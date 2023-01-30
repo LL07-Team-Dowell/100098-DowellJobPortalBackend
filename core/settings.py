@@ -21,11 +21,11 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    "CandidateView",
-    "HrView",
-    "LeadView",
-    "AccountView",
-    "AdminView",
+    'candidate_management',
+    'hr_management',
+    'lead_management',
+    'accounts_management',
+    'admin_management',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

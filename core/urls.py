@@ -17,33 +17,33 @@ from django.contrib import admin
 from django.urls import path ,include ,path , re_path
 
 # import views for URL
-from CandidateView.canditate_views import (
+from candidate_management.candidate_views import (
     getServerReport,
 )
-from HrView.hr_views import (
+from hr_management.hr_views import(
     getServerReport,
 )
-from LeadView.lead_views import (
+from lead_management.lead_views import(
     getServerReport,
 )
-from AccountView.account_views import (
+from accounts_management.accounts_views import(
     getServerReport,
 )
-from AdminView.admin_views import (
+from admin_management.admin_views import(
     getServerReport,
 )
 urlpatterns = [
     # admin url
     path('admin/', admin.site.urls),
-    # candidate page url
-    path('candidatepage/server_report', getServerReport.as_view()),
-    # hr page url
-    path('hrpage/server_report', getServerReport.as_view()),
-    # lead page url
-    path('leadpage/server_report', getServerReport.as_view()),
-    # account page url
-    path('accountpage/server_report', getServerReport.as_view()),
-    # admin page url
-    path('adminpage/server_report', getServerReport.as_view()),
+    # candidate management url
+    path('candidate_management/server_report', getServerReport.as_view()),
+    # hr management url
+    path('hr_management/server_report', getServerReport.as_view()),
+    # lead management url
+    path('lead_management/server_report', getServerReport.as_view()),
+    # account management url
+    path('account_management/server_report', getServerReport.as_view()),
+    # admin management url
+    path('admin_management/server_report', getServerReport.as_view()),
 
 ]

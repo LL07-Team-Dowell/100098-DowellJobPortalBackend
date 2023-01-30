@@ -10,4 +10,4 @@ import requests
 class getServerReport(APIView):
 
     def get(self, request):
-        return Response({"info": "APi services for Candidate_view"},status=status.HTTP_200_OK)
+        return Response({"info": "APi services for Hr_view"},status=status.HTTP_200_OK)

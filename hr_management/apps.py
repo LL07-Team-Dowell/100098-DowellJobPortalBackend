@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class LeadviewConfig(AppConfig):
+class HrManagementConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'LeadView'
+    name = 'hr_management'

@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class CandidateviewConfig(AppConfig):
+class AdminManagementConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'CandidateView'
+    name = 'admin_management'

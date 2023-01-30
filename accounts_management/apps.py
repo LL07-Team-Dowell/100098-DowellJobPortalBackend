@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class HrviewConfig(AppConfig):
+class AccountsManagementConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'HrView'
+    name = 'accounts_management'
