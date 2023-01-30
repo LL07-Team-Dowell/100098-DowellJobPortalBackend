@@ -1,0 +1,6 @@
+.test__Navbar {
+    display: flex;
+    width: 50%;
+    justify-content: space-between;
+    margin: 5% auto 0;
+}
