@@ -17,33 +17,29 @@ from django.contrib import admin
 from django.urls import path ,include ,path , re_path
 
 # import views for URL
-from candidate_management.candidate_views import (
-    getServerReport,
-)
-from hr_management.hr_views import(
-    getServerReport,
-)
-from lead_management.lead_views import(
-    getServerReport,
-)
-from accounts_management.accounts_views import(
-    getServerReport,
-)
-from admin_management.admin_views import(
-    getServerReport,
-)
+from candidate_management.candidate_views import *
+from hr_management.hr_views import *
+from lead_management.lead_views import *
+from accounts_management.accounts_views import *
+from admin_management.admin_views import *
 urlpatterns = [
     # admin url
     path('admin/', admin.site.urls),
     # candidate management url
+    
     path('candidate_management/server_report', getServerReport.as_view()),
     # hr management url
+
     path('hr_management/server_report', getServerReport.as_view()),
     # lead management url
+
     path('lead_management/server_report', getServerReport.as_view()),
     # account management url
+
     path('account_management/server_report', getServerReport.as_view()),
     # admin management url
+
     path('admin_management/server_report', getServerReport.as_view()),
+    path('admin_management/create_jobs',create_jobs.as_view())
 
 ]

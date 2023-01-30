@@ -37,4 +37,4 @@ def get_event_id():
     else: 
         return json.loads(r.text)['error']
 
-print(respose['event_id'])
+# print(respose['event_id'])
