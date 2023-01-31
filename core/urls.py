@@ -30,17 +30,19 @@ urlpatterns = [
     path('', serverStatus.as_view()),
     
     # candidate management url
-    path('candidate_management/apply_job_application',apply_job_application.as_view()),
+    path('candidate_management/apply_job',apply_job.as_view()),
     path('candidate_management/get_job_application',get_job_application.as_view()),
+    path('candidate_management/get_candidate_application',get_candidate_application.as_view()),
 
     # hr management url
-    path('hr_management/server_report', getServerReport.as_view()),
+    path('hr_management/hr_shortlisted_candidate', hr_shortlisted_candidate.as_view()),
+    path('hr_management/hr_selected_candidate', hr_selected_candidate.as_view()),
 
     # lead management url
-    path('lead_management/server_report', getServerReport.as_view()),
+    path('lead_management/lead_hired_candidate', lead_hired_candidate.as_view()),
 
     # account management url
-    path('account_management/server_report', getServerReport.as_view()),
+    
     
     # admin management url
     path('admin_management/create_jobs',create_jobs.as_view()),

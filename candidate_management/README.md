@@ -1,21 +1,25 @@
 ### Backend services for Admin view
 
-*Post* to `/candidate_management/apply_job_application`
+*Post* to `/candidate_management/apply_job`
 - Request Body
 ```json
 {
     "job_number": "<job _number of already created jobs",
     "job_title": "<job title of already created jobs>",
     "applicant": "<applicant name>",
+    "applicant_email":"<applicant email>",
     "feedBack": "<feedback>",
     "freelancePlatform": "<freelancePlatform>",
     "freelancePlatformUrl": "<freelancePlatformUrl>",
+    "academic_qualification_type": "<academic_qualification_type>",
+    "academic_qualification":"<academic_qualification>" ,
     "country": "<location function>",
     "agree_to_all_terms": "<True | False>",
     "company_id": "<company_id>",
     "usernames": "<username>",
     "data_type": "<data_type>",
-    "payment": "<payment>"
+    "payment": "<payment>",
+    "scheduled_interview_date":"<scheduled_interview_date>"
 }
 ```
 - Response 201

@@ -75,9 +75,7 @@ class update_jobs(APIView):
         field = {
             "_id": data.get('document_id', '')
         }
-        update_field = {
-            "job_title":  data.get('job_title', '')
-        }
+        update_field = data
         response = dowellconnection(*jobs,"update",field,update_field)
         print(response)
         if response:

@@ -56,12 +56,12 @@
     "response":["list of jobs"]
 }
 ```
-*Post* to `/admin_management/update_jobs` **Need to coorect**
+*Post* to `/admin_management/update_jobs`
 - Request Body
 ```json
 {
     "document_id":"<document_id>",
-    "job_title":"<job_title>"
+    "<update_field : Kindly follow notes to update the database , you should not update other field>"
 }
 ```
 - Response 200
@@ -76,4 +76,4 @@
     "message":"Job updation has failed." 
 }
 ```
-
+**Notes: "description","skills","qualification","payment","is_active","time_interval","general_terms","technical_specification","workflow_terms","other_info","data_type"**

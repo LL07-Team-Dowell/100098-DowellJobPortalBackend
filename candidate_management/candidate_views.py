@@ -11,8 +11,8 @@ from database.database_management import *
 
 # apply for jobs
 @method_decorator(csrf_exempt, name='dispatch')
-class apply_job_application(APIView):
-
+class apply_job(APIView):
+#add few details
     def post(self, request):
         data = request.data
         field = {
@@ -20,13 +20,16 @@ class apply_job_application(APIView):
             "job_number":  data.get('job_number', ''),
             "job_title":  data.get('job_title', ''),
             "applicant": data.get('applicant', ''),
+            "applicant_email": data.get('applicant_email', ''),
             "feedBack": data.get('feedBack', ''),
             "freelancePlatform": data.get('freelancePlatform', ''),
             "freelancePlatformUrl": data.get('freelancePlatformUrl',''),
+            "academic_qualification_type": data.get('academic_qualification_type',''),
+            "academic_qualification": data.get('academic_qualification',''),
             "country": data.get('country',''),
             "agree_to_all_terms": data.get('agree_to_all_terms',''),
             "project":"",
-            "status": "pending",
+            "status": "Pending",
             "hr_remarks":"",
             "teamlead_remarks":"",
             "rehire_remarks":"",
@@ -34,8 +37,9 @@ class apply_job_application(APIView):
             "product_discord_link": "",
             "payment": data.get('payment',""),
             "company_id":data.get('company_id',''),
-            "username": data.get('usernames',''),
-            "data_type":data.get('data_type','')
+            "username": data.get('username',''),
+            "data_type":data.get('data_type',''),
+            "scheduled_interview_date": data.get('scheduled_interview_date','')
         }
         update_field = {
             "status":"nothing to update"
@@ -66,3 +70,21 @@ class get_job_application(APIView):
         else:
             return Response({"message":"There is no job applications","response":json.loads(response)},status=status.HTTP_204_NO_CONTENT)
 
+@method_decorator(csrf_exempt, name='dispatch')
+class get_candidate_application(APIView):
+
+    def post(self, request):
+        data = request.data
+        field = {
+            "_id":data.get('document_id','')
+
+        }
+        update_field = {
+            "status":"nothing to update"
+        }
+        response = dowellconnection(*candidate_management_reports,"fetch",field,update_field)
+        print(response)
+        if response:
+            return Response({"message":"List of job apllications.","response":json.loads(response)},status=status.HTTP_200_OK)
+        else:
+            return Response({"message":"There is no job applications","response":json.loads(response)},status=status.HTTP_204_NO_CONTENT)
