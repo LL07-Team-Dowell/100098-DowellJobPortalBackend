@@ -2,7 +2,10 @@
 
 Hello frontend developers!
 
-<h3>This is the active branch you would be working on. Please read this very well before starting any work</h3>
+<h3>This is the active branch you would be building from. 
+<br />
+<b>Please read this very well before starting any work.</b>
+</h3>
 
 <br />
 
@@ -28,7 +31,12 @@ cd 100098-dowelljobportal
 npm start
 ```
 
-- After working, please push your changes to `YOUR` branch and only `YOUR` branch using this:
+- Each time before you begin working, please make sure to <b>PULL</b> all the recent changes from the `frontend` branch using this:
+```bash
+git pull origin frontend
+```
+
+- After working, please <b>PUSH</b> your changes to <b>YOUR</b> branch and only <b>YOUR</b> branch using this:
 ```bash
 git push origin <your-name-frontend>
 ```
