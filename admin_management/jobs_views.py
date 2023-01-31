@@ -9,11 +9,6 @@ from database.connection import dowellconnection
 from database.event import get_event_id
 from database.database_management import *
 
-@method_decorator(csrf_exempt, name='dispatch')
-class getServerReport(APIView):
-
-    def get(self, request):
-        return Response({"info": "APi services for Admin_view"},status=status.HTTP_200_OK)
 
 # create new job
 @method_decorator(csrf_exempt, name='dispatch')

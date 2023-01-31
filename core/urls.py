@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path ,include ,path , re_path
 
 # import views for URL
+from jobportal.views import *
 from candidate_management.candidate_views import *
 from hr_management.hr_views import *
 from lead_management.lead_views import *
@@ -25,9 +26,9 @@ from admin_management.jobs_views import *
 urlpatterns = [
     # admin url
     path('admin/', admin.site.urls),
-
+    # get server_reports
+    path('', getServerReport.as_view()),
     # candidate management url
-    path('candidate_management/server_report', getServerReport.as_view()),
     path('candidate_management/apply_job_application',apply_job_application.as_view()),
     path('candidate_management/get_job_application',get_job_application.as_view()),
 
@@ -41,7 +42,6 @@ urlpatterns = [
     path('account_management/server_report', getServerReport.as_view()),
     
     # admin management url
-    path('admin_management/server_report', getServerReport.as_view()),
     path('admin_management/create_jobs',create_jobs.as_view()),
     path('admin_management/get_jobs',get_jobs.as_view()),
     path('admin_management/update_jobs',update_jobs.as_view()),

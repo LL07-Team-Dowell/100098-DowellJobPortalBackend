@@ -62,13 +62,18 @@
 {
     "document_id":"<document_id>",
     "job_title":"<job_title>"
-}```
+}
+```
 - Response 200
+```json
 {
    "message":"Job updation successful." 
 }
+```
 - Response 304
+```json
 {
     "message":"Job updation has failed." 
 }
+```
 
