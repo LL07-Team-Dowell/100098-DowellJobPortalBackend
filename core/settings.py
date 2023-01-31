@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'lead_management',
     'accounts_management',
     'admin_management',
+    'jobportal',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

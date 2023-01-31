@@ -12,7 +12,7 @@ candidate_management_reports = [
     "jobportal",
     "candidate_reports",
     "candidate_report",
-    "100098007",
+    "100098002",
     "ABCDE",
 ]
 
