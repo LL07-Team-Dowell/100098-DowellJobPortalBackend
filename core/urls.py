@@ -27,7 +27,8 @@ urlpatterns = [
     # admin url
     path('admin/', admin.site.urls),
     # get server_reports
-    path('', getServerReport.as_view()),
+    path('', serverStatus.as_view()),
+    
     # candidate management url
     path('candidate_management/apply_job_application',apply_job_application.as_view()),
     path('candidate_management/get_job_application',get_job_application.as_view()),

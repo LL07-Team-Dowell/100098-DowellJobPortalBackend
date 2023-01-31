@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 import requests
 
 @method_decorator(csrf_exempt, name='dispatch')
-class getServerReport(APIView):
+class serverStatus(APIView):
 
     def get(self, request):
         return Response({"info": "Welcome to Dowell-Job-Portal-Version2.0"},status=status.HTTP_200_OK)
