@@ -9,10 +9,10 @@
 #### candidate management 
 - [candidate api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/candidate_management/README.md)
 
-#### HR management -> **COMING SOON**
+#### HR management 
 - [hr api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/hr_management/README.md)
 
-#### lead management -> **COMING SOON**
+#### lead management -> **COMING SOON --> left with rehire**
 - [lead api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/lead_management/README.md)
 
 #### accounts management -> **COMING SOON**
