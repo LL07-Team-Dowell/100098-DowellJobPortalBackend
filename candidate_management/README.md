@@ -4,18 +4,18 @@
 - Request Body
 ```json
 {
-  "job_number": "<job _number of already created jobs",
-  "job_title": "<job title of already created jobs>",
-  "applicant": "<applicant name>",
-  "feedBack": "<feedcak>",
-  "freelancePlatform": "<freelancePlatform>",
-  "freelancePlatformUrl": "<freelancePlatformUrl>",
-  "country": "<location function>",
-  "agree_to_all_terms": "<True | False>",
-  "status": "<pending | Shortlist | hire | Select | Onboarding | Rehire | Reject>",
-  "company_id": "<company_id>",
-  "usernames": "<username>",
-  "data_type": "<data_type>"
+    "job_number": "<job _number of already created jobs",
+    "job_title": "<job title of already created jobs>",
+    "applicant": "<applicant name>",
+    "feedBack": "<feedback>",
+    "freelancePlatform": "<freelancePlatform>",
+    "freelancePlatformUrl": "<freelancePlatformUrl>",
+    "country": "<location function>",
+    "agree_to_all_terms": "<True | False>",
+    "company_id": "<company_id>",
+    "usernames": "<username>",
+    "data_type": "<data_type>",
+    "payment": "<payment>"
 }
 ```
 - Response 201
