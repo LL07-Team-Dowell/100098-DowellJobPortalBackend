@@ -10,13 +10,14 @@
 - [candidate api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/candidate_management/README.md)
 
 #### HR management -> **COMING SOON**
-- hr api service[]
+- [hr api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/hr_management/README.md)
 
 #### lead management -> **COMING SOON**
-- lead api service[]
+- [lead api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/lead_management/README.md)
 
 #### accounts management -> **COMING SOON**
-- accounts api service[]
+- [accounts api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/accounts_management/README.md)
 
-
+#### PostMan collection
+- [Postman API service](https://documenter.getpostman.com/view/14666556/2s935iv7C3)
 
