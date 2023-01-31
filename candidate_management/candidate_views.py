@@ -25,7 +25,6 @@ class apply_job_application(APIView):
             "freelancePlatformUrl": data.get('freelancePlatformUrl',''),
             "country": data.get('country',''),
             "agree_to_all_terms": data.get('agree_to_all_terms',''),
-            "application_status": data.get('application_status',''),
             "status": data.get('status',''), 
             "company_id":data.get('company_id',''),
             "username": data.get('usernames',''),

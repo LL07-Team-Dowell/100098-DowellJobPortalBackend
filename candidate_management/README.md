@@ -12,7 +12,6 @@
   "freelancePlatformUrl": "<freelancePlatformUrl>",
   "country": "<location function>",
   "agree_to_all_terms": "<True | False>",
-  "application_status":"<canditate_view | hr_view | account_view | leader_view >",
   "status": "<pending | Shortlist | hire | Select | Onboarding | Rehire | Reject>",
   "company_id": "<company_id>",
   "usernames": "<username>",
