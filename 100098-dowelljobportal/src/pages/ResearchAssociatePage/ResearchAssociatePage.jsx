@@ -8,10 +8,10 @@ import selectorArrow from './icons/selectorArrow.svg'
 import map from './images/map.png' ; 
 import message from './icons/message.svg'
 const ResearchAssociatePage = () => {
-    return <>
+    return <div className={"research-jobs"}>
     <header>
         <div>
-        <img src={logo} alt="logo" />
+        <img className="logo" src={logo} alt="logo" />
         </div>
         <h3>Join Dowell Team as Research Associate </h3>
     </header>
@@ -41,7 +41,6 @@ const ResearchAssociatePage = () => {
 
                 </div>
             </div>
-            
             <div>
                 <h6>City Name:</h6>
                 <div className="input">
@@ -60,13 +59,12 @@ const ResearchAssociatePage = () => {
                 </div>
             </div>
         </div>
-        <div className="map">
-            
-        </div>
+        
+        <img src={map} className="map-image" alt="" />
         
     </main>
     <img src={message} alt=""  className="message"/>
-    </>
+    </div>
 }
 
 export default ResearchAssociatePage;
