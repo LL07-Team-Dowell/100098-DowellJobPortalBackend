@@ -12,59 +12,66 @@ import requests
 
 @method_decorator(csrf_exempt, name='dispatch')
 class hr_shortlisted_candidate(APIView):
+
     def post(self, request):
             data = request.data
-            field = {
-                "_id":data.get('document_id',''),
+            if data :
+                field = {
+                    "_id":data.get('document_id'),
+                    }
+                update_field = {
+                    "hr_remarks":data.get('hr_remarks'),
+                    "status":data.get('status')
                 }
-            update_field = {
-               "hr_remarks": data.get('hr_remarks',''),
-               "status":data.get('status', ''),
-            }
-            insert_to_hr_report={
-                "event_id":get_event_id()["event_id"],
-                "applicant":data.get('applicant', ''),
-                "hr_remarks":data.get('hr_remarks', ''),
-                "status":data.get('status', ''),
-                "company_id":data.get('company_id',''),
-                "data_type":data.get('data_type','')
-            }
-            update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
-            insert_response = dowellconnection(*hr_management_reports,"insert",insert_to_hr_report,update_field)
-            print(update_response)
-            if update_response or insert_response:
-                return Response({"message":f"Candidate has been {data.get('status', '')}"},status=status.HTTP_200_OK)
+                insert_to_hr_report={
+                    "event_id":get_event_id()["event_id"],
+                    "applicant":data.get('applicant'),
+                    "hr_remarks":data.get('hr_remarks'),
+                    "status":data.get('status'),
+                    "company_id":data.get('company_id'),
+                    "data_type":data.get('data_type')
+                }
+                update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
+                insert_response = dowellconnection(*hr_management_reports,"insert",insert_to_hr_report,update_field)
+                print(update_response)
+                if update_response or insert_response:
+                    return Response({"message":f"Candidate has been {data.get('status')}"},status=status.HTTP_200_OK)
+                else:
+                    return Response({"message":"HR operation failed"},status=status.HTTP_304_NOT_MODIFIED)
             else:
-                return Response({"message":"HR operation failed"},status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message":"Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class hr_selected_candidate(APIView):
     def post(self, request):
             data = request.data
-            field = {
-                "_id":data.get('document_id',''),
+            if data :
+                field = {
+                    "_id":data.get('document_id'),
+                    }
+                update_field = {
+                    "hr_remarks":data.get('hr_remarks'),
+                    "project":data.get('project'),
+                    "product_discord_link":data.get('product_discord_link'),
+                    "status":data.get('status')
                 }
-            update_field = {
-                "project":data.get('project',''),
-                "product_discord_link":data.get('product_discord_link',''),
-                "status":data.get('status', ''),
-                "hr_remarks":data.get('hr_remarks', ''),
-            }
-            insert_to_hr_report={
-                "event_id":get_event_id()["event_id"],
-                "applicant":data.get('applicant', ''),
-                "hr_remarks":data.get('hr_remarks', ''),
-                "project":data.get('project',''),
-                "product_discord_link":data.get('product_discord_link',''),
-                "status":data.get('status', ''),
-                "company_id":data.get('company_id',''),
-                "data_type":data.get('data_type','')
-            }
-            update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
-            insert_response = dowellconnection(*hr_management_reports,"insert",insert_to_hr_report,update_field)
-            print(update_response)
-            if update_response or insert_response:
-                return Response({"message":f"Candidate has been {data.get('status', '')}"},status=status.HTTP_200_OK)
+                insert_to_hr_report={
+                    "event_id":get_event_id()["event_id"],
+                    "applicant":data.get('applicant'),
+                    "hr_remarks":data.get('hr_remarks'),
+                    "project":data.get('project'),
+                    "product_discord_link":data.get('product_discord_link'),
+                    "status":data.get('status'),
+                    "company_id":data.get('company_id'),
+                    "data_type":data.get('data_type')
+                }
+                update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
+                insert_response = dowellconnection(*hr_management_reports,"insert",insert_to_hr_report,update_field)
+                print(update_response)
+                if update_response or insert_response:
+                    return Response({"message":f"Candidate has been {data.get('status')}"},status=status.HTTP_200_OK)
+                else:
+                    return Response({"message":"HR operation failed"},status=status.HTTP_304_NOT_MODIFIED)
             else:
-                return Response({"message":"HR operation failed"},status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message":"Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)

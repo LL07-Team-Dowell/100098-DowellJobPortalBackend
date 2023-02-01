@@ -76,4 +76,4 @@
     "message":"Job updation has failed." 
 }
 ```
-**Notes: "description","skills","qualification","payment","is_active","time_interval","general_terms","technical_specification","workflow_terms","other_info","data_type"**
+**Notes: "job_title","description","skills","qualification","payment","is_active","time_interval","general_terms","technical_specification","workflow_terms","other_info","data_type"**

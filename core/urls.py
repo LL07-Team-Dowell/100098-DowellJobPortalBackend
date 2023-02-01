@@ -15,9 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path ,include ,path , re_path
-
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import permissions
 # import views for JobPortal
 from jobportal.views import *
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="API DOCS",
+      default_version='1.0.0',
+      description="Test description",
+   ),
+   public=True,
+   permission_classes=[permissions.AllowAny],
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +37,7 @@ urlpatterns = [
     path('candidate_management/',include('candidate_management.urls')),
     path('hr_management/',include('hr_management.urls')),
     path('lead_management/',include('lead_management.urls')),
-    path('admin_management/',include('admin_management.urls'))
+    path('admin_management/',include('admin_management.urls')),
+    path('task_management/',include('task_management.urls')),
+    path('swagger/schema/', schema_view.with_ui('swagger',cache_timeout=0), name='schema-schema')
 ]
