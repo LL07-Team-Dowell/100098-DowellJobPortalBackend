@@ -1,6 +1,6 @@
 ### Backend services for Admin view
 
-*Post* to `/admin_management/create_jobs`
+*Post* to `admin_management/create_jobs/`
 - Request Body
 ```json
 {
@@ -35,7 +35,7 @@
     "message":"Job creation has failed"
 }
 ```
-*Post* to `/admin_management/get_jobs`
+*Post* to `admin_management/get_jobs/`
 - Request Body
 ```json
 {
@@ -56,7 +56,7 @@
     "response":["list of jobs"]
 }
 ```
-*Post* to `/admin_management/update_jobs`
+*Post* to `admin_management/update_jobs/`
 - Request Body
 ```json
 {

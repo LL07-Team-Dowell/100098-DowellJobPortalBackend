@@ -1,6 +1,6 @@
 ### Backend services for lead management view
 
-_Post_ to `lead_management/lead_hired_candidate`
+*Post* to `lead_management/lead_hired_candidate/`
 
 - Request Body
 
