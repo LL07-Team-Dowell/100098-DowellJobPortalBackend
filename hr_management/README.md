@@ -1,6 +1,6 @@
 ### Backend services for Hr view
 
-*Post* to `hr_management/shortlisted_candidate/`
+_Post_ to `hr_management/shortlisted_candidate/`
 
 - Request Body
 
@@ -32,7 +32,7 @@
 }
 ```
 
-*Post* to `hr_management/hr_selected_candidate/`
+_Post_ to `hr_management/selected_candidate/`
 
 - Request Body
 

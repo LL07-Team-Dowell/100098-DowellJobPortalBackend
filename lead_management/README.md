@@ -1,6 +1,6 @@
 ### Backend services for lead management view
 
-*Post* to `lead_management/lead_hired_candidate/`
+_Post_ to `lead_management/hire_candidate/`
 
 - Request Body
 
@@ -29,5 +29,32 @@
 ```json
 {
   "message": "Lead operation failed"
+}
+```
+
+_Post_ to `lead_management/hire_candidate/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document id>",
+  "rehire_remarks": "<rehire remarks>"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Candidate has been Onboarding."
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "HR operation failed"
 }
 ```
