@@ -1,6 +1,7 @@
 ### Backend services for Admin view
 
 *Post* to `admin_management/create_jobs/`
+
 - Request Body
 ```json
 {
@@ -20,7 +21,8 @@
     "other_info":["term1","term2"],
     "company_id":"<company_id>",
     "data_type":"<data_type>",
-    "created_by":"<created_by>"  
+    "created_by":"<created_by>",
+    "created_on":"<created_on>",
 }
 ```
 - Response 201

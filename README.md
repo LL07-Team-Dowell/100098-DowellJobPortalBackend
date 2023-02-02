@@ -12,7 +12,7 @@
 #### HR management 
 - [hr api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/hr_management/README.md)
 
-#### lead management -> **COMING SOON --> left with rehire**
+#### lead management 
 - [lead api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/lead_management/README.md)
 
 #### accounts management -> **COMING SOON**
@@ -20,4 +20,5 @@
 
 #### PostMan collection
 - [Postman API service](https://documenter.getpostman.com/view/14666556/2s935iv7C3)
+
 

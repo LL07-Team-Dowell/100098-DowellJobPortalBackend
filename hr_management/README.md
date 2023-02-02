@@ -1,6 +1,6 @@
 ### Backend services for Hr view
 
-*Post* to `hr_management/hr_shortlisted_candidate/`
+*Post* to `hr_management/shortlisted_candidate/`
 
 - Request Body
 
@@ -11,7 +11,8 @@
   "status": "<status>",
   "applicant": "<applicant name>",
   "company_id": "<company_id>",
-  "data_type": "<data_type>"
+  "data_type": "<data_type>",
+  "shortlisted_on": "<shortlisted_on>"
 }
 ```
 
@@ -44,7 +45,8 @@
   "product_discord_link": "link",
   "applicant": "<applicant name>",
   "company_id": "<company id>",
-  "data_type": "<data type>"
+  "data_type": "<data type>",
+  "selected_on": "<selected on>"
 }
 ```
 

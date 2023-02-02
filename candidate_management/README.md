@@ -19,7 +19,7 @@
     "usernames": "<username>",
     "data_type": "<data_type>",
     "payment": "<payment>",
-    "scheduled_interview_date":"<scheduled_interview_date>"
+    "application_submitted_on": "<application_submitted_on>"
 }
 ```
 - Response 201

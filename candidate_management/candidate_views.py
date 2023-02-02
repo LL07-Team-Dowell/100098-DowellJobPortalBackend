@@ -14,11 +14,9 @@ from rest_framework.parsers import FormParser, MultiPartParser
 @method_decorator(csrf_exempt, name='dispatch')
 class apply_job(APIView):
 #add few details
-    def post(self, request , *args, **kwargs):
+    def post(self, request ):
         data = request.data
-        print(data)
         if data:
-            print("i am here")
             field = {
                 "eventId":get_event_id()['event_id'],
                 "job_number":  data.get('job_number'),
@@ -43,7 +41,12 @@ class apply_job(APIView):
                 "company_id":data.get('company_id'),
                 "username": data.get('username'),
                 "data_type":data.get('data_type'),
-                "scheduled_interview_date": data.get('scheduled_interview_date')
+                "scheduled_interview_date": "",
+                "application_submitted_on":data.get('application_submitted_on'),
+                "shortlisted_on":"",
+                "selected_on":"",
+                "hired_on":"",
+                "onboarded_on":"",
             }
             update_field = {
                 "status":"nothing to update"
@@ -57,7 +60,7 @@ class apply_job(APIView):
         else:
             return Response({"message":"Parameters are not valid."},status=status.HTTP_400_BAD_REQUEST)
 
-# apply for jobs
+
 @method_decorator(csrf_exempt, name='dispatch')
 class get_job_application(APIView):
 
@@ -95,7 +98,7 @@ class get_candidate_application(APIView):
             response = dowellconnection(*candidate_management_reports,"fetch",field,update_field)
             print(response)
             if response:
-                return Response({"message":"List of job apllications.","response":json.loads(response)},status=status.HTTP_200_OK)
+                return Response({"message":"Candidate job apllications.","response":json.loads(response)},status=status.HTTP_200_OK)
             else:
                 return Response({"message":"There is no job applications","response":json.loads(response)},status=status.HTTP_204_NO_CONTENT)
         else:

@@ -11,7 +11,7 @@ import requests
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class hr_shortlisted_candidate(APIView):
+class shortlisted_candidate(APIView):
 
     def post(self, request):
             data = request.data
@@ -21,7 +21,8 @@ class hr_shortlisted_candidate(APIView):
                     }
                 update_field = {
                     "hr_remarks":data.get('hr_remarks'),
-                    "status":data.get('status')
+                    "status":data.get('status'),
+                    "shortlisted_on":data.get('shortlisted_on')
                 }
                 insert_to_hr_report={
                     "event_id":get_event_id()["event_id"],
@@ -29,7 +30,8 @@ class hr_shortlisted_candidate(APIView):
                     "hr_remarks":data.get('hr_remarks'),
                     "status":data.get('status'),
                     "company_id":data.get('company_id'),
-                    "data_type":data.get('data_type')
+                    "data_type":data.get('data_type'),
+                    "shortlisted_on":data.get('shortlisted_on')
                 }
                 update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
                 insert_response = dowellconnection(*hr_management_reports,"insert",insert_to_hr_report,update_field)
@@ -43,7 +45,7 @@ class hr_shortlisted_candidate(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class hr_selected_candidate(APIView):
+class selected_candidate(APIView):
     def post(self, request):
             data = request.data
             if data :
@@ -54,7 +56,8 @@ class hr_selected_candidate(APIView):
                     "hr_remarks":data.get('hr_remarks'),
                     "project":data.get('project'),
                     "product_discord_link":data.get('product_discord_link'),
-                    "status":data.get('status')
+                    "status":data.get('status'),
+                    "selected_on":data.get('selected_on')
                 }
                 insert_to_hr_report={
                     "event_id":get_event_id()["event_id"],
@@ -64,7 +67,8 @@ class hr_selected_candidate(APIView):
                     "product_discord_link":data.get('product_discord_link'),
                     "status":data.get('status'),
                     "company_id":data.get('company_id'),
-                    "data_type":data.get('data_type')
+                    "data_type":data.get('data_type'),
+                    "selected_on":data.get('selected_on')
                 }
                 update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
                 insert_response = dowellconnection(*hr_management_reports,"insert",insert_to_hr_report,update_field)

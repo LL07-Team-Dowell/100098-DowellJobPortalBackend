@@ -35,7 +35,8 @@ class create_jobs(APIView):
                 "other_info":data.get('other_info'), 
                 "company_id":data.get('company_id'),
                 "data_type":data.get('data_type'),
-                "created_by":data.get('created_by')
+                "created_by":data.get('created_by'),
+                "created_on":data.get('created_on')
             }
             update_field = {
                 "status":"nothing to update"
@@ -66,6 +67,28 @@ class get_jobs(APIView):
             print(response)
             if response:
                 return Response({"message":"List of jobs." , "response":json.loads(response)},status=status.HTTP_200_OK)
+            else:
+                return Response({"message":"There is no jobs" , "response":json.loads(response)},status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"message":"Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class get_job(APIView):
+
+    def post(self,request):
+        data = request.data
+        if data :
+            field = {
+                "_id": data.get('document_id')
+            }
+            update_field = {
+                "status":"nothing to update"
+            }
+            response = dowellconnection(*jobs,"fetch",field,update_field)
+            print(response)
+            if response:
+                return Response({"message":"Job details." , "response":json.loads(response)},status=status.HTTP_200_OK)
             else:
                 return Response({"message":"There is no jobs" , "response":json.loads(response)},status=status.HTTP_204_NO_CONTENT)
         else:

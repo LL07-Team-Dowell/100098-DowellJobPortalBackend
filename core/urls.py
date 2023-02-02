@@ -37,6 +37,7 @@ urlpatterns = [
     path('candidate_management/',include('candidate_management.urls')),
     path('hr_management/',include('hr_management.urls')),
     path('lead_management/',include('lead_management.urls')),
+    path('accounts_management/',include('accounts_management.urls')),
     path('admin_management/',include('admin_management.urls')),
     path('task_management/',include('task_management.urls')),
     path('swagger/schema/', schema_view.with_ui('swagger',cache_timeout=0), name='schema-schema')

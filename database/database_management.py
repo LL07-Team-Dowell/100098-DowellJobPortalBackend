@@ -50,3 +50,12 @@ admin_management_reports = [
     "100098006",
     "ABCDE",
 ]
+
+task_management_reports = [
+    "jobportal",
+    "jobportal",
+    "task_reports",
+    "task_reports",
+    "100098007",
+    "ABCDE",
+]

@@ -11,7 +11,8 @@
   "status": "<status>",
   "applicant": "<applicant name>",
   "company_id": "<company_id>",
-  "data_type": "<data_type>"
+  "data_type": "<data_type>",
+  "hired_on": "<hired_on>"
 }
 ```
 
