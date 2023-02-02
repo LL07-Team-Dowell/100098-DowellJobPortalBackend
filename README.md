@@ -15,10 +15,10 @@
 #### lead management 
 - [lead api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/lead_management/README.md)
 
-#### accounts management -> 
+#### accounts management 
 - [accounts api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/accounts_management/README.md)
 
-#### Task management -> 
+#### Task management 
 - [task api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/task_management/README.md)
 
 #### PostMan collection
