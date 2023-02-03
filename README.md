@@ -28,6 +28,7 @@ git checkout -b ayo-frontend
 - To start up the react application, you can use this:
 ```bash
 cd 100098-dowelljobportal
+npm install
 npm start
 ```
 
@@ -41,4 +42,23 @@ git pull origin frontend
 git push origin <your-name-frontend>
 ```
 
-- That's all. Happy hacking!
+<br />
+<br />
+
+<h3>In summary:</h3>
+
+- Pull first from the `frontend` branch before working
+```bash
+git pull origin frontend
+```
+- Work then add and commmit your changes using a descriptive message
+```bash
+git add .
+git commit -m "Descriptive message here"
+```
+- Push your changes to your branch
+```bash
+git push origin <your-name-frontend>
+```
+
+- That's all. <b>Happy hacking!</b>
