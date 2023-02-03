@@ -6,6 +6,7 @@ import AdminPage from './pages/AdminPage/AdminPage';
 import AddJob from './pages/AdminPage/views/AddJob/AddJob';
 import ViewJob from './pages/AdminPage/views/ViewJob/ViewJob';
 import EditJob from './pages/AdminPage/views/EditJob/EditJob';
+import LandingPage from './pages/Landingpage/LandingPage';
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
           <Route path='view' element={<ViewJob />} />
           <Route path='edit' element={<EditJob />} />
         </Route>
+        <Route path='/landingpage' element={<LandingPage />} />
+
       </Routes>
     </>
   )

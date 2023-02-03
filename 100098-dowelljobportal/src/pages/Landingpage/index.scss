@@ -1,0 +1,197 @@
+
+// colors 
+$main__green : #005734 ; 
+$background__gray: #F5F5F5 ; 
+$placeholder__gray:#A3A1A1 ; 
+$text__gray:#B8B8B8 ; 
+$span__gray:#B8B8B8 ; 
+$slider__gray:#D9D9D9 ; 
+
+.landing-page{
+            position: relative;
+            font-family: 'Inter', sans-serif;
+            padding:5.8125rem 7.75rem ; 
+            .backpage{
+                        position: absolute;
+                        top:3.4125rem ; 
+                        left:5.55rem ; 
+            }
+            .add_new_job{
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        >div:first-child{
+                        display: flex;
+                        align-items: center;
+                        button{
+                        background-color: $main__green;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: none;
+                        outline: none;
+                        width: 5.375rem;
+                        height: 5.375rem;
+                        border-radius: 50%;
+                        margin-right: 2.5625rem;
+                        }
+                        h3{
+                        font-weight: 700;
+                        font-size: 2.9375rem;
+                        color: $main__green;
+                        }
+                        }
+                        .input{
+                        display: flex;
+                        align-items: center;
+                        width: 26.5625rem;
+                        min-height: 3.75rem;
+                        background-color: $background__gray;
+                        padding:1.4375rem 1.0625rem ; 
+                        border-radius: 10px;
+                        input{      
+                        margin-left: 14px;
+                        flex: 1;
+                        outline: none;
+                        border: none;
+                        background-color: transparent;
+                        height: 100%;
+                        &::placeholder{
+                                    font-size: 1.175rem;
+                        }
+                        }
+
+                        }
+            }
+
+            .cards{
+            margin-top: 5.9375rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill , minmax(34.5rem , 1fr));
+            grid-gap: 40px;
+            .card{
+            padding:1.5rem 2.0625rem ; 
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            transition: .3s;
+            position: relative;
+            &:hover{
+            box-shadow: rgba($main__green , 0.6) 0px 7px 29px 0px;
+
+            }
+            input[type=checkbox]{
+                        // hereee
+                        position: absolute;
+                        width: 200px;
+                        height: 60px;
+                        border: 1px solid red;
+                        top:70px ; 
+                        right: 0;
+                        visibility: visible;
+                        opacity: 0;
+                        z-index: 999;
+                      }
+                      
+                      label {
+                        cursor: pointer;
+                        text-indent: -9999px;
+                        width: 3.5rem;
+                        height: 1.125rem;
+                        background: grey;
+                        display: block;
+                        border-radius: 100px;
+                        position: relative;
+            
+                      }
+                      
+                      label:after {
+                        content: '';
+                        position: absolute;
+                        top: -1px;
+                        left: -0px;
+                        width: 20px;
+                        height: 20px;
+                        background: $main__green ;
+                        border-radius: 90px;
+                        transition: 0.3s;
+                      }
+                      
+                      input:checked + label {
+                      }
+                      
+                      input:checked + label:after {
+                        left: calc(100% - 5px);
+                        transform: translateX(-100%);
+                      }
+                      
+                      label:active:after {
+                        width: 30px;
+                      }
+            .card__header{
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.9rem;
+            }
+            .card__skill{
+            padding:5px ;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            div:first-child{
+            display: flex;
+            align-items: center;
+            }
+            h6{
+            font-size: 1.5rem;
+            margin-right: 10px;
+            }
+            }
+            .card__footer{
+            display: flex;
+            align-items: flex-end ; 
+            justify-content: space-between;
+            p{
+            display: flex; 
+            align-items: center;
+            margin-left: -5px;
+
+            span{
+            margin-left: 5px;
+            }
+            }
+            .line{
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 2px;
+            height: 41px;
+            background-color: $placeholder__gray;
+            }
+            button{
+                        background-color: $main__green;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding:0.625rem 2.9375rem ;
+                        border-radius: 10px;
+                        font-size: 1.3125rem;
+                        color: white;
+                        font-weight: 500;
+                        cursor: pointer;
+                        outline: none;
+                        border: none;
+            }
+            }
+            }
+            }
+
+}
+
+
+
+
+          
+          // centering
+          
