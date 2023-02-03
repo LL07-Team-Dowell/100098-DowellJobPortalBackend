@@ -32,7 +32,7 @@ _Post_ to `lead_management/hire_candidate/`
 }
 ```
 
-_Post_ to `lead_management/hire_candidate/`
+_Post_ to `lead_management/rehire_candidate/`
 
 - Request Body
 
@@ -47,7 +47,7 @@ _Post_ to `lead_management/hire_candidate/`
 
 ```json
 {
-  "message": "Candidate has been Onboarding."
+  "message": "Candidate has been rehire."
 }
 ```
 

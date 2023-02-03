@@ -10,12 +10,10 @@ _Post_ to `task_management/create_task/`
   "project": "<project name>",
   "applicant": "<applicant name>",
   "task": "<task>",
-  "status": "<status>",
   "task_added_by": "<task added name>",
   "data_type": "<data_type>",
   "company_id": "<company_id>",
-  "task created date": "<task created date>",
-  "task_updated_date": ""
+  "task created date": "<task created date>"
 }
 ```
 
@@ -63,6 +61,34 @@ _Post_ to `task_management/get_task/`
 }
 ```
 
+_Post_ to `task_management/get_cadidate_task/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document id>"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "List of the task.",
+  "response": ["List of the task."]
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "There is no task",
+  "response": ["There is no task"]
+}
+```
+
 _Post_ to `task_management/update_task/`
 
 - Request Body
@@ -73,8 +99,7 @@ _Post_ to `task_management/update_task/`
   "task": "<task>",
   "status": "<status>",
   "task_added_by": "<task added name>",
-  "task_updated_date": "task updated date",
-  "data_type": "<data_type>"
+  "task_updated_date": "task updated date"
 }
 ```
 
