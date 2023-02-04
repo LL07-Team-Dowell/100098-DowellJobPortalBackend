@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { AiFillCloseCircle } from 'react-icons/ai'; 
 import { AiFillPlusCircle } from 'react-icons/ai'; 
 import { BsFillBookmarkFill } from 'react-icons/bs'; 
-import "./style.css";
+import "./style.css"
 
 
 function EditJob() {

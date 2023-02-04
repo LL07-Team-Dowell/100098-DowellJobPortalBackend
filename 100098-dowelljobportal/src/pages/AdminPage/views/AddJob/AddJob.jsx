@@ -1,8 +1,6 @@
 import { useState, Fragment } from "react";
 import Terms from "./Terms";
-import { CgRadioCheck } from "react-icons/cg";
-import { CgRadioChecked } from "react-icons/cg";
-import { BsSave2Fill } from "react-icons/bs";
+import { IoIosBookmark } from "react-icons/io";
 import { MdArrowBackIos } from "react-icons/md";
 
 import { Link } from "react-router-dom";
@@ -17,60 +15,14 @@ const defaultFormField = {
   jobDescription: "",
 };
 
-const terms = [
-  {
-    id: 1,
-    name: "General Terms",
-    add: "Add General Terms",
-  },
-  {
-    id: 2,
-    name: "Technical specifications",
-    add: "Add Specifications",
-  },
-  {
-    id: 3,
-    name: "Payment Terms",
-    add: "Add Payment Terms",
-  },
-  {
-    id: 4,
-    name: "Workflow",
-    add: "Add Workflow",
-  },
-  {
-    id: 5,
-    name: "Others",
-    add: "Add Others",
-  },
-];
-
 const AddJob = () => {
   const [formField, setFormField] = useState(defaultFormField);
   const { jobName, skill, duration, payment, jobDescription } = formField;
   const [isActive, setIsActive] = useState(true);
-  const [newDescription, setNewDescription] = useState("");
-  const [click, setClick] = useState(false);
-  const [des, setDes] = useState([]);
+  const [change, setChange] = useState(" ");
 
-  const toggleOptionButton = () => {
-    setClick(!click);
-  };
-
-  //add description
-  const addDescription = () => {
-    if (newDescription) {
-      let num = des.length + 1;
-      let newTerm = { id: num, title: newDescription, status: false };
-      setDes([...des, newTerm]);
-      setNewDescription(" ");
-    }
-  };
-
-  //delete description
-  const deleteDescription = (id) => {
-    let newDescription = des.filter((item) => item.id !== id);
-    setDes(newDescription);
+  const toggleOptionButton = (e) => {
+    setChange(e.target.value);
   };
 
   const handleChange = (e) => {
@@ -80,15 +32,14 @@ const AddJob = () => {
 
   const handleClick = () => {
     setIsActive(!isActive);
-    console.log(isActive, "value");
   };
 
   return (
     <>
       <div className="addNewJob-container">
-        <Link to="/admin" className="nav-link">
-          <button>
-            <MdArrowBackIos size="1.5em" />
+        <Link to="/admin">
+          <button className="nav-link">
+            <MdArrowBackIos size="2.2em" color="#a3a1a1" />
           </button>
         </Link>
         <h1 className="add-new-job">Add New Job</h1>
@@ -104,7 +55,8 @@ const AddJob = () => {
               <form>
                 <label>Name of Job</label>
                 <input
-                  label="Enter name of job"
+                  className="form-input"
+                  placeholder="Enter name of job"
                   type="text"
                   required
                   onChange={handleChange}
@@ -113,7 +65,8 @@ const AddJob = () => {
                 />
                 <label>Skills</label>
                 <input
-                  label="Enter skills"
+                  className="form-input"
+                  placeholder="Enter skills"
                   type="text"
                   required
                   onChange={handleChange}
@@ -123,43 +76,67 @@ const AddJob = () => {
                 <div>
                   <label>Type of Job</label>
                   <div className="job-type">
-                    <div onClick={toggleOptionButton}>
-                      {click ? (
-                        <CgRadioChecked color="#1f1f1f" size="1.5em" />
-                      ) : (
-                        <CgRadioCheck size="1.5em" />
-                      )}{" "}
-                      <span>Freelancer</span>
-                    </div>
-                    <div onClick={toggleOptionButton}>
-                      {click ? (
-                        <CgRadioChecked color="#1f1f1f" size="1.5em" />
-                      ) : (
-                        <CgRadioCheck size="1.5em" />
-                      )}{" "}
-                      <span>Employee</span>
-                    </div>
-                    <div onClick={toggleOptionButton}>
-                      {click ? (
-                        <CgRadioChecked color="#1f1f1f" size="1.5em" />
-                      ) : (
-                        <CgRadioCheck size="1.5em" />
-                      )}{" "}
-                      <span>Internship</span>
-                    </div>
-                    <div onClick={toggleOptionButton}>
-                      {click ? (
-                        <CgRadioChecked color="#1f1f1f" size="1.5em" />
-                      ) : (
-                        <CgRadioCheck size="1.5em" />
-                      )}{" "}
-                      <span>Reasearch Associate</span>
-                    </div>
+                    <label htmlFor="freelancer" className="radio">
+                      <input
+                        className="radio-input"
+                        type="radio"
+                        id="freelancer"
+                        name="job-type"
+                        value="freelancer"
+                        checked={change === "freelancer"}
+                        onChange={toggleOptionButton}
+                      />
+                      <div className="radio-radio"></div>
+                      Freelancer
+                    </label>
+                    <label htmlFor="employee" className="employee">
+                      <input
+                        className="radio-input"
+                        type="radio"
+                        id="employee"
+                        name="job-type"
+                        value="employee"
+                        checked={change === "employee"}
+                        onChange={toggleOptionButton}
+                      />
+                      <div className="radio-radio"></div>
+                      Employee
+                    </label>
+                    <label htmlFor="internship" className="internship">
+                      <input
+                        className="radio-input"
+                        type="radio"
+                        id="internship"
+                        name="job-type"
+                        value="internship"
+                        checked={change === "internship"}
+                        onChange={toggleOptionButton}
+                      />
+                      <div className="radio-radio"></div>
+                      Intership
+                    </label>
+                    <label
+                      htmlFor="research associate"
+                      className="research-associate"
+                    >
+                      <input
+                        className="radio-input"
+                        type="radio"
+                        id="research associate"
+                        name="job-type"
+                        value="research associate"
+                        checked={change === "research associate"}
+                        onChange={toggleOptionButton}
+                      />
+                      <div className="radio-radio"></div>
+                      Research Associate
+                    </label>
                   </div>
                 </div>
                 <label>Time Period</label>
                 <input
-                  label="Enter time period"
+                  className="form-input"
+                  placeholder="Enter time period"
                   type="text"
                   required
                   onChange={handleChange}
@@ -169,21 +146,20 @@ const AddJob = () => {
                 <div className="job-state">
                   <label>State of Job</label>
                   <div className="state">
-                    Active{" "}
-                    <div>
-                      <span onClick={handleClick} className="toggle">
-                        {isActive ? (
-                          <span className="toggle-active"></span>
-                        ) : (
-                          <span className="toggle-inactive"></span>
-                        )}
-                      </span>
-                    </div>
+                    {isActive ? <span>Inactive</span> : <span>Active</span>}
+                    <span onClick={handleClick} className="toggle">
+                      {isActive ? (
+                        <span className="toggle-active"></span>
+                      ) : (
+                        <span className="toggle-inactive"></span>
+                      )}
+                    </span>
                   </div>
                 </div>
                 <label>Payment</label>
                 <input
-                  label="Enter your amount"
+                  className="form-input"
+                  placeholder="Enter your amount"
                   type="text"
                   required
                   onChange={handleChange}
@@ -192,7 +168,8 @@ const AddJob = () => {
                 />
                 <label>Job Description</label>
                 <input
-                  label="Enter your answer"
+                  className="form-input"
+                  placeholder="Enter your answer"
                   type="text"
                   required
                   onChange={handleChange}
@@ -200,18 +177,11 @@ const AddJob = () => {
                   value={jobDescription}
                 />
               </form>
-              <Terms
-                terms={terms}
-                des={des}
-                addDescription={addDescription}
-                deleteDescription={deleteDescription}
-                newDescription={newDescription}
-                setNewDescription={setNewDescription}
-              />
+              <Terms />
               <div>
                 <button className="submit">
                   <div className="save">
-                    Save <BsSave2Fill size="0.7em" />
+                    Save <IoIosBookmark size="0.9em" />
                   </div>
                 </button>
               </div>
