@@ -8,13 +8,17 @@ import "./style.css"
 
 function EditJob() {
   const [formData, setFormData] = useState({
-    jobName: '',
+    job_title: '',
     skills: '',
     jobType: 'freelancer',
     jobStatus: 'Inactive',
     payment: '',
     jobDescription: '',
-    timeperiod:''
+    timeperiod:'',
+    genaral_terms:['You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.'],
+    payment_terms:['You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.'],
+    workflow:['You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.'],
+    others:[]
   });
 
   const [selectedOption, setSelectedOption] = useState('');
@@ -35,9 +39,59 @@ function EditJob() {
     });
   };
 
+  const handleRemoveGeneralTerms=(index)=>{
+    const newItems = [...formData.genaral_terms];
+    const filterItems = newItems.filter((currElm, ind)=>ind !== index)
+    setFormData({...formData, genaral_terms:[...filterItems]})
+    // console.log(filterItems);
+  }
+
+  const handleRemovePaymentTerms =(index)=>{
+    const newItems = [...formData.payment_terms];
+    const filterItems = newItems.filter((currElm, ind)=>ind !== index)
+    setFormData({...formData, payment_terms:[...filterItems]})
+  }
+
+  const handleRemoveWorkflow =(index)=>{
+    const newItems = [...formData.workflow];
+    const filterItems = newItems.filter((currElm, ind)=>ind !== index)
+    setFormData({...formData, workflow:[...filterItems]})
+  }
+
+  const handleChangeInTermsArray = (valueEntered, termsKey, indexPassed) => {
+    setFormData((prevValue) => {
+        const copyOfPrevValueObj = { ...prevValue }   
+        // take a copy
+        const copyOfArray = copyOfPrevValueObj[termsKey].slice() 
+        // modification made to the copy
+        copyOfArray[indexPassed] = valueEntered;
+        
+        copyOfPrevValueObj[termsKey] = copyOfArray 
+
+        return copyOfPrevValueObj
+    })
+}
+
+
+const handleAddTerm = (termsKey) => {
+  setFormData((prevValue) => {
+      const copyOfPrevValueObj = { ...prevValue }   
+      
+      // take a copy
+      const copyOfArray = copyOfPrevValueObj[termsKey].slice()     
+      
+      // making modifications to the copy
+      copyOfArray.push("")
+      
+      copyOfPrevValueObj[termsKey] = copyOfArray   
+      
+      return copyOfPrevValueObj
+  })
+}
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(formData);
+    console.log("edit job: ", formData)
   };
 
   return (
@@ -56,13 +110,13 @@ function EditJob() {
 
       <form onSubmit={handleSubmit}>
         <div className='input__data'>
-          <label htmlFor="jobName">Name of Job</label>
+          <label htmlFor="job_title">Name of Job</label>
           <input
             type="text"
-            id="jobName"
-            name="jobName"
+            id="job_title"
+            name="job_title"
             placeholder='UI Design'
-            value={formData.jobName}
+            value={formData.job_title}
             onChange={handleInputChange}
           />
         </div>
@@ -143,8 +197,7 @@ function EditJob() {
             />
             <label htmlFor="research associate">Research Associate</label>
        </div>  
-     </div>
-         
+     </div> 
 
     </div>
         <div className='input__data'>
@@ -197,44 +250,37 @@ function EditJob() {
         <div className="gernaral__term">
             <label>General Terms</label>
             <div className="general__items">
-                <div className="item">
-                    <p>1. You should have google account. We will invite you to our google drive then you have to work as a team.</p>
-                    <AiFillCloseCircle/>
-                </div>
-                <div className="item">
-                    <p>2. You should have google account. We will invite you to our google drive then you have to work as a team .</p>
-                    <AiFillCloseCircle/>
-                </div>
-                <div className="item">
-                    <p>3. You should have google account. We will invite you to our google drive then you have to work as a team .</p>
-                    <AiFillCloseCircle/>
-                </div>
+          {
+            React.Children.toArray(formData.genaral_terms?.map((x, i)=>{
+              return <div className="item">
+              <p> {i+1}. <input value={x} onChange={(e) => handleChangeInTermsArray(e.target.value, "genaral_terms", i)} /> </p>
+              <AiFillCloseCircle onClick={()=>{handleRemoveGeneralTerms(i)}}/>
+          </div>
+            }))
+          }
             </div>
+            
             <div className="add__item">
-                <AiFillPlusCircle/>
+                <AiFillPlusCircle onClick={() => handleAddTerm("genaral_terms")}/>
                 <label>Add General Terms</label>
             </div>
-        </div>
+            </div>
 
 
         <div className="gernaral__term">
             <label>Payment Terms</label>
             <div className="general__items">
-                <div className="item">
-                    <p>1. You should have google account. We will invite you to our google drive then you have to work as a team.</p>
-                    <AiFillCloseCircle/>
-                </div>
-                <div className="item">
-                    <p>2. You should have google account. We will invite you to our google drive then you have to work as a team .</p>
-                    <AiFillCloseCircle/>
-                </div>
-                <div className="item">
-                    <p>3. You should have google account. We will invite you to our google drive then you have to work as a team .</p>
-                    <AiFillCloseCircle/>
-                </div>
+               {
+                  React.Children.toArray(formData.payment_terms?.map((x,i)=>{
+                  return <div className='item'>
+                   <p> {i+1}. <input value={x} onChange={(e) => handleChangeInTermsArray(e.target.value, "payment_terms", i)} /> </p>
+                    <AiFillCloseCircle onClick={()=>{handleRemovePaymentTerms(i)}}/>
+                  </div>
+                   }))
+                }
             </div>
             <div className="add__item">
-                <AiFillPlusCircle/>
+                <AiFillPlusCircle onClick={() => handleAddTerm("payment_terms")}/>
                 <label>Add Payement Terms</label>
             </div>
         </div>
@@ -242,21 +288,17 @@ function EditJob() {
         <div className="gernaral__term">
             <label>Workflow</label>
             <div className="general__items">
-                <div className="item">
-                    <p>1. You should have google account. We will invite you to our google drive then you have to work as a team.</p>
-                    <AiFillCloseCircle/>
-                </div>
-                <div className="item">
-                    <p>2. You should have google account. We will invite you to our google drive then you have to work as a team .</p>
-                    <AiFillCloseCircle/>
-                </div>
-                <div className="item">
-                    <p>3. You should have google account. We will invite you to our google drive then you have to work as a team .</p>
-                    <AiFillCloseCircle/>
-                </div>
+            {
+                  React.Children.toArray(formData.workflow?.map((x,i)=>{
+                  return <div className='item'>
+                   <p> {i+1}. <input value={x} onChange={(e) => handleChangeInTermsArray(e.target.value, "workflow", i)} /> </p>
+                    <AiFillCloseCircle onClick={()=>{handleRemoveWorkflow(i)}}/>
+                  </div>
+                   }))
+                }
             </div>
             <div className="add__item">
-                <AiFillPlusCircle/>
+                <AiFillPlusCircle onClick={() => handleAddTerm("workflow")}/>
                 <label>Add Workflow</label>
             </div>
         </div>
@@ -294,23 +336,23 @@ function EditJob() {
         padding: 70px 0px 20px 20px;
         h2{
             color: #005734;
-            font-weight: 600;
-            font-size: 20px;
+            font-weight: 700;
+            font-size: 32px;
         }
 
         h3{
-            font-size: 10px;
+            font-size: 13px;
             font-weight: 600;
         }
     }
     
     .job__details{
         background-color: #F3F8F4;
-        padding: 20px 15px;
-
+        padding: 40px 35px;
+        border-radius: 10px;
         .job__detail__title{
             color:#fff;
-            padding:10px 20px;
+            padding:20px 20px;
             background-color:#005734;
             border-radius: 10px 10px 0px 0px;
         }
@@ -333,22 +375,22 @@ function EditJob() {
                 input {
                     padding: 15px;
                     border-radius: 10px;
-                    border: 1px solid #005734
-                    ;
+                    border: 1px solid #005734;
                 }
 
                 textarea#jobDescription {
                     height: 258px;
                     padding: 15px;
                     border-radius: 10px;
-                    border: 1px solid #005734
+                    border: 1px solid #005734;
+                    font-family: 'poppins';
                 }
             }
 
             .input__data__row{
                 display: flex;
                 justify-content: space-between;
-
+                flex-wrap: wrap;
                 label{
                     color: #005734;
                     font-weight: 600;
@@ -380,13 +422,26 @@ function EditJob() {
                 justify-content: space-between;
                 align-items: center;
                 padding:10px 0;
+                position: relative;
+                
                 p{
                     font-weight: 300;
                     color: #7E7E7E;
                     font-size: 14px;
+                    display: flex;
+                    width: 90%;
+
+                    input{
+                      width: 750px;
+                      border: none;
+                      color: #7E7E7E;
+                      font-size: 14px;
+                    }
                 }
                 svg {
                     color: #B8B8B8;
+                    position: absolute;
+                    right: 0;
                 }                
 
             }
@@ -404,6 +459,7 @@ function EditJob() {
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
+                cursor: pointer;
 
                 label{
                     color: #000;
@@ -439,6 +495,15 @@ function EditJob() {
         .container{
            width: 95%; 
         }
+    }
+
+    @media only screen and (max-width: 900px){
+      .item{
+        p{
+          input{
+          }
+        }
+      }
     }
   `
 
