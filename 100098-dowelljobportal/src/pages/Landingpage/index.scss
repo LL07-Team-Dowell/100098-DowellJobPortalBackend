@@ -7,6 +7,9 @@ $text__gray:#B8B8B8 ;
 $span__gray:#B8B8B8 ; 
 $slider__gray:#D9D9D9 ; 
 
+
+
+
 .landing-page{
             position: relative;
             font-family: 'Inter', sans-serif;
@@ -37,7 +40,7 @@ $slider__gray:#D9D9D9 ;
                         }
                         h3{
                         font-weight: 700;
-                        font-size: 2.9375rem;
+                        font-size: 1.95rem;
                         color: $main__green;
                         }
                         }
@@ -67,10 +70,10 @@ $slider__gray:#D9D9D9 ;
             .cards{
             margin-top: 5.9375rem;
             display: grid;
-            grid-template-columns: repeat(auto-fill , minmax(34.5rem , 1fr));
+            grid-template-columns: repeat(auto-fill , minmax(29rem , 1fr));
             grid-gap: 40px;
             .card{
-            padding:1.5rem 2.0625rem ; 
+            padding:1rem 1.37rem ; 
             width: 100%;
             border-radius: 10px;
             box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
@@ -86,8 +89,8 @@ $slider__gray:#D9D9D9 ;
                         width: 200px;
                         height: 60px;
                         border: 1px solid red;
-                        top:70px ; 
-                        right: 0;
+                        top:20%; 
+                        right: -10%;
                         visibility: visible;
                         opacity: 0;
                         z-index: 999;
@@ -133,7 +136,11 @@ $slider__gray:#D9D9D9 ;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.9rem;
+            font-size: 1.04rem;
+            >img{
+              width: 1.5rem;
+              height: 1.5rem;
+            }
             }
             .card__skill{
             padding:5px ;
@@ -145,7 +152,7 @@ $slider__gray:#D9D9D9 ;
             align-items: center;
             }
             h6{
-            font-size: 1.5rem;
+            font-size: 1rem;
             margin-right: 10px;
             }
             }
@@ -176,12 +183,17 @@ $slider__gray:#D9D9D9 ;
                         justify-content: center;
                         padding:0.625rem 2.9375rem ;
                         border-radius: 10px;
-                        font-size: 1.3125rem;
+                        font-size: 0.9rem;
                         color: white;
                         font-weight: 500;
                         cursor: pointer;
                         outline: none;
                         border: none;
+                        img{
+                          padding-top: 3px ;
+                          width: 0.9rem;
+                          height: 0.9rem;
+                        }
             }
             }
             }
