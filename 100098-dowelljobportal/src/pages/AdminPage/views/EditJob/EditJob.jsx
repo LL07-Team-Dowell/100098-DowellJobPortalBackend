@@ -3,22 +3,24 @@ import styled from 'styled-components';
 import { AiFillCloseCircle } from 'react-icons/ai'; 
 import { AiFillPlusCircle } from 'react-icons/ai'; 
 import { BsFillBookmarkFill } from 'react-icons/bs'; 
+import {IoIosArrowBack} from "react-icons/io";
+
 import "./style.css";
 
 
 function EditJob() {
   const [formData, setFormData] = useState({
-    job_title: '',
-    skills: '',
-    jobType: 'freelancer',
+    job_title: 'testing job',
+    skills: 'testing skills',
+    jobType: 'employe',
     jobStatus: 'Inactive',
-    payment: '',
-    jobDescription: '',
-    timeperiod:'',
-    genaral_terms:['You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.'],
-    payment_terms:['You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.'],
-    workflow:['You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.','You should have google account. We will invite you to our google drive then you have to work as a team.'],
-    others:[]
+    payment: '30usd per week',
+    jobDescription: 'testing job description',
+    timeperiod:'3 months',
+    genaral_terms:['genTerm1','genTerm2','genTerm3'],
+    payment_terms:['paymentTerm1','paymentTerm2','paymentTerm3'],
+    workflow:['workflow1','workflow2','workflow3'],
+    others:['others'],
   });
 
   const [selectedOption, setSelectedOption] = useState('');
@@ -56,6 +58,12 @@ function EditJob() {
     const newItems = [...formData.workflow];
     const filterItems = newItems.filter((currElm, ind)=>ind !== index)
     setFormData({...formData, workflow:[...filterItems]})
+  }
+
+  const handleRemoveOthers=(index)=>{
+    const newItems = [...formData.others];
+    const filterItems = newItems.filter((currElm, ind)=>ind !== index)
+    setFormData({...formData, others:[...filterItems]})
   }
 
   const handleChangeInTermsArray = (valueEntered, termsKey, indexPassed) => {
@@ -97,6 +105,12 @@ const handleAddTerm = (termsKey) => {
   return (
     <Wrapper>
         <div className="container">
+        <div className="back__button">
+          <a href="./admin#/admin">
+          <IoIosArrowBack/>
+          </a>
+        </div>
+
         <div className="main__titles">
          <h2>Edit Job</h2>
          <h3>Project Management <span style={{"fontWeight":"400"}}>- UX Living Lab</span> </h3>
@@ -115,7 +129,7 @@ const handleAddTerm = (termsKey) => {
             type="text"
             id="job_title"
             name="job_title"
-            placeholder='UI Design'
+            // placeholder='UI Design'
             value={formData.job_title}
             onChange={handleInputChange}
           />
@@ -126,7 +140,7 @@ const handleAddTerm = (termsKey) => {
             type="text"
             id="skills"
             name="skills"
-            placeholder='Figma, XD'
+            // placeholder='Figma, XD'
             value={formData.skills}
             onChange={handleInputChange}
           />
@@ -206,7 +220,7 @@ const handleAddTerm = (termsKey) => {
             type="text"
             id="timeperiod"
             name="timeperiod"
-            placeholder='1 Week'
+            // placeholder='1 Week'
             value={formData.timeperiod}
             onChange={handleInputChange}
           />
@@ -231,7 +245,7 @@ const handleAddTerm = (termsKey) => {
             type="text"
             id="payment"
             name="payment"
-            placeholder='30$'
+            // placeholder='30$'
             value={formData.payment}
             onChange={handleInputChange}
           />
@@ -241,7 +255,7 @@ const handleAddTerm = (termsKey) => {
           <textarea
             id="jobDescription"
             name="jobDescription"
-            placeholder='1. Setting goals and developing plans for business and revenue growth. Researching, planning, and implementing new target market initiatives.'
+            // placeholder='1. Setting goals and developing plans for business and revenue growth. Researching, planning, and implementing new target market initiatives.'
             value={formData.jobDescription}
             onChange={handleInputChange}
           />
@@ -253,7 +267,7 @@ const handleAddTerm = (termsKey) => {
           {
             React.Children.toArray(formData.genaral_terms?.map((x, i)=>{
               return <div className="item">
-              <p> {i+1}. <input value={x} onChange={(e) => handleChangeInTermsArray(e.target.value, "genaral_terms", i)} /> </p>
+              <p> <input value={x} placeholder="genaral term" onChange={(e) => handleChangeInTermsArray(e.target.value, "genaral_terms", i)} /> </p>
               <AiFillCloseCircle onClick={()=>{handleRemoveGeneralTerms(i)}}/>
           </div>
             }))
@@ -273,7 +287,7 @@ const handleAddTerm = (termsKey) => {
                {
                   React.Children.toArray(formData.payment_terms?.map((x,i)=>{
                   return <div className='item'>
-                   <p> {i+1}. <input value={x} onChange={(e) => handleChangeInTermsArray(e.target.value, "payment_terms", i)} /> </p>
+                   <p> <input value={x} placeholder="payment term" onChange={(e) => handleChangeInTermsArray(e.target.value, "payment_terms", i)} /> </p>
                     <AiFillCloseCircle onClick={()=>{handleRemovePaymentTerms(i)}}/>
                   </div>
                    }))
@@ -291,7 +305,7 @@ const handleAddTerm = (termsKey) => {
             {
                   React.Children.toArray(formData.workflow?.map((x,i)=>{
                   return <div className='item'>
-                   <p> {i+1}. <input value={x} onChange={(e) => handleChangeInTermsArray(e.target.value, "workflow", i)} /> </p>
+                   <p><input value={x} placeholder="workflow" onChange={(e) => handleChangeInTermsArray(e.target.value, "workflow", i)} /> </p>
                     <AiFillCloseCircle onClick={()=>{handleRemoveWorkflow(i)}}/>
                   </div>
                    }))
@@ -306,13 +320,17 @@ const handleAddTerm = (termsKey) => {
         <div className="gernaral__term">
             <label>Others</label>
             <div className="general__items">
-                <div className="item">
-                    <p>1. Your Discord ID</p>
-                    <AiFillCloseCircle/>
-                </div>
+            {
+                  React.Children.toArray(formData.others?.map((x,i)=>{
+                  return <div className='item'>
+                   <p><input value={x} placeholder="others" onChange={(e) => handleChangeInTermsArray(e.target.value, "others", i)} /> </p>
+                    <AiFillCloseCircle onClick={()=>{handleRemoveOthers(i)}}/>
+                  </div>
+                   }))
+                }
             </div>
             <div className="add__item">
-                <AiFillPlusCircle/>
+            <AiFillPlusCircle onClick={() => handleAddTerm("others")}/>
                 <label>Add Others</label>
             </div>
         </div>
@@ -330,6 +348,18 @@ const handleAddTerm = (termsKey) => {
     width: 1300px;
     margin: auto;
     background: #ffff;
+
+    .back__button {
+      position: absolute;
+      top: 20px;
+      left: 50px;
+      color:black;
+      background-color: #f3f8f5;
+      padding: 3px 15px;
+      padding-top: 10px;
+      font-size: 20px;
+      cursor: pointer;
+    }
 
     .main__titles{
         padding-top: 70px;
@@ -355,6 +385,10 @@ const handleAddTerm = (termsKey) => {
             padding:20px 20px;
             background-color:#005734;
             border-radius: 10px 10px 0px 0px;
+
+            h3{
+              font-size: 30px;
+            }
         }
 
         form{
@@ -486,6 +520,11 @@ const handleAddTerm = (termsKey) => {
                     margin-left: 10px;
                 }
            }
+
+           button.save__button:hover {
+            box-shadow: 0 0px 26px 5px #005734;
+            transition: 0.3s ease-in-out;
+        }
 
         }
     }     
