@@ -16,8 +16,12 @@ const Card = () => {
                         <img src={edit} alt="" />
             </div>
             <div className="card__skill">
-            <div><h6>skills:</h6> <span>Business </span></div>
+            <div><h6>Skills:</h6> <span>Business </span></div>
+            <div>
+              <h6>Active</h6>
             <input type="checkbox" id="switch" /><label for="switch">Toggle</label>
+
+            </div>
             </div>
 
             <div className='card__footer'>

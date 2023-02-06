@@ -79,9 +79,14 @@ $slider__gray:#D9D9D9 ;
             box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
             transition: .3s;
             position: relative;
+            text-transform: capitalize;
             &:hover{
             box-shadow: rgba($main__green , 0.6) 0px 7px 29px 0px;
 
+            }
+            .card__skill >div:last-child{
+              display: flex;
+              align-items: center;
             }
             input[type=checkbox]{
                         // hereee
@@ -136,7 +141,8 @@ $slider__gray:#D9D9D9 ;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.04rem;
+            font-size: 1.34rem;
+            font-weight: 700;
             >img{
               width: 1.5rem;
               height: 1.5rem;
@@ -152,7 +158,7 @@ $slider__gray:#D9D9D9 ;
             align-items: center;
             }
             h6{
-            font-size: 1rem;
+            font-size: 1.18rem;
             margin-right: 10px;
             }
             }
@@ -189,6 +195,7 @@ $slider__gray:#D9D9D9 ;
                         cursor: pointer;
                         outline: none;
                         border: none;
+                        font-weight: 600;
                         img{
                           padding-top: 3px ;
                           width: 0.9rem;
