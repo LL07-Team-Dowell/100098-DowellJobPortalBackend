@@ -254,5 +254,6 @@ export const continentsData = {
         "Uruguay",
         "Venezuela",
     ],
-    "Antarctica":[]
+    "Antarctica":[] , 
+    "default contient": []
 }
