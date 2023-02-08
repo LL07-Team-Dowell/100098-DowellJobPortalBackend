@@ -46,6 +46,7 @@ function App() {
   
   if (loading) return <LoadingSpinner />
   
+  // NO LOGGED IN USER VIEW
   if (!currentUser) {
     return <Routes>
       
@@ -70,6 +71,7 @@ function App() {
     </Routes>
   }
 
+  // ACCOUNT PAGE
   if (currentUser.role === process.env.REACT_APP_ACCOUNT_ROLE) {
     return <Routes>
       
@@ -90,6 +92,7 @@ function App() {
     </Routes>
   }
 
+  // ADMIN PAGE
   if (currentUser.username === process.env.REACT_APP_ADMIN_USERNAME) {
 
     return <Routes>
@@ -110,6 +113,7 @@ function App() {
 
   }
 
+  // HR PAGE
   if (currentUser.role === process.env.REACT_APP_HR_ROLE) {
 
     return <Routes>
@@ -150,6 +154,7 @@ function App() {
     </Routes>
   }
 
+  // TEAMLEAD PAGE
   if (currentUser.role === process.env.REACT_APP_TEAMLEAD_ROLE) {
 
     return <Routes>
@@ -174,6 +179,7 @@ function App() {
 
   }
 
+  // CANDIDATE PAGE
   return (
     candidateHired ? <Routes>
 
