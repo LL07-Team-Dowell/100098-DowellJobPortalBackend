@@ -1,0 +1,37 @@
+.rejected-candidates-container {
+    --black-color: #000000;
+    --grey-color: #A1A1A1;
+    font-family: 'Inter', sans-serif;
+}
+
+.rejected-candidates-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--grey-color);
+    padding: 6% 7%;
+}
+
+.rejected-candidates-count-container h2{
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--black-color);
+    line-height: 19.36px;
+    margin-bottom: 2.5%;
+}
+
+.rejected-candidates-count-container p, .sort-candidates-container p{
+    font-size: 0.8125rem;
+}
+
+.sort-candidates-container p{
+    cursor: pointer;
+}
+
+@media (min-width: 1200px){
+    .rejected-candidates-container{
+        width: 80%;
+        margin: 0 auto;
+        padding: 3% 6% 3% 4.2%;
+    }
+}

@@ -1,0 +1,44 @@
+.candidate__Jobs__Wrapper {
+  width: 100%;
+  margin-top: 0;
+  padding: 2% 0;
+}
+.candidate__Jobs__Container {
+  width: 80%;
+  margin: 0 auto;
+}
+.candidate__Jobs__Container .all__Current__Jobs__Container {
+  width: 100%;
+  padding-bottom: 4%;
+}
+.candidate__Jobs__Container .all__Current__Jobs__Container .job__Card__Container {
+  display: inline-block;
+  margin-left: 0;
+  margin-right: 3%;
+  width: calc(calc(100% - 3%) / 2);
+  margin-bottom: 3%;
+}
+.candidate__Jobs__Container .all__Current__Jobs__Container > *:nth-child(2n + 2){
+  margin-right: 0;
+}
+.candidate__Jobs__Container .candidate__Job__Selections__Toggler {
+  margin: 3% auto 5%;
+  width: 40%;
+}
+
+.candidate__Jobs__Container .candidate__Job__Selections__Toggler.single__Item {
+  margin-left: 0;
+}
+
+@media screen and (max-width: 991px) {
+  .candidate__Jobs__Container {
+    width: 90%;
+  }
+  .candidate__Jobs__Container .candidate__Job__Selections__Toggler {
+    width: 100%;
+  }
+  .candidate__Jobs__Container .all__Current__Jobs__Container .job__Card__Container {
+    width: 100%;
+    margin-top: 6%;
+  }
+}

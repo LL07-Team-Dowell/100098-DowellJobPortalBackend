@@ -1,0 +1,61 @@
+.title__Navigation__Bar__Container {
+    --green-color: #005734;
+    --white-color: #fff;
+    --box-shadow-color: rgba(0, 0, 0, 0.16);
+    --grey-color: #A3A1A1;
+}
+
+.title__Navigation__Bar__Container {
+    width: 80%;
+    margin: 1% auto 4%;
+}
+
+.title__Navigation__Bar__Container,
+.title__Navigation__Bar__Container .title__Item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.title__Navigation__Bar__Container .title__Item {
+    white-space: nowrap;
+}
+
+.title__Navigation__Bar__Container .title__Item h1 {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    color: var(--green-color);
+    font-size: 2rem;
+    letter-spacing: 0.05em; 
+    margin-left: 8%;
+}
+
+.title__Navigation__Bar__Container .title__Item .back__Icon__Container {
+    background-color: var(--white-color);
+    box-shadow: inset 0px 1.73626px 8px var(--box-shadow-color);
+    border-radius: 12px;
+    /* padding: 3.5% 4%; */
+    cursor: pointer;
+    position: relative;
+    top: -0.5rem;
+    color: var(--grey-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 2.5rem;
+}
+
+.title__Navigation__Bar__Container .title__Item .back__Icon__Container .back__Icon {
+    font-size: 1.2rem;
+}
+
+@media screen and (max-width: 991px) {
+    .title__Navigation__Bar__Container {
+        width: 90%;
+        margin-top: 6%;
+    }
+    .title__Navigation__Bar__Container .title__Item h1 {
+        font-size: 1.4rem;
+    }
+}

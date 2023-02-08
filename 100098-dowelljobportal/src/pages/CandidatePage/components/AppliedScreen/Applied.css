@@ -1,0 +1,16 @@
+.candidate__View__Applications__Container {
+  width: 80%;
+  margin: 4% auto;
+}
+
+.candidate__View__Applications__Container .job__Card__Container {
+  display: inline-block;
+  margin-left: 0;
+  margin-right: 3%;
+  width: calc(calc(100% - 3%) / 2);
+  margin-bottom: 3%;
+}
+
+.candidate__View__Applications__Container > *:nth-child(2n + 2){
+  margin-right: 0;
+}

@@ -1,0 +1,72 @@
+.selected-applicant-details, .selected-applicant-details span{
+    display: flex;
+    align-items: center;
+}
+
+.selected-applicant-info span.highlight__Item {
+    font-weight: 600;
+}
+
+.selected-applicant-details.teamlead__Page{
+    margin-bottom: 5%;
+}
+
+.selected-applicant-info.candidate__Page{
+    margin-top: 5%;
+}
+
+.selected-applicant-info > span{
+    margin-left: 0;
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 16.94px;
+    margin-bottom: 6%;
+}
+
+.selected-applicant-info > span:last-child{
+    margin-bottom: 17%;
+}
+
+.selected-applicant-details{
+    justify-content: flex-start;
+    margin-bottom: 10%;
+}
+
+.selected-applicant-details p{
+    font-size: 0.8889rem;
+    line-height: 19.36px;
+}
+
+.selected-applicant-details span{
+    font-size: 0.875rem;
+    line-height: 16.94px;
+    cursor: pointer;
+}
+
+@media screen and (min-width: 992px) {
+    .selected-applicant-info > span{
+        margin-bottom: 2%;
+    }
+    .selected-applicant-info > span:last-child{
+        margin-bottom: 6%;
+    }
+    
+    .selected-applicant-info.teamlead__Page{
+        width: 82%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .selected-applicant-info {
+        padding-bottom: 6%;
+    }
+}
+
+@media (min-width: 1200px){
+    .selected-applicant-details{
+        width: 82%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

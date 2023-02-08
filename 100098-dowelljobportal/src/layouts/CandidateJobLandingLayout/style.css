@@ -1,0 +1,154 @@
+.jobs__Layout__Navigation__Container, .jobs__Layout__Content__Container {
+    font-family: "Poppins", sans-serif;
+    --grey-color: #B8B8B8;
+    --green-color: #005734;
+    --light-grey-color: #F0F0F0;
+}
+
+.jobs__Layout__Navigation__Container img, .jobs__Layout__Content__Container img {
+    max-width: 100%;
+}
+
+.jobs__Layout__Navigation__Container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding-left: 1%;
+    height: 6.5rem;
+}
+
+.jobs__Layout__Navigation__Container .jobs__Layout__Link__Item {
+    width: 9%;
+}
+
+.jobs__Layout__Navigation__Container img {
+    width: 100%;
+    height: 100%;
+}
+
+.jobs__Layout__Navigation__Container .search__Navigation__Bar {
+    width: 70%;
+}
+
+.jobs__Layout__Navigation__Container .search__Navigation__Bar input {
+    width: 95%;
+}
+
+.jobs__Layout__Navigation__Container .search__Navigation__Bar .search__Icon {
+    width: 5%;
+}
+
+.jobs__Layout__Navigation__Container .jobs__Layout__Icons__Container {
+    width: 13%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 5%;
+}
+
+.jobs__Layout__Navigation__Container .jobs__Landing__Layout__Login__Btn {
+    margin-right: 5%;
+    padding: 0.5% 2%;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    color: var(--green-color);
+    background: transparent;
+    font-family: "Poppins", sans-serif;
+}
+
+.jobs__Layout__Navigation__Container .jobs__Layout__Icons__Container .icon {
+    font-size: 1.8rem;
+    color: var(--grey-color);
+    cursor: pointer;
+}
+
+.jobs__Layout__Navigation__Container hr {
+    position: absolute;
+    bottom: 6%;
+    width: calc(100% - 10%);
+    right: 0;
+    border: none;
+    border-bottom: 1px solid var(--light-grey-color);
+}
+
+.jobs__Layout__Content__Container .new__Side__Navigation__Bar {
+    height: calc(100% - 6.5rem);
+}
+
+.jobs__Layout__Content__Container .jobs__Layout__Content {
+    width: calc(100% - 4.6rem);
+    height: 100%;
+    margin-left: 4.6rem;
+    position: fixed;
+    overflow-y: auto;
+}
+
+.chat__With__CS__Icon {
+    position: fixed;
+    right: 3%;
+    bottom: 5%;
+    color: var(--green-color);
+    font-size: 3.5rem;
+    cursor: pointer;
+    transform: scaleX(-1);
+    transition: 0.3s ease-in-out;
+    z-index: 999;
+}
+
+.chat__With__CS__Icon:hover {
+    filter: brightness(0.8);
+}
+
+.jobs__Layout__Navigation__Container .title__Navigation__Bar__Container {
+    margin-bottom: 2%;
+    margin-left: 3%;
+}
+
+
+@media screen and (max-width: 991px) {
+    .jobs__Layout__Navigation__Container {
+        height: 4rem;
+        padding-left: 3%;
+        padding-right: 3%;
+        padding-top: 3%;
+        margin-bottom: 6%;
+    }
+    .jobs__Layout__Navigation__Container .jobs__Layout__Icons__Container .icon {
+        font-size: 1.4rem;
+    }    
+    .jobs__Layout__Content__Container .new__Side__Navigation__Bar {
+        height: 4.6rem;
+        width: 100%;
+        bottom: 0;
+    }
+    .chat__With__CS__Icon {
+        bottom: 15%;
+    }
+    .jobs__Layout__Content__Container .jobs__Layout__Content {
+        width: 100%;
+        margin-left: 0;
+    }
+    .jobs__Layout__Navigation__Container .jobs__Layout__Icons__Container {
+        padding-right: 0;
+        width: 18%;
+    }
+    .jobs__Layout__Navigation__Container .jobs__Landing__Layout__Login__Btn {
+        width: 18%;
+    }
+    .jobs__Layout__Navigation__Container .search__Navigation__Bar {
+        width: 76%;
+    }
+    .jobs__Layout__Navigation__Container .search__Navigation__Bar input {
+        width: 90%;
+    }
+    .jobs__Layout__Navigation__Container .search__Navigation__Bar .search__Icon {
+        width: 10%;
+    }    
+    .jobs__Layout__Navigation__Container .title__Navigation__Bar__Container {
+        margin: 0;
+        margin-left: 4%;
+    }
+}

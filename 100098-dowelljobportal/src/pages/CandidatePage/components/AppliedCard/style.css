@@ -1,0 +1,126 @@
+.candidate__Applied__Card{
+    --yellow: #C09F2C;
+    --black: #000;
+    --dark-green: #045632;
+    --grey: #838383;
+    --white: #fff;
+    --box-shadow-color: rgba(0, 0, 0, 0.12);
+    --inter-font-family: 'Inter', sans-serif;
+}
+
+.candidate__Applied__Card{
+    background-color: var(--white);
+    border-left: 1px solid var(--yellow);
+    box-shadow: 0px 4px 10px var(--box-shadow-color);
+    border-radius: 5px;
+    display: block;
+    font-family: var(--inter-font-family);
+    padding: 5% 2.5%;
+    margin: 4% 0 10%;
+    transition: 0.35s ease-in-out;
+    animation: fadeIn 0.55s ease-in-out;
+}
+
+.candidate__Applied__Card:hover, .candidate__Applied__Card:focus{
+    box-shadow: 0 8px 16px 0 var(--box-shadow-color);
+}
+
+.candidate__Applied__Card .yellow__Color{
+    color: var(--yellow) !important;
+}
+
+.candidate__Applied__Card .green__Color {
+    color: var(--dark-green) !important;
+}
+
+.candidate__Applied__Card .top__Row__Details, 
+.candidate__Applied__Card .bottom__Row__Details,
+.candidate__Applied__Card .bottom__Row__Details .application__Status__Container, 
+.candidate__Applied__Card .bottom__Row__Details .view__Btn {
+    display: flex;
+    align-items: center;
+}
+
+.candidate__Applied__Card .top__Row__Details,
+.candidate__Applied__Card .bottom__Row__Details{
+    justify-content: space-between;
+}
+
+.candidate__Applied__Card .top__Row__Details{
+    margin-bottom: 14%;
+}
+
+.candidate__Applied__Card .top__Row__Details .job__Title{
+    font-weight: 500;
+    line-height: 19.36px;
+    font-size: 1rem;
+    text-transform: capitalize;
+}
+
+.candidate__Applied__Card .top__Row__Details .time__Details,
+.candidate__Applied__Card .bottom__Row__Details .application__Status__Container {
+    font-size: 0.75rem;
+    color: var(--grey);
+}
+
+.candidate__Applied__Card .top__Row__Details .time__Details{
+    line-height: 15px;
+}
+
+.candidate__Applied__Card .bottom__Row__Details .application__Status__Container {
+    line-height: 14.52px;
+}
+
+.candidate__Applied__Card .bottom__Row__Details .application__Status__Container > * {
+    margin: 0;
+}
+
+.candidate__Applied__Card .bottom__Row__Details .application__Status__Container .application__Icon {
+    font-size: 1.363rem;
+}
+
+.candidate__Applied__Card .bottom__Row__Details .application__Status__Container > *:first-child{
+    margin-right: 6%;
+}
+
+.candidate__Applied__Card .bottom__Row__Details .application__Status__Container span{
+    white-space: pre;
+}
+
+.candidate__Applied__Card .bottom__Row__Details .view__Btn{
+    border: none;
+    outline: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 0.875rem;
+    line-height: 16.94px;
+    font-family: var(--inter-font-family);
+}
+
+.candidate__Applied__Card .bottom__Row__Details .view__Btn span{
+    margin: 0;
+    margin-right: 6%;
+    color: var(--grey);
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .candidate__Applied__Card {
+        margin: 2% 0 4%;
+        padding: 3% 2%;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .candidate__Applied__Card {
+        margin: 2% 0 4%;
+        padding: 2% 1%;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    } to {
+        opacity: 1;
+    }
+}

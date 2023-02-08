@@ -1,0 +1,66 @@
+.navbar-container{
+    --grey-color: #ACABAB;
+    --green-color: linear-gradient(163.78deg, #045632 -13.94%, #57A639 110.54%);
+    --black: #000000;
+    --white: #fff;
+    font-family: 'Inter', sans-serif;
+}
+
+.navbar-container{
+    background: var(--green-color);
+    color: var(--white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4.8% 6%;
+}
+
+.navbar-container.hr_navigation div.menu__Icon__Container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 80%;
+}
+
+.navbar-container.hr_navigation div.menu__Icon__Container h2{
+    margin-left: 10%;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.sticky-nav{
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.navbar-container .navbar-icon{
+    cursor: pointer;
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) { 
+    .navbar-container{
+        padding: 3% 7%;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px){
+    .navbar-container{
+        padding: 2.5% 6%;
+    }
+    .navbar-container.hr_navigation div.menu__Icon__Container {
+        width: 40%;
+    }
+}
+
+@media (min-width: 1200px) {
+    .navbar-container{
+        padding: 1.5% 10%;
+    }
+    .navbar-container.hr_navigation{
+        padding: 1.5% 9%;
+    }
+    .navbar-container.hr_navigation div.menu__Icon__Container {
+        width: 40%;
+    }
+}

@@ -348,6 +348,7 @@ const handleAddTerm = (termsKey) => {
     width: 1300px;
     margin: auto;
     background: #ffff;
+    font-family: 'Poppins';
 
     .back__button {
       position: absolute;

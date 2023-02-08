@@ -1,0 +1,14 @@
+.custom-hr{
+    border: none;
+    border-bottom: 1px solid #fff;
+    width: 100vw;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+@media (min-width: 1200px) {
+    .custom-hr{
+        width: 78vw;
+    }
+}

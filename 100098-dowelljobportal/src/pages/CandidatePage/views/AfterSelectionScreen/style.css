@@ -1,0 +1,18 @@
+.candidate__After__Selection__Screen .candidate-task-screen-container .project-details-container {
+    margin-top: 3%;
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .candidate__After__Selection__Screen .candidate-task-screen-container .project-details-container {
+        margin-top: 12%;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .candidate__After__Selection__Screen .candidate-task-screen-container .project-details-container {
+        margin-top: 0;
+    }
+    .candidate__After__Selection__Screen .candidate-task-screen-container .all__Tasks__Container {
+        padding-bottom: 3%;
+    }
+}

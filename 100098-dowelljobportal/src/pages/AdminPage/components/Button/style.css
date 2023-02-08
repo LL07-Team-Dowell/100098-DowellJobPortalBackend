@@ -1,0 +1,42 @@
+.add__Btn{
+    background: #005734;
+    color: #fff;
+    border: none;
+    outline: none;
+    padding: 3.415% 6.13%;
+    border-radius: 20px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    line-height: 21.78px;
+    font-size: 1.125rem;
+    position: fixed;
+    right: 6%;
+    z-index: 10;
+    bottom: 10%;
+    cursor: pointer;
+    transition: 0.35s ease-in-out;
+    filter: brightness(1);
+}
+
+.add__Btn:hover, .add__Btn:focus{
+    filter: brightness(0.9);
+}
+
+.add__Btn:disabled, .add__Btn[disabled] {
+    cursor: not-allowed;
+    filter: brightness(0.8);
+}
+
+@media (min-width: 768px) and (max-width: 991.98px){
+    .add__Btn{
+        padding: 2.56125% 4.5975%;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .add__Btn{
+        padding: 1.7075% 3.065%;
+        bottom: 15%;
+        right: 10.4%;
+    }
+}
