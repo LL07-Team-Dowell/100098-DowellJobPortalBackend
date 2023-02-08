@@ -1,14 +1,15 @@
 import axios from "axios";
 
-const baseURL = 'https://100055.pythonanywhere.com/api/';
+const formerbaseURL = 'https://100055.pythonanywhere.com/api/';
 const loginBaseURL = 'https://100014.pythonanywhere.com/api/';
 const loginBaseURL2 = 'https://100093.pythonanywhere.com/api/'
 const communityBaseURL = 'https://100081.pythonanywhere.com/mainapp/';
 const locationBaseURL = 'https://100074.pythonanywhere.com/';
+const currentBaseURL = 'https://100098.pythonanywhere.com/';
 
-const backendAxiosInstance = axios.create({
+const formerBackendAxiosInstance = axios.create({
     withCredentials: true,
-    baseURL: baseURL,
+    baseURL: formerbaseURL,
 })
 
 const authAxiosInstance = axios.create({
@@ -36,16 +37,22 @@ const locationAxiosInstance = axios.create({
     withCredentials: true,
 })
 
+const currentBackendAxiosInstance = axios.create({
+    baseURL: currentBaseURL,
+    withCredentials: true,
+})
+
 const dowellLoginUrl = "https://100014.pythonanywhere.com/?redirect_url=" + window.location.origin + "/100098-DowellJobPortal/%23";
 const dowellLogoutUrl = "https://100014.pythonanywhere.com/sign-out?redirect_url=" + window.location.origin + "/100098-DowellJobPortal/%23";
 
 export { 
     authAxiosInstance, 
     otherAuthAxiosInstance, 
-    backendAxiosInstance, 
+    formerBackendAxiosInstance, 
     dowellLoginUrl, 
     dowellLogoutUrl,
     mailAxiosInstance, 
     communityAxiosInstance, 
-    locationAxiosInstance 
+    locationAxiosInstance,
+    currentBackendAxiosInstance,
 };
