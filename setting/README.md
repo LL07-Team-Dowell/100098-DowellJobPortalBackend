@@ -98,7 +98,6 @@ _put_ to `SettingUserProfileInfo/<int:pk>`
 ```
 
 **Notes: Post_example**
--example
 
 ```json
 {
