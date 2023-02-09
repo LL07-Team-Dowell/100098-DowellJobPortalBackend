@@ -20,6 +20,8 @@ header h3{
 font-size:48.57px;
 font-weight: 800;
 text-align: center;
+width: fit-content;
+margin: auto;
 color: white;
 letter-spacing: 1px;
 word-spacing: 1.8px;
@@ -46,12 +48,13 @@ margin-bottom: 20px;
 
 header img{
             position: absolute;
-            top:1.625rem ; 
-            left: 3rem;
+            
 }
 header .logo {
+            width: 70px;
+            height: 70px;
             position: absolute;
-            top:20px ; 
+            top:15px ; 
             left: 40px;
 }
 nav.research{
@@ -190,15 +193,22 @@ main.research .map{
 }
 
 main.research .map-image{
-            width: 90%;
-            margin: auto;
-            margin-top: 3.75rem;
-            object-fit: cover;
+    margin-top: 1.75rem;
+    width: 85%;
+    height: 550px;
+    margin-left: 68px;
+    object-fit: cover;
+
 }
+
 @media((min-width:1200px) and (max-width:1399px) ){
             main.research .map-image{
-                        margin-top: 3.75rem;
-                        width: 100%;
+                        margin-top: 1.75rem;
+                        width: 85%;
+                        height: 550px;
+                        margin-left: 68px;
+                        object-fit: cover;
+
             }
 }
 @media((min-width:992px ) and (max-width:1199px) ){
@@ -213,4 +223,7 @@ main.research .map-image{
             bottom:30px ; 
             right: 30px;
             cursor: pointer;
+}
+.img{
+    display: flex;
 }
