@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'accounts_management',
     'admin_management',
     'jobportal',
+    'setting',
     'task_management',
     'drf_yasg',
     'django.contrib.admin',
