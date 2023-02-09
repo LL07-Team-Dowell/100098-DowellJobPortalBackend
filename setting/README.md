@@ -2,9 +2,9 @@
 
 _Post_ to `setting/SettingUserProfileInfo/`
 
-- Request Body
+- if you not understand see the example end of the page
 
-# if you not understand see the example end of the page
+- Request Body
 
 ```json
 {
@@ -69,8 +69,6 @@ _get_ to `setting/SettingUserProfileInfo/`
 _put_ to `SettingUserProfileInfo/<int:pk>`
 
 - Request Body
-
-# if you not understand see the example end of the page
 
 ```json
 {
