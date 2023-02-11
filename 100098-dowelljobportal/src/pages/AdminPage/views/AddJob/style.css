@@ -22,6 +22,7 @@
   border: none;
   background-color: var(--bg-secondary-color);
   box-shadow: inset 0px 1.7px 8px rgba(0, 0, 0, 0.16);
+  cursor: pointer;
 }
 
 .nav_button .back_icon {
@@ -218,6 +219,9 @@ h3 {
   font-size: 1rem;
   background-color: transparent;
   border: none;
+  cursor: pointer;
+  max-width: fit-content;
+  margin-left: auto;
 }
 
 .add_terms {
@@ -250,6 +254,7 @@ h3 {
   color: #fff;
   border: none;
   margin: 0.8rem 0 0.8rem 0;
+  cursor: pointer;
 }
 
 .submit:hover {

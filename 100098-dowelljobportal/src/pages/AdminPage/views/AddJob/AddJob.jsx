@@ -24,6 +24,12 @@ const AddJob = () => {
     other_info: [],
   });
 
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const handleOptionChange = (e) => {
+    setSelectedOption(e.target.value);
+  };
+
   const handleChange = (valueEntered, inputName) => {
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
@@ -108,11 +114,10 @@ const AddJob = () => {
                   className="radio_input"
                   type={"radio"}
                   id={"freelancer"}
-                  name={"freelancer"}
-                  checked={newJob.type_of_job}
-                  onChange={(e) =>
-                    handleChange(e.target.checked, e.target.name)
-                  }
+                  name="options"
+                  value={"freelancer"}
+                  checked={selectedOption === "freelancer"}
+                  onChange={handleOptionChange}
                 />
                 <div className="radio__radio"></div>
                 <p>Freelancer</p>
@@ -122,11 +127,10 @@ const AddJob = () => {
                   className="radio_input"
                   type={"radio"}
                   id={"intership"}
-                  name={"intership"}
-                  checked={newJob.type_of_job}
-                  onChange={(e) =>
-                    handleChange(e.target.checked, e.target.name)
-                  }
+                  name="options"
+                  value={"intership"}
+                  checked={selectedOption === "intership"}
+                  onChange={handleOptionChange}
                 />
                 <div className="radio__radio"></div>
                 <p>Intership</p>
@@ -136,11 +140,10 @@ const AddJob = () => {
                   className="radio_input"
                   type={"radio"}
                   id={"employee"}
-                  name={"employee"}
-                  checked={newJob.type_of_job}
-                  onChange={(e) =>
-                    handleChange(e.target.checked, e.target.name)
-                  }
+                  name="options"
+                  value={"employee"}
+                  checked={selectedOption === "employee"}
+                  onChange={handleOptionChange}
                 />
                 <div className="radio__radio"></div>
                 <p>Employee</p>
@@ -150,11 +153,10 @@ const AddJob = () => {
                   className="radio_input"
                   type={"radio"}
                   id={"research_associate"}
-                  name={"research_associate"}
-                  checked={newJob.type_of_job}
-                  onChange={(e) =>
-                    handleChange(e.target.checked, e.target.name)
-                  }
+                  name="options"
+                  value={"research_associate"}
+                  checked={selectedOption === "research_associate"}
+                  onChange={handleOptionChange}
                 />
                 <div className="radio__radio"></div>
                 <p>Research Assocaiate</p>
