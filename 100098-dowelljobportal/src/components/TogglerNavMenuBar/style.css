@@ -1,0 +1,52 @@
+.toggler_Nav_Container {
+    --bg-green-color: #005734;
+    --box-shadow-green: rgba(0, 87, 52, 0.67);
+    --bg-grey-color: #F3F8F4;
+    --grey-color: #B8B8B8;
+    --white-color: #fff;
+}
+
+.toggler_Nav_Container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.toggler_Nav_Container.single__Item {
+    justify-content: flex-start;
+}
+
+.toggler_Nav_Container .toggler_Nav_Item {
+    border-radius: 10px;
+    background: var(--bg-grey-color);
+    color: var(--grey-color);
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    width: 10rem;
+    height: 3rem;
+    transition: 0.3s ease-in-out;
+    text-align: center;
+}
+
+.toggler_Nav_Container .toggler_Nav_Item.active {
+    background: var(--bg-green-color);
+    box-shadow: 0px 2.79922px 25px var(--box-shadow-green);
+    color: var(--white-color);
+}
+
+@media screen and (max-width: 991px) {
+    .toggler_Nav_Container .toggler_Nav_Item {
+        width: 6rem;
+        height: 3rem;
+        font-size: 0.8rem;
+        margin-top: 4%;
+    }
+}

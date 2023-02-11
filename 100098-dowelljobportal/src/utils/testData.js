@@ -253,5 +253,7 @@ export const continentsData = {
         "Suriname",
         "Uruguay",
         "Venezuela",
-    ]
+    ],
+    "Antarctica":[] , 
+    "default contient": []
 }

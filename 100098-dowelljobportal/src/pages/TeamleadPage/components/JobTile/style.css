@@ -1,0 +1,112 @@
+.job-tile-container{
+    --grey-color: #838383;
+    --light-grey: #ABABAB;
+    --very-light-grey: #F9F9F9;
+    --yellow-color: #C09F2C;
+    --white-color: #FFFFFF;
+    --box-shadow-color: rgba(0, 0, 0, 0.15);
+    font-family: 'Inter', sans-serif;
+}
+
+.job-tile-container{
+    box-shadow: 0px 4px 8px var(--box-shadow-color);
+    border: 1px solid var(--yellow-color);
+    background: var(--white-color);
+    border-radius: 5px;
+    transition: 0.35s ease-in-out;
+    padding: 2%;
+    margin-bottom: 4%;
+}
+
+.job-tile-container.job__Container{
+    padding: 1%;
+}
+
+.job-tile-container.job__Container.rel__Pos{
+    position: relative;
+}
+
+.job-tile-container:hover, .job-tile-container:focus{
+    background: var(--very-light-grey);
+    cursor: pointer;
+}
+
+.job-tile-container p, .job-tile-container span{
+    font-size: 0.875rem;
+    line-height: 16.94px;
+    color: var(--grey-color);
+}
+
+.job-tile-container > p{
+    margin: 4% 0;
+}
+
+.job__Detail__Item{
+    color: var(--grey-color);
+}
+
+.applicant-details h2, .job__Details h2{
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 19.36px;
+}
+
+.job__Details h2{
+    margin: 4% 0;
+}
+
+.applicant-details, 
+.applicant-qualifications-container, 
+.applicant-experience, 
+.view-application-btn, 
+.job__Detail__Item, 
+.job__Tile__Bottom__Row,
+.job__Details.flex__Display,
+.job__Details.flex__Display .edit__Job__Container{
+    display: flex;
+    align-items: center;
+}
+
+.job__Details.flex__Display{
+    justify-content: space-between;
+}
+
+.job__Details.flex__Display .edit__Job__Container{
+    color: var(--grey-color);
+    margin-right: 4%;
+    cursor: pointer;
+    padding: 5% 1%;
+}
+
+.applicant-experience{
+    color: var(--grey-color);
+}
+
+.applicant-details, .applicant-qualifications-container{
+    justify-content: space-between;
+}
+
+.applicant-qualifications-container .view-application-btn{
+    cursor: pointer;
+}
+
+.applicant-qualifications-container.task-active{
+    justify-content: flex-end;
+}
+
+.job__Tile__Bottom__Row{
+    margin-top: 5%;
+    justify-content: space-between;
+}
+
+.job__Tile__Bottom__Row span{
+    margin-left: 0;
+    font-size: 0.8125rem;
+    line-height: 15.73px;
+}
+
+@media (min-width: 1200px){
+    .applicant-qualifications-container{
+        margin-top: 10%;
+    }
+}

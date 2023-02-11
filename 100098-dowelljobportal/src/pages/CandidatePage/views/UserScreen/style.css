@@ -1,0 +1,106 @@
+.candidate__User__Profile__Page {
+    margin-top: 2%;
+}
+
+.user__Page__Container.user {
+    width: 80%;
+    margin: 3% auto 60%;
+    font-family: 'Poppins', sans-serif;
+    /* background-color: #F3F8F4; */
+    border-radius: 10px;
+}
+
+.user__Page__Container .user__Intro__Item__Container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user__Page__Container .user__Intro__Item {
+    margin: 8% 0;
+}
+
+.user__Page__Container .user__Intro__Item__Container .user__Intro__Item{
+    margin-bottom: 0;
+}
+
+.user__Page__Container .user__Intro__Item__Container .user__Intro__Item span {
+    margin: 12% 0;
+}
+
+.user__Page__Container .user__Intro__Item h2 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 19.36px;
+    margin: 0;
+    color: #005734;
+}
+
+.user__Page__Container .user__Intro__Item span {
+    margin: 1% 0;
+    display: block;
+    font-size: 0.75rem;
+    line-height: 14.52px;
+    color: #838383;
+}
+.user__Page__Container .user__Intro__Item__Container .edit__Btn{
+    cursor: not-allowed;
+    color: #F46242;
+}
+.user__Page__Container .logout__Btn {
+    background-color: #D00C0C;
+    color: #fff;
+    font-family: "Poppins", sans-serif;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0px 1.85594px 12.373px rgba(0, 87, 52, 0.49);
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+    display: block;
+    margin: 30% auto 0;
+    padding: 5% 10%;
+}
+.user__Page__Container .logout__Btn:hover {
+    filter: brightness(0.7);
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .user__Page__Container .user__Intro__Item {
+        margin: 6% 0;
+    }   
+    .user__Page__Container.user {
+        margin-top: 8%;
+        margin-bottom: 6%;
+    } 
+    .user__Page__Container .logout__Btn {
+        padding: 2% 4%;
+        margin: 4% 0 0;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .user__Page__Container.user {
+        width: 80%;
+        margin-top: 0;
+        padding: 4%;
+        margin-bottom: 12%
+    }
+
+    .user__Page__Container .user__Intro__Item__Container .user__Intro__Item{
+        margin: 0;
+    }
+
+    .user__Page__Container .user__Intro__Item__Container .user__Intro__Item span {
+        margin: 12% 0;
+    }
+
+    .user__Page__Container .user__Intro__Item {
+        margin: 2% 0;   
+    }
+
+    .user__Page__Container .logout__Btn {
+        padding: 1% 3%;
+        margin: 4% 0 0;
+    }
+}

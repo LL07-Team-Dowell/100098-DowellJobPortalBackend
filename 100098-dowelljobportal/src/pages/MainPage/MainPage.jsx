@@ -6,6 +6,7 @@ const MainPage = () => {
     const links = [
         { to: "/admin", title: "Admin" },
         { to: "/research-jobs", title: "Research jobs" },
+        {to:"/landingpage" ,  title:"Landing Page"}
     ]
 
     return <div className="main__Page__Container">

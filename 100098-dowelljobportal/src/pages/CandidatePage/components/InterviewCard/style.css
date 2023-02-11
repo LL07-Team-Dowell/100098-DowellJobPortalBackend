@@ -1,0 +1,177 @@
+.candidate__Interview__Card{
+    --black: #000;
+    --dark-green: #045632;
+    --light-green: #57A639;
+    --grey: #838383;
+    --white: #fff;
+    --box-shadow-color: rgba(0, 0, 0, 0.12);
+    --light-grey: rgba(255, 255, 255, 0.8);
+    --inter-font-family: 'Inter', sans-serif;
+}
+
+.candidate__Interview__Card{
+    background-color: var(--white);
+    border-left: 1px solid var(--yellow);
+    box-shadow: 0px 4px 8px var(--box-shadow-color);
+    border-radius: 10px;
+    display: block;
+    font-family: var(--inter-font-family);
+    padding: 5% 2.5%;
+    margin: 5.5% 0 10%;
+    transition: 0.35s ease-in-out;
+    animation: fadeIn 0.55s ease-in-out;
+}
+
+.candidate__Interview__Card:hover, .candidate__Interview__Card:focus{
+    box-shadow: 0 8px 16px 0 var(--box-shadow-color);
+}
+
+.candidate__Interview__Card .green__Color {
+    color: var(--dark-green) !important;
+}
+
+.candidate__Interview__Card .interview__Details__Container,
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .interview__Status__Item {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .interview__Status__Item{
+    align-items: center;
+    justify-content: flex-start;
+    width: 90%;
+}
+
+.candidate__Interview__Card .job__Title{
+    font-weight: 500;
+    line-height: 19.36px;
+    font-size: 1rem;
+    text-transform: capitalize;
+}
+
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .status__Icon__Xl {
+    font-size: 2rem;
+}
+
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .status__Icon {
+    font-size: 1rem;
+}
+
+.candidate__Interview__Card .interview__Status__Container .vertical__Line {
+    height: 3rem;
+    width: 1px;
+    background-color: var(--light-green);
+}
+
+.candidate__Interview__Card .interview__Schedule__Item,
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .interview__Text__Xl,
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .interview__Text{
+    color: var(--grey);
+    line-height: 17px;
+}
+
+.candidate__Interview__Card .interview__Schedule__Item,
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .interview__Text__Xl,
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .interview__Text__No__Wrap{
+    font-size: 0.875rem;
+}
+
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .interview__Text__No__Wrap{
+    font-size: 0.8rem;
+    white-space: nowrap !important;
+}
+
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .interview__Text {
+    font-size: 0.625rem;
+}
+
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .interview__Text__Xl{
+    margin-left: 6%;
+}
+
+.candidate__Interview__Card .interview__Details__Container .interview__Status__Container .interview__Text {
+    margin-left: 12%;
+}
+
+.candidate__Interview__Card .interview__Schedule__Item{
+    margin: 6% auto 4%;
+}
+
+.candidate__Interview__Card a.view__Interview__Btn {
+    font-size: 0.625rem;
+    line-height: 12px;
+    text-decoration: underline;
+    color: var(--grey);
+    text-align: left;
+    margin-bottom: 10%;
+}
+
+.candidate__Interview__Card .interview__Details__Container .discord__Btn__Container{
+    width: 40.8%;
+}
+
+.candidate__Interview__Card .interview__Details__Container .discord__Btn__Container button {
+    border: none;
+    outline: none;
+    padding: 7.8% 20.9%;
+    border-radius: 10px;
+    background-color: var(--light-green);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 19px;
+    font-family: var(--inter-font-family);
+    color: var(--light-grey);
+    display: block;
+    margin-left: auto;
+    width: 100%;
+    transition: 0.3s ease-in-out;
+}
+
+.candidate__Interview__Card .interview__Details__Container .discord__Btn__Container button a {
+    color: var(--white);
+}
+
+.candidate__Interview__Card .interview__Details__Container .discord__Btn__Container button:hover,
+.candidate__Interview__Card .interview__Details__Container .discord__Btn__Container button:focus{
+    filter: brightness(0.9);
+}
+
+.candidate__Interview__Card .interview__Details__Container .discord__Btn__Container span{
+    margin: 0;
+    margin-top: 2%;
+    font-size: 0.625rem;
+    color: var(--grey);
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .candidate__Interview__Card {
+        margin: 2% 0 4%;
+        padding: 3% 2%;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .candidate__Interview__Card {
+        margin: 2% 0;
+        padding: 2% 1%;
+        height: 16rem;
+    }
+    .candidate__Interview__Card:last-child{
+        margin-bottom: 9%;
+    }
+    .candidate__Interview__Card .interview__Status__Container .vertical__Line {
+        margin-left: 4%;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    } to {
+        opacity: 1;
+    }
+}

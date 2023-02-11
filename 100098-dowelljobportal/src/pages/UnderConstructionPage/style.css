@@ -1,0 +1,19 @@
+.construction__Page__Container img{
+    max-width: 100%;
+    width: 100%;
+    display: block;
+    margin: 3% auto;
+}
+
+@media (min-width: 767px) and (max-width: 991.98px) {
+    .construction__Page__Container img {
+        margin: 10% auto;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .construction__Page__Container img {
+        width: 56%;
+        margin: 0 auto;
+    }
+}

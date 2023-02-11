@@ -1,0 +1,42 @@
+.Applied__container{
+    width: 88%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.Applied__container .selected-candidates-container{
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.Applied__container .job-tile-container .applicant-qualifications-container .applicant-experience{
+    color: #838383;
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .Applied__container{
+        width: 86%;
+    }
+    .Applied__container .job-tile-container {
+        width: calc(96% / 2);
+        display: inline-block;
+        margin-right: 4%;
+    }
+    .Applied__container .job-tile-container:nth-child(3n + 3){
+        margin-right: 0;
+    }
+}
+@media screen and (min-width: 992px) {
+    .Applied__container{
+        width: 82%;
+    }
+    .Applied__container .job-tile-container {
+        width: calc(92% / 3);
+        display: inline-block;
+        margin-right: 4%;
+    }
+    .Applied__container .job-tile-container:nth-child(4n + 4){
+        margin-right: 0;
+    }
+}

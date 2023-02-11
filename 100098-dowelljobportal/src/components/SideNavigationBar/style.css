@@ -1,0 +1,54 @@
+.new__Side__Navigation__Bar {
+    --green-color: #005734;
+    --white-color: #fff;
+}
+
+.new__Side__Navigation__Bar {
+    background-color: var(--green-color);
+    height: 100%;
+    position: fixed;
+    left: 0;
+    width: 4.6rem;
+    padding: 3% 0.8%;
+    z-index: 99;
+}
+
+.new__Side__Navigation__Bar .new__Side__Navigation__Links,
+.new__Side__Navigation__Bar .new__Side__Navigation__Links a {
+    color: var(--white-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.new__Side__Navigation__Bar .new__Side__Navigation__Links {
+    list-style: none;
+    height: 70%;
+    justify-content: space-between;
+}
+
+.new__Side__Navigation__Bar .new__Side__Navigation__Links a {
+    align-items: center;
+    justify-content: center;
+}
+
+.new__Side__Navigation__Bar .new__Side__Navigation__Links a svg {
+    font-size: 1.6rem;
+}
+
+.new__Side__Navigation__Bar .new__Side__Navigation__Links a span {
+    word-wrap: break-word;
+    width: 100%;
+    font-size: 0.8rem;
+}
+
+@media screen and (max-width: 991px) {
+    .new__Side__Navigation__Bar {
+        height: 4.6rem;
+        width: 100%;
+        bottom: 0;
+        padding: 3% 5%;
+    }
+    .new__Side__Navigation__Bar .new__Side__Navigation__Links {
+        flex-direction: row;
+    }
+}

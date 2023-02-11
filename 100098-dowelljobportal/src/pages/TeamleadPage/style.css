@@ -1,0 +1,57 @@
+.jobs-container, .tasks-container{
+    padding: 0 7% 24%;
+    background: transparent;
+}
+
+.tasks-container .add__Btn {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    bottom: 15%;
+    padding-top: 5%;
+    padding-bottom: 5%;
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .tasks-container .add__Btn {
+        padding-top: 3%;
+        padding-bottom: 3%;
+    }
+    .jobs-container, .tasks-container {
+        padding-bottom: 12%;
+    }
+    .jobs-container > *, .tasks-container > *{
+        width: calc(96% / 2);
+        display: inline-block;
+        margin-right: 2%;
+    }
+    .jobs-container > *:nth-child(2n + 2), .tasks-container > *:nth-child(2n + 2) {
+        margin-right: 0;
+    }
+}
+
+@media (min-width: 992px){
+    .jobs-container, .tasks-container{
+        width: 86%;
+        margin: 0 auto;
+        padding-bottom: 8%;
+    }
+    .jobs-container > *, .tasks-container > *{
+        width: calc(94% /2);
+        display: inline-block;
+        margin-right: 4%;
+        margin-bottom: 4%;
+    }
+    .jobs-container > *:nth-child(2n + 2), .tasks-container > *:nth-child(2n + 2):not(.add__Btn) {
+        margin-right: 0;
+    }
+    .jobs-container > *:last-child,
+    .tasks-container > *:last-child:not(.add__Btn) {
+        margin-bottom: 15%;
+        background-color: rebeccapurple;
+    }
+    .tasks-container .add__Btn {
+        padding-top: 2%;
+        padding-bottom: 2%;
+    } 
+}

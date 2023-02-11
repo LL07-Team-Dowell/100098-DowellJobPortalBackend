@@ -1,7 +1,7 @@
-* {
-  font-family: "Poppins", sans-serif;
-  letter-spacing: 0.05em;
-}
+/* * { */
+  /* font-family: "Poppins", sans-serif;
+  letter-spacing: 0.05em; */
+/* } */
 
 :root {
   --primary-color: #005734;
@@ -13,6 +13,8 @@
 
 .job_container {
   width: 100%;
+  font-family: "Poppins", sans-serif;
+  letter-spacing: 0.05em;
 }
 
 .nav_button {

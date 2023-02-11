@@ -1,0 +1,138 @@
+.add__New__Task__Overlay {
+    --background-blur: rgba(0, 0, 0, 0.12);
+    --white: #fff;
+    --green-color: #57A639;
+    --yellow-color: #C09F2C;
+}
+.add__New__Task__Overlay{
+    background: var(--background-blur);
+    backdrop-filter: blur(30px);
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    animation: fadeIn 0.2s ease-in-out;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.add__New__Task__Container {
+    background-color: var(--white);
+    width: 90%;
+    border-radius: 10px;
+    overflow-y: auto;
+    padding: 4% 2%;
+    max-height: 80%;
+}
+
+.add__New__Task__Container .title__Item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.add__New__Task__Container .team__Members__Container .team__Member__Item{
+    cursor: pointer;
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+    margin: 4% 0 3%;
+}
+
+.add__New__Task__Container .team__Members__Container .team__Member__Item:hover,
+.add__New__Task__Container .team__Members__Container .team__Member__Item:focus {
+    background-color: var(--green-color);
+    color: var(--white);
+}
+
+.add__New__Task__Container .add__Task__Btn,
+.add__New__Task__Container input, .add__New__Task__Container textarea {
+    outline: none;
+    border: none;
+    display: block;
+    font-family: 'Inter', sans-serif;
+    border-radius: 10px;
+    margin: 6% 0;
+}
+
+.add__New__Task__Container input, .add__New__Task__Container textarea {
+    box-shadow: 0px 4px 8px var(--background-blur);
+    border: 1px solid var(--yellow-color);
+    width: 100%;
+    font-size: 0.875rem;
+    padding: 3%;
+}
+
+.add__New__Task__Container input:read-only {
+    filter: brightness(0.92);
+}
+
+.add__New__Task__Container textarea {
+    resize: none;
+}
+
+.add__New__Task__Container .add__Task__Btn{
+    background-color: var(--green-color);
+    color: var(--white);
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    filter: brightness(1);
+    padding: 4% 5%;
+}
+
+.add__New__Task__Container .add__Task__Btn:hover,
+.add__New__Task__Container .add__Task__Btn:focus{
+    filter: brightness(0.9);
+}
+
+.add__New__Task__Container .add__Task__Btn[disabled],
+.add__New__Task__Container .add__Task__Btn:disabled {
+    cursor: not-allowed;
+    filter: brightness(0.8);
+}
+
+
+@keyframes fadeIn {
+    from{
+        opacity: 0;
+    }to{
+        opacity: 1;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .add__New__Task__Container h1.title__Item{
+        margin-bottom: 6%;
+    }
+    
+    .add__New__Task__Container .add__Task__Btn{
+        padding: 3%;   
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .add__New__Task__Container {
+        padding: 2%;
+        width: 50%;
+        max-height: 80%;
+    }
+
+    .add__New__Task__Container .team__Members__Container .team__Member__Item {
+        margin: 2% 0;
+        padding: 2%;
+    }
+
+    .add__New__Task__Container input, .add__New__Task__Container textarea {
+        margin: 3% 0;
+    }
+
+    .add__New__Task__Container input, .add__New__Task__Container textarea {
+        padding: 2%;
+    }
+
+    .add__New__Task__Container .add__Task__Btn{
+        padding: 2.5% 3%;
+    }
+}

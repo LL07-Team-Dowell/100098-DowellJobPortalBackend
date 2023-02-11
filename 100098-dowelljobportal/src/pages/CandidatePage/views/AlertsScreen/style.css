@@ -1,0 +1,13 @@
+.candidate__Alerts__Page {
+    margin-top: 2%;
+}
+
+.candidate__Alerts__Page .title__Navigation__Bar__Container {
+    margin-bottom: 0;
+}
+
+@media screen and (max-width: 991px) {
+    .candidate__Alerts__Page .title__Navigation__Bar__Container .title__Item .back__Icon__Container {
+        width: 3rem;
+    }
+}

@@ -1,0 +1,226 @@
+.selected-candidate-screen-container{
+    --grey-color: #838383;
+    --light-grey-color: #F8FAFB;
+    --black: #000;
+    --white-color: #fff;
+    --green-color: #005734;
+    --red-color: #FC3939;
+    --orange-color: #FF843F;
+    --light-green-color: #F3F8F4;
+    --grey-color-2: #7C7C7C;
+    --grey-color-3: #9A9A9A;
+    font-family: 'Poppins', sans-serif;
+}
+
+.selected-candidate-screen-container .relative-hr{
+    position: relative;
+}
+
+.selected-candidate-screen-container{
+    padding: 3% 7%;
+    background-color: var(--light-green-color);
+    border-radius: 20px;
+}
+
+.selected-candidate-screen-container > *{
+    color: var(--grey-color);
+}
+
+.down-icon{
+    color: var(--black);
+}
+
+.comments-container.hire-comment{
+    margin-bottom: 15%;
+}
+
+.comments-container.hr__Comments__Container h2{
+    margin-top: 4%;
+}
+
+.comments-container h2{
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 19px;
+    color: var(--black);
+    margin-bottom: 3%;
+}
+
+.comments-container textarea, .comments-container input{
+    resize: none;
+    width: 100%;
+    font-family: 'Inter', sans-serif;
+    line-height: 17px;
+    font-size: 0.7778rem;
+    color: var(--grey-color);
+    background: var(--white-color);
+    border: none;
+    border: 1px solid var(--grey-color-2);
+    outline: none;
+    border-radius: 5px;
+    padding: 4% 2%;
+}
+
+.comments-container textarea:read-only, .comments-container textarea[readonly]{
+    filter: brightness(0.96);
+}
+
+.comments-container.hr__Comments__Container textarea{
+    margin-bottom: 4%;
+}
+
+.comments-container input{
+    padding: 3%;
+}
+
+.candidate-status-container{
+    margin-top: 12%;
+    margin-bottom: 52%;
+}
+
+.candidate-status-container h2{
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 19px;
+    color: var(--black);
+    margin-bottom: 10%;
+}
+
+.candidate-status-container h2.top-m{
+    margin-top: 10%;
+}
+
+.candidate-status-container.onboarding-active > *, .candidate-status-container.onboarding-active .status-options-container .status-option > *{
+    display: inline-block;
+}
+
+.candidate-status-container.onboarding-active .status-options-container{
+    display: inline-flexbox;
+    width: 40%;
+    margin-left: 10%;
+    align-items: center;
+}
+
+.candidate-status-container.onboarding-active .status-options-container .textt{
+    margin-left: 10%;
+}
+.comments-container h2 span, .candidate-status-container h2 span{
+    margin-left: 3px;
+    color: var(--grey-color);
+}
+
+.status-options-container{
+    display: flex;
+    align-items: center;
+    margin-top: 4%;
+    line-height: 17px;
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+    margin-left: auto;
+}
+
+.status-options-container div > *{
+    display: block;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+.status-options-container > *:last-child{
+    margin-right: 5%;
+    margin-left: auto;
+}
+
+.status-options-container.rehire > *{
+    margin-right: 20%;
+}
+
+.status-options-container .textt{
+    font-size: 0.875rem;
+    line-height: 16.94px;
+}
+
+.status-options-container .status-option{
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: var(--grey-color-3);
+    color: var(--white-color);
+    border-radius: 9px;
+    font-family: 'Inter', sans-serif;
+    max-width: 100%;
+}
+
+.status-options-container .status-option:disabled,
+.status-options-container .status-option[disabled] {
+    cursor: not-allowed;
+}
+
+.status-options-container .status-option .status-icon{
+    font-size: 1.25rem;
+}
+
+.status-options-container .status-option.active.green-color{
+    color: var(--green-color);
+}
+
+.status-options-container .status-option.active.red-color{
+    color: var(--red-color);
+}
+
+.status-option.active.orange-color{
+    color: var(--orange-color);
+}
+
+.custom-hr.rehire-hr{
+    position: relative;
+    margin-top: 10%;
+}
+
+.white__Bg__Color{
+    background: var(--white-color) !important;
+}
+
+@media screen and (min-width: 992px) {
+    .comments-container.hr__Comments__Container, .comments-container.hr__Comments__Container ~ .candidate-status-container{
+        width: 100%;
+    }
+    .status-options-container .status-option{
+        padding: 1.5% 3%;
+    }
+}
+@media (min-width: 1200px){
+    .comments-container, .candidate-status-container{
+        width: 82%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .comments-container textarea {
+        padding: 3%;
+    }
+
+    .comments-container.hr__Comments__Container textarea{
+        margin-bottom: 0;
+    }
+
+    .comments-container input{
+        padding: 2%;
+    }
+
+    .comments-container.hire-comment{
+        margin-bottom: 5%;
+    }
+
+    .candidate-status-container{
+        margin-bottom: 10%;
+    }
+
+    .candidate-status-container h2{
+        margin-bottom: 0;
+    }
+
+    .candidate-status-container.onboarding-active .status-options-container .textt{
+        margin-top: 0;
+    }
+    
+}

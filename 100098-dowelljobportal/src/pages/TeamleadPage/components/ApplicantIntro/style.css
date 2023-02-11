@@ -1,0 +1,51 @@
+h1.applicant-title-text{
+    font-size: 1.125rem;
+    line-height: 21.78px;
+    font-weight: 500;
+    color: #000;
+}
+
+.selected-applicant-intro p{
+    font-size: 1.125rem;
+    line-height: 21.78px;
+}
+
+.selected-applicant-intro, .applicant-title-container{
+    display: flex;
+    align-items: center;   
+    justify-content: space-between;
+}
+
+.selected-applicant-intro{
+    margin: 4.5% 0 6%;
+}
+
+.selected-applicant-intro span{
+    font-size: 0.875rem;
+    line-height: 16.94px;
+}
+
+.applicant-title-container{
+    margin: 4% auto 10%;
+    width: 100%;
+}
+
+.applicant-title-container h1.applicant-title-text, .applicant-title-container .selected-applicant-intro{
+    margin: 0;
+}
+
+.applicant-title-container .selected-applicant-intro{
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (min-width: 1200px){
+    .selected-applicant-intro, .applicant-title-text{
+        width: 82%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .applicant-title-container{
+        margin: 2% auto;
+    }
+}

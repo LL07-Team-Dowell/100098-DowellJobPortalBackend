@@ -1,0 +1,37 @@
+.payment-details-container{
+    width: 100%;
+    margin: 25% 0 15%;
+    justify-content: space-between;
+    font-family: 'Inter', sans-serif;
+}
+
+.payment-details-container .payment-info-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10% 0;
+}
+
+.payment-details-container .payment-info-container:last-child{
+    margin-bottom: 30%;
+}
+
+.payment-details-container .payment-info-container p{
+    margin-right: 5%;
+    font-size: 1rem;
+    line-height: 19.36px;
+    color: #000;
+}
+
+@media (min-width: 1200px){
+    .payment-details-container{
+        margin: 15% auto 10%;
+        width: 82%;
+    }
+    .payment-details-container .payment-info-container{
+        margin: 8% 0;
+    }
+    .payment-details-container .payment-info-container:last-child{
+        margin-bottom: 12%;
+    }
+}

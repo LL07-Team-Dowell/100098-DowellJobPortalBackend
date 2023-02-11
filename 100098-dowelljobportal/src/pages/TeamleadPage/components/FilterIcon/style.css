@@ -1,0 +1,49 @@
+.filter-icon{
+    cursor: pointer;
+}
+
+.upper-section, .lower-section{
+    margin-bottom: 28%;
+    display: flex;
+}
+
+.upper-section, .lower-section{
+    position: relative;
+}
+
+.upper-section .vertical-line{
+    left: 20%;
+}
+
+.upper-section > .horizontal-line:first-child, .lower-section > .horizontal-line:first-child{
+    margin-right: 20%;
+}
+
+.lower-section > .horizontal-line:last-child, .upper-section > .horizontal-line:first-child{
+    width: 30%;
+}
+
+.upper-section > .horizontal-line:last-child, .lower-section > .horizontal-line:first-child{
+    width: 60%;
+}
+
+.lower-section .vertical-line{
+    right: 40%;
+}
+
+.horizontal-line, .vertical-line{
+    background: #000;
+}
+
+.horizontal-line{
+    height: 2px;
+}
+
+.vertical-line{
+    width: 2px;
+    height: 9px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
