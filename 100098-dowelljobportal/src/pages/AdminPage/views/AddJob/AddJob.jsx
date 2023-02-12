@@ -3,6 +3,8 @@ import { IoIosBookmark } from "react-icons/io";
 import { MdArrowBackIos } from "react-icons/md";
 import { MdOutlineAddCircle } from "react-icons/md";
 import { MdCancel } from "react-icons/md";
+import { currentBackendAxiosInstance } from "../../../../services/axios";
+import { toast } from "react-toastify";
 
 import { Link } from "react-router-dom";
 
@@ -10,6 +12,7 @@ import "./style.css";
 
 const AddJob = () => {
   const [newJob, setNewJob] = useState({
+    job_number: "crypto.randomUUID()",
     job_title: "",
     skills: "",
     type_of_job: "",
@@ -22,12 +25,21 @@ const AddJob = () => {
     payment_terms: [],
     workflow_terms: [],
     other_info: [],
+    company_id: 100098,
+    data_type: "testing",
+    created_by: "isaac",
+    created_on: new Date(),
   });
 
   const [selectedOption, setSelectedOption] = useState("");
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
+    setNewJob((prevValue) => {
+      const copyOfPrevValue = { ...prevValue };
+      copyOfPrevValue["type_of_job"] = e.target.value;
+      return copyOfPrevValue;
+    });
   };
 
   const handleChange = (valueEntered, inputName) => {
@@ -68,8 +80,42 @@ const AddJob = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    console.log("newJob ", newJob);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(newJob);
+
+    const fields = [
+      "job_title",
+      "skills",
+      "type_of_job",
+      "time_interval",
+      "payment",
+      "description",
+    ];
+
+    if (newJob.type_of_job === "") {
+      toast.error("Please select a type of job");
+      return;
+    } else if (fields.some((field) => newJob[field] === "")) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    try {
+      const response = await currentBackendAxiosInstance.post(
+        "admin_management/create_jobs/",
+        newJob
+      );
+      console.log(response.data);
+
+      if (response.status === 201) {
+        toast.success("Job created successfully");
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
   };
 
   return (
@@ -96,6 +142,7 @@ const AddJob = () => {
               value={newJob.job_title}
               onChange={(e) => handleChange(e.target.value, e.target.name)}
               placeholder={"Enter Name of Job"}
+              required
             />
 
             <label htmlFor="skills">Skills</label>
@@ -105,12 +152,13 @@ const AddJob = () => {
               value={newJob.skills}
               onChange={(e) => handleChange(e.target.value, e.target.name)}
               placeholder={"Enter Skills"}
+              required
             />
 
             <h3>Type of Job</h3>
             <div className="type_of_job">
               <label htmlFor="freelancer" className="radio">
-                <igennput
+                <input
                   className="radio_input"
                   type={"radio"}
                   id={"freelancer"}
@@ -164,7 +212,14 @@ const AddJob = () => {
             </div>
 
             <label htmlFor="time_interval">Time Period</label>
-            <input type="text" placeholder={"Enter Time Period"} />
+            <input
+              type="text"
+              name={"time_interval"}
+              value={newJob.time_interval}
+              onChange={(e) => handleChange(e.target.value, e.target.name)}
+              placeholder={"Enter Time Period"}
+              required
+            />
 
             <div className="state_of_job">
               <label htmlFor="is_active">State of Job</label>
@@ -174,14 +229,29 @@ const AddJob = () => {
                 name={"is_active"}
                 checked={newJob.is_active}
                 onChange={(e) => handleChange(e.target.checked, e.target.name)}
+                required
               />
             </div>
 
             <label htmlFor="payment">Payment</label>
-            <input type="text" placeholder={"Enter your amount"} />
+            <input
+              type="text"
+              name={"payment"}
+              value={newJob.payment}
+              onChange={(e) => handleChange(e.target.value, e.target.name)}
+              placeholder={"Enter your amount"}
+              required
+            />
 
             <label htmlFor="description">Description</label>
-            <input type="text" placeholder={"Enter your answer"} />
+            <input
+              type="text"
+              name={"description"}
+              value={newJob.description}
+              onChange={(e) => handleChange(e.target.value, e.target.name)}
+              placeholder={"Enter your answer"}
+              required
+            />
 
             <div className="terms">
               <h3>General Terms</h3>
