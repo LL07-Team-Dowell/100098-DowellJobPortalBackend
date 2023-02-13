@@ -12,13 +12,12 @@ import ViewJob from './pages/AdminPage/views/ViewJob/ViewJob';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* <HashRouter>
+    <HashRouter>
       <CurrentUserContextProvider>
         <App />
       </CurrentUserContextProvider>
       <ToastContainer />
-    </HashRouter> */}
-    <ViewJob/>
+    </HashRouter>
   </React.StrictMode>
 );
 
