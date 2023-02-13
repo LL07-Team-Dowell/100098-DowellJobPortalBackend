@@ -7,6 +7,7 @@ import { HashRouter } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CurrentUserContextProvider } from './contexts/CurrentUserContext';
+import ViewJob from './pages/AdminPage/views/ViewJob/ViewJob';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

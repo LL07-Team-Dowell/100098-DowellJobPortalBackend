@@ -13,7 +13,7 @@ const ViewJob = () => {
             <div className="header">
             <div>
             <button><MdArrowBackIosNew/></button>
-            <h2>{job_title}</h2>
+            <p>{job_title}</p>
             </div>
             <button>edit <AiFillEdit/></button>      
             </div>
