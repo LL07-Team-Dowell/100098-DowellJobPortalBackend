@@ -4,7 +4,7 @@ import { testJobToWorkWith } from "../../../../utils/testData";
 import { light } from "@mui/material/styles/createPalette";
 import {MdArrowBackIosNew } from "react-icons/md" ;
 import { addNewJob } from '../../../../services/adminServices';
-import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
+import Loading from '../../../CandidatePage/views/ResearchAssociatePage/Loading';
 // AiFillEdit 
 import {AiFillEdit } from "react-icons/ai"
 import axios from 'axios';
@@ -25,7 +25,7 @@ const ViewJob = () => {
     console.log(error);
     });
     },[])
-    if (loading) return  <h1>Loadding...</h1>
+    if (loading) return  <Loading/>
         return <>
         <div className="container">
             <div className="header">
