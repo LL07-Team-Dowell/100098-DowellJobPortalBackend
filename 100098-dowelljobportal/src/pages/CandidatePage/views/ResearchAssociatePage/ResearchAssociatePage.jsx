@@ -18,6 +18,10 @@ import cities from './images/cities.png'
 import axios from 'axios'
 // css
 import "./style.css";
+// AiOutlineHome TbSend MdOutlineNotifications
+import {MdOutlineNotifications} from 'react-icons/md'
+import {TbSend} from 'react-icons/tb'
+import {AiOutlineHome} from 'react-icons/ai'
 
 const ResearchAssociatePage = () => {
     // continents 
@@ -71,9 +75,9 @@ const ResearchAssociatePage = () => {
     </header>
     <nav className='research'>
         <ul>
-            <li><img src={home} alt="" /> <span>Home</span></li>
-            <li><img src={two} alt="" /> <span>Applied</span></li>
-            <li><img src={three} alt="" /> <span>Notifi</span></li>
+            <li><span style={{margin:"auto"}}>< AiOutlineHome style={{fontSize:"40"}}/></span><span>Home</span></li>
+            <li><span style={{margin:"auto"}}><TbSend style={{fontSize:"40"}}/></span> <span>Applied</span></li>
+            <li><span style={{margin:"auto"}}><MdOutlineNotifications style={{fontSize:"40"}}/></span><span>Notifi</span></li>
         </ul>
     </nav>
     <main className='research'>
@@ -142,7 +146,6 @@ const ResearchAssociatePage = () => {
         
         
     </main>
-    <img src={message} alt=""  className="message"/>
     </div>
 }
 
