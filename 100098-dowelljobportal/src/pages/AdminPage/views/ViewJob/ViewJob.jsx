@@ -1,14 +1,32 @@
+import {useEffect, useState} from 'react'
 import "./index.scss";
 import { testJobToWorkWith } from "../../../../utils/testData";
 import { light } from "@mui/material/styles/createPalette";
-import {MdArrowBackIosNew } from "react-icons/md"
+import {MdArrowBackIosNew } from "react-icons/md" ;
+import { addNewJob } from '../../../../services/adminServices';
+import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 // AiFillEdit 
 import {AiFillEdit } from "react-icons/ai"
+import axios from 'axios';
 
 const ViewJob = () => {
     const {job_number , job_title , description , skills , qualification , job_catagory , type_of_job , payment , is_active , time_interval , technical_specification , workflow_terms , other_info , company_id} = testJobToWorkWith
-
-    return <>
+    const [loading , setLoading] = useState(false)
+    useEffect(()=>{
+        setLoading(true)
+        axios.post('https://100098.pythonanywhere.com/admin_management/create_jobs/', {
+            company_id: '100098',
+    },[])
+    .then(response => {
+    setLoading(false)
+    console.log(response.data);
+    })
+    .catch(error => {
+    console.log(error);
+    });
+    },[])
+    if (loading) return  <h1>Loadding...</h1>
+        return <>
         <div className="container">
             <div className="header">
             <div>
@@ -44,7 +62,7 @@ const ViewJob = () => {
                     {workflow_terms.map((term , index) => <li key={index}>{term}</li>)}
                 </ol>
                 <div className="others">
-                    <h5>others</h5>    <span>Your discord profile Id</span>
+                    <h5>others:</h5>    <span>Your discord profile Id</span>
                 </div> 
                 <button>edit <AiFillEdit/></button>
             </div>
