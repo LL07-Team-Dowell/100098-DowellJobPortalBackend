@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import JobLandingLayout from '../../../../layouts/CandidateJobLandingLayout/LandingLayout';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 
-function UserScreen() {
+function UserScreen({ candidateSelected }) {
 
   const { currentUser } = useCurrentUserContext()
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ function UserScreen() {
   const handleLogout = () => navigate("/logout");
 
   return (
-    <JobLandingLayout user={currentUser} afterSelection={true}>
+    <JobLandingLayout user={currentUser} afterSelection={candidateSelected}>
     <div className='candidate__User__Profile__Page'>
       <div className="user__Page__Container user">
 
