@@ -34,6 +34,7 @@ import HrJobScreen from './pages/HrPage/views/JobScreen/HrJobScreen';
 import Teamlead from './pages/TeamleadPage/Teamlead';
 import AccountPage from './pages/AccountPage/AccountPage';
 import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner';
+import { JobContextProvider } from './contexts/Jobs';
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -43,7 +44,6 @@ function App() {
 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
-  
   if (loading) return <LoadingSpinner />
   
   // NO LOGGED IN USER VIEW
@@ -97,17 +97,12 @@ function App() {
 
     return <Routes>
 
-      <Route path="/logout" element={<Logout/>}/>
-
-      <Route path="/" element={ <LandingPage />} />
-
-      <Route path="/edit-job" element={<EditJob />} />
-
-      <Route path="/view-job" element={<ViewJob />} />
-
-      <Route path="/add-job" element={<AddJob />} />
-
-      <Route path='*' element={<ErrorPage />} />
+      <Route path="/" element={<JobContextProvider> <LandingPage /></JobContextProvider>} />
+      <Route path="/logout" element={<JobContextProvider> <Logout/></JobContextProvider>}/>
+      <Route path="/edit-job" element={<JobContextProvider><EditJob /></JobContextProvider>} />
+      <Route path="/view-job" element={<JobContextProvider><ViewJob /></JobContextProvider>} />
+      <Route path="/add-job" element={<JobContextProvider><AddJob /></JobContextProvider>} />
+      <Route path='*' element={<JobContextProvider><ErrorPage /></JobContextProvider>} />
 
     </Routes>
 
@@ -289,22 +284,22 @@ function App() {
     </Routes>
   );
 
-  // return (
-  //   <>
-  //     <Routes>
-  //       <Route path='/' element={<MainPage />} />
-  //       <Route path='/research-jobs' element={<ResearchAssociatePage />} />
-  //       <Route path='/admin'>
-  //         <Route index element={<AdminPage />} />
-  //         <Route path='add' element={<AddJob />} />
-  //         <Route path='view' element={<ViewJob />} />
-  //         <Route path='edit' element={<EditJob />} />
-  //       </Route>
-  //       <Route path='/landingpage' element={<LandingPage />} />
+  return (
+    <>
+      <Routes>
+        <Route path='/' element={<MainPage />} />
+        <Route path='/research-jobs' element={<ResearchAssociatePage />} />
+        <Route path='/admin'>
+          <Route index element={<AdminPage />} />
+          <Route path='add' element={<AddJob />} />
+          <Route path='view' element={<ViewJob />} />
+          <Route path='edit' element={<EditJob />} />
+        </Route>
+        <Route path='/landingpage' element={<LandingPage />} />
 
-  //     </Routes>
-  //   </>
-  // )
+      </Routes>
+    </>
+  )
 }
 
 export default App;
