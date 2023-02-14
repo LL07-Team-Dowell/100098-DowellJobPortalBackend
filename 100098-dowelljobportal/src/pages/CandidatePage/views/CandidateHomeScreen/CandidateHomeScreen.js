@@ -49,7 +49,7 @@ function Home({ setHired, setAssignedProject }) {
 
   const handleLoginLinkClick = (e) => {
     e.preventDefault();
-    window.location = dowellLoginUrl
+    window.location.href = dowellLoginUrl
   }
 
   if (loading) return <LoadingSpinner />

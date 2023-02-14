@@ -34,6 +34,7 @@ import HrJobScreen from './pages/HrPage/views/JobScreen/HrJobScreen';
 import Teamlead from './pages/TeamleadPage/Teamlead';
 import AccountPage from './pages/AccountPage/AccountPage';
 import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner';
+import IntermediatePage, { testingRoles } from './IntermediatePage';
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -71,8 +72,15 @@ function App() {
     </Routes>
   }
 
+  // CURRENT USER BUT NO ROLES YET(WILL REMOVE)
+  if (!currentUser.role) {
+    return <Routes>
+      <Route path='*' element={<IntermediatePage />} />
+    </Routes>
+  }
+
   // ACCOUNT PAGE
-  if (currentUser.role === process.env.REACT_APP_ACCOUNT_ROLE) {
+  if (currentUser.role === testingRoles.accountRole) {
     return <Routes>
       
       <Route path="/logout" element={<Logout/>}/>
@@ -93,7 +101,7 @@ function App() {
   }
 
   // ADMIN PAGE
-  if (currentUser.username === process.env.REACT_APP_ADMIN_USERNAME) {
+  if (currentUser.role === testingRoles.adminRole) {
 
     return <Routes>
 
@@ -114,7 +122,7 @@ function App() {
   }
 
   // HR PAGE
-  if (currentUser.role === process.env.REACT_APP_HR_ROLE) {
+  if (currentUser.role === testingRoles.hrRole) {
 
     return <Routes>
 
@@ -155,7 +163,7 @@ function App() {
   }
 
   // TEAMLEAD PAGE
-  if (currentUser.role === process.env.REACT_APP_TEAMLEAD_ROLE) {
+  if (currentUser.role === testingRoles.teamLeadRole) {
 
     return <Routes>
 
@@ -180,7 +188,8 @@ function App() {
   }
 
   // CANDIDATE PAGE
-  return (
+  if (currentUser.role === testingRoles.candidateRole) {
+    return (
     candidateHired ? <Routes>
 
       <Route path='/' element={
@@ -250,7 +259,7 @@ function App() {
 
       <Route path="/logout" element={<CandidateJobsContextProvider><Logout/></CandidateJobsContextProvider>}/>
       <Route path="/alerts" element={<CandidateJobsContextProvider><AlertScreen/></CandidateJobsContextProvider>}/>
-      <Route path="/user" element={<CandidateJobsContextProvider><UserScreen /></CandidateJobsContextProvider>}/>
+      <Route path="/user" element={<CandidateJobsContextProvider><UserScreen candidateSelected={false} /></CandidateJobsContextProvider>}/>
 
       <Route path="/applied" element={ 
         <NavigationContextProvider>
@@ -287,7 +296,8 @@ function App() {
       <Route path='*' element={<ErrorPage />} />
 
     </Routes>
-  );
+    );
+  }
 
   // return (
   //   <>
