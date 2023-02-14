@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getUserInfoFromLoginAPI, getUserInfoFromPortfolioAPI } from "../services/authServices";
+import { dowellLoginUrl } from "../services/axios";
 
 export default function useDowellLogin ( updateCurrentUserState , updatePageLoading ) {
     
@@ -38,7 +39,7 @@ export default function useDowellLogin ( updateCurrentUserState , updatePageLoad
                 return
             }
 
-            return updatePageLoading(false);
+            return window.location.href = dowellLoginUrl;
         }
         
         sessionStorage.setItem("session_id", session_id);
