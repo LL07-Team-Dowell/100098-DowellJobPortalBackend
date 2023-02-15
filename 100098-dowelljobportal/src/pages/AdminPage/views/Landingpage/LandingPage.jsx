@@ -1,19 +1,31 @@
-import React from 'react'
+import React ,{useContext , useEffect}from 'react'
+import { useJobContext } from '../../../../contexts/Jobs';
 import './index.scss'
 import backpage from './assets/backpage.svg'
 import plus from './assets/plus.svg' ; 
 
 import search from './assets/search.svg'
 import Card from './component/Card';
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import Loading from '../../../CandidatePage/views/ResearchAssociatePage/Loading';
 const LandingPage = () => {
+  const {jobs , setJobs} = useJobContext()
+  console.log("jobs",jobs)
+  useEffect(()=>{
+    if(jobs.length === 0 ){
+      axios.post('https://100098.pythonanywhere.com/admin_management/get_jobs/', {
+      company_id: '100098'},[]).then(response => {setJobs(response.data.response.data); console.log(response.data.response.data)}).catch(error => console.log(error))
+    }
+
+  },[])
   return (
     <div className='landing-page'>
             
             <Link to="/"><img src={backpage} alt="" className={"backpage"} /></Link>
             <div className="add_new_job">
                         <div>
-                        <button><img src={plus} alt="" /></button>
+                        <button><Link to={"/add-job"}><img src={plus} alt="" /></Link></button>
                         <h3>Add New Job</h3>
                         </div>
                         
@@ -23,11 +35,10 @@ const LandingPage = () => {
                         </div>
             </div>
             <div className="cards">
-            <Card/>
-            <Card/>
-            <Card/>
-            <Card/>
-            <Card/>
+            {/* {jobs.map(job => <Card {...job}/>)} */}
+            {
+              jobs.length > 0 ? jobs.map(job => <Card {...job}/>) :<Loading/>
+            }
             </div>
     </div>
   )

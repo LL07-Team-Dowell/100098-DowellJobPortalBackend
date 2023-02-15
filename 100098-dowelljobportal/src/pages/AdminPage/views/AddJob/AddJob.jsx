@@ -120,7 +120,7 @@ const AddJob = () => {
 
   return (
     <div className="job_container">
-      <Link to="/admin">
+      <Link to="/">
         <button className="nav_button">
           <MdArrowBackIos className="back_icon" />
         </button>

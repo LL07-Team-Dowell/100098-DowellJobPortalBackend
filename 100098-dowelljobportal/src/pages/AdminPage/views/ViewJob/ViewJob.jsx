@@ -8,15 +8,18 @@ import Loading from '../../../CandidatePage/views/ResearchAssociatePage/Loading'
 // AiFillEdit 
 import {AiFillEdit } from "react-icons/ai"
 import axios from 'axios';
-
+import { Link , useNavigate} from 'react-router-dom';
 const ViewJob = () => {
     const {job_number , job_title , description , skills , qualification , job_catagory , type_of_job , payment , is_active , time_interval , technical_specification , workflow_terms , other_info , company_id} = testJobToWorkWith
     const [loading , setLoading] = useState(false)
     useEffect(()=>{
+        return
         setLoading(true)
-        axios.post('https://100098.pythonanywhere.com/admin_management/create_jobs/', {
+        axios.post('https://100098.pythonanywhere.com/admin_management/get_job/', {
             company_id: '100098',
     },[])
+    
+    
     .then(response => {
     setLoading(false)
     console.log(response.data);
@@ -25,12 +28,18 @@ const ViewJob = () => {
     console.log(error);
     });
     },[])
+    useEffect(()=>{
+        setTimeout(()=>{
+            setLoading(false)
+        },10000)
+        },[]);
+        const navigate = useNavigate() ; 
     if (loading) return  <Loading/>
         return <>
         <div className="container">
             <div className="header">
             <div>
-            <button><MdArrowBackIosNew/></button>
+            <button onClick={() => navigate(-1)}><MdArrowBackIosNew/></button>
             <p>{job_title}</p>
             </div>
             <button>edit <AiFillEdit/></button>      

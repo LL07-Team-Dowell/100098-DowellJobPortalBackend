@@ -29,6 +29,7 @@ $main__gray : #7C7C7C ;
             position: relative;
             background-color: white;
             cursor: pointer;
+            
             &::after{
             content: "";
             position: absolute;
@@ -42,11 +43,12 @@ $main__gray : #7C7C7C ;
             }
             }
             p{
-            font-size: 2.1rem;
-            letter-spacing: .6px;
-            margin-left: 20px;
-            color: $main__green;
-            font-weight: 700;
+              font-size: 2.1rem;
+              margin-left: 20px;
+              color: #005734;
+              text-transform: capitalize;
+              font-weight: 700;
+              letter-spacing: 0.80px;
             }
             }
             >button{
@@ -61,6 +63,7 @@ $main__gray : #7C7C7C ;
             font-weight: bold;
             font-size: 1.41rem;
             box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 6px;
+            text-transform: capitalize;
             }
             }
             .job-discription{
@@ -78,11 +81,11 @@ $main__gray : #7C7C7C ;
             width: 60%;
             margin-top: 20px;
             h5{
-            font-weight: 800;
+            font-weight: 600;
             font-size: 16px;
             }
             span{
-            font-size: 17px;
+              font-size: 15px;
 
             }
             }
@@ -95,7 +98,7 @@ $main__gray : #7C7C7C ;
             margin-top: 10px ; 
             margin-left: 19px;
             li{
-            font-size: 15px;
+              font-size: 17px;
             margin-bottom: 10px;
             }
             }
@@ -115,6 +118,7 @@ $main__gray : #7C7C7C ;
             outline: transparent;
             font-weight: 500;
             font-size: 1.41rem;
+            text-transform: capitalize;
             }
             }
 }
