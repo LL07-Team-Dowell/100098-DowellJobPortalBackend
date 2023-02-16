@@ -26,7 +26,7 @@ function EditJob() {
     workflow_terms: [],
     other_info: [],
   });
-  console.log(formData.is_active);
+  // console.log(formData.is_active);
   // console.log(formData);
 
   useEffect(() => {
@@ -260,9 +260,18 @@ function EditJob() {
               <div className='input__data__row'>
                 <label>Status of Job</label>
                 <div className="data">
-                  <label htmlFor="jobStatus">{formData.is_active === 'true' ? "Active" : "Inactive"}</label>
-                  <input type="checkbox" id="check1" className="toggle" onClick={toggleJobStatus} />
-                  <label htmlFor="check1"></label>
+                  {/* <input type="checkbox" id="check1" className="toggle" onClick={toggleJobStatus} />
+                  <label htmlFor="check1"></label> */}
+                  {/* <label htmlFor="jobStatus">{formData.is_active === 'true' ? "Active" : "Inactive"}</label> */}
+
+                  <input
+                    className="active_checkbox"
+                    type="checkbox"
+                    name={"is_active"}
+                    checked={formData.is_active}
+                    onChange={toggleJobStatus}
+                    required
+                  />
                 </div>
 
               </div>
@@ -400,17 +409,15 @@ const Wrapper = styled.section`
         padding: 70px 0px 20px 20px;
         h2{
             color: #005734;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 32px;
-            font-weight: 700;
             letter-spacing: 0.05em;
             display: flex;
             align-items: center;
         }
 
         h3{
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 1rem;
             font-weight: 600;
             color: #7c7c7c;
         }
@@ -449,6 +456,8 @@ const Wrapper = styled.section`
                     padding-bottom:4px;
                     color: #005734;
                     font-weight: 600;
+                    font-size: 1.2rem;
+                    padding: 0.6rem 0;
                 }
 
                 input {
@@ -474,6 +483,7 @@ const Wrapper = styled.section`
                     color: #005734;
                     font-weight: 600;
                     padding: 8px 0;
+                    font-size: 1.2rem;
                 }
 
                 .data{    
