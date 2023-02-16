@@ -96,7 +96,7 @@ _Post_ to `/research_management/research_job_creation`
 }
 ```
 
-_get_ to `/research_management/get_research_job_creation`
+_post_ to `/research_management/get_research_job_creation`
 
 - Request Body
 
