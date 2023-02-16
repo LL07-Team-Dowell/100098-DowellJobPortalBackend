@@ -11,3 +11,4 @@ class serverStatus(APIView):
 
     def get(self, request):
         return Response({"info": "Welcome to Dowell-Job-Portal-Version2.0"},status=status.HTTP_200_OK)
+
