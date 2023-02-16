@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import arrowright from '../assets/arrowright.svg'  ; 
 import edit from '../assets/edit.svg' ; 
 import {AiOutlineClockCircle} from 'react-icons/ai' ; 
 import {CgDanger} from 'react-icons/cg' ; 
 import { Link } from 'react-router-dom';
 import './index.scss'
+import axios from 'axios';
+import LittleLoading from '../../../../CandidatePage/views/ResearchAssociatePage/littleLoading';
 const style={
             fontSize:"24px" , 
             color:"#7C7C7C"
 }
-const Card = ({company_id , created_on , skills , job_title}) => {
+const Card = ({company_id , created_on , skills , job_title , is_active , _id}) => {
   const date = () => {
     const today = new Date();
     const targetDate = created_on;
@@ -34,6 +36,24 @@ const Card = ({company_id , created_on , skills , job_title}) => {
     return ("Less than 1 minute");
     }
   }
+  const [is_activee, setIsActive] = useState(is_active);
+  const [loading , setLoading] = useState(false)
+  const handleCheckboxChange = () => {
+    setIsActive(!is_activee);
+    setLoading(true)
+    console.log("asdasdasd")
+    axios.post('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
+      document_id: _id,
+      is_active: is_activee
+  })
+  .then((response) => {
+      console.log(response.data);
+      setLoading(false)
+  })
+  .catch((error) => {
+      console.log(error);
+  });
+  };
   return (
             <div className="card">
             <div className="card__header">
@@ -42,11 +62,21 @@ const Card = ({company_id , created_on , skills , job_title}) => {
             </div>
             <div className="card__skill">
             <div><h6>Skills:</h6> <span>{skills}</span></div>
-            <div>
-              <h6>Active</h6>
-            <input type="checkbox" id="switch" /><label for="switch">Toggle</label>
+            
+            {/* <input type="checkbox" id="switch" /><label for="switch">Toggle</label> */}
+            {loading ? <LittleLoading/> : <div className="state_of_job">
+              <label htmlFor="is_active"></label>
+              <input
+                className="active_checkbox"
+                type="checkbox"
+                name={"is_active"}
+                checked={is_activee}
+                onChange={handleCheckboxChange}
+                required
+              />
+            </div>}
 
-            </div>
+
             </div>
 
             <div className='card__footer'>

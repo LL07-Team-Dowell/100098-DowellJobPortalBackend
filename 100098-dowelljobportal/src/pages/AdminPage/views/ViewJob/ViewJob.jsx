@@ -13,7 +13,6 @@ const ViewJob = () => {
     const {job_number , job_title , description , skills , qualification , job_catagory , type_of_job , payment , is_active , time_interval , technical_specification , workflow_terms , other_info , company_id} = testJobToWorkWith
     const [loading , setLoading] = useState(false)
     useEffect(()=>{
-        return
         setLoading(true)
         axios.post('https://100098.pythonanywhere.com/admin_management/get_job/', {
             company_id: '100098',
