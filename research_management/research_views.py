@@ -68,6 +68,7 @@ class research_job_creation(APIView):
             if data :
                 field = {
                     "eventId": get_event_id()["event_id"],
+                    "job_number":  data.get('job_number'),
                     "title": data.get('title'),
                     "description": data.get('description'),
                     "skills": data.get('skills'),
@@ -79,6 +80,10 @@ class research_job_creation(APIView):
                     "location":data.get('location'),
                     "others": data.get('others'),
                     "phone": data.get('phone'),
+                    "company_id":data.get('company_id'),
+                    "data_type":data.get('data_type'),
+                    "created_by":data.get('created_by'),
+                    "created_on":data.get('created_on')
                     }
                 update_field = {
                     "status":"Nothing to update"
@@ -96,8 +101,7 @@ class get_research_job_creation(APIView):
         data = request.data
         if data:
             field = {
-                "inserted_id":data.get('inserted_id')
-
+                "company_id": data.get('company_id'),
             }
             update_field = {
                 "status":"nothing to update"

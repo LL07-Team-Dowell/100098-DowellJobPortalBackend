@@ -6,9 +6,9 @@ _Post_ to `/research_management/apply_job_form`
 
 ```json
 {
-  "Individual_name": "<Individual_name>",
+  "Individual_name": "<name>",
   "email": "<applicant email>",
-  "Individual_address": "<Individual_address>",
+  "Individual_address": "<Individual address>",
   "city": "<city>",
   "state": "<state>",
   "country": "<country>",
@@ -60,6 +60,7 @@ _Post_ to `/research_management/research_job_creation`
 
 ```json
 {
+  "job_number": "<unique number>",
   "title": "<title>",
   "description": "<description>",
   "skills": "<skills>",
@@ -69,7 +70,11 @@ _Post_ to `/research_management/research_job_creation`
   "city": "<city>",
   "location": "<location>",
   "others": "<others>",
-  "payment": "<payment>"
+  "payment": "<payment>",
+  "company_id": "<company_id>",
+  "data_type": "<data_type>",
+  "created_by": "<created_by>",
+  "created_on": "<created_on>"
 }
 ```
 
@@ -94,6 +99,12 @@ _Post_ to `/research_management/research_job_creation`
 _get_ to `/research_management/get_research_job_creation`
 
 - Request Body
+
+```json
+{
+  "company_id": "<company_id>"
+}
+```
 
 - Response 200
 

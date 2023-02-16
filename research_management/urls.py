@@ -1,5 +1,5 @@
 from django.urls import path
-from research_management.views import *
+from research_management.research_views import *
 
 urlpatterns = [
     path('get_apply_job_form/',get_apply_job_form.as_view()),
