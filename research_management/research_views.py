@@ -97,7 +97,7 @@ class research_job_creation(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_research_job_creation(APIView):
-    def get(self, request):
+    def post(self, request):
         data = request.data
         if data:
             field = {
