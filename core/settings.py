@@ -23,6 +23,7 @@ ALLOWED_HOSTS = ["*"]
 INSTALLED_APPS = [
     'candidate_management',
     'hr_management',
+    'research_management',
     'lead_management',
     'accounts_management',
     'admin_management',

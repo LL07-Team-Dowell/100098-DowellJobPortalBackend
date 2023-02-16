@@ -59,3 +59,20 @@ task_management_reports = [
     "100098007",
     "ABCDE",
 ]
+
+research_management_reports = [
+    "hr_hiring",
+    "hr_hiring",
+    "community",
+    "community",
+    "10008101",
+    "ABCDE",
+]
+research_job_creation_reports = [
+    "hr_hiring",
+    "hr_hiring",
+    "research_job_creation_reports",
+    "research_job_creation_reports",
+    "10008102",
+    "ABCDE",
+]

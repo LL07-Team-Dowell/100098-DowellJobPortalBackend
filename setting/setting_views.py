@@ -20,7 +20,7 @@ class SettingUserProfileInfoView(APIView):
     def get(self, request, format=None):
         profiles = SettingUserProfileInfo.objects.all()
         serializer = self.serializer_class(profiles, many=True)
-        return Response({"profiles": serializer.data})
+        return Response(serializer.data)
 
 
     def put(self, request, pk, *args, **kwargs):
