@@ -24,7 +24,7 @@
 
 #### research management
 
-- [accounts api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/research_management/README.md)
+- [research api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/research_management/README.md)
 
 #### Task management
 
@@ -32,7 +32,7 @@
 
 #### setting
 
-- [task api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/setting/README.md)
+- [setting api service](https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend/setting/README.md)
 
 #### PostMan collection
 
