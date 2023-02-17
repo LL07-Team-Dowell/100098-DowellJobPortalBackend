@@ -25,6 +25,8 @@ class apply_job_form(APIView):
                     "state":data.get('state'),
                     "country": data.get('country'),
                     "phone": data.get('phone'),
+                    "company_id":data.get('company_id'),
+                    "data_type":data.get('data_type'),
                     }
                 update_field = {
                     "status":"Nothing to update"
@@ -45,7 +47,7 @@ class get_apply_job_form(APIView):
         data = request.data
         if data:
             field = {
-                "inserted_id":data.get('inserted_id')
+                "company_id":data.get('company_id'),
 
             }
             update_field = {

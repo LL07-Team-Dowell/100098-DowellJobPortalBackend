@@ -15,7 +15,7 @@ class shortlisted_candidate(APIView):
 
     def post(self, request):
             data = request.data
-            if data :
+            if data:
                 field = {
                     "_id":data.get('document_id'),
                     }
