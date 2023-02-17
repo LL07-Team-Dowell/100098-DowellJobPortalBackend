@@ -9,7 +9,7 @@
   --tertiary-color: #7e7e7e;
   --bg-color: #f3f8f4;
   --bg-secondary-color: #ffff;
-  width: 95%;
+  width: 85%;
   font-family: "Poppins", sans-serif;
   letter-spacing: 0.05em;
   margin: auto; 
@@ -212,7 +212,7 @@ h3 {
 }
 
 .terms .terms_button {
-  margin: 0 0 5rem 0;
+  margin: 0 0 1rem 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -242,6 +242,7 @@ h3 {
   background-color: transparent;
   font-weight: 400;
   color: #7e7e7e;
+  margin-bottom: 1rem;
 }
 
 .terms_remove {
