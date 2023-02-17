@@ -32,7 +32,7 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation }
 
     const handleLogin = (e) => {
         e.preventDefault();
-        window.location = dowellLoginUrl + window.location.hash.replace("#", "");
+        window.location.href = dowellLoginUrl + window.location.hash.replace("#", "");
     }
 
     return <>

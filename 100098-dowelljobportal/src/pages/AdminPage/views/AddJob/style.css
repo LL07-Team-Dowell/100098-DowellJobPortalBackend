@@ -173,11 +173,11 @@ h3 {
 .active_checkbox[type="checkbox"]:before {
   content: "";
   position: absolute;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   background-color: red;
-  top: -0.5rem;
+  top: -0.3rem;
   left: 0;
   transition: 0.3s ease;
 }
@@ -198,7 +198,7 @@ h3 {
   position: absolute;
   color: #1f1f1f;
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1rem;
   top: 0.2rem;
   left: -6rem;
   letter-spacing: 0.05em;

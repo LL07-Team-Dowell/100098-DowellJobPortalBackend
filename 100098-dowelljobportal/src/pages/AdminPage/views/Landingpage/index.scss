@@ -58,7 +58,7 @@ $slider__gray:#D9D9D9 ;
                         outline: none;
                         border: none;
                         background-color: transparent;
-                        height: 100%;
+                        height: 20px ; 
                         &::placeholder{
                                     font-size: 1.175rem;
                         }
@@ -88,54 +88,7 @@ $slider__gray:#D9D9D9 ;
               display: flex;
               align-items: center;
             }
-            input[type=checkbox]{
-                        // hereee
-                        position: absolute;
-                        width: 200px;
-                        height: 60px;
-                        border: 1px solid red;
-                        top:20%; 
-                        right: -10%;
-                        visibility: visible;
-                        opacity: 0;
-                        z-index: 999;
-                      }
-                      
-                      label {
-                        cursor: pointer;
-                        text-indent: -9999px;
-                        width: 3.5rem;
-                        height: 1.125rem;
-                        background: grey;
-                        display: block;
-                        border-radius: 100px;
-                        position: relative;
             
-                      }
-                      
-                      label:after {
-                        content: '';
-                        position: absolute;
-                        top: -1px;
-                        left: -0px;
-                        width: 20px;
-                        height: 20px;
-                        background: $main__green ;
-                        border-radius: 90px;
-                        transition: 0.3s;
-                      }
-                      
-                      input:checked + label {
-                      }
-                      
-                      input:checked + label:after {
-                        left: calc(100% - 5px);
-                        transform: translateX(-100%);
-                      }
-                      
-                      label:active:after {
-                        width: 30px;
-                      }
             .card__header{
             padding-bottom: 10px;
             display: flex;
@@ -151,8 +104,9 @@ $slider__gray:#D9D9D9 ;
             .card__skill{
             padding:5px ;
             display: flex;
-            align-items: center;
+            // align-items: center;
             justify-content: space-between;
+            min-height: 74px;
             div:first-child{
             display: flex;
             align-items: center;
@@ -213,4 +167,51 @@ $slider__gray:#D9D9D9 ;
 
           
           // centering
+          // input[type=checkbox]{
+            // hereee
+          //   position: absolute;
+          //   width: 200px;
+          //   height: 60px;
+          //   border: 1px solid red;
+          //   top:20%; 
+          //   right: -10%;
+          //   visibility: visible;
+          //   opacity: 0;
+          //   z-index: 999;
+          // }
           
+          // label {
+          //   cursor: pointer;
+          //   text-indent: -9999px;
+          //   width: 3.5rem;
+          //   height: 1.125rem;
+          //   background: grey;
+          //   display: block;
+          //   border-radius: 100px;
+          //   position: relative;
+
+          // }
+          
+          // label:after {
+          //   content: '';
+          //   position: absolute;
+          //   top: -1px;
+          //   left: -0px;
+          //   width: 20px;
+          //   height: 20px;
+          //   background: $main__green ;
+          //   border-radius: 90px;
+          //   transition: 0.3s;
+          // }
+          
+          // input:checked + label {
+          // }
+          
+          // input:checked + label:after {
+          //   left: calc(100% - 5px);
+          //   transform: translateX(-100%);
+          // }
+          
+          // label:active:after {
+          //   width: 30px;
+          // }

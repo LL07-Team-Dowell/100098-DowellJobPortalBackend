@@ -124,7 +124,7 @@ const AddJob = () => {
 
   return (
     <div className="job_container">
-      <Link to="/admin" className="navLink">
+      <Link to="/" className="navLink">
         <button className="nav_button">
           <MdArrowBackIos className="back_icon" />
         </button>

@@ -100,7 +100,7 @@ function Applied({ currentUser }) {
               currentApplicationStatus={candidateJobs.currentUserApplications.find(application => application.job === interview.job_applied).status} 
               handleBtnClick={
                 () => candidateJobs.currentUserApplications.find(application => application.job === interview.job_applied).others[mutableNewApplicationStateNames.hr_discord_link] ? 
-                window.location = candidateJobs.currentUserApplications.find(application => application.job === interview.job_applied).others[mutableNewApplicationStateNames.hr_discord_link] : 
+                window.location.href = candidateJobs.currentUserApplications.find(application => application.job === interview.job_applied).others[mutableNewApplicationStateNames.hr_discord_link] : 
                 () => {}
               }
               buttonText={"Discord"}

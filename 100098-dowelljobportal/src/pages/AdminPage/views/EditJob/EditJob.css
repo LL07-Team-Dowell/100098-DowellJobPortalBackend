@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap');
 body{
-    /* font-family: 'poppins'; */
+    font-family: 'poppins';
 }
 
 input[type="checkbox"].toggle {
@@ -52,7 +52,7 @@ input[type="checkbox"].toggle {
   }
   
   input[type="checkbox"].toggle:checked + label::after {
-    content: "\2713";
+    /* content: "\2713"; */
     transform: translateX(100%);
     background-color: #005734
     ;

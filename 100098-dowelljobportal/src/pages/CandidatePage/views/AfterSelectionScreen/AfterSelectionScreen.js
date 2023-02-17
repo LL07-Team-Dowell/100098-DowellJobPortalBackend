@@ -38,7 +38,7 @@ const AfterSelectionScreen = ({ assignedProject }) => {
 
             section === "user" ?
             
-            <UserScreen afterSelection={true} /> :
+            <UserScreen candidateSelected={true} /> :
             
             <ErrorPage />
         }
