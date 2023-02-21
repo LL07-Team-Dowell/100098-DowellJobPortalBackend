@@ -30,6 +30,8 @@ class apply_job(APIView):
                 "academic_qualification": data.get('academic_qualification'),
                 "country": data.get('country'),
                 "agree_to_all_terms": data.get('agree_to_all_terms'),
+                "internet_speed": data.get('internet_speed'),
+                "other_info":data.get('other_info'),
                 "project":"",
                 "status": "Pending",
                 "hr_remarks":"",

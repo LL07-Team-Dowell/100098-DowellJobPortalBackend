@@ -32,6 +32,7 @@ class create_jobs(APIView):
                 "general_terms":data.get('general_terms'),
                 "technical_specification":data.get('technical_specification'),
                 "workflow_terms":data.get('workflow_terms'),
+                "payment_terms":data.get('payment_terms'),
                 "other_info":data.get('other_info'), 
                 "company_id":data.get('company_id'),
                 "data_type":data.get('data_type'),

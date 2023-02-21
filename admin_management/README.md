@@ -12,7 +12,7 @@ _Post_ to `admin_management/create_jobs/`
   "skills": "<Required skills for the job",
   "qualification": "<Qualifications required for the job>",
   "job_catagory": "<freelancer | intership | Employee>",
-  "type_of_job": "<Part time | Full time>",
+  "type_of_job": "<Part time | Full time| Time based>",
   "payment": "<Payment for the job>",
   "is_active": "<True| False>",
   "time_interval": "<Time interval for the job>",
@@ -77,7 +77,7 @@ _Post_ to `admin_management/get_job/`
 
 ```json
 {
-  "company_id": "<company_id>"
+  "document_id": "<document_id>"
 }
 ```
 
