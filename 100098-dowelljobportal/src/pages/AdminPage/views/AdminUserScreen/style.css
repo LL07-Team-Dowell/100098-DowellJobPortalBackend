@@ -1,0 +1,66 @@
+.user__Page__Container {
+    width: 86%;
+    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+}
+
+.user__Page__Container .user__Intro__Item__Container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user__Page__Container .user__Intro__Item {
+    margin: 8% 0;
+}
+
+.user__Page__Container .user__Intro__Item__Container .user__Intro__Item{
+    margin-bottom: 0;
+}
+
+.user__Page__Container .user__Intro__Item__Container .user__Intro__Item span {
+    margin: 12% 0;
+}
+
+.user__Page__Container .user__Intro__Item h2 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 19.36px;
+    margin: 0;
+}
+
+.user__Page__Container .user__Intro__Item span {
+    margin: 1% 0;
+    display: block;
+    font-size: 0.75rem;
+    line-height: 14.52px;
+    color: #838383;
+}
+.user__Page__Container .user__Intro__Item__Container .edit__Btn{
+    cursor: not-allowed;
+    color: #F46242;
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .user__Page__Container .user__Intro__Item {
+        margin: 6% 0;
+    }    
+}
+
+@media screen and (min-width: 992px) {
+    .user__Page__Container.admin {
+        width: 82%;
+    }
+
+    .user__Page__Container .user__Intro__Item__Container .user__Intro__Item{
+        margin: 0;
+    }
+
+    .user__Page__Container .user__Intro__Item__Container .user__Intro__Item span {
+        margin: 12% 0;
+    }
+
+    .user__Page__Container .user__Intro__Item {
+        margin: 2% 0;   
+    }
+}
