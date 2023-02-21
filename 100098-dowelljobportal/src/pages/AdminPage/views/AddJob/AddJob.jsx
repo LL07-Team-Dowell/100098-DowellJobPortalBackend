@@ -10,6 +10,7 @@ import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner
 import { Link } from "react-router-dom";
 
 import "./style.css";
+import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 
 const AddJob = () => {
   const [newJob, setNewJob] = useState({
@@ -123,6 +124,7 @@ const AddJob = () => {
   };
 
   return (
+    <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} hideTitleBar={true}>
     <div className="job_container">
       <Link to="/" className="navLink">
         <button className="nav_button">
@@ -482,6 +484,7 @@ const AddJob = () => {
         </div>
       </div>
     </div>
+    </StaffJobLandingLayout>
   );
 };
 

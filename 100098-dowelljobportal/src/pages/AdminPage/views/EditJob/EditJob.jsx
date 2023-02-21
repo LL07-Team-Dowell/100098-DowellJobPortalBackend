@@ -6,6 +6,7 @@ import { BsFillBookmarkFill } from 'react-icons/bs';
 import { IoIosArrowBack } from "react-icons/io";
 import "./EditJob.css";
 import Loading from '../../../../components/LoadingSpinner/LoadingSpinner';
+import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
 
 
 function EditJob() {
@@ -153,6 +154,7 @@ function EditJob() {
 
   return (
     <> {loading ? <Loading /> :
+      <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} hideTitleBar={true}>
       <Wrapper>
         <div className="container">
           <div className="back__button">
@@ -377,6 +379,7 @@ function EditJob() {
           </div>
         </div>
       </Wrapper>
+      </StaffJobLandingLayout>
     }
     </>
   )

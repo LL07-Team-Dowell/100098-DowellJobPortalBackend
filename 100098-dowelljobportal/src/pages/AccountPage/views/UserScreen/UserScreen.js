@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import "./style.css";
 
 
-const UserScreen = ({ currentUser }) => {
+const UserScreen = () => {
     const navigate = useNavigate();
-    
+    const { currentUser } = useCurrentUserContext();
     const handleLogout = () => navigate("/logout");
 
     return <>

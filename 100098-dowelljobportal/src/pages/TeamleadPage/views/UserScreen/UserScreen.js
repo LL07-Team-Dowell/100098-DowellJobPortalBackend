@@ -1,7 +1,9 @@
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import "./style.css";
 
 
-const UserScreen = ({ currentUser }) => {
+const UserScreen = () => {
+    const { currentUser } = useCurrentUserContext();
     return <>
         <div className="user__Page__Container teamlead">
 

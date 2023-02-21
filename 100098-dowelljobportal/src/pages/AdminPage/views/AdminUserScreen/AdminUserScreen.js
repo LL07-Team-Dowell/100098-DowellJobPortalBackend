@@ -1,20 +1,22 @@
 import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import "./style.css";
 
 
-const UserScreen = () => {
+const AdminUserScreen = () => {
     const navigate = useNavigate();
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser } = useCurrentUserContext()
     const handleLogout = () => navigate("/logout");
 
     return <>
-        <div className="user__Page__Container hr">
+        <StaffJobLandingLayout adminView={true} handleNavIconClick={() => navigate("/add-job")} adminAlternativePageActive={true} pageTitle={"User"}>
+        <div className="user__Page__Container admin">
 
             <div className="user__Intro__Item__Container">
                 <div className="user__Intro__Item">
                     <h2>User Name</h2>
-                    <span>{ currentUser.username }</span>    
+                    <span>{ currentUser?.username }</span>    
                 </div>
                 <div className="edit__Btn">
                     Edit
@@ -22,28 +24,29 @@ const UserScreen = () => {
             </div>
             <div className="user__Intro__Item">
                 <h2>Email</h2>
-                <span>{currentUser.email}</span>
+                <span>{currentUser?.email}</span>
             </div>
             <div className="user__Intro__Item">
                 <h2>First Name</h2>
-                <span>{currentUser.first_name}</span>
+                <span>{currentUser?.first_name}</span>
             </div>
             {
-                currentUser.last_name !== "" &&
+                currentUser?.last_name !== "" &&
                 <div className="user__Intro__Item">
                     <h2>Last Name</h2>
-                    <span>{currentUser.last_name}</span>
+                    <span>{currentUser?.last_name}</span>
                 </div>
             }
             <div className="user__Intro__Item">
                 <h2>Role</h2>
-                <span>{currentUser.role}</span>
+                <span>{currentUser?.role}</span>
             </div>
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout
             </button>  
         </div>
+        </StaffJobLandingLayout>
     </>
 }
 
-export default UserScreen;
+export default AdminUserScreen;

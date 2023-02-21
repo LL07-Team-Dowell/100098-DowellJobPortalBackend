@@ -36,6 +36,9 @@ import AccountPage from './pages/AccountPage/AccountPage';
 import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner';
 import IntermediatePage, { testingRoles } from './IntermediatePage';
 import { JobContextProvider } from './contexts/Jobs';
+import AdminUserScreen from './pages/AdminPage/views/AdminUserScreen/AdminUserScreen';
+import AdminReports from './pages/AdminPage/views/Reports/Reports';
+import AdminSettings from './pages/AdminPage/views/Settings/AdminSettings';
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -110,6 +113,9 @@ function App() {
       <Route path="/edit-job" element={<JobContextProvider><EditJob /></JobContextProvider>} />
       <Route path="/view-job" element={<JobContextProvider><ViewJob /></JobContextProvider>} />
       <Route path="/add-job" element={<JobContextProvider><AddJob /></JobContextProvider>} />
+      <Route path="/user" element={<JobContextProvider><AdminUserScreen /></JobContextProvider>} />
+      <Route path="/report" element={<JobContextProvider><AdminReports /></JobContextProvider>} />
+      <Route path="/settings" element={<JobContextProvider><AdminSettings /></JobContextProvider>} />
       <Route path='*' element={<JobContextProvider><ErrorPage /></JobContextProvider>} />
 
     </Routes>

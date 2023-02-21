@@ -8,14 +8,15 @@ import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 import { useCandidateJobsContext } from '../../../../contexts/CandidateJobsContext';
 import { getAllCandidateInterviews, getCandidateApplications, getJobs } from '../../../../services/commonServices';
+import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 
 
-function Applied({ currentUser }) {
+function Applied() {
   const [ currentNavigationTab, setCurrentNavigationTab ] = useState("Applied");
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
   const [ loading, setLoading ] = useState(true);
   const navigate = useNavigate();
-  
+  const { currentUser } = useCurrentUserContext();
   // const getAppliedData = async () => {
   //   const response = await myAxiosInstance.get(routes.Applications);
   //   const jobsResponse = await myAxiosInstance.get(routes.Jobs);

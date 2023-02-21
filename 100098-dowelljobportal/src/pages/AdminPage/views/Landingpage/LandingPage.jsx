@@ -6,13 +6,20 @@ import plus from './assets/plus.svg' ;
 
 import search from './assets/search.svg'
 import Card from './component/Card';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../../../CandidatePage/views/ResearchAssociatePage/Loading';
+<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom'
 const LandingPage = () => {
   const {jobs , setJobs} = useJobContext() ; 
   const navigate = useNavigate() ; 
+=======
+import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
+const LandingPage = () => {
+  const {jobs , setJobs} = useJobContext()
+  const navigate = useNavigate()
+>>>>>>> 609ee2bc303eb2181b072e69ea33e51986f370f5
   console.log("jobs",jobs)
   useEffect(()=>{
     if(jobs.length === 0 ){
@@ -22,9 +29,14 @@ const LandingPage = () => {
 
   },[])
   return (
+    <StaffJobLandingLayout adminView={true} handleNavIconClick={() => navigate("/add-job")}>
     <div className='landing-page'>
             
+<<<<<<< HEAD
             <a onClick={()=>navigate(-1)} ><img src={backpage} alt="" className={"backpage"} /></a>
+=======
+            {/* <Link to="/"><img src={backpage} alt="" className={"backpage"} /></Link>
+>>>>>>> 609ee2bc303eb2181b072e69ea33e51986f370f5
             <div className="add_new_job">
                         <div>
                         <button><Link to={"/add-job"}><img src={plus} alt="" /></Link></button>
@@ -35,7 +47,7 @@ const LandingPage = () => {
                                     <img src={search} alt="" />
                                     <input type="text" placeholder='Search by skill, job' />
                         </div>
-            </div>
+            </div> */}
             <div className="cards">
             {/* {jobs.map(job => <Card {...job}/>)} */}
             {
@@ -43,6 +55,7 @@ const LandingPage = () => {
             }
             </div>
     </div>
+    </StaffJobLandingLayout>
   )
 }
 
