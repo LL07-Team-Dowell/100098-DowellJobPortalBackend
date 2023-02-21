@@ -32,7 +32,6 @@ function JobScreen() {
     const { currentUser } = useCurrentUserContext();
 
     useEffect(() => {
-
         // console.log(jobs);
         // const findJobsMatchingCategory = (category) => jobs.filter(job => job.job_catagory.toLocaleLowerCase().includes(category.toLocaleLowerCase()) || category.toLocaleLowerCase().includes(job.job_catagory.toLocaleLowerCase()));
         // const findJobsMatchingCategory = (category) => jobs.filter(job => console.log(category));
@@ -46,41 +45,43 @@ function JobScreen() {
 
         const jobCategoryParam = params.get('jobCategory');
         const currentJobStream = params.get('stream');
-
+        console.log(jobs);
         if (jobCategoryParam) {
             setCurrentCategory(jobCategoryParam);
-
             if (jobCategoryParam === "all") return setJobsMatchingCategory(jobs);
-
             setJobSelectionHasCategory(true);
 
             const matchedJobs = findJobsMatchingCategory(jobCategoryParam);
-            setJobsMatchingCategory(matchedJobs)
+            setJobsMatchingCategory(matchedJobs);
+            console.log(matchedJobs);
 
-            if (jobCategoryParam === "Intern") {
+            if (jobCategoryParam === "Intership") {
                 setJobSelectionCategories(["Full time", "Part time"])
-                const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.others[jobKeys.othersInternJobType] === currentJobCategory);
-                if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
+                const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.type_of_job === currentJobCategory);
+                if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_catagory.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_catagory.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
+
             if (jobCategoryParam === "Employee") {
                 setJobSelectionCategories(["Full time"])
                 setJobsToDisplay(matchedJobs);
             }
+
             if (jobCategoryParam === "Research Associate") {
                 setJobSelectionCategories(["Full time", "Part time"])
                 const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.others[jobKeys.othersResearchAssociateJobType] === currentJobCategory);
                 if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
+
             if (jobCategoryParam === "Freelancer") {
                 setJobSelectionCategories(["Task based", "Time based"])
-                const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.others[jobKeys.othersFreelancerJobType] === currentJobCategory);
-                if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
+                const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.type_of_job === currentJobCategory);
+                if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_catagory.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_catagory.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
 
-            return
+            return;
         }
 
     }, [jobs, params])
@@ -93,15 +94,11 @@ function JobScreen() {
     }, [jobSelectionCategories])
 
     useEffect(() => {
-
         if (!currentJobCategory) return
-
-        if (currentCategory === "Intern") {
-
-            const matchedJobs = jobsMatchingCategory.filter(job => job.others[jobKeys.othersInternJobType] === currentJobCategory);
-            if (matchedJobs.length === 0) return setJobsToDisplay(jobs.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
+        if (currentCategory === "Intership") {
+            const matchedJobs = jobsMatchingCategory.filter(job => job.type_of_job === currentJobCategory);
+            if (matchedJobs.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_catagory.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_catagory.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
-
         }
 
         if (currentCategory === "Employee") return
@@ -115,11 +112,9 @@ function JobScreen() {
         }
 
         if (currentCategory === "Freelancer") {
-
-            const matchedJobs = jobsMatchingCategory.filter(job => job.others[jobKeys.othersFreelancerJobType] === currentJobCategory);
-            if (matchedJobs.length === 0) return setJobsToDisplay(jobs.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
+            const matchedJobs = jobsMatchingCategory.filter(job => job.type_of_job === currentJobCategory);
+            if (matchedJobs.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_catagory.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_catagory.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
-
         }
 
     }, [currentJobCategory])
