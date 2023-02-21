@@ -11,8 +11,8 @@ import axios from 'axios';
 import Loading from '../../../CandidatePage/views/ResearchAssociatePage/Loading';
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
 const LandingPage = () => {
-  const {jobs , setJobs} = useJobContext()
-  const navigate = useNavigate()
+  const {jobs , setJobs} = useJobContext() ; 
+  const navigate = useNavigate() ; 
   console.log("jobs",jobs)
   useEffect(()=>{
     if(jobs.length === 0 ){
@@ -25,7 +25,7 @@ const LandingPage = () => {
     <StaffJobLandingLayout adminView={true} handleNavIconClick={() => navigate("/add-job")}>
     <div className='landing-page'>
             
-            {/* <Link to="/"><img src={backpage} alt="" className={"backpage"} /></Link>
+            {/* <a onClick={()=>navigate(-1)} ><img src={backpage} alt="" className={"backpage"} /></a>
             <div className="add_new_job">
                         <div>
                         <button><Link to={"/add-job"}><img src={plus} alt="" /></Link></button>
@@ -40,7 +40,7 @@ const LandingPage = () => {
             <div className="cards">
             {/* {jobs.map(job => <Card {...job}/>)} */}
             {
-              jobs.length > 0 ? jobs.map(job => <Card {...job}/>) :<Loading/>
+              jobs.length > 0 ? jobs.reverse().map((job , index) => <Card {...job} key={index}/>) :<Loading/>
             }
             </div>
     </div>
