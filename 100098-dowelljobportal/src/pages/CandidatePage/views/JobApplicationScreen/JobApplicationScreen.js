@@ -25,6 +25,7 @@ import { dowellLoginUrl } from "../../../../services/axios";
 import { submitNewApplication } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
 import { jobKeys } from "../../../AdminPage/utils/jobKeys";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 
 const JobApplicationScreen = () => {
     const location = useLocation();
@@ -46,7 +47,7 @@ const JobApplicationScreen = () => {
     const [removeFreelanceOptions, setRemoveFreelanceOptions] = useState(false);
     const [allJobs, setAllJobs] = useState([]);
     const [jobsLoading, setJobsLoading] = useState(true);
-    const [ currentUser, setCurrentUser ] = useState(null);
+    const { currentUser } = useCurrentUserContext();
     const [jobSaved, setJobSaved] = useState(false);
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
 

@@ -1,8 +1,9 @@
-import { currentBackendAxiosInstance } from "./axios"
+import { currentBackendAxiosInstance } from "./axios";
 
-export const addNewJob = async (data) =>{
-            await currentBackendAxiosInstance.post(
-                        "admin_management/get_jobs/" , 
-                        data
-            )
-}
+export const addNewJob = async (dataToPost) => {
+  const response = await currentBackendAxiosInstance.post(
+    "admin_management/create_jobs/",
+    dataToPost
+  );
+  return response;
+};

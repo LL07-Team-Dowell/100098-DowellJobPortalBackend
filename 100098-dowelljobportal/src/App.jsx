@@ -40,8 +40,8 @@ import { JobContextProvider } from './contexts/Jobs';
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
-  const [ candidateHired, setCandidateHired ] = useState(false);
-  const [ assignedProject, setAssignedProject ] = useState("");
+  const [candidateHired, setCandidateHired] = useState(false);
+  const [assignedProject, setAssignedProject] = useState("");
 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
@@ -50,13 +50,13 @@ function App() {
   // NO LOGGED IN USER VIEW
   if (!currentUser) {
     return <Routes>
-      
+
       <Route path="/apply/job/:id" element={
         <NewApplicationContextProvider>
           <JobApplicationScreen />
         </NewApplicationContextProvider>
       } />
-      
+
       <Route path='/' element={<CandidateHomeScreen />} />
 
       <Route path='/jobs'>
@@ -82,7 +82,7 @@ function App() {
   // ACCOUNT PAGE
   if (currentUser.role === testingRoles.accountRole) {
     return <Routes>
-      
+
       <Route path="/logout" element={<Logout/>}/>
 
       <Route path="/" element={
@@ -122,7 +122,7 @@ function App() {
     return <Routes>
 
       <Route path="/logout" element={<Logout/>}/>
-      
+
       <Route path="/" element={
         <NavigationContextProvider>
           <HrCandidateContextProvider>
@@ -149,7 +149,7 @@ function App() {
             } />
           </Route>
         </Route>
-        
+
       </Route>
 
       <Route path='*' element={<ErrorPage />} />
@@ -177,7 +177,7 @@ function App() {
       </Route>
 
       <Route path='*' element={<ErrorPage />} />
-      
+
     </Routes>
 
   }
@@ -198,7 +198,7 @@ function App() {
       }>
         <Route path=':section' element={<AfterSelectionScreen />} />
       </Route>
-      
+
       <Route path="/logout" element={<Logout/>}/>
 
       <Route path='*' element={<ErrorPage />} />
@@ -256,7 +256,7 @@ function App() {
       <Route path="/alerts" element={<CandidateJobsContextProvider><AlertScreen/></CandidateJobsContextProvider>}/>
       <Route path="/user" element={<CandidateJobsContextProvider><UserScreen candidateSelected={false} /></CandidateJobsContextProvider>}/>
 
-      <Route path="/applied" element={ 
+      <Route path="/applied" element={
         <NavigationContextProvider>
           <CandidateJobsContextProvider>
             <AppliedScreen />
@@ -271,7 +271,7 @@ function App() {
           </NavigationContextProvider>
         } />
       </Route>
-      
+
       <Route path="/apply/job/:id" element={
         <NewApplicationContextProvider>
             <CandidateJobsContextProvider>
@@ -294,22 +294,21 @@ function App() {
     );
   }
 
-  return (
-    <>
-      <Routes>
-        <Route path='/' element={<MainPage />} />
-        <Route path='/research-jobs' element={<ResearchAssociatePage />} />
-        <Route path='/admin'>
-          <Route index element={<AdminPage />} />
-          <Route path='add' element={<AddJob />} />
-          <Route path='view' element={<ViewJob />} />
-          <Route path='edit' element={<EditJob />} />
-        </Route>
-        <Route path='/landingpage' element={<LandingPage />} />
-
-      </Routes>
-    </>
-  )
+  // return (
+  //   <>
+  //     <Routes>
+  //       <Route path="/" element={<MainPage />} />
+  //       <Route path="/research-jobs" element={<ResearchAssociatePage />} />
+  //       <Route path="/admin">
+  //         <Route index element={<AdminPage />} />
+  //         <Route path="add" element={<AddJob />} />
+  //         <Route path="view" element={<ViewJob />} />
+  //         <Route path="edit" element={<EditJob />} />
+  //       </Route>
+  //       <Route path="/landingpage" element={<LandingPage />} />
+  //     </Routes>
+  //   </>
+  // );
 }
 
 export default App;

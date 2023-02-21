@@ -3,8 +3,9 @@ import { IoIosBookmark } from "react-icons/io";
 import { MdArrowBackIos } from "react-icons/md";
 import { MdOutlineAddCircle } from "react-icons/md";
 import { MdCancel } from "react-icons/md";
-import { currentBackendAxiosInstance } from "../../../../services/axios";
+import { addNewJob } from "../../../../services/adminServices";
 import { toast } from "react-toastify";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 
 import { Link } from "react-router-dom";
 
@@ -12,7 +13,7 @@ import "./style.css";
 
 const AddJob = () => {
   const [newJob, setNewJob] = useState({
-    job_number: "crypto.randomUUID()",
+    job_number: crypto.randomUUID(),
     job_title: "",
     skills: "",
     type_of_job: "",
@@ -32,6 +33,7 @@ const AddJob = () => {
   });
 
   const [selectedOption, setSelectedOption] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -82,6 +84,7 @@ const AddJob = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     console.log(newJob);
 
     const fields = [
@@ -94,33 +97,34 @@ const AddJob = () => {
     ];
 
     if (newJob.type_of_job === "") {
-      toast.error("Please select a type of job");
+      toast.info("Please select a type of job");
       return;
-    } else if (fields.some((field) => newJob[field] === "")) {
-      toast.error("Please fill in all fields");
+    } else if (fields.find((field) => newJob[field] === "")) {
+      toast.info(
+        `Please fill ${fields.find((field) => newJob[field] === "")} field`
+      );
       return;
     }
 
     try {
-      const response = await currentBackendAxiosInstance.post(
-        "admin_management/create_jobs/",
-        newJob
-      );
+      const response = await addNewJob(newJob);
       console.log(response.data);
 
       if (response.status === 201) {
         toast.success("Job created successfully");
       } else {
-        toast.error("Something went wrong");
+        toast.info("Something went wrong");
       }
     } catch (error) {
       toast.error("Something went wrong");
     }
+
+    setIsLoading(false);
   };
 
   return (
     <div className="job_container">
-      <Link to="/">
+      <Link to="/" className="navLink">
         <button className="nav_button">
           <MdArrowBackIos className="back_icon" />
         </button>
@@ -458,9 +462,19 @@ const AddJob = () => {
             </div>
 
             <div>
-              <button className="submit" onClick={(e) => handleSubmit(e)}>
+              <button
+                className="submit"
+                onClick={(e) => handleSubmit(e)}
+                disabled={isLoading}
+              >
                 <div className="save">
-                  Save <IoIosBookmark size="0.9em" />
+                  {isLoading ? (
+                    <LoadingSpinner width={25} height={25} color="#fff" />
+                  ) : (
+                    <div>
+                      Save <IoIosBookmark size="0.9em" />
+                    </div>
+                  )}
                 </div>
               </button>
             </div>

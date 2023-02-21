@@ -3,18 +3,20 @@
   letter-spacing: 0.05em; */
 /* } */
 
-:root {
+.job_container {
   --primary-color: #005734;
   --secondary-color: #1f1f1f;
   --tertiary-color: #7e7e7e;
   --bg-color: #f3f8f4;
   --bg-secondary-color: #ffff;
-}
-
-.job_container {
-  width: 100%;
+  width: 85%;
   font-family: "Poppins", sans-serif;
   letter-spacing: 0.05em;
+  margin: auto; 
+}
+
+.navLink{
+  width: 0%;
 }
 
 .nav_button {
@@ -171,11 +173,11 @@ h3 {
 .active_checkbox[type="checkbox"]:before {
   content: "";
   position: absolute;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   background-color: red;
-  top: -0.5rem;
+  top: -0.3rem;
   left: 0;
   transition: 0.3s ease;
 }
@@ -196,7 +198,7 @@ h3 {
   position: absolute;
   color: #1f1f1f;
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1rem;
   top: 0.2rem;
   left: -6rem;
   letter-spacing: 0.05em;
@@ -210,7 +212,7 @@ h3 {
 }
 
 .terms .terms_button {
-  margin: 0 0 5rem 0;
+  margin: 0 0 1rem 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -240,6 +242,7 @@ h3 {
   background-color: transparent;
   font-weight: 400;
   color: #7e7e7e;
+  margin-bottom: 1rem;
 }
 
 .terms_remove {
@@ -263,6 +266,12 @@ h3 {
   background-color: #005734;
   box-shadow: 0 0.4rem 1.3rem rgba(0, 87, 52, 1);
   transition: 0.2s ease;
+}
+
+.submit[disabled] {
+  background-color: var(--tertiary-color);
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
 .save {
