@@ -153,7 +153,7 @@ function JobScreen() {
     return <div className='candidate__Jobs__Wrapper'>
 
         {
-            isLoading ? <></> :
+            isLoading ? <LoadingSpinner /> :
 
                 <>
                     <TitleNavigationBar title={`${changeToTitleCase(currentCategory)} Jobs`} showSearchBar={true} handleBackBtnClick={() => currentCategory ? navigate(-1) : navigate("/home")} />
