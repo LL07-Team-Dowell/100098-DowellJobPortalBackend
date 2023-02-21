@@ -39,7 +39,7 @@ const LandingPage = () => {
             <div className="cards">
             {/* {jobs.map(job => <Card {...job}/>)} */}
             {
-              jobs.length > 0 ? jobs.map(job => <Card {...job}/>) :<Loading/>
+              jobs.length > 0 ? jobs.reverse().map((job , index) => <Card {...job} key={index}/>) :<Loading/>
             }
             </div>
     </div>

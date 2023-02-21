@@ -13,28 +13,24 @@ const style={
 }
 const Card = ({company_id , created_on , skills , job_title , is_active , _id , }) => {
   const date = () => {
-    const today = new Date();
-    const targetDate = created_on;
-    const diffTime = Math.abs(today - targetDate);
-    const diffMonths = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 30));
-    const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-  const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    const givenDate = new Date(created_on);
+    const timeDiff = new Date().getTime() - givenDate.getTime();
+    const seconds = Math.floor(timeDiff / 1000);
+    const minutes = Math.floor(timeDiff / 1000 / 60);
+    const hours = Math.floor(timeDiff / 1000 / 60 / 60);
+    const days = Math.floor(timeDiff / 1000 / 60 / 60 / 24);
+    let timeAgo;
 
-    if (diffMonths > 1) {
-    return `${diffMonths} Monthes ago`
-    } else if (diffWeeks > 1) {
-      return `${diffWeeks} weeks ago`
-    } else if (diffDays > 1) {
-      return `${diffDays} days ago`
-    } else if (diffHours > 1) {
-      return `${diffHours} hours ago`
-    } else if (diffMinutes > 1) {
-      return `${diffMinutes} minutes ago`
+    if (days > 0) {
+    timeAgo = days + " day(s) ago";
+    } else if (hours > 0) {
+    timeAgo = hours + " hour(s) ago";
+    } else if (minutes > 0) {
+    timeAgo = minutes + " minute(s) ago";
     } else {
-    return ("Less than 1 minute");
+    timeAgo = seconds + " second(s) ago";
     }
+    return timeAgo ; 
   }
   const [is_activee, setIsActive] = useState(is_active);
   const [loading , setLoading] = useState(false)
@@ -62,7 +58,7 @@ const Card = ({company_id , created_on , skills , job_title , is_active , _id , 
                         <Link to={"/edit-job"}><img src={edit} alt="" /></Link>
             </div>
             <div className="card__skill">
-            <div><h6>Skills:</h6> <span>{skills}</span></div>
+            <div><h6>Skills:</h6> <span>{skills.length > 20 ? skills.slice(0,20) + ' ...' : skills }</span></div>
             
             {/* <input type="checkbox" id="switch" /><label for="switch">Toggle</label> */}
             {loading ? <LittleLoading/> : <div className="state_of_job">
@@ -82,7 +78,7 @@ const Card = ({company_id , created_on , skills , job_title , is_active , _id , 
 
             <div className='card__footer'>
                         <div>
-                        <p><AiOutlineClockCircle style={style}/> <span>{date() ? date() : 'asd'}</span></p>
+                        <p><AiOutlineClockCircle style={style}/> <span>{date()}</span></p>
                         <div className='line'></div>
                         <p><CgDanger style={style}/><span>2 candidates apply for this</span></p>
                         </div>
