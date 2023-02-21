@@ -1,6 +1,6 @@
 import { AiFillCheckCircle, AiOutlineArrowRight } from "react-icons/ai";
 import { changeToTitleCase, formatDateAndTime, getDaysDifferenceFromPresentDate } from "../../helpers/helpers";
-import { jobKeys } from "../../pages/AdminPage/utils/jobKeys";
+// import { jobKeys } from "../../pages/AdminPage/utils/jobKeys";
 import { IoMdTime } from "react-icons/io";
 import "./style.css";
 import { mutableNewApplicationStateNames } from "../../contexts/NewApplicationContext";
@@ -9,7 +9,6 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 
 
 const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText, handleBtnClick, showCandidateAppliedJob, showCandidateDeclinedJob, showCandidateInterview, guestUser, interviewDetails, viewJobApplicationDetails, applicationsCount, candidateCardView, candidateData, jobAppliedFor, taskView }) => {
-    console.log(job);
     return <div className="job__Card__Container">
         <div className="job__Card__Title__Info">
             <h2><b>{changeToTitleCase(job ? job.job_title : candidateData ? taskView ? candidateData.user : candidateData.applicant : "")}</b></h2>
@@ -124,12 +123,14 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 </div>
             </div>
         }
-
+        {console.log(candidateData)
+        }
         <button disabled={disableActionBtn} className={`cta__Button ${candidateCardView && candidateData ? "rel" : ''}`} onClick={() => handleBtnClick(job ? job : candidateData ? candidateData : null)}>
             <span>{buttonText ? buttonText : "Apply"}</span>
             <AiOutlineArrowRight />
         </button>
     </div>
+
 }
 
 export default JobCard;
