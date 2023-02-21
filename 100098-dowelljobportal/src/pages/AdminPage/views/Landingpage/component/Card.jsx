@@ -11,7 +11,7 @@ const style={
             fontSize:"24px" , 
             color:"#7C7C7C"
 }
-const Card = ({company_id , created_on , skills , job_title , is_active , _id}) => {
+const Card = ({company_id , created_on , skills , job_title , is_active , _id , }) => {
   const date = () => {
     const today = new Date();
     const targetDate = created_on;
@@ -41,10 +41,10 @@ const Card = ({company_id , created_on , skills , job_title , is_active , _id}) 
   const handleCheckboxChange = () => {
     setIsActive(!is_activee);
     setLoading(true)
-    console.log("asdasdasd")
+    console.log({id:_id , is_activee})
     axios.post('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
       document_id: _id,
-      is_active: is_activee
+      is_active: !is_activee
   })
   .then((response) => {
       console.log(response.data);
@@ -54,6 +54,7 @@ const Card = ({company_id , created_on , skills , job_title , is_active , _id}) 
       console.log(error);
   });
   };
+  if(job_title === null)return <></>
   return (
             <div className="card">
             <div className="card__header">

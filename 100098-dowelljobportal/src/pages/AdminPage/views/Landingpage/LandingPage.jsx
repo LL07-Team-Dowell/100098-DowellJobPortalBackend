@@ -9,8 +9,10 @@ import Card from './component/Card';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../../../CandidatePage/views/ResearchAssociatePage/Loading';
+import { useNavigate } from 'react-router-dom'
 const LandingPage = () => {
-  const {jobs , setJobs} = useJobContext()
+  const {jobs , setJobs} = useJobContext() ; 
+  const navigate = useNavigate() ; 
   console.log("jobs",jobs)
   useEffect(()=>{
     if(jobs.length === 0 ){
@@ -22,7 +24,7 @@ const LandingPage = () => {
   return (
     <div className='landing-page'>
             
-            <Link to="/"><img src={backpage} alt="" className={"backpage"} /></Link>
+            <a onClick={()=>navigate(-1)} ><img src={backpage} alt="" className={"backpage"} /></a>
             <div className="add_new_job">
                         <div>
                         <button><Link to={"/add-job"}><img src={plus} alt="" /></Link></button>
