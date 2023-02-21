@@ -9,7 +9,8 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 
 
 const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText, handleBtnClick, showCandidateAppliedJob, showCandidateDeclinedJob, showCandidateInterview, guestUser, interviewDetails, viewJobApplicationDetails, applicationsCount, candidateCardView, candidateData, jobAppliedFor, taskView }) => {
-    return <div className="job__Card__Container">
+   console.log(job);
+   return <div className="job__Card__Container">
         <div className="job__Card__Title__Info">
             <h2><b>{changeToTitleCase(job ? job.title : candidateData ? taskView ? candidateData.user : candidateData.applicant : "")}</b></h2>
             { subtitle && <span className="subtitle__Item"><span>{subtitle}</span><span>- UX Living Lab</span></span> }
@@ -20,7 +21,7 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 <div className="detail__Item">
                     <span className="dot"></span>
                     <span className="job__Highlight__Item">Duration: </span>
-                    <span>6 months</span>
+                    <span>{job.time_interval}</span>
                 </div>
                 <div className="vertical__Seperator"></div>
                 <div className="detail__Item">
@@ -32,7 +33,7 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 <div className="detail__Item">
                     <span className="dot"></span>
                     <span className="job__Highlight__Item">Stipend: </span>
-                    <span>{job.others[jobKeys.paymentForJob] ? job.others[jobKeys.paymentForJob] : "Not specified"}</span>
+                    <span>{job.payment ? job.payment : "Not specified"}</span>
                 </div>
             </div> 
         }
