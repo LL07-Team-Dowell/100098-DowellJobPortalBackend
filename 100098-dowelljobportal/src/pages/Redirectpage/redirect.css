@@ -1,0 +1,52 @@
+.redirect-page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+img{
+    width: 30%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.redirect {
+    position: relative;
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: "Poppins", sans-serif;
+}
+
+.redirect::after{
+    content: "";
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: #fff;
+    border-left: 2px solid #000;
+    animation: typing 3s steps(10) forwards;
+}
+
+@keyframes typing{
+    100%{
+        left: 90%;
+        margin: 0 -35px 0 35px;
+    }
+}
+
+.redirect {
+    animation-delay: 0.5s;
+}
+
+.handle-redirect{
+    color: red;
+    text-decoration: underline;
+    cursor: pointer;
+}
+    
