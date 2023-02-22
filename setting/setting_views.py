@@ -4,6 +4,10 @@ from rest_framework.views import APIView
 from .models import SettingUserProfileInfo
 from .helper import *
 from .serializers import SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+@method_decorator(csrf_exempt, name='dispatch')
 class SettingUserProfileInfoView(APIView):
     serializer_class = SettingUserProfileInfoSerializer
 
