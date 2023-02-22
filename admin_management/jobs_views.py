@@ -65,7 +65,7 @@ class get_jobs(APIView):
                 "status":"nothing to update"
             }
             response = dowellconnection(*jobs,"fetch",field,update_field)
-            print(response)
+            # print(response)
             if response:
                 return Response({"message":"List of jobs." , "response":json.loads(response)},status=status.HTTP_200_OK)
             else:
@@ -87,7 +87,7 @@ class get_job(APIView):
                 "status":"nothing to update"
             }
             response = dowellconnection(*jobs,"fetch",field,update_field)
-            print(response)
+            # print(response)
             if response:
                 return Response({"message":"Job details." , "response":json.loads(response)},status=status.HTTP_200_OK)
             else:
@@ -108,7 +108,7 @@ class update_jobs(APIView):
             }
             update_field = data
             response = dowellconnection(*jobs,"update",field,update_field)
-            print(response)
+            # print(response)
             if response:
                 return Response({"message":"Job updation successful."},status=status.HTTP_200_OK)
             else:
