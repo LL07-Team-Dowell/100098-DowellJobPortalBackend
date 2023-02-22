@@ -12,16 +12,13 @@ class SettingUserProfileInfoView(APIView):
     serializer_class = SettingUserProfileInfoSerializer
 
     def post(self, request):
-        data = request.data
-        serializer = self.serializer_class(data=data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            profile_info = serializer.save()
-            return Response({
-                "success": "Profile info '{}' created successfully".format(profile_info.profile_info)
-            })
-        return Response({"message":serializer.errors}, status=400)
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
-    def get(self, request, format=None):
+    def get(self, request):
         profiles = SettingUserProfileInfo.objects.all()
         serializer = self.serializer_class(profiles, many=True)
         return Response(serializer.data)
