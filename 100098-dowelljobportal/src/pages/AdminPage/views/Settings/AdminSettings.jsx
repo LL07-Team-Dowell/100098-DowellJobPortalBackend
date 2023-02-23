@@ -11,9 +11,9 @@ const AdminSettings = () => {
     const [data ,setData] = useState("") ; 
     console.log("DATA",data) ;
     const [showSecondSelection, setShowSecondSelection] = useState(false);
-    const [options1 , setOptions1] = useState(currentUser.selected_product.userportfolio) ; 
+    const [options1 , setOptions1] = useState(currentUser?.selected_product.userportfolio) ; 
     const [options2 , setOptions2] = useState(["Dept_Lead" ,"Hr" ,"Proj_Lead" ,"Candidate" ]) ; 
-    console.log(options1) ; 
+    console.log("options1".toUpperCase(),options1) ; 
     console.log("currentUser",currentUser) ; 
     const handleFirstSelectionChange = (event) => {
     const selection = event.target.value;
@@ -37,10 +37,9 @@ const AdminSettings = () => {
       profile_info: [
         { profile_title: firstSelection, Role: secondSelection, version: "1.0" }
       ]},[])
-        .then(response => { console.log(response)})
+        .then(response => { console.log(response) ;setFirstSelection("") ;setSecondSelection("") })
         .catch(error => console.log(error))
       }
-
     return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Settings"}>
         <div className="Slections">
       <div>
@@ -62,7 +61,7 @@ const AdminSettings = () => {
             onChange={handleSecondSelectionChange}
           >
             <option value="">Select an option</option>
-            {options2.map(value => <option onSelect={()=>{setSelectedRole(value)}}  value={value}>{value}</option>)}
+            {options2.map(value => <option onSelect={()=>{setSelectedRole(value)}} key={value} value={value}>{value}</option>)}
           </select>
         </label>
         
