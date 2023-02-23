@@ -1,20 +1,25 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout"
 import axios from 'axios' ; 
 import './index.scss'
+import Alert from "./component/Alert";
 const AdminSettings = () => {
     const {currentUser} = useCurrentUserContext() ; 
-  
     const [firstSelection, setFirstSelection] = useState("");
     const [secondSelection, setSecondSelection] = useState("");
     const [data ,setData] = useState("") ; 
-    console.log("DATA",data) ;
     const [showSecondSelection, setShowSecondSelection] = useState(false);
     const [options1 , setOptions1] = useState(currentUser?.selected_product.userportfolio) ; 
     const [options2 , setOptions2] = useState(["Dept_Lead" ,"Hr" ,"Proj_Lead" ,"Candidate" ]) ; 
-    console.log("options1".toUpperCase(),options1) ; 
-    console.log("currentUser",currentUser) ; 
+    const [alert , setAlert] = useState(false) ; 
+    useEffect(()=>{
+      if(alert){
+        setTimeout(()=>{
+          setAlert(false)
+        },2500)
+      }
+    },[alert])
     const handleFirstSelectionChange = (event) => {
     const selection = event.target.value;
     setData(options1.find(option => option.portfolio_name === selection))
@@ -28,7 +33,6 @@ const AdminSettings = () => {
   
   const submit = () => {
       const {org_id , org_name ,data_type , owner_name } = options1[0] ; 
-      console.log("AAAAAAAAAAAAAAAA",{org_id , org_name ,data_type , owner_name } )
     axios.post('https://100098.pythonanywhere.com/setting/SettingUserProfileInfo/', {
       company_id:org_id,
       org_name: org_name,
@@ -37,11 +41,14 @@ const AdminSettings = () => {
       profile_info: [
         { profile_title: firstSelection, Role: secondSelection, version: "1.0" }
       ]},[])
-        .then(response => { console.log(response) ;setFirstSelection("") ;setSecondSelection("") })
+        .then(response => { console.log(response) ;setFirstSelection("") ;setSecondSelection("") ;setAlert(true)})
         .catch(error => console.log(error))
       }
     return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Settings"}>
+          {alert &&   <Alert/> }
+
         <div className="Slections">
+      
       <div>
       <label>
         <p>First Selection <span>* </span> :</p>
