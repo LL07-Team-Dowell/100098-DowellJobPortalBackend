@@ -47,7 +47,7 @@ const AdminSettings = () => {
         <p>First Selection <span>* </span> :</p>
         <select value={firstSelection} onChange={handleFirstSelectionChange} >
           <option value="">Select an option</option>
-        {options1.map(option => option.member_type !== "owner" ? <option onSelect={()=>{setSelectedUser(option)}}  key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option> : null)}
+        {options1.map(option => option.member_type !== "owner" ? <option   key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option> : null)}
         </select>
       </label>
       </div>
@@ -61,7 +61,7 @@ const AdminSettings = () => {
             onChange={handleSecondSelectionChange}
           >
             <option value="">Select an option</option>
-            {options2.map(value => <option onSelect={()=>{setSelectedRole(value)}} key={value} value={value}>{value}</option>)}
+            {options2.map(value => <option  key={value} value={value}>{value}</option>)}
           </select>
         </label>
         
