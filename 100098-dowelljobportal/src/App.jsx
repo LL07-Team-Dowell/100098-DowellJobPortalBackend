@@ -1,44 +1,45 @@
-import './App.css';
-import { Route, Routes } from 'react-router-dom';
-import MainPage from './pages/MainPage/MainPage';
-import ResearchAssociatePage from './pages/CandidatePage/views/ResearchAssociatePage/ResearchAssociatePage';
-import AdminPage from './pages/AdminPage/AdminPage';
-import AddJob from './pages/AdminPage/views/AddJob/AddJob';
-import ViewJob from './pages/AdminPage/views/ViewJob/ViewJob';
-import EditJob from './pages/AdminPage/views/EditJob/EditJob';
-import LandingPage from './pages/AdminPage/views/Landingpage/LandingPage';
-import { useState } from 'react';
-import useDowellLogin from './hooks/useDowellLogin';
-import useTitle from './hooks/useTitle';
-import ErrorPage from './pages/ErrorPage/ErrorPage';
-import { NavigationContextProvider } from './contexts/NavigationContext';
-import { NewApplicationContextProvider } from './contexts/NewApplicationContext';
-import { CandidateContextProvider } from './contexts/CandidatesContext';
-import { HrCandidateContextProvider } from './contexts/HrCandidateContext';
-import { CandidateTaskContextProvider } from './contexts/CandidateTasksContext';
-import { CandidateJobsContextProvider } from './contexts/CandidateJobsContext';
-import { useCurrentUserContext } from './contexts/CurrentUserContext';
-import Logout from './pages/LogoutPage/Logout';
-import JobApplicationScreen from './pages/CandidatePage/views/JobApplicationScreen/JobApplicationScreen';
-import SingleJobScreen from './pages/CandidatePage/views/JobApplicationScreen/SingleJobScreen';
-import JobScreen from './pages/CandidatePage/components/Job/Job';
-import EmployeeJobScreen from './pages/CandidatePage/views/JobsLandingScreens/EmployeeJobLandingScreen';
-import InternJobScreen from './pages/CandidatePage/views/JobsLandingScreens/InternJobLandingScreen';
-import FreelancerJobScreen from './pages/CandidatePage/views/JobsLandingScreens/FreelancerJobScreen';
-import CandidateHomeScreen from './pages/CandidatePage/views/CandidateHomeScreen/CandidateHomeScreen';
-import AfterSelectionScreen from './pages/CandidatePage/views/AfterSelectionScreen/AfterSelectionScreen';
-import AlertScreen from './pages/CandidatePage/views/AlertsScreen/AlertScreen';
-import UserScreen from './pages/CandidatePage/views/UserScreen/UserScreen';
-import AppliedScreen from './pages/CandidatePage/views/AppliedPageScreen/AppliedScreen';
-import HrJobScreen from './pages/HrPage/views/JobScreen/HrJobScreen';
-import Teamlead from './pages/TeamleadPage/Teamlead';
-import AccountPage from './pages/AccountPage/AccountPage';
-import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner';
-import IntermediatePage, { testingRoles } from './IntermediatePage';
-import { JobContextProvider } from './contexts/Jobs';
-import AdminUserScreen from './pages/AdminPage/views/AdminUserScreen/AdminUserScreen';
-import AdminReports from './pages/AdminPage/views/Reports/Reports';
-import AdminSettings from './pages/AdminPage/views/Settings/AdminSettings';
+import "./App.css";
+import { Route, Routes } from "react-router-dom";
+import MainPage from "./pages/MainPage/MainPage";
+import ResearchAssociatePage from "./pages/CandidatePage/views/ResearchAssociatePage/ResearchAssociatePage";
+import AdminPage from "./pages/AdminPage/AdminPage";
+import AddJob from "./pages/AdminPage/views/AddJob/AddJob";
+import ViewJob from "./pages/AdminPage/views/ViewJob/ViewJob";
+import EditJob from "./pages/AdminPage/views/EditJob/EditJob";
+import LandingPage from "./pages/AdminPage/views/Landingpage/LandingPage";
+import { useState } from "react";
+import useDowellLogin from "./hooks/useDowellLogin";
+import useTitle from "./hooks/useTitle";
+import ErrorPage from "./pages/ErrorPage/ErrorPage";
+import { NavigationContextProvider } from "./contexts/NavigationContext";
+import { NewApplicationContextProvider } from "./contexts/NewApplicationContext";
+import { CandidateContextProvider } from "./contexts/CandidatesContext";
+import { HrCandidateContextProvider } from "./contexts/HrCandidateContext";
+import { CandidateTaskContextProvider } from "./contexts/CandidateTasksContext";
+import { CandidateJobsContextProvider } from "./contexts/CandidateJobsContext";
+import { useCurrentUserContext } from "./contexts/CurrentUserContext";
+import Logout from "./pages/LogoutPage/Logout";
+import JobApplicationScreen from "./pages/CandidatePage/views/JobApplicationScreen/JobApplicationScreen";
+import SingleJobScreen from "./pages/CandidatePage/views/JobApplicationScreen/SingleJobScreen";
+import JobScreen from "./pages/CandidatePage/components/Job/Job";
+import EmployeeJobScreen from "./pages/CandidatePage/views/JobsLandingScreens/EmployeeJobLandingScreen";
+import InternJobScreen from "./pages/CandidatePage/views/JobsLandingScreens/InternJobLandingScreen";
+import FreelancerJobScreen from "./pages/CandidatePage/views/JobsLandingScreens/FreelancerJobScreen";
+import CandidateHomeScreen from "./pages/CandidatePage/views/CandidateHomeScreen/CandidateHomeScreen";
+import AfterSelectionScreen from "./pages/CandidatePage/views/AfterSelectionScreen/AfterSelectionScreen";
+import AlertScreen from "./pages/CandidatePage/views/AlertsScreen/AlertScreen";
+import UserScreen from "./pages/CandidatePage/views/UserScreen/UserScreen";
+import AppliedScreen from "./pages/CandidatePage/views/AppliedPageScreen/AppliedScreen";
+import HrJobScreen from "./pages/HrPage/views/JobScreen/HrJobScreen";
+import Teamlead from "./pages/TeamleadPage/Teamlead";
+import AccountPage from "./pages/AccountPage/AccountPage";
+import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
+import IntermediatePage, { testingRoles } from "./IntermediatePage";
+import { JobContextProvider } from "./contexts/Jobs";
+import AdminUserScreen from "./pages/AdminPage/views/AdminUserScreen/AdminUserScreen";
+import AdminReports from "./pages/AdminPage/views/Reports/Reports";
+import AdminSettings from "./pages/AdminPage/views/Settings/AdminSettings";
+import RedirectPage from "./pages/Redirectpage/redirect";
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -49,7 +50,7 @@ function App() {
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
   if (loading) return <LoadingSpinner />
-  
+
   // NO LOGGED IN USER VIEW
   if (!currentUser) {
     return <Routes>
@@ -312,6 +313,14 @@ function App() {
   //         <Route path="edit" element={<EditJob />} />
   //       </Route>
   //       <Route path="/landingpage" element={<LandingPage />} />
+  //     </Routes>
+  //   </>
+  // );
+
+  // return (
+  //   <>
+  //     <Routes>
+  //       <Route path="/" element={<RedirectPage />} />
   //     </Routes>
   //   </>
   // );
