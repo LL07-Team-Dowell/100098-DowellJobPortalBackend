@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import Socialmedia2 from "./assets/Socialmedia2.png";
 import "./redirect.css";
 
@@ -11,15 +12,6 @@ const RedirectPage = () => {
     const sessionId = sessionStorage.getItem("session_id");
     if (sessionId) {
       setSessionId(sessionId);
-    }
-  }, []);
-
-  //update session Id in session storage
-  useEffect(() => {
-    if (sessionId) {
-      sessionStorage.setItem("session_id", sessionId);
-    } else {
-      sessionStorage.removeItem("session_id");
     }
   }, []);
 
