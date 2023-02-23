@@ -37,7 +37,7 @@ const AdminSettings = () => {
       profile_info: [
         { profile_title: firstSelection, Role: secondSelection, version: "1.0" }
       ]},[])
-        .then(response => { console.log(response)})
+        .then(response => { console.log(response) ;setFirstSelection("") ;setSecondSelection("") })
         .catch(error => console.log(error))
       }
     return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Settings"}>
