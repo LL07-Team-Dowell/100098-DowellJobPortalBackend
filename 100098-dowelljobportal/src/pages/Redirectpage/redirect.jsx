@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import Socialmedia2 from "./assets/Socialmedia2.png";
 import "./redirect.css";
 
