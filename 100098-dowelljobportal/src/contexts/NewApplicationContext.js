@@ -3,28 +3,25 @@ import { newJobApplicationDataReducer } from "../reducers/NewJobApplicationDataR
 
 const NewApplicationContext = createContext({});
 
-export const newApplicationState = {
-    country: "",
+export const newApplicationState = { 
+    job_number: "",
+    job_title: "",
+    applicant: "",
+    applicant_email: "",
+    feedBack: "",
     freelancePlatform: "",
     freelancePlatformUrl: "",
-    feedBack: "Waiting for verification of documents",
-    hr_remarks: "Currently receiving applications",
-    status: "Pending",
-    others: {
-        agreeToAllTerms: false,
-        academic_qualification_type: "",
-        academic_qualification: "",
-        comments: "",
-        date_applied: "",
-        team_lead_remarks: "",
-        applicant_email: "",
-        applicant_first_name: "",
-        scheduled_interview_date: "",
-    },
-    applicant: "",
-    job: "",
-    title: "",
-    description: "",
+    academic_qualification_type: "",
+    academic_qualification: "",
+    country: "",
+    internet_speed: "",
+    other_info: [],
+    agree_to_all_terms: "False",
+    company_id: "",
+    usernames: "",
+    data_type: "",
+    payment: "",
+    application_submitted_on: ""
 }
 
 export const excludedApplicantInfo = [
