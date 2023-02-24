@@ -34,12 +34,12 @@ import HrJobScreen from "./pages/HrPage/views/JobScreen/HrJobScreen";
 import Teamlead from "./pages/TeamleadPage/Teamlead";
 import AccountPage from "./pages/AccountPage/AccountPage";
 import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
-import IntermediatePage, { testingRoles } from "./IntermediatePage";
 import { JobContextProvider } from "./contexts/Jobs";
 import AdminUserScreen from "./pages/AdminPage/views/AdminUserScreen/AdminUserScreen";
 import AdminReports from "./pages/AdminPage/views/Reports/Reports";
 import AdminSettings from "./pages/AdminPage/views/Settings/AdminSettings";
 import RedirectPage from "./pages/Redirectpage/redirect";
+import { testingRoles } from "./utils/testingRoles";
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -90,15 +90,6 @@ function App() {
     return (
       <Routes>
         <Route path="*" element={<RedirectPage />} />
-      </Routes>
-    );
-  }
-
-  // CURRENT USER BUT NO ROLES YET(WILL REMOVE)
-  if (!currentUser.role) {
-    return (
-      <Routes>
-        <Route path="*" element={<IntermediatePage />} />
       </Routes>
     );
   }
