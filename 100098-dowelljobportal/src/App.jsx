@@ -105,8 +105,9 @@ function App() {
 
   // ACCOUNT PAGE
   if (
-    currentUser.settings_for_profile_info.profile_info[0].role ===
-    testingRoles.accountRole
+    currentUser.settings_for_profile_info &&
+    currentUser.settings_for_profile_info.profile_info[0].Role ===
+      testingRoles.accountRole
   ) {
     return (
       <Routes>
@@ -218,8 +219,9 @@ function App() {
 
   // HR PAGE
   if (
-    currentUser.settings_for_profile_info.profile_info[0].role ===
-    testingRoles.hrRole
+    currentUser.settings_for_profile_info &&
+    currentUser.settings_for_profile_info.profile_info[0].Role ===
+      testingRoles.hrRole
   ) {
     return (
       <Routes>
@@ -272,8 +274,9 @@ function App() {
 
   // TEAMLEAD PAGE
   if (
-    currentUser.settings_for_profile_info.profile_info[0].role ===
-    testingRoles.teamLeadRole
+    currentUser.settings_for_profile_info &&
+    currentUser.settings_for_profile_info.profile_info[0].Role ===
+      testingRoles.teamLeadRole
   ) {
     return (
       <Routes>
@@ -301,8 +304,9 @@ function App() {
 
   // CANDIDATE PAGE
   if (
-    currentUser.settings_for_profile_info.profile_info[0].role ===
-    testingRoles.candidateRole
+    currentUser.settings_for_profile_info &&
+    currentUser.settings_for_profile_info.profile_info[0].Role ===
+      testingRoles.candidateRole
   ) {
     return candidateHired ? (
       <Routes>
