@@ -19,6 +19,9 @@ export default function useDowellLogin(
     const session_id = searchParams.get("session_id");
     const portfolio_id = searchParams.get("id");
 
+    // remove session_id and id from url
+    window.history.replaceState({}, document.title, "/");
+
     if (!session_id && !portfolio_id) {
       if (currentLocalSessionId && currentLocalPortfolioId) {
         getUserInfoFromPortfolioAPI({ session_id: currentLocalSessionId })
