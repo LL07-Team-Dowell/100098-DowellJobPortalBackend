@@ -10,7 +10,7 @@ const AdminSettings = () => {
     const [secondSelection, setSecondSelection] = useState("");
     const [data ,setData] = useState("") ; 
     const [showSecondSelection, setShowSecondSelection] = useState(false);
-    const [options1 , setOptions1] = useState(currentUser?.members.team_member.filter(member => member.portfolio_name)) ; 
+    const [options1 , setOptions1] = useState(currentUser?.userportfolio.filter(member => member.member_type !== "owner")) ; 
     const [options2 , setOptions2] = useState(["Dept_Lead" ,"Hr" ,"Proj_Lead" ,"Candidate" ]) ; 
     const [alert , setAlert] = useState(false) ; 
     useEffect(()=>{
@@ -54,7 +54,7 @@ const AdminSettings = () => {
         <p>First Selection <span>* </span> :</p>
         <select value={firstSelection} onChange={handleFirstSelectionChange} >
           <option value="">Select an option</option>
-        {options1.map(option => option.name !== "owner" ? <option   key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option> : null)}
+        {options1.map(option => <option   key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option> )}
         </select>
       </label>
       </div>
