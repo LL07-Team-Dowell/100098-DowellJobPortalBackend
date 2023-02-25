@@ -40,6 +40,10 @@ const AdminSettings = () => {
 
     }, [])
 
+    useEffect(() => {
+      setOptions1(currentUser?.userportfolio.filter(member => member.member_type !== "owner"))
+    }, [currentUser])
+
     useEffect(()=>{
       if(alert){
         setTimeout(()=>{
