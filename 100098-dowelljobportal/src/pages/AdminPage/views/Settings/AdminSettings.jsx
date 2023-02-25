@@ -4,8 +4,9 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 import axios from 'axios' ; 
 import './index.scss'
 import Alert from "./component/Alert";
+import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 const AdminSettings = () => {
-    const {currentUser} = useCurrentUserContext() ; 
+    const {currentUser, setCurrentUser} = useCurrentUserContext() ; 
     const [firstSelection, setFirstSelection] = useState("");
     const [secondSelection, setSecondSelection] = useState("");
     const [data ,setData] = useState("") ; 
@@ -13,6 +14,32 @@ const AdminSettings = () => {
     const [options1 , setOptions1] = useState(currentUser?.userportfolio.filter(member => member.member_type !== "owner")) ; 
     const [options2 , setOptions2] = useState(["Dept_Lead" ,"Hr" ,"Proj_Lead" ,"Candidate" ]) ; 
     const [alert , setAlert] = useState(false) ; 
+
+    useEffect(() => {
+
+      // User portfolio has already being loaded
+      if (currentUser.userportfolio.length > 0) return
+
+      const currentSessionId = sessionStorage.getItem("session_id");
+
+      if (!currentSessionId) return
+      const teamManagementProduct = currentUser?.portfolio_info.find(item => item.product === "Team Management");
+      if (!teamManagementProduct) return
+
+      const dataToPost = {
+        session_id: currentSessionId,
+        product: teamManagementProduct.product,
+      }
+
+      getUserInfoFromLoginAPI(dataToPost).then(res => {
+        setCurrentUser(res.data);
+      }).catch(err => {
+        console.log("Failed to get user details from login API");
+        console.log(err.response ? err.response.data : err.message);
+      })
+
+    }, [])
+
     useEffect(()=>{
       if(alert){
         setTimeout(()=>{
