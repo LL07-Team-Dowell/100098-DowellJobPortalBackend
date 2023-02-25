@@ -86,7 +86,10 @@ function App() {
   // }
 
   //CURRENT USER BUT NO PORTFOLIO INFO OR PORTFOLIO INFO IS EMPTY
-  if (!currentUser.portfolio_info || currentUser.portfolio_info.length < 1) {
+  if (
+    !currentUser.portfolio_info || currentUser.portfolio_info.length < 1 ||
+    !currentUser.portfolio_info.find(item => item.product === "Team Management")
+  ) {
     return (
       <Routes>
         <Route path="*" element={<RedirectPage />} />
@@ -126,7 +129,7 @@ function App() {
   if (
     currentUser.portfolio_info &&
     currentUser.portfolio_info.length > 0 &&
-    currentUser.portfolio_info[0].product === "Team Management"
+    currentUser.portfolio_info.find(item => item.product.product === "Team Management")
   ) {
     return (
       <Routes>
