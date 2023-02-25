@@ -28,10 +28,12 @@ const LandingPage = () => {
     const currentSessionId = sessionStorage.getItem("session_id");
 
     if (!currentSessionId) return
+    const teamManagementProduct = currentUser?.portfolio_info.find(item => item.product === "Team Management");
+    if (teamManagementProduct) return
 
     const dataToPost = {
       session_id: currentSessionId,
-      product: currentUser?.portfolio_info[0]?.product,
+      product: teamManagementProduct.product,
     }
 
     getUserInfoFromLoginAPI(dataToPost).then(res => {

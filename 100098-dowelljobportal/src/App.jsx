@@ -129,7 +129,7 @@ function App() {
   if (
     currentUser.portfolio_info &&
     currentUser.portfolio_info.length > 0 &&
-    currentUser.portfolio_info.find(item => item.product.product === "Team Management")
+    currentUser.portfolio_info.find(item => item.product === "Team Management")
   ) {
     return (
       <Routes>
