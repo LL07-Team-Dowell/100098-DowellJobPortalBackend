@@ -29,7 +29,7 @@ const LandingPage = () => {
 
     if (!currentSessionId) return
     const teamManagementProduct = currentUser?.portfolio_info.find(item => item.product === "Team Management");
-    if (teamManagementProduct) return
+    if (!teamManagementProduct) return
 
     const dataToPost = {
       session_id: currentSessionId,
