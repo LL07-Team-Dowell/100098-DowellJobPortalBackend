@@ -53,7 +53,7 @@ function JobScreen() {
 
             const matchedJobs = findJobsMatchingCategory(jobCategoryParam);
             setJobsMatchingCategory(matchedJobs);
-            console.log(matchedJobs);
+            // console.log(matchedJobs);
 
             if (jobCategoryParam === "Intership") {
                 setJobSelectionCategories(["Full time", "Part time"])
@@ -142,7 +142,7 @@ function JobScreen() {
     }, [allRequestsDone])
 
     const handleApplyButtonClick = (currentJob) => {
-        navigate(`/apply/job/${currentJob.id}`, { state: { currentUser: currentUser } })
+        navigate(`/apply/job/${currentJob._id}`, { state: { currentUser: currentUser } })
     }
 
     return <div className='candidate__Jobs__Wrapper'>

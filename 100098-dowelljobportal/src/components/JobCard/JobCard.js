@@ -125,6 +125,10 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
         }
         {console.log(candidateData)
         }
+        {/* <button disabled={disableActionBtn} className={`cta__Button ${candidateCardView && candidateData ? "rel" : ''}`} onClick={() => handleBtnClick(job ? job : candidateData ? candidateData : null)}>
+            <span>{buttonText ? buttonText : "Apply"}</span>
+            <AiOutlineArrowRight />
+        </button> */}
         <button disabled={disableActionBtn} className={`cta__Button ${candidateCardView && candidateData ? "rel" : ''}`} onClick={() => handleBtnClick(job ? job : candidateData ? candidateData : null)}>
             <span>{buttonText ? buttonText : "Apply"}</span>
             <AiOutlineArrowRight />

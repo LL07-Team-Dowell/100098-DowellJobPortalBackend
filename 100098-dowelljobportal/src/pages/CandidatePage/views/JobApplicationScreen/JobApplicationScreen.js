@@ -7,7 +7,6 @@ import { validateUrl } from "../../../../helpers/helpers";
 import { countriesData, dowellInfo, dowellLinks, freelancingPlatforms, qualificationsData } from "../../utils/jobFormApplicationData";
 import { mutableNewApplicationStateNames, useNewApplicationContext } from "../../../../contexts/NewApplicationContext";
 import { newJobApplicationDataReducerActions } from "../../../../reducers/NewJobApplicationDataReducer";
-
 import "./style.css";
 import { handleShareBtnClick } from "../../utils/helperFunctions";
 import { BsCashStack } from "react-icons/bs";
@@ -20,11 +19,13 @@ import { IoMdShare, IoIosArrowRoundForward } from "react-icons/io";
 import { VscCalendar } from "react-icons/vsc";
 import { BsClock } from "react-icons/bs";
 import { useMediaQuery } from "@mui/material";
-import { getJobs } from "../../../../services/commonServices";
+// import { getJobs } from "../../../../services/commonServices";
+import { getJobs } from '../../../../services/candidateServices';
 import { dowellLoginUrl } from "../../../../services/axios";
 import { submitNewApplication } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
 import { jobKeys } from "../../../AdminPage/utils/jobKeys";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 
 const JobApplicationScreen = () => {
     const location = useLocation();
@@ -36,7 +37,7 @@ const JobApplicationScreen = () => {
     const selectCountryOptionRef = useRef(null);
     const qualificationSelectionRef = useRef(null);
     const freelancePlatformRef = useRef(null);
-    const [disableNextBtn, setDisableNextBtn] = useState(true);
+    const [disableNextBtn, setDisableNextBtn] = useState(false);
     const generalTermsSelectionsRef = useRef([]);
     const [labelClicked, setLabelClicked] = useState(false);
     const [showQualificationInput, setShowQualificationInput] = useState(false);
@@ -46,7 +47,9 @@ const JobApplicationScreen = () => {
     const [removeFreelanceOptions, setRemoveFreelanceOptions] = useState(false);
     const [allJobs, setAllJobs] = useState([]);
     const [jobsLoading, setJobsLoading] = useState(true);
-    const [ currentUser, setCurrentUser ] = useState(null);
+    // const [currentUser, setCurrentUser] = useState(null);
+    const { currentUser } = useCurrentUserContext();
+    // console.log(currentUser);
     const [jobSaved, setJobSaved] = useState(false);
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
 
@@ -59,7 +62,8 @@ const JobApplicationScreen = () => {
     useEffect(() => {
 
         getJobs().then(res => {
-            setAllJobs(res.data);
+            // setAllJobs(res.data);
+            setAllJobs(res.data.response.data);
             setJobsLoading(false);
         }).catch(err => {
             console.log(err);
@@ -71,13 +75,10 @@ const JobApplicationScreen = () => {
     useEffect(() => {
 
         if (!id) return navigate("/home");
-
         if (jobsLoading) return;
 
-        if (typeof(Number(id)) !== "number") return navigate("/home");
-
-        const foundJob = allJobs.find(job => job.id === Number(id));
-
+        // if (typeof (Number(id)) !== "number") return navigate("/home");
+        const foundJob = allJobs.find(job => job._id === id);
         if (!foundJob) return navigate("/home");
 
         setCurrentJob(foundJob)
@@ -85,7 +86,7 @@ const JobApplicationScreen = () => {
     }, [id, jobsLoading, allJobs]);
 
     useEffect(() => {
-        
+
         if (location.pathname.includes("form") || location.pathname.split("/").includes("form")) return setDisableNextBtn(true);
 
         setDisableApplyBtn(false);
@@ -96,7 +97,7 @@ const JobApplicationScreen = () => {
 
         if (jobsLoading) return;
         if (!currentUser) return;
-        
+
         setDisableApplyBtn(false);
         setDisableNextBtn(true);
 
@@ -117,31 +118,35 @@ const JobApplicationScreen = () => {
                 delete currentState.others[mutableNewApplicationStateNames.others_applicant_email];
             }
 
-            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.REWRITE_EXISTING_STATE, payload: { newState: currentState }});
+            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.REWRITE_EXISTING_STATE, payload: { newState: currentState } });
         }
 
-        if ((currentJob.typeof !== "Employee" || currentJob.typeof !== "Internship") && (currentUser.role !== process.env.REACT_APP_GUEST_ROLE)) {
-            delete currentState.others[mutableNewApplicationStateNames.others_applicant_first_name];
-            delete currentState.others[mutableNewApplicationStateNames.others_applicant_email];
+        if ((currentJob.job_category !== "Employee" || currentJob.job_category !== "Internship") && (currentUser.role !== process.env.REACT_APP_GUEST_ROLE)) {
+            //delete currentState.others[mutableNewApplicationStateNames.others_applicant_first_name];
+            //delete currentState.others[mutableNewApplicationStateNames.others_applicant_email];
+            //dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.REWRITE_EXISTING_STATE, payload: { newState: currentState } });
 
-            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.REWRITE_EXISTING_STATE, payload: { newState: currentState }});
+            delete currentState.applicant;
+            delete currentState.applicant_email;
+            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.REWRITE_EXISTING_STATE, payload: { newState: currentState } });
+            //  console.log(currentState);
         }
 
         if (currentUser.role === process.env.REACT_APP_GUEST_ROLE) {
-            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_FIRST_NAME, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_first_name, value: currentUser.username.split("_")[1] }});
-            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_email, value: currentUser.email }});
-            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICATION_STATUS, payload: { stateToChange: mutableNewApplicationStateNames.status, value: candidateStatuses.GUEST_PENDING_SELECTION }});
+            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_FIRST_NAME, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_first_name, value: currentUser.username.split("_")[1] } });
+            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_email, value: currentUser.email } });
+            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICATION_STATUS, payload: { stateToChange: mutableNewApplicationStateNames.status, value: candidateStatuses.GUEST_PENDING_SELECTION } });
         }
-        
+
         Object.keys(currentJob.others || {}).forEach(item => {
-            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_OTHERS, payload: { stateToChange: item, value: "" }})
+            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_OTHERS, payload: { stateToChange: item, value: "" } })
         })
 
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB, payload: { stateToChange: mutableNewApplicationStateNames.job, value: currentJob.id }})
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT, payload: { stateToChange: mutableNewApplicationStateNames.applicant, value: currentUser.username }})
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATE_APPLIED, payload: { stateToChange: mutableNewApplicationStateNames.others_date_applied, value: new Date() }})
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.title, value: currentJob.title }})
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_DESCRIPTION, payload: { stateToChange: mutableNewApplicationStateNames.jobDescription, value: currentJob.description }})
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB, payload: { stateToChange: mutableNewApplicationStateNames.job, value: currentJob.id } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT, payload: { stateToChange: mutableNewApplicationStateNames.applicant, value: currentUser.username } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATE_APPLIED, payload: { stateToChange: mutableNewApplicationStateNames.others_date_applied, value: new Date() } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.title, value: currentJob.title } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_DESCRIPTION, payload: { stateToChange: mutableNewApplicationStateNames.jobDescription, value: currentJob.description } })
 
         if (currentJob.typeof === "Employee" || currentJob.typeof === "Internship") return setRemoveFreelanceOptions(true);
 
@@ -191,31 +196,31 @@ const JobApplicationScreen = () => {
         if (formPage === 5) {
 
             if (!qualificationSelectionRef.current) return;
-            
+
             if (qualificationSelectionRef.current.value !== "default_") {
-                dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_QUALIFICATIONS, payload: { stateToChange: mutableNewApplicationStateNames.others_property_qualification, value: qualificationSelectionRef.current.value }})
+                dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_QUALIFICATIONS, payload: { stateToChange: mutableNewApplicationStateNames.academic_qualification_type, value: qualificationSelectionRef.current.value } })
                 setShowQualificationInput(true);
             }
-            
-            
-            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_COUNTRY, payload:{ stateToChange: mutableNewApplicationStateNames.country, value: selectCountryOptionRef.current.value }})
-            
-            if ((selectCountryOptionRef.current.value === "default_") || (newApplicationData.country.length < 1)) return setDisableNextBtn(true);
-            
-            !removeFreelanceOptions && dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FREELANCE_PLATFORM, payload:{ stateToChange: mutableNewApplicationStateNames.freelancePlatform, value: freelancePlatformRef.current.value }})
-            
-            if (!removeFreelanceOptions) {
-                if ((freelancePlatformRef.current.value === "default_") || (newApplicationData.freelancePlatformUrl.length < 1) ) return setDisableNextBtn(true);
-            
-                if ( !validateUrl(newApplicationData.freelancePlatformUrl, true)) return setDisableNextBtn(true);    
-            }
-            
-            if (qualificationSelectionRef.current.value === "default_") return setDisableNextBtn(true);
-            
-            if (newApplicationData.others[mutableNewApplicationStateNames.others_property_qualification_type].length < 1) return setDisableNextBtn(true);
 
-            if ( !newApplicationData.others[mutableNewApplicationStateNames.others_property_agreeToAll] ) {
-                
+
+            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_COUNTRY, payload: { stateToChange: mutableNewApplicationStateNames.country, value: selectCountryOptionRef.current.value } })
+            // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FEEDBACK, payload: { stateToChange: mutableNewApplicationStateNames.feedBack, value: feedBack.current.value } })
+
+            if ((selectCountryOptionRef.current.value === "default_") || (newApplicationData.country.length < 1)) return setDisableNextBtn(true);
+
+            !removeFreelanceOptions && dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FREELANCE_PLATFORM, payload: { stateToChange: mutableNewApplicationStateNames.freelancePlatform, value: freelancePlatformRef.current.value } })
+
+            if (!removeFreelanceOptions) {
+                if ((freelancePlatformRef.current.value === "default_") || (newApplicationData.freelancePlatformUrl.length < 1)) return setDisableNextBtn(true);
+
+                if (!validateUrl(newApplicationData.freelancePlatformUrl, true)) return setDisableNextBtn(true);
+            }
+
+            if (qualificationSelectionRef.current.value === "default_") return setDisableNextBtn(true);
+
+            if (newApplicationData.academic_qualification_type.length < 1) return setDisableNextBtn(true);
+            if (!newApplicationData.agree_to_all_terms) {
+
                 return setDisableNextBtn(true);
             }
 
@@ -226,21 +231,23 @@ const JobApplicationScreen = () => {
         return setDisableNextBtn(true);
 
     }, [
-        formPage, 
-        labelClicked, 
-        newApplicationData.country, 
-        newApplicationData.freelancePlatformUrl, 
+        formPage,
+        labelClicked,
+        newApplicationData.country,
+        newApplicationData.freelancePlatformUrl,
+        newApplicationData.feedBack,
+        newApplicationData.applicant,
         newApplicationData.others,
         section,
         removeFreelanceOptions,
-        ]
+    ]
     )
 
 
     const handleSubmitApplicationBtnClick = () => {
 
         if (!currentUser) return window.location.href = dowellLoginUrl + `/apply/job/${id}/`;
-
+        // console.log(currentUser);
         setDisableApplyBtn(true);
         setDisableNextBtn(true);
 
@@ -252,19 +259,21 @@ const JobApplicationScreen = () => {
         e.preventDefault();
 
         setDisableNextBtn(true);
-        
-        try {
-            await submitNewApplication(newApplicationData);
-            navigate("/applied");
-        } catch (error) {
-            console.log(error)
-            toast.info("Application submission failed. Please try again");
-            setDisableNextBtn(false);
-        }
+
+        // try {
+        //     await submitNewApplication(newApplicationData);
+        //     navigate("/applied");
+        // } catch (error) {
+        //     console.log(error)
+        //     toast.info("Application submission failed. Please try again");
+        //     setDisableNextBtn(false);
+        // }
+
+        console.log(newApplicationData);
     }
 
     const createCheckBoxData = (data, arrayRef) => {
-        
+
         return (
             <label className="form__Label" onClick={() => setLabelClicked(!labelClicked)}>
                 <input type={'checkbox'} ref={elem => addToRefsArray(elem, arrayRef)} />
@@ -275,7 +284,7 @@ const JobApplicationScreen = () => {
     }
 
     const createInputData = (key, data) => {
-        
+
         if (key === jobKeys.paymentForJob || key === jobKeys.othersFreelancerJobType || key === jobKeys.othersInternJobType || key === jobKeys.othersResearchAssociateJobType) return <></>
 
         return (
@@ -293,35 +302,35 @@ const JobApplicationScreen = () => {
     if (jobsLoading) return <LoadingSpinner />
 
     return <>
-            <div className="candidate__Job__Application__Container">
-                <TitleNavigationBar handleBackBtnClick={() => navigate(-1)} />
-                {
-                    section === "form" ? <>
-                        <div className="job__Title__Container">
-                            <div className="job__Title__Items">
-                                <h1 className="job__Title"><b>Job Application Form for {currentJob.title}</b></h1>
-                                <p>Dowell Ux living lab</p>  
-                            </div>
-                            <div className="job__Share__Items">
-                                <button className={`save__Btn grey__Btn ${jobSaved ? 'active' : ''}`} onClick={() => setJobSaved(!jobSaved)}>
-                                    { isLargeScreen && <span>{jobSaved ? "Saved": "Save"}</span> }
-                                    <IoBookmarkSharp className="save__Icon" />
-                                </button>
-                                <button className="share__Btn grey__Btn" onClick={() => handleShareBtnClick(currentJob.title, `Apply for ${currentJob.title} on Dowell!`, window.location)}>
-                                    { isLargeScreen && <span>Share</span> }
-                                    <IoMdShare />
-                                </button>
-                            </div>
+        <div className="candidate__Job__Application__Container">
+            <TitleNavigationBar handleBackBtnClick={() => navigate(-1)} />
+            {
+                section === "form" ? <>
+                    <div className="job__Title__Container">
+                        <div className="job__Title__Items">
+                            <h1 className="job__Title"><b>Job Application Form for {currentJob.title}</b></h1>
+                            <p>Dowell Ux living lab</p>
                         </div>
+                        <div className="job__Share__Items">
+                            <button className={`save__Btn grey__Btn ${jobSaved ? 'active' : ''}`} onClick={() => setJobSaved(!jobSaved)}>
+                                {isLargeScreen && <span>{jobSaved ? "Saved" : "Save"}</span>}
+                                <IoBookmarkSharp className="save__Icon" />
+                            </button>
+                            <button className="share__Btn grey__Btn" onClick={() => handleShareBtnClick(currentJob.title, `Apply for ${currentJob.title} on Dowell!`, window.location)}>
+                                {isLargeScreen && <span>Share</span>}
+                                <IoMdShare />
+                            </button>
+                        </div>
+                    </div>
 
-                        <div className="job__Application__Form__Wrapper">
-                            <p className="required__Indicator__Item">
-                                *Required
-                            </p>
-                            <form className="job__Application__Form" onSubmit={handleSubmitNewApplication}>
-                                {
-                                    
-                                    formPage === 1 && <>
+                    <div className="job__Application__Form__Wrapper">
+                        <p className="required__Indicator__Item">
+                            *Required
+                        </p>
+                        <form className="job__Application__Form" onSubmit={handleSubmitNewApplication}>
+                            {
+
+                                formPage === 1 && <>
 
                                     <div className="job__Application__Items">
                                         <div className="form__Title__Item">
@@ -331,12 +340,12 @@ const JobApplicationScreen = () => {
                                         <p className="form__Salutations__Item">Thank you for applying to freelancing opportunity in uxlivinglab. Read following terms and conditions and accept</p>
                                         {React.Children.toArray(Object.keys(currentJob.general_terms || {}).map((key) => createCheckBoxData(currentJob.general_terms[key], generalTermsSelectionsRef)))}
                                     </div>
-                                    </>
-                                }
+                                </>
+                            }
 
-                                {
-                                    formPage === 2 && <>
-                                    
+                            {
+                                formPage === 2 && <>
+
                                     <div className="job__Application__Items">
                                         <div className="form__Title__Item">
                                             <h2><b>Technical Specifications</b></h2>
@@ -344,12 +353,12 @@ const JobApplicationScreen = () => {
                                         <p className="form__Tick__Item">Tick each box to approve</p>
                                         <p className="form__Salutations__Item">Thank you for accepting terms and conditions. Read following technical specifications and accept</p>
                                         {React.Children.toArray(Object.keys(currentJob.Technical_Specifications || {}).map((key) => createCheckBoxData(currentJob.Technical_Specifications[key], technicalTermsSelectionsRef)))}
-                                    </div>    
-                                    </>
-                                }
+                                    </div>
+                                </>
+                            }
 
-                                {
-                                    formPage === 3 && <>
+                            {
+                                formPage === 3 && <>
 
                                     <div className="job__Application__Items">
                                         <div className="form__Title__Item">
@@ -359,12 +368,12 @@ const JobApplicationScreen = () => {
                                         <p className="form__Salutations__Item">Thank you for accepting technical specifications. Read following payment terms and accept</p>
                                         {React.Children.toArray(Object.keys(currentJob.Payment_terms || {}).map((key) => createCheckBoxData(currentJob.Payment_terms[key], paymentTermsSelectionsRef)))}
                                     </div>
-                                    </>
-                                }
+                                </>
+                            }
 
-                                {
+                            {
 
-                                    formPage === 4 && <>
+                                formPage === 4 && <>
 
                                     <div className="job__Application__Items">
                                         <div className="form__Title__Item">
@@ -374,36 +383,41 @@ const JobApplicationScreen = () => {
                                         <p className="form__Salutations__Item">Thank you for accepting payment terms. Read following work flow to proceed</p>
                                         {React.Children.toArray(Object.keys(currentJob.workflow || {}).map((key) => createCheckBoxData(currentJob.workflow[key], workflowTermsSelectionsRef)))}
                                     </div>
-                                    </>
-                                }
+                                </>
+                            }
 
-                                {
-                                    formPage === 5 && <>
+                            {
+                                formPage === 5 && <>
+                                    <div className="form__Title__Item">
+                                        <h2><b>Basic Information</b></h2>
+                                    </div>
 
-                                        <div className="form__Title__Item">
-                                            <h2><b>Basic Information</b></h2>
+                                    <div className="job__Application__Item">
+                                        <h2>Enter Your Name<span className="required-indicator">*</span></h2>
+                                        <label className="input__Text__Container">
+                                            <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Enter Your Name'} value={newApplicationData.applicant} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT, payload: { stateToChange: mutableNewApplicationStateNames.applicant, value: e.target.value } })} />
+                                        </label>
+                                    </div>
+
+                                    <div className="job__Application__Item">
+                                        <h2>Select Country<span className="required-indicator">*</span></h2>
+                                        <div className="select__Dropdown__Container" onClick={() => setLabelClicked(!labelClicked)}>
+                                            <select name="country" ref={selectCountryOptionRef} defaultValue={'default_'}>
+                                                <option value={'default_'} disabled>Select Option</option>
+                                                {React.Children.toArray(countriesData.map(country => {
+                                                    return <option value={country.toLocaleLowerCase()}>{country}</option>
+                                                }))}
+                                            </select>
+                                            <AiOutlineDown className="dropdown__Icon" onClick={() => { if (!selectCountryOptionRef.current) return; selectCountryOptionRef.current.click() }} />
                                         </div>
-                                        <div className="job__Application__Item">
+                                    </div>
 
-                                            <h2>Select Country<span className="required-indicator">*</span></h2>
-                                            <div className="select__Dropdown__Container" onClick={() => setLabelClicked(!labelClicked)}>
-                                                <select name="country" ref={selectCountryOptionRef} defaultValue={'default_'}>
-                                                    <option value={'default_'} disabled>Select Option</option>
-                                                    {React.Children.toArray(countriesData.map(country => {
-                                                        return <option value={country.toLocaleLowerCase()}>{country}</option>
-                                                    }))}
-                                                </select>
-                                                <AiOutlineDown className="dropdown__Icon" onClick={() => { if (!selectCountryOptionRef.current) return; selectCountryOptionRef.current.click() }} />
-                                            </div>
-                                        </div>
-                                        
-                                        {
-                                            removeFreelanceOptions ? <></> : 
-                                            
+                                    {
+                                        removeFreelanceOptions ? <></> :
+
                                             <>
                                                 <div className="job__Application__Item">
                                                     <h2>Freelancing Profile<span className="required-indicator">*</span></h2>
-                                                    
                                                     <div className="select__Dropdown__Container" onClick={() => setLabelClicked(!labelClicked)}>
                                                         <select name="freelancePlaform" ref={freelancePlatformRef} defaultValue={'default_'}>
                                                             <option value={'default_'} disabled>Select Option</option>
@@ -416,92 +430,101 @@ const JobApplicationScreen = () => {
                                                 </div>
 
                                                 <div className="job__Application__Item">
+                                                    <h2>Link to profile on freelancing platform<span className="required-indicator">*</span></h2>
                                                     <label className="input__Text__Container">
-                                                        <h2>Link to profile on freelancing platform<span className="required-indicator">*</span></h2>
-                                                        <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Link to profile on platform'} value={newApplicationData.freelancePlatformUrl} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FREELANCE_PLATFORM_URL, payload: { stateToChange: mutableNewApplicationStateNames.freelancePlatformUrl, value: e.target.value }})} />
+                                                        <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Link to profile on platform'} value={newApplicationData.freelancePlatformUrl} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FREELANCE_PLATFORM_URL, payload: { stateToChange: mutableNewApplicationStateNames.freelancePlatformUrl, value: e.target.value } })} />
                                                     </label>
                                                 </div>
 
                                             </>
-                                        }
-                                        
+                                    }
 
-                                        <div className="job__Application__Item">
-                                            <h2>Academic Qualifications<span className="required-indicator">*</span></h2>
-                                            <div className="select__Dropdown__Container" onClick={() => setLabelClicked(!labelClicked)}>
-                                                <select name="qualifications" ref={qualificationSelectionRef} defaultValue={'default_'}>
-                                                    <option value={'default_'} disabled>Select Option</option>
-                                                    {React.Children.toArray(qualificationsData.map(qualification => {
-                                                        return <option value={qualification.toLocaleLowerCase()} onClick={() => setLabelClicked(!labelClicked)}>{qualification}</option>
-                                                    }))}
-                                                </select>
-                                                <AiOutlineDown className="dropdown__Icon" />
-                                            </div>
+
+                                    <div className="job__Application__Item">
+                                        <h2>Academic Qualifications<span className="required-indicator">*</span></h2>
+                                        <div className="select__Dropdown__Container" onClick={() => setLabelClicked(!labelClicked)}>
+                                            <select name="qualifications" ref={qualificationSelectionRef} defaultValue={'default_'}>
+                                                <option value={'default_'} disabled>Select Option</option>
+                                                {React.Children.toArray(qualificationsData.map(qualification => {
+                                                    return <option value={qualification.toLocaleLowerCase()} onClick={() => setLabelClicked(!labelClicked)}>{qualification}</option>
+                                                }))}
+                                            </select>
+                                            <AiOutlineDown className="dropdown__Icon" />
                                         </div>
+                                    </div>
 
-                                        { 
-                                            showQualificationInput && <div className="job__Application__Item">
-                                                <label className="input__Text__Container">
-                                                    <h2 className="qualification__Title__Text">Qualification<span className="required-indicator">*</span></h2>
-                                                    <input aria-label="your academic qualification" type={'text'} placeholder={'Academic Qualification'} value={newApplicationData.others[mutableNewApplicationStateNames.others_property_qualification_type]} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_QUALIFICATIONS, payload: { stateToChange: mutableNewApplicationStateNames.others_property_qualification_type, value: e.target.value }})} />
-                                                </label>
-                                            </div>
-                                        }
-
-                                        {React.Children.toArray(Object.keys(currentJob.others || {}).map((key) => createInputData(key, currentJob.others[key])))}
-                                    
-                                        <label className="form__Label__Accept__All" onClick={() => setLabelClicked(!labelClicked)}>
-                                            <input type={'checkbox'} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_AGREE_TO_ALL, payload: { stateToChange: mutableNewApplicationStateNames.others_property_agreeToAll, value: e.target.checked } }) } />
-                                            <span>Agree/Disagree to all terms</span>
-                                        </label>
-                                        
-                                        <div className="job__Application__Item comments">
+                                    {
+                                        showQualificationInput && <div className="job__Application__Item">
+                                            <h2 className="qualification__Title__Text">Qualification<span className="required-indicator">*</span></h2>
                                             <label className="input__Text__Container">
-                                                <h2>Comments/Suggestions</h2>
-                                                <input type={'text'} placeholder={'Any comments'} value={newApplicationData.others[mutableNewApplicationStateNames.others_comments]} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_COMMENTS, payload: { stateToChange: mutableNewApplicationStateNames.others_comments, value: e.target.value } })} />
+                                                <input aria-label="your academic qualification" type={'text'} placeholder={'Academic Qualification'} value={newApplicationData.academic_qualification} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_ACADEMIC_QUALIFICATION, payload: { stateToChange: mutableNewApplicationStateNames.academic_qualification, value: e.target.value } })} />
                                             </label>
                                         </div>
+                                    }
 
-                                    </>
-                                }
-        
-                                {
-                                    
-                                    formPage !== 5 &&
-                                    <>
-                                        <button className="apply__Btn green__Btn" type="button" disabled={disableNextBtn} onClick={() => { setFormPage(formPage + 1); } }>
-                                            <span>Next</span>
-                                            <IoIosArrowRoundForward />
-                                        </button>
-                                    </>
-                                }
+                                    <div className="job__Application__Item comments">
+                                        <label className="input__Text__Container">
+                                            <h2>Comments/Feedback<span className="required-indicator">*</span></h2>
+                                            <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Write Your Feedback'} value={newApplicationData.feedBack} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FEEDBACK, payload: { stateToChange: mutableNewApplicationStateNames.feedBack, value: e.target.value } })} />
+                                        </label>
+                                    </div>
 
-                                {
-                                    formPage === 5 && <>
-                                        <button className="apply__Btn green__Btn" type="submit" disabled={disableNextBtn} onClick={handleSubmitNewApplication}>
-                                            <span>Submit</span>
-                                            <IoIosArrowRoundForward />
-                                        </button>
-                                    </>
-                                }
+                                    {React.Children.toArray(Object.keys(currentJob.others || {}).map((key) => createInputData(key, currentJob.others[key])))}
 
-                            </form>
-                        </div>
-                    </>:
+                                    <label className="form__Label__Accept__All" onClick={() => setLabelClicked(!labelClicked)}>
+                                        <input type={'checkbox'} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_AGREE_TO_ALL, payload: { stateToChange: mutableNewApplicationStateNames.others_property_agreeToAll, value: e.target.checked } })} />
+                                        <span>Agree/Disagree to all terms</span>
+                                    </label>
+
+
+
+                                    {/* <div className="job__Application__Item">
+                                        <h2>Enter Your Discord ID<span className="required-indicator">*</span></h2>
+                                        <label className="input__Text__Container">
+                                            <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Enter Your Name'} value={newApplicationData.freelancePlatformUrl} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FREELANCE_PLATFORM_URL, payload: { stateToChange: mutableNewApplicationStateNames.freelancePlatformUrl, value: e.target.value } })} />
+                                        </label>
+                                    </div> */}
+
+                                </>
+                            }
+
+                            {
+
+                                formPage !== 5 &&
+                                <>
+                                    <button className="apply__Btn green__Btn" type="button" onClick={() => { setFormPage(formPage + 1); }}>
+                                        <span>Next</span>
+                                        <IoIosArrowRoundForward />
+                                    </button>
+                                </>
+                            }
+
+                            {
+                                formPage === 5 && <>
+                                    <button className="apply__Btn green__Btn" type="submit" onClick={handleSubmitNewApplication}>
+                                        <span>Submit</span>
+                                        <IoIosArrowRoundForward />
+                                    </button>
+                                </>
+                            }
+
+                        </form>
+                    </div>
+                </> :
 
                     <>
                         <div className="job__Title__Container">
                             <div className="job__Title__Items">
                                 <h1 className="job__Title"><b>{currentJob.title}</b></h1>
-                                <p>Dowell Ux living lab</p>  
+                                <p>Dowell Ux living lab</p>
                             </div>
                             <div className="job__Share__Items">
                                 <button className={`save__Btn grey__Btn ${jobSaved ? 'active' : ''}`} onClick={() => setJobSaved(!jobSaved)}>
-                                    { isLargeScreen && <span>{jobSaved ? "Saved": "Save"}</span> }
+                                    {isLargeScreen && <span>{jobSaved ? "Saved" : "Save"}</span>}
                                     <IoBookmarkSharp className="save__Icon" />
                                 </button>
                                 <button className="share__Btn grey__Btn" onClick={() => handleShareBtnClick(currentJob.title, `Apply for ${currentJob.title} on Dowell!`, window.location)}>
-                                    { isLargeScreen && <span>Share</span> }
+                                    {isLargeScreen && <span>Share</span>}
                                     <IoMdShare />
                                 </button>
                             </div>
@@ -516,25 +539,25 @@ const JobApplicationScreen = () => {
                                     currentJob.others && currentJob.others[jobKeys.othersInternJobType] &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
-                                        <span>Job Type:&nbsp;<span className="highlight__Job__Info">{ currentJob.others[jobKeys.othersInternJobType]}</span></span>
+                                        <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.othersInternJobType]}</span></span>
                                     </span>
                                 }
                                 {
                                     currentJob.others && currentJob.others[jobKeys.othersResearchAssociateJobType] &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
-                                        <span>Job Type:&nbsp;<span className="highlight__Job__Info">{ currentJob.others[jobKeys.othersResearchAssociateJobType]}</span></span>
+                                        <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.othersResearchAssociateJobType]}</span></span>
                                     </span>
                                 }
                                 {
-                                    currentJob.others && currentJob.others[jobKeys.othersFreelancerJobType] && 
+                                    currentJob.others && currentJob.others[jobKeys.othersFreelancerJobType] &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
-                                        <span>Job Type:&nbsp;<span className="highlight__Job__Info">{ currentJob.others[jobKeys.othersFreelancerJobType]}</span></span>
+                                        <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.othersFreelancerJobType]}</span></span>
                                     </span>
                                 }
                                 {
-                                    currentJob.typeof === "Employee" && 
+                                    currentJob.typeof === "Employee" &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
                                         <span>Job Type:&nbsp;<span className="highlight__Job__Info">Full time</span></span>
@@ -542,7 +565,7 @@ const JobApplicationScreen = () => {
                                 }
                                 <span className="job__Skill__Wrapper">
                                     <BsClock className="info__Icon" />
-                                    <span>Duration:&nbsp;<span className="highlight__Job__Info">{ currentJob.time_period}</span></span>
+                                    <span>Duration:&nbsp;<span className="highlight__Job__Info">{currentJob.time_period}</span></span>
                                 </span>
                                 {
                                     currentJob.others && currentJob.others[jobKeys.paymentForJob] &&
@@ -568,7 +591,7 @@ const JobApplicationScreen = () => {
                         <div className="job__Skills__Info">
                             <p className="paragraph__Title__Item">Skills:</p>
                             <span>
-                                { currentJob.skills }
+                                {currentJob.skills}
                             </span>
                         </div>
 
@@ -578,39 +601,43 @@ const JobApplicationScreen = () => {
                                 <RiShareBoxFill />
                             </button>
                             <button className={`save__Btn grey__Btn ${jobSaved ? 'active' : ''}`} onClick={() => setJobSaved(!jobSaved)}>
-                                <span>{jobSaved ? "Saved": "Save"}</span>
+                                <span>{jobSaved ? "Saved" : "Save"}</span>
                                 <IoBookmarkSharp />
                             </button>
                         </div>
                     </>
-                }
-                
-            </div>
-            {
-                section !== "form" ? <div className="bottom__About__Dowell__Container">
-                    <div className="intro__Container">
-                        <div className="img__Container">
-                            <img src={process.env.PUBLIC_URL + "/logos/logo-1.png"} alt="dowell logo" loading="lazy" />
-                        </div>
-                        <div className="info__Container">
-                            <h2 className="about__Dowell__Title"><b>About D'Well Research</b></h2>
-                            <p className="about__Dowell">{dowellInfo}</p>
-                        </div>
-                    </div>
-
-                    <div className="social__Icons__Container">
-                        {
-                            React.Children.toArray(dowellLinks.map(dowellLink => {
-                                return <a aria-label={dowellLink.title} href={dowellLink.link} rel="noopener noreferrer" target="_blank" className="social__Icon__Item">
-                                    {dowellLink.icon}
-                                </a>
-                            }))
-                        }
-                    </div>
-                </div> 
-                : <></>
             }
-        {newApplicationData.others[mutableNewApplicationStateNames.applicant] && newApplicationData.others[mutableNewApplicationStateNames.applicant] !== "" && <Footer currentCategory={currentJob.typeof} />}
+
+        </div>
+        {
+            section !== "form" ? <div className="bottom__About__Dowell__Container">
+                <div className="intro__Container">
+                    <div className="img__Container">
+                        <img src={process.env.PUBLIC_URL + "/logos/logo-1.png"} alt="dowell logo" loading="lazy" />
+                    </div>
+                    <div className="info__Container">
+                        <h2 className="about__Dowell__Title"><b>About D'Well Research</b></h2>
+                        <p className="about__Dowell">{dowellInfo}</p>
+                    </div>
+                </div>
+
+                <div className="social__Icons__Container">
+                    {
+                        React.Children.toArray(dowellLinks.map(dowellLink => {
+                            return <a aria-label={dowellLink.title} href={dowellLink.link} rel="noopener noreferrer" target="_blank" className="social__Icon__Item">
+                                {dowellLink.icon}
+                            </a>
+                        }))
+                    }
+                </div>
+            </div>
+                : <></>
+        }
+        {
+
+            // newApplicationData.others[mutableNewApplicationStateNames.applicant] && newApplicationData.others[mutableNewApplicationStateNames.applicant] !== "" && <Footer currentCategory={currentJob.typeof} />
+            newApplicationData.applicant && newApplicationData.applicant !== "" && <Footer currentCategory={currentJob.job_category} />
+        }
     </>
 }
 

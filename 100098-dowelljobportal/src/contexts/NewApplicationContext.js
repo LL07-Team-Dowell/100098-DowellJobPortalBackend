@@ -3,7 +3,7 @@ import { newJobApplicationDataReducer } from "../reducers/NewJobApplicationDataR
 
 const NewApplicationContext = createContext({});
 
-export const newApplicationState = { 
+export const newApplicationState = {
     job_number: "",
     job_title: "",
     applicant: "",
@@ -53,10 +53,10 @@ export const mutableNewApplicationStateNames = {
     freelancePlatform: "freelancePlatform",
     freelancePlatformUrl: "freelancePlatformUrl",
     jobDescription: "description",
-    others_property_agreeToAll: "agreeToAllTerms",
-    others_property_qualification_type: "academic_qualification_type",
-    others_property_qualification: "academic_qualification",
-    others_comments: "comments",
+    agree_to_all_terms: "agreeToAllTerms",
+    academic_qualification_type: "academic_qualification_type",
+    academic_qualification: "academic_qualification",
+    feedBack: "feedBack",
     others_date_applied: "date_applied",
     others_team_lead_remarks: "team_lead_remarks",
     others_applicant_email: "applicant_email",
@@ -73,7 +73,7 @@ export const useNewApplicationContext = () => useContext(NewApplicationContext);
 export const NewApplicationContextProvider = ({ children }) => {
 
     const [newApplicationData, dispatchToNewApplicationData] = useReducer(newJobApplicationDataReducer, newApplicationState);
-    
+
     const newApplicationContextData = {
         newApplicationData: newApplicationData,
         dispatchToNewApplicationData: dispatchToNewApplicationData,
@@ -81,7 +81,7 @@ export const NewApplicationContextProvider = ({ children }) => {
 
     return (
         <NewApplicationContext.Provider value={newApplicationContextData} >
-            { children }
+            {children}
         </NewApplicationContext.Provider>
     )
 }
