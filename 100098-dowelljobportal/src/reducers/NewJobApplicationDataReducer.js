@@ -6,7 +6,7 @@ export const newJobApplicationDataReducerActions = {
     UPDATE_FREELANCE_PLATFORM_URL: "update_freelance_platform_url",
     UPDATE_AGREE_TO_ALL: "update_agree_to_all",
     UPDATE_QUALIFICATIONS: "update_qualifications",
-    UPDATE_COMMENTS: "update_comments",
+    UPDATE_FEEDBACK: "update_feedback",
     UPDATE_OTHERS: "update_others",
     UPDATE_JOB_DESCRIPTION: "update_job_description",
     UPDATE_DATE_APPLIED: "update_date_applied",
@@ -15,21 +15,18 @@ export const newJobApplicationDataReducerActions = {
     UPDATE_APPLICANT_EMAIL: "update_applicant_email",
     UPDATE_APPLICANT_FIRST_NAME: "update_applicant_first_name",
     UPDATE_APPLICATION_STATUS: "update_application_status",
+    UPDATE_ACADEMIC_QUALIFICATION:"update_academic_qualification"
 }
 
 export const newJobApplicationDataReducer = (currentState, action) => {
+   console.log(action);
     switch (action.type) {
-
-        case newJobApplicationDataReducerActions.UPDATE_AGREE_TO_ALL:
-        case newJobApplicationDataReducerActions.UPDATE_QUALIFICATIONS:
-        case newJobApplicationDataReducerActions.UPDATE_COMMENTS:
         case newJobApplicationDataReducerActions.UPDATE_DATE_APPLIED:
         case newJobApplicationDataReducerActions.UPDATE_OTHERS:
         case newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL:
         case newJobApplicationDataReducerActions.UPDATE_APPLICANT_FIRST_NAME:
 
             if (!action.payload.stateToChange) return currentState;
-
             return { 
                 ...currentState, others : {
                     ...currentState.others,
@@ -37,6 +34,10 @@ export const newJobApplicationDataReducer = (currentState, action) => {
                 }
             }
         
+        case newJobApplicationDataReducerActions.UPDATE_ACADEMIC_QUALIFICATION:
+        case newJobApplicationDataReducerActions.UPDATE_QUALIFICATIONS:
+        case newJobApplicationDataReducerActions.UPDATE_AGREE_TO_ALL:
+        case newJobApplicationDataReducerActions.UPDATE_FEEDBACK:
         case newJobApplicationDataReducerActions.UPDATE_JOB:
         case newJobApplicationDataReducerActions.UPDATE_APPLICANT:
         case newJobApplicationDataReducerActions.UPDATE_COUNTRY:

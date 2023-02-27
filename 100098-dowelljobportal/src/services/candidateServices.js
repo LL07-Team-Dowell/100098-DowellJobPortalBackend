@@ -1,7 +1,7 @@
 import { formerBackendAxiosInstance, currentBackendAxiosInstance } from "./axios"
 
 export const submitNewApplication = async (data) => {
-    return await formerBackendAxiosInstance.post("/jobs/add_application/", data)
+    return await currentBackendAxiosInstance.post("/jobs/add_application/", data)
 }
 
 export const getJobs = async () => {
