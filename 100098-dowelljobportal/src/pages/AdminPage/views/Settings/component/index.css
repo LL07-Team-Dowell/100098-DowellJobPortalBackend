@@ -95,7 +95,7 @@
             }
           }
           
-          button {
+          .toast button {
             padding: 12px 20px;
             font-size: 20px;
             outline: none;
@@ -106,7 +106,7 @@
             transition: 0.3s;
           }
           
-          button:hover {
+          .toast button:hover {
           }
           
           .toast.active ~ button {
