@@ -7,6 +7,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import "./EditJob.css";
 import Loading from '../../../../components/LoadingSpinner/LoadingSpinner';
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
+import { Link } from 'react-router-dom';
 
 
 function EditJob() {
@@ -158,9 +159,9 @@ function EditJob() {
       <Wrapper>
         <div className="container">
           <div className="back__button">
-            <a href="./admin#/admin">
+            <Link to={"/"}>
               <IoIosArrowBack />
-            </a>
+            </Link>
           </div>
 
           <div className="main__titles">

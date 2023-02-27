@@ -8,7 +8,7 @@
     box-sizing: border-box;
 }
 
-img{
+.redirect-page img{
     width: 30%;
     object-fit: cover;
     z-index: -1;

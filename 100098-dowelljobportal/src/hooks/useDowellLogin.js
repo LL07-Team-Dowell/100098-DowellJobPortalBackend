@@ -36,7 +36,7 @@ export default function useDowellLogin(
 
               //CHECK IF USER HAS ROLE CONFIGURED
               const userHasRoleConfigured = settingForCurrentUserOrg.find(
-                (setting) => setting.portfolio_info[0].portfolio_title
+                (setting) => setting.profile_info[0].profile_title === currentUserDetails.portfolio_info[0].portfolio_name
               );
 
               //USER DOES NOT HAVE ROLE CONFIGURED
@@ -69,39 +69,9 @@ export default function useDowellLogin(
         getUserInfoFromLoginAPI({ session_id: currentLocalSessionId })
           .then(async (res) => {
             const currentUserDetails = res.data;
-            try {
-              const settingsResponse = await getSettingUserProfileInfo();
-              const settingForCurrentUserOrg = settingsResponse.data
-                .reverse()
-                .filter(
-                  (setting) =>
-                    setting.company_id ===
-                    currentUserDetails.portfolio_info[0].org_id
-                );
 
-              //CHECK IF USER HAS ROLE CONFIGURED
-              const userHasRoleConfigured = settingForCurrentUserOrg.find(
-                (setting) => setting.portfolio_info[0].portfolio_title
-              );
-
-              //User Does not have role configured
-              if (!userHasRoleConfigured) {
-                updateCurrentUserState(currentUserDetails);
-                updatePageLoading(false);
-
-                return;
-              } else {
-                //User has role configured
-                updateCurrentUserState({
-                  ...currentUserDetails,
-                  settings_for_profile_info: userHasRoleConfigured,
-                });
-                updatePageLoading(false);
-              }
-            } catch (error) {
-              updateCurrentUserState(currentUserDetails);
-              updatePageLoading(false);
-            }
+            updateCurrentUserState(currentUserDetails);
+            updatePageLoading(false);
           })
           .catch((err) => {
             console.log(err);
@@ -122,39 +92,9 @@ export default function useDowellLogin(
       getUserInfoFromLoginAPI({ session_id: session_id })
         .then(async (res) => {
           const currentUserDetails = res.data;
-          try {
-            const settingsResponse = await getSettingUserProfileInfo();
-            const settingForCurrentUserOrg = settingsResponse.data
-              .reverse()
-              .filter(
-                (setting) =>
-                  setting.company_id ===
-                  currentUserDetails.portfolio_info[0].org_id
-              );
 
-            //CHECK IF USER HAS ROLE CONFIGURED
-            const userHasRoleConfigured = settingForCurrentUserOrg.find(
-              (setting) => setting.portfolio_info[0].portfolio_title
-            );
-
-            //User Does not have role configured
-            if (!userHasRoleConfigured) {
-              updateCurrentUserState(currentUserDetails);
-              updatePageLoading(false);
-
-              return;
-            } else {
-              //User has role configured
-              updateCurrentUserState({
-                ...currentUserDetails,
-                settings_for_profile_info: userHasRoleConfigured,
-              });
-              updatePageLoading(false);
-            }
-          } catch (error) {
-            updateCurrentUserState(currentUserDetails);
-            updatePageLoading(false);
-          }
+          updateCurrentUserState(currentUserDetails);
+          updatePageLoading(false);
         })
         .catch((err) => {
           console.log(err);
@@ -184,7 +124,7 @@ export default function useDowellLogin(
 
           //CHECK IF USER HAS ROLE CONFIGURED
           const userHasRoleConfigured = settingForCurrentUserOrg.find(
-            (setting) => setting.portfolio_info[0].portfolio_title
+            (setting) => setting.profile_info[0].profile_title === currentUserDetails.portfolio_info[0].portfolio_name
           );
 
           //User Does not have role configured

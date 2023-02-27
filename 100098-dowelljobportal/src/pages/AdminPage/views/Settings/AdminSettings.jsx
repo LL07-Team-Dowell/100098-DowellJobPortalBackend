@@ -64,11 +64,14 @@ const AdminSettings = () => {
   
   const submit = () => {
       const {org_id , org_name ,data_type , owner_name } = options1[0] ; 
+      const teamManagementProduct = currentUser.portfolio_info.find(item => item.product === "Team Management");
+      if (!teamManagementProduct) return
+
     axios.post('https://100098.pythonanywhere.com/setting/SettingUserProfileInfo/', {
-      company_id:org_id,
-      org_name: org_name,
-      owner:owner_name,
-      data_type:data_type,
+      company_id: teamManagementProduct.org_id,
+      org_name: teamManagementProduct.org_name,
+      owner: currentUser.userinfo.username,
+      data_type:teamManagementProduct.data_type,
       profile_info: [
         { profile_title: firstSelection, Role: secondSelection, version: "1.0" }
       ]},[])
