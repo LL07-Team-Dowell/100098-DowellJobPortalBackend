@@ -5,6 +5,7 @@ import axios from 'axios' ;
 import './index.scss'
 import Alert from "./component/Alert";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 const AdminSettings = () => {
     const {currentUser, setCurrentUser} = useCurrentUserContext() ; 
     const [firstSelection, setFirstSelection] = useState("");
@@ -14,7 +15,7 @@ const AdminSettings = () => {
     const [options1 , setOptions1] = useState(currentUser?.userportfolio.filter(member => member.member_type !== "owner")) ; 
     const [options2 , setOptions2] = useState(["Dept_Lead" ,"Hr" ,"Proj_Lead" ,"Candidate" ]) ; 
     const [alert , setAlert] = useState(false) ; 
-
+    const [loading , setLoading] = useState(false) ;
     useEffect(() => {
 
       // User portfolio has already being loaded
@@ -30,9 +31,9 @@ const AdminSettings = () => {
         session_id: currentSessionId,
         product: teamManagementProduct.product,
       }
-
       getUserInfoFromLoginAPI(dataToPost).then(res => {
         setCurrentUser(res.data);
+
       }).catch(err => {
         console.log("Failed to get user details from login API");
         console.log(err.response ? err.response.data : err.message);
@@ -66,7 +67,7 @@ const AdminSettings = () => {
       const {org_id , org_name ,data_type , owner_name } = options1[0] ; 
       const teamManagementProduct = currentUser.portfolio_info.find(item => item.product === "Team Management");
       if (!teamManagementProduct) return
-
+    setLoading(true) ;
     axios.post('https://100098.pythonanywhere.com/setting/SettingUserProfileInfo/', {
       company_id: teamManagementProduct.org_id,
       org_name: teamManagementProduct.org_name,
@@ -75,7 +76,7 @@ const AdminSettings = () => {
       profile_info: [
         { profile_title: firstSelection, Role: secondSelection, version: "1.0" }
       ]},[])
-        .then(response => { console.log(response) ;setFirstSelection("") ;setSecondSelection("") ;setAlert(true)})
+        .then(response => { console.log(response) ;setFirstSelection("") ;setSecondSelection("") ;setAlert(true) ; setLoading(false) ;})
         .catch(error => console.log(error))
       }
     return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Settings"}>
@@ -85,7 +86,7 @@ const AdminSettings = () => {
       
       <div>
       <label>
-        <p>First Selection <span>* </span> :</p>
+        <p>Select User <span>* </span> :</p>
         <select value={firstSelection} onChange={handleFirstSelectionChange} >
           <option value="">Select an option</option>
         {options1.map(option => <option   key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option> )}
@@ -96,7 +97,7 @@ const AdminSettings = () => {
 
       {showSecondSelection && (
         <label>
-          <p>Second Selection <span>* </span> :</p>
+          <p>Select Role <span> * </span> :</p>
           <select
             value={secondSelection}
             onChange={handleSecondSelectionChange}
@@ -108,7 +109,12 @@ const AdminSettings = () => {
         
       )}
       </div>
-    {(firstSelection && secondSelection) && <button onClick={submit}>submit</button>}
+    {(firstSelection && secondSelection) && <button onClick={submit}  style={{ position: "relative" }}>{loading ?  <LoadingSpinner
+      color="#fff"
+      width={24}
+      height={24}
+      style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+    /> :"submit"}</button>}
     </div>
     </StaffJobLandingLayout>
 }

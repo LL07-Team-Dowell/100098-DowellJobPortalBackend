@@ -100,7 +100,6 @@
             font-size: 20px;
             outline: none;
             border: none;
-            background-color: #4070f4;
             color: #fff;
             border-radius: 6px;
             cursor: pointer;
@@ -108,7 +107,6 @@
           }
           
           button:hover {
-            background-color: #0e4bf1;
           }
           
           .toast.active ~ button {

@@ -12,7 +12,7 @@ export const CandidateJobsContextProvider = ({ children }) => {
     })
 
     return (
-        <CandidateJobsContext.Provider value={{ candidateJobs, setCandidateJobs }}>
+        <CandidateJobsContext.Provider  value={{ candidateJobs, setCandidateJobs }}>
             {children}
         </CandidateJobsContext.Provider>
     )
