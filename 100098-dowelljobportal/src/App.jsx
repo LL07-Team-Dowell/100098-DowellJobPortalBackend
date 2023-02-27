@@ -161,7 +161,7 @@ function App() {
           }
         />
         <Route
-          path="/view-job"
+          path="/view-job/:id"
           element={
             <JobContextProvider>
               <ViewJob />

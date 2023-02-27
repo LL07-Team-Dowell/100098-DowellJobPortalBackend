@@ -109,7 +109,7 @@ const AdminSettings = () => {
         
       )}
       </div>
-    {(firstSelection && secondSelection) && <button onClick={submit}  style={{ position: "relative" }}>{loading ?  <LoadingSpinner
+    {(firstSelection && secondSelection) && <button  onClick={submit}  style={{ position: "relative" }}>{loading ?  <LoadingSpinner
       color="#fff"
       width={24}
       height={24}
