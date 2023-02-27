@@ -13,7 +13,7 @@ export default function useDowellLogin(
 ) {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentLocalSessionId = sessionStorage.getItem("session_id");
-  const currentLocalPortfolioId = sessionStorage.getItem("id");
+  const currentLocalPortfolioId = sessionStorage.getItem("portfolio_id");
 
   useEffect(() => {
     const session_id = searchParams.get("session_id");
