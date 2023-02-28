@@ -8,17 +8,17 @@ import Loading from '../../../CandidatePage/views/ResearchAssociatePage/Loading'
 // AiFillEdit 
 import {AiFillEdit } from "react-icons/ai"
 import axios from 'axios';
-import { Link , useNavigate} from 'react-router-dom';
+import { Link , useNavigate , useParams} from 'react-router-dom';
+import { useJobContext } from '../../../../contexts/Jobs';
+
 const ViewJob = () => {
-    const {job_number , job_title , description , skills , qualification , job_catagory , type_of_job , payment , is_active , time_interval , technical_specification , workflow_terms , other_info , company_id} = testJobToWorkWith
+    
     const [loading , setLoading] = useState(false)
     useEffect(()=>{
         setLoading(true)
         axios.post('https://100098.pythonanywhere.com/admin_management/get_job/', {
             company_id: '100098',
     },[])
-    
-    
     .then(response => {
     setLoading(false)
     console.log(response.data);
@@ -32,13 +32,22 @@ const ViewJob = () => {
             setLoading(false)
         },10000)
         },[]);
-        const navigate = useNavigate() ; 
+        const navigate = useNavigate() ;
+        // asd
+        const {jobs , setJobs} = useJobContext() ; 
+        const {id} = useParams() ;
+        console.log({jobs , id , job:jobs.filter(job => job["_id"] === id)}) ;
+        console.log({jobs , id , data:jobs.filter(job => job["_id"] === id)})
+        const singleJob = jobs.filter(job => job["_id"] === id)[0] ; 
+        console.log({singleJob})
+        const {company_id , created_by , created_on , data_type , description , document_id , eventId , general_terms , is_active , job_catagory , job_number , job_title , other_info , payment
+ , qualification , skills , technical_specification, time_interval , type_of_job ,workflow_terms , _id        } = singleJob
     if (loading) return  <Loading/>
         return <>
         <div className="container">
             <div className="header">
             <div>
-            <button onClick={() => navigate(-1)}><MdArrowBackIosNew/></button>
+            <button onClick={() => navigate(-1)} style={{position:"relative"}}><MdArrowBackIosNew style={{color:"#005734" ,position:'absolute' ,fontSize:25,top:"20%",left:"21%" }}/></button>
             <p>{job_title}</p>
             </div>
             <button>edit <AiFillEdit/></button>      
@@ -53,22 +62,35 @@ const ViewJob = () => {
                 {/* change */}
                 <li>Setting goals and developing plans for business and revenue growth. Researching, planning, and implementing new target market initiatives. </li>
                 </ol>
+
+               { general_terms.length &&
+                <>
+                <h4>General Terms:</h4>
+                <ol>
+                    {general_terms.map((term , index) => <li key={index}>{term}</li>)}
+                </ol>
+                </>}
+
+                {technical_specification.length === 0 || <> <h4>Technical Specifications:</h4>
+                <ol>
+                    {technical_specification.map((specif , index) => <li key={index}>{specif}</li>)}
+                </ol> </>}
+                
+                { technical_specification.length &&
+                <>
+                <h4>General Terms:</h4>
+                <ol>
+                    {technical_specification.map((term , index) => <li key={index}>{term}</li>)}
+                </ol>
+                </>}
+                { workflow_terms.length &&
+                <>
                 <h4>General Terms:</h4>
                 <ol>
                     {workflow_terms.map((term , index) => <li key={index}>{term}</li>)}
                 </ol>
-                <h4>Technical Specifications:</h4>
-                <ol>
-                    {technical_specification.map((specif , index) => <li key={index}>{specif}</li>)}
-                </ol>
-                <h4>Payment Terms:</h4>
-                <ol>
-                    {technical_specification.map((specif , index) => <li key={index}>{specif}</li>)}
-                </ol>
-                <h4>Workflow:</h4>
-                <ol>
-                    {workflow_terms.map((term , index) => <li key={index}>{term}</li>)}
-                </ol>
+                </>}
+                
                 <div className="others">
                     <h5>others:</h5>    <span>Your discord profile Id</span>
                 </div> 
