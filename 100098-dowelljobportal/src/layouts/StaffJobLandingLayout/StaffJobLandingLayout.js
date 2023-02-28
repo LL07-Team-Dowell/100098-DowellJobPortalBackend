@@ -33,7 +33,7 @@ const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, ru
                             <div className="add__Icon__Container">
                                 <AiOutlinePlus />
                             </div>
-                            <h2>Add New Job</h2>
+                            { isLargeScreen && <h2>Add New Job</h2> }
                         </div> :
                         <></>
                 }
