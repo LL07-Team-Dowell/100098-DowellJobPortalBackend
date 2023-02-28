@@ -48,16 +48,19 @@ export const excludedApplicantInfo = [
 export const mutableNewApplicationStateNames = {
     job: "job",
     applicant: "applicant",
-    title: "title",
+    job_title: "job_title",
+    job_number: "job_number",
+    payment: "payment",
     country: "country",
+    usernames: "usernames",
     freelancePlatform: "freelancePlatform",
     freelancePlatformUrl: "freelancePlatformUrl",
     jobDescription: "description",
-    agree_to_all_terms: "agreeToAllTerms",
+    agree_to_all_terms: "agree_to_all_terms",
     academic_qualification_type: "academic_qualification_type",
     academic_qualification: "academic_qualification",
     feedBack: "feedBack",
-    others_date_applied: "date_applied",
+    application_submitted_on: "application_submitted_on",
     others_team_lead_remarks: "team_lead_remarks",
     others_applicant_email: "applicant_email",
     others_applicant_first_name: "applicant_first_name",
@@ -65,7 +68,9 @@ export const mutableNewApplicationStateNames = {
     hr_discord_link: "hr_discord_link",
     assigned_project: "assigned_project",
     status: "status",
-    others_scheduled_interview_date: "scheduled_interview_date"
+    others_scheduled_interview_date: "scheduled_interview_date",
+    company_id: "company_id",
+    data_type: "data_type"
 }
 
 export const useNewApplicationContext = () => useContext(NewApplicationContext);
