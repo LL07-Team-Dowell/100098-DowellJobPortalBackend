@@ -21,11 +21,11 @@ const RedirectPage = () => {
   };
   return (
     <>
-      <div className="redirect-page">
-        <img src={Socialmedia2} alt="Socialmedia2" />
+      <div className="redirect__page">
+        <img src={Socialmedia2} alt="Socialmedia2" className="socialmediaimg"/>
         <p className="redirect">
           You Don't Have a Portfolio,{" "}
-          <span onClick={handleRedirectClick} className="handle-redirect">
+          <span onClick={handleRedirectClick} className="handle__redirect">
             Click Here
           </span>
         </p>
