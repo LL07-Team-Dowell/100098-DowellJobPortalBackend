@@ -39,7 +39,7 @@ const AdminUserScreen = () => {
             }
             <div className="user__Intro__Item">
                 <h2>Role</h2>
-                <span>Admi</span>
+                <span>Admin</span>
             </div>
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout

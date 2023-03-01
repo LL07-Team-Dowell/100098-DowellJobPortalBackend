@@ -17,7 +17,7 @@ function EditJob() {
   // console.log(updateLoading)
   const [formData, setFormData] = useState({
     job_title: '',
-    skills: ' ',
+    skills: '',
     job_catagory: '',
     is_active: '',
     payment: '',

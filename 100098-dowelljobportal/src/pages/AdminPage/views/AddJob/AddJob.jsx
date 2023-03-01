@@ -6,6 +6,7 @@ import { MdCancel } from "react-icons/md";
 import { addNewJob } from "../../../../services/adminServices";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 
 import { Link } from "react-router-dom";
 
@@ -13,6 +14,8 @@ import "./style.css";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 
 const AddJob = () => {
+  const { currentUser } = useCurrentUserContext();
+
   const [newJob, setNewJob] = useState({
     job_number: crypto.randomUUID(),
     job_title: "",
@@ -27,9 +30,9 @@ const AddJob = () => {
     payment_terms: [],
     workflow_terms: [],
     other_info: [],
-    company_id: 100098,
-    data_type: "testing",
-    created_by: "isaac",
+    company_id: currentUser.portfolio_info[0].org_id,
+    data_type: currentUser.portfolio_info[0].data_type,
+    created_by: currentUser.userinfo.username,
     created_on: new Date(),
   });
 
