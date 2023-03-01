@@ -269,14 +269,14 @@ const JobApplicationScreen = () => {
 
         setDisableNextBtn(true);
 
-        // try {
-        //     await submitNewApplication(newApplicationData);
-        //     navigate("/applied");
-        // } catch (error) {
-        //     console.log(error)
-        //     toast.info("Application submission failed. Please try again");
-        //     setDisableNextBtn(false);
-        // }
+        try {
+            await submitNewApplication(newApplicationData);
+            navigate("/applied");
+        } catch (error) {
+            console.log(error)
+            toast.info("Application submission failed. Please try again");
+            setDisableNextBtn(false);
+        }
 
         console.log(newApplicationData);
     }
