@@ -14,19 +14,7 @@ import { useJobContext } from '../../../../contexts/Jobs';
 const ViewJob = () => {
     
     const [loading , setLoading] = useState(false)
-    useEffect(()=>{
-        setLoading(true)
-        axios.post('https://100098.pythonanywhere.com/admin_management/get_job/', {
-            company_id: '100098',
-    },[])
-    .then(response => {
-    setLoading(false)
-    console.log(response.data);
-    })
-    .catch(error => {
-    console.log(error);
-    });
-    },[])
+  
     useEffect(()=>{
         setTimeout(()=>{
             setLoading(false)
@@ -71,30 +59,28 @@ const ViewJob = () => {
                 </ol>
                 </>}
 
-                {technical_specification.length === 0 || <> <h4>Technical Specifications:</h4>
+                {technical_specification.length && <> <h4>Technical Specification:</h4>    
                 <ol>
                     {technical_specification.map((specif , index) => <li key={index}>{specif}</li>)}
                 </ol> </>}
                 
-                { technical_specification.length &&
-                <>
-                <h4>General Terms:</h4>
-                <ol>
-                    {technical_specification.map((term , index) => <li key={index}>{term}</li>)}
-                </ol>
-                </>}
+                
                 { workflow_terms.length &&
                 <>
-                <h4>General Terms:</h4>
+                <h4>Workflow Terms:</h4>
                 <ol>
                     {workflow_terms.map((term , index) => <li key={index}>{term}</li>)}
                 </ol>
                 </>}
                 
-                <div className="others">
-                    <h5>others:</h5>    <span>Your discord profile Id</span>
-                </div> 
-                <button>edit <AiFillEdit/></button>
+                { other_info.length &&
+                <>
+                <h4>Others:</h4>
+                <ol>
+                    {other_info.map((term , index) => <li key={index}>{term}</li>)}
+                </ol>
+                </>}
+                <button>Edit <AiFillEdit/></button>
             </div>
         </div>
     </>
