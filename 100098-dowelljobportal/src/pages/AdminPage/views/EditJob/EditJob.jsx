@@ -157,7 +157,7 @@ function EditJob() {
     <> {loading ? <Loading /> :
       <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} hideTitleBar={true}>
       <Wrapper>
-        <div className="container">
+        <div className="container edit__page_Admin__T">
           <div className="back__button">
             <Link to={"/"}>
               <IoIosArrowBack />
