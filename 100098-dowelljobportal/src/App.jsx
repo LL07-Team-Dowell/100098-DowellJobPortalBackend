@@ -476,29 +476,29 @@ function App() {
     );
   }
 
-  return (
-    <>
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/research-jobs" element={<ResearchAssociatePage />} />
-        <Route path="/admin">
-          <Route index element={<AdminPage />} />
-          <Route path="add" element={<AddJob />} />
-          <Route path="view" element={<ViewJob />} />
-          <Route path="edit" element={<EditJob />} />
-        </Route>
-        <Route path="/landingpage" element={<LandingPage />} />
-      </Routes>
-    </>
-  );
+  // return (
+  //   <>
+  //     <Routes>
+  //       <Route path="/" element={<MainPage />} />
+  //       <Route path="/research-jobs" element={<ResearchAssociatePage />} />
+  //       <Route path="/admin">
+  //         <Route index element={<AdminPage />} />
+  //         <Route path="add" element={<AddJob />} />
+  //         <Route path="view" element={<ViewJob />} />
+  //         <Route path="edit" element={<EditJob />} />
+  //       </Route>
+  //       <Route path="/landingpage" element={<LandingPage />} />
+  //     </Routes>
+  //   </>
+  // );
 
-  return (
-    <>
-      <Routes>
-        <Route path="/" element={<RedirectPage />} />
-      </Routes>
-    </>
-  );
+  // return (
+  //   <>
+  //     <Routes>
+  //       <Route path="/" element={<RedirectPage />} />
+  //     </Routes>
+  //   </>
+  // );
 }
 
 export default App;
