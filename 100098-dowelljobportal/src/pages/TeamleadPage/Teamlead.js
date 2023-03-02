@@ -20,6 +20,7 @@ import TogglerNavMenuBar from "../../components/TogglerNavMenuBar/TogglerNavMenu
 import JobCard from "../../components/JobCard/JobCard";
 import { fetchCandidateTasks, getCandidateApplications, getJobs } from "../../services/commonServices";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
+import { hireCandidate, reHireCandidate } from "../../services/teamleadServices";
 
 
 const Teamlead = () => {
