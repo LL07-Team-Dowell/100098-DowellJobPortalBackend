@@ -1,4 +1,4 @@
-import { formerBackendAxiosInstance } from "./axios"
+import { currentBackendAxiosInstance, formerBackendAxiosInstance } from "./axios"
 
 export const getJobs = async () => {
     return await formerBackendAxiosInstance.get("/jobs/get_jobs/");
@@ -30,4 +30,8 @@ export const addNewTask = async (data) => {
 
 export const updateCandidateApplication = async (applicationId, data) => {
     return await formerBackendAxiosInstance.post("/jobs/update_application/" + applicationId + "/", data)
+}
+
+export const getJobs2 = async (data) => {
+    return await currentBackendAxiosInstance.post("admin_managment/get_jobs/",data )
 }

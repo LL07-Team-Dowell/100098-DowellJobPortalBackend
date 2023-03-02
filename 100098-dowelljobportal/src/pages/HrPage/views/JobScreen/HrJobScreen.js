@@ -20,8 +20,9 @@ import TitleNavigationBar from '../../../../components/TitleNavigationBar/TitleN
 import TogglerNavMenuBar from '../../../../components/TogglerNavMenuBar/TogglerNavMenuBar';
 import JobCard from '../../../../components/JobCard/JobCard';
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
-import { fetchCandidateTasks, getCandidateApplications, getJobs, getProjects } from '../../../../services/commonServices';
+import { fetchCandidateTasks, getCandidateApplications, getJobs, getJobs2, getProjects } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
+import { getCandidateApplicationsForHr } from '../../../../services/hrServices';
 
 
 function HrJobScreen() {
@@ -77,17 +78,28 @@ function HrJobScreen() {
 
   useEffect(() => {
 
-    getCandidateApplications().then(res => {
-      setAppliedJobs(res.data.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
-      setGuestApplications(res.data.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
-      setCandidateData(res.data.filter(application => application.status === candidateStatuses.SHORTLISTED));
-      setHiredCandidates(res.data.filter(application => application.status === candidateStatuses.ONBOARDING));   
-    }).catch(err => {
-      console.log(err)
-    });
+    // getCandidateApplications().then(res => {
+    //   setAppliedJobs(res.data.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
+    //   setGuestApplications(res.data.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
+    //   setCandidateData(res.data.filter(application => application.status === candidateStatuses.SHORTLISTED));
+    //   setHiredCandidates(res.data.filter(application => application.status === candidateStatuses.ONBOARDING));   
+    // }).catch(err => {
+    //   console.log(err)
+    // });
+    getCandidateApplicationsForHr({company_id: currentUser.portfolio_info[0].org_id})
+    .then(res => {
+      setAppliedJobs(res.data.response.data.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
+      setGuestApplications(res.data.response.data.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
+      setCandidateData(res.data.response.data.filter(application => application.status === candidateStatuses.SHORTLISTED));
+      setHiredCandidates(res.data.response.data.filter(application => application.status === candidateStatuses.ONBOARDING));   
+    })
+    .catch(err => console.log(err))
 
-    getJobs().then(res => {
-      setJobs(res.data);
+
+
+    getJobs2({company_id: currentUser.portfolio_info[0].org_id}).then(res => {
+      setJobs(res.data.response.data);
+      setLoading(false)
     }).catch(err => {
       console.log(err)
     });
@@ -249,7 +261,7 @@ function HrJobScreen() {
                   return <>
                     <JobCard 
                       job={job}
-                      subtitle={job.typeof}
+                      subtitle={job.job_catagory}
                       buttonText={"View"}
                       viewJobApplicationDetails={true}
                       applicationsCount={appliedJobs.filter(application => application.job === job.id).length}
@@ -262,7 +274,7 @@ function HrJobScreen() {
                   return <>
                     <JobCard 
                       job={job}
-                      subtitle={job.typeof}
+                      subtitle={job.job_catagory}
                       buttonText={"View"}
                       viewJobApplicationDetails={true}
                       applicationsCount={appliedJobs.filter(application => application.job === job.id).length}
@@ -302,11 +314,11 @@ function HrJobScreen() {
                       return <>
                         <JobCard 
                           job={job}
-                          subtitle={job.typeof}
+                          subtitle={job.job_catagory}
                           buttonText={"View"}
                           viewJobApplicationDetails={true}
-                          applicationsCount={guestApplications.filter(application => application.job === job.id).length}
-                          handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job === job.id))}
+                          applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
+                          handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job === job.job_number))}
                         />
                       </>
                     })) :
@@ -315,10 +327,10 @@ function HrJobScreen() {
                       return <>
                         <JobCard 
                           job={job}
-                          subtitle={job.typeof}
+                          subtitle={job.job_catagory}
                           buttonText={"View"}
                           viewJobApplicationDetails={true}
-                          applicationsCount={guestApplications.filter(application => application.job === job.id).length}
+                          applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
                           handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job === job.id))}
                         />
                       </>
@@ -483,7 +495,7 @@ function HrJobScreen() {
               </>
             }
           </>
-          
+          // id
           :
 
           sub_section === undefined && section === "user" ? <UserScreen currentUser={currentUser} /> :
@@ -502,7 +514,7 @@ function HrJobScreen() {
       <>
       
         <div className='hr__wrapper'>
-          <SelectedCandidates title={location.state.job.title} candidatesCount={location.state.appliedCandidates.length} hrPageActive={true} />
+          <SelectedCandidates title={location.state.job.job_title} candidatesCount={location.state.appliedCandidates.length} hrPageActive={true} />
 
           {
             <div className='hr__Job__Tile__Container'>
@@ -513,7 +525,7 @@ function HrJobScreen() {
                     candidateCardView={true}
                     candidateData={candidate}
                     handleBtnClick={goToJobApplicationDetails}
-                    jobAppliedFor={jobs.find(job => job.id === candidate.job) ? jobs.find(job => job.id === candidate.job).title : ""}
+                    jobAppliedFor={jobs.find(job => job.job_number === candidate.job_number) ? jobs.find(job => job.job_number === candidate.job_number).job_title : ""}
                   />
                 }))
               }
@@ -533,7 +545,7 @@ function HrJobScreen() {
                 selectedCandidateData={location.state.candidate}
                 updateCandidateData={setAppliedJobs}
                 updateAppliedData={section === "guest-applications" ? setGuestApplications : setAppliedJobs}
-                jobTitle={jobs.find(job => job.id === location.state.candidate.job)?.title}
+                jobTitle={jobs.find(job => job.job_number === location.state.candidate.job_number)?.job_title}
               />
             </>
           </div>
