@@ -265,7 +265,7 @@ function HrJobScreen() {
                       buttonText={"View"}
                       viewJobApplicationDetails={true}
                       applicationsCount={appliedJobs.filter(application => application.job_number === job.job_number).length}
-                      handleBtnClick={() => goToJobDetails(job, appliedJobs.filter(application => application.job === job.id))}
+                      handleBtnClick={() => goToJobDetails(job, appliedJobs.filter(application => application.job_number === job.job_number))}
                     />
                   </>
                 })) :
@@ -278,7 +278,7 @@ function HrJobScreen() {
                       buttonText={"View"}
                       viewJobApplicationDetails={true}
                       applicationsCount={appliedJobs.filter(application => application.job_number === job.job_number).length}
-                      handleBtnClick={() => goToJobDetails(job, appliedJobs.filter(application => application.job === job.id))}
+                      handleBtnClick={() => goToJobDetails(job, appliedJobs.filter(application => application.job_number === job.job_number))}
                     />
                   </>
                 }))
@@ -318,7 +318,7 @@ function HrJobScreen() {
                           buttonText={"View"}
                           viewJobApplicationDetails={true}
                           applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
-                          handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job === job.job_number))}
+                          handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job_number === job.job_number))}
                         />
                       </>
                     })) :
@@ -331,7 +331,7 @@ function HrJobScreen() {
                           buttonText={"View"}
                           viewJobApplicationDetails={true}
                           applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
-                          handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job === job.id))}
+                          handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job_number === job.job_number))}
                         />
                       </>
                     }))
