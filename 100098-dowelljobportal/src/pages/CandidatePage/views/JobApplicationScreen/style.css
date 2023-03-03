@@ -118,6 +118,7 @@
     align-items: flex-end;
     justify-content: space-between;
     margin-bottom: 6%;
+    display: none;
 }
 
 .candidate__Job__Application__Container .job__Info__Container .job__Skills__Info,
@@ -411,6 +412,7 @@
     .candidate__Job__Application__Container .job__Title__Container .job__Title__Items .job__Title {
         font-size: 1.3rem;
     }
+
     .candidate__Job__Application__Container .job__Title__Container .job__Title__Items p,
     .candidate__Job__Application__Container .job__Info__Container .job__Skills__Info span.job__Skill__Wrapper,
     .candidate__Job__Application__Container .job__About__Info span {
@@ -463,5 +465,24 @@
     .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form .apply__Btn {
         padding-top: 3%;
         padding-bottom: 3%;
+    }
+}
+
+@media screen and (max-width:600px) {
+    
+    .job__Info__Container{
+        display: block !important;
+    }
+
+    .job__About__Info{
+        display: none;
+    }
+
+    .job__Skills__Info{
+        display: none;
+    }
+
+    .apply_Btn_Container{
+        display: none !important;
     }
 }
