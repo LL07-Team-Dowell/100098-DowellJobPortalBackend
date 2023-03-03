@@ -264,7 +264,7 @@ function HrJobScreen() {
                       subtitle={job.job_catagory}
                       buttonText={"View"}
                       viewJobApplicationDetails={true}
-                      applicationsCount={appliedJobs.filter(application => application.job === job.id).length}
+                      applicationsCount={appliedJobs.filter(application => application.job_number === job.job_number).length}
                       handleBtnClick={() => goToJobDetails(job, appliedJobs.filter(application => application.job === job.id))}
                     />
                   </>
@@ -277,7 +277,7 @@ function HrJobScreen() {
                       subtitle={job.job_catagory}
                       buttonText={"View"}
                       viewJobApplicationDetails={true}
-                      applicationsCount={appliedJobs.filter(application => application.job === job.id).length}
+                      applicationsCount={appliedJobs.filter(application => application.job_number === job.job_number).length}
                       handleBtnClick={() => goToJobDetails(job, appliedJobs.filter(application => application.job === job.id))}
                     />
                   </>
@@ -532,7 +532,7 @@ function HrJobScreen() {
             </div>
           }
         </div>
-        
+        {/* id */}
       </> : 
       
       path !== undefined && sub_section === "job" ? <>
