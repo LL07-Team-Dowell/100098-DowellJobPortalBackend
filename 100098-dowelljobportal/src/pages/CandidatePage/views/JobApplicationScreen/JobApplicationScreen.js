@@ -318,7 +318,7 @@ const JobApplicationScreen = () => {
                 section === "form" ? <>
                     <div className="job__Title__Container">
                         <div className="job__Title__Items">
-                            <h1 className="job__Title"><b>Job Application Form for {currentJob.title}</b></h1>
+                            <h1 className="job__Title"><b>Job Application Form for {currentJob.job_title}</b></h1>
                             <p>Dowell Ux living lab</p>
                         </div>
                         <div className="job__Share__Items">
@@ -502,7 +502,7 @@ const JobApplicationScreen = () => {
 
                                 formPage !== 5 &&
                                 <>
-                                    <button className="apply__Btn green__Btn" type="button" onClick={() => { setFormPage(formPage + 1); }}>
+                                    <button className="apply__Btn green__Btn" type="button" onClick={() => { setFormPage(formPage + 1); }} disabled={disableNextBtn}>
                                         <span>Next</span>
                                         <IoIosArrowRoundForward />
                                     </button>
@@ -546,51 +546,51 @@ const JobApplicationScreen = () => {
                                     <span>Start Date:&nbsp;<span className="highlight__Job__Info">Immediately</span></span>
                                 </span>
                                 {
-                                    currentJob.others && currentJob.others[jobKeys.othersInternJobType] &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
-                                        <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.othersInternJobType]}</span></span>
+                                        <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.type_of_job}</span></span>
                                     </span>
                                 }
-                                {
+                                {/* {
                                     currentJob.others && currentJob.others[jobKeys.othersResearchAssociateJobType] &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
                                         <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.othersResearchAssociateJobType]}</span></span>
                                     </span>
-                                }
-                                {
+                                } */}
+                                {/* {
                                     currentJob.others && currentJob.others[jobKeys.othersFreelancerJobType] &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
                                         <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.othersFreelancerJobType]}</span></span>
                                     </span>
-                                }
-                                {
+                                } */}
+                                {/* {
                                     currentJob.typeof === "Employee" &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
                                         <span>Job Type:&nbsp;<span className="highlight__Job__Info">Full time</span></span>
                                     </span>
-                                }
+                                } */}
                                 <span className="job__Skill__Wrapper">
                                     <BsClock className="info__Icon" />
                                     <span>Duration:&nbsp;<span className="highlight__Job__Info">{currentJob.time_interval}</span></span>
                                 </span>
                                 {
-                                    currentJob.others && currentJob.others[jobKeys.paymentForJob] &&
                                     <span className="job__Skill__Wrapper">
                                         <BsCashStack className="info__Icon" />
-                                        <span>Payment:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.paymentForJob]}</span></span>
+                                        <span>Payment:&nbsp;<span className="highlight__Job__Info">{currentJob.payment}</span></span>
                                     </span>
                                 }
                             </div>
-                            <div className="job__Quick__Apply__Container">
-                                <button className="apply__Btn green__Btn" onClick={handleSubmitApplicationBtnClick} disabled={disableApplyBtn}>
-                                    <span>Apply</span>
-                                    <RiShareBoxFill />
-                                </button>
-                            </div>
+                            {
+                                isLargeScreen && <div className="job__Quick__Apply__Container">
+                                    <button className="apply__Btn green__Btn" onClick={handleSubmitApplicationBtnClick} disabled={disableApplyBtn}>
+                                        <span>Apply</span>
+                                        <RiShareBoxFill />
+                                    </button>
+                                </div>
+                            }
                         </div>
 
                         <div className="job__About__Info">
