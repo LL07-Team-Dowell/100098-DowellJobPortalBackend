@@ -18,9 +18,9 @@ export const newApplicationState = {
     other_info: [],
     agree_to_all_terms: "False",
     company_id: "",
-    usernames: "",
     data_type: "",
     payment: "",
+    // time_interval: "",
     application_submitted_on: ""
 }
 
@@ -46,13 +46,13 @@ export const excludedApplicantInfo = [
 ]
 
 export const mutableNewApplicationStateNames = {
-    job: "job",
+    _id: "_id",
     applicant: "applicant",
     job_title: "job_title",
     job_number: "job_number",
     payment: "payment",
     country: "country",
-    usernames: "usernames",
+    username: "username",
     freelancePlatform: "freelancePlatform",
     freelancePlatformUrl: "freelancePlatformUrl",
     jobDescription: "description",
@@ -70,6 +70,7 @@ export const mutableNewApplicationStateNames = {
     status: "status",
     others_scheduled_interview_date: "scheduled_interview_date",
     company_id: "company_id",
+    // time_interval: "time_interval",
     data_type: "data_type"
 }
 

@@ -21,6 +21,7 @@ export const newJobApplicationDataReducerActions = {
     UPDATE_DATA_TYPE: "update_data_type",
     UPDATE_JOB_NUMBER: "update_job_number",
     UPDATE_USERNAME: "update_username",
+    // UPDATE_TIME_INTERVAL:"update_time_interval"
 }
 
 export const newJobApplicationDataReducer = (currentState, action) => {

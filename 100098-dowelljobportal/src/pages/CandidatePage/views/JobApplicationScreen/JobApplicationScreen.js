@@ -141,13 +141,14 @@ const JobApplicationScreen = () => {
             dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_OTHERS, payload: { stateToChange: item, value: "" } })
         })
 
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB, payload: { stateToChange: mutableNewApplicationStateNames.job, value: currentJob._id } });
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB, payload: { stateToChange: mutableNewApplicationStateNames._id, value: currentJob._id } });
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.job_title, value: currentJob.job_title } });
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_NUMBER, payload: { stateToChange: mutableNewApplicationStateNames.job_number, value: currentJob.job_number } });
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_PAYMENT, payload: { stateToChange: mutableNewApplicationStateNames.payment, value: currentJob.payment } });
 
         console.log(currentJob);
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_USERNAME, payload: { stateToChange: mutableNewApplicationStateNames.usernames, value: currentUser.userinfo.username } });
+        // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_TIME_INTERVAL, payload: { stateToChange: mutableNewApplicationStateNames.time_interval, value: currentJob.time_interval } });
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_USERNAME, payload: { stateToChange: mutableNewApplicationStateNames.username, value: currentUser.userinfo.username } });
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_email, value: currentUser.userinfo.email } });
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_COMPANY_ID, payload: { stateToChange: mutableNewApplicationStateNames.company_id, value: currentUser.portfolio_info[0].org_id } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATA_TYPE, payload: { stateToChange: mutableNewApplicationStateNames.data_type, value: currentUser.portfolio_info[0].data_type } })
@@ -524,7 +525,7 @@ const JobApplicationScreen = () => {
                     <>
                         <div className="job__Title__Container">
                             <div className="job__Title__Items">
-                                <h1 className="job__Title"><b>{currentJob.title}</b></h1>
+                                <h1 className="job__Title"><b>{currentJob.job_title}</b></h1>
                                 <p>Dowell Ux living lab</p>
                             </div>
                             <div className="job__Share__Items">
@@ -574,7 +575,7 @@ const JobApplicationScreen = () => {
                                 }
                                 <span className="job__Skill__Wrapper">
                                     <BsClock className="info__Icon" />
-                                    <span>Duration:&nbsp;<span className="highlight__Job__Info">{currentJob.time_period}</span></span>
+                                    <span>Duration:&nbsp;<span className="highlight__Job__Info">{currentJob.time_interval}</span></span>
                                 </span>
                                 {
                                     currentJob.others && currentJob.others[jobKeys.paymentForJob] &&
