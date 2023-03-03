@@ -41,7 +41,8 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
             <div className="job__Details__Info mt__5">
                 <div className="detail__Item">
                     <IoMdTime className="status__Icon" />
-                    <span>Applied {getDaysDifferenceFromPresentDate(job.others[mutableNewApplicationStateNames.others_date_applied])} {getDaysDifferenceFromPresentDate(job.others[mutableNewApplicationStateNames.others_date_applied]) > 1 ? 'days' : 'day'} ago</span>
+                    {/* <span>Applied {getDaysDifferenceFromPresentDate(job.others[mutableNewApplicationStateNames.others_date_applied])} {getDaysDifferenceFromPresentDate(job.others[mutableNewApplicationStateNames.others_date_applied]) > 1 ? 'days' : 'day'} ago</span> */}
+                    <span>Applied {getDaysDifferenceFromPresentDate(job[mutableNewApplicationStateNames.others_date_applied])} {getDaysDifferenceFromPresentDate(job[mutableNewApplicationStateNames.others_date_applied]) > 1 ? 'days' : 'day'} ago</span>
                 </div>
                 <div className="vertical__Seperator lg"></div>
                 <div className="detail__Item">
@@ -123,8 +124,7 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 </div>
             </div>
         }
-        {console.log(candidateData)
-        }
+       
         {/* <button disabled={disableActionBtn} className={`cta__Button ${candidateCardView && candidateData ? "rel" : ''}`} onClick={() => handleBtnClick(job ? job : candidateData ? candidateData : null)}>
             <span>{buttonText ? buttonText : "Apply"}</span>
             <AiOutlineArrowRight />
