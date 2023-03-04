@@ -50,7 +50,7 @@ function App() {
 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingPage />;
 
   console.log("CURRENT USER", currentUser);
 

@@ -27,9 +27,10 @@ const LoadingPage = () => {
             viewBox="0 0 100 100"
             id="electron"
           >
-            <circle fill="#34cc40" cx="10" cy="70" r="10" />
+            <circle fill="#34cc40" cx="5" cy="70" r="5" />
           </svg>
         </div>
+        <p>Loading...</p>
       </div>
     </>
   );
