@@ -20,7 +20,7 @@ import { updateCandidateApplication } from '../../../../services/commonServices'
 import { sendMail } from '../../../../services/mailServices';
 import { dowellLoginUrl } from '../../../../services/axios';
 import { getUserDetails } from '../../../../services/authServices';
-import { changeCandidateStatusToShortlisted } from '../../../../services/hrServices';
+import { addSelectedCandidate, changeCandidateStatusToShortlisted } from '../../../../services/hrServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 
 
@@ -213,6 +213,20 @@ const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, 
 
             case hrPageActions.MOVE_TO_SELECTED:
                 if (!selectedCandidateData) return;
+
+                const selectData ={
+                    document_id :selectedCandidateData["_id"] , 
+                    hr_remarks:remarks ,  
+                    status:candidateStatuses.SELECTED ,  
+                    project:assignedProject , 
+                    product_discord_link:hrDiscordLink, 
+                    applicant:selectedCandidateData.applicant , 
+                    company_id:currentUser.portfolio_info[0].org_id, 
+                    data_type:currentUser.portfolio_info[0].data_type ,
+                    selected_on:new Date() 
+                }
+                await addSelectedCandidate(selectData) ;
+
 
                 await updateCandidateApplication(selectedCandidateData.id, { applicant: selectedCandidateData.applicant, status: candidateStatuses.SELECTED, job: selectedCandidateData.job, others: { ...selectedCandidateData.others, [mutableNewApplicationStateNames.hr_discord_link] : hrDiscordLink, [mutableNewApplicationStateNames.assigned_project]: assignedProject } })
 
