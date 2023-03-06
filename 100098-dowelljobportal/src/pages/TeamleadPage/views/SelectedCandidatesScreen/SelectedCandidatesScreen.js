@@ -228,9 +228,9 @@ const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, 
                 await addSelectedCandidate(selectData) ;
 
 
-                await updateCandidateApplication(selectedCandidateData.id, { applicant: selectedCandidateData.applicant, status: candidateStatuses.SELECTED, job: selectedCandidateData.job, others: { ...selectedCandidateData.others, [mutableNewApplicationStateNames.hr_discord_link] : hrDiscordLink, [mutableNewApplicationStateNames.assigned_project]: assignedProject } })
+                // await updateCandidateApplication(selectedCandidateData.id, { applicant: selectedCandidateData.applicant, status: candidateStatuses.SELECTED, job: selectedCandidateData.job, others: { ...selectedCandidateData.others, [mutableNewApplicationStateNames.hr_discord_link] : hrDiscordLink, [mutableNewApplicationStateNames.assigned_project]: assignedProject } })
 
-                updateCandidateData(prevCandidates => { return prevCandidates.filter(candidate => candidate.id !== selectedCandidateData.id) })
+                // updateCandidateData(prevCandidates => { return prevCandidates.filter(candidate => candidate.id !== selectedCandidateData.id) })
                 
                 return navigate("/shortlisted");
 
