@@ -19,7 +19,7 @@ function UserScreen({ candidateSelected }) {
         <div className="user__Intro__Item__Container">
               <div className="user__Intro__Item">
                   <h2>User Name</h2>
-                  <span>{ currentUser.username }</span>    
+                  <span>{ currentUser.userinfo.username }</span>    
               </div>
               <div className="edit__Btn">
                   Edit
