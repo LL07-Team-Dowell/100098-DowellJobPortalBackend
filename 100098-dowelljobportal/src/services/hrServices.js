@@ -1,10 +1,10 @@
 import { currentBackendAxiosInstance } from "./axios"
 
-export const getShortListedCandidate = async (data) => {
+export const changeCandidateStatusToShortlisted = async (data) => {
             return await currentBackendAxiosInstance.post("hr_management/shortlisted_candidate/", data)
 }
 
-export const getSelectedCandidate = async (data) => {
+export const addSelectedCandidate = async (data) => {
             return await currentBackendAxiosInstance.post("hr_management/selected_candidate/", data)
 }
 
