@@ -227,7 +227,8 @@ const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, 
                 }
                 await addSelectedCandidate(selectData) ;
 
-
+                updateCandidateData(prevCandidates => { return [ ...prevCandidates, selectedCandidateData ] } )
+                updateAppliedData(prevAppliedCandidates => { return prevAppliedCandidates.filter(application => application._id !== selectedCandidateData._id) })
                 // await updateCandidateApplication(selectedCandidateData.id, { applicant: selectedCandidateData.applicant, status: candidateStatuses.SELECTED, job: selectedCandidateData.job, others: { ...selectedCandidateData.others, [mutableNewApplicationStateNames.hr_discord_link] : hrDiscordLink, [mutableNewApplicationStateNames.assigned_project]: assignedProject } })
 
                 // updateCandidateData(prevCandidates => { return prevCandidates.filter(candidate => candidate.id !== selectedCandidateData.id) })
