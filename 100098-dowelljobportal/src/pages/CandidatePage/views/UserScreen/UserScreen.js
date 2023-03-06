@@ -13,6 +13,7 @@ function UserScreen({ candidateSelected }) {
 
   return (
     <JobLandingLayout user={currentUser} afterSelection={candidateSelected}>
+   {console.log(currentUser)}
     <div className='candidate__User__Profile__Page'>
       <div className="user__Page__Container user">
 
@@ -27,22 +28,22 @@ function UserScreen({ candidateSelected }) {
           </div>
           <div className="user__Intro__Item">
               <h2>Email</h2>
-              <span>{currentUser.email}</span>
+              <span>{currentUser.userinfo.email}</span>
           </div>
           <div className="user__Intro__Item">
               <h2>First Name</h2>
-              <span>{currentUser.first_name}</span>
+              <span>{currentUser.userinfo.first_name}</span>
           </div>
           {
-              currentUser.last_name !== "" &&
+              currentUser.userinfo.last_name !== "" &&
               <div className="user__Intro__Item">
                   <h2>Last Name</h2>
-                  <span>{currentUser.last_name}</span>
+                  <span>{currentUser.userinfo.last_name}</span>
               </div>
           }
           <div className="user__Intro__Item">
               <h2>Role</h2>
-              <span>{currentUser.role}</span>
+              <span>Candidate</span>
           </div>
           <button className="logout__Btn" onClick={handleLogout}>
             Logout
