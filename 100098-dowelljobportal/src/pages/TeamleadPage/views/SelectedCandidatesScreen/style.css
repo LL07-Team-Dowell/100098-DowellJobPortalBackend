@@ -163,6 +163,10 @@
     color: var(--green-color);
 }
 
+.status-options-container .status-option.green-bg {
+    background-color: var(--green-color);
+}
+
 .status-options-container .status-option.active.red-color{
     color: var(--red-color);
 }

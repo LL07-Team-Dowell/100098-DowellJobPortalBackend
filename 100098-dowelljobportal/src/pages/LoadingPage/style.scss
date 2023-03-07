@@ -1,0 +1,77 @@
+.loading__page__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  height: 100vh;
+   
+  p {
+    position: relative;
+    margin-top: 2rem;
+    font-family: 'Poppins', sans-serif;
+    &::after{
+      content: "";
+      position: absolute;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: #fff;
+      border-left: 2px solid #000;
+      animation: typing 5s steps(13) forwards;
+    }
+    
+    @keyframes typing{
+      100%{
+        left: 90%;
+        margin: 4px -10px 0 10px;
+      }
+    }
+  }
+}
+svg {
+  max-width: 100%;
+}
+.loadingPic {
+  width: 100%;
+  position: absolute;
+  top: 0rem;
+  left: 0rem;
+  z-index: 100;
+}
+
+$electrons: 3;
+$atom-size: 10rem;
+$logo_config: (
+  name: logo_kinetics,
+  duration: 5s,
+  timing: linear,
+  iteration: infinite,
+  direction: normal,
+  fill-mode: forwards,
+);
+
+@function sh-setup($config) {
+  @return zip(map-values($config)...);
+}
+
+@keyframes logo_kinetics {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.e-albania {
+  height: $atom-size;
+  position: relative;
+  width: $atom-size;
+
+  svg:not(#orbit) {
+    animation: sh-setup($logo_config);
+    position: absolute;
+    top: -50%;
+    left: 0;
+    transform-origin: bottom center;
+  }
+}

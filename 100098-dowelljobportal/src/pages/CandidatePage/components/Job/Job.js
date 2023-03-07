@@ -11,13 +11,13 @@ import TitleNavigationBar from '../../../../components/TitleNavigationBar/TitleN
 import { changeToTitleCase } from '../../../../helpers/helpers';
 import { useCandidateJobsContext } from '../../../../contexts/CandidateJobsContext';
 // import { getJobs } from '../../../../services/commonServices';
-import { getJobs } from '../../../../services/candidateServices';
+import { getAppliedJobs, getJobs } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 
 function JobScreen() {
     const [jobs, setJobs] = useState([]);
     const [jobsLoading, setJobsLoading] = useState(true);
-    const { candidateJobs } = useCandidateJobsContext();
+    const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
     const navigate = useNavigate();
     const { section } = useNavigationContext();
     const [isLoading, setLoading] = useState(true);
@@ -125,13 +125,41 @@ function JobScreen() {
             // setJobs(res.data.sort((a, b) => a.title.localeCompare(b.title)));
             setJobs(res.data.response.data.sort((a, b) => a.job_title.localeCompare(b.job_title)));
             setJobsLoading(false);
-            setAllRequestsDone(true);
+            // setAllRequestsDone(true);
         }).catch(err => {
             console.log(err);
             setJobsLoading(false)
             setAllRequestsDone(true);
         })
+
+        if (!currentUser) return setLoading(false);
+        if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
+        const datass = currentUser.portfolio_info[0].org_id;
+
+        getAppliedJobs(datass).then(res => {
+
+            const currentUserAppliedJobs = res.data.response.data.filter(application => application.username === currentUser.userinfo.username);
+            // const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
+
+            // if (userSelectedJobs.length  >= 1) {
+            //   setAssignedProject(userSelectedJobs[0].others[mutableNewApplicationStateNames.assigned_project])
+            //   setHired(true);
+            //   setLoading(false);
+            //   return;
+            // }
+
+            setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
+            //setLoading(false);
+            setAllRequestsDone(true);
+
+        }).catch(err => {
+            console.log(err);
+            //  setLoading(false);
+            setAllRequestsDone(true);
+        })
+
     }, []);
+
 
     useEffect(() => {
 

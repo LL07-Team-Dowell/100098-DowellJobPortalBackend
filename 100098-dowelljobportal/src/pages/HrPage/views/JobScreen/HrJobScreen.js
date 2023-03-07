@@ -543,7 +543,7 @@ function HrJobScreen() {
                 hrPageActive={true}
                 guestApplication={location.state.candidate.status === candidateStatuses.GUEST_PENDING_SELECTION ? true : false}
                 selectedCandidateData={location.state.candidate}
-                updateCandidateData={setAppliedJobs}
+                updateCandidateData={setCandidateData}
                 updateAppliedData={section === "guest-applications" ? setGuestApplications : setAppliedJobs}
                 jobTitle={jobs.find(job => job.job_number === location.state.candidate.job_number)?.job_title}
               />

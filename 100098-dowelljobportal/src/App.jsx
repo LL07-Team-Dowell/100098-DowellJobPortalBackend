@@ -40,6 +40,7 @@ import AdminReports from "./pages/AdminPage/views/Reports/Reports";
 import AdminSettings from "./pages/AdminPage/views/Settings/AdminSettings";
 import RedirectPage from "./pages/Redirectpage/redirect";
 import { testingRoles } from "./utils/testingRoles";
+import LoadingPage from "./pages/LoadingPage/LoadingPage";
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -49,7 +50,7 @@ function App() {
 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingPage />;
 
   console.log("CURRENT USER", currentUser);
 
@@ -495,7 +496,7 @@ function App() {
   // return (
   //   <>
   //     <Routes>
-  //       <Route path="/" element={<RedirectPage />} />
+  //       <Route path="/" element={<LoadingPage />} />
   //     </Routes>
   //   </>
   // );

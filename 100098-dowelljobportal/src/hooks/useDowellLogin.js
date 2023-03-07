@@ -13,7 +13,7 @@ export default function useDowellLogin(
 ) {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentLocalSessionId = sessionStorage.getItem("session_id");
-  const currentLocalPortfolioId = sessionStorage.getItem("id");
+  const currentLocalPortfolioId = sessionStorage.getItem("portfolio_id");
 
   useEffect(() => {
     const session_id = searchParams.get("session_id");
@@ -36,7 +36,9 @@ export default function useDowellLogin(
 
               //CHECK IF USER HAS ROLE CONFIGURED
               const userHasRoleConfigured = settingForCurrentUserOrg.find(
-                (setting) => setting.profile_info[0].profile_title === currentUserDetails.portfolio_info[0].portfolio_name
+                (setting) =>
+                  setting.profile_info[0].profile_title ===
+                  currentUserDetails.portfolio_info[0].portfolio_name
               );
 
               //USER DOES NOT HAVE ROLE CONFIGURED
@@ -85,9 +87,13 @@ export default function useDowellLogin(
 
     sessionStorage.setItem("session_id", session_id);
 
-    if (session_id && !portfolio_id) {      
+    if (session_id && !portfolio_id) {
       // remove session_id from url
-      window.history.replaceState({}, document.title, "/100098-DowellJobPortal/");
+      window.history.replaceState(
+        {},
+        document.title,
+        "/100098-DowellJobPortal/"
+      );
 
       getUserInfoFromLoginAPI({ session_id: session_id })
         .then(async (res) => {
@@ -103,7 +109,6 @@ export default function useDowellLogin(
       return;
     }
 
-    
     // remove session_id and id from url
     window.history.replaceState({}, document.title, "/100098-DowellJobPortal/");
 
@@ -124,7 +129,9 @@ export default function useDowellLogin(
 
           //CHECK IF USER HAS ROLE CONFIGURED
           const userHasRoleConfigured = settingForCurrentUserOrg.find(
-            (setting) => setting.profile_info[0].profile_title === currentUserDetails.portfolio_info[0].portfolio_name
+            (setting) =>
+              setting.profile_info[0].profile_title ===
+              currentUserDetails.portfolio_info[0].portfolio_name
           );
 
           //User Does not have role configured

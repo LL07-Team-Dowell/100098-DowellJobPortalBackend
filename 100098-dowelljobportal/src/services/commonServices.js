@@ -33,5 +33,5 @@ export const updateCandidateApplication = async (applicationId, data) => {
 }
 
 export const getJobs2 = async (data) => {
-    return await currentBackendAxiosInstance.post("admin_managment/get_jobs/",data )
+    return await currentBackendAxiosInstance.post("admin_management/get_jobs/",data )
 }

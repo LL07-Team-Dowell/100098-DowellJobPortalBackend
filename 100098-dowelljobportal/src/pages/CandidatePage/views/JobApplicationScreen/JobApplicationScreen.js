@@ -132,20 +132,30 @@ const JobApplicationScreen = () => {
             //  console.log(currentState);
         }
 
-        if (currentUser.role === process.env.REACT_APP_GUEST_ROLE) {
-            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_FIRST_NAME, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_first_name, value: currentUser.username.split("_")[1] } });
-            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_email, value: currentUser.email } });
-            dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICATION_STATUS, payload: { stateToChange: mutableNewApplicationStateNames.status, value: candidateStatuses.GUEST_PENDING_SELECTION } });
-        }
+        // if (currentUser.role === process.env.REACT_APP_GUEST_ROLE) {
+        //     dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_FIRST_NAME, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_first_name, value: currentUser.username.split("_")[1] } });
+        //     dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICATION_STATUS, payload: { stateToChange: mutableNewApplicationStateNames.status, value: candidateStatuses.GUEST_PENDING_SELECTION } });
+        // }
 
         Object.keys(currentJob.others || {}).forEach(item => {
             dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_OTHERS, payload: { stateToChange: item, value: "" } })
         })
 
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB, payload: { stateToChange: mutableNewApplicationStateNames.job, value: currentJob.id } })
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT, payload: { stateToChange: mutableNewApplicationStateNames.applicant, value: currentUser.username } })
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATE_APPLIED, payload: { stateToChange: mutableNewApplicationStateNames.others_date_applied, value: new Date() } })
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.title, value: currentJob.title } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB, payload: { stateToChange: mutableNewApplicationStateNames._id, value: currentJob._id } });
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.job_title, value: currentJob.job_title } });
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_NUMBER, payload: { stateToChange: mutableNewApplicationStateNames.job_number, value: currentJob.job_number } });
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_PAYMENT, payload: { stateToChange: mutableNewApplicationStateNames.payment, value: currentJob.payment } });
+
+        console.log(currentJob);
+        // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_TIME_INTERVAL, payload: { stateToChange: mutableNewApplicationStateNames.time_interval, value: currentJob.time_interval } });
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_USERNAME, payload: { stateToChange: mutableNewApplicationStateNames.username, value: currentUser.userinfo.username } });
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_email, value: currentUser.userinfo.email } });
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_COMPANY_ID, payload: { stateToChange: mutableNewApplicationStateNames.company_id, value: currentUser.portfolio_info[0].org_id } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATA_TYPE, payload: { stateToChange: mutableNewApplicationStateNames.data_type, value: currentUser.portfolio_info[0].data_type } })
+        console.log(currentUser);
+        // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT, payload: { stateToChange: mutableNewApplicationStateNames.applicant, value: currentUser.username } })
+        // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.title, value: currentJob.title } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATE_APPLIED, payload: { stateToChange: mutableNewApplicationStateNames.application_submitted_on, value: new Date() } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_DESCRIPTION, payload: { stateToChange: mutableNewApplicationStateNames.jobDescription, value: currentJob.description } })
 
         if (currentJob.typeof === "Employee" || currentJob.typeof === "Internship") return setRemoveFreelanceOptions(true);
@@ -260,14 +270,14 @@ const JobApplicationScreen = () => {
 
         setDisableNextBtn(true);
 
-        // try {
-        //     await submitNewApplication(newApplicationData);
-        //     navigate("/applied");
-        // } catch (error) {
-        //     console.log(error)
-        //     toast.info("Application submission failed. Please try again");
-        //     setDisableNextBtn(false);
-        // }
+        try {
+            await submitNewApplication(newApplicationData);
+            navigate("/applied");
+        } catch (error) {
+            console.log(error)
+            toast.info("Application submission failed. Please try again");
+            setDisableNextBtn(false);
+        }
 
         console.log(newApplicationData);
     }
@@ -308,7 +318,7 @@ const JobApplicationScreen = () => {
                 section === "form" ? <>
                     <div className="job__Title__Container">
                         <div className="job__Title__Items">
-                            <h1 className="job__Title"><b>Job Application Form for {currentJob.title}</b></h1>
+                            <h1 className="job__Title"><b>Job Application Form for {currentJob.job_title}</b></h1>
                             <p>Dowell Ux living lab</p>
                         </div>
                         <div className="job__Share__Items">
@@ -469,10 +479,10 @@ const JobApplicationScreen = () => {
                                         </label>
                                     </div>
 
-                                    {React.Children.toArray(Object.keys(currentJob.others || {}).map((key) => createInputData(key, currentJob.others[key])))}
+                                    {/* {React.Children.toArray(Object.keys(currentJob.others || {}).map((key) => createInputData(key, currentJob.others[key])))} */}
 
                                     <label className="form__Label__Accept__All" onClick={() => setLabelClicked(!labelClicked)}>
-                                        <input type={'checkbox'} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_AGREE_TO_ALL, payload: { stateToChange: mutableNewApplicationStateNames.others_property_agreeToAll, value: e.target.checked } })} />
+                                        <input type={'checkbox'} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_AGREE_TO_ALL, payload: { stateToChange: mutableNewApplicationStateNames.agree_to_all_terms, value: e.target.checked } })} />
                                         <span>Agree/Disagree to all terms</span>
                                     </label>
 
@@ -492,7 +502,7 @@ const JobApplicationScreen = () => {
 
                                 formPage !== 5 &&
                                 <>
-                                    <button className="apply__Btn green__Btn" type="button" onClick={() => { setFormPage(formPage + 1); }}>
+                                    <button className="apply__Btn green__Btn" type="button" onClick={() => { setFormPage(formPage + 1); }} disabled={disableNextBtn}>
                                         <span>Next</span>
                                         <IoIosArrowRoundForward />
                                     </button>
@@ -515,7 +525,7 @@ const JobApplicationScreen = () => {
                     <>
                         <div className="job__Title__Container">
                             <div className="job__Title__Items">
-                                <h1 className="job__Title"><b>{currentJob.title}</b></h1>
+                                <h1 className="job__Title"><b>{currentJob.job_title}</b></h1>
                                 <p>Dowell Ux living lab</p>
                             </div>
                             <div className="job__Share__Items">
@@ -536,51 +546,51 @@ const JobApplicationScreen = () => {
                                     <span>Start Date:&nbsp;<span className="highlight__Job__Info">Immediately</span></span>
                                 </span>
                                 {
-                                    currentJob.others && currentJob.others[jobKeys.othersInternJobType] &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
-                                        <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.othersInternJobType]}</span></span>
+                                        <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.type_of_job}</span></span>
                                     </span>
                                 }
-                                {
+                                {/* {
                                     currentJob.others && currentJob.others[jobKeys.othersResearchAssociateJobType] &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
                                         <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.othersResearchAssociateJobType]}</span></span>
                                     </span>
-                                }
-                                {
+                                } */}
+                                {/* {
                                     currentJob.others && currentJob.others[jobKeys.othersFreelancerJobType] &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
                                         <span>Job Type:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.othersFreelancerJobType]}</span></span>
                                     </span>
-                                }
-                                {
+                                } */}
+                                {/* {
                                     currentJob.typeof === "Employee" &&
                                     <span className="job__Skill__Wrapper">
                                         <BusinessCenterIcon className="info__Icon" />
                                         <span>Job Type:&nbsp;<span className="highlight__Job__Info">Full time</span></span>
                                     </span>
-                                }
+                                } */}
                                 <span className="job__Skill__Wrapper">
                                     <BsClock className="info__Icon" />
-                                    <span>Duration:&nbsp;<span className="highlight__Job__Info">{currentJob.time_period}</span></span>
+                                    <span>Duration:&nbsp;<span className="highlight__Job__Info">{currentJob.time_interval}</span></span>
                                 </span>
                                 {
-                                    currentJob.others && currentJob.others[jobKeys.paymentForJob] &&
                                     <span className="job__Skill__Wrapper">
                                         <BsCashStack className="info__Icon" />
-                                        <span>Payment:&nbsp;<span className="highlight__Job__Info">{currentJob.others[jobKeys.paymentForJob]}</span></span>
+                                        <span>Payment:&nbsp;<span className="highlight__Job__Info">{currentJob.payment}</span></span>
                                     </span>
                                 }
                             </div>
-                            <div className="job__Quick__Apply__Container">
-                                <button className="apply__Btn green__Btn" onClick={handleSubmitApplicationBtnClick} disabled={disableApplyBtn}>
-                                    <span>Apply</span>
-                                    <RiShareBoxFill />
-                                </button>
-                            </div>
+                            {
+                                isLargeScreen && <div className="job__Quick__Apply__Container">
+                                    <button className="apply__Btn green__Btn" onClick={handleSubmitApplicationBtnClick} disabled={disableApplyBtn}>
+                                        <span>Apply</span>
+                                        <RiShareBoxFill />
+                                    </button>
+                                </div>
+                            }
                         </div>
 
                         <div className="job__About__Info">
@@ -636,7 +646,6 @@ const JobApplicationScreen = () => {
         {
 
             // newApplicationData.others[mutableNewApplicationStateNames.applicant] && newApplicationData.others[mutableNewApplicationStateNames.applicant] !== "" && <Footer currentCategory={currentJob.typeof} />
-            newApplicationData.applicant && newApplicationData.applicant !== "" && <Footer currentCategory={currentJob.job_category} />
         }
     </>
 }

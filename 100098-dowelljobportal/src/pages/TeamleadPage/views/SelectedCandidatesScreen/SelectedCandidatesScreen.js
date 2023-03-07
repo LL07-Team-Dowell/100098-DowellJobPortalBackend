@@ -57,31 +57,31 @@ const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, 
 
         ref.current.classList.toggle("active");
 
-        if (action === hrPageActions.MOVE_TO_SHORTLISTED) {
+        // if (action === hrPageActions.MOVE_TO_SHORTLISTED) {
             
-            try {
+        //     try {
                 
-                const res = await getUserDetails({ username: selectedCandidateData[mutableNewApplicationStateNames.applicant] })
+        //         const res = await getUserDetails({ username: selectedCandidateData[mutableNewApplicationStateNames.applicant] })
                 
-                if (res.data.username === "") {
-                    disableOtherBtns && setDisabled(false);
-                    ref.current.classList.toggle("active");
-                    return toast.info("Candidate has no active account.")
-                }
+        //         if (res.data.username === "") {
+        //             disableOtherBtns && setDisabled(false);
+        //             ref.current.classList.toggle("active");
+        //             return toast.info("Candidate has no active account.")
+        //         }
                 
-                if (res.data.role === process.env.REACT_APP_GUEST_ROLE) {
-                    disableOtherBtns && setDisabled(false);
-                    ref.current.classList.toggle("active");
-                    return toast.info("Candidate has not yet done full signup.")
-                };
+        //         if (res.data.role === process.env.REACT_APP_GUEST_ROLE) {
+        //             disableOtherBtns && setDisabled(false);
+        //             ref.current.classList.toggle("active");
+        //             return toast.info("Candidate has not yet done full signup.")
+        //         };
 
-            } catch (err) {
-                disableOtherBtns && setDisabled(false);
-                ref.current.classList.toggle("active");
-                return toast.error("Something went wrong went trying to fetch details of current user.")
-            }
+        //     } catch (err) {
+        //         disableOtherBtns && setDisabled(false);
+        //         ref.current.classList.toggle("active");
+        //         return toast.error("Something went wrong went trying to fetch details of current user.")
+        //     }
 
-        }
+        // }
 
         switch (action) {
             case accountPageActions.MOVE_TO_ONBOARDING:
@@ -193,6 +193,12 @@ const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, 
             case hrPageActions.MOVE_TO_SHORTLISTED:
                 if (!selectedCandidateData) return;
 
+                if (remarks.length < 1) {
+                    disableOtherBtns && setDisabled(false);
+                    ref.current.classList.toggle("active");
+
+                    return toast.info("Please add remarks for candidate")
+                }
                 // selectedCandidateData[mutableNewApplicationStateNames.hr_remarks] = remarks;
                 const testData = {
                     hr_remarks:remarks , 
@@ -214,9 +220,16 @@ const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, 
             case hrPageActions.MOVE_TO_SELECTED:
                 if (!selectedCandidateData) return;
 
+                if (hrDiscordLink.length < 1) {
+                    disableOtherBtns && setDisabled(false);
+                    ref.current.classList.toggle("active");
+
+                    return toast.info("Please add discord link for candidate")
+                }
+
                 const selectData ={
                     document_id :selectedCandidateData["_id"] , 
-                    hr_remarks:remarks ,  
+                    hr_remarks: selectedCandidateData.hr_remarks,  
                     status:candidateStatuses.SELECTED ,  
                     project:assignedProject , 
                     product_discord_link:hrDiscordLink, 
@@ -371,7 +384,7 @@ const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, 
                     {
                         hrPageActive ? <>
 
-                        <button className={`status-option ${initialMeet ? 'green-color' : 'orange-color'} ${initialMeet ? '' : selectedCandidateData.status === candidateStatuses.SHORTLISTED ? 'active' : ''}`} ref={ref7} onClick={() => handleClick(ref7, true, initialMeet ? hrPageActions.MOVE_TO_SELECTED : guestApplication ? hrPageActions.MOVE_TO_PENDING : hrPageActions.MOVE_TO_SHORTLISTED)} disabled={initialMeet ? disabled : selectedCandidateData.status === candidateStatuses.SHORTLISTED ? true : disabled}>
+                        <button className={`status-option green-bg ${initialMeet ? 'green-color' : 'orange-color'} ${initialMeet ? '' : selectedCandidateData.status === candidateStatuses.SHORTLISTED ? 'active' : ''}`} ref={ref7} onClick={() => handleClick(ref7, true, initialMeet ? hrPageActions.MOVE_TO_SELECTED : guestApplication ? hrPageActions.MOVE_TO_PENDING : hrPageActions.MOVE_TO_SHORTLISTED)} disabled={initialMeet ? disabled : selectedCandidateData.status === candidateStatuses.SHORTLISTED ? true : disabled}>
                             {/* <BsStopCircle className='status-icon' /> */}
                             {/* <br /><br/> */}
                             <div className='textt'>{`${initialMeet ? 'Selected' : guestApplication ? 'Pending' : 'Shortlisted'}`}</div>

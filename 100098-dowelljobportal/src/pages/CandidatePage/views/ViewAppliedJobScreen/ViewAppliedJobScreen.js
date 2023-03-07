@@ -7,7 +7,6 @@ import "./style.css";
 
 
 const ViewAppliedJobScreen = ( { job, applicationDetails }) => {
-    
     const navigate = useNavigate();
 
     return <>
@@ -15,11 +14,11 @@ const ViewAppliedJobScreen = ( { job, applicationDetails }) => {
         <div className="view__Applied__Jobs__Container">
             <TitleNavigationBar title={"Application Details"} handleBackBtnClick={() => navigate(-1)} />
             <div className="view__Job__Details">
-                <h2><b>{job.title}</b></h2>
+                <h2><b>{job.job_title}</b></h2>
                 <ApplicantDetails candidateApplicationPageActive={true} applicantData={applicationDetails} />
             </div>
         </div>
-        <Footer />
+        {/* <Footer /> */}
     </>
 }
 

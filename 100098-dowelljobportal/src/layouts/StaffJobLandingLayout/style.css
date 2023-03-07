@@ -311,4 +311,16 @@
     .jobs__Layout__Content.admin {
         margin-top: 0;
     }
+    .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar.full__Height {
+        height: 4.6rem;
+        justify-content: flex-start;
+    }
+    .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar.full__Height .new__Side__Navigation__Links {
+        width: 100%;
+    }
+    .staff__Jobs__Layout__Navigation__Container.admin .search__Navigation__Bar {
+        width: 65%;
+        padding-top: 2%;
+        padding-bottom: 2%;
+    }
 }
