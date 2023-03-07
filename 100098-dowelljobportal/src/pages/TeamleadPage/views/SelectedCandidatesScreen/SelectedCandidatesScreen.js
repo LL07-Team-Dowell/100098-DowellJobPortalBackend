@@ -20,6 +20,8 @@ import { updateCandidateApplication } from '../../../../services/commonServices'
 import { sendMail } from '../../../../services/mailServices';
 import { dowellLoginUrl } from '../../../../services/axios';
 import { getUserDetails } from '../../../../services/authServices';
+import { addSelectedCandidate, changeCandidateStatusToShortlisted } from '../../../../services/hrServices';
+import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 
 
 const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, allCandidatesData, rehireTabActive, accountPage, hireTabActive, showOnboarding, updateShowCandidate, hrPageActive, initialMeet, jobTitle, teamleadPageActive, showApplicationDetails, handleViewApplicationBtnClick, availableProjects, updateAppliedData, guestApplication }) => {
@@ -37,6 +39,7 @@ const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, 
     const [ candidatePlatform, setCandidatePlatform ] = useState("");
     const [ assignedProject, setAssignedProject ] = useState("Hr Hiring");
     const [ interviewDate, setInterviewDate ] = useState("");
+    const { currentUser} = useCurrentUserContext();
 
     useEffect(() => {
 
@@ -190,21 +193,44 @@ const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, 
             case hrPageActions.MOVE_TO_SHORTLISTED:
                 if (!selectedCandidateData) return;
 
-                selectedCandidateData[mutableNewApplicationStateNames.hr_remarks] = remarks;
-
-                await updateCandidateApplication(selectedCandidateData.id, { applicant: selectedCandidateData.applicant, status: candidateStatuses.SHORTLISTED, job: selectedCandidateData.job, [mutableNewApplicationStateNames.hr_remarks]: remarks })
+                // selectedCandidateData[mutableNewApplicationStateNames.hr_remarks] = remarks;
+                const testData = {
+                    hr_remarks:remarks , 
+                    status: candidateStatuses.SHORTLISTED , 
+                    applicant:selectedCandidateData.applicant , 
+                    shortlisted_on: new Date() ,
+                    company_id:currentUser.portfolio_info[0].org_id, 
+                    data_type:currentUser.portfolio_info[0].data_type ,
+                    document_id:selectedCandidateData["_id"]
+                }
+                await changeCandidateStatusToShortlisted(testData)
+                // await updateCandidateApplication(selectedCandidateData.id, { applicant: selectedCandidateData.applicant, status: candidateStatuses.SHORTLISTED, job: selectedCandidateData.job, [mutableNewApplicationStateNames.hr_remarks]: remarks })
 
                 updateCandidateData(prevCandidates => { return [ ...prevCandidates, selectedCandidateData ] } )
-                updateAppliedData(prevAppliedCandidates => { return prevAppliedCandidates.filter(application => application.id !== selectedCandidateData.id) })
-
+                updateAppliedData(prevAppliedCandidates => { return prevAppliedCandidates.filter(application => application._id !== selectedCandidateData._id) })
+                
                 return navigate("/shortlisted");
 
             case hrPageActions.MOVE_TO_SELECTED:
                 if (!selectedCandidateData) return;
 
-                await updateCandidateApplication(selectedCandidateData.id, { applicant: selectedCandidateData.applicant, status: candidateStatuses.SELECTED, job: selectedCandidateData.job, others: { ...selectedCandidateData.others, [mutableNewApplicationStateNames.hr_discord_link] : hrDiscordLink, [mutableNewApplicationStateNames.assigned_project]: assignedProject } })
+                const selectData ={
+                    document_id :selectedCandidateData["_id"] , 
+                    hr_remarks:remarks ,  
+                    status:candidateStatuses.SELECTED ,  
+                    project:assignedProject , 
+                    product_discord_link:hrDiscordLink, 
+                    applicant:selectedCandidateData.applicant , 
+                    company_id:currentUser.portfolio_info[0].org_id, 
+                    data_type:currentUser.portfolio_info[0].data_type ,
+                    selected_on:new Date() 
+                }
+                await addSelectedCandidate(selectData) ;
 
-                updateCandidateData(prevCandidates => { return prevCandidates.filter(candidate => candidate.id !== selectedCandidateData.id) })
+
+                // await updateCandidateApplication(selectedCandidateData.id, { applicant: selectedCandidateData.applicant, status: candidateStatuses.SELECTED, job: selectedCandidateData.job, others: { ...selectedCandidateData.others, [mutableNewApplicationStateNames.hr_discord_link] : hrDiscordLink, [mutableNewApplicationStateNames.assigned_project]: assignedProject } })
+
+                updateCandidateData(prevCandidates => { return prevCandidates.filter(candidate => candidate["_id"] !== selectedCandidateData["_id"]) })
                 
                 return navigate("/shortlisted");
 
