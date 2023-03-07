@@ -66,7 +66,7 @@ const AdminSettings = () => {
   };
   useEffect(()=>{
     setLoading(true) ; 
-    getSettingUserProfileInfo().then(resp => {setSettingUsetProfileInfo(resp.data), setLoading(false);console.log({reverse:resp.data.reverse()})}).catch(err => {console.log(err) ; setLoading(false)})
+    getSettingUserProfileInfo().then(resp => {setSettingUsetProfileInfo(resp.data); setLoading(false);console.log({reverse:resp.data.reverse()})}).catch(err => {console.log(err) ; setLoading(false)})
   },[])
   const submit = () => {
       const {org_id , org_name ,data_type , owner_name } = options1[0] ; 
@@ -100,7 +100,7 @@ const AdminSettings = () => {
           </tr>
         </thead>
         <tbody>
-        {options1.map((option , index) => <tr key={index}> <td>{index + 1 }</td> <td>{option.portfolio_name}</td> <td>{settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name) ? "candidate" : "No Role assigned yet" }</td> </tr>) }
+        {options1.map((option , index) => <tr key={index}> <td>{index + 1 }</td> <td>{option.portfolio_name}</td> <td>{settingUserProfileInfo?.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name) ? "candidate" : "No Role assigned yet" }</td> </tr>) }
          
         </tbody>
         </table>
