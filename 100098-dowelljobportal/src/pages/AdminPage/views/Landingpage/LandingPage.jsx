@@ -19,7 +19,7 @@ const LandingPage = () => {
   useEffect(()=>{
     if(jobs.length === 0 ){
       axios.post('https://100098.pythonanywhere.com/admin_management/get_jobs/', {
-      company_id: '100098'},[]).then(response => {setJobs(response.data.response.data); console.log(response.data.response.data)}).catch(error => console.log(error))
+      company_id: currentUser.portfolio_info[0].org_id},[]).then(response => {setJobs(response.data.response.data); console.log(response.data.response.data)}).catch(error => console.log(error))
     }
 
     // User portfolio has already being loaded
