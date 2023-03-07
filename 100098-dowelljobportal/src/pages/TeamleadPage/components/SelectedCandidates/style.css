@@ -14,6 +14,7 @@
     color: var(--grey-color);
     padding: 6% 7%;
     position: relative;
+    flex-direction: row;
 }
 
 .background__Overlay{

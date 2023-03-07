@@ -67,7 +67,7 @@ const JobTile = ({ setShowCandidate, showTask, setShowCandidateTask, disableClic
                 <>
                     <div className="applicant-details">
                         <h2><b>{showTask ? taskData.user.length > 17 ? taskData.user.slice(0, 17) + "..." : taskData.user : hrPageActive ? candidateData[mutableNewApplicationStateNames.applicant] && candidateData[mutableNewApplicationStateNames.applicant] : candidateData.applicant && candidateData.applicant.length > 20 ? candidateData.applicant.slice(0, 21) + "..." : candidateData.applicant}</b></h2>
-                        <p>{showTask ? formatDateAndTime(taskData.created) : formatDateAndTime(candidateData.others[mutableNewApplicationStateNames.others_date_applied])}</p>
+                        <p>{showTask ? formatDateAndTime(taskData.created) : formatDateAndTime(candidateData.application_submitted_on)}</p>
                     </div>
                     <p>{hrPageActive ? `` : `Job: ${showTask ? taskData.title : jobTitle}` }</p>
                     <div className={`applicant-qualifications-container ${showTask ? 'task-active' : ''}`}>

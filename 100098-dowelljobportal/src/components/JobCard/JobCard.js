@@ -102,7 +102,7 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
             <div className="job__Details__Info">
                 <div className="detail__Item">
                     <BiTimeFive className="status__Icon" />
-                    <span>Applied {getDaysDifferenceFromPresentDate(candidateData.created)} {getDaysDifferenceFromPresentDate(candidateData.created_on) ? "days" : "day"} ago</span>
+                    <span>Applied {getDaysDifferenceFromPresentDate(candidateData.application_submitted_on)} {getDaysDifferenceFromPresentDate(candidateData.application_submitted_on) ? "days" : "day"} ago</span>
                 </div>
                 <div className="vertical__Seperator"></div>
                 <div className="detail__Item full__Width">
