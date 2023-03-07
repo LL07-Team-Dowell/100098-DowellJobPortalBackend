@@ -43,6 +43,7 @@ export const excludedApplicantInfo = [
     "othersInternJobType",
     "othersResearchAssociateJobType",
     "othersFreelancerJobType",
+    "server_discord_link",
 ]
 
 export const mutableNewApplicationStateNames = {

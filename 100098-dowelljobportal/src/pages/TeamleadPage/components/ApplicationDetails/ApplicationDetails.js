@@ -41,11 +41,11 @@ const ApplicantDetails = ({ hrPageActive, applicantData, candidateApplicationPag
                             if (key === mutableNewApplicationStateNames.country) return <span><span className="highlight__Item">Country:</span> {applicantData[key]}</span>
                             if (key === mutableNewApplicationStateNames.freelancePlatform) return <span><span className="highlight__Item">Freelance Platform:</span> {applicantData[key]}</span>
                             if (key === mutableNewApplicationStateNames.freelancePlatformUrl) return <span><span className="highlight__Item">Freelance Platform Url:</span> {applicantData[key]}</span>
-                            if (key === "job_title") return <span><span className="highlight__Item">job title:</span> {applicantData[key]}</span>
+                            if (key === "job_title") return <span><span className="highlight__Item">Job title:</span> {applicantData[key]}</span>
                             if (key === "applicant_email") return <span><span className="highlight__Item">Email of applicant:</span> {applicantData[key]}</span>
                             if (key === "academic_qualification_type") return <span><span className="highlight__Item"> Qualification type:</span> {applicantData[key]}</span>
                             if (key === "academic_qualification") return <span><span className="highlight__Item">Qualification:</span> {applicantData[key]}</span>
-                            if (key === "agree_to_all_terms") return <span><span className="highlight__Item">Agreed to terms:</span> {applicantData[key]}</span>
+                            if (key === "agree_to_all_terms") return <span><span className="highlight__Item">Agreed to terms:</span> {applicantData[key] === true ? "True" : "False"}</span>
                             if (key === "internet_speed") return <span><span className="highlight__Item"> Internet speed:</span> {applicantData[key]}</span>
                             if (key === "_id") return null 
                             if (key === "job_number") return null 
