@@ -86,7 +86,8 @@ function Applied() {
                   job={appliedJob}
                   showCandidateAppliedJob={true}
                   buttonText={"View"}
-                  handleBtnClick={(job) => navigate("/applied/view_job_application", { state: { jobToView: job, applicationDetails: candidateJobs.currentUserApplications.find(application => application.job === appliedJob.id) } })}
+                  candidateData={candidateJobs.currentUserApplications.find(application => application.job_number === appliedJob.job_number)}
+                  handleBtnClick={(job) => navigate("/applied/view_job_application", { state: { jobToView: job, applicationDetails: candidateJobs.currentUserApplications.find(application => application.job_number === appliedJob.job_number) } })}
                 />
               }))
             }

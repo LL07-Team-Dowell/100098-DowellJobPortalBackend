@@ -42,7 +42,7 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 <div className="detail__Item">
                     <IoMdTime className="status__Icon" />
                     {/* <span>Applied {getDaysDifferenceFromPresentDate(job.others[mutableNewApplicationStateNames.others_date_applied])} {getDaysDifferenceFromPresentDate(job.others[mutableNewApplicationStateNames.others_date_applied]) > 1 ? 'days' : 'day'} ago</span> */}
-                    <span>Applied {getDaysDifferenceFromPresentDate(job[mutableNewApplicationStateNames.others_date_applied])} {getDaysDifferenceFromPresentDate(job[mutableNewApplicationStateNames.others_date_applied]) > 1 ? 'days' : 'day'} ago</span>
+                    <span>Applied {getDaysDifferenceFromPresentDate(candidateData.application_submitted_on)} {getDaysDifferenceFromPresentDate(candidateData.application_submitted_on) > 1 ? 'days' : 'day'} ago</span>
                 </div>
                 <div className="vertical__Seperator lg"></div>
                 <div className="detail__Item">

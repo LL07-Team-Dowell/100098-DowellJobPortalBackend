@@ -18,7 +18,7 @@ const ViewAppliedJobScreen = ( { job, applicationDetails }) => {
                 <ApplicantDetails candidateApplicationPageActive={true} applicantData={applicationDetails} />
             </div>
         </div>
-        <Footer />
+        {/* <Footer /> */}
     </>
 }
 
