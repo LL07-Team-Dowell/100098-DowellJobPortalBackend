@@ -10,7 +10,7 @@ const UserScreen = () => {
             <div className="user__Intro__Item__Container">
                 <div className="user__Intro__Item">
                     <h2>User Name</h2>
-                    <span>{ currentUser.username }</span>    
+                    <span>{ currentUser?.userinfo.username }</span>    
                 </div>
                 <div className="edit__Btn">
                     Edit
@@ -18,7 +18,7 @@ const UserScreen = () => {
             </div>
             <div className="user__Intro__Item">
                 <h2>Email</h2>
-                <span>{currentUser.email}</span>
+                <span>{currentUser?.userinfo.email}</span>
             </div>
             <div className="user__Intro__Item">
                 <h2>First Name</h2>
@@ -33,7 +33,7 @@ const UserScreen = () => {
             }
             <div className="user__Intro__Item">
                 <h2>Role</h2>
-                <span>{currentUser.role}</span>
+                <span>User</span>
             </div>
             
         </div>
