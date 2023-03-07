@@ -226,7 +226,13 @@ const SelectedCandidatesScreen = ({ selectedCandidateData, updateCandidateData, 
 
                     return toast.info("Please add discord link for candidate")
                 }
-
+                if(hrDiscordLink.length >= 1){
+                    const urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+                    const isValidUrl = urlPattern.test(hrDiscordLink);
+                    ref.current.classList.toggle("active");
+                    setHrDiscordLink("") ;
+                    if(!isValidUrl) return toast.info("Please add valid discord link for candidate")
+                }
                 const selectData ={
                     document_id :selectedCandidateData["_id"] , 
                     hr_remarks: selectedCandidateData.hr_remarks,  
