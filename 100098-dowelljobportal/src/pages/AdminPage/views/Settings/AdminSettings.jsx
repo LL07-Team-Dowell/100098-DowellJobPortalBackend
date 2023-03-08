@@ -69,7 +69,7 @@ const AdminSettings = () => {
   };
   useEffect(()=>{
     setLoading(true) ; 
-    getSettingUserProfileInfo().then(resp => {setSettingUsetProfileInfo(resp.data), setLoading(false);console.log(resp.data.reverse())}).catch(err => {console.log(err) ; setLoading(false)})
+    getSettingUserProfileInfo().then(resp => {setSettingUsetProfileInfo(resp.data); setLoading(false);console.log(resp.data.reverse())}).catch(err => {console.log(err) ; setLoading(false)})
   },[])
   const submit = () => {
       const {org_id , org_name ,data_type , owner_name } = options1[0] ; 
