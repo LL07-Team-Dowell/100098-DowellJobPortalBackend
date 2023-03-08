@@ -10,7 +10,6 @@ $slider__gray:#D9D9D9 ;
 
 
 .table_team_roles{
-  background-color: red;
   width: 50%;
   margin: auto;
   margin-top:40px;
@@ -36,7 +35,11 @@ $slider__gray:#D9D9D9 ;
             align-items: center;
             flex-direction: column;
             margin-top:40px;
-            
+            transform: translateX(-18px);
+            h2{
+              text-align: left;
+              width: 60%;
+            }
             >div{
             margin-top: 20px;
             width: 60%;
