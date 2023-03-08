@@ -23,13 +23,13 @@ const AdminSettings = () => {
     useEffect(() => {
 
       // User portfolio has already being loaded
-      if (currentUser.userportfolio.length > 0) return
+      if (currentUser.userportfolio.length > 0) return setLoading2(false)
 
       const currentSessionId = sessionStorage.getItem("session_id");
 
-      if (!currentSessionId) return
+      if (!currentSessionId) return setLoading2(false)
       const teamManagementProduct = currentUser?.portfolio_info.find(item => item.product === "Team Management");
-      if (!teamManagementProduct) return
+      if (!teamManagementProduct) return setLoading2(false)
 
       const dataToPost = {
         session_id: currentSessionId,
