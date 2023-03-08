@@ -6,7 +6,7 @@ import './index.scss'
 import Alert from "./component/Alert";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
-import { getSettingUserProfileInfo } from "../../../../services/settingServices";
+import { getSettingUserProfileInfo } from "../../../../services/settingServices"; 
 const AdminSettings = () => {
     const {currentUser, setCurrentUser} = useCurrentUserContext() ; 
     const [firstSelection, setFirstSelection] = useState("");
@@ -17,7 +17,9 @@ const AdminSettings = () => {
     const [options2 , setOptions2] = useState(["Dept_Lead" ,"Hr" ,"Proj_Lead" ,"Candidate" ]) ; 
     const [alert , setAlert] = useState(false) ; 
     const [loading , setLoading] = useState(false) ;
-    const [settingUserProfileInfo ,setSettingUsetProfileInfo] = useState("") ; 
+    const [settingUserProfileInfo ,setSettingUsetProfileInfo] = useState([]) ; 
+    const [loading2 , setLoading2] = useState(true) ; 
+    console.log({loading , loading2})
     useEffect(() => {
 
       // User portfolio has already being loaded
@@ -35,6 +37,7 @@ const AdminSettings = () => {
       }
       getUserInfoFromLoginAPI(dataToPost).then(res => {
         setCurrentUser(res.data);
+        setLoading2(false)
 
       }).catch(err => {
         console.log("Failed to get user details from login API");
@@ -66,7 +69,7 @@ const AdminSettings = () => {
   };
   useEffect(()=>{
     setLoading(true) ; 
-    getSettingUserProfileInfo().then(resp => {setSettingUsetProfileInfo(resp.data); setLoading(false);console.log({reverse:resp.data.reverse()})}).catch(err => {console.log(err) ; setLoading(false)})
+    getSettingUserProfileInfo().then(resp => {setSettingUsetProfileInfo(resp.data), setLoading(false);console.log(resp.data.reverse())}).catch(err => {console.log(err) ; setLoading(false)})
   },[])
   const submit = () => {
       const {org_id , org_name ,data_type , owner_name } = options1[0] ; 
@@ -86,11 +89,12 @@ const AdminSettings = () => {
       }
 
     return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Settings"}>
-          {loading ? <h1>Loading..</h1> : 
+          {(loading || loading2) ? <LoadingSpinner/> : 
           <>
           {alert &&   <Alert/> }
-
           <div className="table_team_roles">
+          <h2>Portfolio/Team roles</h2>
+           
           <table>
         <thead>
           <tr>
@@ -100,13 +104,21 @@ const AdminSettings = () => {
           </tr>
         </thead>
         <tbody>
-        {options1.map((option , index) => <tr key={index}> <td>{index + 1 }</td> <td>{option.portfolio_name}</td> <td>{settingUserProfileInfo?.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name) ? "candidate" : "No Role assigned yet" }</td> </tr>) }
+        {options1.map((option , index) => 
+        <tr key={index}> <td>{index + 1 }</td>
+        <td>{option.portfolio_name}</td>
+        <td>{settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name) 
+        ?  settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name)["profile_info"][0]["Role"] 
+        : "No Role assigned yet" }</td>
+        </tr>)}
          
         </tbody>
         </table>
           </div>
   
           <div className="Slections">
+          <h2>Assign Roles & Rights to Portfolios & Teams</h2>
+
         <div>
         <label>
           <p>Select User <span>* </span> :</p>

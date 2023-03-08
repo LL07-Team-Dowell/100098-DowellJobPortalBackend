@@ -1,6 +1,7 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import React from 'react';
 import { excludedApplicantInfo, mutableNewApplicationStateNames } from '../../../../contexts/NewApplicationContext';
+import { formatDateAndTime } from '../../../../helpers/helpers';
 
 import "./style.css";
 
@@ -53,7 +54,7 @@ const ApplicantDetails = ({ hrPageActive, applicantData, candidateApplicationPag
                             if (key === "company_id") return null 
                             if (key === "data_type") return null 
                             if (applicantData[key] === "" ) return null 
-                            return <span>{key}: {applicantData[key] === true ? "True" : applicantData[key]}</span>
+                            return <span>{key.replace(/_/g, " ")}: {applicantData[key] === true ? "True" : formatDateAndTime(applicantData[key])}</span>
 
                         }))
                     }

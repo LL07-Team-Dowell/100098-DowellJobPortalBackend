@@ -51,7 +51,7 @@ const ViewJob = () => {
                 <li>Setting goals and developing plans for business and revenue growth. Researching, planning, and implementing new target market initiatives. </li>
                 </ol>
 
-               { general_terms.length &&
+               { general_terms.length > 0 &&
                 <>
                 <h4>General Terms:</h4>
                 <ol>
@@ -59,13 +59,13 @@ const ViewJob = () => {
                 </ol>
                 </>}
 
-                {technical_specification.length && <> <h4>Technical Specification:</h4>    
+                {technical_specification.length > 0  && <> <h4>Technical Specification:</h4>    
                 <ol>
                     {technical_specification.map((specif , index) => <li key={index}>{specif}</li>)}
                 </ol> </>}
                 
                 
-                { workflow_terms.length &&
+                { workflow_terms.length > 0 &&
                 <>
                 <h4>Workflow Terms:</h4>
                 <ol>
@@ -73,7 +73,7 @@ const ViewJob = () => {
                 </ol>
                 </>}
                 
-                { other_info.length &&
+                { other_info.length > 0 &&
                 <>
                 <h4>Others:</h4>
                 <ol>
