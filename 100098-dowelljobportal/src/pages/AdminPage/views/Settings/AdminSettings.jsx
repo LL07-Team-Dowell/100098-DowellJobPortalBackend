@@ -18,6 +18,8 @@ const AdminSettings = () => {
     const [alert , setAlert] = useState(false) ; 
     const [loading , setLoading] = useState(false) ;
     const [settingUserProfileInfo ,setSettingUsetProfileInfo] = useState([]) ; 
+    const [loading2 , setLoading2] = useState(true) ; 
+    console.log({loading , loading2})
     useEffect(() => {
 
       // User portfolio has already being loaded
@@ -35,6 +37,7 @@ const AdminSettings = () => {
       }
       getUserInfoFromLoginAPI(dataToPost).then(res => {
         setCurrentUser(res.data);
+        setLoading2(false)
 
       }).catch(err => {
         console.log("Failed to get user details from login API");
@@ -86,7 +89,7 @@ const AdminSettings = () => {
       }
 
     return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Settings"}>
-          {(loading && options1.length === 0) ? <LoadingSpinner/> : 
+          {(loading || loading2) ? <LoadingSpinner/> : 
           <>
           {alert &&   <Alert/> }
           <div className="table_team_roles">
