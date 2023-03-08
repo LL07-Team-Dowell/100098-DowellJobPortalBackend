@@ -33,7 +33,7 @@ const UserScreen = () => {
             }
             <div className="user__Intro__Item">
                 <h2>Role</h2>
-                <span>User</span>
+                <span>TeamLead</span>
             </div>
             
         </div>

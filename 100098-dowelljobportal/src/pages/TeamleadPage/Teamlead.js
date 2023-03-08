@@ -47,7 +47,11 @@ const Teamlead = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getJobs2()
+    const requestData = {
+      company_id: currentUser?.portfolio_info[0].org_id
+    };
+
+    getJobs2(requestData)
       .then((res) => {
         setJobs(res.data.response.data);
       })
@@ -55,15 +59,15 @@ const Teamlead = () => {
         console.log(err);
       });
 
-    getCandidateApplicationsForTeamLead()
+    getCandidateApplicationsForTeamLead(requestData)
       .then((res) => {
-        const selectedCandidates = res.data.filter(
+        const selectedCandidates = res.data.response.data.filter(
           (application) => application.status === candidateStatuses.SELECTED
         );
-        const candidatesToRehire = res.data.filter(
+        const candidatesToRehire = res.data.response.data.filter(
           (application) => application.status === candidateStatuses.TO_REHIRE
         );
-        const onboardingCandidates = res.data.filter(
+        const onboardingCandidates = res.data.response.data.filter(
           (application) => application.status === candidateStatuses.ONBOARDING
         );
 
