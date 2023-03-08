@@ -6,6 +6,7 @@ import './index.scss'
 import Alert from "./component/Alert";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import { getSettingUserProfileInfo } from "../../../../services/settingServices";
 const AdminSettings = () => {
     const {currentUser, setCurrentUser} = useCurrentUserContext() ; 
     const [firstSelection, setFirstSelection] = useState("");
@@ -16,6 +17,7 @@ const AdminSettings = () => {
     const [options2 , setOptions2] = useState(["Dept_Lead" ,"Hr" ,"Proj_Lead" ,"Candidate" ]) ; 
     const [alert , setAlert] = useState(false) ; 
     const [loading , setLoading] = useState(false) ;
+    const [settingUserProfileInfo ,setSettingUsetProfileInfo] = useState("") ; 
     useEffect(() => {
 
       // User portfolio has already being loaded
@@ -62,7 +64,10 @@ const AdminSettings = () => {
   const handleSecondSelectionChange = (event) => {
     setSecondSelection(event.target.value);
   };
-  
+  useEffect(()=>{
+    setLoading(true) ; 
+    getSettingUserProfileInfo().then(resp => {setSettingUsetProfileInfo(resp.data); setLoading(false);console.log({reverse:resp.data.reverse()})}).catch(err => {console.log(err) ; setLoading(false)})
+  },[])
   const submit = () => {
       const {org_id , org_name ,data_type , owner_name } = options1[0] ; 
       const teamManagementProduct = currentUser.portfolio_info.find(item => item.product === "Team Management");
@@ -79,43 +84,65 @@ const AdminSettings = () => {
         .then(response => { console.log(response) ;setFirstSelection("") ;setSecondSelection("") ;setAlert(true) ; setLoading(false) ;})
         .catch(error => console.log(error))
       }
+
     return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Settings"}>
+          {loading ? <h1>Loading..</h1> : 
+          <>
           {alert &&   <Alert/> }
 
-        <div className="Slections">
-      
-      <div>
-      <label>
-        <p>Select User <span>* </span> :</p>
-        <select value={firstSelection} onChange={handleFirstSelectionChange} >
-          <option value="">Select an option</option>
-        {options1.map(option => <option   key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option> )}
-        </select>
-      </label>
-      </div>
-      <div>
-
-      {showSecondSelection && (
+          <div className="table_team_roles">
+          <table>
+        <thead>
+          <tr>
+            <th>S/N</th>
+            <th>Member portfolio name</th>
+            <th>Role Assigned</th>
+          </tr>
+        </thead>
+        <tbody>
+        {options1.map((option , index) => <tr key={index}> <td>{index + 1 }</td> <td>{option.portfolio_name}</td> <td>{settingUserProfileInfo?.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name) ? "candidate" : "No Role assigned yet" }</td> </tr>) }
+         
+        </tbody>
+        </table>
+          </div>
+  
+          <div className="Slections">
+        <div>
         <label>
-          <p>Select Role <span> * </span> :</p>
-          <select
-            value={secondSelection}
-            onChange={handleSecondSelectionChange}
-          >
+          <p>Select User <span>* </span> :</p>
+          <select value={firstSelection} onChange={handleFirstSelectionChange} >
             <option value="">Select an option</option>
-            {options2.map(value => <option  key={value} value={value}>{value}</option>)}
+          {options1.map(option => <option   key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option> )}
           </select>
         </label>
-        
-      )}
+        </div>
+        <div>
+  
+        {showSecondSelection && (
+          <label>
+            <p>Select Role <span> * </span> :</p>
+            <select
+              value={secondSelection}
+              onChange={handleSecondSelectionChange}
+            >
+              <option value="">Select an option</option>
+              {options2.map(value => <option  key={value} value={value}>{value}</option>)}
+            </select>
+          </label>
+          
+        )}
+        </div>
+      {(firstSelection && secondSelection) && <button  onClick={submit}  style={{ position: "relative" }}>{loading ?  <LoadingSpinner
+        color="#fff"
+        width={24}
+        height={24}
+        style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+      /> :"submit"}</button>}
       </div>
-    {(firstSelection && secondSelection) && <button  onClick={submit}  style={{ position: "relative" }}>{loading ?  <LoadingSpinner
-      color="#fff"
-      width={24}
-      height={24}
-      style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
-    /> :"submit"}</button>}
-    </div>
+          
+      </>
+          }
+       
     </StaffJobLandingLayout>
 }
 

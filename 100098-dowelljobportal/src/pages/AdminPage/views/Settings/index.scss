@@ -7,6 +7,28 @@ $span__gray:#B8B8B8 ;
 $slider__gray:#D9D9D9 ; 
 
 
+
+
+.table_team_roles{
+  background-color: red;
+  width: 50%;
+  margin: auto;
+  margin-top:40px;
+  transform: translateX(-70px);
+  table{
+    text-align: left;
+    width: 100%;
+    background-color: #005734;
+    max-height: 100px;
+    overflow: auto;
+    th , td {
+      background-color: white;
+      padding:10px
+    }
+  }
+}
+
+
 .Slections{
             display: flex;
             width: 100%;
