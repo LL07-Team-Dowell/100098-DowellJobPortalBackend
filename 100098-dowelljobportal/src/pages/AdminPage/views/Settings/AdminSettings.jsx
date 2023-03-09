@@ -121,7 +121,7 @@ const AdminSettings = () => {
 
         <div>
         <label>
-          <p>Select User <span>* </span> :</p>
+          <p>Select User Portfolio <span>* </span> :</p>
           <select value={firstSelection} onChange={handleFirstSelectionChange} >
             <option value="">Select an option</option>
           {options1.map(option => <option   key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option> )}
