@@ -20,6 +20,7 @@ const AddJob = () => {
     job_number: crypto.randomUUID(),
     job_title: "",
     skills: "",
+    job_catagory: "",
     type_of_job: "",
     time_interval: "",
     is_active: true,
@@ -37,10 +38,20 @@ const AddJob = () => {
   });
 
   const [selectedOption, setSelectedOption] = useState("");
+  const [secondOption, setSecondOption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
+    setNewJob((prevValue) => {
+      const copyOfPrevValue = { ...prevValue };
+      copyOfPrevValue["job_catagory"] = e.target.value;
+      return copyOfPrevValue;
+    });
+  };
+
+  const handleSecondOptionChange = (e) => {
+    setSecondOption(e.target.value);
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
       copyOfPrevValue["type_of_job"] = e.target.value;
@@ -97,14 +108,27 @@ const AddJob = () => {
       "time_interval",
       "payment",
       "description",
+      "job_catagory",
     ];
 
-    if (newJob.type_of_job === "") {
-      toast.info("Please select a type of job");
+    if (newJob.job_catagory === "research_associate") {
+      return toast.info("Still under development");
+    }
+    if (newJob.job_catagory === "") {
+      toast.info("Please select a category type");
       return;
     } else if (fields.find((field) => newJob[field] === "")) {
       toast.info(
-        `Please fill ${fields.find((field) => newJob[field] === "")} field`
+        `Please select ${fields.find((field) => newJob[field] === "")} field`
+      );
+      return;
+    }
+    if (newJob.type_of_job === "") {
+      toast.info("Please select type of job");
+      return;
+    } else if (fields.find((field) => newJob[field] === "")) {
+      toast.info(
+        `Please select ${fields.find((field) => newJob[field] === "")} field`
       );
       return;
     }
@@ -168,8 +192,8 @@ const AddJob = () => {
                 required
               />
 
-              <h3>Type of Job</h3>
-              <div className="type_of_job">
+              <h3>Job Category</h3>
+              <div className="job_category">
                 <label htmlFor="freelancer" className="radio">
                   <input
                     className="radio_input"
@@ -183,14 +207,14 @@ const AddJob = () => {
                   <div className="radio__radio"></div>
                   <p>Freelancer</p>
                 </label>
-                <label htmlFor="internship" className="radio">
+                <label htmlFor="intership" className="radio">
                   <input
                     className="radio_input"
                     type={"radio"}
-                    id={"internship"}
+                    id={"intership"}
                     name="options"
-                    value={"internship"}
-                    checked={selectedOption === "internship"}
+                    value={"intership"}
+                    checked={selectedOption === "intership"}
                     onChange={handleOptionChange}
                   />
                   <div className="radio__radio"></div>
@@ -223,6 +247,105 @@ const AddJob = () => {
                   <p>Research Assocaiate</p>
                 </label>
               </div>
+
+              {newJob.job_catagory < 1 ? (
+                <></>
+              ) : newJob.job_catagory === "freelancer" ? (
+                <>
+                  <h3>Type of Job</h3>
+                  <div className="type_of_job">
+                    <div>
+                      <label htmlFor="taskbased" className="radio">
+                        <input
+                          className="radio_input"
+                          type={"radio"}
+                          id={"taskbased"}
+                          name="options2"
+                          value={"taskbased"}
+                          checked={secondOption === "taskbased"}
+                          onChange={handleSecondOptionChange}
+                        />
+                        <div className="radio__radio"></div>
+                        <p>Task Based</p>
+                      </label>
+                    </div>
+                    <div>
+                      <label htmlFor="timebased" className="radio">
+                        <input
+                          className="radio_input"
+                          type={"radio"}
+                          id={"timebased"}
+                          name="options2"
+                          value={"timebased"}
+                          checked={secondOption === "timebased"}
+                          onChange={handleSecondOptionChange}
+                        />
+                        <div className="radio__radio"></div>
+                        <p>Time Based</p>
+                      </label>
+                    </div>
+                  </div>
+                </>
+              ) : newJob.job_catagory === "intership" ? (
+                <>
+                  <h3>Type of Job</h3>
+                  <div className="type_of_job">
+                    <div>
+                      <label htmlFor="fulltime" className="radio">
+                        <input
+                          className="radio_input"
+                          type={"radio"}
+                          id={"fulltime"}
+                          name="options2"
+                          value={"fulltime"}
+                          checked={secondOption === "fulltime"}
+                          onChange={handleSecondOptionChange}
+                        />
+                        <div className="radio__radio"></div>
+                        <p>Full Time</p>
+                      </label>
+                    </div>
+                    <div>
+                      <label htmlFor="parttime" className="radio">
+                        <input
+                          className="radio_input"
+                          type={"radio"}
+                          id={"parttime"}
+                          name="options2"
+                          value={"parttime"}
+                          checked={secondOption === "parttime"}
+                          onChange={handleSecondOptionChange}
+                        />
+                        <div className="radio__radio"></div>
+                        <p>Part Time</p>
+                      </label>
+                    </div>
+                  </div>
+                </>
+              ) : newJob.job_catagory === "employee" ? (
+                <>
+                  <h3>Type of Job</h3>
+                  <div className="type_of_job">
+                    <div>
+                      <label htmlFor="fulltime" className="radio">
+                        <input
+                          className="radio_input"
+                          type={"radio"}
+                          id={"fulltime"}
+                          name="options2"
+                          value={"fulltime"}
+                          checked={secondOption === "fulltime"}
+                          onChange={handleSecondOptionChange}
+                        />
+                        <div className="radio__radio"></div>
+                        <p>Full Time</p>
+                      </label>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
 
               <label htmlFor="time_interval">Time Period</label>
               <input

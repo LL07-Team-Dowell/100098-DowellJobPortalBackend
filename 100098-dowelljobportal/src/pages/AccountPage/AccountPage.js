@@ -20,13 +20,11 @@ import { useMediaQuery } from "@mui/material";
 import { BsPersonCheck, BsPersonPlus, BsPersonX } from "react-icons/bs";
 import { AiOutlineRedo } from "react-icons/ai";
 import {
-  getCandidateApplications,
   getJobs2,
 } from "../../services/commonServices";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import {
   getCandidateApplicationsForTeamLead,
-  getCurrentApplicationFromTeamlead,
 } from "../../services/teamleadServices";
 
 const AccountPage = () => {
