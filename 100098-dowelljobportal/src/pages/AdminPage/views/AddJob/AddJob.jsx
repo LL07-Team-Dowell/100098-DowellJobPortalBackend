@@ -248,7 +248,7 @@ const AddJob = () => {
                 </label>
               </div>
 
-              {newJob.job_catagory < 1 ? (
+              {newJob.job_catagory.length < 1 ? (
                 <></>
               ) : newJob.job_catagory === "freelancer" ? (
                 <>
@@ -261,8 +261,8 @@ const AddJob = () => {
                           type={"radio"}
                           id={"taskbased"}
                           name="options2"
-                          value={"taskbased"}
-                          checked={secondOption === "taskbased"}
+                          value={"Task based"}
+                          checked={secondOption === "Task based"}
                           onChange={handleSecondOptionChange}
                         />
                         <div className="radio__radio"></div>
@@ -276,8 +276,8 @@ const AddJob = () => {
                           type={"radio"}
                           id={"timebased"}
                           name="options2"
-                          value={"timebased"}
-                          checked={secondOption === "timebased"}
+                          value={"Time based"}
+                          checked={secondOption === "Time based"}
                           onChange={handleSecondOptionChange}
                         />
                         <div className="radio__radio"></div>
@@ -297,8 +297,8 @@ const AddJob = () => {
                           type={"radio"}
                           id={"fulltime"}
                           name="options2"
-                          value={"fulltime"}
-                          checked={secondOption === "fulltime"}
+                          value={"Full time"}
+                          checked={secondOption === "Full time"}
                           onChange={handleSecondOptionChange}
                         />
                         <div className="radio__radio"></div>
@@ -312,8 +312,8 @@ const AddJob = () => {
                           type={"radio"}
                           id={"parttime"}
                           name="options2"
-                          value={"parttime"}
-                          checked={secondOption === "parttime"}
+                          value={"Part time"}
+                          checked={secondOption === "Part time"}
                           onChange={handleSecondOptionChange}
                         />
                         <div className="radio__radio"></div>
@@ -333,8 +333,8 @@ const AddJob = () => {
                           type={"radio"}
                           id={"fulltime"}
                           name="options2"
-                          value={"fulltime"}
-                          checked={secondOption === "fulltime"}
+                          value={"Full time"}
+                          checked={secondOption === "Full time"}
                           onChange={handleSecondOptionChange}
                         />
                         <div className="radio__radio"></div>
