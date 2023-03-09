@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useReducer } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import Footer from "../../components/Footer/Footer";
+// import Footer from "../../components/Footer/Footer";
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import { AiOutlineDown } from "react-icons/ai";
 import { validateUrl } from "../../../../helpers/helpers";
@@ -11,7 +11,7 @@ import "./style.css";
 import { handleShareBtnClick } from "../../utils/helperFunctions";
 import { BsCashStack } from "react-icons/bs";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
-import { candidateStatuses } from "../../utils/candidateStatuses";
+// import { candidateStatuses } from "../../utils/candidateStatuses";
 import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleNavigationBar";
 import { IoBookmarkSharp } from "react-icons/io5";
 import { RiShareBoxFill } from "react-icons/ri";
@@ -26,6 +26,8 @@ import { submitNewApplication } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
 import { jobKeys } from "../../../AdminPage/utils/jobKeys";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+
+
 
 const JobApplicationScreen = () => {
     const location = useLocation();
@@ -47,21 +49,22 @@ const JobApplicationScreen = () => {
     const [removeFreelanceOptions, setRemoveFreelanceOptions] = useState(false);
     const [allJobs, setAllJobs] = useState([]);
     const [jobsLoading, setJobsLoading] = useState(true);
-    // const [currentUser, setCurrentUser] = useState(null);
     const { currentUser } = useCurrentUserContext();
     // console.log(currentUser);
     const [jobSaved, setJobSaved] = useState(false);
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
-
     const [formPage, setFormPage] = useState(1);
+
+    const [url, setUrl] = useState("");
 
     const addToRefsArray = (elem, arrayToAddTo) => {
         if (elem && !arrayToAddTo.current.includes(elem)) arrayToAddTo.current.push(elem)
     }
 
-    useEffect(() => {
 
-        getJobs().then(res => {
+    useEffect(() => {
+        const datass = currentUser.portfolio_info[0].org_id;
+        getJobs(datass).then(res => {
             // setAllJobs(res.data);
             setAllJobs(res.data.response.data);
             setJobsLoading(false);
@@ -444,6 +447,7 @@ const JobApplicationScreen = () => {
                                                     <label className="input__Text__Container">
                                                         <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Link to profile on platform'} value={newApplicationData.freelancePlatformUrl} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FREELANCE_PLATFORM_URL, payload: { stateToChange: mutableNewApplicationStateNames.freelancePlatformUrl, value: e.target.value } })} />
                                                     </label>
+                                                    <p>{!validateUrl(newApplicationData.freelancePlatformUrl) ? "Use valid URL" : ""}</p>
                                                 </div>
 
                                             </>
@@ -511,7 +515,7 @@ const JobApplicationScreen = () => {
 
                             {
                                 formPage === 5 && <>
-                                    <button className="apply__Btn green__Btn" type="submit" onClick={handleSubmitNewApplication}>
+                                    <button className="apply__Btn green__Btn" type="submit" onClick={handleSubmitNewApplication} disabled={disableNextBtn}>
                                         <span>Submit</span>
                                         <IoIosArrowRoundForward />
                                     </button>
