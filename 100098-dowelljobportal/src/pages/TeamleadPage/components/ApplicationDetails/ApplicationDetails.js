@@ -1,7 +1,7 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import React from 'react';
 import { excludedApplicantInfo, mutableNewApplicationStateNames } from '../../../../contexts/NewApplicationContext';
-import { formatDateAndTime } from '../../../../helpers/helpers';
+import { changeToTitleCase, formatDateAndTime } from '../../../../helpers/helpers';
 
 import "./style.css";
 
@@ -47,14 +47,14 @@ const ApplicantDetails = ({ hrPageActive, applicantData, candidateApplicationPag
                             if (key === "academic_qualification_type") return <span><span className="highlight__Item"> Qualification type:</span> {applicantData[key]}</span>
                             if (key === "academic_qualification") return <span><span className="highlight__Item">Qualification:</span> {applicantData[key]}</span>
                             if (key === "agree_to_all_terms") return <span><span className="highlight__Item">Agreed to terms:</span> {applicantData[key] === true ? "True" : "False"}</span>
-                            if (key === "internet_speed") return <span><span className="highlight__Item"> Internet speed:</span> {applicantData[key]}</span>
+                            if (key === "internet_speed") return <span><span className="highlight__Item">Internet speed:</span> {applicantData[key]}</span>
                             if (key === "_id") return null 
                             if (key === "job_number") return null 
                             if (key === "eventId") return null 
                             if (key === "company_id") return null 
                             if (key === "data_type") return null 
                             if (applicantData[key] === "" ) return null 
-                            return <span>{key.replace(/_/g, " ")}: {applicantData[key] === true ? "True" : formatDateAndTime(applicantData[key])}</span>
+                            return <span><span className="highlight__Item">{changeToTitleCase(key.replace(/_/g, " "))}:</span> {applicantData[key] === true ? "True" : formatDateAndTime(applicantData[key])}</span>
 
                         }))
                     }

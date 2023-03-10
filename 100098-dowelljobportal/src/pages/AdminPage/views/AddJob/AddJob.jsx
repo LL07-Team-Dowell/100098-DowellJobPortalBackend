@@ -8,13 +8,14 @@ import { toast } from "react-toastify";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import "./style.css";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 
 const AddJob = () => {
   const { currentUser } = useCurrentUserContext();
+  const navigate = useNavigate();
 
   const [newJob, setNewJob] = useState({
     job_number: crypto.randomUUID(),
@@ -140,6 +141,7 @@ const AddJob = () => {
 
       if (response.status === 201) {
         toast.success("Job created successfully");
+        navigate("/")
       } else {
         toast.info("Something went wrong");
       }

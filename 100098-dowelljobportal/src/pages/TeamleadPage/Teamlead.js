@@ -215,6 +215,7 @@ const Teamlead = () => {
 
         {section === "home" || section == undefined ? (
           showCandidate ? (
+            <div className="teamlead__Selected__Wrapper">
             <SelectedCandidatesScreen
               selectedCandidateData={currentCandidate}
               updateShowCandidate={setShowCandidate}
@@ -236,12 +237,13 @@ const Teamlead = () => {
                     )[0].job_title
                   : ""
               }
-              showApplicationDetails={showApplicationDetails}
+              showApplicationDetails={true}
               teamleadPageActive={true}
               handleViewApplicationBtnClick={() =>
                 setShowApplicationDetails(!showApplicationDetails)
               }
             />
+            </div>
           ) : (
             <>
               <SelectedCandidates

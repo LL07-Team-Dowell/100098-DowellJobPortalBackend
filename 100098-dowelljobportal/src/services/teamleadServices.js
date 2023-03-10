@@ -16,7 +16,7 @@ export const leadReHireCandidate = async (data) => {
 
 export const getCandidateApplicationsForTeamLead = async (data) => {
   return await currentBackendAxiosInstance.post(
-    "/candidate_management/get_candidate_application/",
+    "/candidate_management/get_job_application/",
     data
   );
 };

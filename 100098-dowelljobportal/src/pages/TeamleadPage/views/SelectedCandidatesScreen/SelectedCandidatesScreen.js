@@ -250,7 +250,7 @@ const SelectedCandidatesScreen = ({
           disableOtherBtns && setDisabled(false);
           ref.current.classList.toggle("active");
 
-          return toast.info(`Please add remarks for ${selectedCandidateData}`);
+          return toast.info(`Please add remarks for ${selectedCandidateData.applicant}`);
         }
 
         const dataToPost = {
@@ -284,7 +284,7 @@ const SelectedCandidatesScreen = ({
           ref.current.classList.toggle("active");
 
           return toast.info(
-            `Please add remarks for candidate ${selectedCandidateData}`
+            `Please add remarks for candidate ${selectedCandidateData.applicant}`
           );
         }
 
@@ -306,7 +306,7 @@ const SelectedCandidatesScreen = ({
 
           return toast.info("Please add remarks for candidate");
         }
-        // selectedCandidateData[mutableNewApplicationStateNames.hr_remarks] = remarks;
+        selectedCandidateData.hr_remarks = remarks;
         const testData = {
           hr_remarks: remarks,
           status: candidateStatuses.SHORTLISTED,
@@ -345,8 +345,10 @@ const SelectedCandidatesScreen = ({
           const urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
           const isValidUrl = urlPattern.test(hrDiscordLink);
           ref.current.classList.toggle("active");
-          setHrDiscordLink("") ;
-          if(!isValidUrl) return toast.info("Please add valid discord link for candidate")
+          if(!isValidUrl) {
+            setHrDiscordLink("") ;
+            return toast.info("Please add valid discord link for candidate")
+          }
         }
 
         const selectData = {
@@ -479,9 +481,7 @@ const SelectedCandidatesScreen = ({
         {!hrPageActive && (
           <AssignedProjectDetails
             assignedProject={
-              selectedCandidateData.others[
-                mutableNewApplicationStateNames.assigned_project
-              ]
+              selectedCandidateData.assigned_project
             }
             removeDropDownIcon={true}
           />
@@ -533,7 +533,7 @@ const SelectedCandidatesScreen = ({
                 </h2>
                 <textarea
                   placeholder={`${
-                    initialMeet ? "Remarks given" : "Write here"
+                    initialMeet ? `${selectedCandidateData.hr_remarks}` : "Write here"
                   }`}
                   readOnly={initialMeet ? true : false}
                   value={
@@ -578,9 +578,7 @@ const SelectedCandidatesScreen = ({
                 placeholder={accountPage ? "Reason to Rehire" : "Write here"}
                 value={
                   hireTabActive
-                    ? selectedCandidateData.others[
-                        mutableNewApplicationStateNames.others_team_lead_remarks
-                      ]
+                    ? selectedCandidateData.team_lead_remarks
                     : remarks
                 }
                 readOnly={hireTabActive ? true : false}
@@ -659,7 +657,7 @@ const SelectedCandidatesScreen = ({
                 onClick={() => handleClick(ref3, false)}
                 disabled={accountPage ? true : disabled}
               >
-                <CheckCircleIcon className="status-icon" />
+                {/* <CheckCircleIcon className="status-icon" /> */}
                 <br />
                 <br />
                 <div className="textt">Pay</div>
@@ -715,7 +713,7 @@ const SelectedCandidatesScreen = ({
               </>
             ) : (
               <button
-                className={`status-option green-color ${
+                className={`status-option green-color green-bg ${
                   accountPage && rehireTabActive
                     ? selectedCandidateData.status ===
                       candidateStatuses.TEAMLEAD_TOREHIRE
@@ -783,12 +781,14 @@ const SelectedCandidatesScreen = ({
                 disabled={disabled}
               >
                 {accountPage && rehireTabActive ? (
-                  <AiOutlineCloseCircle className="status-icon" />
+                  <></>
+                  // <AiOutlineCloseCircle className="status-icon" />
                 ) : (
-                  <BsStopCircle className="status-icon" />
+                  <></>
+                  // <BsStopCircle className="status-icon" />
                 )}
-                <br />
-                <br />
+                {/* <br /> */}
+                {/* <br /> */}
 
                 <div className="textt">
                   {hireTabActive ? "Reject" : "Rejected"}
@@ -814,7 +814,7 @@ const SelectedCandidatesScreen = ({
                   }
                   disabled={disabled}
                 >
-                  <BsStopCircle className="status-icon" />
+                  {/* <BsStopCircle className="status-icon" /> */}
                   <br />
                   <br />
                   <div className="textt">Onboarding</div>
@@ -827,7 +827,7 @@ const SelectedCandidatesScreen = ({
                   }
                   disabled={disabled}
                 >
-                  <BsStopCircle className="status-icon" />
+                  {/* <BsStopCircle className="status-icon" /> */}
                   <br />
                   <br />
                   <div className="textt">Reject</div>

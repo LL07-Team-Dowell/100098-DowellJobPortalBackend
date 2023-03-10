@@ -7,7 +7,7 @@
     display: flex;
     align-items: center;
     width: max-content;
-    bottom: 15%;
+    bottom: 10%;
     padding-top: 5%;
     padding-bottom: 5%;
 }
@@ -36,7 +36,7 @@
         margin: 0 auto;
         padding-bottom: 8%;
     }
-    .jobs-container > *, .tasks-container > *{
+    .jobs-container > *, .tasks-container > *:not(.add__Btn){
         width: calc(94% /2);
         display: inline-block;
         margin-right: 4%;
@@ -48,10 +48,25 @@
     .jobs-container > *:last-child,
     .tasks-container > *:last-child:not(.add__Btn) {
         margin-bottom: 15%;
-        background-color: rebeccapurple;
+        /* background-color: rebeccapurple; */
     }
     .tasks-container .add__Btn {
         padding-top: 2%;
         padding-bottom: 2%;
     } 
+    .teamlead__Selected__Wrapper .selected-candidate-screen-container {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 3%;
+    }
+    .teamlead__Selected__Wrapper .selected-candidate-screen-container .project-details-container {
+        margin-top: 0;
+    }
+    .teamlead__Selected__Wrapper .selected-candidate-screen-container .comments-container {
+        margin-top: 4%;
+    }
+    .teamlead__Selected__Wrapper .selected-candidate-screen-container > * {
+        width: 90%;
+    }
 }

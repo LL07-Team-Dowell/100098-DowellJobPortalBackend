@@ -275,6 +275,7 @@ const JobApplicationScreen = () => {
 
         try {
             await submitNewApplication(newApplicationData);
+            toast.success("Successfully submitted job application!");
             navigate("/applied");
         } catch (error) {
             console.log(error)

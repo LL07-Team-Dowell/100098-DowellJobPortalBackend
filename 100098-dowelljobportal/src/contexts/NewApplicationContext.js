@@ -16,7 +16,7 @@ export const newApplicationState = {
     country: "",
     internet_speed: "",
     other_info: [],
-    agree_to_all_terms: "False",
+    agree_to_all_terms: false,
     company_id: "",
     data_type: "",
     payment: "",
