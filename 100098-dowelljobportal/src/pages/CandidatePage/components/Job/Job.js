@@ -36,13 +36,13 @@ function JobScreen() {
         // const findJobsMatchingCategory = (category) => jobs.filter(job => job.job_catagory.toLocaleLowerCase().includes(category.toLocaleLowerCase()) || category.toLocaleLowerCase().includes(job.job_catagory.toLocaleLowerCase()));
         // const findJobsMatchingCategory = (category) => jobs.filter(job => console.log(category));
         const findJobsMatchingCategory = (category) => jobs.filter(job => {
+            console.log(job);
             if (job.job_catagory && category) {
                 return job.job_catagory.toLocaleLowerCase().includes(category.toLocaleLowerCase()) || category.toLocaleLowerCase().includes(job.job_catagory.toLocaleLowerCase());
             } else {
                 return false;
             }
         });
-
         const jobCategoryParam = params.get('jobCategory');
         const currentJobStream = params.get('stream');
         console.log(jobs);
@@ -120,8 +120,9 @@ function JobScreen() {
     }, [currentJobCategory])
 
     useEffect(() => {
+        const datass = currentUser.portfolio_info[0].org_id;
 
-        getJobs().then(res => {
+        getJobs(datass).then(res => {
             // setJobs(res.data.sort((a, b) => a.title.localeCompare(b.title)));
             setJobs(res.data.response.data.sort((a, b) => a.job_title.localeCompare(b.job_title)));
             setJobsLoading(false);
@@ -134,10 +135,8 @@ function JobScreen() {
 
         if (!currentUser) return setLoading(false);
         if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
-        const datass = currentUser.portfolio_info[0].org_id;
 
         getAppliedJobs(datass).then(res => {
-
             const currentUserAppliedJobs = res.data.response.data.filter(application => application.username === currentUser.userinfo.username);
             // const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
 
@@ -205,8 +204,8 @@ function JobScreen() {
                                                             job={job}
                                                             candidateViewJob={true}
                                                             subtitle={currentCategory}
-                                                            disableActionBtn={currentUser ? candidateJobs.appliedJobs.find(appliedJob => appliedJob.job === job.id) == undefined ? false : true : false}
-                                                            buttonText={currentUser ? candidateJobs.appliedJobs.find(appliedJob => appliedJob.job === job.id) == undefined ? "Apply" : "Applied" : "Apply"}
+                                                            disableActionBtn={currentUser ? candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? false : true : false}
+                                                            buttonText={currentUser ? candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? "Apply" : "Applied" : "Apply"}
                                                             handleBtnClick={(job) => handleApplyButtonClick(job)}
                                                         />
                                                     }))

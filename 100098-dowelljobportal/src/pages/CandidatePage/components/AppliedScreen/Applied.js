@@ -42,11 +42,12 @@ function Applied() {
     const datass = currentUser.portfolio_info[0].org_id;
     getAppliedJobs(datass).then(async (res) => {
       try {
-        const jobs = await (await getJobs());
+        const jobs = await (await getJobs(datass));
+        // console.log(jobs);
         if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
         const currentUserApplications = res.data.response.data.filter(application => application.username === currentUser.userinfo.username);
-        // console.log(currentUserApplications);
         const currentUserAppliedJobs = jobs.data.response.data.filter((currentJob) => currentUserApplications.find(({ job_number }) => currentJob.job_number === job_number));
+      // console.log(currentUserAppliedJobs);
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
         return setLoading(false);
@@ -61,7 +62,7 @@ function Applied() {
       setLoading(false);
     })
 
-  console.log(candidateJobs);
+  //console.log(candidateJobs);
 
     getAllCandidateInterviews().then(res => {
 

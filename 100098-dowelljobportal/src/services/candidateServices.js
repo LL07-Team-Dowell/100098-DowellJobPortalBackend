@@ -4,8 +4,9 @@ export const submitNewApplication = async (data) => {
     return await currentBackendAxiosInstance.post("/candidate_management/apply_job/", data)
 }
 
-export const getJobs = async () => {
-    const data = { "company_id": "100098" };
+export const getJobs = async (datass) => {
+    console.log(datass);
+    const data = { "company_id": datass };
     return await currentBackendAxiosInstance.post("/admin_management/get_jobs/", data)
 }
 

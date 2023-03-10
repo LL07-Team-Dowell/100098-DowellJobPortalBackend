@@ -13,7 +13,6 @@ function UserScreen({ candidateSelected }) {
 
   return (
     <JobLandingLayout user={currentUser} afterSelection={candidateSelected}>
-   {console.log(currentUser)}
     <div className='candidate__User__Profile__Page'>
       <div className="user__Page__Container user">
 
