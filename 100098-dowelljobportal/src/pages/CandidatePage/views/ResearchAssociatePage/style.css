@@ -58,6 +58,7 @@ header .logo {
             left: 40px;
 }
 nav.research{
+    display: none;
 width: 4.6rem;
 height: calc(100vh - 5.875rem);
 background-color: var(--green-color);
@@ -226,4 +227,11 @@ main.research .map-image{
 }
 .img{
     display: flex;
+}
+
+.map__image{
+    background-image: url('./images/cities.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 600px;
 }

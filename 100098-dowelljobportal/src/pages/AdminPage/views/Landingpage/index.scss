@@ -82,6 +82,9 @@ $slider__gray:#D9D9D9 ;
             transition: .3s;
             position: relative;
             text-transform: capitalize;
+            @media only screen and (max-width: 992px) {
+              font-size: 11px;
+            }
             &:hover{
             box-shadow: rgba($main__green , 0.6) 0px 7px 29px 0px;
 
@@ -152,6 +155,9 @@ $slider__gray:#D9D9D9 ;
                         outline: none;
                         border: none;
                         font-weight: 600;
+                        a{
+                          display: flex;
+                        }
                         img{
                           padding-top: 3px ;
                           width: 0.9rem;

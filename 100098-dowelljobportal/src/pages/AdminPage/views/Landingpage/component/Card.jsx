@@ -83,7 +83,7 @@ const Card = ({company_id , created_on , skills , job_title , is_active , _id , 
                         <p><CgDanger style={style}/><span>2 candidates apply for this</span></p>
                         </div>
                         <button>
-                        <span><Link to={`/view-job/${_id}`} style={{color:"white"}}>View <img src={arrowright} alt="" /></Link></span>
+                        <Link to={`/view-job/${_id}`} style={{color:"white"}}><span>View</span> <img src={arrowright} alt="" /></Link>
                         </button>
             </div>
 </div>
