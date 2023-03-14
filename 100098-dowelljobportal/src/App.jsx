@@ -102,7 +102,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.accountRole
+    testingRoles.accountRole
   ) {
     return (
       <Routes>
@@ -217,7 +217,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.hrRole
+    testingRoles.hrRole
   ) {
     return (
       <Routes>
@@ -272,7 +272,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.teamLeadRole
+    testingRoles.teamLeadRole
   ) {
     return (
       <Routes>
@@ -302,7 +302,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.candidateRole
+    testingRoles.candidateRole
   ) {
     return candidateHired ? (
       <Routes>
@@ -318,12 +318,30 @@ function App() {
             </NavigationContextProvider>
           }
         >
-          <Route path=":section" element={<AfterSelectionScreen />} />
+          <Route path=":section" element={
+            <NavigationContextProvider>
+              <CandidateContextProvider>
+                <AfterSelectionScreen />
+              </CandidateContextProvider>
+            </NavigationContextProvider>
+          } />
+
         </Route>
+        <Route path="/logout" element={
+          <NavigationContextProvider>
+            <CandidateContextProvider>
+              <Logout />
+            </CandidateContextProvider>
+          </NavigationContextProvider>
+        } />
 
-        <Route path="/logout" element={<Logout />} />
-
-        <Route path="*" element={<ErrorPage />} />
+        <Route path="*" element={
+          <NavigationContextProvider>
+            <CandidateContextProvider>
+              <ErrorPage />
+            </CandidateContextProvider>
+          </NavigationContextProvider>
+        } />
       </Routes>
     ) : (
       <Routes>

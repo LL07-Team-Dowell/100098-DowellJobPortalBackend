@@ -11,7 +11,7 @@ const InterviewCard = ({ interviewDetails, job, currentApplicationStatus, hrDisc
     
     const handleClick = (e) => {
         e.preventDefault();
-        // navigate("/applied/view_job_application", { state: { jobToView: job, applicationDetails: applicationDetails } });
+       // navigate("/applied/view_job_application", { state: { jobToView: job, applicationDetails: applicationDetails } });
     }
 
     const guestStyle = {

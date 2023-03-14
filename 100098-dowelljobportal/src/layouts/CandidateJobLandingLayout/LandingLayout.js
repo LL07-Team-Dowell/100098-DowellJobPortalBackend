@@ -70,7 +70,7 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation }
                 <div className="jobs__Layout__Content">
                     { children }
                 </div>
-                {!afterSelection && <BsFillChatTextFill className="chat__With__CS__Icon" onClick={handleChatIconClick} /> }
+                {/* {!afterSelection && <BsFillChatTextFill className="chat__With__CS__Icon" onClick={handleChatIconClick} /> } */}
             </div>
         </main>
     </>
