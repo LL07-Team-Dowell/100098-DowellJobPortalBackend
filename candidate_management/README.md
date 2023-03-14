@@ -1,6 +1,6 @@
 ### Backend services for candidate management view
 
-_Post_ to `/candidate_management/apply_job`
+_Post_ to `/candidate_management/apply_job/`
 
 - Request Body
 
