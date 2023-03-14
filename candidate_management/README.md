@@ -43,7 +43,7 @@ _Post_ to `/candidate_management/apply_job/`
 }
 ```
 
-_Post_ to `/candidate_management/get_job_application`
+_Post_ to `/candidate_management/get_job_application/`
 
 - Request Body
 
@@ -71,7 +71,7 @@ _Post_ to `/candidate_management/get_job_application`
 }
 ```
 
-_Post_ to `/candidate_management/get_candidate_application`
+_Post_ to `/candidate_management/get_candidate_application/`
 
 - Request Body
 
