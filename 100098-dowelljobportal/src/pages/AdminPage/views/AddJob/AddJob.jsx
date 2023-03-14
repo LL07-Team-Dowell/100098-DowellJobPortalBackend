@@ -165,7 +165,7 @@ const AddJob = () => {
       <div className="job_container">
         <Link to="/" className="navLink">
           <button className="nav_button">
-            <MdArrowBackIos className="back_icon" />
+            <MdArrowBackIos size="1.5rem" className="back_icon" />
           </button>
         </Link>
         <div className="add_section">
@@ -421,7 +421,7 @@ const AddJob = () => {
                             className="terms_remove"
                             onClick={() => handleRemoveTerms("general_terms")}
                           >
-                            <MdCancel size="1rem" color="#b8b8b8" />
+                            <MdCancel size="1.2rem" color="#b8b8b8" />
                           </button>
                         </div>
                       );

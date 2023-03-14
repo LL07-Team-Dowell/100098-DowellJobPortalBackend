@@ -19,9 +19,9 @@
   width: 0%;
 }
 
-.nav_button {
-  margin: 1rem 0 0 1rem;
-  padding: 0rem 1rem;
+.nav_button{
+  margin-top: 1rem;
+  padding: 0.7rem 1rem 0.7rem 0;
   border-radius: 0.5rem;
   border: none;
   background-color: var(--bg-secondary-color);
@@ -29,9 +29,10 @@
   cursor: pointer;
 }
 
-.nav_button .back_icon {
-  font-size: 1.5rem;
-  margin: 1.2rem 0 0 1.2rem;
+.nav_button .back_icon{
+  /* font-size: 1rem; */
+  margin-right: 1rem;
+  margin-left: 1rem;
   color: #a3a1a1;
 }
 
@@ -237,12 +238,13 @@ h3 {
 .add_terms {
   display: flex;
   justify-content: space-between;
+  /* align-items: center; */
 }
 
 .add_terms .terms_input {
   width: 100%;
   margin: 0;
-  padding: 0;
+  padding: 0.5rem;
   border-radius: 0.3rem;
   border: none;
   background-color: transparent;
