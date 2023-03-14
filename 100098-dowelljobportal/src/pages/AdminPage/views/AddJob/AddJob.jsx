@@ -7,6 +7,7 @@ import { addNewJob } from "../../../../services/adminServices";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { useJobContext } from "../../../../contexts/Jobs";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -16,6 +17,7 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 const AddJob = () => {
   const { currentUser } = useCurrentUserContext();
   const navigate = useNavigate();
+  const { setJobs } = useJobContext();
 
   const [newJob, setNewJob] = useState({
     job_number: crypto.randomUUID(),
@@ -100,7 +102,7 @@ const AddJob = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(newJob);
+    // console.log(newJob);
 
     const fields = [
       "job_title",
@@ -138,10 +140,12 @@ const AddJob = () => {
     try {
       const response = await addNewJob(newJob);
       console.log(response.data);
-
+      
+      
       if (response.status === 201) {
+        setJobs((prevValue) => [newJob, ...prevValue])
         toast.success("Job created successfully");
-        navigate("/")
+        navigate("/");
       } else {
         toast.info("Something went wrong");
       }
