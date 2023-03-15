@@ -10,6 +10,7 @@
     align-items: center;
     color: var(--grey-color);
     padding: 6% 7%;
+    flex-direction: row;
 }
 
 .rejected-candidates-count-container h2{
@@ -30,7 +31,7 @@
 
 @media (min-width: 1200px){
     .rejected-candidates-container{
-        width: 80%;
+        width: 85%;
         margin: 0 auto;
         padding: 3% 6% 3% 4.2%;
     }

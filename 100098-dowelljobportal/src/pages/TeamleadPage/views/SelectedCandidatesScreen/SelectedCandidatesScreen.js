@@ -254,7 +254,7 @@ const SelectedCandidatesScreen = ({
         }
 
         const dataToPost = {
-          document_id: selectedCandidateData.id,
+          document_id: selectedCandidateData["_id"],
           teamlead_remarks: remarks,
           status: candidateStatuses.TEAMLEAD_HIRE,
           applicant: selectedCandidateData.applicant,
@@ -264,6 +264,7 @@ const SelectedCandidatesScreen = ({
         };
 
         await leadHireCandidate(dataToPost);
+        console.log("dataToPost", dataToPost);
 
         updateCandidateData({
           type: candidateDataReducerActions.UPDATE_SELECTED_CANDIDATES,
@@ -289,7 +290,7 @@ const SelectedCandidatesScreen = ({
         }
 
         const dataToPost2 = {
-          document_id: selectedCandidateData.id,
+          document_id: selectedCandidateData["_id"],
           rehire_remarks: remarks,
         };
 

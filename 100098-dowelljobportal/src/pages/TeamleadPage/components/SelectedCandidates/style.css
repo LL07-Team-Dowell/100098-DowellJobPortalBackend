@@ -1,141 +1,154 @@
 .selected-candidates-container {
-    --black-color: #000000;
-    --grey-color: #A1A1A1;
-    --pale-grey-color: #F8FAFB;
-    --light-grey-color: #C4C4C4;
-    --background-overlay: rgba(0, 0, 0, 0.25);
-    font-family: 'Inter', sans-serif;
+  --black-color: #000000;
+  --grey-color: #a1a1a1;
+  --pale-grey-color: #f8fafb;
+  --light-grey-color: #c4c4c4;
+  --background-overlay: rgba(0, 0, 0, 0.25);
+  font-family: "Inter", sans-serif;
 }
 
-.selected-candidates-container{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--grey-color);
-    padding: 6% 7%;
-    position: relative;
-    flex-direction: row;
+.selected-candidates-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--grey-color);
+  padding: 6% 7%;
+  position: relative;
+  flex-direction: row;
 }
 
-.background__Overlay{
-    position: fixed;
-    background-color: var(--background-overlay);
-    width: 100%;
-    height: 100vmax;
-    left: 50%;
-    transform: translateX(-50%);
-    animation: fadeIn 0.35s ease-in-out;
-    z-index: 9999;
+.background__Overlay {
+  position: fixed;
+  background-color: var(--background-overlay);
+  width: 100%;
+  height: 100vmax;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: fadeIn 0.35s ease-in-out;
+  z-index: 9999;
 }
 
-.selected-candidates-count-container h2{
-    font-size: 1rem;
-    font-weight: 400;
-    color: var(--black-color);
-    line-height: 19.36px;
-    margin-bottom: 2.5%;
+.selected-candidates-count-container h2 {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--black-color);
+  line-height: 19.36px;
+  margin-bottom: 2.5%;
 }
 
-.selected-candidates-count-container p, .sort-candidates-container p{
-    font-size: 0.8125rem;
+.selected-candidates-count-container p,
+.sort-candidates-container p {
+  font-size: 0.8125rem;
 }
 
-.sort-candidates-container p{
-    cursor: pointer;
+.sort-candidates-container p {
+  cursor: pointer;
 }
 
-.sort__Candidates__Selection__Container{
-    position: absolute;
-    right: 7%;
-    top: 0;
-    width: 80%;
-    background-color: var(--pale-grey-color);
-    border-radius: 10px;
-    padding: 1% 2%;
-    z-index: 10000;
+.sort__Candidates__Selection__Container {
+  position: absolute;
+  right: 7%;
+  top: 0;
+  width: 80%;
+  background-color: var(--pale-grey-color);
+  border-radius: 10px;
+  padding: 1% 2%;
+  z-index: 10000;
 }
 
-.sort__Candidates__Selection__Container .close-icon{
-    display: block;
-    margin-left: auto;
-    color: var(--black-color);
-    cursor: pointer;
+.sort__Candidates__Selection__Container .close-icon {
+  display: block;
+  margin-left: auto;
+  color: var(--black-color);
+  cursor: pointer;
 }
 
-.sort__Candidates__Selection__Container p{
-    color: var(--black-color);
-    font-size: 0.875rem;
+.sort__Candidates__Selection__Container p {
+  color: var(--black-color);
+  font-size: 0.875rem;
 }
 
-.sort__Candidates__Selection__Container p, .sort__Candidates__Selection__Container .sort__Candidates__Selections ul{
-    margin-top: 5%;
+.sort__Candidates__Selection__Container p,
+.sort__Candidates__Selection__Container .sort__Candidates__Selections ul {
+  margin-top: 5%;
 }
 .sort__Candidates__Selection__Container .sort__Candidates__Selections {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
-.sort__Candidates__Selection__Container .sort__Candidates__Selections .vertical-line{
-    width: 1px;
-    height: 80%;
-    position: absolute;
-    left: 30%;
+.sort__Candidates__Selection__Container
+  .sort__Candidates__Selections
+  .vertical-line {
+  width: 1px;
+  height: 80%;
+  position: absolute;
+  left: 30%;
 }
 
-.sort__Candidates__Selection__Container .sort__Candidates__Selections ul{
-    width: 67%;
-    margin-bottom: 5%;
+.sort__Candidates__Selection__Container .sort__Candidates__Selections ul {
+  width: 67%;
+  margin-bottom: 5%;
 }
 
-.sort__Candidates__Selection__Container .sort__Candidates__Selections ul li{
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 8%;
-    border-bottom: 1px solid var(--light-grey-color);
-    cursor: pointer;
-    padding-bottom: 2%;
+.sort__Candidates__Selection__Container .sort__Candidates__Selections ul li {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8%;
+  border-bottom: 1px solid var(--light-grey-color);
+  cursor: pointer;
+  padding-bottom: 2%;
 }
 
-.sort__Candidates__Selection__Container .sort__Candidates__Selections ul li > *:last-child{
-    margin-right: 10%;
+.sort__Candidates__Selection__Container
+  .sort__Candidates__Selections
+  ul
+  li
+  > *:last-child {
+  margin-right: 10%;
 }
 
-.sort__Candidates__Selection__Container .sort__Candidates__Selections ul li span{
-    margin-left: 0;
-    font-weight: 400;
-    font-size: 0.875rem;
-    line-height: 17px;
+.sort__Candidates__Selection__Container
+  .sort__Candidates__Selections
+  ul
+  li
+  span {
+  margin-left: 0;
+  font-weight: 400;
+  font-size: 0.875rem;
+  line-height: 17px;
 }
 
-@media (min-width: 768px) and (max-width: 991.98px){
-    .sort__Candidates__Selection__Container{
-        width: 50%;
-    }
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .sort__Candidates__Selection__Container {
+    width: 50%;
+  }
 }
 
 @media screen and (min-width: 992px) {
-    .sort__Candidates__Selection__Container{
-        width: 30%;
-    }
+  .sort__Candidates__Selection__Container {
+    width: 30%;
+  }
 }
 
-@media (min-width: 1200px){
-    .selected-candidates-container{
-        width: 80%;
-        margin: 0 auto;
-        padding: 3% 6% 3% 4.2%;
-    }
-    .sort__Candidates__Selection__Container{
-        right: 6%;
-        top: 28%;
-    }
+@media (min-width: 1200px) {
+  .selected-candidates-container {
+    width: 85%;
+    margin: 0 auto;
+    padding: 3% 6% 3% 4.2%;
+  }
+  .sort__Candidates__Selection__Container {
+    right: 6%;
+    top: 28%;
+  }
 }
 
 @keyframes fadeIn {
-    from{
-        opacity: 0;
-    }to{
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

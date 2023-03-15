@@ -7,6 +7,7 @@ import { addNewJob } from "../../../../services/adminServices";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { useJobContext } from "../../../../contexts/Jobs";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -16,6 +17,7 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 const AddJob = () => {
   const { currentUser } = useCurrentUserContext();
   const navigate = useNavigate();
+  const { setJobs } = useJobContext();
 
   const [newJob, setNewJob] = useState({
     job_number: crypto.randomUUID(),
@@ -100,7 +102,7 @@ const AddJob = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(newJob);
+    // console.log(newJob);
 
     const fields = [
       "job_title",
@@ -138,10 +140,12 @@ const AddJob = () => {
     try {
       const response = await addNewJob(newJob);
       console.log(response.data);
-
+      
+      
       if (response.status === 201) {
+        setJobs((prevValue) => [newJob, ...prevValue])
         toast.success("Job created successfully");
-        navigate("/")
+        navigate("/");
       } else {
         toast.info("Something went wrong");
       }
@@ -161,7 +165,7 @@ const AddJob = () => {
       <div className="job_container">
         <Link to="/" className="navLink">
           <button className="nav_button">
-            <MdArrowBackIos className="back_icon" />
+            <MdArrowBackIos size="1.5rem" className="back_icon" />
           </button>
         </Link>
         <div className="add_section">
@@ -417,7 +421,7 @@ const AddJob = () => {
                             className="terms_remove"
                             onClick={() => handleRemoveTerms("general_terms")}
                           >
-                            <MdCancel size="1rem" color="#b8b8b8" />
+                            <MdCancel size="1.2rem" color="#b8b8b8" />
                           </button>
                         </div>
                       );
