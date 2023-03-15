@@ -312,36 +312,20 @@ function App() {
             <NavigationContextProvider>
               <CandidateTaskContextProvider>
                 <CandidateJobsContextProvider>
-                  <AfterSelectionScreen assignedProject={assignedProject} />
+                  <JobContextProvider>
+                    <AfterSelectionScreen assignedProject={assignedProject} />
+                  </JobContextProvider>
                 </CandidateJobsContextProvider>
               </CandidateTaskContextProvider>
             </NavigationContextProvider>
           }
         >
-          <Route path=":section" element={
-            <NavigationContextProvider>
-              <CandidateContextProvider>
-                <AfterSelectionScreen />
-              </CandidateContextProvider>
-            </NavigationContextProvider>
-          } />
-
+          <Route path=":section" element={<AfterSelectionScreen />} />
         </Route>
-        <Route path="/logout" element={
-          <NavigationContextProvider>
-            <CandidateContextProvider>
-              <Logout />
-            </CandidateContextProvider>
-          </NavigationContextProvider>
-        } />
 
-        <Route path="*" element={
-          <NavigationContextProvider>
-            <CandidateContextProvider>
-              <ErrorPage />
-            </CandidateContextProvider>
-          </NavigationContextProvider>
-        } />
+        <Route path="/logout" element={<Logout />} />
+
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     ) : (
       <Routes>
@@ -350,10 +334,12 @@ function App() {
           element={
             <NavigationContextProvider>
               <CandidateJobsContextProvider>
-                <CandidateHomeScreen
-                  setHired={setCandidateHired}
-                  setAssignedProject={setAssignedProject}
-                />
+                <JobContextProvider>
+                  <CandidateHomeScreen
+                    setHired={setCandidateHired}
+                    setAssignedProject={setAssignedProject}
+                  />
+                </JobContextProvider>
               </CandidateJobsContextProvider>
             </NavigationContextProvider>
           }
@@ -362,9 +348,11 @@ function App() {
             path=":section"
             element={
               <NavigationContextProvider>
-                <CandidateJobsContextProvider>
-                  <CandidateHomeScreen />
-                </CandidateJobsContextProvider>
+                <JobContextProvider>
+                  <CandidateJobsContextProvider>
+                    <CandidateHomeScreen />
+                  </CandidateJobsContextProvider>
+                </JobContextProvider>
               </NavigationContextProvider>
             }
           />
@@ -374,17 +362,21 @@ function App() {
           <Route
             index
             element={
-              <CandidateJobsContextProvider>
-                <JobScreen />
-              </CandidateJobsContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <JobScreen />
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
             }
           />
           <Route
             path=":jobTitle"
             element={
-              <CandidateJobsContextProvider>
-                <SingleJobScreen />
-              </CandidateJobsContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <SingleJobScreen />
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
             }
           />
           <Route
@@ -396,27 +388,33 @@ function App() {
             exact
             path="c/employee"
             element={
-              <CandidateJobsContextProvider>
-                <EmployeeJobScreen />
-              </CandidateJobsContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <EmployeeJobScreen />
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
             }
           />
           <Route
             exact
             path="c/intern"
             element={
-              <CandidateJobsContextProvider>
-                <InternJobScreen />
-              </CandidateJobsContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <InternJobScreen />
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
             }
           />
           <Route
             exact
             path="c/freelancer"
             element={
-              <CandidateJobsContextProvider>
-                <FreelancerJobScreen />
-              </CandidateJobsContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <FreelancerJobScreen />
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
             }
           />
         </Route>
@@ -424,25 +422,31 @@ function App() {
         <Route
           path="/logout"
           element={
-            <CandidateJobsContextProvider>
-              <Logout />
-            </CandidateJobsContextProvider>
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <Logout />
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
           }
         />
         <Route
           path="/alerts"
           element={
-            <CandidateJobsContextProvider>
-              <AlertScreen />
-            </CandidateJobsContextProvider>
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <AlertScreen />
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
           }
         />
         <Route
           path="/user"
           element={
-            <CandidateJobsContextProvider>
-              <UserScreen candidateSelected={false} />
-            </CandidateJobsContextProvider>
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <UserScreen candidateSelected={false} />
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
           }
         />
 
@@ -450,19 +454,24 @@ function App() {
           path="/applied"
           element={
             <NavigationContextProvider>
-              <CandidateJobsContextProvider>
-                <AppliedScreen />
-              </CandidateJobsContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <AppliedScreen />
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
             </NavigationContextProvider>
+
           }
         >
           <Route
             path=":section"
             element={
               <NavigationContextProvider>
-                <CandidateJobsContextProvider>
-                  <AppliedScreen />
-                </CandidateJobsContextProvider>
+                <JobContextProvider>
+                  <CandidateJobsContextProvider>
+                    <AppliedScreen />
+                  </CandidateJobsContextProvider>
+                </JobContextProvider>
               </NavigationContextProvider>
             }
           />
@@ -472,9 +481,11 @@ function App() {
           path="/apply/job/:id"
           element={
             <NewApplicationContextProvider>
-              <CandidateJobsContextProvider>
-                <JobApplicationScreen />
-              </CandidateJobsContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <JobApplicationScreen />
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
             </NewApplicationContextProvider>
           }
         >
@@ -482,9 +493,11 @@ function App() {
             path=":section"
             element={
               <NewApplicationContextProvider>
-                <CandidateJobsContextProvider>
-                  <JobApplicationScreen />
-                </CandidateJobsContextProvider>
+                <JobContextProvider>
+                  <CandidateJobsContextProvider>
+                    <JobApplicationScreen />
+                  </CandidateJobsContextProvider>
+                </JobContextProvider>
               </NewApplicationContextProvider>
             }
           />
