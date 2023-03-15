@@ -136,7 +136,9 @@ const ResearchAssociatePage = () => {
                         </div>
                     </div>
                 </div>
-                <img src={cities} className="map-image" alt="" />
+                <div className="map__image">
+                    
+                </div>
                 </>
                 :
                 <Loading/>
