@@ -25,8 +25,8 @@
 
 @media (min-width: 1200px){
     .payment-details-container{
-        margin: 15% auto 10%;
-        width: 82%;
+        margin: 10% auto 10%;
+        width: 100%;
     }
     .payment-details-container .payment-info-container{
         margin: 8% 0;

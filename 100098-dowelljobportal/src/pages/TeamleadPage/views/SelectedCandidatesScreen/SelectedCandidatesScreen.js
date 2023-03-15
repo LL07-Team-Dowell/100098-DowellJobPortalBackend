@@ -250,7 +250,9 @@ const SelectedCandidatesScreen = ({
           disableOtherBtns && setDisabled(false);
           ref.current.classList.toggle("active");
 
-          return toast.info(`Please add remarks for ${selectedCandidateData.applicant}`);
+          return toast.info(
+            `Please add remarks for ${selectedCandidateData.applicant}`
+          );
         }
 
         const dataToPost = {
@@ -264,7 +266,7 @@ const SelectedCandidatesScreen = ({
         };
 
         await leadHireCandidate(dataToPost);
-        console.log("dataToPost", dataToPost);
+        // console.log("dataToPost", dataToPost);
 
         updateCandidateData({
           type: candidateDataReducerActions.UPDATE_SELECTED_CANDIDATES,
@@ -343,12 +345,13 @@ const SelectedCandidatesScreen = ({
 
         if (hrDiscordLink.length >= 1) {
           disableOtherBtns && setDisabled(false);
-          const urlPattern = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+          const urlPattern =
+            /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
           const isValidUrl = urlPattern.test(hrDiscordLink);
           ref.current.classList.toggle("active");
-          if(!isValidUrl) {
-            setHrDiscordLink("") ;
-            return toast.info("Please add valid discord link for candidate")
+          if (!isValidUrl) {
+            setHrDiscordLink("");
+            return toast.info("Please add valid discord link for candidate");
           }
         }
 
@@ -481,9 +484,7 @@ const SelectedCandidatesScreen = ({
 
         {!hrPageActive && (
           <AssignedProjectDetails
-            assignedProject={
-              selectedCandidateData.assigned_project
-            }
+            assignedProject={selectedCandidateData.assigned_project}
             removeDropDownIcon={true}
           />
         )}
@@ -534,7 +535,9 @@ const SelectedCandidatesScreen = ({
                 </h2>
                 <textarea
                   placeholder={`${
-                    initialMeet ? `${selectedCandidateData.hr_remarks}` : "Write here"
+                    initialMeet
+                      ? `${selectedCandidateData.hr_remarks}`
+                      : "Write here"
                   }`}
                   readOnly={initialMeet ? true : false}
                   value={
@@ -714,7 +717,9 @@ const SelectedCandidatesScreen = ({
               </>
             ) : (
               <button
-                className={`status-option green-color green-bg ${
+                className={`status-option green-bg ${
+                  rehireTabActive ? "green-color" : "orange-color"
+                } ${
                   accountPage && rehireTabActive
                     ? selectedCandidateData.status ===
                       candidateStatuses.TEAMLEAD_TOREHIRE
@@ -743,13 +748,15 @@ const SelectedCandidatesScreen = ({
                 {/* <BsStopCircle className='status-icon' /> */}
                 {/* <br /><br/> */}
                 <div className="textt">
-                  {rehireTabActive
-                    ? "ReHire"
-                    : hireTabActive
-                    ? "Onboarding"
-                    : showOnboarding
-                    ? "ReHire"
-                    : "Hire"}
+                  {`${
+                    rehireTabActive
+                      ? "ReHire"
+                      : hireTabActive
+                      ? "Onboarding"
+                      : showOnboarding
+                      ? "ReHire"
+                      : "Hire"
+                  }`}
                 </div>
               </button>
             )}
@@ -783,8 +790,8 @@ const SelectedCandidatesScreen = ({
               >
                 {accountPage && rehireTabActive ? (
                   <></>
-                  // <AiOutlineCloseCircle className="status-icon" />
                 ) : (
+                  // <AiOutlineCloseCircle className="status-icon" />
                   <></>
                   // <BsStopCircle className="status-icon" />
                 )}

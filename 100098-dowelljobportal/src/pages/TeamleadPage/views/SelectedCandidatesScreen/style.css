@@ -194,9 +194,10 @@
 }
 @media (min-width: 1200px){
     .comments-container, .candidate-status-container{
-        width: 82%;
+        width: 100%;
         margin-left: auto;
         margin-right: auto;
+        margin-top: 4rem;
     }
 
     .comments-container textarea {
