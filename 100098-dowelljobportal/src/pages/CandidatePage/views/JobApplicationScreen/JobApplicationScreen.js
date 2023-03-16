@@ -26,6 +26,7 @@ import { submitNewApplication } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
 import { jobKeys } from "../../../AdminPage/utils/jobKeys";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { useJobContext } from "../../../../contexts/Jobs";
 
 
 
@@ -47,16 +48,12 @@ const JobApplicationScreen = () => {
     const paymentTermsSelectionsRef = useRef([]);
     const workflowTermsSelectionsRef = useRef([]);
     const [removeFreelanceOptions, setRemoveFreelanceOptions] = useState(false);
-    const [allJobs, setAllJobs] = useState([]);
+    const {jobs, setJobs} = useJobContext();
     const [jobsLoading, setJobsLoading] = useState(true);
     const { currentUser } = useCurrentUserContext();
-    // console.log(currentUser);
     const [jobSaved, setJobSaved] = useState(false);
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     const [formPage, setFormPage] = useState(1);
-
-    const [url, setUrl] = useState("");
-
     const addToRefsArray = (elem, arrayToAddTo) => {
         if (elem && !arrayToAddTo.current.includes(elem)) arrayToAddTo.current.push(elem)
     }
@@ -65,8 +62,8 @@ const JobApplicationScreen = () => {
     useEffect(() => {
         const datass = currentUser.portfolio_info[0].org_id;
         getJobs(datass).then(res => {
-            // setAllJobs(res.data);
-            setAllJobs(res.data.response.data);
+            // setjobs(res.data);
+            setJobs(res.data.response.data);
             setJobsLoading(false);
         }).catch(err => {
             console.log(err);
@@ -81,12 +78,12 @@ const JobApplicationScreen = () => {
         if (jobsLoading) return;
 
         // if (typeof (Number(id)) !== "number") return navigate("/home");
-        const foundJob = allJobs.find(job => job._id === id);
+        const foundJob = jobs.find(job => job._id === id);
         if (!foundJob) return navigate("/home");
 
         setCurrentJob(foundJob)
 
-    }, [id, jobsLoading, allJobs]);
+    }, [id, jobsLoading, jobs]);
 
     useEffect(() => {
 

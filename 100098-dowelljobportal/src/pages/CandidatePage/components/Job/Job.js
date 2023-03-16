@@ -13,9 +13,10 @@ import { useCandidateJobsContext } from '../../../../contexts/CandidateJobsConte
 // import { getJobs } from '../../../../services/commonServices';
 import { getAppliedJobs, getJobs } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
+import { useJobContext } from '../../../../contexts/Jobs';
 
 function JobScreen() {
-    const [jobs, setJobs] = useState([]);
+    const {jobs, setJobs} = useJobContext();
     const [jobsLoading, setJobsLoading] = useState(true);
     const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
     const navigate = useNavigate();
@@ -120,8 +121,8 @@ function JobScreen() {
     }, [currentJobCategory])
 
     useEffect(() => {
+        if (jobs.length > 0) return setLoading(false);
         const datass = currentUser.portfolio_info[0].org_id;
-
         getJobs(datass).then(res => {
             // setJobs(res.data.sort((a, b) => a.title.localeCompare(b.title)));
             setJobs(res.data.response.data.sort((a, b) => a.job_title.localeCompare(b.job_title)));
