@@ -26,7 +26,7 @@ const AttendanceScreen = ({ currentUser, className, assignedProject }) => {
 
         fetchCandidateTasks().then(response => {
         
-            const tasksForCurrentUser = response.data.filter(task => task.user === currentUser).reverse();
+            const tasksForCurrentUser = response.data.filter(task => task.applicant === currentUser.username).reverse();
             setUserTasks(tasksForCurrentUser);
             setTasksToShow(tasksForCurrentUser.filter(task => new Date(task.created).toLocaleDateString() === new Date().toLocaleDateString()));
     
