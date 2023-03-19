@@ -264,6 +264,7 @@ function App() {
         </Route>
 
         <Route path="*" element={<ErrorPage />} />
+        <Route path="/new-task-screen" element={<>Your page here</>} />
       </Routes>
     );
   }
@@ -294,6 +295,7 @@ function App() {
         </Route>
 
         <Route path="*" element={<ErrorPage />} />
+        <Route path="/new-task-screen" element={<>Your page here</>} />
       </Routes>
     );
   }

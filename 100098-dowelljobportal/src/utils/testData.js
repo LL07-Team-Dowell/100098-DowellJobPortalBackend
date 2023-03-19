@@ -34,6 +34,113 @@ export const testJobToWorkWith = {
     "created_by": "ayoola",  
 }
 
+export const testTasksToWorkWithForNow = [
+    {
+        "_id": "64175d43543974729c6b1208",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Hr Hiring",
+        "applicant": "ayoolaa",
+        "task": "Testing task 1",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Sun Mar 19 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175d718a28dc1674653581",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Hr Hiring",
+        "applicant": "ayoolaa",
+        "task": "Testing task 1",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Mon Mar 20 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175da5543974729c6b120e",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Hr Hiring",
+        "applicant": "ayoolaa",
+        "task": "Testing task 1",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Tue Mar 21 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175db89979d691c9c00489",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Hr Hiring",
+        "applicant": "ayoolaa",
+        "task": "Testing task 2",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Wed Mar 22 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175dcf9979d691c9c0048d",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Hr Hiring",
+        "applicant": "ayoolaa",
+        "task": "Testing task 3",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Thu Mar 23 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175de28a28dc1674653589",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Hr Hiring",
+        "applicant": "ayoolaa",
+        "task": "Testing task 4",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Fri Mar 24 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175e108a28dc167465358d",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Hr Hiring",
+        "applicant": "ayoolaa",
+        "task": "Testing task 5",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Sat Mar 25 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175e26ef4580aebca7f296",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Hr Hiring",
+        "applicant": "ayoolaa",
+        "task": "Testing task 8",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Sun Mar 26 2023 20:05:14",
+        "task_updated_date": ""
+    }
+]
+
 export const continentsData = {
     "Africa": [        
         "Algeria",
