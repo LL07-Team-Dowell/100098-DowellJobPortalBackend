@@ -20,3 +20,10 @@ export const getCandidateApplicationsForTeamLead = async (data) => {
     data
   );
 };
+
+export const getTaskForTeamLead = async (data) => {
+  return await currentBackendAxiosInstance.post(
+    "/task_management/get_task/",
+    data
+  );
+}
