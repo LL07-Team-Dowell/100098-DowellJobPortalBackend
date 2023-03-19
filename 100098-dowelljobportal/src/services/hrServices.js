@@ -11,3 +11,8 @@ export const addSelectedCandidate = async (data) => {
 export const getCandidateApplicationsForHr = async (data) => {
             return await currentBackendAxiosInstance.post("/candidate_management/get_job_application/", data)
 }
+
+
+export const getCandidateTask= async (data) => {
+            return await currentBackendAxiosInstance.post("task_management/get_cadidate_task/",data)
+          }
