@@ -7,7 +7,7 @@ const UserScreen = () => {
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext();
     const handleLogout = () => navigate("/logout");
-
+    console.log("3asnaaaaa",currentUser.userinfo)
     return <>
         <div className="user__Page__Container hr">
 
