@@ -12,7 +12,7 @@ import { useMediaQuery } from "@mui/material";
 import { adminNavigationLinks } from "../../pages/AdminPage/views/adminNavigationLinks";
 
 
-const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, runExtraFunctionOnNavItemClick, hideSideBar, adminView, searchValue, setSearchValue, handleNavIconClick, adminAlternativePageActive, pageTitle, hideTitleBar }) => {
+const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, runExtraFunctionOnNavItemClick, hideSideBar, adminView, searchValue, setSearchValue, handleNavIconClick, adminAlternativePageActive, pageTitle, hideTitleBar, showAnotherBtn, btnIcon, handleNavIcon }) => {
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     
     return <>
@@ -22,11 +22,12 @@ const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, ru
                     !adminView && isLargeScreen && <Link to={"/"} className="jobs__Layout__Link__Item">
                         <img src={logo} alt={"dowell logo"} />
                     </Link>
-                }
+                } 
                 {
                     adminView ?
                         adminAlternativePageActive ?
                             <div className="admin__View__Title__Container" onClick={handleNavIconClick ? handleNavIconClick : () => {}}>
+                                {showAnotherBtn ? <><div className="add__Icon__Container" onClick={handleNavIcon}>{btnIcon}</div></> : <></>}
                                 { pageTitle ? <h2>{pageTitle}</h2> : <></> }
                             </div> :
                         <div className="admin__View__Title__Container" onClick={handleNavIconClick ? handleNavIconClick : () => {}}>
