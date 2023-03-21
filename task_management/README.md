@@ -6,14 +6,13 @@ _Post_ to `task_management/create_task/`
 
 ```json
 {
-  "document_id": "<document id>",
   "project": "<project name>",
   "applicant": "<applicant name>",
   "task": "<task>",
   "task_added_by": "<task added name>",
   "data_type": "<data_type>",
   "company_id": "<company_id>",
-  "task created date": "<task created date>"
+  "task_created_date": "<task created date>"
 }
 ```
 
