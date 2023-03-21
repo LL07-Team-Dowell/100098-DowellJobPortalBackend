@@ -6,4 +6,5 @@ urlpatterns = [
     path('get_jobs/',get_jobs.as_view()),
     path('get_job/',get_job.as_view()),
     path('update_jobs/',update_jobs.as_view()),
+    path('delete_job/',delete_job.as_view()),
 ]

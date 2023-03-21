@@ -125,5 +125,30 @@ _Post_ to `admin_management/update_jobs/`
   "message": "Job updation has failed."
 }
 ```
+_Post_ to `admin_management/delete_job/`
 
+- Request Body
+
+```json
+{
+    "document_id":"<document_id>",
+     "data_type": "<data_type>",
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Job deletion successful."
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Job deletion has failed."
+}
+```
 **Notes: "job_title","description","skills","qualification","payment","is_active","time_interval","general_terms","technical_specification","workflow_terms","other_info","data_type"**

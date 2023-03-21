@@ -121,6 +121,28 @@ class update_jobs(APIView):
         else:
             return Response({"message":"Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)
   
+# delete the jobs
+@method_decorator(csrf_exempt, name='dispatch')
+class delete_job(APIView):
+
+    def post(self,request):
+        data = request.data
+        print(data)
+        if data :
+            field = {
+                "_id": data.get('document_id')
+            }
+            update_field = {
+                "data_type" :"archive_data"
+            }
+            response = dowellconnection(*jobs,"update",field,update_field)
+            # print(response)
+            if response:
+                return Response({"message":"Job deletion successful."},status=status.HTTP_200_OK)
+            else:
+                return Response({"message":"Job deletion has failed." },status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message":"Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)
 
 
 
