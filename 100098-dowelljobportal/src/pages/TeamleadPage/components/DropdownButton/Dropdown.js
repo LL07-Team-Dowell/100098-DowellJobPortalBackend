@@ -9,7 +9,7 @@ const DropdownButton = ({ currentSelection, selections, adminPageActive, handleS
     const currentSelectionRef = useRef(null);
     const selectionsRef = useRef(null);
     const [showDropdown, setShowDropdown] = useState(false);
-
+    console.log("selections" , selections)
     useClickOutside(selectionsRef, () => setShowDropdown(false));
     
     const updateCurrentSelection = (selection) => {
