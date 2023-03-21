@@ -132,7 +132,6 @@ _Post_ to `admin_management/delete_job/`
 ```json
 {
     "document_id":"<document_id>",
-     "data_type": "<data_type>",
 }
 ```
 
