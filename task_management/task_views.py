@@ -24,7 +24,7 @@ class create_task(APIView):
                     "task_added_by":data.get('task_added_by'),
                     "data_type": data.get('data_type'),
                     "company_id": data.get('company_id'),
-                    "task_created_date": data.get('task_date'),
+                    "task_created_date": data.get('task_created_date'),
                     "task_updated_date": ""
                     }
                 update_field = {
