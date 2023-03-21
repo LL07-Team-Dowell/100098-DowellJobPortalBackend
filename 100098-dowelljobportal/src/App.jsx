@@ -41,6 +41,7 @@ import AdminSettings from "./pages/AdminPage/views/Settings/AdminSettings";
 import RedirectPage from "./pages/Redirectpage/redirect";
 import { testingRoles } from "./utils/testingRoles";
 import LoadingPage from "./pages/LoadingPage/LoadingPage";
+import HrTasks from "./pages/HrPage/views/Tasks/HrTasks";
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -264,7 +265,7 @@ function App() {
         </Route>
 
         <Route path="*" element={<ErrorPage />} />
-        <Route path="/new-task-screen" element={<>Your page here</>} />
+        <Route path="/new-task-screen" element={<><HrTasks/></>} />
       </Routes>
     );
   }
