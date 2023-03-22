@@ -6,13 +6,16 @@ import Calendar from 'react-calendar';
 import TitleNavigationBar from '../../../../components/TitleNavigationBar/TitleNavigationBar.js'
 import AssignedProjectDetails from '../../../../pages/TeamleadPage/components/AssignedProjectDetails/AssignedProjectDetails.js' ;
 import TaskScreen from '../../../TeamleadPage/views/TaskScreen/TaskScreen.js';
+import {useSearchParams} from 'react-router-dom'
 const HrTasks = () => {
             const [data ,setdata] = useState(testTasksToWorkWithForNow) ; 
             const [project , setproject] = useState("") ;
             const [taskdetail , settaskdetail] = useState([]) ; 
             const [taskdetail2 , settaskdetail2] = useState([]) ; 
             const [value, onChange] = useState(new Date());
-            
+            let [searchParams, setSearchParams] = useSearchParams();
+            const name = searchParams.get('name')
+            console.log("name",name) ;
             console.log(value.toString(), "value")
             // loading 
             useEffect(()=>{
