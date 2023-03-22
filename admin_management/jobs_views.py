@@ -8,18 +8,14 @@ import requests
 from database.connection import dowellconnection
 from database.event import get_event_id
 from database.database_management import *
-
+from .serializers import AdminSerializer
 
 # create new job
 @method_decorator(csrf_exempt, name='dispatch')
 class create_jobs(APIView):
-
     def post(self, request):
         data = request.data
-        print(data)
-        if data :
-            if request.data['job_number'] and request.data['job_title'] and request.data['description'] and request.data['skills'] and request.data['qualification']:
-                field = {
+        field = {
                     "eventId":get_event_id()['event_id'],
                     "job_number":  data.get('job_number'),
                     "job_title":  data.get('job_title'),
@@ -27,7 +23,7 @@ class create_jobs(APIView):
                     "skills": data.get('skills',),
                     "qualification": data.get('qualification'),
                     "time_interval": data.get('time_interval'),
-                    "job_catagory": data.get('job_catagory'),
+                    "job_category": data.get('job_category'),
                     "type_of_job": data.get('type_of_job'),
                     "payment": data.get('payment',),
                     "is_active": data.get('is_active', False),
@@ -41,20 +37,20 @@ class create_jobs(APIView):
                     "created_by":data.get('created_by'),
                     "created_on":data.get('created_on')
                 }
-                update_field = {
+        update_field = {
                     "status":"nothing to update"
                 }
-                # response = dowellconnection(*jobs,"insert",field,update_field)
-                response = "hello"
-                print(response)
-                if response:
-                    return Response({"message":"Job creation was successful."},status=status.HTTP_201_CREATED)
-                else:
-                    return Response({"message":"Job creation has failed"},status=status.HTTP_400_BAD_REQUEST)
+        serializer = AdminSerializer(data=field)
+        if serializer.is_valid():
+            response = dowellconnection(*jobs,"insert",field,update_field)
+            if response:
+                return Response({"message":"Job creation was successful."},status=status.HTTP_201_CREATED)
             else:
-                return Response({"message":"Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message":"Job creation has failed"},status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"message":"Parameters are mising"},status=status.HTTP_400_BAD_REQUEST)
+            error = {"error":serializer.errors[error][0] for error in serializer.errors}
+            return Response(error,status=status.HTTP_400_BAD_REQUEST)
+
 
 #get jobs based on company id
 @method_decorator(csrf_exempt, name='dispatch')

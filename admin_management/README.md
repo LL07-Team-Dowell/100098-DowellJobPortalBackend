@@ -11,9 +11,10 @@ _Post_ to `admin_management/create_jobs/`
   "description": "Description for the job>",
   "skills": "<Required skills for the job",
   "qualification": "<Qualifications required for the job>",
-  "job_catagory": "<freelancer | intership | Employee>",
+  "job_category": "<freelancer | internship | Employee>",
   "type_of_job": "<Part time | Full time| Time based>",
   "payment": "<Payment for the job>",
+  "payment_terms": "<payment_terms>",
   "is_active": "<True| False>",
   "time_interval": "<Time interval for the job>",
   "general_terms": ["term1", "term2"],
@@ -21,7 +22,7 @@ _Post_ to `admin_management/create_jobs/`
   "workflow_terms": ["term1", "term2"],
   "other_info": ["term1", "term2"],
   "company_id": "<company_id>",
-  "data_type": "<data_type>",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
   "created_by": "<created_by>",
   "created_on": "<created_on>"
 }
@@ -40,6 +41,14 @@ _Post_ to `admin_management/create_jobs/`
 ```json
 {
   "message": "Job creation has failed"
+}
+```
+
+- Response 400
+
+```json
+{
+  "error": "field errors"
 }
 ```
 
@@ -125,13 +134,14 @@ _Post_ to `admin_management/update_jobs/`
   "message": "Job updation has failed."
 }
 ```
+
 _Post_ to `admin_management/delete_job/`
 
 - Request Body
 
 ```json
 {
-    "document_id":"<document_id>",
+  "document_id": "<document_id>"
 }
 ```
 
@@ -150,4 +160,5 @@ _Post_ to `admin_management/delete_job/`
   "message": "Job deletion has failed."
 }
 ```
+
 **Notes: "job_title","description","skills","qualification","payment","is_active","time_interval","general_terms","technical_specification","workflow_terms","other_info","data_type"**
