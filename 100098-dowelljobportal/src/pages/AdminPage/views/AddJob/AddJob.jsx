@@ -140,10 +140,9 @@ const AddJob = () => {
     try {
       const response = await addNewJob(newJob);
       console.log(response.data);
-      
-      
+
       if (response.status === 201) {
-        setJobs((prevValue) => [newJob, ...prevValue])
+        setJobs((prevValue) => [newJob, ...prevValue]);
         toast.success("Job created successfully");
         navigate("/");
       } else {
@@ -160,20 +159,24 @@ const AddJob = () => {
     <StaffJobLandingLayout
       adminView={true}
       adminAlternativePageActive={true}
-      hideTitleBar={true}
+      // hideTitleBar={true}
+      pageTitle={"Add New Job"}
+      showAnotherBtn={true}
+      btnIcon={<MdArrowBackIos size="1.5rem" />}
+      handleNavIcon={() => navigate(-1)}
     >
       <div className="job_container">
-        <Link to="/" className="navLink">
+        {/*<Link to="/" className="navLink">
           <button className="nav_button">
             <MdArrowBackIos size="1.5rem" className="back_icon" />
-          </button>
+  </button>
         </Link>
         <div className="add_section">
           <h1>Add New Job</h1>
           <p>
             Project Management - <span>UX Living Lab</span>
           </p>
-        </div>
+        </div>*/}
         <div className="job_details_bg">
           <div>
             <h3 className="title">Job Details</h3>

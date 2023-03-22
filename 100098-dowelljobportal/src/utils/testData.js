@@ -138,7 +138,85 @@ export const testTasksToWorkWithForNow = [
         "company_id": "63a2b3fb2be81449d3a30d3f",
         "task_created_date": "Sun Mar 26 2023 20:05:14",
         "task_updated_date": ""
-    }
+    },
+    {
+        "_id": "64175e26ef4580aebca7f296",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Workflow AI",
+        "applicant": "ayoolaa",
+        "task": "Testing task",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Mon Mar 20 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175e26ef4580aebca7f296",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Workflow AI",
+        "applicant": "ayoolaa",
+        "task": "Testing task 2",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Tue Mar 21 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175e26ef4580aebca7f296",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "QR Code",
+        "applicant": "ayoolaa",
+        "task": "Testing task",
+        "status": "Incomplete",
+        "task_added_by": "ayoolaa",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Wed Mar 22 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175e26ef4580aebca7f296",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "QR Code",
+        "applicant": "boxboy",
+        "task": "Testing task 90",
+        "status": "Incomplete",
+        "task_added_by": "boxboy",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Wed Mar 22 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175e26ef4580aebca7f296",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "QR Code",
+        "applicant": "boxboy",
+        "task": "Working task",
+        "status": "Incomplete",
+        "task_added_by": "boxboy",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Thu Mar 23 2023 20:05:14",
+        "task_updated_date": ""
+    },
+    {
+        "_id": "64175e26ef4580aebca7f296",
+        "eventId": "FB1010000000000000000000003004",
+        "project": "Wifi Automation",
+        "applicant": "boxboy",
+        "task": "Automation task",
+        "status": "Incomplete",
+        "task_added_by": "boxboy",
+        "data_type": "Real_Data",
+        "company_id": "63a2b3fb2be81449d3a30d3f",
+        "task_created_date": "Tue Mar 21 2023 20:05:14",
+        "task_updated_date": ""
+    },
 ]
 
 export const continentsData = {
