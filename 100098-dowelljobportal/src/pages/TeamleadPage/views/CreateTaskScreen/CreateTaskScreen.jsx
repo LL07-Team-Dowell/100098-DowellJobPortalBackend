@@ -3,132 +3,62 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 import { testTasksToWorkWithForNow } from "../../../../utils/testData";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import { differenceInCalendarDays } from "date-fns";
 
 const CreateTaskScreen = () => {
   const [data, setdata] = useState(testTasksToWorkWithForNow);
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [tasksForSelectedProject, setTasksForSelectedProject] = useState([]);
-  const [tasksForSelectedDate, setTasksForSelectedDate] = useState([]);
-  const [tasksForSelectedMonth, setTasksForSelectedMonth] = useState(
+  const [tasksForSelectedProject, setTasksForSelectedProject] = useState([]); //settask 2
+  const [tasksDate, setTasksDate] = useState([]); // settask 1
+  const [tasksMonth, setTasksMonth] = useState(
     selectedDate.toLocaleString("en-us", { month: "long" })
   );
-  const [newTask, setNewTask] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
+  //   const [newTask, setNewTask] = useState("");
+  //   const [showPopup, setShowPopup] = useState(false);
+
+  //check if applicant is already in the database and setTaskDate to that applicant
 
   useEffect(() => {
     setTasksForSelectedProject(
       data.filter((d) => d.project === selectedProject)
     );
-  }, [data, selectedProject]);
+  }, [selectedProject]);
 
   useEffect(() => {
-    const dateTime =
-      selectedDate.toLocaleString("en-us", { month: "long" }) +
-      " " +
-      selectedDate.getDate() +
-      ", " +
-      selectedDate.getFullYear();
-    setTasksForSelectedDate(
-      data.filter((d) => d.task_created_date === dateTime)
+    setTasksDate(
+      data.filter((d) => {
+        const dateTime = d.task_created_date.split(" ")[0]+ " " + d.task_created_date.split(" ")[1]+ " " + d.task_created_date.split(" ")[2]+ " " + d.task_created_date.split(" ")[3] ;
+        const calendatTime = selectedDate.toString().split(" ")[0] + " " + selectedDate.toString().split(" ")[1] + " " + selectedDate.toString().split(" ")[2] + " " +selectedDate.toString().split(" ")[3]
+        return dateTime === calendatTime;
+      })
     );
-  }, [data, selectedDate]);
 
-  //   const handleAddTaskBtnClick = () => {
-  //     setdata([
-  //       ...data,
-  //       {
-  //         task: newTask,
-  //         task_created_date: new Date(),
-  //         project: selectedProject,
-  //       },
-  //     ]);
-  //     setNewTask("");
-  //   };
-
-  const handleAddTask = () => {
-    const newTaskData = {
-      task: newTask,
-      task_created_date: new Date().toISOString(),
-      project: selectedProject,
-    };
-    setdata([...data, newTaskData]);
-    setNewTask("");
-    setShowPopup(false);
-  };
-
-  const handleCancel = () => {
-    setNewTask("");
-    setShowPopup(false);
-  };
-
-  const onClickDate = (date) => {
-    setSelectedDate(date);
-    setTasksForSelectedMonth(date.toLocaleString("en-us", { month: "long" }));
-    setTasksForSelectedDate([]);
-  };
+    setTasksMonth(selectedDate.toLocaleString("en-us", { month: "long" }));
+  }, [selectedDate]);
 
   return (
-    <>
-      <StaffJobLandingLayout teamleadView={true}>
+    <StaffJobLandingLayout teamleadView={true}>
+      <div>
+        <h1>Task details</h1>
+        <select onChange={(e) => setSelectedProject(e.target.value)}>
+          {data.map((d, i) => (
+            <option value={d.project} key={i}>
+              {d.project}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <Calendar onChange={setSelectedDate} value={selectedDate} />
         <div>
-          <h1>Task details</h1>
-          <ul>
-            {tasksForSelectedProject.map((d, i) => (
-              <li key={i}>{d.task}</li>
-            ))}
-          </ul>
+          <h1>{tasksMonth}</h1>
+          {tasksDate.length > 0
+            ? tasksDate.map((d, i) => <li key={i}>{d.task}</li>)
+            : "No Tasks Found For Today"}
         </div>
-        <div>
-          <h1>Teamlead Project</h1>
-          <select onChange={(e) => setSelectedProject(e.target.value)}>
-            <option value="">Select Project</option>
-            {data.map((d, i) => (
-              <option value={d.project} key={i}>
-                {d.project}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <h1>Task By Date</h1>
-          <Calendar value={selectedDate} onChange={onClickDate} />
-          <ul>
-            <h1>{tasksForSelectedMonth}</h1>
-            {tasksForSelectedDate.length > 0
-              ? tasksForSelectedDate.map((d, i) => <li key={i}>{d.task}</li>)
-              : `No tasks for ${tasksForSelectedMonth}`}
-          </ul>
-        </div>
-        {/*<div>
-          <h1>Add Task</h1>
-          <input
-            type="text"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-          />
-          <button onClick={handleAddTaskBtnClick}>Add Task</button>
-            </div> */}
-        {showPopup && (
-          <div className="popup">
-            <div className="popup-content">
-              <div>Create New Task</div>
-              <input
-                type="text"
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
-              />
-              <button onClick={handleAddTask}>Add Task</button>
-              <button onClick={handleCancel}>Cancel</button>
-            </div>
-          </div>
-        )}
-        <div>
-          Add Task
-          <button onClick={() => setShowPopup(true)}>Add Task</button>
-        </div>
-      </StaffJobLandingLayout>
-    </>
+      </div>
+    </StaffJobLandingLayout>
   );
 };
 
