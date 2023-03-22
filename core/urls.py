@@ -42,5 +42,6 @@ urlpatterns = [
     path('task_management/',include('task_management.urls')),
     path('research_management/',include('research_management.urls')),
     path('setting/',include('setting.urls')),
+    path('training_management/',include('training_management.urls')),
     path('swagger/schema/', schema_view.with_ui('swagger',cache_timeout=0), name='schema-schema')
 ]

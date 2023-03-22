@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'accounts_management',
     'admin_management',
     'jobportal',
+    'training_management',
     'setting',
     'task_management',
     'drf_yasg',

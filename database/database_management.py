@@ -76,3 +76,12 @@ research_job_creation_reports = [
     "10008102",
     "ABCDE",
 ]
+
+questionnaire_modules = [
+   "hr_hiring",
+    "hr_hiring",
+    "questionnaire",
+    "questionnaire",
+    "1000981011",
+    "ABCDE" 
+]                
