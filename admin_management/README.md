@@ -14,7 +14,7 @@ _Post_ to `admin_management/create_jobs/`
   "job_category": "<freelancer | internship | Employee>",
   "type_of_job": "<Part time | Full time| Time based>",
   "payment": "<Payment for the job>",
-  "payment_terms": "<payment_terms>",
+  "payment_terms": ["term1", "term2"],
   "is_active": "<True| False>",
   "time_interval": "<Time interval for the job>",
   "general_terms": ["term1", "term2"],

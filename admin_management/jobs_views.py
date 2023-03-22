@@ -48,8 +48,11 @@ class create_jobs(APIView):
             else:
                 return Response({"message":"Job creation has failed"},status=status.HTTP_400_BAD_REQUEST)
         else:
-            error = {"error":serializer.errors[error][0] for error in serializer.errors}
-            return Response(error,status=status.HTTP_400_BAD_REQUEST)
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error,status=status.HTTP_400_BAD_REQUEST)
 
 
 #get jobs based on company id
