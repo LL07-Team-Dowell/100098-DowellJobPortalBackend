@@ -324,3 +324,8 @@
         padding-bottom: 2%;
     }
 }
+@media(width >=1200px){
+    .project-details-container{
+        margin-top: 5%;
+    }
+}

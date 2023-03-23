@@ -23,7 +23,7 @@ const AddJob = () => {
     job_number: crypto.randomUUID(),
     job_title: "",
     skills: "",
-    job_catagory: "",
+    job_category: "",
     type_of_job: "",
     time_interval: "",
     is_active: true,
@@ -48,7 +48,7 @@ const AddJob = () => {
     setSelectedOption(e.target.value);
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
-      copyOfPrevValue["job_catagory"] = e.target.value;
+      copyOfPrevValue["job_category"] = e.target.value;
       return copyOfPrevValue;
     });
   };
@@ -111,13 +111,13 @@ const AddJob = () => {
       "time_interval",
       "payment",
       "description",
-      "job_catagory",
+      "job_category",
     ];
 
-    if (newJob.job_catagory === "research_associate") {
+    if (newJob.job_category === "research_associate") {
       return toast.info("Still under development");
     }
-    if (newJob.job_catagory === "") {
+    if (newJob.job_category === "") {
       toast.info("Please select a category type");
       return;
     } else if (fields.find((field) => newJob[field] === "")) {
@@ -257,9 +257,9 @@ const AddJob = () => {
                 </label>
               </div>
 
-              {newJob.job_catagory.length < 1 ? (
+              {newJob.job_category.length < 1 ? (
                 <></>
-              ) : newJob.job_catagory === "freelancer" ? (
+              ) : newJob.job_category === "freelancer" ? (
                 <>
                   <h3>Type of Job</h3>
                   <div className="type_of_job">
@@ -295,7 +295,7 @@ const AddJob = () => {
                     </div>
                   </div>
                 </>
-              ) : newJob.job_catagory === "intership" ? (
+              ) : newJob.job_category === "intership" ? (
                 <>
                   <h3>Type of Job</h3>
                   <div className="type_of_job">
@@ -331,7 +331,7 @@ const AddJob = () => {
                     </div>
                   </div>
                 </>
-              ) : newJob.job_catagory === "employee" ? (
+              ) : newJob.job_category === "employee" ? (
                 <>
                   <h3>Type of Job</h3>
                   <div className="type_of_job">

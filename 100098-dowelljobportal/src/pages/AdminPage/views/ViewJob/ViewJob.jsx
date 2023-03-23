@@ -28,7 +28,7 @@ const ViewJob = () => {
         console.log({jobs , id , data:jobs.filter(job => job["_id"] === id)})
         const singleJob = jobs.filter(job => job["_id"] === id)[0] ; 
         console.log({singleJob})
-        const {company_id , created_by , created_on , data_type , description , document_id , eventId , general_terms , is_active , job_catagory , job_number , job_title , other_info , payment
+        const {company_id , created_by , created_on , data_type , description , document_id , eventId , general_terms , is_active , job_category , job_number , job_title , other_info , payment
  , qualification , skills , technical_specification, time_interval , type_of_job ,workflow_terms , _id        } = singleJob
     if (loading) return  <Loading/>
         return <>

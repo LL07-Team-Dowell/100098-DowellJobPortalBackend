@@ -18,7 +18,7 @@ function EditJob() {
   const [formData, setFormData] = useState({
     job_title: '',
     skills: '',
-    job_catagory: '',
+    job_category: '',
     is_active: '',
     payment: '',
     description: '',
@@ -199,7 +199,7 @@ function EditJob() {
                 />
               </div>
               <div className='input__data'>
-                <label htmlFor="job_catagory">Type of Job</label>
+                <label htmlFor="job_category">Type of Job</label>
                 <div className="input__data__row">
                   <div className="data">
                     <input type="radio"

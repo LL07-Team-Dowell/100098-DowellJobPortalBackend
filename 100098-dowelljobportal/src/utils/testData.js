@@ -4,7 +4,7 @@ export const testJobToWorkWith = {
     "description": "testing job description",
     "skills": "testing skills",
     "qualification": "testing qualifications required",
-    "job_catagory": "freelancer",
+    "job_category": "freelancer",
     "type_of_job": "Full time",
     "payment": "30usd per week",
     "is_active": true,

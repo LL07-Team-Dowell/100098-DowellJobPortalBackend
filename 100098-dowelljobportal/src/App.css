@@ -7,3 +7,8 @@
 .center__Text{
   text-align: center;
 }
+@media (width >= 1200px){
+  .project-details-container{
+    margin-top: 4%;
+  }
+}
