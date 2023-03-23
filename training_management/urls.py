@@ -3,4 +3,5 @@ from training_management.training_views import *
 
 urlpatterns = [
     path('index/', index.as_view()),
+    path('response/', response.as_view()),
 ]

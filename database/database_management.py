@@ -78,10 +78,19 @@ research_job_creation_reports = [
 ]
 
 questionnaire_modules = [
-   "hr_hiring",
-    "hr_hiring",
-    "questionnaire",
-    "questionnaire",
-    "1000981011",
-    "ABCDE" 
+    "jobportal",
+    "jobportal",
+    "Questionnaire_report",
+    "Questionnaire_report",
+    "1000981012",
+    "ABCDE"
 ]                
+
+response_modules = [
+    "jobportal",
+    "jobportal",
+    "Response_report",
+    "Response_report",
+    "1000981013",
+    "ABCDE"
+]

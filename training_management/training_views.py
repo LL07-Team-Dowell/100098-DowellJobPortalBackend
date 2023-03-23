@@ -23,3 +23,15 @@ class index(APIView):
         insert_response = dowellconnection(*questionnaire_modules,"insert",field,update_field)
         return Response({"info": insert_response},status=status.HTTP_200_OK)
 
+@method_decorator(csrf_exempt, name='dispatch')
+class response(APIView):
+
+    def get(self, request):
+        field = {
+            "_id":"Manish",
+            }
+        update_field = {
+            "name":"Manish"
+        }
+        insert_response = dowellconnection(*response_modules,"insert",field,update_field)
+        return Response({"info": insert_response},status=status.HTTP_200_OK)
