@@ -37,7 +37,7 @@ const UserScreen = () => {
             }
             <div className="user__Intro__Item">
                 <h2>Role</h2>
-                <span>{currentUser.settings_for_profile_info.profile_info.map(role => ` ${role.Role}`)}</span>
+                <span>{"currentUser.settings_for_profile_info.profile_info.map(role => ` ${role.Role}`)"}</span>
             </div>
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout
