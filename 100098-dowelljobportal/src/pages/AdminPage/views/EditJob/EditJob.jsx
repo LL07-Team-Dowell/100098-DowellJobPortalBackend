@@ -18,7 +18,7 @@ function EditJob() {
   const [formData, setFormData] = useState({
     job_title: '',
     skills: '',
-    job_catagory: '',
+    job_category: '',
     is_active: '',
     payment: '',
     description: '',
@@ -156,230 +156,230 @@ function EditJob() {
   return (
     <> {loading ? <Loading /> :
       <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} hideTitleBar={true}>
-      <Wrapper>
-        <div className="container edit__page_Admin__T">
-          <div className="back__button">
-            <Link to={"/"}>
-              <IoIosArrowBack />
-            </Link>
-          </div>
-
-          <div className="main__titles">
-            <h2>Edit Job</h2>
-            <h3>Project Management <span style={{ "fontWeight": "400" }}>- UX Living Lab</span> </h3>
-          </div>
-
-
-          <div className="job__details">
-            <div className="job__detail__title">
-              <h3>Job Details</h3>
+        <Wrapper>
+          <div className="container edit__page_Admin__T">
+            <div className="back__button">
+              <Link to={"/"}>
+                <IoIosArrowBack />
+              </Link>
             </div>
 
-            <form onSubmit={handleSubmit}>
-              <div className='input__data'>
-                <label htmlFor="job_title">Name of Job</label>
-                <input
-                  type="text"
-                  id="job_title"
-                  name="job_title"
-                  // placeholder='UI Design'
-                  value={formData.job_title}
-                  onChange={handleInputChange}
-                />
+            <div className="main__titles">
+              <h2>Edit Job</h2>
+              <h3>Project Management <span style={{ "fontWeight": "400" }}>- UX Living Lab</span> </h3>
+            </div>
+
+
+            <div className="job__details">
+              <div className="job__detail__title">
+                <h3>Job Details</h3>
               </div>
-              <div className='input__data'>
-                <label htmlFor="skills">Skills</label>
-                <input
-                  type="text"
-                  id="skills"
-                  name="skills"
-                  // placeholder='Figma, XD'
-                  value={formData.skills}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className='input__data'>
-                <label htmlFor="job_catagory">Type of Job</label>
-                <div className="input__data__row">
-                  <div className="data">
-                    <input type="radio"
-                      id="freelancer"
-                      name="options"
-                      value="freelancer"
-                      checked={selectedOption === 'freelancer'}
-                      onChange={handleOptionChange}
-                    />
-                    <label htmlFor="freelancer">Freelancer</label>
-                  </div>
 
-                  <div className="data">
-                    <input
-                      type="radio"
-                      id="employe"
-                      name="options"
-                      value="employe"
-                      checked={selectedOption === 'employe'}
-                      onChange={handleOptionChange}
-                    />
-                    <label htmlFor="employe">Employe</label>
-                  </div>
+              <form onSubmit={handleSubmit}>
+                <div className='input__data'>
+                  <label htmlFor="job_title">Name of Job</label>
+                  <input
+                    type="text"
+                    id="job_title"
+                    name="job_title"
+                    // placeholder='UI Design'
+                    value={formData.job_title}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className='input__data'>
+                  <label htmlFor="skills">Skills</label>
+                  <input
+                    type="text"
+                    id="skills"
+                    name="skills"
+                    // placeholder='Figma, XD'
+                    value={formData.skills}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className='input__data'>
+                  <label htmlFor="job_category">Type of Job</label>
+                  <div className="input__data__row">
+                    <div className="data">
+                      <input type="radio"
+                        id="freelancer"
+                        name="options"
+                        value="freelancer"
+                        checked={selectedOption === 'freelancer'}
+                        onChange={handleOptionChange}
+                      />
+                      <label htmlFor="freelancer">Freelancer</label>
+                    </div>
 
-                  <div className="data">
-                    <input
-                      type="radio"
-                      id="internship"
-                      name="options"
-                      value="internship"
-                      checked={selectedOption === 'internship'}
-                      onChange={handleOptionChange}
-                    />
-                    <label htmlFor="internship">Internship</label>
-                  </div>
+                    <div className="data">
+                      <input
+                        type="radio"
+                        id="employe"
+                        name="options"
+                        value="employe"
+                        checked={selectedOption === 'employe'}
+                        onChange={handleOptionChange}
+                      />
+                      <label htmlFor="employe">Employe</label>
+                    </div>
 
-                  <div className="data">
-                    <input
-                      type="radio"
-                      id="research associate"
-                      name="options"
-                      value="research associate"
-                      checked={selectedOption === 'research associate'}
-                      onChange={handleOptionChange}
-                    />
-                    <label htmlFor="research associate">Research Associate</label>
+                    <div className="data">
+                      <input
+                        type="radio"
+                        id="internship"
+                        name="options"
+                        value="internship"
+                        checked={selectedOption === 'internship'}
+                        onChange={handleOptionChange}
+                      />
+                      <label htmlFor="internship">Internship</label>
+                    </div>
+
+                    <div className="data">
+                      <input
+                        type="radio"
+                        id="research associate"
+                        name="options"
+                        value="research associate"
+                        checked={selectedOption === 'research associate'}
+                        onChange={handleOptionChange}
+                      />
+                      <label htmlFor="research associate">Research Associate</label>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className='input__data'>
-                <label htmlFor="skills">Time Period</label>
-                <input
-                  type="text"
-                  id="time_interval"
-                  name="time_interval"
-                  // placeholder='1 Week'
-                  value={formData.time_interval}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className='input__data__row'>
-                <label>Status of Job</label>
-                <div className="data">
-                  {/* <input type="checkbox" id="check1" className="toggle" onClick={toggleJobStatus} />
-                  <label htmlFor="check1"></label> */}
-                  {/* <label htmlFor="jobStatus">{formData.is_active === 'true' ? "Active" : "Inactive"}</label> */}
-
+                <div className='input__data'>
+                  <label htmlFor="skills">Time Period</label>
                   <input
-                    className="active_checkbox"
-                    type="checkbox"
-                    name={"is_active"}
-                    checked={formData.is_active}
-                    onChange={toggleJobStatus}
-                    required
+                    type="text"
+                    id="time_interval"
+                    name="time_interval"
+                    // placeholder='1 Week'
+                    value={formData.time_interval}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className='input__data__row'>
+                  <label>Status of Job</label>
+                  <div className="data">
+                    {/* <input type="checkbox" id="check1" className="toggle" onClick={toggleJobStatus} />
+                  <label htmlFor="check1"></label> */}
+                    {/* <label htmlFor="jobStatus">{formData.is_active === 'true' ? "Active" : "Inactive"}</label> */}
+
+                    <input
+                      className="active_checkbox"
+                      type="checkbox"
+                      name={"is_active"}
+                      checked={formData.is_active}
+                      onChange={toggleJobStatus}
+                      required
+                    />
+                  </div>
+
+                </div>
+                <div className='input__data'>
+                  <label htmlFor="payment">Payment</label>
+                  <input
+                    type="text"
+                    id="payment"
+                    name="payment"
+                    // placeholder='30$'
+                    value={formData.payment}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className='input__data'>
+                  <label htmlFor="description">Job Description</label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    // placeholder='1. Setting goals and developing plans for business and revenue growth. Researching, planning, and implementing new target market initiatives.'
+                    value={formData.description}
+                    onChange={handleInputChange}
                   />
                 </div>
 
-              </div>
-              <div className='input__data'>
-                <label htmlFor="payment">Payment</label>
-                <input
-                  type="text"
-                  id="payment"
-                  name="payment"
-                  // placeholder='30$'
-                  value={formData.payment}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div className='input__data'>
-                <label htmlFor="description">Job Description</label>
-                <textarea
-                  id="description"
-                  name="description"
-                  // placeholder='1. Setting goals and developing plans for business and revenue growth. Researching, planning, and implementing new target market initiatives.'
-                  value={formData.description}
-                  onChange={handleInputChange}
-                />
-              </div>
+                <div className="gernaral__term">
+                  <label>General Terms</label>
+                  <div className="general__items">
+                    {
+                      React.Children.toArray(formData.general_terms?.map((x, i) => {
+                        return <div className="item">
+                          <p> <input value={x} placeholder="genaral term" onChange={(e) => handleChangeInTermsArray(e.target.value, "general_terms", i)} /> </p>
+                          <AiFillCloseCircle onClick={() => { handleRemoveGeneralTerms(i) }} />
+                        </div>
+                      }))
+                    }
+                  </div>
 
-              <div className="gernaral__term">
-                <label>General Terms</label>
-                <div className="general__items">
-                  {
-                    React.Children.toArray(formData.general_terms?.map((x, i) => {
-                      return <div className="item">
-                        <p> <input value={x} placeholder="genaral term" onChange={(e) => handleChangeInTermsArray(e.target.value, "general_terms", i)} /> </p>
-                        <AiFillCloseCircle onClick={() => { handleRemoveGeneralTerms(i) }} />
-                      </div>
-                    }))
-                  }
+                  <div className="add__item">
+                    <AiFillPlusCircle onClick={() => handleAddTerm("general_terms")} />
+                    <label>Add General Terms</label>
+                  </div>
                 </div>
 
-                <div className="add__item">
-                  <AiFillPlusCircle onClick={() => handleAddTerm("general_terms")} />
-                  <label>Add General Terms</label>
-                </div>
-              </div>
 
+                <div className="gernaral__term">
+                  <label>Technical Specification</label>
+                  <div className="general__items">
+                    {
+                      React.Children.toArray(formData.technical_specification?.map((x, i) => {
+                        return <div className='item'>
+                          <p> <input value={x} placeholder="payment term" onChange={(e) => handleChangeInTermsArray(e.target.value, "technical_specification", i)} /> </p>
+                          <AiFillCloseCircle onClick={() => { handleRemovePaymentTerms(i) }} />
+                        </div>
+                      }))
+                    }
+                  </div>
+                  <div className="add__item">
+                    <AiFillPlusCircle onClick={() => handleAddTerm("technical_specification")} />
+                    <label>Add Payement Terms</label>
+                  </div>
+                </div>
 
-              <div className="gernaral__term">
-                <label>Technical Specification</label>
-                <div className="general__items">
-                  {
-                    React.Children.toArray(formData.technical_specification?.map((x, i) => {
-                      return <div className='item'>
-                        <p> <input value={x} placeholder="payment term" onChange={(e) => handleChangeInTermsArray(e.target.value, "technical_specification", i)} /> </p>
-                        <AiFillCloseCircle onClick={() => { handleRemovePaymentTerms(i) }} />
-                      </div>
-                    }))
-                  }
+                <div className="gernaral__term">
+                  <label>Workflow</label>
+                  <div className="general__items">
+                    {
+                      React.Children.toArray(formData.workflow_terms?.map((x, i) => {
+                        return <div className='item'>
+                          <p><input value={x} placeholder="workflow" onChange={(e) => handleChangeInTermsArray(e.target.value, "workflow_terms", i)} /> </p>
+                          <AiFillCloseCircle onClick={() => { handleRemoveWorkflow(i) }} />
+                        </div>
+                      }))
+                    }
+                  </div>
+                  <div className="add__item">
+                    <AiFillPlusCircle onClick={() => handleAddTerm("workflow_terms")} />
+                    <label>Add Workflow</label>
+                  </div>
                 </div>
-                <div className="add__item">
-                  <AiFillPlusCircle onClick={() => handleAddTerm("technical_specification")} />
-                  <label>Add Payement Terms</label>
-                </div>
-              </div>
 
-              <div className="gernaral__term">
-                <label>Workflow</label>
-                <div className="general__items">
-                  {
-                    React.Children.toArray(formData.workflow_terms?.map((x, i) => {
-                      return <div className='item'>
-                        <p><input value={x} placeholder="workflow" onChange={(e) => handleChangeInTermsArray(e.target.value, "workflow_terms", i)} /> </p>
-                        <AiFillCloseCircle onClick={() => { handleRemoveWorkflow(i) }} />
-                      </div>
-                    }))
-                  }
+                <div className="gernaral__term">
+                  <label>Others</label>
+                  <div className="general__items">
+                    {
+                      React.Children.toArray(formData.other_info?.map((x, i) => {
+                        return <div className='item'>
+                          <p><input value={x} placeholder="others" onChange={(e) => handleChangeInTermsArray(e.target.value, "other_info", i)} /> </p>
+                          <AiFillCloseCircle onClick={() => { handleRemoveOthers(i) }} />
+                        </div>
+                      }))
+                    }
+                  </div>
+                  <div className="add__item">
+                    <AiFillPlusCircle onClick={() => handleAddTerm("other_info")} />
+                    <label>Add Others</label>
+                  </div>
                 </div>
-                <div className="add__item">
-                  <AiFillPlusCircle onClick={() => handleAddTerm("workflow_terms")} />
-                  <label>Add Workflow</label>
-                </div>
-              </div>
-
-              <div className="gernaral__term">
-                <label>Others</label>
-                <div className="general__items">
-                  {
-                    React.Children.toArray(formData.other_info?.map((x, i) => {
-                      return <div className='item'>
-                        <p><input value={x} placeholder="others" onChange={(e) => handleChangeInTermsArray(e.target.value, "other_info", i)} /> </p>
-                        <AiFillCloseCircle onClick={() => { handleRemoveOthers(i) }} />
-                      </div>
-                    }))
-                  }
-                </div>
-                <div className="add__item">
-                  <AiFillPlusCircle onClick={() => handleAddTerm("other_info")} />
-                  <label>Add Others</label>
-                </div>
-              </div>
-              <button type="submit" className="save__button" disabled={updateLoading}>
-                {updateLoading ? "Save..." : "Save"}<BsFillBookmarkFill />
-              </button>
-            </form>
+                <button type="submit" className="save__button" disabled={updateLoading}>
+                  {updateLoading ? "Save..." : "Save"}<BsFillBookmarkFill />
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
-      </Wrapper>
+        </Wrapper>
       </StaffJobLandingLayout>
     }
     </>

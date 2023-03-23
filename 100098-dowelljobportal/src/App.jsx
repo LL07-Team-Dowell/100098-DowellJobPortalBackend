@@ -45,8 +45,8 @@ import LoadingPage from "./pages/LoadingPage/LoadingPage";
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
-  const [candidateHired, setCandidateHired] = useState(false);
-  const [assignedProject, setAssignedProject] = useState("");
+  const [candidateHired, setCandidateHired] = useState(true);
+  const [assignedProject, setAssignedProject] = useState("hr hiring");
 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
