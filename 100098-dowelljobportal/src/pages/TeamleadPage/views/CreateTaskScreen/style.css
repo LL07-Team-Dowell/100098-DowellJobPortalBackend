@@ -1,101 +1,115 @@
-.candidate-task-screen-container{
-    --grey-color: #838383;
-    --light-grey-color: #E0E0E0;
-    --black: #000;
-    --green-color: #53CA5F;
-    --red-color: #FC3939;
-    --yellow-color: #C09F2C;
-    font-family: 'Inter', sans-serif;
+.candidate-task-screen-container {
+  --grey-color: #838383;
+  --light-grey-color: #e0e0e0;
+  --black: #000;
+  --green-color: #53ca5f;
+  --red-color: #fc3939;
+  --yellow-color: #c09f2c;
+  font-family: "Inter", sans-serif;
 }
 
-.candidate-task-screen-container{
-    padding: 3% 7%;
+.candidate-task-screen-container {
+  padding: 0;
+  padding-top: 3%;
+  padding-bottom: 3%;
 }
 
 .candidate-task-screen-container > * {
-    color: var(--grey-color);
+  color: var(--grey-color);
 }
 
 .candidate-task-screen-container .selected-applicant-intro {
-    justify-content: flex-start;
+  justify-content: flex-start;
 }
 
 .candidate-task-screen-container .selected-applicant-intro span {
-    margin: 0;
+  margin: 0;
 }
 
-.candidate-task-screen-container .add-task-btn{
-    margin: 10% auto 50%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    cursor: pointer;
-    color: var(--yellow-color);
+.candidate-task-screen-container .add-task-btn {
+  margin: 10% auto 50%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  cursor: pointer;
+  color: var(--yellow-color);
 }
 
-.candidate-task-screen-container .add-task-btn span{
-    margin-right: 1%;
+.candidate-task-screen-container .add-task-btn span {
+  margin-right: 1%;
 }
 
 .candidate-task-screen-container .all__Tasks__Container {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
-.candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {
-    margin-top: 8%;
+.candidate-task-screen-container
+  .all__Tasks__Container
+  .task__Details__Item
+  .month__Title {
+  margin-top: 8%;
 }
 
 .candidate-task-screen-container .task__Indicator {
-    background-color: var(--green-color);
+  background-color: var(--green-color);
 }
 
 .candidate-task-screen-container .empty__Task__Content {
-    font-size: 0.875rem;
+  font-size: 0.875rem;
 }
 
 .candidate-task-screen-container .all__Tasks__Container .react-calendar {
-    height: max-content;
+  height: max-content;
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
-    .candidate-task-screen-container .applicant-title-text {
-        margin-bottom: 2%;
-    }
-    .candidate-task-screen-container .selected-applicant-intro {
-        margin-top: 2%;
-    }
-    .candidate-task-screen-container .all__Tasks__Container {
-        flex-direction: row;
-    }
-    .candidate-task-screen-container .all__Tasks__Container .task__Details__Item {
-        margin-left: 4%;
-        width: 60%;
-    }   
-    .candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {
-        margin: 0 0 2.5%;
-    }
+  .candidate-task-screen-container .applicant-title-text {
+    margin-bottom: 2%;
+  }
+  .candidate-task-screen-container .selected-applicant-intro {
+    margin-top: 2%;
+  }
+  .candidate-task-screen-container .all__Tasks__Container {
+    flex-direction: row;
+  }
+  .candidate-task-screen-container .all__Tasks__Container .task__Details__Item {
+    margin-left: 4%;
+    width: 60%;
+  }
+  .candidate-task-screen-container
+    .all__Tasks__Container
+    .task__Details__Item
+    .month__Title {
+    margin: 0 0 2.5%;
+  }
 }
 
-@media (min-width: 992px){
-    .candidate-task-screen-container .add-task-btn,
-    .candidate-task-screen-container .all__Tasks__Container {
-        width: 82%;
-        margin: 3% auto;
-    }
-    .candidate-task-screen-container .add-task-btn {
-        margin-bottom: 11%;
-    }
-    .candidate-task-screen-container .all__Tasks__Container {
-        margin-top: 0;
-        flex-direction: row;
-        padding-bottom: 10%;
-    }
-    .candidate-task-screen-container .all__Tasks__Container .task__Details__Item {
-        margin-left: 2%;
-        width: 80%;
-    }
-    .candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {
-        margin: 0 0 2%;
-    }
+@media (min-width: 992px) {
+  .task-bar {
+    margin: 3% 5%;
+  }
+  .candidate-task-screen-container .add-task-btn,
+  .candidate-task-screen-container .all__Tasks__Container {
+    width: 82%;
+    margin: 3% auto;
+  }
+  .candidate-task-screen-container .add-task-btn {
+    margin-bottom: 11%;
+  }
+  .candidate-task-screen-container .all__Tasks__Container {
+    margin-top: 0;
+    flex-direction: row;
+    padding-bottom: 10%;
+  }
+  .candidate-task-screen-container .all__Tasks__Container .task__Details__Item {
+    margin-left: 2%;
+    width: 80%;
+  }
+  .candidate-task-screen-container
+    .all__Tasks__Container
+    .task__Details__Item
+    .month__Title {
+    margin: 0 0 2%;
+  }
 }

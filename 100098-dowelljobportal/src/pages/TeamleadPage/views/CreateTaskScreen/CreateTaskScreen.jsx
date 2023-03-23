@@ -9,6 +9,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import "./style.css";
 import CandidateTaskItem from "../../components/CandidateTaskItem/CandidateTaskItem";
 import { useSearchParams } from "react-router-dom";
+import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleNavigationBar";
 
 const CreateTaskScreen = ({
   handleAddTaskBtnClick,
@@ -17,7 +18,10 @@ const CreateTaskScreen = ({
   className,
   assignedProject,
 }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const applicant = searchParams.get("applicant"); 
   const [data, setdata] = useState(testTasksToWorkWithForNow);
+  console.log(data)
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [tasksForSelectedProject, setTasksForSelectedProject] = useState([]);
@@ -25,11 +29,11 @@ const CreateTaskScreen = ({
   const [tasksMonth, setTasksMonth] = useState(
     selectedDate.toLocaleString("en-us", { month: "long" })
   );
-  const [searchParams, setSearchParams] = useSearchParams();
+
 
   useEffect(() => {
     setTasksForSelectedProject(
-      data.filter((d) => d.project === selectedProject)
+      data.filter((d) => d.project === selectedProject && d.applicant === applicant)
     );
   }, [selectedProject]);
 
@@ -63,6 +67,7 @@ const CreateTaskScreen = ({
 
   return (
     <StaffJobLandingLayout teamleadView={true}>
+    <TitleNavigationBar title="Tasks" className="task-bar"/>
       <div
         className={`candidate-task-screen-container ${
           className ? className : ""
