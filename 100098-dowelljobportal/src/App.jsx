@@ -47,8 +47,8 @@ import CreateTaskScreen from "./pages/TeamleadPage/views/CreateTaskScreen/Create
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
-  const [candidateHired, setCandidateHired] = useState(true);
-  const [assignedProject, setAssignedProject] = useState("hr hiring");
+  const [candidateHired, setCandidateHired] = useState(false);
+  const [assignedProject, setAssignedProject] = useState("");
 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");

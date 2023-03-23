@@ -34,7 +34,7 @@ function JobScreen() {
 
     useEffect(() => {
         // console.log(jobs);
-        // const findJobsMatchingCategory = (category) => jobs.filter(job => job.job_catagory.toLocaleLowerCase().includes(category.toLocaleLowerCase()) || category.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase()));
+        // const findJobsMatchingCategory = (category) => jobs.filter(job => job.job_category.toLocaleLowerCase().includes(category.toLocaleLowerCase()) || category.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase()));
         // const findJobsMatchingCategory = (category) => jobs.filter(job => console.log(category));
         const findJobsMatchingCategory = (category) => jobs.filter(job => {
             console.log(job);

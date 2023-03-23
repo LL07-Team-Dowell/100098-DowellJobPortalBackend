@@ -1,22 +1,38 @@
 export const testJobToWorkWith = {
-  job_number: crypto.randomUUID(),
-  job_title: "testing job",
-  description: "testing job description",
-  skills: "testing skills",
-  qualification: "testing qualifications required",
-  job_catagory: "freelancer",
-  type_of_job: "Full time",
-  payment: "30usd per week",
-  is_active: true,
-  time_interval: "3 months",
-  general_terms: ["genTerm1", "genTerm2", "genTerm3"],
-  technical_specification: ["tecTerm1", "tecTerm2", "tecTerm3"],
-  workflow_terms: ["workTerm1", "workTerm2", "workTerm3"],
-  other_info: ["otherTerm1", "otherTerm2", "otherTerm3"],
-  company_id: "538573dsjdjadna84",
-  data_type: "real",
-  created_by: "ayoola",
-};
+    "job_number": crypto.randomUUID(),
+    "job_title": "testing job",
+    "description": "testing job description",
+    "skills": "testing skills",
+    "qualification": "testing qualifications required",
+    "job_category": "freelancer",
+    "type_of_job": "Full time",
+    "payment": "30usd per week",
+    "is_active": true,
+    "time_interval": "3 months",
+    "general_terms": [
+        "genTerm1",
+        "genTerm2",
+        "genTerm3",
+    ],
+    "technical_specification": [
+        "tecTerm1",
+        "tecTerm2",
+        "tecTerm3",
+    ], 
+    "workflow_terms": [
+        "workTerm1",
+        "workTerm2",
+        "workTerm3",
+    ],
+    "other_info": [
+        "otherTerm1",
+        "otherTerm2",
+        "otherTerm3",
+    ],
+    "company_id": "538573dsjdjadna84",
+    "data_type": "real",
+    "created_by": "ayoola",  
+}
 
 export const testTasksToWorkWithForNow = [
   {
