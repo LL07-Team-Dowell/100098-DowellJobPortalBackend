@@ -1,23 +1,31 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { testTasksToWorkWithForNow } from "../../../../utils/testData";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { differenceInCalendarDays } from "date-fns";
+import AssignedProjectDetails from "../../components/AssignedProjectDetails/AssignedProjectDetails";
+import ApplicantIntro from "../../components/ApplicantIntro/ApplicantIntro";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import "./style.css";
+import CandidateTaskItem from "../../components/CandidateTaskItem/CandidateTaskItem";
+import { useSearchParams } from "react-router-dom";
 
-const CreateTaskScreen = () => {
+const CreateTaskScreen = ({
+  handleAddTaskBtnClick,
+  candidateAfterSelectionScreen,
+  handleEditBtnClick,
+  className,
+  assignedProject,
+}) => {
   const [data, setdata] = useState(testTasksToWorkWithForNow);
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [tasksForSelectedProject, setTasksForSelectedProject] = useState([]); //settask 2
-  const [tasksDate, setTasksDate] = useState([]); // settask 1
+  const [tasksForSelectedProject, setTasksForSelectedProject] = useState([]);
+  const [tasksDate, setTasksDate] = useState([]);
   const [tasksMonth, setTasksMonth] = useState(
     selectedDate.toLocaleString("en-us", { month: "long" })
   );
-  //   const [newTask, setNewTask] = useState("");
-  //   const [showPopup, setShowPopup] = useState(false);
-
-  //check if applicant is already in the database and setTaskDate to that applicant
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     setTasksForSelectedProject(
@@ -28,8 +36,22 @@ const CreateTaskScreen = () => {
   useEffect(() => {
     setTasksDate(
       data.filter((d) => {
-        const dateTime = d.task_created_date.split(" ")[0]+ " " + d.task_created_date.split(" ")[1]+ " " + d.task_created_date.split(" ")[2]+ " " + d.task_created_date.split(" ")[3] ;
-        const calendatTime = selectedDate.toString().split(" ")[0] + " " + selectedDate.toString().split(" ")[1] + " " + selectedDate.toString().split(" ")[2] + " " +selectedDate.toString().split(" ")[3]
+        const dateTime =
+          d.task_created_date.split(" ")[0] +
+          " " +
+          d.task_created_date.split(" ")[1] +
+          " " +
+          d.task_created_date.split(" ")[2] +
+          " " +
+          d.task_created_date.split(" ")[3];
+        const calendatTime =
+          selectedDate.toString().split(" ")[0] +
+          " " +
+          selectedDate.toString().split(" ")[1] +
+          " " +
+          selectedDate.toString().split(" ")[2] +
+          " " +
+          selectedDate.toString().split(" ")[3];
         return dateTime === calendatTime;
       })
     );
@@ -37,25 +59,57 @@ const CreateTaskScreen = () => {
     setTasksMonth(selectedDate.toLocaleString("en-us", { month: "long" }));
   }, [selectedDate]);
 
+  const selectOption = Array.from(new Set(data.map((d) => d.project)));
+
   return (
     <StaffJobLandingLayout teamleadView={true}>
-      <div>
-        <h1>Task details</h1>
-        <select onChange={(e) => setSelectedProject(e.target.value)}>
-          {data.map((d, i) => (
-            <option value={d.project} key={i}>
-              {d.project}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <Calendar onChange={setSelectedDate} value={selectedDate} />
-        <div>
-          <h1>{tasksMonth}</h1>
-          {tasksDate.length > 0
-            ? tasksDate.map((d, i) => <li key={i}>{d.task}</li>)
-            : "No Tasks Found For Today"}
+      <div
+        className={`candidate-task-screen-container ${
+          className ? className : ""
+        }`}
+      >
+        {!candidateAfterSelectionScreen && (
+          <>
+            <ApplicantIntro showTask={true} />
+          </>
+        )}
+        <AssignedProjectDetails
+          showTask={true}
+          availableProjects={selectOption}
+          removeDropDownIcon={false}
+          handleSelectionClick={(e) => setSelectedProject(e.target.value)}
+          assignedProject={assignedProject}
+        />
+        <div className="all__Tasks__Container">
+          <Calendar onChange={setSelectedDate} value={selectedDate} />
+          <div className="task__Details__Item">
+            <h3 className="month__Title">{tasksMonth}</h3>
+            {tasksDate.length === 0 ? (
+              <p className="empty__task__Content">No task found for today</p>
+            ) : (
+              React.Children.toArray(
+                tasksDate.map((d, i) => {
+                  return (
+                    <CandidateTaskItem
+                      currentTask={d}
+                      taskNum={i + 1}
+                      candidatePage={candidateAfterSelectionScreen}
+                      handleEditBtnClick={() => handleEditBtnClick(d)}
+                      updateTasks={() =>
+                        setTasksForSelectedProject(
+                          data.filter((d) => d.project === selectedProject)
+                        )
+                      }
+                    />
+                  );
+                })
+              )
+            )}
+          </div>
+        </div>
+        <div className="add-task-btn" onClick={handleAddTaskBtnClick}>
+          <span>Add</span>
+          <AddCircleOutlineIcon />
         </div>
       </div>
     </StaffJobLandingLayout>
@@ -63,3 +117,5 @@ const CreateTaskScreen = () => {
 };
 
 export default CreateTaskScreen;
+
+// new-task-screen/?applicant={applicant_name}
