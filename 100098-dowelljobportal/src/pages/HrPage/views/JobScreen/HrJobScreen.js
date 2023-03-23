@@ -261,7 +261,7 @@ function HrJobScreen() {
                   return <>
                     <JobCard 
                       job={job}
-                      subtitle={job.job_catagory}
+                      subtitle={job.job_category}
                       buttonText={"View"}
                       viewJobApplicationDetails={true}
                       applicationsCount={appliedJobs.filter(application => application.job_number === job.job_number).length}
@@ -274,7 +274,7 @@ function HrJobScreen() {
                   return <>
                     <JobCard 
                       job={job}
-                      subtitle={job.job_catagory}
+                      subtitle={job.job_category}
                       buttonText={"View"}
                       viewJobApplicationDetails={true}
                       applicationsCount={appliedJobs.filter(application => application.job_number === job.job_number).length}
@@ -314,7 +314,7 @@ function HrJobScreen() {
                       return <>
                         <JobCard 
                           job={job}
-                          subtitle={job.job_catagory}
+                          subtitle={job.job_category}
                           buttonText={"View"}
                           viewJobApplicationDetails={true}
                           applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
@@ -327,7 +327,7 @@ function HrJobScreen() {
                       return <>
                         <JobCard 
                           job={job}
-                          subtitle={job.job_catagory}
+                          subtitle={job.job_category}
                           buttonText={"View"}
                           viewJobApplicationDetails={true}
                           applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}

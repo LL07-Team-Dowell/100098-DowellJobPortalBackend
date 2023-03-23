@@ -5,7 +5,7 @@ import "./style.css";
 
 
 const AssignedProjectDetails = ({ showTask, assignedProject, availableProjects, handleSelectionClick, removeDropDownIcon, hrAttendancePageActive }) => {
-
+console.log(assignedProject);
     return <>
         <div className="project-details-container">
             {

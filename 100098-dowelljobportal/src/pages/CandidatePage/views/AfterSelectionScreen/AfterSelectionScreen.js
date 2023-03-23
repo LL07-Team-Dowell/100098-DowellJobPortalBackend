@@ -14,6 +14,7 @@ import "./style.css";
 
 const AfterSelectionScreen = ({ assignedProject }) => {
     const { currentUser } = useCurrentUserContext();
+    console.log(currentUser);
     const [ showAddTaskModal, setShowAddTaskModal ] = useState(false);
     const { section } = useNavigationContext();
     const { setUserTasks } = useCandidateTaskContext();
