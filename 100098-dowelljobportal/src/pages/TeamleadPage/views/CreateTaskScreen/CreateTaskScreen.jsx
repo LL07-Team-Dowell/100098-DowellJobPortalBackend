@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { testTasksToWorkWithForNow } from "../../../../utils/testData";
-import Calendar from "react-calendar";
+import { Calendar } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import AssignedProjectDetails from "../../components/AssignedProjectDetails/AssignedProjectDetails";
 import ApplicantIntro from "../../components/ApplicantIntro/ApplicantIntro";
@@ -10,18 +10,18 @@ import "./style.css";
 import CandidateTaskItem from "../../components/CandidateTaskItem/CandidateTaskItem";
 import { useSearchParams } from "react-router-dom";
 import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleNavigationBar";
+import { differenceInCalendarDays } from "date-fns";
 
 const CreateTaskScreen = ({
-  handleAddTaskBtnClick,
   candidateAfterSelectionScreen,
   handleEditBtnClick,
   className,
   assignedProject,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const applicant = searchParams.get("applicant"); 
+  const applicant = searchParams.get("applicant");
   const [data, setdata] = useState(testTasksToWorkWithForNow);
-  console.log(data)
+  console.log(data);
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [tasksForSelectedProject, setTasksForSelectedProject] = useState([]);
@@ -29,11 +29,13 @@ const CreateTaskScreen = ({
   const [tasksMonth, setTasksMonth] = useState(
     selectedDate.toLocaleString("en-us", { month: "long" })
   );
-
+  const [datesToStyle, setDatesToStyle] = useState([]);
 
   useEffect(() => {
     setTasksForSelectedProject(
-      data.filter((d) => d.project === selectedProject && d.applicant === applicant)
+      data.filter(
+        (d) => d.project === selectedProject && d.applicant === applicant
+      )
     );
   }, [selectedProject]);
 
@@ -65,9 +67,17 @@ const CreateTaskScreen = ({
 
   const selectOption = Array.from(new Set(data.map((d) => d.project)));
 
+  const isSameDay = (a, b) => differenceInCalendarDays(a, b) === 0;
+
+  const tileClassName = ({ date, view }) => {
+    const formattedDate = date.toISOString().split(0, 10);
+    const hasdate = data.find((d) => d.task_created_date === formattedDate);
+    return hasdate ? "has-date" : ""; 
+  };
+
   return (
     <StaffJobLandingLayout teamleadView={true}>
-    <TitleNavigationBar title="Tasks" className="task-bar"/>
+      <TitleNavigationBar title="Tasks" className="task-bar" />
       <div
         className={`candidate-task-screen-container ${
           className ? className : ""
@@ -86,7 +96,11 @@ const CreateTaskScreen = ({
           assignedProject={assignedProject}
         />
         <div className="all__Tasks__Container">
-          <Calendar onChange={setSelectedDate} value={selectedDate} />
+          <Calendar
+            onChange={setSelectedDate}
+            value={selectedDate}
+            tileClassName={tileClassName}
+          />
           <div className="task__Details__Item">
             <h3 className="month__Title">{tasksMonth}</h3>
             {tasksDate.length === 0 ? (
@@ -112,10 +126,10 @@ const CreateTaskScreen = ({
             )}
           </div>
         </div>
-        <div className="add-task-btn" onClick={handleAddTaskBtnClick}>
+        {/* <div className="add-task-btn" onClick={handleAddTaskBtnClick}>
           <span>Add</span>
           <AddCircleOutlineIcon />
-        </div>
+              </div> */}
       </div>
     </StaffJobLandingLayout>
   );
