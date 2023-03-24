@@ -8,7 +8,7 @@ from database.event import get_event_id
 from database.database_management import *
 from database.connection import dowellconnection
 import requests
-
+from task_management.serializers import TaskSerializer
 
 @method_decorator(csrf_exempt, name='dispatch')
 class create_task(APIView):
@@ -103,3 +103,27 @@ class update_task(APIView):
                     return Response({"message":"Task updation failed"},status=status.HTTP_304_NOT_MODIFIED)
             else:
                 return Response({"message":"Parametes are not valid"},status=status.HTTP_400_BAD_REQUEST)
+            
+@method_decorator(csrf_exempt, name='dispatch')
+class delete_task(APIView):
+    def delete(self,request):
+        data = request.data
+        if data :
+            field = {
+                "_id": data.get('document_id')
+            }
+            update_field = {
+                "data_type" :"Archived_Data"
+            }
+            response = dowellconnection(*task_management_reports,"update",field,update_field)
+            if response:
+                return Response({"message":"Task deletion successful."},status=status.HTTP_200_OK)
+            else:
+                return Response({"message":"Task deletion has failed." },status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message":"Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)
+                    
+                
+            
+       
+               

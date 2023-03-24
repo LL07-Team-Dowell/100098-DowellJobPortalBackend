@@ -6,4 +6,5 @@ urlpatterns = [
     path('get_task/',get_task.as_view()),
     path('get_cadidate_task/',get_cadidate_task.as_view()),
     path('update_task/',update_task.as_view()),
+    path('delete_task/',delete_task.as_view()),
 ]
