@@ -4,20 +4,19 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import requests
 from database.connection import dowellconnection
 from database.event import get_event_id
 from database.database_management import *
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
+from candidate_management.serializers import CandidateSerializer
+
 # apply for jobs
 @method_decorator(csrf_exempt, name='dispatch')
 class apply_job(APIView):
-#add few details
     def post(self, request ):
         data = request.data
-        if data:
-            field = {
+        field = {
                 "eventId":get_event_id()['event_id'],
                 "job_number":  data.get('job_number'),
                 "job_title":  data.get('job_title'),
@@ -29,6 +28,7 @@ class apply_job(APIView):
                 "academic_qualification_type": data.get('academic_qualification_type'),
                 "academic_qualification": data.get('academic_qualification'),
                 "country": data.get('country'),
+                "job_category" : data.get('job_category'),
                 "agree_to_all_terms": data.get('agree_to_all_terms'),
                 "internet_speed": data.get('internet_speed'),
                 "other_info":data.get('other_info'),
@@ -50,17 +50,22 @@ class apply_job(APIView):
                 "hired_on":"",
                 "onboarded_on":"",
             }
-            update_field = {
+        update_field = {
                 "status":"nothing to update"
             }
+        serializer = CandidateSerializer(data=field,context={'request':request})
+        if serializer.is_valid():
             response = dowellconnection(*candidate_management_reports,"insert",field,update_field)
-            print(response)
             if response:
                 return Response({"message":"Application received."},status=status.HTTP_201_CREATED)
             else:
                 return Response({"message":"Application failed to receive."},status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"message":"Parameters are not valid."},status=status.HTTP_400_BAD_REQUEST)
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error,status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
