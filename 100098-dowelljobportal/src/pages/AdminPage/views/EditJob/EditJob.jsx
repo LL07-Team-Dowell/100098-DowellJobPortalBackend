@@ -158,7 +158,7 @@ function EditJob() {
       <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} hideTitleBar={true}>
         <Wrapper>
           <div className="container edit__page_Admin__T">
-            <div className="back__button">
+            {/* <div className="back__button">
               <Link to={"/"}>
                 <IoIosArrowBack />
               </Link>
@@ -167,7 +167,7 @@ function EditJob() {
             <div className="main__titles">
               <h2>Edit Job</h2>
               <h3>Project Management <span style={{ "fontWeight": "400" }}>- UX Living Lab</span> </h3>
-            </div>
+            </div> */}
 
 
             <div className="job__details">

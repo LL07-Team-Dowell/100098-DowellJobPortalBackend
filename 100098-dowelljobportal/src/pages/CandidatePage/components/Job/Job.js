@@ -14,6 +14,7 @@ import { useCandidateJobsContext } from '../../../../contexts/CandidateJobsConte
 import { getAppliedJobs, getJobs } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { useJobContext } from '../../../../contexts/Jobs';
+import { SettingsAccessibility } from '@mui/icons-material';
 
 function JobScreen() {
     const {jobs, setJobs} = useJobContext();
@@ -121,7 +122,7 @@ function JobScreen() {
     }, [currentJobCategory])
 
     useEffect(() => {
-        if (jobs.length > 0) return setLoading(false);
+        if (jobs.length > 0) return setAllRequestsDone(false);
         const datass = currentUser.portfolio_info[0].org_id;
         getJobs(datass).then(res => {
             // setJobs(res.data.sort((a, b) => a.title.localeCompare(b.title)));
