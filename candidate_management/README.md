@@ -8,6 +8,7 @@ _Post_ to `/candidate_management/apply_job/`
 {
   "job_number": "<job _number of already created jobs",
   "job_title": "<job title of already created jobs>",
+  "job_category": "<freelancer | internship | Employee>",
   "applicant": "<applicant name>",
   "applicant_email": "<applicant email>",
   "feedBack": "<feedback>",
@@ -20,7 +21,7 @@ _Post_ to `/candidate_management/apply_job/`
   "other_info": ["term1", "term2"],
   "agree_to_all_terms": "<True | False>",
   "company_id": "<company_id>",
-  "usernames": "<username>",
+  "username": "<username>",
   "data_type": "<data_type>",
   "payment": "<payment>",
   "application_submitted_on": "<application_submitted_on>"
