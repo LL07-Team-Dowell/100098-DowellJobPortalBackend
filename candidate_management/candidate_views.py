@@ -53,7 +53,7 @@ class apply_job(APIView):
         update_field = {
                 "status":"nothing to update"
             }
-        serializer = CandidateSerializer(data=field,context={'request':request})
+        serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
             response = dowellconnection(*candidate_management_reports,"insert",field,update_field)
             if response:

@@ -1,4 +1,3 @@
-import json
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
@@ -7,7 +6,7 @@ from rest_framework.views import APIView
 from database.event import get_event_id
 from database.database_management import *
 from database.connection import dowellconnection
-import requests
+from hr_management.serializers import HRSerializer
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -33,15 +32,20 @@ class shortlisted_candidate(APIView):
                     "data_type":data.get('data_type'),
                     "shortlisted_on":data.get('shortlisted_on')
                 }
-                update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
-                insert_response = dowellconnection(*hr_management_reports,"insert",insert_to_hr_report,update_field)
-                print(update_response)
-                if update_response or insert_response:
-                    return Response({"message":f"Candidate has been {data.get('status')}"},status=status.HTTP_200_OK)
+                serializer = HRSerializer(data=data)
+                if serializer.is_valid():
+                    update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
+                    insert_response = dowellconnection(*hr_management_reports,"insert",insert_to_hr_report,update_field)
+                    if update_response or insert_response:
+                        return Response({"message":f"Candidate has been {data.get('status')}"},status=status.HTTP_200_OK)
+                    else:
+                        return Response({"message":"HR operation failed"},status=status.HTTP_304_NOT_MODIFIED)
                 else:
-                    return Response({"message":"HR operation failed"},status=status.HTTP_304_NOT_MODIFIED)
-            else:
-                return Response({"message":"Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)
+                    default_errors = serializer.errors
+                    new_error = {}
+                    for field_name, field_errors in default_errors.items():
+                        new_error[field_name] = field_errors[0]
+                    return Response(new_error,status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
