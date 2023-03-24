@@ -117,3 +117,36 @@ _Post_ to `task_management/update_task/`
   "message": "Task updation failed"
 }
 ```
+_delete_ to `task_management/delete_task/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document id>",
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Task deletion successful."
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Task deletion failed"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
