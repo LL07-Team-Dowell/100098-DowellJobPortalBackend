@@ -46,7 +46,7 @@ class onboard_candidate(APIView):
                     new_error = {}
                     for field_name, field_errors in default_errors.items():
                         new_error[field_name] = field_errors[0]
-                        return Response(new_error,status=status.HTTP_400_BAD_REQUEST)
+                    return Response(new_error,status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
