@@ -40,6 +40,18 @@ const CreateTaskScreen = ({
   }, [selectedProject]);
 
   useEffect(() => {
+    const newData = data.filter((d) => d.project === selectedProject);
+    setTasksForSelectedProject(newData);
+    const datesUserHasTask = [
+      ...new Set(
+        data.map((task) => [new Date(task.task_created_date)])
+      ).values(),
+    ].flat();
+    console.log(datesUserHasTask)
+    setDatesToStyle(datesUserHasTask);
+  }, [data]);
+
+  useEffect(() => {
     setTasksDate(
       data.filter((d) => {
         const dateTime =
