@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import arrowright from "../assets/arrowright.svg";
-import edit from "../assets/edit.svg";
 import { AiOutlineClockCircle } from "react-icons/ai";
 import { CgDanger } from "react-icons/cg";
+import { RiEdit2Fill } from "react-icons/ri";
+import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 import "./index.scss";
 import axios from "axios";
@@ -18,6 +19,8 @@ const Card = ({
   job_title,
   is_active,
   _id,
+  jobs,
+  setJobs,
 }) => {
   const date = () => {
     const givenDate = new Date(created_on);
@@ -41,6 +44,13 @@ const Card = ({
   };
   const [is_activee, setIsActive] = useState(is_active);
   const [loading, setLoading] = useState(false);
+
+  const handleDeleteOfJob = (id) => {
+    const newJob = [...jobs];
+    newJob.splice(id, 1);
+    setJobs(newJob);
+  };
+
   const handleCheckboxChange = () => {
     setIsActive(!is_activee);
     setLoading(true);
@@ -63,9 +73,16 @@ const Card = ({
     <div className="card">
       <div className="card__header">
         <h5>{job_title}</h5>
-        <Link to={"/edit-job"}>
-          <img src={edit} alt="" className="edit-link"/>
-        </Link>
+        <div className="interact__icons">
+          <Link to={"/edit-job"}>
+            <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
+          </Link>
+          <MdDelete
+            style={{ fontSize: "1.3rem", color: "#000" }}
+            onClick={handleDeleteOfJob}
+            className="delete__icon"
+          />
+        </div>
       </div>
       <div className="card__skill">
         <div>
@@ -106,7 +123,8 @@ const Card = ({
         </div>
         <button>
           <Link to={`/view-job/${_id}`} style={{ color: "white" }}>
-            <span>View</span> <img src={arrowright} alt="" className="arrow-link"/>
+            <span>View</span>{" "}
+            <img src={arrowright} alt="" className="arrow-link" />
           </Link>
         </button>
       </div>

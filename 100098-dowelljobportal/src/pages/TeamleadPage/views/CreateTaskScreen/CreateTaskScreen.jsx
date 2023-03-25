@@ -70,9 +70,13 @@ const CreateTaskScreen = ({
   const isSameDay = (a, b) => differenceInCalendarDays(a, b) === 0;
 
   const tileClassName = ({ date, view }) => {
-    const formattedDate = date.toISOString().split(0, 10);
-    const hasdate = data.find((d) => d.task_created_date === formattedDate);
-    return hasdate ? "has-date" : ""; 
+    // Add class to tiles in month view only
+    if (view === "month") {
+      // Check if a date React-Calendar wants to check is on the list of dates to add class to
+      if (datesToStyle.find((dDate) => isSameDay(dDate, date))) {
+        return "task__Indicator";
+      }
+    }
   };
 
   return (
