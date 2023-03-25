@@ -40,7 +40,7 @@ _Post_ to `setting/SettingUserProfileInfo/`
 
 _get_ to `setting/SettingUserProfileInfo/`
 
-- Response 201
+- Response 200
 
 ```json
 {
@@ -51,7 +51,7 @@ _get_ to `setting/SettingUserProfileInfo/`
   "profile_info": [
     { "profile_title": "profile_title", "Role": "Role", "version": "version" }
   ]
-}
+},status=200
 ```
 
 - Response 400
