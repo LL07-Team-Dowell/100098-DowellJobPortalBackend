@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from database.event import get_event_id
 from database.database_management import *
 from database.connection import dowellconnection
-import requests
+from lead_management.serializers import LeadSerializer
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -32,15 +32,20 @@ class hire_candidate(APIView):
                     "data_type":data.get('data_type'),
                     "hired_on":data.get('hired_on')
                 }
-                update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
-                insert_response = dowellconnection(*lead_management_reports,"insert",insert_to_lead_report,update_field)
-                print(update_response)
-                if update_response or insert_response:
-                    return Response({"message":f"Candidate has been {data.get('status')}"},status=status.HTTP_200_OK)
+                serializer = LeadSerializer(data=data)
+                if serializer.is_valid(): 
+                    update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
+                    insert_response = dowellconnection(*lead_management_reports,"insert",insert_to_lead_report,update_field)
+                    if update_response or insert_response:
+                        return Response({"message":f"Candidate has been {data.get('status')}"},status=status.HTTP_200_OK)
+                    else:
+                        return Response({"message":"Lead operation failed"},status=status.HTTP_304_NOT_MODIFIED)
                 else:
-                    return Response({"message":"Lead operation failed"},status=status.HTTP_304_NOT_MODIFIED)
-            else:
-                return Response({"message":"Parameters are not valid"},status=status.HTTP_400_BAD_request)
+                    default_errors = serializer.errors
+                    new_error = {}
+                    for field_name, field_errors in default_errors.items():
+                        new_error[field_name] = field_errors[0]
+                    return Response(new_error,status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
