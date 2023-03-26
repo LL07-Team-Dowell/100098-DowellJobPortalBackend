@@ -2,13 +2,11 @@
   margin:0;
   padding: 0;
   box-sizing: border-box;
+  
 }
-
+.task__Indicator{
+  background-color: red;
+}
 .center__Text{
   text-align: center;
-}
-@media (width >= 1200px){
-  .project-details-container{
-    margin-top: 4%;
-  }
 }
