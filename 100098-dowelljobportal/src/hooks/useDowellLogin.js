@@ -14,6 +14,7 @@ export default function useDowellLogin(
   const [searchParams, setSearchParams] = useSearchParams();
   const currentLocalSessionId = sessionStorage.getItem("session_id");
   const currentLocalPortfolioId = sessionStorage.getItem("portfolio_id");
+  const currentLocalUserDetails = sessionStorage.getItem("user");
 
   useEffect(() => {
     const session_id = searchParams.get("session_id");
@@ -21,6 +22,11 @@ export default function useDowellLogin(
 
     if (!session_id && !portfolio_id) {
       if (currentLocalSessionId && currentLocalPortfolioId) {
+        if (currentLocalUserDetails) {
+          updateCurrentUserState(JSON.parse(currentLocalUserDetails));
+          updatePageLoading(false);
+          return
+        }
         getUserInfoFromPortfolioAPI({ session_id: currentLocalSessionId })
           .then(async (res) => {
             const currentUserDetails = res.data;
@@ -43,12 +49,14 @@ export default function useDowellLogin(
 
               //USER DOES NOT HAVE ROLE CONFIGURED
               if (!userHasRoleConfigured) {
+                sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
                 updateCurrentUserState(currentUserDetails);
                 updatePageLoading(false);
 
                 return;
               } else {
                 //USER HAS ROLE CONFIGURED
+                sessionStorage.setItem('user', JSON.stringify({...currentUserDetails, settings_for_profile_info: userHasRoleConfigured }));
                 updateCurrentUserState({
                   ...currentUserDetails,
                   settings_for_profile_info: userHasRoleConfigured,
@@ -56,6 +64,7 @@ export default function useDowellLogin(
                 updatePageLoading(false);
               }
             } catch (error) {
+              sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
               updateCurrentUserState(currentUserDetails);
               updatePageLoading(false);
             }
@@ -68,10 +77,15 @@ export default function useDowellLogin(
       }
 
       if (currentLocalSessionId && !currentLocalPortfolioId) {
+        if (currentLocalUserDetails) {
+          updateCurrentUserState(JSON.parse(currentLocalUserDetails));
+          updatePageLoading(false);
+          return
+        }
         getUserInfoFromLoginAPI({ session_id: currentLocalSessionId })
           .then(async (res) => {
             const currentUserDetails = res.data;
-
+            sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
             updateCurrentUserState(currentUserDetails);
             updatePageLoading(false);
           })
@@ -95,10 +109,16 @@ export default function useDowellLogin(
         "/100098-DowellJobPortal/"
       );
 
+      if (currentLocalUserDetails) {
+        updateCurrentUserState(JSON.parse(currentLocalUserDetails));
+        updatePageLoading(false);
+        return
+      }
+
       getUserInfoFromLoginAPI({ session_id: session_id })
         .then(async (res) => {
           const currentUserDetails = res.data;
-
+          sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
           updateCurrentUserState(currentUserDetails);
           updatePageLoading(false);
         })
@@ -113,6 +133,12 @@ export default function useDowellLogin(
     window.history.replaceState({}, document.title, "/100098-DowellJobPortal/");
 
     sessionStorage.setItem("portfolio_id", portfolio_id);
+
+    if (currentLocalUserDetails) {
+      updateCurrentUserState(JSON.parse(currentLocalUserDetails));
+      updatePageLoading(false);
+      return
+    }
 
     getUserInfoFromPortfolioAPI({ session_id: session_id })
       .then(async (res) => {
@@ -136,12 +162,14 @@ export default function useDowellLogin(
 
           //User Does not have role configured
           if (!userHasRoleConfigured) {
+            sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
             updateCurrentUserState(currentUserDetails);
             updatePageLoading(false);
 
             return;
           } else {
             //User has role configured
+            sessionStorage.setItem('user', JSON.stringify({...currentUserDetails, settings_for_profile_info: userHasRoleConfigured}));
             updateCurrentUserState({
               ...currentUserDetails,
               settings_for_profile_info: userHasRoleConfigured,
@@ -149,6 +177,7 @@ export default function useDowellLogin(
             updatePageLoading(false);
           }
         } catch (error) {
+          sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
           updateCurrentUserState(currentUserDetails);
           updatePageLoading(false);
         }
