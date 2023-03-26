@@ -162,6 +162,14 @@ function App() {
           }
         />
         <Route
+          path="/edit-job/:id"
+          element={
+            <JobContextProvider>
+              <EditJob />
+            </JobContextProvider>
+          }
+        />
+        <Route
           path="/view-job/:id"
           element={
             <JobContextProvider>
