@@ -37,7 +37,7 @@ const UserScreen = () => {
             }
             <div className="user__Intro__Item">
                 <h2>Role</h2>
-                <span>{"Role"}</span>
+                <span>{"Hr"}</span>
             </div>
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout
