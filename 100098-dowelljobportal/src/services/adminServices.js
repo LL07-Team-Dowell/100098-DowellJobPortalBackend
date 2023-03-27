@@ -7,3 +7,7 @@ export const addNewJob = async (dataToPost) => {
   );
   return response;
 };
+
+export const deleteJob = async (data) => {
+  return await currentBackendAxiosInstance.post("admin_management/delete_job/",data)
+}

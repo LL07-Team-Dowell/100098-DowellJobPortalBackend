@@ -29,6 +29,7 @@ const LandingPage = () => {
         .then((response) => {
           setJobs(response.data.response.data);
           console.log(response.data.response.data);
+          console.log(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data"));
         })
         .catch((error) => console.log(error));
     }
@@ -57,6 +58,7 @@ const LandingPage = () => {
     getUserInfoFromLoginAPI(dataToPost)
       .then((res) => {
         setCurrentUser(res.data);
+        console.log(res.data.portfolio_info[0].data_type) ;
       })
       .catch((err) => {
         console.log("Failed to get user details from login API");
@@ -72,7 +74,7 @@ const LandingPage = () => {
       <div className="landing-page">
         <div className="cards">
           {jobs.length > 0 ? (
-            jobs
+            jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data")
               .reverse()
               .map((job, index) => (
                 <Card {...job} key={index} jobs={jobs} setJobs={setJobs} />

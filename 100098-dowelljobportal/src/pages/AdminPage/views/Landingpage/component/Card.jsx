@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import "./index.scss";
 import axios from "axios";
 import LittleLoading from "../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
+import { deleteJob } from "../../../../../services/adminServices";
 const style = {
   fontSize: "24px",
   color: "#7C7C7C",
@@ -44,11 +45,25 @@ const Card = ({
   };
   const [is_activee, setIsActive] = useState(is_active);
   const [loading, setLoading] = useState(false);
+  const [deletingLoading , setDeletingLoading] = useState(false) ; 
+  const handleDeleteOfJob = async (id) => {
+      console.log("SADASDSADASDSD") ; 
+      setDeletingLoading(true) ; 
 
-  const handleDeleteOfJob = (id) => {
-    const newJob = [...jobs];
-    newJob.splice(id, 1);
-    setJobs(newJob);
+    try{
+      const response = await deleteJob(id) ; 
+      console.log(response) ;
+      const newJobs = [...jobs];
+      const newJob =  newJobs.filter(job => job._id !== id)
+      console.log({newJob})
+      setJobs(newJob); 
+      setDeletingLoading(false) ; 
+    }
+    catch(err){
+      console.log(err) ; 
+      setDeletingLoading(false) ; 
+
+    }
   };
 
   const handleCheckboxChange = () => {
@@ -77,11 +92,11 @@ const Card = ({
           <Link to={`/edit-job/${_id}`}>
             <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
           </Link>
-          <MdDelete
+          {deletingLoading ? <LittleLoading/> : <MdDelete
             style={{ fontSize: "1.3rem", color: "#000" }}
-            onClick={handleDeleteOfJob}
+            onClick={()=>handleDeleteOfJob(_id)}
             className="delete__icon"
-          />
+          />}
         </div>
       </div>
       <div className="card__skill">
