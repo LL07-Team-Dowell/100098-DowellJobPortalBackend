@@ -40,7 +40,7 @@ const LandingPage = () => {
     // };
 
     // User portfolio has already being loaded
-    if (currentUser.userportfolio.length > 0) return;
+    if (currentUser?.userportfolio?.length > 0) return;
 
     const currentSessionId = sessionStorage.getItem("session_id");
 
