@@ -7,12 +7,15 @@ import { IoIosArrowBack } from "react-icons/io";
 import "./EditJob.css";
 import Loading from '../../../../components/LoadingSpinner/LoadingSpinner';
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { MdArrowBackIos } from 'react-icons/md';
+import { useJobContext } from '../../../../contexts/Jobs';
 
 
 function EditJob() {
-  const [loading, setLoading] = useState([false]);
+  // const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
   const [updateLoading, setUpdateLoading] = useState(false)
   // console.log(updateLoading)
   const [formData, setFormData] = useState({
@@ -25,38 +28,43 @@ function EditJob() {
     time_interval: '',
     general_terms: ['', '', ''],
     technical_specification: [],
+    payment_terms: [],
     workflow_terms: [],
     other_info: [],
   });
   // console.log(formData.is_active);
   // console.log(formData);
+  const { jobs, setJobs } = useJobContext();
+  const { id } = useParams();
+  const singleJob = jobs.filter(job => job["_id"] === id)[0];
+  const { company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_catagory, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id } = singleJob;
+  console.log(job_catagory);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     setError(null);
+  //     try {
+  //       const response = await fetch('https://100098.pythonanywhere.com/admin_management/get_jobs/', {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify({ "company_id": "100098" }),
+  //       });
+  //       const data = await response.json();
+  //       setFormData(data.response.data[0]);
+  //     } catch (e) {
+  //       setError(e);
+  //     }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch('https://100098.pythonanywhere.com/admin_management/get_jobs/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ "company_id": "100098" }),
-        });
-        const data = await response.json();
-        setFormData(data.response.data[0]);
-      } catch (e) {
-        setError(e);
-      }
+  //     setLoading(false)
+  //   }
 
-      setLoading(false)
-    }
-
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
 
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState(job_catagory);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -78,7 +86,12 @@ function EditJob() {
     const newItems = [...formData.general_terms];
     const filterItems = newItems.filter((currElm, ind) => ind !== index)
     setFormData({ ...formData, general_terms: [...filterItems] })
-    // console.log(filterItems);
+  }
+
+  const handleRemoveSpecificationTerms = (index) => {
+    const newItems = [...formData.technical_specification];
+    const filterItems = newItems.filter((currElm, ind) => ind !== index)
+    setFormData({ ...formData, technical_specification: [...filterItems] })
   }
 
   const handleRemovePaymentTerms = (index) => {
@@ -154,11 +167,17 @@ function EditJob() {
   };
 
   return (
-    <> {loading ? <Loading /> :
-      <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} hideTitleBar={true}>
+    <> {updateLoading ? <Loading /> :
+      <StaffJobLandingLayout adminView={true}
+        adminAlternativePageActive={true}
+        pageTitle={"Edit  Job"}
+        showAnotherBtn={true}
+        btnIcon={<MdArrowBackIos size="1.5rem" />}
+        handleNavIcon={() => navigate(-1)}
+      >
         <Wrapper>
           <div className="container edit__page_Admin__T">
-            <div className="back__button">
+            {/* <div className="back__button">
               <Link to={"/"}>
                 <IoIosArrowBack />
               </Link>
@@ -167,7 +186,7 @@ function EditJob() {
             <div className="main__titles">
               <h2>Edit Job</h2>
               <h3>Project Management <span style={{ "fontWeight": "400" }}>- UX Living Lab</span> </h3>
-            </div>
+            </div> */}
 
 
             <div className="job__details">
@@ -183,7 +202,7 @@ function EditJob() {
                     id="job_title"
                     name="job_title"
                     // placeholder='UI Design'
-                    value={formData.job_title}
+                    defaultValue={job_title}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -194,12 +213,12 @@ function EditJob() {
                     id="skills"
                     name="skills"
                     // placeholder='Figma, XD'
-                    value={formData.skills}
+                    defaultValue={skills}
                     onChange={handleInputChange}
                   />
                 </div>
                 <div className='input__data'>
-                  <label htmlFor="job_category">Type of Job</label>
+                  <label htmlFor="job_category">Job Category</label>
                   <div className="input__data__row">
                     <div className="data">
                       <input type="radio"
@@ -256,12 +275,12 @@ function EditJob() {
                     id="time_interval"
                     name="time_interval"
                     // placeholder='1 Week'
-                    value={formData.time_interval}
+                    value={time_interval}
                     onChange={handleInputChange}
                   />
                 </div>
                 <div className='input__data__row'>
-                  <label>Status of Job</label>
+                  <label>State of Job</label>
                   <div className="data">
                     {/* <input type="checkbox" id="check1" className="toggle" onClick={toggleJobStatus} />
                   <label htmlFor="check1"></label> */}
@@ -285,17 +304,17 @@ function EditJob() {
                     id="payment"
                     name="payment"
                     // placeholder='30$'
-                    value={formData.payment}
+                    defaultValue={payment}
                     onChange={handleInputChange}
                   />
                 </div>
                 <div className='input__data'>
-                  <label htmlFor="description">Job Description</label>
+                  <label htmlFor="description">Description</label>
                   <textarea
                     id="description"
                     name="description"
                     // placeholder='1. Setting goals and developing plans for business and revenue growth. Researching, planning, and implementing new target market initiatives.'
-                    value={formData.description}
+                    defaultValue={description}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -321,19 +340,39 @@ function EditJob() {
 
 
                 <div className="gernaral__term">
-                  <label>Technical Specification</label>
+                  <label>Technical Specifications</label>
                   <div className="general__items">
                     {
                       React.Children.toArray(formData.technical_specification?.map((x, i) => {
                         return <div className='item'>
-                          <p> <input value={x} placeholder="payment term" onChange={(e) => handleChangeInTermsArray(e.target.value, "technical_specification", i)} /> </p>
-                          <AiFillCloseCircle onClick={() => { handleRemovePaymentTerms(i) }} />
+                          <p> <input value={x} placeholder="specification term" onChange={(e) => handleChangeInTermsArray(e.target.value, "technical_specification", i)} /> </p>
+                          <AiFillCloseCircle onClick={() => { handleRemoveSpecificationTerms(i) }} />
                         </div>
                       }))
                     }
                   </div>
                   <div className="add__item">
                     <AiFillPlusCircle onClick={() => handleAddTerm("technical_specification")} />
+                    <label>Add Specifications</label>
+                  </div>
+                </div>
+
+
+
+                <div className="gernaral__term">
+                  <label>Payment Term</label>
+                  <div className="general__items">
+                    {
+                      React.Children.toArray(formData.payment_terms?.map((x, i) => {
+                        return <div className='item'>
+                          <p> <input value={x} placeholder="payment term" onChange={(e) => handleChangeInTermsArray(e.target.value, "payment_terms", i)} /> </p>
+                          <AiFillCloseCircle onClick={() => { handleRemovePaymentTerms(i) }} />
+                        </div>
+                      }))
+                    }
+                  </div>
+                  <div className="add__item">
+                    <AiFillPlusCircle onClick={() => handleAddTerm("payment_terms")} />
                     <label>Add Payement Terms</label>
                   </div>
                 </div>
@@ -391,7 +430,7 @@ const Wrapper = styled.section`
     width: 1300px;
     margin: auto;
     background: #ffff;
-
+    padding-bottom: 10rem;
     .back__button {
       position: absolute;
       top: 20px;
@@ -569,7 +608,7 @@ const Wrapper = styled.section`
                 align-items: center;
                 background-color: #005734;
                 border: none;
-                padding: 15px 50px;
+                padding: 10px 50px;
                 color: #fff;
                 font-size: 20px;
                 border-radius: 10px;

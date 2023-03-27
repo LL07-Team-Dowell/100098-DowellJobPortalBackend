@@ -11,10 +11,11 @@ import { useMediaQuery } from '@mui/material';
 import { dowellLoginUrl } from '../../../../services/axios';
 import { getCandidateApplications } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
+import { getAppliedJobs } from '../../../../services/candidateServices';
 
 function Home({ setHired, setAssignedProject }) {
 
-  const [ loading, setLoading ] = useState(true);
+  const [loading, setLoading] = useState(true);
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
 
@@ -25,21 +26,21 @@ function Home({ setHired, setAssignedProject }) {
     if (!currentUser) return setLoading(false);
     if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
 
-    getCandidateApplications().then(res => {
+    getAppliedJobs().then(res => {
 
       const currentUserAppliedJobs = res.data.filter(application => application.applicant === currentUser.username);
       const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
-      
-      if (userSelectedJobs.length  >= 1) {
-        setAssignedProject(userSelectedJobs[0].others[mutableNewApplicationStateNames.assigned_project])
-        setHired(true);
-        setLoading(false);
-        return;
-      }
 
-      setCandidateJobs((prevJobs) => { return {...prevJobs, "appliedJobs": currentUserAppliedJobs }});
+      // if (userSelectedJobs.length  >= 1) {
+      //   setAssignedProject(userSelectedJobs[0].others[mutableNewApplicationStateNames.assigned_project])
+      //   setHired(true);
+      //   setLoading(false);
+      //   return;
+      // }
+
+      setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
       setLoading(false);
-      
+
     }).catch(err => {
       console.log(err);
       setLoading(false);
@@ -75,16 +76,16 @@ function Home({ setHired, setAssignedProject }) {
                   React.Children.toArray(availableJobCategories.slice(0, 2).map(category => {
                     return <Link className='job__Link__Item' to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
                       <>
-                      Apply for
-                      {
-                        category === "Employee" ? " Full time Employment" :
-                        ` Full time/Part time ${category} ${category === "Freelancer" ? 'jobs' : ''}`
-                      }
+                        Apply for
+                        {
+                          category === "Employee" ? " Full time Employment" :
+                            ` Full time/Part time ${category} ${category === "Freelancer" ? 'jobs' : ''}`
+                        }
                       </>
                     </Link>
                   }))
                 }
-                  
+
               </div>
             </div>
             <div className='content__Item'>
@@ -94,21 +95,21 @@ function Home({ setHired, setAssignedProject }) {
                   React.Children.toArray(availableJobCategories.slice(2).map(category => {
                     return <Link className='job__Link__Item' to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
                       <>
-                      Apply for
-                      {
-                        category === "Employee" ? " Full time Employment" :
-                        ` Full time/Part time ${category} ${category === "Freelancer" ? 'jobs' : ''}`
-                      }
+                        Apply for
+                        {
+                          category === "Employee" ? " Full time Employment" :
+                            ` Full time/Part time ${category} ${category === "Freelancer" ? 'jobs' : ''}`
+                        }
                       </>
                     </Link>
                   }))
                 }
-                  
+
               </div>
             </div>
           </div>
         </section>
-        { isLargeScreen && <aside>
+        {isLargeScreen && <aside>
           <div className='side__Content'>
             <img src={assets.map_img} alt='dowell on the map' />
             <video width={'100%'} controls>
@@ -116,7 +117,7 @@ function Home({ setHired, setAssignedProject }) {
             </video>
             <p>DoWell is the right place to "fail", if you are innovating !!</p>
           </div>
-        </aside> }
+        </aside>}
       </main>
       {/* <div className='container-wrapper candidate__Home__Page'>
         <h1 className='home__Title__Text'>Welcome to dowell job portal!</h1>

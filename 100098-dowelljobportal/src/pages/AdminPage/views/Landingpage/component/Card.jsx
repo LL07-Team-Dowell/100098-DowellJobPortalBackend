@@ -74,7 +74,7 @@ const Card = ({
       <div className="card__header">
         <h5>{job_title}</h5>
         <div className="interact__icons">
-          <Link to={"/edit-job"}>
+          <Link to={`/edit-job/${_id}`}>
             <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
           </Link>
           <MdDelete
