@@ -51,7 +51,9 @@ const Card = ({
       setDeletingLoading(true) ; 
 
     try{
-      const response = await deleteJob(id) ; 
+      const response = await deleteJob({
+        "document_id": _id
+      }) ; 
       console.log(response) ;
       const newJobs = [...jobs];
       const newJob =  newJobs.filter(job => job._id !== id)

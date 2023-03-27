@@ -74,8 +74,7 @@ const LandingPage = () => {
       <div className="landing-page">
         <div className="cards">
           {jobs.length > 0 ? (
-            jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data")
-              .reverse()
+            jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )
               .map((job, index) => (
                 <Card {...job} key={index} jobs={jobs} setJobs={setJobs} />
               ))
