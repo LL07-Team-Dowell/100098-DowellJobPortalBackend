@@ -27,9 +27,9 @@ const LandingPage = () => {
           []
         )
         .then((response) => {
-          setJobs(response.data.response.data);
+          setJobs(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data"));
           console.log(response.data.response.data);
-          console.log(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data"));
+          console.log(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data").map(j => j.data_type));
         })
         .catch((error) => console.log(error));
     }
