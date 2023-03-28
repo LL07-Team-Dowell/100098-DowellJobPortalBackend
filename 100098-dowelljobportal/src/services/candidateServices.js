@@ -14,3 +14,6 @@ export const getAppliedJobs = async (datass) => {
     const data = { "company_id": datass };
     return await currentBackendAxiosInstance.post("/candidate_management/get_job_application/", data)
 }
+export const getCandidateTask= async (data) => {
+    return await currentBackendAxiosInstance.post("task_management/get_task/",data)
+  }

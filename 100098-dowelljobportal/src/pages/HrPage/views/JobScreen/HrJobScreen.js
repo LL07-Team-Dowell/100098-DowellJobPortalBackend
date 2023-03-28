@@ -120,8 +120,9 @@ function HrJobScreen() {
     // });
     
 
-    getCandidateTask({company_id:currentUser.portfolio_info[0].company_id}).then(resp => {
-      console.log('this one:',resp.data.response.data); 
+    getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
+    }).then(resp => {
+      console.log(resp.data.response.data) ;
       const usersWithTasks = [...new Map(resp.data.response.data.map(task => [ task.applicant, task ])).values()];
       setAllTasks(usersWithTasks.reverse());
       setLoading(false);

@@ -47,8 +47,8 @@ import { HrJobScreenAllTasksContextProvider } from "./contexts/HrJobScreenAllTas
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
-  const [candidateHired, setCandidateHired] = useState(false);
-  const [assignedProject, setAssignedProject] = useState("");
+  const [candidateHired, setCandidateHired] = useState(true);
+  const [assignedProject, setAssignedProject] = useState(["Hr Hired" , "ala"]);
 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");

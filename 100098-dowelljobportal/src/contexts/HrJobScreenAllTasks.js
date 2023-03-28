@@ -8,7 +8,7 @@ export const HrJobScreenAllTasksContextProvider = ({ children }) => {
 
 
             return (
-            <HrJobScreenAllTasksContext.Provider value={{ jobScreenAllTasksData, setJobScreenAllTasksData }}>
+            <HrJobScreenAllTasksContext.Provider value={{ allTasks, setAllTasks }}>
             {children}
             </HrJobScreenAllTasksContext.Provider>
             )

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCandidateTaskContext } from "../../../../contexts/CandidateTasksContext";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { useNavigationContext } from "../../../../contexts/NavigationContext";
 import JobLandingLayout from "../../../../layouts/CandidateJobLandingLayout/LandingLayout";
+import { getCandidateTask } from "../../../../services/candidateServices";
 import ErrorPage from "../../../ErrorPage/ErrorPage";
 import AddTaskScreen from "../../../TeamleadPage/views/AddTaskScreen/AddTaskScreen";
 import TaskScreen from "../../../TeamleadPage/views/TaskScreen/TaskScreen";
@@ -15,6 +16,13 @@ import "./style.css";
 const AfterSelectionScreen = ({ assignedProject }) => {
     const { currentUser } = useCurrentUserContext();
     console.log(currentUser);
+    const [tasksofuser , settasksofuser] = useState("") ; 
+    useEffect(()=>{
+        getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
+        })
+        // .then(resp => console.log('a;aaaa',resp.data.response.data.filter(v => v.applicant ==='boxboy' )))
+        .then(resp => settasksofuser(resp.data.response.data.filter(v => v.applicant === 'boxboy')))
+    },[])
     const [ showAddTaskModal, setShowAddTaskModal ] = useState(false);
     const { section } = useNavigationContext();
     const { setUserTasks } = useCandidateTaskContext();
@@ -24,7 +32,7 @@ const AfterSelectionScreen = ({ assignedProject }) => {
             section === undefined || section === "tasks" ? <>
                 <JobLandingLayout user={currentUser} afterSelection={true} hideSideNavigation={showAddTaskModal}>
                 {
-                    showAddTaskModal && <AddTaskScreen teamMembers={[]} afterSelectionScreen={true} closeTaskScreen={() => setShowAddTaskModal(false)} updateTasks={setUserTasks} />
+                    showAddTaskModal && <AddTaskScreen teamMembers={[]} afterSelectionScreen={true} closeTaskScreen={() => setShowAddTaskModal(false)} updateTasks={setUserTasks} assignedProject={assignedProject} />
                 }
 
                 <div className="candidate__After__Selection__Screen">
@@ -37,9 +45,11 @@ const AfterSelectionScreen = ({ assignedProject }) => {
 
             <TeamsScreen /> :
 
-            section === "user" ?
+            section === "user" ? <>
             
-            <UserScreen candidateSelected={true} /> :
+            <UserScreen candidateSelected={true} />
+            
+            </> :
             
             <ErrorPage />
         }

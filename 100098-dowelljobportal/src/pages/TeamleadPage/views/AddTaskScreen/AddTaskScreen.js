@@ -9,7 +9,7 @@ import { addNewTask, updateSingleTask } from "../../../../services/commonService
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 
 
-const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelectionScreen, editPage, setEditPage, taskToEdit, hrPageActive }) => {
+const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelectionScreen, editPage, setEditPage, taskToEdit, hrPageActive , assignedProject }) => {
 
     const ref = useRef(null);
     const [ showTaskForm, setShowTaskForm ] = useState(false);
@@ -38,7 +38,7 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
     useEffect (() => {
 
         if (afterSelectionScreen) {
-            setNewTaskDetails(prevValue => { return { ...prevValue, username: currentUser.username }});
+            setNewTaskDetails(prevValue => { return { ...prevValue, username: currentUser.userinfo.username }});
             setShowTaskForm(true);
         }
 
@@ -125,7 +125,10 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
         }
 
     }
-
+    const [optionValue , setoptionValue] = useState("") ; 
+    const selctChange = (e) => {
+        setoptionValue(e.target.value) ; 
+    }
     return <>
         <div className="add__New__Task__Overlay">
             <div className="add__New__Task__Container" ref={ref}>
@@ -142,7 +145,8 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
                 {
                     showTaskForm ? <>
                         <input type={"text"} placeholder={"Task Assignee"} value={newTaskDetails.username} readOnly={true} />
-                        <input type={"text"} placeholder={"Task Title"} name="title" value={newTaskDetails.title} onChange={handleChange} />
+                        <select onChange={e => selctChange(e)}>{assignedProject.map((v , i) => <option key={i} value={v}>{v}</option>)}</select>
+                        <input type={"text"} placeholder={"today time"} value={new Date().toString()} readOnly={true} />
                         <textarea placeholder="Task Description" name="description" value={newTaskDetails.description} onChange={handleChange} rows={5}></textarea>
                         <button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateTaskBtnClick() : handleNewTaskBtnClick()}>{editPage ? "Update Task" : "Add Task"}</button>
                     </> :
