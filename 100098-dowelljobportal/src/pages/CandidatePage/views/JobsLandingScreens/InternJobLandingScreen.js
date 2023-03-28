@@ -18,7 +18,7 @@ const InternJobScreen = () => {
     
     const handleJobCategoryCardClick = (category) => {
         console.log("stream -> ", category)
-        navigate(`/jobs?jobCategory=Intership&stream=${encodeURIComponent(category)}`)
+        navigate(`/jobs?jobCategory=Internship&stream=${encodeURIComponent(category)}`)
     }
 
     const handlePlayBtnClick = () => {

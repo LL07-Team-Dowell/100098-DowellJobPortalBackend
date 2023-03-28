@@ -60,6 +60,9 @@ const JobApplicationScreen = () => {
 
 
     useEffect(() => {
+
+        if(jobs.length > 0) return setJobsLoading(false);
+
         const datass = currentUser.portfolio_info[0].org_id;
         getJobs(datass).then(res => {
             // setjobs(res.data);

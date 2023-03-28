@@ -216,18 +216,18 @@ const AddJob = () => {
                   <div className="radio__radio"></div>
                   <p>Freelancer</p>
                 </label>
-                <label htmlFor="intership" className="radio">
+                <label htmlFor="internship" className="radio">
                   <input
                     className="radio_input"
                     type={"radio"}
-                    id={"intership"}
+                    id={"internship"}
                     name="options"
-                    value={"intership"}
-                    checked={selectedOption === "intership"}
+                    value={"internship"}
+                    checked={selectedOption === "internship"}
                     onChange={handleOptionChange}
                   />
                   <div className="radio__radio"></div>
-                  <p>Intership</p>
+                  <p>Internship</p>
                 </label>
                 <label htmlFor="employee" className="radio">
                   <input
@@ -295,7 +295,7 @@ const AddJob = () => {
                     </div>
                   </div>
                 </>
-              ) : newJob.job_category === "intership" ? (
+              ) : newJob.job_category === "internship" ? (
                 <>
                   <h3>Type of Job</h3>
                   <div className="type_of_job">

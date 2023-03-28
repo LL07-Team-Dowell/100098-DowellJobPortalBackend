@@ -5,7 +5,6 @@ import { Calendar } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import AssignedProjectDetails from "../../components/AssignedProjectDetails/AssignedProjectDetails";
 import ApplicantIntro from "../../components/ApplicantIntro/ApplicantIntro";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import "./style.css";
 import CandidateTaskItem from "../../components/CandidateTaskItem/CandidateTaskItem";
 import { useSearchParams } from "react-router-dom";
