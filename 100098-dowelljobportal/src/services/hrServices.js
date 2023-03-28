@@ -14,5 +14,5 @@ export const getCandidateApplicationsForHr = async (data) => {
 
 
 export const getCandidateTask= async (data) => {
-            return await currentBackendAxiosInstance.post("task_management/get_cadidate_task/",data)
+            return await currentBackendAxiosInstance.post("task_management/get_task/",data)
           }

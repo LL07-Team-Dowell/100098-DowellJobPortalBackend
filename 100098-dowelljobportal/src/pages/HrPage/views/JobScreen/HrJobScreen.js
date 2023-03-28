@@ -22,7 +22,8 @@ import JobCard from '../../../../components/JobCard/JobCard';
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
 import { fetchCandidateTasks, getCandidateApplications, getJobs, getJobs2, getProjects } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
-import { getCandidateApplicationsForHr } from '../../../../services/hrServices';
+import { getCandidateApplicationsForHr, getCandidateTask } from '../../../../services/hrServices';
+import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenAllTasks';
 
 
 function HrJobScreen() {
@@ -38,7 +39,7 @@ function HrJobScreen() {
   const { candidateData, setCandidateData } = useHrCandidateContext();
   const [ isLoading, setLoading ] = useState(true);
   const [ currentProjects, setCurrentProjects ] = useState([]);
-  const [ allTasks, setAllTasks ] = useState([]);
+  const { allTasks, setAllTasks } = useHrJobScreenAllTasksContext();
   const [ showAddTaskModal, setShowAddTaskModal ] = useState(false);
   const [ hiredCandidates, setHiredCandidates ] = useState([]);
   const [ showCurrentCandidateTask, setShowCurrentCandidateTask ] = useState(false);
@@ -110,15 +111,21 @@ function HrJobScreen() {
       console.log(err)
     });
 
-    fetchCandidateTasks().then(res => {
-      const usersWithTasks = [...new Map(res.data.map(task => [ task.user, task ])).values()];
-      setAllTasks(usersWithTasks.reverse());
-      setLoading(false);
-    }).catch(err => {
-      console.log(err)
-    });
+    // fetchCandidateTasks().then(res => {
+    //   const usersWithTasks = [...new Map(res.data.map(task => [ task.user, task ])).values()];
+    //   setAllTasks(usersWithTasks.reverse());
+    //   setLoading(false);
+    // }).catch(err => {
+    //   console.log(err)
+    // });
     
 
+    getCandidateTask({company_id:currentUser.portfolio_info[0].company_id}).then(resp => {
+      console.log('this one:',resp.data.response.data); 
+      const usersWithTasks = [...new Map(resp.data.response.data.map(task => [ task.applicant, task ])).values()];
+      setAllTasks(usersWithTasks.reverse());
+      setLoading(false);
+    }).catch(err => console.log(err))
   }, [])
 
   useEffect(() => {
@@ -227,8 +234,9 @@ function HrJobScreen() {
   }
 
   const handleTaskItemClick = (data) => {
-    setCurrentTeamMember(data.user);
-    setShowCurrentCandidateTask(true);
+    // setCurrentTeamMember(data.user);
+    // setShowCurrentCandidateTask(true);
+    navigate(`/new-task-screen/?applicant=${data.applicant}`)
   }
 
   const handleAttendanceItemClick = (data) => {
