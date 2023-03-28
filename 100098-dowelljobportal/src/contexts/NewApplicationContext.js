@@ -6,6 +6,7 @@ const NewApplicationContext = createContext({});
 export const newApplicationState = {
     job_number: "",
     job_title: "",
+    job_category:"",
     applicant: "",
     applicant_email: "",
     feedBack: "",
@@ -51,6 +52,7 @@ export const mutableNewApplicationStateNames = {
     applicant: "applicant",
     job_title: "job_title",
     job_number: "job_number",
+    job_category:"job_category",
     payment: "payment",
     country: "country",
     username: "username",
