@@ -5,6 +5,7 @@ import "./style.css";
 
 const TitleNavigationBar = ({ className, title, showSearchBar, handleBackBtnClick, hideBackBtn }) => {
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
+    
 
     return <>
         <div className={`title__Navigation__Bar__Container ${className ? className : ''}`}>

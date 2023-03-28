@@ -57,7 +57,7 @@ function JobScreen() {
             setJobsMatchingCategory(matchedJobs);
             // console.log(matchedJobs);
 
-            if (jobCategoryParam === "Intership") {
+            if (jobCategoryParam === "Internship") {
                 setJobSelectionCategories(["Full time", "Part time"])
                 const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.type_of_job === currentJobCategory);
                 console.log(jobsToDisplayForCurrentCategory);
@@ -98,7 +98,7 @@ function JobScreen() {
 
     useEffect(() => {
         if (!currentJobCategory) return
-        if (currentCategory === "Intership") {
+        if (currentCategory === "Internship") {
             const matchedJobs = jobsMatchingCategory.filter(job => job.type_of_job === currentJobCategory);
             if (matchedJobs.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
