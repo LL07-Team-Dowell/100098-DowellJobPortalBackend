@@ -43,7 +43,7 @@ import { testingRoles } from "./utils/testingRoles";
 import LoadingPage from "./pages/LoadingPage/LoadingPage";
 import HrTasks from "./pages/HrPage/views/Tasks/HrTasks";
 import CreateTaskScreen from "./pages/TeamleadPage/views/CreateTaskScreen/CreateTaskScreen";
-
+import { HrJobScreenAllTasksContextProvider } from "./contexts/HrJobScreenAllTasks";
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
@@ -228,6 +228,7 @@ function App() {
         <Route
           path="/"
           element={
+            <HrJobScreenAllTasksContextProvider>
             <NavigationContextProvider>
               <HrCandidateContextProvider>
                 <CandidateTaskContextProvider>
@@ -235,30 +236,37 @@ function App() {
                 </CandidateTaskContextProvider>
               </HrCandidateContextProvider>
             </NavigationContextProvider>
+            </HrJobScreenAllTasksContextProvider>
           }
         >
           <Route
             path=":section"
             element={
+              <HrJobScreenAllTasksContextProvider>
               <NavigationContextProvider>
                 <HrJobScreen />
               </NavigationContextProvider>
+              </HrJobScreenAllTasksContextProvider>
             }
           >
             <Route
               path=":sub_section"
               element={
+                <HrJobScreenAllTasksContextProvider>
                 <NavigationContextProvider>
                   <HrJobScreen />
                 </NavigationContextProvider>
+                </HrJobScreenAllTasksContextProvider>
               }
             >
               <Route
                 path=":path"
                 element={
+                  <HrJobScreenAllTasksContextProvider>
                   <NavigationContextProvider>
                     <HrJobScreen />
                   </NavigationContextProvider>
+                  </HrJobScreenAllTasksContextProvider>
                 }
               />
             </Route>

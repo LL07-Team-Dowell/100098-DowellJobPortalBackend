@@ -27,8 +27,10 @@ const HrTasks = () => {
             // List 
             const List = Array.from(new Set(data.map(d => d.project))) ; 
             useEffect(()=>{
-              if(data.length === 0  ){
+              if(data.length < 1  ){
                   setnoApplicant(true) ;
+              }else{
+                setnoApplicant(false) ;
               }
             },[applicant , data]) ; 
             
@@ -83,7 +85,7 @@ const HrTasks = () => {
             <div>
             <div style={{marginTop:40}}>
             <TitleNavigationBar title={"Task details"}/>
-            <AssignedProjectDetails showTask={true} hrAttendancePageActive={false} availableProjects={List} removeDropDownIcon={false} handleSelectionClick={e => setproject(e)} />
+            <AssignedProjectDetails  assignedProject={List[0] ? List[0] : ""} showTask={true} hrAttendancePageActive={false} availableProjects={List} removeDropDownIcon={false} handleSelectionClick={e => setproject(e)} />
             
             </div>
            

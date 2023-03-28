@@ -9,9 +9,9 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 
 
 const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText, handleBtnClick, showCandidateAppliedJob, showCandidateDeclinedJob, showCandidateInterview, guestUser, interviewDetails, viewJobApplicationDetails, applicationsCount, candidateCardView, candidateData, jobAppliedFor, taskView }) => {
-    return <div className="job__Card__Container">
+    return <div className={"job__Card__Container"}>
         <div className="job__Card__Title__Info">
-            <h2><b>{changeToTitleCase(job ? job.job_title : candidateData ? taskView ? candidateData.user : candidateData.applicant : "")}</b></h2>
+            <h2><b>{changeToTitleCase(job ? job.job_title : candidateData ? taskView ? candidateData.applicant : "" : "")}</b></h2>
             {subtitle && <span className="subtitle__Item"><span>{subtitle}</span><span>- UX Living Lab</span></span>}
         </div>
         {
@@ -116,11 +116,11 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
             <div className="job__Details__Info task__View">
                 <div className="detail__Item">
                     <span className="job__Highlight__Item">Description: </span>
-                    <span>{candidateData.title ? candidateData.title.length > 42 ? candidateData.title.slice(0, 43) + "..." : candidateData.title : ""}</span>
+                    <span>{candidateData.task ? candidateData.task.length > 42 ? candidateData.task.slice(0, 43) + "..." : candidateData.task : ""}</span>
                 </div>
                 <div className="detail__Item">
                     <span className="job__Highlight__Item">Given on: </span>
-                    <span>{formatDateAndTime(candidateData.created)}</span>
+                    <span>{formatDateAndTime(candidateData.task_created_date)}</span>
                 </div>
             </div>
         }
