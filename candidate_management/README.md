@@ -22,7 +22,7 @@ _Post_ to `/candidate_management/apply_job/`
   "agree_to_all_terms": "<True | False>",
   "company_id": "<company_id>",
   "username": "<username>",
-  "data_type": "<data_type>",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
   "payment": "<payment>",
   "application_submitted_on": "<application_submitted_on>"
 }
@@ -97,5 +97,31 @@ _Post_ to `/candidate_management/get_candidate_application/`
 {
   "message": "There is no job applications",
   "response": ["Candidate job not exist"]
+}
+```
+
+_delete_ to `/candidate_management/delete_candidate_application/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document id>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "candidate application deleted successfully."
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "candidate application deletion has failed."
 }
 ```

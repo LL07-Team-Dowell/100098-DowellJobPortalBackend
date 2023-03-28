@@ -110,3 +110,23 @@ class get_candidate_application(APIView):
                 return Response({"message":"There is no job applications","response":json.loads(response)},status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message":"Parameters are not valid."},status=status.HTTP_400_BAD_REQUEST)
+        
+
+@method_decorator(csrf_exempt, name='dispatch')
+class delete_candidate_application(APIView):
+    def delete(self,request):
+        data = request.data
+        if data :
+            field = {
+                "_id": data.get('document_id')
+            }
+            update_field = {
+                "data_type" :"Archived_Data"
+            }
+            response = dowellconnection(*candidate_management_reports,"update",field,update_field)
+            if response:
+                return Response({"message":"candidate application deleted successfully."},status=status.HTTP_200_OK)
+            else:
+                return Response({"message":"candidate application deletion has failed." },status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message":"Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)
