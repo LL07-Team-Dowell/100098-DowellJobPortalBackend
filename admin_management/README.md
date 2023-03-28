@@ -12,7 +12,7 @@ _Post_ to `admin_management/create_jobs/`
   "skills": "<Required skills for the job",
   "qualification": "<Qualifications required for the job>",
   "job_category": "<freelancer | internship | Employee>",
-  "type_of_job": "<Part time | Full time| Time based>",
+  "type_of_job": "<Part time | Full time| Time based | Task based>",
   "payment": "<Payment for the job>",
   "payment_terms": ["term1", "term2"],
   "is_active": "<True| False>",
