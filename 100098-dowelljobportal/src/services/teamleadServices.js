@@ -27,3 +27,10 @@ export const getCandidateTaskForTeamLead = async (data) => {
     data
   );
 }
+
+export const candidateUpdateTaskForTeamLead = async (data) => {
+  return await currentBackendAxiosInstance.post(
+    "/task_management/update_task/",
+    data
+  );
+}

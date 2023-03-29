@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { formatDateAndTime } from "../../../../helpers/helpers";
 import { updateSingleTask } from "../../../../services/commonServices";
+import { candidateUpdateTaskForTeamLead } from "../../../../services/teamleadServices";
 import CustomHr from "../CustomHr/CustomHr";
 import DropdownButton from "../DropdownButton/Dropdown";
 import "./style.css";
@@ -24,11 +25,18 @@ const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnC
 
         try{
 
-            await updateSingleTask(currentTask.id, currentTask)
+            // await updateSingleTask(currentTask.id, currentTask)
+            await candidateUpdateTaskForTeamLead({
+              document_id: currentTask._id,
+              task: currentTask.task,
+              status: currentTask.status,
+              task_added_by: currentTask.task_added_by,
+              task_updated_date: new Date(),
+            });
             
             updateTasks(prevTasks => prevTasks.map(task => {
                 
-                if (task.id === currentTask.id) {
+                if (task._id === currentTask._id) {
                     return { ...task, status: updateSelection }
                 }
 
@@ -64,8 +72,8 @@ const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnC
                 
             </div>
             <div className="candidate-task-date-container">
-                <span>Given on {formatDateAndTime(currentTask.created)}</span>
-                {formatDateAndTime(currentTask.updated) ? <span>on {formatDateAndTime(currentTask.updated)}</span> : <></>}
+                <span>Given on {formatDateAndTime(currentTask.task_created_date)}</span>
+                {formatDateAndTime(currentTask.task_updated_date) ? <span>on {formatDateAndTime(currentTask.task_updated_date)}</span> : <></>}
             </div>
             
             <CustomHr />

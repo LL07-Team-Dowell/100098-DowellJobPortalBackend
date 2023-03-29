@@ -131,7 +131,7 @@ function JobScreen() {
         const datass = currentUser.portfolio_info[0].org_id;
         getJobs(datass).then(res => {
             // setJobs(res.data.sort((a, b) => a.title.localeCompare(b.title)));
-            const filterJob = res.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type);
+            const filterJob = res.data.response.data.filter(job => job.data_type === currentUser?.portfolio_info[0].data_type);
             setJobs(filterJob.sort((a, b) => a.job_title.localeCompare(b.job_title)));
             setJobsLoading(false);
             // setAllRequestsDone(true);
@@ -145,7 +145,13 @@ function JobScreen() {
         if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
 
         getAppliedJobs(datass).then(res => {
-            const currentUserAppliedJobs = res.data.response.data.filter(application => application.username === currentUser.userinfo.username);
+            const userApplication = res.data.response.data.filter(
+                (application) => application.data_type === currentUser?.portfolio_info[0].data_type
+            )
+            const currentUserAppliedJobs = userApplication.filter(
+              (application) =>
+                application.username === currentUser.userinfo.username
+            );
             // const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
 
             // if (userSelectedJobs.length  >= 1) {

@@ -65,8 +65,11 @@ const JobApplicationScreen = () => {
 
         const datass = currentUser.portfolio_info[0].org_id;
         getJobs(datass).then(res => {
+            const userAppliedJobs = res.data.response.data.filter(
+                (job) => job.data_type === currentUser?.portfolio_info[0].data_type
+            );
             // setjobs(res.data);
-            setJobs(res.data.response.data);
+            setJobs(userAppliedJobs);
             setJobsLoading(false);
         }).catch(err => {
             console.log(err);
