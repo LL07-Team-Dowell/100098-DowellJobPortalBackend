@@ -89,17 +89,17 @@ function HrJobScreen() {
     // });
     getCandidateApplicationsForHr({company_id: currentUser.portfolio_info[0].org_id})
     .then(res => {
-      setAppliedJobs(res.data.response.data.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
-      setGuestApplications(res.data.response.data.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
-      setCandidateData(res.data.response.data.filter(application => application.status === candidateStatuses.SHORTLISTED));
-      setHiredCandidates(res.data.response.data.filter(application => application.status === candidateStatuses.ONBOARDING));   
+      setAppliedJobs(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
+      setGuestApplications(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
+      setCandidateData(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
+      setHiredCandidates(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));   
     })
     .catch(err => console.log(err))
 
 
 
     getJobs2({company_id: currentUser.portfolio_info[0].org_id}).then(res => {
-      setJobs(res.data.response.data);
+      setJobs(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
       setLoading(false)
     }).catch(err => {
       console.log(err)
