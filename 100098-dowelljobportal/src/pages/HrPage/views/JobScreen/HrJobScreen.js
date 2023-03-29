@@ -89,10 +89,11 @@ function HrJobScreen() {
     // });
     getCandidateApplicationsForHr({company_id: currentUser.portfolio_info[0].org_id})
     .then(res => {
-      setAppliedJobs(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
-      setGuestApplications(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
-      setCandidateData(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
-      setHiredCandidates(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));   
+      const filteredData = res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
+      setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
+      setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
+      setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
+      setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));   
     })
     .catch(err => console.log(err))
 
