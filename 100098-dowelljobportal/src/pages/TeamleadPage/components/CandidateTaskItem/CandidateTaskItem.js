@@ -28,7 +28,7 @@ const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnC
             
             updateTasks(prevTasks => prevTasks.map(task => {
                 
-                if (task.id === currentTask.id) {
+                if (task._id === currentTask._id) {
                     return { ...task, status: updateSelection }
                 }
 
@@ -64,8 +64,8 @@ const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnC
                 
             </div>
             <div className="candidate-task-date-container">
-                <span>Given on {formatDateAndTime(currentTask.created)}</span>
-                {formatDateAndTime(currentTask.updated) ? <span>on {formatDateAndTime(currentTask.updated)}</span> : <></>}
+                <span>Given on {formatDateAndTime(currentTask.task_created_date)}</span>
+                {formatDateAndTime(currentTask.task_updated_date) ? <span>on {formatDateAndTime(currentTask.task_updated_date)}</span> : <></>}
             </div>
             
             <CustomHr />

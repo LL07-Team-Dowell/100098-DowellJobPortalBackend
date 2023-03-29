@@ -27,6 +27,7 @@ import {
   getCandidateApplicationsForTeamLead,
   getCandidateTaskForTeamLead,
 } from "../../services/teamleadServices";
+import { useCandidateTaskContext } from "../../contexts/CandidateTasksContext";
 
 const Teamlead = () => {
   const { currentUser } = useCurrentUserContext();
@@ -41,7 +42,8 @@ const Teamlead = () => {
   const [currentUserProject, setCurrentUserProject] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [showApplicationDetails, setShowApplicationDetails] = useState(false);
-  const [allTasks, setAllTasks] = useState([]);
+  const [ userTasks, setUserTasks ] = useCandidateTaskContext();
+  // const [allTasks, setAllTasks] = useState([]);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [editTaskActive, setEditTaskActive] = useState(false);
   const [currentTaskToEdit, setCurrentTaskToEdit] = useState({});
@@ -135,7 +137,7 @@ const Teamlead = () => {
         ];
         console.log(usersWithTasks)
         // console.log(res.data.response.data);
-        setAllTasks(usersWithTasks.reverse());
+        setUserTasks(usersWithTasks.reverse());
       })
       .catch((err) => {
         console.log(err);
@@ -238,7 +240,7 @@ const Teamlead = () => {
           <AddTaskScreen
             closeTaskScreen={() => setShowAddTaskModal(false)}
             teamMembers={candidatesData.onboardingCandidates}
-            updateTasks={setAllTasks}
+            updateTasks={setUserTasks}
             editPage={editTaskActive}
             setEditPage={setEditTaskActive}
             taskToEdit={currentTaskToEdit}
@@ -353,12 +355,12 @@ const Teamlead = () => {
             <>
               <SelectedCandidates
                 showTasks={true}
-                tasksCount={allTasks.length}
+                tasksCount={userTasks.length}
               />
 
               <div className="tasks-container">
                 {React.Children.toArray(
-                  allTasks.map((dataitem) => {
+                  userTasks.map((dataitem) => {
                     return (
                       <JobCard
                         buttonText={"View"}

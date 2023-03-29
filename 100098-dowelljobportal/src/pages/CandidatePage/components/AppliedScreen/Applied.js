@@ -44,13 +44,27 @@ function Applied() {
     if (candidateJobs.appliedJobs.length > 0) return setLoading(false);
     const datass = currentUser.portfolio_info[0].org_id;
     getAppliedJobs(datass).then(async (res) => {
+      const userApplication = res.data.response.data.filter(
+        (application) => application.data_type === currentUser?.portfolio_info[0].data_type
+      );
+      // console.log(appliedJobs);
       try {
         const jobs = await (await getJobs(datass));
         // console.log(jobs);
+        const userAppliedJobs = jobs.data.response.data.filter(
+          (currentJob) => currentJob.data_type === currentUser?.portfolio_info[0].data_type
+        )
         if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
-        const currentUserApplications = res.data.response.data.filter(application => application.username === currentUser.userinfo.username);
-        const currentUserAppliedJobs = jobs.data.response.data.filter((currentJob) => currentUserApplications.find(({ job_number }) => currentJob.job_number === job_number));
-        // console.log(currentUserAppliedJobs);
+        const currentUserApplications = userApplication.filter(
+          (application) =>
+            application.username === currentUser.userinfo.username
+        );
+        const currentUserAppliedJobs = userAppliedJobs.filter((currentJob) =>
+          currentUserApplications.find(
+            ({ job_number }) => currentJob.job_number === job_number
+          )
+        );
+        console.log(currentUserAppliedJobs);
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
         return setLoading(false);
