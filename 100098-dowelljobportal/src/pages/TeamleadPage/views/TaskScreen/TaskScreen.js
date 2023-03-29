@@ -13,9 +13,10 @@ import { getDaysInMonth } from "../../../../helpers/helpers";
 import { differenceInCalendarDays } from 'date-fns';
 import { fetchCandidateTasks } from "../../../../services/commonServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { getCandidateTask } from "../../../../services/candidateServices";
 
 
-const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, handleEditBtnClick, className, assignedProject }) => {
+const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, handleEditBtnClick, className, assignedProject  }) => {
     const { currentUser } = useCurrentUserContext();
     const { userTasks, setUserTasks } = useCandidateTaskContext();
     const navigate = useNavigate();
@@ -23,6 +24,26 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
     const [ daysInMonth, setDaysInMonth ] = useState(0);
     const [ currentMonth, setCurrentMonth ] = useState("");
     const [ datesToStyle, setDatesToStyle ] = useState([]);
+
+    const [project , setproject] = useState(null) ;
+    const [tasksofuser , settasksofuser] = useState([]) ; 
+    const [taskdetail2 , settaskdetail2] = useState([]) ; 
+    const [value, onChange] = useState(new Date());
+
+    useEffect(()=>{
+        getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
+        })
+        .then(resp =>{ settasksofuser(resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username));console.log('a;aaaa',resp.data.response.data ,resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username)) })
+    },[]); 
+    useEffect(()=>{
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        settaskdetail2(tasksofuser.filter(d => {
+        const dateTime = d.task_created_date.split(" ")[0]+ " " + d.task_created_date.split(" ")[1]+ " " + d.task_created_date.split(" ")[2]+ " " + d.task_created_date.split(" ")[3] ;
+        const calendatTime = value.toString().split(" ")[0] + " " + value.toString().split(" ")[1] + " " + value.toString().split(" ")[2] + " " +value.toString().split(" ")[3] ;
+        console.log({dateTime , calendatTime})
+        return dateTime === calendatTime ; 
+}))
+},[value , tasksofuser , project]);
 
     useEffect(() => {
 
@@ -86,21 +107,11 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
                 </>
             }
 
-            <AssignedProjectDetails showTask={true} availableProjects={null} removeDropDownIcon={true} assignedProject={assignedProject} />
+            <AssignedProjectDetails assignedProject={project ? project : assignedProject[0]} showTask={true} availableProjects={assignedProject} removeDropDownIcon={true} handleSelectionClick={e => setproject(e)} />
 
             <div className="all__Tasks__Container">
-                <Calendar onChange={handleDateChange} tileClassName={tileClassName} />
-                
-                <div className="task__Details__Item">
-                    <h3 className="month__Title">{currentMonth}</h3>
-                    {
-                        tasksToShow.length === 0 ? <p className="empty__Task__Content">No tasks found for today</p> :
-
-                        React.Children.toArray(tasksToShow.map((task, index) => {
-                            return <CandidateTaskItem currentTask={task} taskNum={index + 1} candidatePage={candidateAfterSelectionScreen} handleEditBtnClick={() => handleEditBtnClick(task)} updateTasks={setUserTasks} />
-                        }))
-                    }
-                </div>
+                <Calendar onChange={onChange}  value={value} tileClassName={tileClassName} />
+                <ul>{taskdetail2.length > 0 ? taskdetail2.map((d , i) => <li style={{listStyle:"none",color:"#ccc",fontWeight:400}} key={i}>{d.task}</li>) : "No Tasks Found For Today"}</ul>
 
             </div>
 
@@ -115,3 +126,14 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
 }
 
 export default TaskScreen;
+
+{/* <div className="task__Details__Item">
+    <h3 className="month__Title">{currentMonth}</h3>
+    {
+        tasksToShow.length === 0 ? <p className="empty__Task__Content">No tasks found for today</p> :
+
+        React.Children.toArray(tasksToShow.map((task, index) => {
+            return <CandidateTaskItem currentTask={task} taskNum={index + 1} candidatePage={candidateAfterSelectionScreen} handleEditBtnClick={() => handleEditBtnClick(task)} updateTasks={setUserTasks} />
+        }))
+    }
+</div> */}
