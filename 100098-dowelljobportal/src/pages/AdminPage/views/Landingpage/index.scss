@@ -86,6 +86,7 @@ $slider__gray: #d9d9d9;
       .card__skill > div:last-child {
         display: flex;
         align-items: center;
+        padding: 0 5px;
       }
 
       .card__header {
@@ -93,8 +94,10 @@ $slider__gray: #d9d9d9;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 1.7rem;
+        font-size: 1.5rem;
         font-weight: 700;
+        letter-spacing: 0.05em;
+        font-family: 'Poppins', sans-serif;
 
         .interact__icons {
           display: flex;
@@ -104,6 +107,10 @@ $slider__gray: #d9d9d9;
 
         .delete__icon {
           cursor: pointer;
+        }
+
+        h5 {
+          max-width: 80%;
         }
       }
       .card__skill {
@@ -140,14 +147,15 @@ $slider__gray: #d9d9d9;
           span {
             margin-left: 5px;
             color: rgba(184, 184, 184, 1);
-            font-size: small;
+            font-size: 0.8rem;
           }
         }
         .line {
           margin-top: 10px;
           margin-bottom: 10px;
+          margin-left: 2px;
           width: 2px;
-          height: 41px;
+          height: 20px;
           background-color: $placeholder__gray;
         }
         button {
@@ -160,11 +168,12 @@ $slider__gray: #d9d9d9;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0.7rem 0.8rem;
-            font-weight: 300;
+            padding: 0.6rem 0.8rem;
+            font-weight: 500;
             font-size: 1rem;
-            letter-spacing: 0.1rem;
+            letter-spacing: 0.05em;
             gap: 0.7rem;
+            font-family: 'Poppins', sans-serif;
           }
           
           .arrow-link {
