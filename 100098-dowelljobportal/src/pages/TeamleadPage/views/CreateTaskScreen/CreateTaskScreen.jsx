@@ -12,6 +12,9 @@ import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleN
 import { differenceInCalendarDays } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useCandidateTaskContext } from "../../../../contexts/CandidateTasksContext";
+import { getCandidateTaskForTeamLead } from "../../../../services/teamleadServices";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 
 const CreateTaskScreen = ({
   candidateAfterSelectionScreen,
@@ -21,47 +24,75 @@ const CreateTaskScreen = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const applicant = searchParams.get("applicant");
-  const { userTasks } = useCandidateTaskContext();
-
-  const [data, setdata] = useState(userTasks);
-  console.log(data);
+  const { userTasks, setUserTasks } = useCandidateTaskContext();
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentApplicantTasks, setCurrentApplicantTasks] = useState([]);
   const [tasksForSelectedProject, setTasksForSelectedProject] = useState([]);
   const [tasksDate, setTasksDate] = useState([]);
   const [tasksMonth, setTasksMonth] = useState(
     selectedDate.toLocaleString("en-us", { month: "long" })
   );
   const [datesToStyle, setDatesToStyle] = useState([]);
-  // const [noApplicant, setNoApplicant] = useState(false);
-
   const navigate = useNavigate();
 
-  const selectOption = Array.from(new Set(data.map((d) => d.project)));
+  const [selectOption, setSelectOption] = useState([]);
+  const [ loading, setLoading ] = useState(true);
+  const { currentUser } = useCurrentUserContext();
+
+  useEffect(() => {
+    if (userTasks.length > 0) return setLoading(false);
+    getCandidateTaskForTeamLead({
+      company_id: currentUser?.portfolio_info[0].org_id,
+    })
+      .then((res) => {
+        setLoading(false);
+        setUserTasks(
+          res.data.response.data.filter(
+            (currenttask) =>
+              currenttask.data_type === currentUser?.portfolio_info[0].data_type
+          )
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (selectOption.length < 1) return;
+    if (selectedProject !== "") return;
+    setSelectedProject(selectOption[0]);
+  }, [selectOption]);
 
   useEffect(() => {
     setTasksForSelectedProject(
-      data.filter(
+      currentApplicantTasks.filter(
         (d) => d.project === selectedProject && d.applicant === applicant
       )
     );
-  }, [selectedProject, data, applicant]);
+  }, [selectedProject, currentApplicantTasks, applicant]);
+
+  //setting Task for Applicant
+  useEffect(() => {
+    const applicantTasks = userTasks.filter((d) => d.applicant === applicant);
+    setCurrentApplicantTasks(applicantTasks);
+    setSelectOption(Array.from(new Set(applicantTasks.map((d) => d.project))));
+  }, [userTasks, applicant]);
 
   useEffect(() => {
-    setdata(testTasksToWorkWithForNow.filter((d) => d.applicant === applicant));
-  }, [applicant]);
-
-  useEffect(() => {
-    const newData = data.filter((d) => d.project === selectedProject);
-    setTasksForSelectedProject(newData);
+    // const newData = userTasks.filter((d) => d.project === selectedProject);
+    // setTasksForSelectedProject(newData);
     const datesUserHasTask = [
       ...new Set(
-        data.map((task) => [new Date(task.task_created_date)])
+        tasksForSelectedProject.map((task) => [
+          new Date(task.task_created_date),
+        ])
       ).values(),
     ].flat();
     console.log(datesUserHasTask);
     setDatesToStyle(datesUserHasTask);
-  }, [selectedProject, data]);
+  }, [tasksForSelectedProject]);
 
   useEffect(() => {
     setTasksDate(
@@ -87,7 +118,7 @@ const CreateTaskScreen = ({
     );
 
     setTasksMonth(selectedDate.toLocaleString("en-us", { month: "long" }));
-  }, [selectedDate, tasksForSelectedProject, data]);
+  }, [selectedDate, tasksForSelectedProject, userTasks]);
 
   const isSameDay = (a, b) => differenceInCalendarDays(a, b) === 0;
 
@@ -109,57 +140,67 @@ const CreateTaskScreen = ({
           className="task-bar"
           handleBackBtnClick={() => navigate(-1)}
         />
-        <div
-          className={`candidate-task-screen-container ${
-            className ? className : ""
-          }`}
-        >
-          {!candidateAfterSelectionScreen && (
-            <>
-              <ApplicantIntro showTask={true} />
-            </>
-          )}
-          <AssignedProjectDetails
-            showTask={true}
-            availableProjects={selectOption}
-            removeDropDownIcon={false}
-            handleSelectionClick={(selection) => setSelectedProject(selection)}
-            assignedProject={selectOption[0] ? selectOption[0] : ""}
-          />
-          <div className="all__Tasks__Container">
-            <Calendar
-              onChange={setSelectedDate}
-              value={selectedDate}
-              tileClassName={tileClassName}
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <div
+            className={`candidate-task-screen-container ${
+              className ? className : ""
+            }`}
+          >
+            {!candidateAfterSelectionScreen && (
+              <>
+                <ApplicantIntro showTask={true} />
+              </>
+            )}
+            <AssignedProjectDetails
+              showTask={true}
+              availableProjects={selectOption}
+              removeDropDownIcon={false}
+              handleSelectionClick={(selection) =>
+                setSelectedProject(selection)
+              }
+              assignedProject={selectOption[0] ? selectOption[0] : ""}
             />
-            <div className="task__Details__Item">
-              <h3 className="month__Title">{tasksMonth}</h3>
-              {tasksDate.length === 0 ? (
-                <p className="empty__task__Content">No task found for today</p>
-              ) : (
-                React.Children.toArray(
-                  tasksDate.map((d, i) => {
-                    return (
-                      <CandidateTaskItem
-                        currentTask={d}
-                        taskNum={i + 1}
-                        candidatePage={candidateAfterSelectionScreen}
-                        handleEditBtnClick={(selection) =>
-                          setSelectedProject(selection)
-                        }
-                        updateTasks={() =>
-                          setTasksForSelectedProject(
-                            data.filter((d) => d.project === selectedProject)
-                          )
-                        }
-                      />
-                    );
-                  })
-                )
-              )}
+            <div className="all__Tasks__Container">
+              <Calendar
+                onChange={setSelectedDate}
+                value={selectedDate}
+                tileClassName={tileClassName}
+              />
+              <div className="task__Details__Item">
+                <h3 className="month__Title">{tasksMonth}</h3>
+                {tasksDate.length === 0 ? (
+                  <p className="empty__task__Content">
+                    No task found for today
+                  </p>
+                ) : (
+                  React.Children.toArray(
+                    tasksDate.map((d, i) => {
+                      return (
+                        <CandidateTaskItem
+                          currentTask={d}
+                          taskNum={i + 1}
+                          candidatePage={candidateAfterSelectionScreen}
+                          handleEditBtnClick={(selection) =>
+                            setSelectedProject(selection)
+                          }
+                          updateTasks={() =>
+                            setTasksForSelectedProject(
+                              userTasks.filter(
+                                (d) => d.project === selectedProject
+                              )
+                            )
+                          }
+                        />
+                      );
+                    })
+                  )
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </>
     </StaffJobLandingLayout>
   );

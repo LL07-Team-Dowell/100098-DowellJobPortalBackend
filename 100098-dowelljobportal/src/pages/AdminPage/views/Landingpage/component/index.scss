@@ -45,14 +45,14 @@ $slider__gray: #d9d9d9;
 .active_checkbox[type="checkbox"]:checked:after {
   content: "Active";
   color: #1f1f1f;
-  top: 0.1rem;
+  top: -0.05rem;
   left: -3.5rem;
 }
 
 .active_checkbox[type="checkbox"]:after {
   content: "Inactive";
   font-size: small;
-  top: 0.1rem;
+  top: -0.05rem;
   left: -4.3rem;
 }
 .active_checkbox[type="checkbox"]:after,
