@@ -6,7 +6,7 @@ import { AiOutlineDown } from "react-icons/ai";
 import { validateUrl } from "../../../../helpers/helpers";
 import { countriesData, dowellInfo, dowellLinks, freelancingPlatforms, qualificationsData } from "../../utils/jobFormApplicationData";
 import { mutableNewApplicationStateNames, useNewApplicationContext } from "../../../../contexts/NewApplicationContext";
-import { newJobApplicationDataReducerActions } from "../../../../reducers/NewJobApplicationDataReducer";
+import { newJobApplicationDataReducer, newJobApplicationDataReducerActions } from "../../../../reducers/NewJobApplicationDataReducer";
 import "./style.css";
 import { handleShareBtnClick } from "../../utils/helperFunctions";
 import { BsCashStack } from "react-icons/bs";
@@ -48,7 +48,7 @@ const JobApplicationScreen = () => {
     const paymentTermsSelectionsRef = useRef([]);
     const workflowTermsSelectionsRef = useRef([]);
     const [removeFreelanceOptions, setRemoveFreelanceOptions] = useState(false);
-    const {jobs, setJobs} = useJobContext();
+    const { jobs, setJobs } = useJobContext();
     const [jobsLoading, setJobsLoading] = useState(true);
     const { currentUser } = useCurrentUserContext();
     const [jobSaved, setJobSaved] = useState(false);
@@ -160,12 +160,17 @@ const JobApplicationScreen = () => {
         // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.title, value: currentJob.title } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATE_APPLIED, payload: { stateToChange: mutableNewApplicationStateNames.application_submitted_on, value: new Date() } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_DESCRIPTION, payload: { stateToChange: mutableNewApplicationStateNames.jobDescription, value: currentJob.description } })
-
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_CATEGORY, payload: { stateToChange: mutableNewApplicationStateNames.job_category, value: seleteCategoryOption } })
         if (currentJob.typeof === "Employee" || currentJob.typeof === "Internship") return setRemoveFreelanceOptions(true);
 
         setRemoveFreelanceOptions(false);
 
     }, [currentJob]);
+
+    const [seleteCategoryOption, setSelectCategoryOption] = useState("");
+    const handleOptionChange = (e) => {
+        setSelectCategoryOption(e.target.value);
+    };
 
     useEffect(() => {
 
@@ -414,6 +419,13 @@ const JobApplicationScreen = () => {
                                     </div>
 
                                     <div className="job__Application__Item">
+                                        <h2>Enter Your Internet Speed<span className="required-indicator">*</span></h2>
+                                        <label className="input__Text__Container">
+                                            <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Enter Your Internet Speed'} value={newApplicationData.internet_speed} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED, payload: { stateToChange: mutableNewApplicationStateNames.internet_speed, value: e.target.value } })} />
+                                        </label>
+                                    </div>
+
+                                    <div className="job__Application__Item">
                                         <h2>Select Country<span className="required-indicator">*</span></h2>
                                         <div className="select__Dropdown__Container" onClick={() => setLabelClicked(!labelClicked)}>
                                             <select name="country" ref={selectCountryOptionRef} defaultValue={'default_'}>
@@ -454,7 +466,58 @@ const JobApplicationScreen = () => {
                                             </>
                                     }
 
+                                    <div className='job__Application__Item'>
+                                        <h2 htmlFor="job_category">Job Category<span className="required-indicator">*</span></h2>
+                                        <div className="input__data__row">
+                                            <div className="data">
+                                                <input type="radio"
+                                                    id="freelancer"
+                                                    name="options"
+                                                    value="Freelancer"
+                                                    checked={seleteCategoryOption === 'Freelancer'}
+                                                    onChange={handleOptionChange}
 
+                                                />
+                                                <label htmlFor="freelancer">Freelancer</label>
+                                            </div>
+
+                                            <div className="data">
+                                                <input
+                                                    type="radio"
+                                                    id="employe"
+                                                    name="options"
+                                                    value="Employee"
+                                                    checked={seleteCategoryOption === 'Freelancer'}
+                                                    onChange={handleOptionChange}
+                                                />
+                                                <label htmlFor="employe">Employee</label>
+                                            </div>
+
+                                            <div className="data">
+                                                <input
+                                                    type="radio"
+                                                    id="internship"
+                                                    name="options"
+                                                    value="Internship"
+                                                    checked={seleteCategoryOption === 'Internship'}
+                                                    onChange={handleOptionChange}
+                                                />
+                                                <label htmlFor="internship">Internship</label>
+                                            </div>
+
+                                            <div className="data">
+                                                <input
+                                                    type="radio"
+                                                    id="research associate"
+                                                    name="options"
+                                                    value="research associate"
+                                                    checked={seleteCategoryOption === 'Research Associate'}
+                                                    onChange={handleOptionChange}
+                                                />
+                                                <label htmlFor="research associate">Research Associate</label>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div className="job__Application__Item">
                                         <h2>Academic Qualifications<span className="required-indicator">*</span></h2>
                                         <div className="select__Dropdown__Container" onClick={() => setLabelClicked(!labelClicked)}>

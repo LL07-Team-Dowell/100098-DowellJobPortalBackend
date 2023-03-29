@@ -55,6 +55,7 @@ export const mutableNewApplicationStateNames = {
     job_category:"job_category",
     payment: "payment",
     country: "country",
+    internet_speed:"internet_speed",
     username: "username",
     freelancePlatform: "freelancePlatform",
     freelancePlatformUrl: "freelancePlatformUrl",

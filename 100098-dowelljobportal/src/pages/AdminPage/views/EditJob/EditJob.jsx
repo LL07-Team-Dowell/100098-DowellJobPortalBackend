@@ -13,7 +13,7 @@ import { useJobContext } from '../../../../contexts/Jobs';
 
 
 function EditJob() {
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [updateLoading, setUpdateLoading] = useState(false)
@@ -22,11 +22,12 @@ function EditJob() {
     job_title: '',
     skills: '',
     job_category: '',
+    type_of_job: '',
     is_active: '',
     payment: '',
     description: '',
     time_interval: '',
-    general_terms: ['', '', ''],
+    general_terms: [],
     technical_specification: [],
     payment_terms: [],
     workflow_terms: [],
@@ -34,11 +35,16 @@ function EditJob() {
   });
   // console.log(formData.is_active);
   // console.log(formData);
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false)
+    }, 10000)
+  }, []);
+
   const { jobs, setJobs } = useJobContext();
   const { id } = useParams();
-  const singleJob = jobs.filter(job => job["_id"] === id)[0];
-  const { company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_catagory, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id } = singleJob;
-  console.log(job_catagory);
+  const singleJob = jobs?.filter(job => job["_id"] === id)[0];
+  const { company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id } = singleJob;
   // useEffect(() => {
   //   const fetchData = async () => {
   //     setLoading(true);
@@ -64,8 +70,9 @@ function EditJob() {
   // }, []);
 
 
-  const [selectedOption, setSelectedOption] = useState(job_catagory);
-
+  const [selectedOption, setSelectedOption] = useState(job_category);
+  const [typeofOption, setTypeofOption] = useState(type_of_job)
+  console.log(typeofOption);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
@@ -74,6 +81,10 @@ function EditJob() {
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
+
+  const handltTypeOfOption = (e) => {
+    setTypeofOption(e.target.value);
+  }
 
   const toggleJobStatus = () => {
     setFormData({
@@ -95,9 +106,9 @@ function EditJob() {
   }
 
   const handleRemovePaymentTerms = (index) => {
-    const newItems = [...formData.technical_specification];
+    const newItems = [...formData.payment_terms];
     const filterItems = newItems.filter((currElm, ind) => ind !== index)
-    setFormData({ ...formData, technical_specification: [...filterItems] })
+    setFormData({ ...formData, payment_terms: [...filterItems] })
   }
 
   const handleRemoveWorkflow = (index) => {
@@ -126,7 +137,6 @@ function EditJob() {
     })
   }
 
-
   const handleAddTerm = (termsKey) => {
     // console.log(termsKey);
     setFormData((prevValue) => {
@@ -145,7 +155,7 @@ function EditJob() {
   }
 
   const handleSubmit = (event) => {
-    setUpdateLoading(true);
+    setLoading(true);
     try {
       fetch('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
         method: 'POST',
@@ -156,18 +166,16 @@ function EditJob() {
       })
         .then((res) => res.json())
         .then((data) => {
-          // console.log(data);
-          setUpdateLoading(false)
+          console.log(data);
+          setLoading(false)
         });
     } catch (e) {
       setError(e)
     }
-
-
   };
 
   return (
-    <> {updateLoading ? <Loading /> :
+    <> {loading ? <Loading /> :
       <StaffJobLandingLayout adminView={true}
         adminAlternativePageActive={true}
         pageTitle={"Edit  Job"}
@@ -224,8 +232,8 @@ function EditJob() {
                       <input type="radio"
                         id="freelancer"
                         name="options"
-                        value="freelancer"
-                        checked={selectedOption === 'freelancer'}
+                        value="Freelancer"
+                        checked={selectedOption === 'Freelancer'}
                         onChange={handleOptionChange}
                       />
                       <label htmlFor="freelancer">Freelancer</label>
@@ -236,11 +244,11 @@ function EditJob() {
                         type="radio"
                         id="employe"
                         name="options"
-                        value="employe"
-                        checked={selectedOption === 'employe'}
+                        value="Employee"
+                        checked={selectedOption === 'Employee'}
                         onChange={handleOptionChange}
                       />
-                      <label htmlFor="employe">Employe</label>
+                      <label htmlFor="employe">Employee</label>
                     </div>
 
                     <div className="data">
@@ -248,8 +256,8 @@ function EditJob() {
                         type="radio"
                         id="internship"
                         name="options"
-                        value="internship"
-                        checked={selectedOption === 'internship'}
+                        value="Internship"
+                        checked={selectedOption === 'Internship'}
                         onChange={handleOptionChange}
                       />
                       <label htmlFor="internship">Internship</label>
@@ -260,14 +268,105 @@ function EditJob() {
                         type="radio"
                         id="research associate"
                         name="options"
-                        value="research associate"
-                        checked={selectedOption === 'research associate'}
+                        value="Research Associate"
+                        checked={selectedOption === 'Research Associate'}
                         onChange={handleOptionChange}
                       />
                       <label htmlFor="research associate">Research Associate</label>
                     </div>
                   </div>
                 </div>
+
+
+                {selectedOption.length < 1 ? (
+                  <></>
+                ) : selectedOption === "Freelancer" ? (
+                  <>
+                    <div className='input__data'>
+                      <label htmlFor="job_category">Type of Job</label>
+                    </div>
+                    <div className="type_of_job">
+
+                      <div className="data">
+                        <input
+                          type="radio"
+                          id="time"
+                          name="Task based"
+                          value="Task based"
+                          checked={typeofOption === 'Task based'}
+                          onChange={handltTypeOfOption}
+                        />
+                        <label htmlFor="employe">Task Based</label>
+                      </div>
+
+                      <div className="data">
+                        <input
+                          type="radio"
+                          id="task"
+                          name="Time based"
+                          value="Time based"
+                          checked={typeofOption === 'Time based'}
+                          onChange={handltTypeOfOption}
+                        />
+                        <label htmlFor="employe">Time Based</label>
+                      </div>
+
+                    </div>
+                  </>
+                ) : selectedOption === "Internship" ? (
+                  <>
+                    <div className='input__data'>
+                      <label htmlFor="job_category">Type of Job</label>
+                    </div>
+                    <div className="type_of_job">
+                      <div className="data">
+                        <input
+                          type="radio"
+                          id="Full time"
+                          name="Full time"
+                          value="Full time"
+                          checked={typeofOption === 'Full time'}
+                          onChange={handltTypeOfOption}
+                        />
+                        <label htmlFor="internship">Full Time</label>
+                      </div>
+                      <div className="data">
+                        <input
+                          type="radio"
+                          id="Full time"
+                          name="Part time"
+                          value="Part time"
+                          checked={typeofOption === 'Part time'}
+                          onChange={handltTypeOfOption}
+                        />
+                        <label htmlFor="employe">Part Time</label>
+                      </div>
+
+                    </div>
+                  </>
+                ) : selectedOption === "Employee" ? (
+                  <>
+                    <div className='input__data'>
+                      <label htmlFor="job_category">Type of Job</label>
+                    </div>
+                    <div className="type_of_job">
+                      <div className="data">
+                        <input
+                          type="radio"
+                          id="Full time"
+                          name="Full time"
+                          value="Full time"
+                          checked={typeofOption === 'Full time'}
+                          onChange={handltTypeOfOption}
+                        />
+                        <label htmlFor="employe">Full Time</label>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <></>
+                )}
+
                 <div className='input__data'>
                   <label htmlFor="skills">Time Period</label>
                   <input
@@ -279,6 +378,7 @@ function EditJob() {
                     onChange={handleInputChange}
                   />
                 </div>
+
                 <div className='input__data__row'>
                   <label>State of Job</label>
                   <div className="data">
@@ -290,7 +390,7 @@ function EditJob() {
                       className="active_checkbox"
                       type="checkbox"
                       name={"is_active"}
-                      checked={formData.is_active}
+                      checked={is_active}
                       onChange={toggleJobStatus}
                       required
                     />
@@ -446,6 +546,14 @@ const Wrapper = styled.section`
       box-shadow: inset 0px 1.7px 8px rgba(0, 0, 0, 0.16);
       cursor: pointer;
     }
+   
+    .type_of_job{
+      padding: 0;
+    }
+
+    .type_of_job label{
+      padding: 0 0.4rem;
+    }
 
     .main__titles{
         padding-top: 70px;
@@ -470,6 +578,8 @@ const Wrapper = styled.section`
         background-color: #F3F8F4;
         padding: 40px 35px;
         border-radius: 10px;
+        width: 85%;
+        margin: auto;
         
         .job__detail__title{
             background-color:#005734;
@@ -504,8 +614,7 @@ const Wrapper = styled.section`
                 }
 
                 input {
-                    padding: 15px;
-                    border-radius: 10px;
+                  padding: 1.1rem 1.1rem 1.1rem 2rem;                    border-radius: 10px;
                     border: 1px solid #005734;
                 }
 
