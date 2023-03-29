@@ -7,6 +7,7 @@ import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { addNewTask, updateSingleTask } from "../../../../services/commonServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { createCandidateTask } from "../../../../services/candidateServices";
 
 
 const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelectionScreen, editPage, setEditPage, taskToEdit, hrPageActive , assignedProject }) => {
@@ -22,19 +23,46 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
     const [ disabled, setDisabled ] = useState(true);
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext();
-
+    const [time , settime] = useState(new Date().toString()) ; 
+    const TimeValue = `${time.split(" ")[0]} ${time.split(" ")[1]} ${time.split(" ")[2]} ${time.split(" ")[3]}` 
+    const [optionValue , setoptionValue] = useState("") ; 
+    const selctChange = (e) => {
+        setoptionValue(e.target.value) ; 
+    }
     useClickOutside(ref, () => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) });
 
-    useEffect (() => {
+    // useEffect (() => {
 
-        if (newTaskDetails.username.length < 1) return setShowTaskForm(false);
+    //     if (newTaskDetails.username.length < 1) return setShowTaskForm(false);
 
-        if ((newTaskDetails.title.length < 1) || (newTaskDetails.description.length < 1)) return setDisabled(true)
+    //     if ((newTaskDetails.title.length < 1) || (newTaskDetails.description.length < 1)) return setDisabled(true)
         
+    //     setDisabled(false)
+
+    // }, [newTaskDetails])
+    useEffect(()=>{
+        if(newTaskDetails.description.length < 1 || optionValue.length < 1    )return setDisabled(true)  ; 
         setDisabled(false)
 
-    }, [newTaskDetails])
-
+    },[newTaskDetails.description , optionValue]) ;
+    const CreateNewTaskFunction = () => {
+        createCandidateTask({
+            project: optionValue , 
+            applicant: currentUser.userinfo.username ,
+            task: newTaskDetails.description , 
+            task_added_by: currentUser.userinfo.username ,
+            data_type:currentUser.portfolio_info[0].data_type , 
+            company_id: currentUser.portfolio_info[0].org_id,
+            task_created_date: time
+        }).then(resp => {
+            console.log(resp);
+            setNewTaskDetails({...newTaskDetails ,"description": "" });
+            setoptionValue("");
+            alert("new task created")
+        
+        })
+        .catch(err => console.log(err))
+    }
     useEffect (() => {
 
         if (afterSelectionScreen) {
@@ -125,10 +153,7 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
         }
 
     }
-    const [optionValue , setoptionValue] = useState("") ; 
-    const selctChange = (e) => {
-        setoptionValue(e.target.value) ; 
-    }
+    
     return <>
         <div className="add__New__Task__Overlay">
             <div className="add__New__Task__Container" ref={ref}>
@@ -145,10 +170,10 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
                 {
                     showTaskForm ? <>
                         <input type={"text"} placeholder={"Task Assignee"} value={newTaskDetails.username} readOnly={true} />
-                        <select onChange={e => selctChange(e)}>{assignedProject.map((v , i) => <option key={i} value={v}>{v}</option>)}</select>
-                        <input type={"text"} placeholder={"today time"} value={new Date().toString()} readOnly={true} />
-                        <textarea placeholder="Task Description" name="description" value={newTaskDetails.description} onChange={handleChange} rows={5}></textarea>
-                        <button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateTaskBtnClick() : handleNewTaskBtnClick()}>{editPage ? "Update Task" : "Add Task"}</button>
+                        <select onChange={e => selctChange(e)}><option value={""}>Select</option>{assignedProject.map((v , i) => <option key={i} value={v}>{v}</option>)}</select>
+                        <input type={"text"} placeholder={"today time"} value={TimeValue} readOnly={true} />
+                        <textarea placeholder="Enter Task" name="description" value={newTaskDetails.description} onChange={handleChange} rows={5}></textarea>
+                        <button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateTaskBtnClick() : CreateNewTaskFunction()}>{editPage ? "Update Task" : "Add Task"}</button>
                     </> :
                     
                     <>

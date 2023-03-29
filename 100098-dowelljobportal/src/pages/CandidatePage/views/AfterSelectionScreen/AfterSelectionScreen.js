@@ -16,13 +16,7 @@ import "./style.css";
 const AfterSelectionScreen = ({ assignedProject }) => {
     const { currentUser } = useCurrentUserContext();
     console.log(currentUser);
-    const [tasksofuser , settasksofuser] = useState("") ; 
-    useEffect(()=>{
-        getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
-        })
-        // .then(resp => console.log('a;aaaa',resp.data.response.data.filter(v => v.applicant ==='boxboy' )))
-        .then(resp => settasksofuser(resp.data.response.data.filter(v => v.applicant === 'boxboy')))
-    },[])
+   
     const [ showAddTaskModal, setShowAddTaskModal ] = useState(false);
     const { section } = useNavigationContext();
     const { setUserTasks } = useCandidateTaskContext();
@@ -36,7 +30,7 @@ const AfterSelectionScreen = ({ assignedProject }) => {
                 }
 
                 <div className="candidate__After__Selection__Screen">
-                    <TaskScreen candidateAfterSelectionScreen={true} handleAddTaskBtnClick={() => setShowAddTaskModal(true)} assignedProject={assignedProject} />
+                    <TaskScreen candidateAfterSelectionScreen={true} handleAddTaskBtnClick={() => setShowAddTaskModal(true)} assignedProject={assignedProject}/>
                 </div>
                 </JobLandingLayout>
             </> : 
