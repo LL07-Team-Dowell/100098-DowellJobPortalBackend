@@ -14,7 +14,6 @@ import { useJobContext } from '../../../../contexts/Jobs';
 const ViewJob = () => {
 
     const [loading, setLoading] = useState(false)
-
     useEffect(() => {
         setTimeout(() => {
             setLoading(false)
@@ -55,7 +54,7 @@ const ViewJob = () => {
                 {description.length > 0 && <><h4>Job Description:</h4>
 
                     <ol>
-                        {description.map((specif, index) => <li key={index}>{specif}</li>)}
+                        {description}
                     </ol> </>}
 
 
