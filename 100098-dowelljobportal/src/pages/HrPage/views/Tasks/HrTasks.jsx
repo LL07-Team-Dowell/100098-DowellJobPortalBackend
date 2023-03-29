@@ -10,20 +10,31 @@ import {useSearchParams} from 'react-router-dom'
 import { fetchCandidateTasks } from '../../../../services/commonServices'; 
 import './index.scss'
 import { differenceInCalendarDays } from 'date-fns';
+import { getCandidateTask } from '../../../../services/candidateServices';
+import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 
 const HrTasks = () => {
             // searchParams
             let [searchParams, setSearchParams] = useSearchParams();
             const applicant = searchParams.get('applicant') ; 
+            const { currentUser } = useCurrentUserContext();
             
             // states
-            const [data ,setdata] = useState(testTasksToWorkWithForNow.filter(s => s.applicant === applicant)) ; 
+            const [data ,setdata] = useState([]) ; 
+            const [loading , setloading] = useState(false) ;
             const [project , setproject] = useState("") ;
             const [taskdetail , settaskdetail] = useState([]) ; 
             const [taskdetail2 , settaskdetail2] = useState([]) ; 
             const [value, onChange] = useState(new Date());
             const [ datesToStyle, setDatesToStyle ] = useState([]);
             const [noApplicant , setnoApplicant] = useState(false) ; 
+            useEffect(()=>{
+              setloading(true)
+              getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
+              })
+              .then(resp =>{ setdata(resp.data.response.data.filter(v => v.applicant === applicant));setloading(false);console.log(resp.data.response.data) })
+              .catch(err => console.log(err));
+          },[]); 
             // List 
             const List = Array.from(new Set(data.map(d => d.project))) ; 
             useEffect(()=>{
@@ -48,8 +59,9 @@ const HrTasks = () => {
 
             useEffect(()=>{
                         settaskdetail2(taskdetail.filter(d => {
-                        const dateTime = d.task_created_date.split(" ")[0]+ " " + d.task_created_date.split(" ")[1]+ " " + d.task_created_date.split(" ")[2]+ " " + d.task_created_date.split(" ")[3] ;
-                        const calendatTime = value.toString().split(" ")[0] + " " + value.toString().split(" ")[1] + " " + value.toString().split(" ")[2] + " " +value.toString().split(" ")[3] 
+                        const dateTime = d.task_created_date.split(" ")[1]+ " " + d.task_created_date.split(" ")[2]+ " " + d.task_created_date.split(" ")[3] ;
+                        const calendatTime = value.toString().split(" ")[1] + " " + value.toString().split(" ")[2] + " " + value.toString().split(" ")[3] ;
+                        console.log({dateTime ,calendatTime })
                         return dateTime === calendatTime ; 
             }))
             },[value , taskdetail , data]);
@@ -76,6 +88,7 @@ const HrTasks = () => {
                     }
                 }
             }
+            if(loading)return <h1>Loading..</h1>
   return (
     <StaffJobLandingLayout hrView={true}>
            {

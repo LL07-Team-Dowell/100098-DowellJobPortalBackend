@@ -46,16 +46,13 @@ const ViewJob = () => {
                 <div><h5>TimePeriod:</h5> <span>{time_interval}</span></div>
                 <div><h5>Payment:</h5> <span>{payment}</span></div>
                 <div><h5>Job Type:</h5> <span>{type_of_job}</span></div>
-                <ol>
-                    {/* change */}
-                    <li>Setting goals and developing plans for business and revenue growth. Researching, planning, and implementing new target market initiatives. </li>
-                </ol>
+            
 
                 {description.length > 0 && <><h4>Job Description:</h4>
 
-                    <ol>
+                    <div style={{whiteSpace:"pre-wrap", wordSpacing:0.6}} >
                         {description}
-                    </ol> </>}
+                    </div> </>}
 
 
                 {general_terms.length > 0 &&
@@ -87,7 +84,7 @@ const ViewJob = () => {
                             {other_info.map((term, index) => <li key={index}>{term}</li>)}
                         </ol>
                     </>}
-                <button>Edit <AiFillEdit /></button>
+                <button onClick={()=> navigate(`/edit-job/${_id}`)}>Edit <AiFillEdit /></button>
             </div>
         </div>
     </>
