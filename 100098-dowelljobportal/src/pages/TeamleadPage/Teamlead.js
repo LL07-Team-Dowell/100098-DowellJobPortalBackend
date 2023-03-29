@@ -42,7 +42,7 @@ const Teamlead = () => {
   const [currentUserProject, setCurrentUserProject] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [showApplicationDetails, setShowApplicationDetails] = useState(false);
-  const [ userTasks, setUserTasks ] = useCandidateTaskContext();
+  const { userTasks, setUserTasks } = useCandidateTaskContext();
   // const [allTasks, setAllTasks] = useState([]);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [editTaskActive, setEditTaskActive] = useState(false);

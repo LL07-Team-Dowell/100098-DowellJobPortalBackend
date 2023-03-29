@@ -11,6 +11,7 @@ import { useSearchParams } from "react-router-dom";
 import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleNavigationBar";
 import { differenceInCalendarDays } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { useCandidateTaskContext } from "../../../../contexts/CandidateTasksContext";
 
 const CreateTaskScreen = ({
   candidateAfterSelectionScreen,
@@ -20,7 +21,9 @@ const CreateTaskScreen = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const applicant = searchParams.get("applicant");
-  const [data, setdata] = useState(testTasksToWorkWithForNow);
+  const { userTasks } = useCandidateTaskContext();
+
+  const [data, setdata] = useState(userTasks);
   console.log(data);
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -30,8 +33,11 @@ const CreateTaskScreen = ({
     selectedDate.toLocaleString("en-us", { month: "long" })
   );
   const [datesToStyle, setDatesToStyle] = useState([]);
-  const [noApplicant, setNoApplicant] = useState(false);
+  // const [noApplicant, setNoApplicant] = useState(false);
+
   const navigate = useNavigate();
+
+  const selectOption = Array.from(new Set(data.map((d) => d.project)));
 
   useEffect(() => {
     setTasksForSelectedProject(
@@ -39,7 +45,7 @@ const CreateTaskScreen = ({
         (d) => d.project === selectedProject && d.applicant === applicant
       )
     );
-  }, [selectedProject]);
+  }, [selectedProject, data, applicant]);
 
   useEffect(() => {
     setdata(testTasksToWorkWithForNow.filter((d) => d.applicant === applicant));
@@ -55,11 +61,11 @@ const CreateTaskScreen = ({
     ].flat();
     console.log(datesUserHasTask);
     setDatesToStyle(datesUserHasTask);
-  }, [data]);
+  }, [selectedProject, data]);
 
   useEffect(() => {
     setTasksDate(
-      data.filter((d) => {
+      tasksForSelectedProject.filter((d) => {
         const dateTime =
           d.task_created_date.split(" ")[0] +
           " " +
@@ -81,16 +87,7 @@ const CreateTaskScreen = ({
     );
 
     setTasksMonth(selectedDate.toLocaleString("en-us", { month: "long" }));
-  }, [selectedDate]);
-
-  const selectOption = Array.from(new Set(data.map((d) => d.project)));
-  useEffect(() => {
-    if (data.length < 1) {
-      setNoApplicant(true);
-    } else {
-      setNoApplicant(false);
-    }
-  }, [data]);
+  }, [selectedDate, tasksForSelectedProject, data]);
 
   const isSameDay = (a, b) => differenceInCalendarDays(a, b) === 0;
 
@@ -106,80 +103,66 @@ const CreateTaskScreen = ({
 
   return (
     <StaffJobLandingLayout teamleadView={true}>
-      {noApplicant ? (
-        <>No Applicant</>
-      ) : (
-        <>
-          <TitleNavigationBar
-            title="Tasks"
-            className="task-bar"
-            handleBackBtnClick={() => navigate(-1)}
+      <>
+        <TitleNavigationBar
+          title="Tasks"
+          className="task-bar"
+          handleBackBtnClick={() => navigate(-1)}
+        />
+        <div
+          className={`candidate-task-screen-container ${
+            className ? className : ""
+          }`}
+        >
+          {!candidateAfterSelectionScreen && (
+            <>
+              <ApplicantIntro showTask={true} />
+            </>
+          )}
+          <AssignedProjectDetails
+            showTask={true}
+            availableProjects={selectOption}
+            removeDropDownIcon={false}
+            handleSelectionClick={(selection) => setSelectedProject(selection)}
+            assignedProject={selectOption[0] ? selectOption[0] : ""}
           />
-          <div
-            className={`candidate-task-screen-container ${
-              className ? className : ""
-            }`}
-          >
-            {!candidateAfterSelectionScreen && (
-              <>
-                <ApplicantIntro showTask={true} />
-              </>
-            )}
-            <AssignedProjectDetails
-              showTask={true}
-              availableProjects={selectOption}
-              removeDropDownIcon={false}
-              handleSelectionClick={(e) => setSelectedProject(e.target.value)}
-              assignedProject={selectOption[0] ? selectOption[0] : ""}
+          <div className="all__Tasks__Container">
+            <Calendar
+              onChange={setSelectedDate}
+              value={selectedDate}
+              tileClassName={tileClassName}
             />
-            <div className="all__Tasks__Container">
-              <Calendar
-                onChange={setSelectedDate}
-                value={selectedDate}
-                tileClassName={tileClassName}
-              />
-              <div className="task__Details__Item">
-                <h3 className="month__Title">{tasksMonth}</h3>
-                {tasksDate.length === 0 ? (
-                  <p className="empty__task__Content">
-                    No task found for today
-                  </p>
-                ) : (
-                  React.Children.toArray(
-                    tasksDate.map((d, i) => {
-                      return (
-                        <CandidateTaskItem
-                          currentTask={d}
-                          taskNum={i + 1}
-                          candidatePage={candidateAfterSelectionScreen}
-                          handleEditBtnClick={() => handleEditBtnClick(d)}
-                          updateTasks={() =>
-                            setTasksForSelectedProject(
-                              data.filter((d) => d.project === selectedProject)
-                            )
-                          }
-                        />
-                      );
-                    })
-                  )
-                )}
-              </div>
+            <div className="task__Details__Item">
+              <h3 className="month__Title">{tasksMonth}</h3>
+              {tasksDate.length === 0 ? (
+                <p className="empty__task__Content">No task found for today</p>
+              ) : (
+                React.Children.toArray(
+                  tasksDate.map((d, i) => {
+                    return (
+                      <CandidateTaskItem
+                        currentTask={d}
+                        taskNum={i + 1}
+                        candidatePage={candidateAfterSelectionScreen}
+                        handleEditBtnClick={(selection) =>
+                          setSelectedProject(selection)
+                        }
+                        updateTasks={() =>
+                          setTasksForSelectedProject(
+                            data.filter((d) => d.project === selectedProject)
+                          )
+                        }
+                      />
+                    );
+                  })
+                )
+              )}
             </div>
           </div>
-        </>
-      )}
+        </div>
+      </>
     </StaffJobLandingLayout>
   );
 };
 
 export default CreateTaskScreen;
-
-{
-  /* <div className="add-task-btn" onClick={handleAddTaskBtnClick}>
-          <span>Add</span>
-          <AddCircleOutlineIcon />
-              </div> 
-            
-            new-task-screen/?applicant={applicant_name}
-            */
-}

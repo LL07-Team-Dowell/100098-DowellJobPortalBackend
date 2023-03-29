@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { formatDateAndTime } from "../../../../helpers/helpers";
 import { updateSingleTask } from "../../../../services/commonServices";
+import { candidateUpdateTaskForTeamLead } from "../../../../services/teamleadServices";
 import CustomHr from "../CustomHr/CustomHr";
 import DropdownButton from "../DropdownButton/Dropdown";
 import "./style.css";
@@ -24,7 +25,14 @@ const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnC
 
         try{
 
-            await updateSingleTask(currentTask.id, currentTask)
+            // await updateSingleTask(currentTask.id, currentTask)
+            await candidateUpdateTaskForTeamLead({
+              document_id: currentTask._id,
+              task: currentTask.task,
+              status: currentTask.status,
+              task_added_by: currentTask.task_added_by,
+              task_updated_date: new Date(),
+            });
             
             updateTasks(prevTasks => prevTasks.map(task => {
                 
