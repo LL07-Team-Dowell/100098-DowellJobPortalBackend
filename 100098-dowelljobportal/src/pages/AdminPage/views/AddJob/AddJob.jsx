@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { IoIosBookmark } from "react-icons/io";
+import { BsFillBookmarkFill } from "react-icons/bs";
 import { MdArrowBackIos } from "react-icons/md";
 import { MdOutlineAddCircle } from "react-icons/md";
 import { MdCancel } from "react-icons/md";
@@ -216,18 +216,18 @@ const AddJob = () => {
                   <div className="radio__radio"></div>
                   <p>Freelancer</p>
                 </label>
-                <label htmlFor="intership" className="radio">
+                <label htmlFor="internship" className="radio">
                   <input
                     className="radio_input"
                     type={"radio"}
-                    id={"intership"}
+                    id={"internship"}
                     name="options"
-                    value={"intership"}
-                    checked={selectedOption === "intership"}
+                    value={"internship"}
+                    checked={selectedOption === "internship"}
                     onChange={handleOptionChange}
                   />
                   <div className="radio__radio"></div>
-                  <p>Intership</p>
+                  <p>Internship</p>
                 </label>
                 <label htmlFor="employee" className="radio">
                   <input
@@ -295,7 +295,7 @@ const AddJob = () => {
                     </div>
                   </div>
                 </>
-              ) : newJob.job_category === "intership" ? (
+              ) : newJob.job_category === "internship" ? (
                 <>
                   <h3>Type of Job</h3>
                   <div className="type_of_job">
@@ -436,7 +436,7 @@ const AddJob = () => {
                   onClick={() => handleAddTerms("general_terms")}
                 >
                   <span>
-                    <MdOutlineAddCircle size="2rem" color="#005734" />
+                    <MdOutlineAddCircle size="2.6rem" color="#005734" />
                   </span>{" "}
                   Add General Terms
                 </button>
@@ -478,7 +478,7 @@ const AddJob = () => {
                   onClick={() => handleAddTerms("technical_specification")}
                 >
                   <span>
-                    <MdOutlineAddCircle size="2rem" color="#005734" />
+                    <MdOutlineAddCircle size="2.6rem" color="#005734" />
                   </span>{" "}
                   Add Specifications
                 </button>
@@ -518,7 +518,7 @@ const AddJob = () => {
                   onClick={() => handleAddTerms("payment_terms")}
                 >
                   <span>
-                    <MdOutlineAddCircle size="2rem" color="#005734" />
+                    <MdOutlineAddCircle size="2.6rem" color="#005734" />
                   </span>{" "}
                   Add Payment Terms
                 </button>
@@ -558,7 +558,7 @@ const AddJob = () => {
                   onClick={() => handleAddTerms("workflow_terms")}
                 >
                   <span>
-                    <MdOutlineAddCircle size="2rem" color="#005734" />
+                    <MdOutlineAddCircle size="2.6rem" color="#005734" />
                   </span>{" "}
                   Add Workflow
                 </button>
@@ -598,7 +598,7 @@ const AddJob = () => {
                   onClick={() => handleAddTerms("other_info")}
                 >
                   <span>
-                    <MdOutlineAddCircle size="2rem" color="#005734" />
+                    <MdOutlineAddCircle size="2.6rem" color="#005734" />
                   </span>{" "}
                   Add Others
                 </button>
@@ -615,7 +615,7 @@ const AddJob = () => {
                       <LoadingSpinner width={25} height={25} color="#fff" />
                     ) : (
                       <div>
-                        Save <IoIosBookmark size="0.9em" />
+                        Save <BsFillBookmarkFill size="1.2rem" />
                       </div>
                     )}
                   </div>

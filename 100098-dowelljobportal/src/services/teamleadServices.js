@@ -21,9 +21,16 @@ export const getCandidateApplicationsForTeamLead = async (data) => {
   );
 };
 
-export const getTaskForTeamLead = async (data) => {
+export const getCandidateTaskForTeamLead = async (data) => {
   return await currentBackendAxiosInstance.post(
     "/task_management/get_task/",
+    data
+  );
+}
+
+export const candidateUpdateTaskForTeamLead = async (data) => {
+  return await currentBackendAxiosInstance.post(
+    "/task_management/update_task/",
     data
   );
 }

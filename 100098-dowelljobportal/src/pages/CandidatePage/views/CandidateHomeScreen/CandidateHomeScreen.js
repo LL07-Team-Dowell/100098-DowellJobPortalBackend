@@ -27,8 +27,13 @@ function Home({ setHired, setAssignedProject }) {
     if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
 
     getAppliedJobs().then(res => {
+      const userApplication = res.data.filter(
+        (application) => application.data_type === currentUser?.portfolio_info[0].data_type
+      )
 
-      const currentUserAppliedJobs = res.data.filter(application => application.applicant === currentUser.username);
+      const currentUserAppliedJobs = userApplication.filter(
+        (application) => application.applicant === currentUser.username
+      );
       const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
 
       // if (userSelectedJobs.length  >= 1) {

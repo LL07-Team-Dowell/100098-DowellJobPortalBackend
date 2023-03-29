@@ -23,7 +23,11 @@ import TogglerNavMenuBar from "../../components/TogglerNavMenuBar/TogglerNavMenu
 import JobCard from "../../components/JobCard/JobCard";
 import { fetchCandidateTasks, getJobs2 } from "../../services/commonServices";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
-import { getCandidateApplicationsForTeamLead } from "../../services/teamleadServices";
+import {
+  getCandidateApplicationsForTeamLead,
+  getCandidateTaskForTeamLead,
+} from "../../services/teamleadServices";
+import { useCandidateTaskContext } from "../../contexts/CandidateTasksContext";
 
 const Teamlead = () => {
   const { currentUser } = useCurrentUserContext();
@@ -38,7 +42,8 @@ const Teamlead = () => {
   const [currentUserProject, setCurrentUserProject] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [showApplicationDetails, setShowApplicationDetails] = useState(false);
-  const [allTasks, setAllTasks] = useState([]);
+  const { userTasks, setUserTasks } = useCandidateTaskContext();
+  // const [allTasks, setAllTasks] = useState([]);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [editTaskActive, setEditTaskActive] = useState(false);
   const [currentTaskToEdit, setCurrentTaskToEdit] = useState({});
@@ -48,12 +53,16 @@ const Teamlead = () => {
 
   useEffect(() => {
     const requestData = {
-      company_id: currentUser?.portfolio_info[0].org_id
+      company_id: currentUser?.portfolio_info[0].org_id,
     };
 
     getJobs2(requestData)
       .then((res) => {
-        setJobs(res.data.response.data);
+        const jobsMatchingCurrentCompany = res.data.response.data.filter(
+          (job) => job.data_type === currentUser?.portfolio_info[0].data_type
+        );
+        console.log(jobsMatchingCurrentCompany);
+        setJobs(jobsMatchingCurrentCompany);
       })
       .catch((err) => {
         console.log(err);
@@ -61,13 +70,17 @@ const Teamlead = () => {
 
     getCandidateApplicationsForTeamLead(requestData)
       .then((res) => {
-        const selectedCandidates = res.data.response.data.filter(
+        const applicationForMatching = res.data.response.data.filter(
+          (application) =>
+            application.data_type === currentUser?.portfolio_info[0].data_type
+        );
+        const selectedCandidates = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.SELECTED
         );
-        const candidatesToRehire = res.data.response.data.filter(
+        const candidatesToRehire = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.TO_REHIRE
         );
-        const onboardingCandidates = res.data.response.data.filter(
+        const onboardingCandidates = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.ONBOARDING
         );
 
@@ -99,12 +112,32 @@ const Teamlead = () => {
         console.log(err);
       });
 
-    fetchCandidateTasks()
+    // fetchCandidateTasks()
+    //   .then((res) => {
+    //     const usersWithTasks = [
+    //       ...new Map(res.data.map((task) => [task.user, task])).values(),
+    //     ];
+    //     setAllTasks(usersWithTasks.reverse());
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+
+    getCandidateTaskForTeamLead({
+      company_id: currentUser?.portfolio_info[0].org_id,
+    })
       .then((res) => {
+        const tasksToDisplay = res.data.response.data.filter(
+          (task) => task.data_type === currentUser?.portfolio_info[0].data_type
+        );
         const usersWithTasks = [
-          ...new Map(res.data.map((task) => [task.user, task])).values(),
+          ...new Map(
+            tasksToDisplay.map((task) => [task.applicant, task])
+          ).values(),
         ];
-        setAllTasks(usersWithTasks.reverse());
+        console.log(usersWithTasks)
+        // console.log(res.data.response.data);
+        setUserTasks(usersWithTasks.reverse());
       })
       .catch((err) => {
         console.log(err);
@@ -168,8 +201,9 @@ const Teamlead = () => {
   };
 
   const handleViewTaskBtnClick = (data) => {
-    setCurrentTeamMember(data.user);
-    setShowCandidateTask(true);
+    navigate(`/new-task-screen?applicant=${data.applicant}`);
+    // setCurrentTeamMember(data.user);
+    // setShowCandidateTask(true);
   };
 
   const handleViewBtnClick = (data) => {
@@ -206,7 +240,7 @@ const Teamlead = () => {
           <AddTaskScreen
             closeTaskScreen={() => setShowAddTaskModal(false)}
             teamMembers={candidatesData.onboardingCandidates}
-            updateTasks={setAllTasks}
+            updateTasks={setUserTasks}
             editPage={editTaskActive}
             setEditPage={setEditTaskActive}
             taskToEdit={currentTaskToEdit}
@@ -216,33 +250,33 @@ const Teamlead = () => {
         {section === "home" || section == undefined ? (
           showCandidate ? (
             <div className="teamlead__Selected__Wrapper">
-            <SelectedCandidatesScreen
-              selectedCandidateData={currentCandidate}
-              updateShowCandidate={setShowCandidate}
-              rehireTabActive={rehireTabActive}
-              allCandidatesData={
-                selectedTabActive
-                  ? candidatesData.selectedCandidates
-                  : rehireTabActive
-                  ? candidatesData.candidatesToRehire
-                  : []
-              }
-              updateCandidateData={dispatchToCandidatesData}
-              jobTitle={
-                jobs.filter(
-                  (job) => job.job_number === currentCandidate.job_number
-                ).length >= 1
-                  ? jobs.filter(
-                      (job) => job.job_number === currentCandidate.job_number
-                    )[0].job_title
-                  : ""
-              }
-              showApplicationDetails={true}
-              teamleadPageActive={true}
-              handleViewApplicationBtnClick={() =>
-                setShowApplicationDetails(!showApplicationDetails)
-              }
-            />
+              <SelectedCandidatesScreen
+                selectedCandidateData={currentCandidate}
+                updateShowCandidate={setShowCandidate}
+                rehireTabActive={rehireTabActive}
+                allCandidatesData={
+                  selectedTabActive
+                    ? candidatesData.selectedCandidates
+                    : rehireTabActive
+                    ? candidatesData.candidatesToRehire
+                    : []
+                }
+                updateCandidateData={dispatchToCandidatesData}
+                jobTitle={
+                  jobs.filter(
+                    (job) => job.job_number === currentCandidate.job_number
+                  ).length >= 1
+                    ? jobs.filter(
+                        (job) => job.job_number === currentCandidate.job_number
+                      )[0].job_title
+                    : ""
+                }
+                showApplicationDetails={true}
+                teamleadPageActive={true}
+                handleViewApplicationBtnClick={() =>
+                  setShowApplicationDetails(!showApplicationDetails)
+                }
+              />
             </div>
           ) : (
             <>
@@ -321,12 +355,12 @@ const Teamlead = () => {
             <>
               <SelectedCandidates
                 showTasks={true}
-                tasksCount={allTasks.length}
+                tasksCount={userTasks.length}
               />
 
               <div className="tasks-container">
                 {React.Children.toArray(
-                  allTasks.map((dataitem) => {
+                  userTasks.map((dataitem) => {
                     return (
                       <JobCard
                         buttonText={"View"}

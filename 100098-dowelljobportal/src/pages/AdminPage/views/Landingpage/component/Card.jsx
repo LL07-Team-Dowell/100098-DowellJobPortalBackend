@@ -10,7 +10,7 @@ import axios from "axios";
 import LittleLoading from "../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 import { deleteJob } from "../../../../../services/adminServices";
 const style = {
-  fontSize: "24px",
+  fontSize: "1.2rem",
   color: "#7C7C7C",
 };
 const Card = ({

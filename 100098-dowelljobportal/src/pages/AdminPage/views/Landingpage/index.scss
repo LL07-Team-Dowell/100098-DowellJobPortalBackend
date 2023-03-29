@@ -86,6 +86,7 @@ $slider__gray: #d9d9d9;
       .card__skill > div:last-child {
         display: flex;
         align-items: center;
+        padding: 0 5px;
       }
 
       .card__header {
@@ -93,8 +94,10 @@ $slider__gray: #d9d9d9;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 1.7rem;
+        font-size: 1.5rem;
         font-weight: 700;
+        letter-spacing: 0.05em;
+        font-family: "Poppins", sans-serif;
 
         .interact__icons {
           display: flex;
@@ -104,6 +107,12 @@ $slider__gray: #d9d9d9;
 
         .delete__icon {
           cursor: pointer;
+        }
+
+        h5 {
+          max-width: 80%;
+          font-weight: 800;
+          font-size: 1.4rem;
         }
       }
       .card__skill {
@@ -124,6 +133,7 @@ $slider__gray: #d9d9d9;
         .skills {
           color: rgba(184, 184, 184, 1);
           font-size: small;
+          font-family: "Poppins", sans-serif;
           // max-width: 7rem;
           // white-space: pre-wrap;
         }
@@ -136,37 +146,40 @@ $slider__gray: #d9d9d9;
           display: flex;
           align-items: center;
           margin-left: -5px;
-          
+
           span {
             margin-left: 5px;
             color: rgba(184, 184, 184, 1);
-            font-size: small;
+            font-size: 0.8rem;
           }
         }
         .line {
           margin-top: 10px;
           margin-bottom: 10px;
+          margin-left: 2px;
           width: 2px;
-          height: 41px;
+          height: 20px;
           background-color: $placeholder__gray;
         }
         button {
           background-color: $main__green;
           width: 7.5rem;
           border: none;
-          border-radius: 10px;
-          
+          border-radius: 6px;
+          box-shadow: 0px 1.85594px 12.373px rgba(0, 87, 52, 0.49);
+
           a {
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0.7rem 0.8rem;
+            padding: 0.6rem 0.5rem;
             font-weight: 300;
             font-size: 1rem;
-            letter-spacing: 0.1rem;
+            letter-spacing: 0.02em;
             gap: 0.7rem;
+            font-family: "Poppins", sans-serif;
           }
-          
+
           .arrow-link {
             width: 0.8rem;
             height: 0.8rem;
@@ -197,7 +210,6 @@ $slider__gray: #d9d9d9;
     grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
   }
 }
-
 
 // centering
 // input[type=checkbox]{

@@ -32,7 +32,7 @@
 
 @media (min-width: 992px){
     .jobs-container, .tasks-container{
-        width: 86%;
+        width: 91%;
         margin: 0 auto;
         padding-bottom: 8%;
     }

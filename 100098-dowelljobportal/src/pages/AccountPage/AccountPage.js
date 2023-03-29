@@ -80,7 +80,10 @@ const AccountPage = () => {
 
     getJobs2(requestData)
       .then((res) => {
-        setJobs(res.data.response.data);
+        const jobsMatchingCurrentCompany = res.data.response.data.filter(
+          (job) => job.data_type === currentUser?.portfolio_info[0].data_type
+        )
+        setJobs(jobsMatchingCurrentCompany);
       })
       .catch((err) => {
         console.log(err);
@@ -88,19 +91,23 @@ const AccountPage = () => {
 
     getCandidateApplicationsForTeamLead(requestData)
       .then((response) => {
-        const candidatesToHire = response.data.response.data.filter(
+        const applicationForMatching = response.data.response.data.filter(
+          (application) =>
+            application.data_type === currentUser?.portfolio_info[0].data_type
+        );
+        const candidatesToHire = applicationForMatching.filter(
           (application) =>
             application.status === candidateStatuses.TEAMLEAD_HIRE
         );
-        const candidatesToRehire = response.data.response.data.filter(
+        const candidatesToRehire = applicationForMatching.filter(
           (application) =>
             application.status === candidateStatuses.TO_REHIRE ||
             application.status === candidateStatuses.TEAMLEAD_TOREHIRE
         );
-        const candidatesOnboarding = response.data.response.data.filter(
+        const candidatesOnboarding = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.ONBOARDING
         );
-        const candidatesRejected = response.data.response.data.filter(
+        const candidatesRejected = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.REJECTED
         );
 

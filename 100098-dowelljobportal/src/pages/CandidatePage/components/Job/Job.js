@@ -17,7 +17,7 @@ import { useJobContext } from '../../../../contexts/Jobs';
 import { SettingsAccessibility } from '@mui/icons-material';
 
 function JobScreen() {
-    const {jobs, setJobs} = useJobContext();
+    const { jobs, setJobs } = useJobContext();
     const [jobsLoading, setJobsLoading] = useState(true);
     const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
     const navigate = useNavigate();
@@ -57,9 +57,10 @@ function JobScreen() {
             setJobsMatchingCategory(matchedJobs);
             // console.log(matchedJobs);
 
-            if (jobCategoryParam === "Intership") {
+            if (jobCategoryParam === "Internship") {
                 setJobSelectionCategories(["Full time", "Part time"])
                 const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.type_of_job === currentJobCategory);
+                console.log(jobsToDisplayForCurrentCategory);
                 if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
@@ -97,7 +98,7 @@ function JobScreen() {
 
     useEffect(() => {
         if (!currentJobCategory) return
-        if (currentCategory === "Intership") {
+        if (currentCategory === "Internship") {
             const matchedJobs = jobsMatchingCategory.filter(job => job.type_of_job === currentJobCategory);
             if (matchedJobs.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
@@ -122,11 +123,16 @@ function JobScreen() {
     }, [currentJobCategory])
 
     useEffect(() => {
-        if (jobs.length > 0) return setAllRequestsDone(false);
+        if (jobs.length > 0) {
+            setAllRequestsDone(true);
+            setJobsLoading(false);
+            return
+        }
         const datass = currentUser.portfolio_info[0].org_id;
         getJobs(datass).then(res => {
             // setJobs(res.data.sort((a, b) => a.title.localeCompare(b.title)));
-            setJobs(res.data.response.data.sort((a, b) => a.job_title.localeCompare(b.job_title)));
+            const filterJob = res.data.response.data.filter(job => job.data_type === currentUser?.portfolio_info[0].data_type);
+            setJobs(filterJob.sort((a, b) => a.job_title.localeCompare(b.job_title)));
             setJobsLoading(false);
             // setAllRequestsDone(true);
         }).catch(err => {
@@ -139,7 +145,13 @@ function JobScreen() {
         if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
 
         getAppliedJobs(datass).then(res => {
-            const currentUserAppliedJobs = res.data.response.data.filter(application => application.username === currentUser.userinfo.username);
+            const userApplication = res.data.response.data.filter(
+                (application) => application.data_type === currentUser?.portfolio_info[0].data_type
+            )
+            const currentUserAppliedJobs = userApplication.filter(
+              (application) =>
+                application.username === currentUser.userinfo.username
+            );
             // const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
 
             // if (userSelectedJobs.length  >= 1) {

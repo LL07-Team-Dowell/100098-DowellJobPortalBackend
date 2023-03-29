@@ -18,6 +18,7 @@ h1.applicant-title-text{
 
 .selected-applicant-intro{
     margin: 4.5% 0 3%;
+    margin-top: 0;
 }
 
 .selected-applicant-intro span{

@@ -86,7 +86,7 @@ export const changeToTitleCase = (testStr) => {
 
     if ( typeof (testStr) !== "string") return testStr;
 
-    return testStr[0].toLocaleUpperCase() + testStr.slice(1).toLocaleLowerCase();
+    return testStr[0]?.toLocaleUpperCase() + testStr?.slice(1).toLocaleLowerCase();
 
 }
 

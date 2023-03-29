@@ -47,8 +47,8 @@ import { HrJobScreenAllTasksContextProvider } from "./contexts/HrJobScreenAllTas
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
-  const [candidateHired, setCandidateHired] = useState(true);
-  const [assignedProject, setAssignedProject] = useState(["Hr Hiring" , "ala"]);
+  const [candidateHired, setCandidateHired] = useState(false);
+  const [assignedProject, setAssignedProject] = useState("");
 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
@@ -90,8 +90,11 @@ function App() {
 
   //CURRENT USER BUT NO PORTFOLIO INFO OR PORTFOLIO INFO IS EMPTY
   if (
-    !currentUser.portfolio_info || currentUser.portfolio_info.length < 1 ||
-    !currentUser.portfolio_info.find(item => item.product === "Team Management")
+    !currentUser.portfolio_info ||
+    currentUser.portfolio_info.length < 1 ||
+    !currentUser.portfolio_info.find(
+      (item) => item.product === "Team Management"
+    )
   ) {
     return (
       <Routes>
@@ -104,7 +107,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-    testingRoles.accountRole
+      testingRoles.accountRole
   ) {
     return (
       <Routes>
@@ -132,8 +135,12 @@ function App() {
   if (
     currentUser.portfolio_info &&
     currentUser.portfolio_info.length > 0 &&
-    currentUser.portfolio_info.find(item => item.product === "Team Management") &&
-    currentUser.portfolio_info.find(item => item.product === "Team Management").member_type === "owner"
+    currentUser.portfolio_info.find(
+      (item) => item.product === "Team Management"
+    ) &&
+    currentUser.portfolio_info.find(
+      (item) => item.product === "Team Management"
+    ).member_type === "owner"
   ) {
     return (
       <Routes>
@@ -219,7 +226,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-    testingRoles.hrRole
+      testingRoles.hrRole
   ) {
     return (
       <Routes>
@@ -229,13 +236,13 @@ function App() {
           path="/"
           element={
             <HrJobScreenAllTasksContextProvider>
-            <NavigationContextProvider>
-              <HrCandidateContextProvider>
-                <CandidateTaskContextProvider>
-                  <HrJobScreen />
-                </CandidateTaskContextProvider>
-              </HrCandidateContextProvider>
-            </NavigationContextProvider>
+              <NavigationContextProvider>
+                <HrCandidateContextProvider>
+                  <CandidateTaskContextProvider>
+                    <HrJobScreen />
+                  </CandidateTaskContextProvider>
+                </HrCandidateContextProvider>
+              </NavigationContextProvider>
             </HrJobScreenAllTasksContextProvider>
           }
         >
@@ -243,9 +250,9 @@ function App() {
             path=":section"
             element={
               <HrJobScreenAllTasksContextProvider>
-              <NavigationContextProvider>
-                <HrJobScreen />
-              </NavigationContextProvider>
+                <NavigationContextProvider>
+                  <HrJobScreen />
+                </NavigationContextProvider>
               </HrJobScreenAllTasksContextProvider>
             }
           >
@@ -253,9 +260,9 @@ function App() {
               path=":sub_section"
               element={
                 <HrJobScreenAllTasksContextProvider>
-                <NavigationContextProvider>
-                  <HrJobScreen />
-                </NavigationContextProvider>
+                  <NavigationContextProvider>
+                    <HrJobScreen />
+                  </NavigationContextProvider>
                 </HrJobScreenAllTasksContextProvider>
               }
             >
@@ -263,9 +270,9 @@ function App() {
                 path=":path"
                 element={
                   <HrJobScreenAllTasksContextProvider>
-                  <NavigationContextProvider>
-                    <HrJobScreen />
-                  </NavigationContextProvider>
+                    <NavigationContextProvider>
+                      <HrJobScreen />
+                    </NavigationContextProvider>
                   </HrJobScreenAllTasksContextProvider>
                 }
               />
@@ -274,7 +281,14 @@ function App() {
         </Route>
 
         <Route path="*" element={<ErrorPage />} />
-        <Route path="/new-task-screen" element={<><HrTasks/></>} />
+        <Route
+          path="/new-task-screen"
+          element={
+            <>
+              <HrTasks />
+            </>
+          }
+        />
       </Routes>
     );
   }
@@ -283,7 +297,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-    testingRoles.teamLeadRole
+      testingRoles.teamLeadRole
   ) {
     return (
       <Routes>
@@ -301,11 +315,25 @@ function App() {
             </NavigationContextProvider>
           }
         >
-          <Route path=":section" element={<Teamlead />} />
+          <Route
+            path=":section"
+            element={
+              <CandidateTaskContextProvider>
+                <Teamlead />
+              </CandidateTaskContextProvider>
+            }
+          />
         </Route>
 
         <Route path="*" element={<ErrorPage />} />
-        <Route path="/new-task-screen" element={<CreateTaskScreen />} />
+        <Route
+          path="/new-task-screen"
+          element={
+            <CandidateTaskContextProvider>
+              <CreateTaskScreen />
+            </CandidateTaskContextProvider>
+          }
+        />
       </Routes>
     );
   }
@@ -314,7 +342,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-    testingRoles.candidateRole
+      testingRoles.candidateRole
   ) {
     return candidateHired ? (
       <Routes>
@@ -472,7 +500,6 @@ function App() {
                 </CandidateJobsContextProvider>
               </JobContextProvider>
             </NavigationContextProvider>
-
           }
         >
           <Route

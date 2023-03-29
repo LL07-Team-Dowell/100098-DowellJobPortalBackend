@@ -74,6 +74,11 @@
     border-bottom: 1px solid var(--light-grey-color);
 }
 
+.staff__Jobs__Layout__Navigation__Container.admin .admin__View__Title__Container .add__Icon__Container svg {
+    width: 1rem;
+    height: 1rem;
+}
+
 .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar {
     height: calc(100% - 6.5rem);
 }
