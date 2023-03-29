@@ -18,20 +18,20 @@ const ViewJob = () => {
     useEffect(() => {
         setTimeout(() => {
             setLoading(false)
-        },10000)
-        },[]);
-        const navigate = useNavigate() ;
-        // asd
-        const {jobs , setJobs} = useJobContext() ; 
-        const {id} = useParams() ;
-        console.log({jobs , id , job:jobs.filter(job => job["_id"] === id)}) ;
-        console.log({jobs , id , data:jobs.filter(job => job["_id"] === id)})
-        const singleJob = jobs.filter(job => job["_id"] === id)[0] ; 
-        console.log({singleJob})
-        const {company_id , created_by , created_on , data_type , description , document_id , eventId , general_terms , is_active , job_category , job_number , job_title , other_info , payment
- , qualification , skills , technical_specification, time_interval , type_of_job ,workflow_terms , _id        } = singleJob
-    if (loading) return  <Loading/>
-        return <>
+        }, 10000)
+    }, []);
+    const navigate = useNavigate();
+    // asd
+    const { jobs, setJobs } = useJobContext();
+    const { id } = useParams();
+    console.log({ jobs, id, job: jobs.filter(job => job["_id"] === id) });
+    console.log({ jobs, id, data: jobs.filter(job => job["_id"] === id) })
+    const singleJob = jobs.filter(job => job["_id"] === id)[0];
+    console.log({ singleJob })
+    const { company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment
+        , qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id } = singleJob
+    if (loading) return <Loading />
+    return <>
         <div className="container">
             <div className="header">
                 <div>
