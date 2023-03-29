@@ -278,7 +278,8 @@ const JobApplicationScreen = () => {
 
     const handleSubmitNewApplication = async (e) => {
         e.preventDefault();
-
+console.log(newApplicationData)
+return
         setDisableNextBtn(true);
 
         try {
