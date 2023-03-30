@@ -502,7 +502,7 @@ function EditJob() {
                   </div>
                   <div className="add__item">
                     <AiFillPlusCircle onClick={() => handleAddTerm("payment_terms")} />
-                    <label>Add Payement Terms</label>
+                    <label>Add Payment Terms</label>
                   </div>
                 </div>
 
