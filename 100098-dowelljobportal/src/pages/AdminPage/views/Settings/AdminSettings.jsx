@@ -24,9 +24,7 @@ const AdminSettings = () => {
     const [Proj_Lead , setProj_Lead] = useState('') ;  
   const { list } = useJobContext();
 
-    useEffect(()=>{
-        setlist(list)
-      },[]) ;
+  
     useEffect(()=>{
       if(firstSelection.length  > 0){
         const status = list.reverse().find(p => p.portfolio_name === firstSelection )?.status ;
