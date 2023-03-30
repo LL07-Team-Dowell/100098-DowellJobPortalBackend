@@ -61,7 +61,7 @@ const JobApplicationScreen = () => {
 
     useEffect(() => {
 
-        if(jobs.length > 0) return setJobsLoading(false);
+        if (jobs.length > 0) return setJobsLoading(false);
 
         const datass = currentUser.portfolio_info[0].org_id;
         getJobs(datass).then(res => {
@@ -163,7 +163,7 @@ const JobApplicationScreen = () => {
         // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.title, value: currentJob.title } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATE_APPLIED, payload: { stateToChange: mutableNewApplicationStateNames.application_submitted_on, value: new Date() } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_DESCRIPTION, payload: { stateToChange: mutableNewApplicationStateNames.jobDescription, value: currentJob.description } })
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_CATEGORY, payload: { stateToChange: mutableNewApplicationStateNames.job_category, value: seleteCategoryOption } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_CATEGORY, payload: { stateToChange: mutableNewApplicationStateNames.job_category, value: currentJob.job_category } })
         if (currentJob.typeof === "Employee" || currentJob.typeof === "Internship") return setRemoveFreelanceOptions(true);
 
         setRemoveFreelanceOptions(false);
@@ -174,6 +174,7 @@ const JobApplicationScreen = () => {
     const handleOptionChange = (e) => {
         setSelectCategoryOption(e.target.value);
     };
+    const isUrlValid = validateUrl(newApplicationData.freelancePlatformUrl);
 
     useEffect(() => {
 
@@ -278,8 +279,8 @@ const JobApplicationScreen = () => {
 
     const handleSubmitNewApplication = async (e) => {
         e.preventDefault();
-console.log(newApplicationData)
-return
+        console.log(newApplicationData)
+        return
         setDisableNextBtn(true);
 
         try {
@@ -464,64 +465,14 @@ return
                                                     <label className="input__Text__Container">
                                                         <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Link to profile on platform'} value={newApplicationData.freelancePlatformUrl} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FREELANCE_PLATFORM_URL, payload: { stateToChange: mutableNewApplicationStateNames.freelancePlatformUrl, value: e.target.value } })} />
                                                     </label>
-                                                    <p>{!validateUrl(newApplicationData.freelancePlatformUrl) ? "Use valid URL" : ""}</p>
+                                                    <p style={{ color: isUrlValid ? "black" : "red" }}>
+                                                        {isUrlValid ? "" : "Use valid URL"}
+                                                    </p>
                                                 </div>
 
                                             </>
                                     }
 
-                                    <div className='job__Application__Item'>
-                                        <h2 htmlFor="job_category">Job Category<span className="required-indicator">*</span></h2>
-                                        <div className="input__data__row">
-                                            <div className="data">
-                                                <input type="radio"
-                                                    id="freelancer"
-                                                    name="options"
-                                                    value="Freelancer"
-                                                    checked={seleteCategoryOption === 'Freelancer'}
-                                                    onChange={handleOptionChange}
-
-                                                />
-                                                <label htmlFor="freelancer">Freelancer</label>
-                                            </div>
-
-                                            <div className="data">
-                                                <input
-                                                    type="radio"
-                                                    id="employe"
-                                                    name="options"
-                                                    value="Employee"
-                                                    checked={seleteCategoryOption === 'Freelancer'}
-                                                    onChange={handleOptionChange}
-                                                />
-                                                <label htmlFor="employe">Employee</label>
-                                            </div>
-
-                                            <div className="data">
-                                                <input
-                                                    type="radio"
-                                                    id="internship"
-                                                    name="options"
-                                                    value="Internship"
-                                                    checked={seleteCategoryOption === 'Internship'}
-                                                    onChange={handleOptionChange}
-                                                />
-                                                <label htmlFor="internship">Internship</label>
-                                            </div>
-
-                                            <div className="data">
-                                                <input
-                                                    type="radio"
-                                                    id="research associate"
-                                                    name="options"
-                                                    value="research associate"
-                                                    checked={seleteCategoryOption === 'Research Associate'}
-                                                    onChange={handleOptionChange}
-                                                />
-                                                <label htmlFor="research associate">Research Associate</label>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div className="job__Application__Item">
                                         <h2>Academic Qualifications<span className="required-indicator">*</span></h2>
                                         <div className="select__Dropdown__Container" onClick={() => setLabelClicked(!labelClicked)}>
