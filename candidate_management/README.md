@@ -8,7 +8,7 @@ _Post_ to `/candidate_management/apply_job/`
 {
   "job_number": "<job _number of already created jobs",
   "job_title": "<job title of already created jobs>",
-  "job_category": "<freelancer | internship | Employee>",
+  "job_category": "<Freelancer | Internship | Employee>",
   "applicant": "<applicant name>",
   "applicant_email": "<applicant email>",
   "feedBack": "<feedback>",
