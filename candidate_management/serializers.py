@@ -19,7 +19,6 @@ class CandidateSerializer(serializers.Serializer):
     country = serializers.CharField(allow_null=False, allow_blank=False)
     agree_to_all_term = serializers.BooleanField(default=False)
     internet_speed = serializers.CharField(allow_null=False, allow_blank=False)
-    other_info = serializers.ListField(required=True, allow_empty=False)
     payment = serializers.CharField(allow_null=False, allow_blank=False)
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
     username = serializers.CharField(allow_null=False, allow_blank=False)
