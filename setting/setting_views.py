@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import SettingUserProfileInfo
+from .models import *
 from .helper import *
-from .serializers import SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer
+from .serializers import *
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
@@ -38,4 +38,30 @@ class SettingUserProfileInfoView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.error_messages, status=400)
 
+
+@method_decorator(csrf_exempt, name='dispatch')
+class SettingUserProjectView(APIView):
+    serializer_class = SettingUserProjectSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+    def get(self, request):
+        profiles = UserProject.objects.all()
+        serializer = self.serializer_class(profiles, many=True)
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        my_model = UserProject.objects.get(pk=pk)
+        serializer = SettingUserProjectSerializer(my_model, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=400)
+    
     
