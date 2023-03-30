@@ -123,6 +123,8 @@ const Teamlead = () => {
     //     console.log(err);
     //   });
 
+    if (userTasks.length > 0) return;
+     
     getCandidateTaskForTeamLead({
       company_id: currentUser?.portfolio_info[0].org_id,
     })
@@ -382,11 +384,11 @@ const Teamlead = () => {
                   })
                 )}
 
-                <Button
+                {/*<Button
                   text={"Add Task"}
                   icon={<AddCircleOutlineIcon />}
                   handleClick={() => setShowAddTaskModal(true)}
-                />
+                />*/}
               </div>
             </>
           )
