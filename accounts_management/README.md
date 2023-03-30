@@ -8,7 +8,7 @@ _Post_ to `accounts_management/onboard_candidate/`
 {
   "document_id": "<document id>",
   "applicant": "<applicant name>",
-  "project": "<project name>",
+  "project": "[<project name 1>,<project name 2>,<project name 3>]",
   "task": "<task>",
   "status": "<status>",
   "company_id": "<company_id>",
@@ -40,7 +40,7 @@ _Post_ to `accounts_management/update_project/`
 ```json
 {
   "document id": "<document id>",
-  "project": "<project name>",
+  "project": "[<project name 1>,<project name 2>,<project name 3>]",
   "payment": "<payment>"
 }
 ```
