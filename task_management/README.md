@@ -6,7 +6,7 @@ _Post_ to `task_management/create_task/`
 
 ```json
 {
-  "project": "<project name>",
+  "project": "[<project name 1>,<project name 2>,<project name 3>]",
   "applicant": "<applicant name>",
   "task": "<task>",
   "task_added_by": "<task added name>",

@@ -41,7 +41,7 @@ _Post_ to `hr_management/selected_candidate/`
   "document_id": "<document id>",
   "hr_remarks": "<hr remarks>",
   "status": "<status>",
-  "project": "<project>",
+  "project": "[<project name 1>,<project name 2>,<project name 3>]",
   "product_discord_link": "<link>",
   "applicant": "<applicant name>",
   "company_id": "<company id>",

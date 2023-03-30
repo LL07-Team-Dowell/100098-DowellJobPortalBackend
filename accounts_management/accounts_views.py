@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from accounts_management.serializers import AccountSerializer
 from admin_management.serializers import AdminSerializer
 from database.event import get_event_id
 from database.database_management import *
@@ -32,7 +33,7 @@ class onboard_candidate(APIView):
                     "data_type":data.get('data_type'),
                     "onboarded_on":data.get('onboarded_on')
                 }
-                serializer = AdminSerializer(data=field)
+                serializer = AccountSerializer(data=data)
                 if serializer.is_valid():
                     update_response = dowellconnection(*candidate_management_reports,"update",field,update_field)
                     insert_response = dowellconnection(*account_management_reports,"insert",insert_to_hr_report,update_field)
