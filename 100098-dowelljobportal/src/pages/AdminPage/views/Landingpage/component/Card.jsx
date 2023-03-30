@@ -8,8 +8,9 @@ import { Link } from "react-router-dom";
 import "./index.scss";
 import axios from "axios";
 import LittleLoading from "../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
-import { deleteJob, getApplicationForAdmin } from "../../../../../services/adminServices";
+import { deleteJob } from "../../../../../services/adminServices";
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
+import { useJobContext } from "../../../../../contexts/Jobs";
 const style = {
   fontSize: "1.2rem",
   color: "#7C7C7C",
@@ -25,17 +26,14 @@ const Card = ({
   jobs,
   setJobs,
 }) => {
+  const { list } = useJobContext();
+
   const { currentUser } = useCurrentUserContext();
   console.log(currentUser.portfolio_info[0].org_id)
   // console.log({job_number}) 
   const [number , setnumber] = useState(0)
   useEffect(()=>{
-    getApplicationForAdmin({company_id: currentUser?.portfolio_info[0].org_id})
-      .then(resp => {
-        console.log(resp.data.response.data.filter(j => j.job_number === job_number).length) ;
-        setnumber(resp.data.response.data.filter(j => j.job_number === job_number).length)
-      })
-      .catch(err => console.log(err))
+        setnumber(list.filter(j => j.job_number === job_number).length)
   },[])
   const date = () => {
     const givenDate = new Date(created_on);

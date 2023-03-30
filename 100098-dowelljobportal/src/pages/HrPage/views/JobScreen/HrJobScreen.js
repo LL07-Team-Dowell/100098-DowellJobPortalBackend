@@ -22,7 +22,7 @@ import JobCard from '../../../../components/JobCard/JobCard';
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
 import { fetchCandidateTasks, getCandidateApplications, getJobs, getJobs2, getProjects } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
-import { getCandidateApplicationsForHr, getCandidateTask } from '../../../../services/hrServices';
+import { getCandidateApplicationsForHr, getCandidateTask, getSettingUserProject } from '../../../../services/hrServices';
 import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenAllTasks';
 
 
@@ -106,8 +106,12 @@ function HrJobScreen() {
       console.log(err)
     });
 
-    getProjects().then(res => {
-      setCurrentProjects(res.data.map(project => project.project_name));
+    getSettingUserProject().then(res => {
+      console.log(res.data)
+      const list = res.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type) ; 
+      const newList = list.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id) ;
+      // console.log({newList  })
+      setCurrentProjects(newList.project_list);
     }).catch(err => {
       console.log(err)
     });

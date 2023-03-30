@@ -7,6 +7,7 @@ import Alert from "./component/Alert";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { getSettingUserProfileInfo } from "../../../../services/settingServices"; 
+import { useJobContext } from "../../../../contexts/Jobs";
 
 const rolesDict = {'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr"};
 
@@ -22,6 +23,20 @@ const AdminSettings = () => {
     const [loading , setLoading] = useState(false) ;
     const [settingUserProfileInfo ,setSettingUsetProfileInfo] = useState([]) ; 
     const [loading2 , setLoading2] = useState(true) ; 
+    const [userstatus , setuserstatus] = useState('') ; 
+    const [Proj_Lead , setProj_Lead] = useState('') ;  
+  const { list } = useJobContext();
+
+    useEffect(()=>{
+        setlist(list)
+      },[]) ;
+    useEffect(()=>{
+      if(firstSelection.length  > 0){
+        const status = list.reverse().find(p => p.portfolio_name === firstSelection )?.status ;
+        if(!status)return 
+        setuserstatus(status) ; 
+      }
+    },[firstSelection])
     console.log({loading , loading2})
     useEffect(() => {
 
@@ -90,7 +105,42 @@ const AdminSettings = () => {
         .then(response => { console.log(response) ;setFirstSelection("") ;setSecondSelection("") ;setAlert(true) ; setLoading(false) ;})
         .catch(error => console.log(error))
       }
-
+    const submit2 = () => {
+      const {org_id , org_name ,data_type , owner_name } = options1[0] ; 
+      const teamManagementProduct = currentUser.portfolio_info.find(item => item.product === "Team Management");
+      if (!teamManagementProduct) return
+    setLoading(true) ;
+    axios.post('https://100098.pythonanywhere.com/setting/SettingUserProfileInfo/', {
+      company_id: teamManagementProduct.org_id,
+      org_name: teamManagementProduct.org_name,
+      owner: currentUser.userinfo.username,
+      data_type:teamManagementProduct.data_type,
+      profile_info: [
+        { profile_title: firstSelection, Role: secondSelection, version: "1.0" , project:Proj_Lead }
+      ]},[])
+        .then(response => { console.log(response) ;setFirstSelection("") ;setSecondSelection("") ;setAlert(true) ; setLoading(false) ;})
+        .catch(error => console.log(error))
+    }
+      const projectList =  [
+        "Workflow AI",
+        "Data Analyst",
+        "Global functions",
+        "Organiser",
+        "Hr Hiring",
+        "Law Intern",
+        "NPS Live",
+        "Voice of Consumer",
+        "Login",
+        "Business development",
+        "QR code generation",
+        "Social Media Automation",
+        "Online shops",
+        "License compatibility",
+        "Live UX Dashboard",
+        "HR Intern",
+        "Sale Agent",
+        "Sales Coordinator"
+    ]
     return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Settings"}>
           {(loading || loading2) ? <LoadingSpinner/> : 
           <>
@@ -132,10 +182,11 @@ const AdminSettings = () => {
           {options1.map(option => <option   key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option> )}
           </select>
         </label>
+        {(userstatus?.length > 0 && firstSelection.length > 0 )  && <p>current application status:{userstatus}</p>}
         </div>
         <div>
   
-        {showSecondSelection && (
+        {(showSecondSelection && firstSelection.length > 0 ) && (userstatus === "hired" &&
           <label>
             <p>Select Role <span> * </span> :</p>
             <select
@@ -149,7 +200,22 @@ const AdminSettings = () => {
           
         )}
         </div>
-      {(firstSelection && secondSelection) && <button  onClick={submit}  style={{ position: "relative" }}>{loading ?  <LoadingSpinner
+        <div>
+          {
+            (secondSelection === "Proj_Lead" &&  firstSelection.length > 0) && (
+              <label>
+            <p>Select Project <span> * </span> :</p>
+              <select value={Proj_Lead} onChange={e => setProj_Lead(e.target.value)}>
+                <option disabled value="">select a project</option>
+                {projectList.map((p,i)=><option value={p} key={i}>{p}</option>)}
+              </select>
+              </label>
+              
+            )
+          }
+        </div>
+        
+      {(firstSelection && secondSelection    ) && <button   onClick={firstSelection && secondSelection !=="Proj_Lead" ? submit : submit2 }  style={{ position: "relative",marginTop:40 }}>{loading ?  <LoadingSpinner
         color="#fff"
         width={24}
         height={24}
