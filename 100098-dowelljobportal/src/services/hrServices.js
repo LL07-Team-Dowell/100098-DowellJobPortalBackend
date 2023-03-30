@@ -16,3 +16,7 @@ export const getCandidateApplicationsForHr = async (data) => {
 export const getCandidateTask= async (data) => {
             return await currentBackendAxiosInstance.post("task_management/get_task/",data)
           }
+
+export const getSettingUserProject = async () => {
+    return await currentBackendAxiosInstance.get('setting/SettingUserProject/')
+}

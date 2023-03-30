@@ -11,8 +11,16 @@ import Loading from "../../../CandidatePage/views/ResearchAssociatePage/Loading"
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { getApplicationForAdmin } from "../../../../services/adminServices";
 const LandingPage = () => {
-  const { jobs, setJobs } = useJobContext();
+  const { jobs, setJobs , setlist } = useJobContext();
+  useEffect(()=>{
+    getApplicationForAdmin({company_id: currentUser?.portfolio_info[0].org_id})
+      .then(resp =>{
+        setlist(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type)) ; 
+      })
+      .catch(err => console.log(err))
+  },[])
   const navigate = useNavigate();
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   console.log("jobs", jobs);

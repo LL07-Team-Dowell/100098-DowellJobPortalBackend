@@ -8,9 +8,9 @@ export const useJobContext = () => {
 
 export const JobContextProvider = ( { children }) => {
     const [jobs, setJobs] = useState([]);
-
+    const [list , setlist] = useState([])
     return (
-        <JobContext.Provider value={{ jobs, setJobs }}>
+        <JobContext.Provider value={{ jobs, setJobs , setlist , list }}>
             {children}
         </JobContext.Provider>
     )
