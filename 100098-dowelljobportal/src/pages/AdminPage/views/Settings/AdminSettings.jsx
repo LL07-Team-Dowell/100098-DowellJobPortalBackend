@@ -7,6 +7,9 @@ import Alert from "./component/Alert";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { getSettingUserProfileInfo } from "../../../../services/settingServices"; 
+
+const rolesDict = {'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr"};
+
 const AdminSettings = () => {
     const {currentUser, setCurrentUser} = useCurrentUserContext() ; 
     const [firstSelection, setFirstSelection] = useState("");
@@ -14,7 +17,7 @@ const AdminSettings = () => {
     const [data ,setData] = useState("") ; 
     const [showSecondSelection, setShowSecondSelection] = useState(false);
     const [options1 , setOptions1] = useState(currentUser?.userportfolio.filter(member => member.member_type !== "owner")) ; 
-    const [options2 , setOptions2] = useState({'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr"}) ; 
+    const [options2 , setOptions2] = useState(rolesDict) ; 
     const [alert , setAlert] = useState(false) ; 
     const [loading , setLoading] = useState(false) ;
     const [settingUserProfileInfo ,setSettingUsetProfileInfo] = useState([]) ; 
@@ -108,7 +111,9 @@ const AdminSettings = () => {
         <tr key={index}> <td>{index + 1 }</td>
         <td>{option.portfolio_name}</td>
         <td>{settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name) 
-        ?  settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name)["profile_info"][0]["Role"] 
+        ?  rolesDict[settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name)["profile_info"][0]["Role"]] ?
+              rolesDict[settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name)["profile_info"][0]["Role"]] :
+              "No Role assigned yet"
         : "No Role assigned yet" }</td>
         </tr>)}
          
