@@ -33,6 +33,8 @@ class CandidateSerializer(serializers.Serializer):
         allow_null=False, allow_blank=False)
     freelancePlatformUrl = serializers.CharField(
         allow_null=False, allow_blank=False)
+    portfolio_name = serializers.CharField(
+        allow_null=False, allow_blank=False)
 
     def get_fields(self):
         fields = super().get_fields()
