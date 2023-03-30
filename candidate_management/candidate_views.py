@@ -42,6 +42,7 @@ class apply_job(APIView):
                 "payment": data.get('payment'),
                 "company_id":data.get('company_id'),
                 "username": data.get('username'),
+                "portfolio_name":data.get('portfolio_name'),
                 "data_type":data.get('data_type'),
                 "scheduled_interview_date": "",
                 "application_submitted_on":data.get('application_submitted_on'),

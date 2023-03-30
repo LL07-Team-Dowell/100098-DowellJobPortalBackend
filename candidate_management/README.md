@@ -22,6 +22,7 @@ _Post_ to `/candidate_management/apply_job/`
   "agree_to_all_terms": "<True | False>",
   "company_id": "<company_id>",
   "username": "<username>",
+  "portfolio_name":"<portfolio_name>",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
   "payment": "<payment>",
   "application_submitted_on": "<application_submitted_on>"
