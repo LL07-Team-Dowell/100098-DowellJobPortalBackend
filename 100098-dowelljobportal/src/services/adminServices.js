@@ -11,3 +11,6 @@ export const addNewJob = async (dataToPost) => {
 export const deleteJob = async (data) => {
   return await currentBackendAxiosInstance.post("admin_management/delete_job/",data)
 }
+export const getApplicationForAdmin = async (data) => {
+  return await currentBackendAxiosInstance.post("candidate_management/get_job_application/",data)
+}

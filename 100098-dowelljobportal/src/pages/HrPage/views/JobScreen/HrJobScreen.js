@@ -474,7 +474,7 @@ function HrJobScreen() {
                                     }))
                                   }
                                   
-                                  <Button text={"Add Task"} icon={<AddCircleOutlineIcon />} handleClick={() => setShowAddTaskModal(true)} />
+                                  {/* <Button text={"Add Task"} icon={<AddCircleOutlineIcon />} handleClick={() => setShowAddTaskModal(true)} /> */}
                                 </div>
                               </>
                             </>
