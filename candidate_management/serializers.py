@@ -4,8 +4,8 @@ from database.database_management import *
 class CandidateSerializer(serializers.Serializer):
     DATA_TYPE_CHOICE = (("Real_Data", "Real_Data"), ("Learning_Data", "Learning_Data"),
                         ("Testing_Data", "Testing_Data"), ("Archived_Data", "Archived_Data"))
-    JOB_CATEGORY_CHOICE = (("Freelancer", "Freelancer"),
-                           ("Internship", "Internship"), ("Employee", "Employee"))
+    JOB_CATEGORY_CHOICE = (("freelancer", "freelancer"),
+                           ("internship", "internship"), ("Employee", "Employee"))
 
     job_number = serializers.CharField(allow_null=False, allow_blank=False)
     job_title = serializers.CharField(allow_null=False, allow_blank=False)
