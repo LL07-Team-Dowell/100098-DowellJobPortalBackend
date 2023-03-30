@@ -14,7 +14,7 @@ const AdminSettings = () => {
     const [data ,setData] = useState("") ; 
     const [showSecondSelection, setShowSecondSelection] = useState(false);
     const [options1 , setOptions1] = useState(currentUser?.userportfolio.filter(member => member.member_type !== "owner")) ; 
-    const [options2 , setOptions2] = useState(["Dept_Lead" ,"Hr" ,"Proj_Lead" ,"Candidate" ]) ; 
+    const [options2 , setOptions2] = useState({'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr"}) ; 
     const [alert , setAlert] = useState(false) ; 
     const [loading , setLoading] = useState(false) ;
     const [settingUserProfileInfo ,setSettingUsetProfileInfo] = useState([]) ; 
@@ -138,7 +138,7 @@ const AdminSettings = () => {
               onChange={handleSecondSelectionChange}
             >
               <option value="">Select an option</option>
-              {options2.map(value => <option  key={value} value={value}>{value}</option>)}
+              {Object.keys(options2).map(key => <option key={key} value={key}>{options2[key]}</option>)}
             </select>
           </label>
           

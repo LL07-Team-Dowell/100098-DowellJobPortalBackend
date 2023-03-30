@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import arrowright from "../assets/arrowright.svg";
 import { AiOutlineClockCircle } from "react-icons/ai";
 import { CgDanger } from "react-icons/cg";
@@ -8,7 +8,8 @@ import { Link } from "react-router-dom";
 import "./index.scss";
 import axios from "axios";
 import LittleLoading from "../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
-import { deleteJob } from "../../../../../services/adminServices";
+import { deleteJob, getApplicationForAdmin } from "../../../../../services/adminServices";
+import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 const style = {
   fontSize: "1.2rem",
   color: "#7C7C7C",
@@ -16,6 +17,7 @@ const style = {
 const Card = ({
   company_id,
   created_on,
+  job_number,
   skills,
   job_title,
   is_active,
@@ -23,6 +25,18 @@ const Card = ({
   jobs,
   setJobs,
 }) => {
+  const { currentUser } = useCurrentUserContext();
+  console.log(currentUser.portfolio_info[0].org_id)
+  // console.log({job_number}) 
+  const [number , setnumber] = useState(0)
+  useEffect(()=>{
+    getApplicationForAdmin({company_id: currentUser?.portfolio_info[0].org_id})
+      .then(resp => {
+        console.log(resp.data.response.data.filter(j => j.job_number === job_number).length) ;
+        setnumber(resp.data.response.data.filter(j => j.job_number === job_number).length)
+      })
+      .catch(err => console.log(err))
+  },[])
   const date = () => {
     const givenDate = new Date(created_on);
     const timeDiff = new Date().getTime() - givenDate.getTime();
@@ -135,7 +149,7 @@ const Card = ({
           <div className="line"></div>
           <p>
             <CgDanger style={style} />
-            <span>2 candidates apply for this</span>
+            <span>{number} candidates apply for this</span>
           </p>
         </div>
         <button>
