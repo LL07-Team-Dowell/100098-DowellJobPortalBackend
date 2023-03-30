@@ -13,6 +13,7 @@ class SettingUserProfileInfoSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         if isinstance(representation['profile_info'], str):
             representation['profile_info'] = json.loads(representation['profile_info'])
+            representation['project_list'] = json.loads(representation['project_list'])
         return representation
 
 
