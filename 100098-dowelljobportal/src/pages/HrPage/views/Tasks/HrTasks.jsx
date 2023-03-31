@@ -109,7 +109,9 @@ const HrTasks = () => {
 
             </div>
             <div style={{display:"flex" ,gap:"2rem", marginLeft:100 ,  }}>
-             <Calendar onChange={onChange} value={value}  tileClassName={tileClassName}  />
+              <div style={attendance && {margin:"0 auto"}}>
+             <Calendar onChange={onChange} value={value}   tileClassName={tileClassName}  />
+             </div>
              {
               !attendance && <div style={{}}>
               <h4>{getFullMonthName(value.toString())}</h4>
