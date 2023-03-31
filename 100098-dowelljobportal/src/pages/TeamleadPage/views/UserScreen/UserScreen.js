@@ -40,6 +40,10 @@ const UserScreen = () => {
                 <h2>Role</h2>
                 <span>TeamLead</span>
             </div>
+            <div className="user__Intro__Item">
+                <h2>Project</h2>
+                <span>{currentUser.settings_for_profile_info.profile_info[0]?.project}</span>
+            </div>
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout
             </button>

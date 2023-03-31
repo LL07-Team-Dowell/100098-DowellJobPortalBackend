@@ -197,7 +197,12 @@
     width: 100%;
   }
   .status-options-container .status-option {
-    padding: 5% 10%;
+    /* padding: 5% 10%; */
+    min-width: 6rem;
+    height: 2.8rem;
+    width: max-content;
+    padding: 0 2%;
+    white-space: nowrap;
 }
 }
 @media (min-width: 1200px) {

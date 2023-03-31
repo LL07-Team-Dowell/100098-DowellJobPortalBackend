@@ -285,7 +285,9 @@ function App() {
           path="/new-task-screen"
           element={
             <>
-              <HrTasks />
+              <HrJobScreenAllTasksContextProvider>
+                <HrTasks />
+              </HrJobScreenAllTasksContextProvider>
             </>
           }
         />

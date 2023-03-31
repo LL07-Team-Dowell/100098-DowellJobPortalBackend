@@ -6,12 +6,13 @@ import Calendar from 'react-calendar';
 import TitleNavigationBar from '../../../../components/TitleNavigationBar/TitleNavigationBar.js'
 import AssignedProjectDetails from '../../../../pages/TeamleadPage/components/AssignedProjectDetails/AssignedProjectDetails.js' ;
 import TaskScreen from '../../../TeamleadPage/views/TaskScreen/TaskScreen.js';
-import {useSearchParams} from 'react-router-dom'
+import {useNavigate, useSearchParams} from 'react-router-dom'
 import { fetchCandidateTasks } from '../../../../services/commonServices'; 
 import './index.scss'
 import { differenceInCalendarDays } from 'date-fns';
 import { getCandidateTask } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
+import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 
 const HrTasks = () => {
             // searchParams
@@ -28,6 +29,7 @@ const HrTasks = () => {
             const [value, onChange] = useState(new Date());
             const [ datesToStyle, setDatesToStyle ] = useState([]);
             const [noApplicant , setnoApplicant] = useState(false) ; 
+            const navigate = useNavigate();
             useEffect(()=>{
               setloading(true)
               getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
@@ -88,7 +90,7 @@ const HrTasks = () => {
                     }
                 }
             }
-            if(loading)return <h1>Loading..</h1>
+            if(loading)return <LoadingSpinner />
   return (
     <StaffJobLandingLayout hrView={true}>
            {
@@ -97,7 +99,7 @@ const HrTasks = () => {
             <>
             <div>
             <div style={{marginTop:40}}>
-            <TitleNavigationBar title={"Task details"}/>
+            <TitleNavigationBar title={"Task details"} handleBackBtnClick={() => navigate(-1)} />
             <AssignedProjectDetails  assignedProject={List[0] ? List[0] : ""} showTask={true} hrAttendancePageActive={false} availableProjects={List} removeDropDownIcon={false} handleSelectionClick={e => setproject(e)} />
             
             </div>
