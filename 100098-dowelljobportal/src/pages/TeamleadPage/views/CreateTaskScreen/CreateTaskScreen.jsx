@@ -37,7 +37,7 @@ const CreateTaskScreen = ({
   const navigate = useNavigate();
 
   const [selectOption, setSelectOption] = useState([]);
-  const [ loading, setLoading ] = useState(true);
+  const [loading, setLoading] = useState(true);
   const { currentUser } = useCurrentUserContext();
 
   useEffect(() => {
@@ -48,10 +48,17 @@ const CreateTaskScreen = ({
       .then((res) => {
         setLoading(false);
         setUserTasks(
-          res.data.response.data.filter(
-            (currenttask) =>
-              currenttask.data_type === currentUser?.portfolio_info[0].data_type
-          )
+          res.data.response.data
+            .filter(
+              (currenttask) =>
+                currenttask.data_type ===
+                currentUser?.portfolio_info[0].data_type
+            )
+            .filter(
+              (task) =>
+                task.project ===
+                currentUser?.settings_for_profile_info.profile_info[0].project
+            )
         );
       })
       .catch((err) => {
@@ -182,9 +189,7 @@ const CreateTaskScreen = ({
                           currentTask={d}
                           taskNum={i + 1}
                           candidatePage={candidateAfterSelectionScreen}
-                          handleEditBtnClick={(selection) =>
-                            setSelectedProject(selection)
-                          }
+                          handleEditBtnClick={() => {}}
                           updateTasks={() =>
                             setTasksForSelectedProject(
                               userTasks.filter(

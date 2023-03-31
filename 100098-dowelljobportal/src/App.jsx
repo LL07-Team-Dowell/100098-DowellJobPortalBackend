@@ -339,159 +339,166 @@ function App() {
   }
 
   // CANDIDATE PAGE
-  if (
-    currentUser.settings_for_profile_info &&
-    currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.candidateRole
-  ) {
-    return candidateHired ? (
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <NavigationContextProvider>
-              <CandidateTaskContextProvider>
-                <CandidateJobsContextProvider>
-                  <JobContextProvider>
-                    <AfterSelectionScreen assignedProject={assignedProject} />
-                  </JobContextProvider>
-                </CandidateJobsContextProvider>
-              </CandidateTaskContextProvider>
-            </NavigationContextProvider>
-          }
-        >
-          <Route path=":section" element={<AfterSelectionScreen />} />
-        </Route>
-
-        <Route path="/logout" element={<Logout />} />
-
-        <Route path="*" element={<ErrorPage />} />
-      </Routes>
-    ) : (
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <NavigationContextProvider>
+  return candidateHired ? (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <NavigationContextProvider>
+            <CandidateTaskContextProvider>
               <CandidateJobsContextProvider>
                 <JobContextProvider>
-                  <CandidateHomeScreen
-                    setHired={setCandidateHired}
-                    setAssignedProject={setAssignedProject}
-                  />
+                  <AfterSelectionScreen assignedProject={assignedProject} />
                 </JobContextProvider>
               </CandidateJobsContextProvider>
+            </CandidateTaskContextProvider>
+          </NavigationContextProvider>
+        }
+      >
+        <Route path=":section" element={<AfterSelectionScreen />} />
+      </Route>
+
+      <Route path="/logout" element={<Logout />} />
+
+      <Route path="*" element={<ErrorPage />} />
+    </Routes>
+  ) : (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <NavigationContextProvider>
+            <CandidateJobsContextProvider>
+              <JobContextProvider>
+                <CandidateHomeScreen
+                  setHired={setCandidateHired}
+                  setAssignedProject={setAssignedProject}
+                />
+              </JobContextProvider>
+            </CandidateJobsContextProvider>
+          </NavigationContextProvider>
+        }
+      >
+        <Route
+          path=":section"
+          element={
+            <NavigationContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <CandidateHomeScreen />
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
             </NavigationContextProvider>
           }
-        >
-          <Route
-            path=":section"
-            element={
-              <NavigationContextProvider>
-                <JobContextProvider>
-                  <CandidateJobsContextProvider>
-                    <CandidateHomeScreen />
-                  </CandidateJobsContextProvider>
-                </JobContextProvider>
-              </NavigationContextProvider>
-            }
-          />
-        </Route>
+        />
+      </Route>
 
-        <Route path="/jobs">
-          <Route
-            index
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <JobScreen />
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            path=":jobTitle"
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <SingleJobScreen />
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            exact
-            path="c/research-associate"
-            element={<ResearchAssociatePage />}
-          />
-          <Route
-            exact
-            path="c/employee"
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <EmployeeJobScreen />
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            exact
-            path="c/intern"
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <InternJobScreen />
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route
-            exact
-            path="c/freelancer"
-            element={
-              <JobContextProvider>
-                <CandidateJobsContextProvider>
-                  <FreelancerJobScreen />
-                </CandidateJobsContextProvider>
-              </JobContextProvider>
-            }
-          />
-        </Route>
-
+      <Route path="/jobs">
         <Route
-          path="/logout"
+          index
           element={
             <JobContextProvider>
               <CandidateJobsContextProvider>
-                <Logout />
+                <JobScreen />
               </CandidateJobsContextProvider>
             </JobContextProvider>
           }
         />
         <Route
-          path="/alerts"
+          path=":jobTitle"
           element={
             <JobContextProvider>
               <CandidateJobsContextProvider>
-                <AlertScreen />
+                <SingleJobScreen />
               </CandidateJobsContextProvider>
             </JobContextProvider>
           }
         />
         <Route
-          path="/user"
+          exact
+          path="c/research-associate"
+          element={<ResearchAssociatePage />}
+        />
+        <Route
+          exact
+          path="c/employee"
           element={
             <JobContextProvider>
               <CandidateJobsContextProvider>
-                <UserScreen candidateSelected={false} />
+                <EmployeeJobScreen />
               </CandidateJobsContextProvider>
             </JobContextProvider>
           }
         />
+        <Route
+          exact
+          path="c/intern"
+          element={
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <InternJobScreen />
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          exact
+          path="c/freelancer"
+          element={
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <FreelancerJobScreen />
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          }
+        />
+      </Route>
 
+      <Route
+        path="/logout"
+        element={
+          <JobContextProvider>
+            <CandidateJobsContextProvider>
+              <Logout />
+            </CandidateJobsContextProvider>
+          </JobContextProvider>
+        }
+      />
+      <Route
+        path="/alerts"
+        element={
+          <JobContextProvider>
+            <CandidateJobsContextProvider>
+              <AlertScreen />
+            </CandidateJobsContextProvider>
+          </JobContextProvider>
+        }
+      />
+      <Route
+        path="/user"
+        element={
+          <JobContextProvider>
+            <CandidateJobsContextProvider>
+              <UserScreen candidateSelected={false} />
+            </CandidateJobsContextProvider>
+          </JobContextProvider>
+        }
+      />
+
+      <Route
+        path="/applied"
+        element={
+          <NavigationContextProvider>
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <AppliedScreen />
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          </NavigationContextProvider>
+        }
+      >
         <Route
-          path="/applied"
+          path=":section"
           element={
             <NavigationContextProvider>
               <JobContextProvider>
@@ -501,23 +508,23 @@ function App() {
               </JobContextProvider>
             </NavigationContextProvider>
           }
-        >
-          <Route
-            path=":section"
-            element={
-              <NavigationContextProvider>
-                <JobContextProvider>
-                  <CandidateJobsContextProvider>
-                    <AppliedScreen />
-                  </CandidateJobsContextProvider>
-                </JobContextProvider>
-              </NavigationContextProvider>
-            }
-          />
-        </Route>
+        />
+      </Route>
 
+      <Route
+        path="/apply/job/:id"
+        element={
+          <NewApplicationContextProvider>
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <JobApplicationScreen />
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          </NewApplicationContextProvider>
+        }
+      >
         <Route
-          path="/apply/job/:id"
+          path=":section"
           element={
             <NewApplicationContextProvider>
               <JobContextProvider>
@@ -527,49 +534,36 @@ function App() {
               </JobContextProvider>
             </NewApplicationContextProvider>
           }
-        >
-          <Route
-            path=":section"
-            element={
-              <NewApplicationContextProvider>
-                <JobContextProvider>
-                  <CandidateJobsContextProvider>
-                    <JobApplicationScreen />
-                  </CandidateJobsContextProvider>
-                </JobContextProvider>
-              </NewApplicationContextProvider>
-            }
-          />
-        </Route>
+        />
+      </Route>
 
-        <Route path="*" element={<ErrorPage />} />
-      </Routes>
-    );
-  }
-
-  // return (
-  //   <>
-  //     <Routes>
-  //       <Route path="/" element={<MainPage />} />
-  //       <Route path="/research-jobs" element={<ResearchAssociatePage />} />
-  //       <Route path="/admin">
-  //         <Route index element={<AdminPage />} />
-  //         <Route path="add" element={<AddJob />} />
-  //         <Route path="view" element={<ViewJob />} />
-  //         <Route path="edit" element={<EditJob />} />
-  //       </Route>
-  //       <Route path="/landingpage" element={<LandingPage />} />
-  //     </Routes>
-  //   </>
-  // );
-
-  // return (
-  //   <>
-  //     <Routes>
-  //       <Route path="/" element={<LoadingPage />} />
-  //     </Routes>
-  //   </>
-  // );
+      <Route path="*" element={<ErrorPage />} />
+    </Routes>
+  );
 }
+
+// return (
+//   <>
+//     <Routes>
+//       <Route path="/" element={<MainPage />} />
+//       <Route path="/research-jobs" element={<ResearchAssociatePage />} />
+//       <Route path="/admin">
+//         <Route index element={<AdminPage />} />
+//         <Route path="add" element={<AddJob />} />
+//         <Route path="view" element={<ViewJob />} />
+//         <Route path="edit" element={<EditJob />} />
+//       </Route>
+//       <Route path="/landingpage" element={<LandingPage />} />
+//     </Routes>
+//   </>
+// );
+
+// return (
+//   <>
+//     <Routes>
+//       <Route path="/" element={<LoadingPage />} />
+//     </Routes>
+//   </>
+// );
 
 export default App;
