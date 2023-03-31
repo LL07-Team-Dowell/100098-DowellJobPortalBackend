@@ -582,6 +582,8 @@ const Wrapper = styled.section`
 
     .type_of_job label{
       padding: 0 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 400;
     }
 
     .main__titles{
@@ -638,7 +640,7 @@ const Wrapper = styled.section`
                     padding-bottom:4px;
                     color: #005734;
                     font-weight: 600;
-                    font-size: 1.2rem;
+                    font-size: 1rem;
                     padding: 0.6rem 0;
                 }
 
@@ -664,7 +666,7 @@ const Wrapper = styled.section`
                     color: #005734;
                     font-weight: 600;
                     padding: 8px 0;
-                    font-size: 1.2rem;
+                    font-size: 0.8rem;
                 }
 
                 .data{    
@@ -682,7 +684,7 @@ const Wrapper = styled.section`
                 .data label{
                     font-weight:400;
                     margin-left:10px;
-                    font-size: 1rem;
+                    font-size: 0.8rem;
                     color: #000;
                 }
             }
