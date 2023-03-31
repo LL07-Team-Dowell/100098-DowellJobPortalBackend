@@ -44,6 +44,7 @@ const Teamlead = () => {
   const [showApplicationDetails, setShowApplicationDetails] = useState(false);
   const { userTasks, setUserTasks } = useCandidateTaskContext();
   // const [allTasks, setAllTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [editTaskActive, setEditTaskActive] = useState(false);
   const [currentTaskToEdit, setCurrentTaskToEdit] = useState({});
@@ -123,19 +124,33 @@ const Teamlead = () => {
     //     console.log(err);
     //   });
 
+    if (userTasks.length > 0) return;
+
     getCandidateTaskForTeamLead({
       company_id: currentUser?.portfolio_info[0].org_id,
     })
       .then((res) => {
-        const tasksToDisplay = res.data.response.data.filter(
-          (task) => task.data_type === currentUser?.portfolio_info[0].data_type
-        );
+        console.log(res.data.response.data)
+        console.log(currentUser?.settings_for_profile_info)
+        const tasksToDisplay = res.data.response.data
+          .filter(
+            (task) =>
+              task.data_type === currentUser?.portfolio_info[0].data_type
+          )
+          .filter(
+            (task) =>
+              task.project ===
+              currentUser?.settings_for_profile_info.profile_info[0].project
+          );
+
+          console.log(tasksToDisplay)
+
         const usersWithTasks = [
           ...new Map(
             tasksToDisplay.map((task) => [task.applicant, task])
           ).values(),
         ];
-        console.log(usersWithTasks)
+        console.log(usersWithTasks);
         // console.log(res.data.response.data);
         setUserTasks(usersWithTasks.reverse());
       })
@@ -382,11 +397,11 @@ const Teamlead = () => {
                   })
                 )}
 
-                <Button
+                {/*<Button
                   text={"Add Task"}
                   icon={<AddCircleOutlineIcon />}
                   handleClick={() => setShowAddTaskModal(true)}
-                />
+                />*/}
               </div>
             </>
           )

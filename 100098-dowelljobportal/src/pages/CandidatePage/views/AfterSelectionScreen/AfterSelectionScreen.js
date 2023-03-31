@@ -13,7 +13,7 @@ import UserScreen from "../UserScreen/UserScreen";
 import "./style.css";
 
 
-const AfterSelectionScreen = ({ assignedProject }) => {
+const AfterSelectionScreen = ({ assignedProjects }) => {
     const { currentUser } = useCurrentUserContext();
     console.log(currentUser);
    
@@ -26,11 +26,11 @@ const AfterSelectionScreen = ({ assignedProject }) => {
             section === undefined || section === "tasks" ? <>
                 <JobLandingLayout user={currentUser} afterSelection={true} hideSideNavigation={showAddTaskModal}>
                 {
-                    showAddTaskModal && <AddTaskScreen teamMembers={[]} afterSelectionScreen={true} closeTaskScreen={() => setShowAddTaskModal(false)} updateTasks={setUserTasks} assignedProject={assignedProject} />
+                    showAddTaskModal && <AddTaskScreen teamMembers={[]} afterSelectionScreen={true} closeTaskScreen={() => setShowAddTaskModal(false)} updateTasks={setUserTasks} assignedProject={assignedProjects} />
                 }
 
                 <div className="candidate__After__Selection__Screen">
-                    <TaskScreen candidateAfterSelectionScreen={true} handleAddTaskBtnClick={() => setShowAddTaskModal(true)} assignedProject={assignedProject}/>
+                    <TaskScreen candidateAfterSelectionScreen={true} handleAddTaskBtnClick={() => setShowAddTaskModal(true)} assignedProject={assignedProjects}/>
                 </div>
                 </JobLandingLayout>
             </> : 

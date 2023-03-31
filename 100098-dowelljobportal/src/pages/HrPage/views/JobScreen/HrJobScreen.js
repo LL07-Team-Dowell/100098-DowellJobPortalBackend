@@ -128,7 +128,7 @@ function HrJobScreen() {
     getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
     }).then(resp => {
       console.log(resp.data.response.data) ;
-      const usersWithTasks = [...new Map(resp.data.response.data.map(task => [ task.applicant, task ])).values()];
+      const usersWithTasks = [...new Map(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [ task.applicant, task ])).values()];
       setAllTasks(usersWithTasks.reverse());
       setLoading(false);
     }).catch(err => console.log(err))
@@ -172,8 +172,7 @@ function HrJobScreen() {
 
     const categories = {};
     const newArray = [];
-    const tasksWithProjectAdded = allTasks.map(task => ( {...task, [mutableNewApplicationStateNames.assigned_project]: hiredCandidates.find(data => data.applicant === task.user) && hiredCandidates.find(data => data.applicant === task.user).others[mutableNewApplicationStateNames.assigned_project] }));
-
+    const tasksWithProjectAdded = allTasks.map(task => ( {...task, project: hiredCandidates.find(data => data.username === task.applicant) && hiredCandidates.find(data => data.username === task.applicant).project }));
     const getCategoryArray = (propertyName, date) => {
 
       tasksWithProjectAdded.forEach(task => {
@@ -218,11 +217,11 @@ function HrJobScreen() {
 
     switch (currentSortOption) {
       case "project":
-        const projectCategoryData = getCategoryArray(mutableNewApplicationStateNames.assigned_project);
+        const projectCategoryData = getCategoryArray('project');
         setSortResults(projectCategoryData);
         break;
       case "date":
-        const dateCategoryData = getCategoryArray("updated", true);
+        const dateCategoryData = getCategoryArray("task_created_date", true);
         setSortResults(dateCategoryData.sort((a, b) => new Date(b.name) - new Date(a.name)));
         break;
       default:
@@ -246,8 +245,9 @@ function HrJobScreen() {
   }
 
   const handleAttendanceItemClick = (data) => {
-    setCurrentTeamMember(data.user);
-    setShowCurrentCandidateAttendance(true);
+    // setCurrentTeamMember(data.user);
+    // setShowCurrentCandidateAttendance(true);
+    navigate(`/new-task-screen/?applicant=${data.applicant}&attendance=true`)
   }
 
   const hideTaskAndAttendaceView = () => {
@@ -502,7 +502,7 @@ function HrJobScreen() {
                           />
                         }))
                       }
-                      <Button text={"Add Task"} icon={<AddCircleOutlineIcon />} handleClick={() => setShowAddTaskModal(true)} />
+                      {/* <Button text={"Add Task"} icon={<AddCircleOutlineIcon />} handleClick={() => setShowAddTaskModal(true)} /> */}
                     </div>
                   </>
                 }

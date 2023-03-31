@@ -6,17 +6,19 @@ import Calendar from 'react-calendar';
 import TitleNavigationBar from '../../../../components/TitleNavigationBar/TitleNavigationBar.js'
 import AssignedProjectDetails from '../../../../pages/TeamleadPage/components/AssignedProjectDetails/AssignedProjectDetails.js' ;
 import TaskScreen from '../../../TeamleadPage/views/TaskScreen/TaskScreen.js';
-import {useSearchParams} from 'react-router-dom'
+import {useNavigate, useSearchParams} from 'react-router-dom'
 import { fetchCandidateTasks } from '../../../../services/commonServices'; 
 import './index.scss'
 import { differenceInCalendarDays } from 'date-fns';
 import { getCandidateTask } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
+import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 
 const HrTasks = () => {
             // searchParams
             let [searchParams, setSearchParams] = useSearchParams();
             const applicant = searchParams.get('applicant') ; 
+            const attendance = searchParams.get('attendance') ;
             const { currentUser } = useCurrentUserContext();
             
             // states
@@ -28,6 +30,7 @@ const HrTasks = () => {
             const [value, onChange] = useState(new Date());
             const [ datesToStyle, setDatesToStyle ] = useState([]);
             const [noApplicant , setnoApplicant] = useState(false) ; 
+            const navigate = useNavigate();
             useEffect(()=>{
               setloading(true)
               getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
@@ -88,17 +91,18 @@ const HrTasks = () => {
                     }
                 }
             }
-            if(loading)return <h1>Loading..</h1>
+            if(loading)return <LoadingSpinner />
   return (
     <StaffJobLandingLayout hrView={true}>
            {
             noApplicant ? <>NO Applicant</> 
             :
             <>
+            {/* hrAttendancePageActive */}
             <div>
             <div style={{marginTop:40}}>
-            <TitleNavigationBar title={"Task details"}/>
-            <AssignedProjectDetails  assignedProject={List[0] ? List[0] : ""} showTask={true} hrAttendancePageActive={false} availableProjects={List} removeDropDownIcon={false} handleSelectionClick={e => setproject(e)} />
+            <TitleNavigationBar title={!attendance ? "Task details" : "Attendance details"} handleBackBtnClick={() => navigate(-1)} />
+            <AssignedProjectDetails  assignedProject={List[0] ? List[0] : ""} showTask={true} hrAttendancePageActive={!attendance ? false : true} availableProjects={List} removeDropDownIcon={false} handleSelectionClick={e => setproject(e)} />
             
             </div>
            
@@ -106,11 +110,13 @@ const HrTasks = () => {
             </div>
             <div style={{display:"flex" ,gap:"2rem", marginLeft:100 ,  }}>
              <Calendar onChange={onChange} value={value}  tileClassName={tileClassName}  />
-             <div style={{}}>
+             {
+              !attendance && <div style={{}}>
               <h4>{getFullMonthName(value.toString())}</h4>
              <ul>{taskdetail2.length > 0 ? taskdetail2.map((d , i) => <li style={{listStyle:"none",color:"#ccc",fontWeight:400}} key={i}>{d.task}</li>) : "No Tasks Found For Today"}</ul>
 
              </div>
+             }
              </div>
              </>
            }

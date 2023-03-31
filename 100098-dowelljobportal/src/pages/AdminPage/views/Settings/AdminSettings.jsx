@@ -8,6 +8,10 @@ import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { getSettingUserProfileInfo } from "../../../../services/settingServices"; 
 import { useJobContext } from "../../../../contexts/Jobs";
+import { getApplicationForAdmin } from "../../../../services/adminServices";
+
+const rolesDict = {'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr"};
+
 const AdminSettings = () => {
     const {currentUser, setCurrentUser} = useCurrentUserContext() ; 
     const [firstSelection, setFirstSelection] = useState("");
@@ -15,20 +19,20 @@ const AdminSettings = () => {
     const [data ,setData] = useState("") ; 
     const [showSecondSelection, setShowSecondSelection] = useState(false);
     const [options1 , setOptions1] = useState(currentUser?.userportfolio.filter(member => member.member_type !== "owner")) ; 
-    const [options2 , setOptions2] = useState({'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr"}) ; 
+    const [options2 , setOptions2] = useState(rolesDict) ; 
     const [alert , setAlert] = useState(false) ; 
     const [loading , setLoading] = useState(false) ;
     const [settingUserProfileInfo ,setSettingUsetProfileInfo] = useState([]) ; 
     const [loading2 , setLoading2] = useState(true) ; 
     const [userstatus , setuserstatus] = useState('') ; 
     const [Proj_Lead , setProj_Lead] = useState('') ;  
-  const { list } = useJobContext();
+  const { list, setlist } = useJobContext();
 
   
     useEffect(()=>{
       if(firstSelection.length  > 0){
         const status = list.reverse().find(p => p.portfolio_name === firstSelection )?.status ;
-        if(!status)return 
+        if(!status)return setuserstatus('');
         setuserstatus(status) ; 
       }
     },[firstSelection])
@@ -83,6 +87,13 @@ const AdminSettings = () => {
   useEffect(()=>{
     setLoading(true) ; 
     getSettingUserProfileInfo().then(resp => {setSettingUsetProfileInfo(resp.data); setLoading(false);console.log(resp.data.reverse())}).catch(err => {console.log(err) ; setLoading(false)})
+    if (list.length < 1) {
+      getApplicationForAdmin({company_id: currentUser?.portfolio_info[0].org_id})
+      .then(resp =>{
+        setlist(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type)) ; 
+      })
+      .catch(err => console.log(err))
+    }
   },[])
   const submit = () => {
       const {org_id , org_name ,data_type , owner_name } = options1[0] ; 
@@ -156,7 +167,9 @@ const AdminSettings = () => {
         <tr key={index}> <td>{index + 1 }</td>
         <td>{option.portfolio_name}</td>
         <td>{settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name) 
-        ?  settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name)["profile_info"][0]["Role"] 
+        ?  rolesDict[settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name)["profile_info"][0]["Role"]] ?
+              rolesDict[settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] ===option.portfolio_name)["profile_info"][0]["Role"]] :
+              "No Role assigned yet"
         : "No Role assigned yet" }</td>
         </tr>)}
          
@@ -171,11 +184,11 @@ const AdminSettings = () => {
         <label>
           <p>Select User Portfolio <span>* </span> :</p>
           <select value={firstSelection} onChange={handleFirstSelectionChange} >
-            <option value="">Select an option</option>
+            <option disabled value="">Select an option</option>
           {options1.map(option => <option   key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option> )}
           </select>
         </label>
-        {(userstatus?.length > 0 && firstSelection.length > 0 )  && <p>current application status:{userstatus}</p>}
+        {(userstatus?.length > 0 && firstSelection.length > 0 )  && <p style={{ marginTop: "4%"}}>Current application status:{userstatus}</p>}
         </div>
         <div>
   
@@ -186,7 +199,7 @@ const AdminSettings = () => {
               value={secondSelection}
               onChange={handleSecondSelectionChange}
             >
-              <option value="">Select an option</option>
+              <option disabled value="">Select an option</option>
               {Object.keys(options2).map(key => <option key={key} value={key}>{options2[key]}</option>)}
             </select>
           </label>
@@ -208,12 +221,12 @@ const AdminSettings = () => {
           }
         </div>
         
-      {(firstSelection && secondSelection    ) && <button   onClick={firstSelection && secondSelection !=="Proj_Lead" ? submit : submit2 }  style={{ position: "relative",marginTop:40 }}>{loading ?  <LoadingSpinner
+      {(firstSelection && secondSelection    ) && <button   onClick={firstSelection && secondSelection !=="Proj_Lead" ? submit : submit2 }  style={{ position: "relative",marginTop:10 }}>{loading ?  <LoadingSpinner
         color="#fff"
         width={24}
         height={24}
         style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
-      /> :"submit"}</button>}
+      /> :"Submit"}</button>}
       </div>
           
       </>

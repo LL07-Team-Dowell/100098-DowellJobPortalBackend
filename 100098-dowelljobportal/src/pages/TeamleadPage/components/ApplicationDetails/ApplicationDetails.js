@@ -54,7 +54,8 @@ const ApplicantDetails = ({ hrPageActive, applicantData, candidateApplicationPag
                             if (key === "company_id") return null 
                             if (key === "data_type") return null 
                             if (applicantData[key] === "" ) return null 
-                            return <span><span className="highlight__Item">{changeToTitleCase(key.replace(/_/g, " "))}:</span> {applicantData[key] === true ? "True" : formatDateAndTime(applicantData[key])}</span>
+                            if (formatDateAndTime(applicantData[key]) !== '1st January') return <span><span className="highlight__Item">{changeToTitleCase(key.replace(/_/g, " "))}:</span> {formatDateAndTime(applicantData[key])}</span>
+                            return <span><span className="highlight__Item">{changeToTitleCase(key.replace(/_/g, " "))}:</span> {typeof applicantData[key] === "boolean" ? applicantData[key] === true ? "True" : "False" : applicantData[key]}</span>
 
                         }))
                     }

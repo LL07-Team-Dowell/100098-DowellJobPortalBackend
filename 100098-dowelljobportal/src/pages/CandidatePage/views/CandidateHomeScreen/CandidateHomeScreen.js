@@ -13,7 +13,7 @@ import { getCandidateApplications } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getAppliedJobs } from '../../../../services/candidateServices';
 
-function Home({ setHired, setAssignedProject }) {
+function Home({ setHired, setAssignedProjects }) {
 
   const [loading, setLoading] = useState(true);
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
@@ -26,22 +26,22 @@ function Home({ setHired, setAssignedProject }) {
     if (!currentUser) return setLoading(false);
     if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
 
-    getAppliedJobs().then(res => {
-      const userApplication = res.data.filter(
+    getAppliedJobs(currentUser?.portfolio_info[0].org_id).then(res => {
+      const userApplication = res.data.response.data.filter(
         (application) => application.data_type === currentUser?.portfolio_info[0].data_type
       )
 
       const currentUserAppliedJobs = userApplication.filter(
-        (application) => application.applicant === currentUser.username
+        (application) => application.username === currentUser.userinfo.username
       );
       const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
 
-      // if (userSelectedJobs.length  >= 1) {
-      //   setAssignedProject(userSelectedJobs[0].others[mutableNewApplicationStateNames.assigned_project])
-      //   setHired(true);
-      //   setLoading(false);
-      //   return;
-      // }
+      if (userSelectedJobs.length  >= 1) {
+        setAssignedProjects(userSelectedJobs.map((job) => job.project))
+        setHired(true);
+        setLoading(false);
+        return;
+      }
 
       setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
       setLoading(false);

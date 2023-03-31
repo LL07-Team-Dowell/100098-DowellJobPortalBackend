@@ -5,7 +5,7 @@ import useClickOutside from '../../../../hooks/useClickOutside';
 import "./style.css";
 
 
-const DropdownButton = ({ currentSelection, selections, adminPageActive, handleSelectionClick, removeDropDownIcon, className, handleClick }) => {
+const DropdownButton = ({ currentSelection, selections, adminPageActive, handleSelectionClick, removeDropDownIcon, className, handleClick}) => {
     const currentSelectionRef = useRef(null);
     const selectionsRef = useRef(null);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -32,7 +32,7 @@ const DropdownButton = ({ currentSelection, selections, adminPageActive, handleS
                 
                 <div className={`dropdown-selections ${showDropdown ? 'active_' : ''}`} ref={selectionsRef}>
                     {React.Children.toArray(selections.map(selection => {
-                        return <div className="dropdown-selection-item" onClick={ () => updateCurrentSelection(selection) } >
+                        return <div className="dropdown-selection-item" onClick={ () => updateCurrentSelection(selection) }>
                             {selection}
                         </div>
                     }))}

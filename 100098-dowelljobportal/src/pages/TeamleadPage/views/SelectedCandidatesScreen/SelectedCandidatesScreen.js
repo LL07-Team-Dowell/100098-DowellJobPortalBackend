@@ -32,6 +32,10 @@ import {
   leadHireCandidate,
   leadReHireCandidate,
 } from "../../../../services/teamleadServices";
+import {
+  managementOnboardingCanditate,
+  managementReHireCanditate,
+} from "../../../../services/accountServices";
 
 const SelectedCandidatesScreen = ({
   selectedCandidateData,
@@ -120,18 +124,21 @@ const SelectedCandidatesScreen = ({
             payload: {
               stateToChange: initialCandidatesDataStateNames.candidatesToRehire,
               value: allCandidatesData.filter(
-                (candidate) => candidate.id !== selectedCandidateData.id
+                (candidate) => candidate._id !== selectedCandidateData._id
               ),
             },
           });
         }
 
-        await updateCandidateApplication(selectedCandidateData.id, {
+        await managementOnboardingCanditate({
+          document_id: selectedCandidateData["_id"],
           applicant: selectedCandidateData.applicant,
+          project: [assignedProject],
+          task: "Will be assigned by management",
           status: candidateStatuses.ONBOARDING,
-          job: selectedCandidateData.job,
-          [mutableNewApplicationStateNames.freelancePlatform]:
-            candidatePlatform,
+          company_id: currentUser.portfolio_info[0].org_id,
+          data_type: currentUser.portfolio_info[0].data_type,
+          onboarded_on: new Date(),
         });
 
         updateCandidateData({
@@ -164,7 +171,7 @@ const SelectedCandidatesScreen = ({
           payload: {
             stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
             value: allCandidatesData.filter(
-              (candidate) => candidate.id !== selectedCandidateData.id
+              (candidate) => candidate._id !== selectedCandidateData._id
             ),
           },
         });
@@ -178,10 +185,9 @@ const SelectedCandidatesScreen = ({
           },
         });
 
-        await updateCandidateApplication(selectedCandidateData.id, {
-          applicant: selectedCandidateData.applicant,
+        await managementReHireCanditate({
+          document_id: selectedCandidateData["_id"],
           status: candidateStatuses.TO_REHIRE,
-          job: selectedCandidateData.job,
         });
 
         return updateShowCandidate(false);
@@ -359,7 +365,7 @@ const SelectedCandidatesScreen = ({
           document_id: selectedCandidateData["_id"],
           hr_remarks: selectedCandidateData.hr_remarks,
           status: candidateStatuses.SELECTED,
-          project: assignedProject,
+          project: [assignedProject],
           product_discord_link: hrDiscordLink,
           applicant: selectedCandidateData.applicant,
           company_id: currentUser.portfolio_info[0].org_id,

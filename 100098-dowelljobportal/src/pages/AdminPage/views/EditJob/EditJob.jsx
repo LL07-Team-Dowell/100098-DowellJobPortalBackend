@@ -44,7 +44,7 @@ function EditJob() {
   const { jobs, setJobs } = useJobContext();
   const { id } = useParams();
   const singleJob = jobs?.filter(job => job["_id"] === id)[0];
-  const { company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id } = singleJob;
+  const { payment_terms, company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id } = singleJob;
   // useEffect(() => {
   //   const fetchData = async () => {
   //     setLoading(true);
@@ -72,7 +72,35 @@ function EditJob() {
 
   const [selectedOption, setSelectedOption] = useState(job_category);
   const [typeofOption, setTypeofOption] = useState(type_of_job)
-  console.log(typeofOption);
+  useEffect(() => {
+    const formDataUpdates = {};
+    switch (true) {
+      case general_terms.length > 0:
+        formDataUpdates.general_terms = general_terms;
+        break;
+      case technical_specification.length > 0:
+        formDataUpdates.technical_specification = technical_specification;
+        break;
+      case payment_terms.length > 0:
+        formDataUpdates.payment_terms = payment_terms;
+        break;
+      case workflow_terms.length > 0:
+        formDataUpdates.workflow_terms = workflow_terms;
+        break;
+      case other_info.length > 0:
+        formDataUpdates.other_info = other_info;
+        break;
+      default:
+        break;
+    }
+    setFormData(prevState => ({
+      ...prevState,
+      ...formDataUpdates
+    }));
+
+  }, [general_terms, payment_terms, technical_specification, other_info, workflow_terms]);
+
+  console.log(general_terms.length);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
@@ -153,6 +181,7 @@ function EditJob() {
       return copyOfPrevValueObj
     })
   }
+
 
   const handleSubmit = (event) => {
     setLoading(true);
@@ -473,7 +502,7 @@ function EditJob() {
                   </div>
                   <div className="add__item">
                     <AiFillPlusCircle onClick={() => handleAddTerm("payment_terms")} />
-                    <label>Add Payement Terms</label>
+                    <label>Add Payment Terms</label>
                   </div>
                 </div>
 
@@ -553,6 +582,8 @@ const Wrapper = styled.section`
 
     .type_of_job label{
       padding: 0 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 400;
     }
 
     .main__titles{
@@ -609,7 +640,7 @@ const Wrapper = styled.section`
                     padding-bottom:4px;
                     color: #005734;
                     font-weight: 600;
-                    font-size: 1.2rem;
+                    font-size: 1rem;
                     padding: 0.6rem 0;
                 }
 
@@ -635,7 +666,7 @@ const Wrapper = styled.section`
                     color: #005734;
                     font-weight: 600;
                     padding: 8px 0;
-                    font-size: 1.2rem;
+                    font-size: 0.8rem;
                 }
 
                 .data{    
@@ -652,8 +683,8 @@ const Wrapper = styled.section`
 
                 .data label{
                     font-weight:400;
-                    margin-left:20px;
-                    font-size: 13px;
+                    margin-left:10px;
+                    font-size: 0.8rem;
                     color: #000;
                 }
             }
