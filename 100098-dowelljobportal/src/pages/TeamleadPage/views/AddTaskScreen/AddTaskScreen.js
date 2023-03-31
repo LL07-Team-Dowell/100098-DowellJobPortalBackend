@@ -170,8 +170,10 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
                 {
                     showTaskForm ? <>
                         <input type={"text"} placeholder={"Task Assignee"} value={newTaskDetails.username} readOnly={true} />
-                        <select onChange={e => selctChange(e)}><option value={""}>Select</option>{assignedProject.map((v , i) => <option key={i} value={v}>{v}</option>)}</select>
                         <input type={"text"} placeholder={"today time"} value={TimeValue} readOnly={true} />
+                        <span className="selectProject">Select Project</span>
+                        <br />
+                        <select onChange={e => selctChange(e)} className="addTaskDropDown"><option value={""} disabled>Select</option>{assignedProject.map((v , i) => <option key={i} value={v}>{v}</option>)}</select>
                         <textarea placeholder="Enter Task" name="description" value={newTaskDetails.description} onChange={handleChange} rows={5}></textarea>
                         <button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateTaskBtnClick() : CreateNewTaskFunction()}>{editPage ? "Update Task" : "Add Task"}</button>
                     </> :

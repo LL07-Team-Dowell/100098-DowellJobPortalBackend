@@ -13,7 +13,7 @@ import { getCandidateApplications } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getAppliedJobs } from '../../../../services/candidateServices';
 
-function Home({ setHired, setAssignedProject }) {
+function Home({ setHired, setAssignedProjects }) {
 
   const [loading, setLoading] = useState(true);
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
@@ -36,12 +36,12 @@ function Home({ setHired, setAssignedProject }) {
       );
       const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
 
-      // if (userSelectedJobs.length  >= 1) {
-      //   setAssignedProject(userSelectedJobs[0].others[mutableNewApplicationStateNames.assigned_project])
-      //   setHired(true);
-      //   setLoading(false);
-      //   return;
-      // }
+      if (userSelectedJobs.length  >= 1) {
+        setAssignedProjects(userSelectedJobs.map((job) => job.project))
+        setHired(true);
+        setLoading(false);
+        return;
+      }
 
       setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
       setLoading(false);

@@ -48,7 +48,7 @@ function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
-  const [assignedProject, setAssignedProject] = useState("");
+  const [assignedProjects, setAssignedProjects] = useState([]);
 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
@@ -348,7 +348,7 @@ function App() {
             <CandidateTaskContextProvider>
               <CandidateJobsContextProvider>
                 <JobContextProvider>
-                  <AfterSelectionScreen assignedProject={assignedProject} />
+                  <AfterSelectionScreen assignedProjects={assignedProjects} />
                 </JobContextProvider>
               </CandidateJobsContextProvider>
             </CandidateTaskContextProvider>
@@ -372,7 +372,7 @@ function App() {
               <JobContextProvider>
                 <CandidateHomeScreen
                   setHired={setCandidateHired}
-                  setAssignedProject={setAssignedProject}
+                  setAssignedProjects={setAssignedProjects}
                 />
               </JobContextProvider>
             </CandidateJobsContextProvider>

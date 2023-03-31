@@ -65,6 +65,20 @@
     padding: 3%;
 }
 
+.add__New__Task__Container .addTaskDropDown {
+    box-shadow: 0px 4px 8px var(--background-blur);
+    border: 1px solid var(--yellow-color);
+    width: 100%;
+    font-size: 0.875rem;
+    padding: 2%;
+    border-radius: 10px;
+}
+
+.add__New__Task__Container .selectProject{
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
 .add__New__Task__Container input:read-only {
     filter: brightness(0.92);
 }

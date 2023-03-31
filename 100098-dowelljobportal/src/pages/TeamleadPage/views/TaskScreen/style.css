@@ -42,6 +42,10 @@
     flex-direction: column;
 }
 
+.candidate-task-screen-container .all__Tasks__Container ul{
+    margin-left: 2rem;
+}
+
 .candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {
     margin-top: 8%;
 }

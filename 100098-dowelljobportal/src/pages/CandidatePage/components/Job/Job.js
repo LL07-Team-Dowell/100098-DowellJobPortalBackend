@@ -152,14 +152,6 @@ function JobScreen() {
               (application) =>
                 application.username === currentUser.userinfo.username
             );
-            // const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
-
-            // if (userSelectedJobs.length  >= 1) {
-            //   setAssignedProject(userSelectedJobs[0].others[mutableNewApplicationStateNames.assigned_project])
-            //   setHired(true);
-            //   setLoading(false);
-            //   return;
-            // }
 
             setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
             //setLoading(false);
