@@ -108,7 +108,7 @@ const HrTasks = () => {
            
 
             </div>
-            <div style={{display:"flex" ,gap:"2rem", marginLeft:100 ,  }}>
+            <div style={{display:"flex" ,gap:"2rem", margin: "0 auto 200px", width: "80%" }}>
               <div style={attendance && {margin:"0 auto"}}>
              <Calendar onChange={onChange} value={value}   tileClassName={tileClassName}  />
              </div>
