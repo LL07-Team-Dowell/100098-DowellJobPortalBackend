@@ -24,6 +24,7 @@ export const newJobApplicationDataReducerActions = {
     UPDATE_JOB_NUMBER: "update_job_number",
     UPDATE_USERNAME: "update_username",
     // UPDATE_TIME_INTERVAL:"update_time_interval"
+    UPDATE_PORTFOLIO_NAME: "update_portfolio_name",
 }
 
 export const newJobApplicationDataReducer = (currentState, action) => {
@@ -59,6 +60,7 @@ export const newJobApplicationDataReducer = (currentState, action) => {
         case newJobApplicationDataReducerActions.UPDATE_APPLICATION_STATUS:
         case newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED:
         case newJobApplicationDataReducerActions.UPDATE_JOB_CATEGORY:
+        case newJobApplicationDataReducerActions.UPDATE_PORTFOLIO_NAME:
 
             if (!action.payload.stateToChange) return currentState;
 

@@ -164,6 +164,7 @@ const JobApplicationScreen = () => {
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATE_APPLIED, payload: { stateToChange: mutableNewApplicationStateNames.application_submitted_on, value: new Date() } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_DESCRIPTION, payload: { stateToChange: mutableNewApplicationStateNames.jobDescription, value: currentJob.description } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_CATEGORY, payload: { stateToChange: mutableNewApplicationStateNames.job_category, value: currentJob.job_category } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_PORTFOLIO_NAME, payload: { stateToChange: mutableNewApplicationStateNames.portfolio_name, value: currentUser.portfolio_info[0].portfolio_name } })
         if (currentJob.typeof === "Employee" || currentJob.typeof === "Internship") return setRemoveFreelanceOptions(true);
 
         setRemoveFreelanceOptions(false);
