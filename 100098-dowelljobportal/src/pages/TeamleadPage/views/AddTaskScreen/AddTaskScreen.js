@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { addNewTask, updateSingleTask } from "../../../../services/commonServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { createCandidateTask } from "../../../../services/candidateServices";
+import { toast } from "react-toastify";
 
 
 const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelectionScreen, editPage, setEditPage, taskToEdit, hrPageActive , assignedProject }) => {
@@ -46,7 +47,8 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
 
     },[newTaskDetails.description , optionValue]) ;
     const CreateNewTaskFunction = () => {
-        createCandidateTask({
+        setDisabled(true)
+        const dataToPost = {
             project: optionValue , 
             applicant: currentUser.userinfo.username ,
             task: newTaskDetails.description , 
@@ -54,14 +56,22 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
             data_type:currentUser.portfolio_info[0].data_type , 
             company_id: currentUser.portfolio_info[0].org_id,
             task_created_date: time
-        }).then(resp => {
+        }
+        createCandidateTask(dataToPost).then(resp => {
             console.log(resp);
+            updateTasks((prevTasks) => {
+                return [ ...prevTasks, { ...dataToPost, status: newTaskDetails.status } ]
+            })
             setNewTaskDetails({...newTaskDetails ,"description": "" });
             setoptionValue("");
-            alert("new task created")
-        
+            toast.success("New task sucessfully added")
+            setDisabled(false)
+            closeTaskScreen();
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            console.log(err); 
+            setDisabled(false)
+        })
     }
     useEffect (() => {
 
@@ -165,7 +175,7 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
                         </> : <>Add new task</>
                     }
 
-                    <AiOutlineClose onClick={() => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) }} style={{ cursor: "pointer" }} />
+                    <AiOutlineClose onClick={() => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) }} style={{ cursor: "pointer" }} fontSize={'1.2rem'} />
                 </h1>
                 {
                     showTaskForm ? <>
@@ -173,7 +183,7 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
                         <input type={"text"} placeholder={"today time"} value={TimeValue} readOnly={true} />
                         <span className="selectProject">Select Project</span>
                         <br />
-                        <select onChange={e => selctChange(e)} className="addTaskDropDown"><option value={""} disabled>Select</option>{assignedProject.map((v , i) => <option key={i} value={v}>{v}</option>)}</select>
+                        <select onChange={e => selctChange(e)} className="addTaskDropDown"><option value={""}>Select</option>{assignedProject.map((v , i) => <option key={i} value={v}>{v}</option>)}</select>
                         <textarea placeholder="Enter Task" name="description" value={newTaskDetails.description} onChange={handleChange} rows={5}></textarea>
                         <button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateTaskBtnClick() : CreateNewTaskFunction()}>{editPage ? "Update Task" : "Add Task"}</button>
                     </> :

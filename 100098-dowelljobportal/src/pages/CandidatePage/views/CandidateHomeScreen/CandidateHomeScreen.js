@@ -26,13 +26,13 @@ function Home({ setHired, setAssignedProjects }) {
     if (!currentUser) return setLoading(false);
     if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
 
-    getAppliedJobs().then(res => {
-      const userApplication = res.data.filter(
+    getAppliedJobs(currentUser?.portfolio_info[0].org_id).then(res => {
+      const userApplication = res.data.response.data.filter(
         (application) => application.data_type === currentUser?.portfolio_info[0].data_type
       )
 
       const currentUserAppliedJobs = userApplication.filter(
-        (application) => application.applicant === currentUser.username
+        (application) => application.username === currentUser.userinfo.username
       );
       const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
 

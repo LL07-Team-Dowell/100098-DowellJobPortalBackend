@@ -33,28 +33,31 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
     useEffect(()=>{
         getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
         })
-        .then(resp =>{ settasksofuser(resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username));console.log('a;aaaa',resp.data.response.data ,resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username)) })
+        .then(resp =>{ setUserTasks(resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username));console.log('a;aaaa',resp.data.response.data ,resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username)) })
     },[]); 
     useEffect(()=>{
         console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-        settaskdetail2(tasksofuser.filter(d => {
+        settaskdetail2(userTasks.filter(d => {
         const dateTime = d.task_created_date.split(" ")[0]+ " " + d.task_created_date.split(" ")[1]+ " " + d.task_created_date.split(" ")[2]+ " " + d.task_created_date.split(" ")[3] ;
         const calendatTime = value.toString().split(" ")[0] + " " + value.toString().split(" ")[1] + " " + value.toString().split(" ")[2] + " " +value.toString().split(" ")[3] ;
         console.log({dateTime , calendatTime})
         return dateTime === calendatTime ; 
 }))
-},[value , tasksofuser , project]);
+},[value , userTasks , project]);
 
     useEffect(() => {
 
         if (!currentUser) return navigate(-1);
+        if (userTasks.length > 0) return
 
-        fetchCandidateTasks().then(response => {
-            const tasksForCurrentUser = response.data.filter(task => task.user === currentUser.username).reverse();
+        getCandidateTask({ company_id: currentUser.portfolio_info[0].org_id }).then(res => {
+            const tasksForCurrentUser = res.data.response.data.filter(v => v.applicant === currentUser.userinfo.username);
             setUserTasks(tasksForCurrentUser);
-            setTasksToShow(tasksForCurrentUser.filter(task => new Date(task.created).toLocaleDateString() === new Date().toLocaleDateString()));
+            settaskdetail2(userTasks.filter(d => new Date(d.task_created_date).toDateString() === new Date().toLocaleDateString()))
+
+            // setTasksToShow(tasksForCurrentUser.filter(task => new Date(task.created).toLocaleDateString() === new Date().toLocaleDateString()));
     
-            const datesUserHasTask = [...new Set(tasksForCurrentUser.map(task => [ new Date(task.created) ])).values()].flat();
+            const datesUserHasTask = [...new Set(tasksForCurrentUser.map(task => [ new Date(task.task_created_date) ])).values()].flat();
             setDatesToStyle(datesUserHasTask);
         }).catch(err => {
             console.log(err)
@@ -69,7 +72,7 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
 
     useEffect(() => {
 
-        setTasksToShow(userTasks.filter(task => new Date(task.created).toDateString() === new Date().toDateString()));
+        setTasksToShow(userTasks.filter(task => new Date(task.task_created_date).toDateString() === new Date().toDateString()));
     
     }, [userTasks])
 
@@ -89,7 +92,8 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
 
         setDaysInMonth(getDaysInMonth(dateSelected));
         
-        setTasksToShow(userTasks.filter(task => new Date(task.created).toDateString() === dateSelected.toDateString()));
+        // setTasksToShow(userTasks.filter(task => new Date(task.created).toDateString() === dateSelected.toDateString()));
+        settaskdetail2(userTasks.filter(d => new Date(d.task_created_date).toDateString() === dateSelected.toDateString()))
         setCurrentMonth(dateSelected.toLocaleDateString("en-us", {month: "long"}));
 
         console.log(daysInMonth)
@@ -110,9 +114,11 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
             <AssignedProjectDetails assignedProject={project ? project : assignedProject[0]} showTask={true} availableProjects={assignedProject} removeDropDownIcon={true} handleSelectionClick={e => setproject(e)} />
 
             <div className="all__Tasks__Container">
-                <Calendar onChange={onChange}  value={value} tileClassName={tileClassName} />
-                <ul>{taskdetail2.length > 0 ? taskdetail2.map((d , i) => <li style={{listStyle:"none",color:"#ccc",fontWeight:400}} key={i}>{d.task}</li>) : "No Tasks Found For Today"}</ul>
-
+                <Calendar onChange={handleDateChange}  value={value} tileClassName={tileClassName} />
+                <div className="tasks__Wrapper">
+                    {taskdetail2.length > 0 && <><h3 className="task__Title">Tasks</h3><br /></>}
+                    <ul>{taskdetail2.length > 0 ? taskdetail2.map((d , i) => <li style={{color:"#000",fontWeight:400}} key={i}>{d.task}</li>) : "No Tasks Found For Today"}</ul>
+                </div>                
             </div>
 
             <div className="add-task-btn" onClick={handleAddTaskBtnClick}>

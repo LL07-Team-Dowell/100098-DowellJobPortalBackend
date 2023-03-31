@@ -5,6 +5,7 @@
     --green-color: #53CA5F;
     --red-color: #FC3939;
     --yellow-color: #C09F2C;
+    --green-color-2: #005734;
     font-family: 'Inter', sans-serif;
 }
 
@@ -42,7 +43,7 @@
     flex-direction: column;
 }
 
-.candidate-task-screen-container .all__Tasks__Container ul{
+.candidate-task-screen-container .all__Tasks__Container .tasks__Wrapper{
     margin-left: 2rem;
 }
 
@@ -51,7 +52,7 @@
 }
 
 .candidate-task-screen-container .task__Indicator {
-    background-color: var(--green-color);
+    background-color: var(--green-color-2);
 }
 
 .candidate-task-screen-container .empty__Task__Content {
@@ -60,6 +61,13 @@
 
 .candidate-task-screen-container .all__Tasks__Container .react-calendar {
     height: max-content;
+}
+
+.candidate-task-screen-container .all__Tasks__Container .task__Title {
+    color: var(--green-color-2);
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.05em;
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
