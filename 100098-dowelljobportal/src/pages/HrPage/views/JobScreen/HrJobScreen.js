@@ -128,7 +128,7 @@ function HrJobScreen() {
     getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
     }).then(resp => {
       console.log(resp.data.response.data) ;
-      const usersWithTasks = [...new Map(resp.data.response.data.map(task => [ task.applicant, task ])).values()];
+      const usersWithTasks = [...new Map(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [ task.applicant, task ])).values()];
       setAllTasks(usersWithTasks.reverse());
       setLoading(false);
     }).catch(err => console.log(err))
