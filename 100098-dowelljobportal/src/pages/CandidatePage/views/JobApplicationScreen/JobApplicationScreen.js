@@ -171,6 +171,8 @@ const JobApplicationScreen = () => {
 
     }, [currentJob]);
 
+    console.log(newApplicationData.freelancePlatformUrl);
+
     const [seleteCategoryOption, setSelectCategoryOption] = useState("");
     const handleOptionChange = (e) => {
         setSelectCategoryOption(e.target.value);
@@ -466,9 +468,12 @@ const JobApplicationScreen = () => {
                                                     <label className="input__Text__Container">
                                                         <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Link to profile on platform'} value={newApplicationData.freelancePlatformUrl} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FREELANCE_PLATFORM_URL, payload: { stateToChange: mutableNewApplicationStateNames.freelancePlatformUrl, value: e.target.value } })} />
                                                     </label>
-                                                    <p style={{ color: isUrlValid ? "black" : "red" }}>
-                                                        {isUrlValid ? "" : "Use valid URL"}
-                                                    </p>
+
+                                                    {newApplicationData.freelancePlatformUrl && (
+                                                        <p style={{ color: isUrlValid ? "black" : "red" }}>
+                                                            {isUrlValid ? "" : "Use valid URL"}
+                                                        </p>
+                                                    )}
                                                 </div>
 
                                             </>
