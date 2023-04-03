@@ -10,28 +10,44 @@ import { AiFillEdit } from "react-icons/ai"
 import axios from 'axios';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useJobContext } from '../../../../contexts/Jobs';
+import { getJob } from '../../../../services/hrServices';
+import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 
 const ViewJob = () => {
-
+    const { currentUser, setCurrentUser } = useCurrentUserContext();
+    const [singleJob , setsingleJob] = useState("")
     const [loading, setLoading] = useState(false)
-    useEffect(() => {
-        setTimeout(() => {
-            setLoading(false)
-        },10000)
-        },[]);
+
         const navigate = useNavigate() ;
-        // asd
-        // save single job state useEffect monitize 
         const {jobs , setJobs} = useJobContext() ; 
         const {id} = useParams() ;
-        console.log({jobs , id , job:jobs.filter(job => job["_id"] === id)}) ;
-        console.log({jobs , id , data:jobs.filter(job => job["_id"] === id)})
-        const singleJob = jobs?.filter(job => job["_id"] === id)[0];
+
+        // console.log({jobs , id , data:jobs.filter(job => job["_id"] === id)})
+        console.log({jobs})
+        useEffect(()=>{
+            setLoading(true) ; 
+            if(jobs.length === 0 ){
+                axios.post("https://100098.pythonanywhere.com/admin_management/get_jobs/",{
+                company_id: currentUser.portfolio_info[0].org_id,},[])
+                .then(resp => {
+                    const JOBS = resp.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ) ; 
+                    setsingleJob(JOBS.filter(job => job["_id"] === id)[0]) ; 
+                    setLoading(false) ; 
+                })
+                .catch(err => console.log(err))
+            }
+            else{
+                setsingleJob(jobs.filter(job => job["_id"] === id)[0]) ; 
+                setLoading(false) ; 
+
+            }
+          
+        },[])
         console.log({singleJob})
         const {company_id , created_by , created_on , data_type , description , document_id , eventId , general_terms , is_active , job_category , job_number , job_title , other_info , payment
  , qualification , skills , technical_specification, time_interval , type_of_job ,workflow_terms , _id        } = singleJob ; 
- console.log({singleJob})
-    if (loading) return  <Loading/>
+//  console.log({singleJob})
+    if (loading || !singleJob ) return  <Loading/>
         return <>
         <div className="container">
             <div className="header">
