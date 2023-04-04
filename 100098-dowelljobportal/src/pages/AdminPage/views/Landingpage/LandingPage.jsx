@@ -12,8 +12,15 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getApplicationForAdmin } from "../../../../services/adminServices";
+import { useState } from "react";
 const LandingPage = () => {
-  const { jobs, setJobs , setlist } = useJobContext();
+  const { jobs, setJobs , setlist , jobs2 , setjobs2 , searchValue ,setsearchValue  } = useJobContext();
+  const handleSearchChange = (value) =>{
+    console.log("kasaksldjalksdjalksdjlkjsakl") 
+    setsearchValue(value) ; 
+    setJobs(jobs2.filter(job => job.job_title.toLowerCase().includes(value.toLowerCase())))
+
+  }
   useEffect(()=>{
     getApplicationForAdmin({company_id: currentUser?.portfolio_info[0].org_id})
       .then(resp =>{
@@ -38,18 +45,11 @@ const LandingPage = () => {
         .then((response) => {
           console.log('AAAAAAAA',response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )) ; 
           setJobs(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data"));
-          console.log(response.data.response.data);
-          console.log(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data").map(j => j.data_type));
+          setjobs2(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data")) ; 
+          
         })
         .catch((error) => console.log(error));
     }
-    // const handleDeleteOfJob = (id) => {
-    //   const newJob = [...jobs];
-    //   newJob.splice(newJob.indexOf(id), 1);
-    //   setJobs(newJob);
-    // };
-
-    // User portfolio has already being loaded
     if (currentUser?.userportfolio?.length > 0) return;
 
     const currentSessionId = sessionStorage.getItem("session_id");
@@ -76,21 +76,29 @@ const LandingPage = () => {
       });
   }, []);
 
+ 
+  console.log({searchValue}) ;
   return (
     <StaffJobLandingLayout
       adminView={true}
-      handleNavIconClick={() => navigate("/add-job")}
+      handleNavIconClick={() => navigate("/add-job")} 
+      searchValue={searchValue}
+      setSearchValue={handleSearchChange}
     >
       <div className="landing-page">
         <div className="cards">
-          {jobs.length > 0 ? (
-            jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )
-              .map((job, index) => (
-                <Card {...job} key={index} jobs={jobs} setJobs={setJobs} />
-              ))
-          ) : (
-            <Loading />
-          )}
+          {
+            jobs.length === 0 && searchValue ? <h1>No Job Found</h1>
+            :
+            jobs.length > 0 ? (
+              jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )
+                .map((job, index) => (
+                  <Card {...job} key={index} jobs={jobs} setJobs={setJobs} />
+                ))
+            ) : (
+              <Loading />
+            )}
+          
         </div>
       </div>
     </StaffJobLandingLayout>

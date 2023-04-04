@@ -39,7 +39,6 @@ const ViewJob = () => {
             else{
                 setsingleJob(jobs.filter(job => job["_id"] === id)[0]) ; 
                 setLoading(false) ; 
-
             }
           
         },[])
