@@ -20,3 +20,7 @@ export const getCandidateTask= async (data) => {
 export const getSettingUserProject = async () => {
     return await currentBackendAxiosInstance.get('setting/SettingUserProject/')
 }
+
+export const getJob = async (data) =>{
+  return await currentBackendAxiosInstance.post("admin_management/get_job/", data)
+}

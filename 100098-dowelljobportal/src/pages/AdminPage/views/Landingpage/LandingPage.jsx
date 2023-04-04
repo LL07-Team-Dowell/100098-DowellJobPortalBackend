@@ -23,6 +23,7 @@ const LandingPage = () => {
   },[])
   const navigate = useNavigate();
   const { currentUser, setCurrentUser } = useCurrentUserContext();
+  console.log("currentUser",currentUser)
   console.log("jobs", jobs);
   useEffect(() => {
     if (jobs.length === 0) {
@@ -35,6 +36,7 @@ const LandingPage = () => {
           []
         )
         .then((response) => {
+          console.log('AAAAAAAA',response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )) ; 
           setJobs(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data"));
           console.log(response.data.response.data);
           console.log(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data").map(j => j.data_type));
