@@ -139,7 +139,7 @@ function HrJobScreen() {
     if (jobSearchInput.length < 1) return setSearchActive(false);
     
     setSearchActive(true);
-    setMatchedJobs(jobs.filter(job => job.skills.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase()) || job.title.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase())));
+    setMatchedJobs(jobs.filter(job => job.skills.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase()) || job.job_title.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase())));
 
   }, [jobSearchInput])
 
@@ -256,7 +256,7 @@ function HrJobScreen() {
   }
 
   return (
-    <StaffJobLandingLayout hrView={true} runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} hideSideBar={showAddTaskModal}>
+    <StaffJobLandingLayout hrView={true} runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} hideSideBar={showAddTaskModal} searchValue={jobSearchInput} setSearchValue={setJobSearchInput}>
     <div className="hr__Page__Container">
     <TitleNavigationBar className={path === undefined ? "": "view__Application__Navbar"} title={path === undefined ? section === "user" ? "Profile" : section === "tasks" ? "Tasks" : section === "attendance" ? "Attendance" : "Applications" : "Application Details"} hideBackBtn={path === undefined && sub_section === undefined ? true : false} handleBackBtnClick={() => navigate(-1)} />
     { section !== "user" && section !== "attendance" && section !== "tasks" && path === undefined && sub_section === undefined && <TogglerNavMenuBar menuItems={["Received", "Guests", "Shortlisted"]} currentActiveItem={currentActiveItem} handleMenuItemClick={handleMenuItemClick} /> }
