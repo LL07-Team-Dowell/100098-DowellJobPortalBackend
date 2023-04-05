@@ -42,7 +42,10 @@ const AccountPage = () => {
   const [currentActiveItem, setCurrentActiveItem] = useState("Hire");
   const navigate = useNavigate();
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredJobs, setFilteredJobs] = useState(jobs);
 
+  
   // async function getApplications () {
   //     const response = await myAxiosInstance.get(routes.Applications);
   //     const candidatesToHire = response.data.filter(application => application.status === candidateStatuses.TEAMLEAD_HIRE);
@@ -56,15 +59,15 @@ const AccountPage = () => {
   //     }});
 
   //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_REHIRED_CANDIDATES, payload: {
-  //         stateToChange: initialCandidatesDataStateNames.candidatesToRehire,
-  //         value: candidatesToRehire,
+    //         stateToChange: initialCandidatesDataStateNames.candidatesToRehire,
+    //         value: candidatesToRehire,
+    //     }});
+    
+    //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES, payload: {
+      //         stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
+      //         value: candidatesOnboarding,
   //     }});
-
-  //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES, payload: {
-  //         stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
-  //         value: candidatesOnboarding,
-  //     }});
-
+  
   //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_REJECTED_CANDIDATES, payload: {
   //         stateToChange: initialCandidatesDataStateNames.rejectedCandidates,
   //         value: candidatesRejected,
@@ -72,6 +75,21 @@ const AccountPage = () => {
 
   //     return
   // }
+  
+  useEffect(() => {
+    const newfilteredJobs = jobs.filter((job) => {
+      return (
+        job.job_title
+          .toLocaleLowerCase()
+          .includes(searchValue.toLocaleLowerCase()) ||
+        job.job_description
+          .toLocaleLowerCase()
+          .includes(searchValue.toLocaleLowerCase())
+      );
+    });
+
+    setFilteredJobs(newfilteredJobs);
+  }, [searchValue, jobs]);
 
   useEffect(() => {
     const requestData = {
@@ -208,7 +226,11 @@ const AccountPage = () => {
 
   return (
     <>
-      <StaffJobLandingLayout accountView={true}>
+      <StaffJobLandingLayout
+        accountView={true}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+      >
         <TitleNavigationBar
           title={
             showCandidate

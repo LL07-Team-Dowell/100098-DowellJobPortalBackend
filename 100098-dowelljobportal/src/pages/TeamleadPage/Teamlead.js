@@ -51,6 +51,21 @@ const Teamlead = () => {
   const location = useLocation();
   const [currentActiveItem, setCurrentActiveItem] = useState("Approval");
   const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredJobs, setFilteredJobs] = useState(jobs);
+
+  useEffect(() => {
+    const newfilteredJobs = jobs.filter((job) => {
+      return (
+        job.job_title.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()) ||
+        job.job_description
+          .toLocaleLowerCase()
+          .includes(searchValue.toLocaleLowerCase())
+      );
+    });
+
+    setFilteredJobs(newfilteredJobs);
+  }, [searchValue, jobs]);
 
   useEffect(() => {
     const requestData = {
@@ -130,8 +145,8 @@ const Teamlead = () => {
       company_id: currentUser?.portfolio_info[0].org_id,
     })
       .then((res) => {
-        console.log(res.data.response.data)
-        console.log(currentUser?.settings_for_profile_info)
+        console.log(res.data.response.data);
+        console.log(currentUser?.settings_for_profile_info);
         const tasksToDisplay = res.data.response.data
           .filter(
             (task) =>
@@ -143,7 +158,7 @@ const Teamlead = () => {
               currentUser?.settings_for_profile_info.profile_info[0].project
           );
 
-          console.log(tasksToDisplay)
+        console.log(tasksToDisplay);
 
         const usersWithTasks = [
           ...new Map(
@@ -228,7 +243,12 @@ const Teamlead = () => {
 
   return (
     <>
-      <StaffJobLandingLayout teamleadView={true} hideSideBar={showAddTaskModal}>
+      <StaffJobLandingLayout
+        teamleadView={true}
+        hideSideBar={showAddTaskModal}
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+      >
         <TitleNavigationBar
           title={
             section === "task"
