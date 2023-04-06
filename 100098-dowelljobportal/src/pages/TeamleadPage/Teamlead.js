@@ -23,6 +23,7 @@ import TogglerNavMenuBar from "../../components/TogglerNavMenuBar/TogglerNavMenu
 import JobCard from "../../components/JobCard/JobCard";
 import { fetchCandidateTasks, getJobs2 } from "../../services/commonServices";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
+import { useJobContext } from "../../contexts/Jobs";
 import {
   getCandidateApplicationsForTeamLead,
   getCandidateTaskForTeamLead,
@@ -54,18 +55,15 @@ const Teamlead = () => {
   const [searchValue, setSearchValue] = useState("");
   const [filteredJobs, setFilteredJobs] = useState(jobs);
 
-  useEffect(() => {
-    const newfilteredJobs = jobs.filter((job) => {
-      return (
-        job.job_title.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()) ||
-        job.job_description
-          .toLocaleLowerCase()
-          .includes(searchValue.toLocaleLowerCase())
-      );
-    });
-
-    setFilteredJobs(newfilteredJobs);
-  }, [searchValue, jobs]);
+  const handleSearch = (value) => {
+    console.log("value", value);
+    setSearchValue(value);
+    setFilteredJobs(
+      filteredJobs.filter((job) =>
+        job.job_title.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+      )
+    );
+  };
 
   useEffect(() => {
     const requestData = {
@@ -247,7 +245,7 @@ const Teamlead = () => {
         teamleadView={true}
         hideSideBar={showAddTaskModal}
         searchValue={searchValue}
-        setSearchValue={setSearchValue}
+        setSearchValue={handleSearch}
       >
         <TitleNavigationBar
           title={
