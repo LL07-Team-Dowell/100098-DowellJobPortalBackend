@@ -58,3 +58,41 @@ _Post_ to `lead_management/rehire_candidate/`
   "message": "HR operation failed"
 }
 ```
+_Post_ to `lead_management/reject_candidate/`
+
+- Request Body
+
+```json
+{
+    "document_id":"<document id>",
+    "reject_remarks": "<reject remark>",
+    "applicant": "<applicant>",
+    "username": "<username>",
+    "company_id": "<company id>",
+    "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+    "rejected_on": "<rejected on>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Candidate has been Rejected."
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "operation failed"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializers error"
+}
