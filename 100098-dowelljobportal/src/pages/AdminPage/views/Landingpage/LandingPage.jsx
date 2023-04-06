@@ -18,7 +18,7 @@ const LandingPage = () => {
   const handleSearchChange = (value) =>{
     console.log("kasaksldjalksdjalksdjlkjsakl") 
     setsearchValue(value) ; 
-    setJobs(jobs2.filter(job => job.job_title.toLowerCase().includes(value.toLowerCase())))
+    setJobs(jobs2.filter(job => job.job_title.toLowerCase().includes(value.toLowerCase()) || job.skills.toLowerCase().includes(value.toLowerCase())))
 
   }
   useEffect(()=>{
