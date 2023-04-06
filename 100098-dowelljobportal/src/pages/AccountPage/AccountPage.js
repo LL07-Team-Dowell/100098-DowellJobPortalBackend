@@ -76,20 +76,15 @@ const AccountPage = () => {
   //     return
   // }
   
-  useEffect(() => {
-    const newfilteredJobs = jobs.filter((job) => {
-      return (
-        job.job_title
-          .toLocaleLowerCase()
-          .includes(searchValue.toLocaleLowerCase()) ||
-        job.job_description
-          .toLocaleLowerCase()
-          .includes(searchValue.toLocaleLowerCase())
-      );
-    });
-
-    setFilteredJobs(newfilteredJobs);
-  }, [searchValue, jobs]);
+  const handleSearch = (value) => {
+    console.log("value", value);
+    setSearchValue(value);
+    setFilteredJobs(
+      filteredJobs.filter((job) =>
+        job.job_title.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+      )
+    );
+  };
 
   useEffect(() => {
     const requestData = {
@@ -229,7 +224,7 @@ const AccountPage = () => {
       <StaffJobLandingLayout
         accountView={true}
         searchValue={searchValue}
-        setSearchValue={setSearchValue}
+        setSearchValue={handleSearch}
       >
         <TitleNavigationBar
           title={
