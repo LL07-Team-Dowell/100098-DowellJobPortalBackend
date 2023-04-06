@@ -59,8 +59,12 @@ const Teamlead = () => {
     console.log("value", value);
     setSearchValue(value);
     setFilteredJobs(
-      filteredJobs.filter((job) =>
-        job.job_title.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+      filteredJobs.filter(
+        (job) =>
+          job.job_title
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase()) ||
+          job.skills.toLocaleLowerCase().includes(value.toLocaleLowerCase())
       )
     );
   };

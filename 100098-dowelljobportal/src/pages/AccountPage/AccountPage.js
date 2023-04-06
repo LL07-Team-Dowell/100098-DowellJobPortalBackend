@@ -19,13 +19,9 @@ import JobCard from "../../components/JobCard/JobCard";
 import { useMediaQuery } from "@mui/material";
 import { BsPersonCheck, BsPersonPlus, BsPersonX } from "react-icons/bs";
 import { AiOutlineRedo } from "react-icons/ai";
-import {
-  getJobs2,
-} from "../../services/commonServices";
+import { getJobs2 } from "../../services/commonServices";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
-import {
-  getCandidateApplicationsForTeamLead,
-} from "../../services/teamleadServices";
+import { getCandidateApplicationsForTeamLead } from "../../services/teamleadServices";
 
 const AccountPage = () => {
   const { currentUser } = useCurrentUserContext();
@@ -45,7 +41,6 @@ const AccountPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [filteredJobs, setFilteredJobs] = useState(jobs);
 
-  
   // async function getApplications () {
   //     const response = await myAxiosInstance.get(routes.Applications);
   //     const candidatesToHire = response.data.filter(application => application.status === candidateStatuses.TEAMLEAD_HIRE);
@@ -59,15 +54,15 @@ const AccountPage = () => {
   //     }});
 
   //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_REHIRED_CANDIDATES, payload: {
-    //         stateToChange: initialCandidatesDataStateNames.candidatesToRehire,
-    //         value: candidatesToRehire,
-    //     }});
-    
-    //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES, payload: {
-      //         stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
-      //         value: candidatesOnboarding,
+  //         stateToChange: initialCandidatesDataStateNames.candidatesToRehire,
+  //         value: candidatesToRehire,
   //     }});
-  
+
+  //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES, payload: {
+  //         stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
+  //         value: candidatesOnboarding,
+  //     }});
+
   //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_REJECTED_CANDIDATES, payload: {
   //         stateToChange: initialCandidatesDataStateNames.rejectedCandidates,
   //         value: candidatesRejected,
@@ -75,13 +70,17 @@ const AccountPage = () => {
 
   //     return
   // }
-  
+
   const handleSearch = (value) => {
     console.log("value", value);
     setSearchValue(value);
     setFilteredJobs(
-      filteredJobs.filter((job) =>
-        job.job_title.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+      filteredJobs.filter(
+        (job) =>
+          job.job_title
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase()) ||
+          job.skills.toLocaleLowerCase().includes(value.toLocaleLowerCase())
       )
     );
   };
@@ -95,7 +94,7 @@ const AccountPage = () => {
       .then((res) => {
         const jobsMatchingCurrentCompany = res.data.response.data.filter(
           (job) => job.data_type === currentUser?.portfolio_info[0].data_type
-        )
+        );
         setJobs(jobsMatchingCurrentCompany);
       })
       .catch((err) => {
