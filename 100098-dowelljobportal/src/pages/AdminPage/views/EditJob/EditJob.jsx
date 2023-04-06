@@ -213,6 +213,7 @@ function EditJob() {
 
 
   const handleSubmit = (event) => {
+    event.preventDefault()
     setUpdateLoading(true);
     try {
       fetch('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
