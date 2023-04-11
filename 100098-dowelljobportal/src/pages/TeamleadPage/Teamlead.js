@@ -23,6 +23,7 @@ import TogglerNavMenuBar from "../../components/TogglerNavMenuBar/TogglerNavMenu
 import JobCard from "../../components/JobCard/JobCard";
 import { fetchCandidateTasks, getJobs2 } from "../../services/commonServices";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
+import { useJobContext } from "../../contexts/Jobs";
 import {
   getCandidateApplicationsForTeamLead,
   getCandidateTaskForTeamLead,
@@ -51,6 +52,22 @@ const Teamlead = () => {
   const location = useLocation();
   const [currentActiveItem, setCurrentActiveItem] = useState("Approval");
   const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState("");
+  const [filteredJobs, setFilteredJobs] = useState(jobs);
+
+  const handleSearch = (value) => {
+    console.log("value", value);
+    setSearchValue(value);
+    setFilteredJobs(
+      filteredJobs.filter(
+        (job) =>
+          job.job_title
+            .toLocaleLowerCase()
+            .includes(value.toLocaleLowerCase()) ||
+          job.skills.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+      )
+    );
+  };
 
   useEffect(() => {
     const requestData = {
@@ -130,8 +147,8 @@ const Teamlead = () => {
       company_id: currentUser?.portfolio_info[0].org_id,
     })
       .then((res) => {
-        console.log(res.data.response.data)
-        console.log(currentUser?.settings_for_profile_info)
+        console.log(res.data.response.data);
+        console.log(currentUser?.settings_for_profile_info);
         const tasksToDisplay = res.data.response.data
           .filter(
             (task) =>
@@ -143,7 +160,7 @@ const Teamlead = () => {
               currentUser?.settings_for_profile_info.profile_info[0].project
           );
 
-          console.log(tasksToDisplay)
+        console.log(tasksToDisplay);
 
         const usersWithTasks = [
           ...new Map(
@@ -228,7 +245,12 @@ const Teamlead = () => {
 
   return (
     <>
-      <StaffJobLandingLayout teamleadView={true} hideSideBar={showAddTaskModal}>
+      <StaffJobLandingLayout
+        teamleadView={true}
+        hideSideBar={showAddTaskModal}
+        searchValue={searchValue}
+        setSearchValue={handleSearch}
+      >
         <TitleNavigationBar
           title={
             section === "task"

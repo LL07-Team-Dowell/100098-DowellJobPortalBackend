@@ -24,7 +24,7 @@ function Home({ setHired, setAssignedProjects }) {
   useEffect(() => {
 
     if (!currentUser) return setLoading(false);
-    if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
+    if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 0) return setLoading(false);
 
     getAppliedJobs(currentUser?.portfolio_info[0].org_id).then(res => {
       const userApplication = res.data.response.data.filter(

@@ -54,7 +54,7 @@ function Applied() {
         const userAppliedJobs = jobs.data.response.data.filter(
           (currentJob) => currentJob.data_type === currentUser?.portfolio_info[0].data_type
         )
-        if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
+        // if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
         const currentUserApplications = userApplication.filter(
           (application) =>
             application.username === currentUser.userinfo.username
