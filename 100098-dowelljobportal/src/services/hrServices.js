@@ -17,7 +17,7 @@ export const getCandidateTask = async (data) => {
   return await currentBackendAxiosInstance.post("task_management/get_task/", data)
 }
 
-export const rejectCandidateTask = async (data) => {
+export const rejectCandidateApplicationforHr = async (data) => {
   return await currentBackendAxiosInstance.post("hr_management/reject_candidate/", data)
 }
 
