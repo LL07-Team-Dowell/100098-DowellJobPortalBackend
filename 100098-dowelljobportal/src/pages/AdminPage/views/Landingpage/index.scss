@@ -199,6 +199,24 @@ $slider__gray: #d9d9d9;
     }
   }
 }
+@media (max-width: 500px) {
+  .landing-page {
+    padding: 0rem 9rem;
+    width: 100%;
+
+    .cards {
+      // grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+      display: flex;
+      gap:40px; 
+      flex-direction: column;
+      width: 100%;
+      .card{
+        width: 400px;
+        transform: translateX(-140px);
+      }
+    }
+  }
+}
 
 @media (min-width: 768px) and (max-width: 991.98px) {
   .landing-page {
