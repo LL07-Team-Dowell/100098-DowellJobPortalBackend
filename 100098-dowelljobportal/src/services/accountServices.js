@@ -14,6 +14,13 @@ export const managementUpdateProject = async (data) => {
   );
 };
 
+export const managementRejectProject = async(data)=>{
+  return await currentBackendAxiosInstance.post(
+    "accounts_management/reject_candidate/",
+    data
+  )
+}
+
 export const managementReHireCanditate = async (data) => {
   return await currentBackendAxiosInstance.post(
     "accounts_management/rehire_candidate/",

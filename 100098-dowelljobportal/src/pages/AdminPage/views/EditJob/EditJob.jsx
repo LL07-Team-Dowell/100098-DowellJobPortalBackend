@@ -13,6 +13,9 @@ import { useJobContext } from '../../../../contexts/Jobs';
 import { getJobs } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
+import LittleLoading from '../../../CandidatePage/views/ResearchAssociatePage/littleLoading';
+import { updateJob } from '../../../../services/adminServices';
+import { toast } from 'react-toastify';
 
 
 function EditJob() {
@@ -36,22 +39,30 @@ function EditJob() {
     workflow_terms: [],
     other_info: [],
   });
-  console.log(formData.job_category);
+  // console.log(formData.job_category);
   // console.log(formData);
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false)
-    }, 10000)
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setLoading(false)
+  //   }, 10000)
+  // }, []);
 
   const { currentUser } = useCurrentUserContext();
-  // const { jobs, setJobs } = useJobContext();
   const { id } = useParams();
   const [newjobs, setNewjobs] = useState([]);
   const singleJob = newjobs?.filter(job => job["_id"] === id)[0];
   const { payment_terms, company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id } = singleJob || {};
-  const [selectedOption, setSelectedOption] = useState(job_category);
-  console.log(selectedOption);
+  const [selectedOption, setSelectedOption] = useState(job_category || "");
+  const [active, setActive] = useState(is_active);
+  const [typeofOption, setTypeofOption] = useState(type_of_job);
+
+
+  useEffect(() => {
+    setSelectedOption(job_category);
+    setActive(is_active);
+    setTypeofOption(type_of_job)
+  }, [singleJob, is_active, type_of_job]);
+
 
 
   useEffect(() => {
@@ -59,19 +70,13 @@ function EditJob() {
     setLoading(true);
     const datass = currentUser.portfolio_info[0].org_id;
     getJobs(datass).then(res => {
-      // const userAppliedJobs = res.data.response.data.filter(
-      //   (job) => job.data_type === currentUser?.portfolio_info[0].data_type
-      // );
-      // setjobs(res.data);
       setNewjobs(res.data.response.data);
       setLoading(false)
     }).catch(err => {
       console.log(err);
       setLoading(false)
     })
-
-
-  }, [job_category, selectedOption, newjobs])
+  }, [id])
 
 
 
@@ -99,11 +104,19 @@ function EditJob() {
   //   fetchData();
   // }, []);
 
-
-  const [typeofOption, setTypeofOption] = useState(type_of_job)
   useEffect(() => {
     const formDataUpdates = {};
     switch (true) {
+      case job_title?.length > 0:
+        formDataUpdates.job_title = job_title;
+        formDataUpdates.description = description;
+        formDataUpdates.skills = skills;
+        formDataUpdates.job_category = selectedOption;
+        formDataUpdates.time_interval = time_interval;
+        formDataUpdates.payment = payment;
+        formDataUpdates.type_of_job = typeofOption;
+        formDataUpdates.is_active = is_active
+        break;
       case general_terms?.length > 0:
         formDataUpdates.general_terms = general_terms;
         break;
@@ -127,7 +140,7 @@ function EditJob() {
       ...formDataUpdates
     }));
 
-  }, [general_terms, payment_terms, technical_specification, other_info, workflow_terms]);
+  }, [payment_terms, data_type, description, general_terms, is_active, selectedOption, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -144,11 +157,13 @@ function EditJob() {
   }
 
   const toggleJobStatus = () => {
+    setActive(!active)
     setFormData({
       ...formData,
-      is_active: formData.is_active === 'true' ? 'false' : 'true',
+      is_active: active,
     });
   };
+
 
   const handleRemoveGeneralTerms = (index) => {
     const newItems = [...formData.general_terms];
@@ -212,27 +227,44 @@ function EditJob() {
   }
 
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     setUpdateLoading(true);
+    // try {
+    //   fetch('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(formData),
+    //   })
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    //       console.log(data);
+    //     });
+    // } catch (e) {
+    //   setError(e)
+    // }
+    console.log(formData);
     try {
-      fetch('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setUpdateLoading(false)
-        });
-    } catch (e) {
-      setError(e)
+      const response = await updateJob(formData);
+      console.log(formData);
+      console.log(response.status);
+
+      // if (response.status === 200) {
+      //   formData((prevValue) => [formData, ...prevValue]);
+      //   toast.success("Job updation successfully");
+      //   navigate("/");
+      // } else {
+      //   toast.info("Something went wrong");
+      // }
+    } catch (error) {
+      toast.error("Something went wrong");
     }
+
+    setUpdateLoading(false);
   };
 
-  if (loading) return <LoadingSpinner />
+  // if (loading) return <LoadingSpinner />
 
   return (
     <>
@@ -245,18 +277,6 @@ function EditJob() {
       >
         <Wrapper>
           <div className="container edit__page_Admin__T">
-            {/* <div className="back__button">
-              <Link to={"/"}>
-                <IoIosArrowBack />
-              </Link>
-            </div>
-
-            <div className="main__titles">
-              <h2>Edit Job</h2>
-              <h3>Project Management <span style={{ "fontWeight": "400" }}>- UX Living Lab</span> </h3>
-            </div> */}
-
-
             <div className="job__details">
               <div className="job__detail__title">
                 <h3>Job Details</h3>
@@ -440,17 +460,13 @@ function EditJob() {
                 </div>
 
                 <div className='input__data__row'>
-                  <label>State of Job</label>
+                  <label style={{ fontSize: "1rem" }}>State of Job</label>
                   <div className="data">
-                    {/* <input type="checkbox" id="check1" className="toggle" onClick={toggleJobStatus} />
-                  <label htmlFor="check1"></label> */}
-                    {/* <label htmlFor="jobStatus">{formData.is_active === 'true' ? "Active" : "Inactive"}</label> */}
-
                     <input
                       className="active_checkbox"
                       type="checkbox"
                       name={"is_active"}
-                      checked={is_active}
+                      checked={active}
                       onChange={toggleJobStatus}
                       required
                     />
@@ -573,7 +589,7 @@ function EditJob() {
                   </div>
                 </div>
                 <button type="submit" className="save__button" disabled={updateLoading}>
-                  {updateLoading ? "Save..." : "Save"}<BsFillBookmarkFill />
+                  {updateLoading ? <LittleLoading /> : `Save`}
                 </button>
               </form>
             </div>
@@ -586,6 +602,19 @@ function EditJob() {
 }
 
 const Wrapper = styled.section`
+
+.lds-ringg div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin: 8px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #f7fffc transparent transparent transparent;
+}
   .container{
     width: 1300px;
     margin: auto;
