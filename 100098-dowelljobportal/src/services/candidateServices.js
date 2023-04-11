@@ -19,6 +19,8 @@ export const getCandidateTask= async (data) => {
     return await currentBackendAxiosInstance.post("task_management/get_task/",data)
 }
 
+
+
 export const createCandidateTask = async (data) => {
     return await currentBackendAxiosInstance.post("task_management/create_task/",data)
 }
