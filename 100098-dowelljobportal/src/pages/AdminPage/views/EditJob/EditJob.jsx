@@ -228,44 +228,63 @@ function EditJob() {
   }
 
 
-  const handleSubmit = async (event) => {
-    setUpdateLoading(true);
-    // try {
-    //   fetch('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(formData),
-    //   })
-    //     .then((res) => res.json())
-    //     .then((data) => {
-    //       console.log(data);
-    //     });
-    // } catch (e) {
-    //   setError(e)
-    // }
-    console.log(formData);
-    try {
-      const response = await updateJob(formData);
-      console.log(formData);
-      console.log(response.status);
+  // const handleSubmit = async (event) => {
+  //   // event.preventDeafult();
+  //   setUpdateLoading(true);
+  //   alert("clicked")
+  //   // try {
+  //   //   fetch('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
+  //   //     method: 'POST',
+  //   //     headers: {
+  //   //       'Content-Type': 'application/json',
+  //   //     },
+  //   //     body: JSON.stringify(formData),
+  //   //   })
+  //   //     .then((res) => res.json())
+  //   //     .then((data) => {
+  //   //       console.log(data);
+  //   //     });
+  //   // } catch (e) {
+  //   //   setError(e)
+  //   // }
+  //   console.log(formData);
+  //   try {
+  //     const response = await updateJob(formData);
+  //     console.log(formData);
+  //     console.log(response);
 
-      // if (response.status === 200) {
-      //   formData((prevValue) => [formData, ...prevValue]);
-      //   toast.success("Job updation successfully");
-      //   navigate("/");
-      // } else {
-      //   toast.info("Something went wrong");
-      // }
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
+  //     // if (response.status === 200) {
+  //     //   formData((prevValue) => [formData, ...prevValue]);
+  //     //   toast.success("Job updation successfully");
+  //     //   navigate("/");
+  //     // } else {
+  //     //   toast.info("Something went wrong");
+  //     // }
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //   }
+
+  //   setUpdateLoading(false);
+  // };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setUpdateLoading(true);
+
+    updateJob(formData)
+      .then(response => {
+        if (response.status === 200) {
+          toast.success("Job updation successfully");
+          navigate(-1)
+        }
+      })
+      .catch(error => console.log(error));
 
     setUpdateLoading(false);
-  };
 
-  // if (loading) return <LoadingSpinner />
+  }
+
+  if (loading) return <LoadingSpinner />
 
   return (
     <>
@@ -460,7 +479,7 @@ function EditJob() {
                   />
                 </div>
 
-                <div className='input__data__row'>
+                <div className='input__data__row stateofjob'>
                   <label style={{ fontSize: "1rem" }}>State of Job</label>
                   <div className="data">
                     <input
@@ -603,6 +622,7 @@ function EditJob() {
 }
 
 const Wrapper = styled.section`
+
 
 .lds-ringg div {
   box-sizing: border-box;
@@ -836,6 +856,13 @@ const Wrapper = styled.section`
     }
 
     @media only screen and (max-width: 900px){
+      .container{
+        padding-right: 4rem;
+      }
+      .staff__Jobs__Layout__Navigation__Container.admin .admin__View__Title__Container {
+        justify-content: space-between;
+        width: auto !important;
+       }
       .item{
         p{
           input{
@@ -843,6 +870,21 @@ const Wrapper = styled.section`
         }
       }
     }
+    @media only screen and (max-width: 510px){
+        .stateofjob{
+          position: relative;
+         label{
+          width: 10rem;
+         }
+         .data{
+          position: absolute;
+          bottom: -13px;
+          right: 0;
+         }
+        }
+    }
+
+    
   `
 
 export default EditJob;
