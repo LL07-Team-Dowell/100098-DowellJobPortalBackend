@@ -368,16 +368,18 @@ const AddJob = () => {
 
               <div className="state_of_job">
                 <label htmlFor="is_active">State of Job</label>
-                <input
-                  className="active_checkbox"
-                  type="checkbox"
-                  name={"is_active"}
-                  checked={newJob.is_active}
-                  onChange={(e) =>
-                    handleChange(e.target.checked, e.target.name)
-                  }
-                  required
-                />
+                <div className="is_active">
+                  <input
+                    className="active_checkbox"
+                    type="checkbox"
+                    name={"is_active"}
+                    checked={newJob.is_active}
+                    onChange={(e) =>
+                      handleChange(e.target.checked, e.target.name)
+                    }
+                    required
+                  />
+                </div>
               </div>
 
               <label htmlFor="payment">Payment</label>
