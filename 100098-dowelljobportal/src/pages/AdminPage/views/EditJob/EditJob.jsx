@@ -269,7 +269,7 @@ function EditJob() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(formData)
+    setUpdateLoading(true);
 
     updateJob(formData)
       .then(response => {
@@ -278,7 +278,10 @@ function EditJob() {
           navigate(-1)
         }
       })
-      .catch(error => console.log(error))
+      .catch(error => console.log(error));
+
+    setUpdateLoading(false);
+
   }
 
   if (loading) return <LoadingSpinner />
