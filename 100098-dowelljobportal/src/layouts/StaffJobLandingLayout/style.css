@@ -234,6 +234,10 @@
 }
 
 @media screen and (max-width: 991px) {
+    .admin__View__Title__Container {
+        width: auto !important;
+    }
+
     .staff__Jobs__Layout__Navigation__Container {
         height: 4rem;
         padding-left: 3%;
