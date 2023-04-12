@@ -213,8 +213,9 @@
 }
 
 .staff__Jobs__Layout__Navigation__Container.admin .admin__View__Title__Container {
-    justify-content: space-between;
-    width: 20%;
+    /* justify-content: space-between; */
+    gap: 1.5rem;
+    width: 75%;
 }
 
 .staff__Jobs__Layout__Navigation__Container.admin .admin__View__Title__Container .add__Icon__Container {
@@ -290,7 +291,7 @@
     }
     .staff__Jobs__Layout__Content__Container.account .jobs-container > *,
     .staff__Jobs__Layout__Content__Container .tasks-container .job__Card__Container {
-        width: 100%;
+        width: calc(96% / 2);
     }
     .staff__Jobs__Layout__Content__Container.account .jobs-container > *:last-child,
     .staff__Jobs__Layout__Content__Container .tasks-container .job__Card__Container:last-of-type {
@@ -313,6 +314,7 @@
     }
     .staff__Jobs__Layout__Content__Container .tasks-container .job__Card__Container {
         margin-bottom: 4%;
+        width: 95%;
     }
     .staff__Jobs__Layout__Content__Container  .candidate-task-screen-container {
         margin-top: 4%;

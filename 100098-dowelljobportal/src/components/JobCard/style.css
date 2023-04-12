@@ -162,7 +162,9 @@
 
 @media screen and (max-width: 991px) {
     .job__Card__Container {
-        padding: 4%;   
+        padding: 4%;
+        width: 95%;
+        margin-bottom: 1.3rem;   
     }
     .job__Card__Container .job__Card__Title__Info h2 {
         font-size: 1.1rem;
@@ -174,3 +176,11 @@
         width: 60%;
     }
 }
+
+/* background-color: var(--pale-grey-color);
+    width: max-content;
+    border-radius: 20px;
+    padding: 2% 2% 3%;
+    transition: 0.3s ease-in-out;
+    font-family: "Poppins", sans-serif;
+    position: relative; */
