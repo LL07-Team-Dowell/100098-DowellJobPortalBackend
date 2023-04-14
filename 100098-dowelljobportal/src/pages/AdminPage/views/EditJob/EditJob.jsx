@@ -38,6 +38,7 @@ function EditJob() {
     payment_terms: [],
     workflow_terms: [],
     other_info: [],
+    document_id: '',
   });
   // console.log(formData.job_category);
   // console.log(formData);
@@ -47,6 +48,7 @@ function EditJob() {
   //   }, 10000)
   // }, []);
 
+
   const { currentUser } = useCurrentUserContext();
   const { jobs, setJobs } = useJobContext();
   const { id } = useParams();
@@ -55,16 +57,33 @@ function EditJob() {
   const { payment_terms, company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id } = singleJob || {};
   const [selectedOption, setSelectedOption] = useState(job_category || "");
   const [active, setActive] = useState(is_active);
-  const [typeofOption, setTypeofOption] = useState(type_of_job);
-
-
+  const [typeofOption, setTypeofOption] = useState(type_of_job || "");
+  console.log(typeofOption);
   useEffect(() => {
     setSelectedOption(job_category);
     setActive(is_active);
     setTypeofOption(type_of_job)
-  }, [singleJob, is_active, type_of_job]);
+  }, [singleJob]);
 
 
+
+  const handleSubmit = (event) => {
+    setUpdateLoading(true);
+    setLoading(false)
+    console.log(formData);
+    updateJob(formData)
+      .then(response => {
+        console.log(response)
+        if (response.status === 200) {
+          navigate(-1);
+          toast.success("Job updation successfully");
+        }
+      })
+      .catch(error => console.log(error));
+
+    setUpdateLoading(false);
+
+  }
 
   useEffect(() => {
     if (jobs.length > 0) return setLoading(false);
@@ -80,31 +99,6 @@ function EditJob() {
   }, [id])
 
 
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     setError(null);
-  //     try {
-  //       const response = await fetch('https://100098.pythonanywhere.com/admin_management/get_jobs/', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify({ "company_id": "100098" }),
-  //       });
-  //       const data = await response.json();
-  //       setFormData(data.response.data[0]);
-  //     } catch (e) {
-  //       setError(e);
-  //     }
-
-  //     setLoading(false)
-  //   }
-
-  //   fetchData();
-  // }, []);
-
   useEffect(() => {
     const formDataUpdates = {};
     switch (true) {
@@ -116,7 +110,8 @@ function EditJob() {
         formDataUpdates.time_interval = time_interval;
         formDataUpdates.payment = payment;
         formDataUpdates.type_of_job = typeofOption;
-        formDataUpdates.is_active = is_active
+        formDataUpdates.is_active = is_active;
+        formDataUpdates.document_id = _id;
         break;
       case general_terms?.length > 0:
         formDataUpdates.general_terms = general_terms;
@@ -141,7 +136,7 @@ function EditJob() {
       ...formDataUpdates
     }));
 
-  }, [payment_terms, data_type, description, general_terms, is_active, selectedOption, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms]);
+  }, [payment_terms, data_type, description, general_terms, is_active, selectedOption, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, document_id]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -155,6 +150,8 @@ function EditJob() {
 
   const handltTypeOfOption = (e) => {
     setTypeofOption(e.target.value);
+    setFormData({ ...formData, type_of_job: typeofOption });
+    console.log(typeofOption);
   }
 
   const toggleJobStatus = () => {
@@ -228,44 +225,47 @@ function EditJob() {
   }
 
 
-  const handleSubmit = async (event) => {
-    setUpdateLoading(true);
-    // try {
-    //   fetch('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(formData),
-    //   })
-    //     .then((res) => res.json())
-    //     .then((data) => {
-    //       console.log(data);
-    //     });
-    // } catch (e) {
-    //   setError(e)
-    // }
-    console.log(formData);
-    try {
-      const response = await updateJob(formData);
-      console.log(formData);
-      console.log(response.status);
+  // const handleSubmit = async (event) => {
+  //   // event.preventDeafult();
+  //   setUpdateLoading(true);
+  //   alert("clicked")
+  //   // try {
+  //   //   fetch('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
+  //   //     method: 'POST',
+  //   //     headers: {
+  //   //       'Content-Type': 'application/json',
+  //   //     },
+  //   //     body: JSON.stringify(formData),
+  //   //   })
+  //   //     .then((res) => res.json())
+  //   //     .then((data) => {
+  //   //       console.log(data);
+  //   //     });
+  //   // } catch (e) {
+  //   //   setError(e)
+  //   // }
+  //   console.log(formData);
+  //   try {
+  //     const response = await updateJob(formData);
+  //     console.log(formData);
+  //     console.log(response);
 
-      // if (response.status === 200) {
-      //   formData((prevValue) => [formData, ...prevValue]);
-      //   toast.success("Job updation successfully");
-      //   navigate("/");
-      // } else {
-      //   toast.info("Something went wrong");
-      // }
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
+  //     // if (response.status === 200) {
+  //     //   formData((prevValue) => [formData, ...prevValue]);
+  //     //   toast.success("Job updation successfully");
+  //     //   navigate("/");
+  //     // } else {
+  //     //   toast.info("Something went wrong");
+  //     // }
+  //   } catch (error) {
+  //     toast.error("Something went wrong");
+  //   }
 
-    setUpdateLoading(false);
-  };
+  //   setUpdateLoading(false);
+  // };
 
-  // if (loading) return <LoadingSpinner />
+
+  if (loading) return <LoadingSpinner />
 
   return (
     <>
@@ -455,12 +455,12 @@ function EditJob() {
                     id="time_interval"
                     name="time_interval"
                     // placeholder='1 Week'
-                    value={time_interval}
+                    defaultValue={time_interval}
                     onChange={handleInputChange}
                   />
                 </div>
 
-                <div className='input__data__row'>
+                <div className='input__data__row stateofjob'>
                   <label style={{ fontSize: "1rem" }}>State of Job</label>
                   <div className="data">
                     <input
@@ -603,6 +603,7 @@ function EditJob() {
 }
 
 const Wrapper = styled.section`
+
 
 .lds-ringg div {
   box-sizing: border-box;
@@ -836,6 +837,13 @@ const Wrapper = styled.section`
     }
 
     @media only screen and (max-width: 900px){
+      .container{
+        padding-right: 4rem;
+      }
+      .staff__Jobs__Layout__Navigation__Container.admin .admin__View__Title__Container {
+        justify-content: space-between;
+        width: auto !important;
+       }
       .item{
         p{
           input{
@@ -843,6 +851,21 @@ const Wrapper = styled.section`
         }
       }
     }
+    @media only screen and (max-width: 510px){
+        .stateofjob{
+          position: relative;
+         label{
+          width: 10rem;
+         }
+         .data{
+          position: absolute;
+          bottom: -13px;
+          right: 0;
+         }
+        }
+    }
+
+    
   `
 
 export default EditJob;

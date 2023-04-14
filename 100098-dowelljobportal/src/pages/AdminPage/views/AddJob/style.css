@@ -162,6 +162,11 @@ h3 {
   align-items: center;
 }
 
+.is_active {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .active_checkbox[type="checkbox"] {
   position: relative;
   appearance: none;
@@ -291,7 +296,7 @@ h3 {
   justify-content: center;
 }
 
-@media screen and (max-width: 844px) {
+@media screen and (max-width: 991px) {
   .add_section {
     margin: 2rem 0 0 1.8rem;
   }
