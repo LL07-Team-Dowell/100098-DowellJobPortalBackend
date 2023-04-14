@@ -235,3 +235,8 @@ main.research .map-image{
     background-repeat: no-repeat;
     height: 600px;
 }
+@media (max-width:500px){
+    .map__image{
+        display: none;
+    }
+}

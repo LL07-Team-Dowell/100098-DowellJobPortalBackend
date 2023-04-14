@@ -200,6 +200,9 @@ $slider__gray: #d9d9d9;
   }
 }
 @media (max-width: 500px) {
+  .staff__Jobs__Layout__Content__Container .jobs__Layout__Content{
+    overflow-y: visible;
+  }
   .landing-page {
     padding: 0rem 9rem;
     width: 100%;
@@ -212,7 +215,7 @@ $slider__gray: #d9d9d9;
       width: 100%;
       .card{
         width: 400px;
-        transform: translateX(-140px);
+        transform: translateX(-180px);
       }
     }
   }
