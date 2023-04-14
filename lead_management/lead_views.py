@@ -1,4 +1,5 @@
 import json
+import threading
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
@@ -68,6 +69,8 @@ class rehire_candidate(APIView):
             else:
                 return Response({"message":"Parametes are not valid"},status=status.HTTP_400_BAD_REQUEST)
 
+
+@method_decorator(csrf_exempt, name='dispatch')
 class reject_candidate(APIView):
     def post(self, request):
             data = request.data
@@ -91,16 +94,26 @@ class reject_candidate(APIView):
                     "data_type":data.get('data_type'),
                     "rejected_on":data.get('rejected_on')
                 }
+                
                 serializer = RejectSerializer(data=data)
                 if serializer.is_valid():
-                    response_to_hr_report = dowellconnection(*hr_management_reports,"update",field,update_field)
-                    print(response_to_hr_report)
-                    response_to_candidate = dowellconnection(*candidate_management_reports,"update",field,update_field)
-                    print(response_to_candidate)
-                    update_response = dowellconnection(*lead_management_reports,"insert",insert_to_lead_report,update_field)
-                    print(update_field)
+                    def call_dowellconnection(*args):
+                        dowellconnection(*args)
+                   
+                    hr_thread = threading.Thread(target=call_dowellconnection, args=(*hr_management_reports, "update", field, update_field))
+                    hr_thread.start()
+        
+                    candidate_thread = threading.Thread(target=call_dowellconnection, args=(*candidate_management_reports, "update", field, update_field))
+                    candidate_thread.start()
+
+                    lead_thread = threading.Thread(target=call_dowellconnection, args=(*lead_management_reports, "insert", insert_to_lead_report, update_field))
+                    lead_thread.start()
+
+                    hr_thread.join()
+                    candidate_thread.join()
+                    lead_thread.join()
                     
-                    if update_response or response_to_candidate or response_to_hr_report:
+                    if not hr_thread.is_alive() and not candidate_thread.is_alive() and not lead_thread.is_alive():
                         return Response({"message":"Candidate has been Rejected"},status=status.HTTP_200_OK)
                     else:
                         return Response({"message":"operation failed"},status=status.HTTP_304_NOT_MODIFIED)
@@ -110,3 +123,5 @@ class reject_candidate(APIView):
                     for field_name, field_errors in default_errors.items():
                         new_error[field_name] = field_errors[0]
                     return Response(new_error,status=status.HTTP_400_BAD_REQUEST)
+                     
+                    

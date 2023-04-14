@@ -1,4 +1,5 @@
 import json
+import threading
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
@@ -126,17 +127,28 @@ class reject_candidate(APIView):
                 "rejected_on": data.get('rejected_on')
             }
             serializer = RejectSerializer(data=data)
-            print(serializer)
             if serializer.is_valid():
-                response_to_hr_report = dowellconnection(
-                    *hr_management_reports, "update", field, update_field)
-                response_to_candidate = dowellconnection(
-                    *candidate_management_reports, "update", field, update_field)
-                response_to_lead_report = dowellconnection(
-                    *lead_management_reports, "update", field, update_field)
-                update_response = dowellconnection(
-                    *account_management_reports, "insert", insert_to_account_report, update_field)
-                if response_to_hr_report or response_to_candidate or response_to_lead_report or update_response:
+                def call_dowellconnection(*args):
+                    dowellconnection(*args)
+
+                candidate_thread = threading.Thread(target=call_dowellconnection, args=(*candidate_management_reports, "update", field, update_field))
+                candidate_thread.start()
+
+                hr_thread = threading.Thread(target=call_dowellconnection, args=(*hr_management_reports, "update", field, update_field))
+                hr_thread.start()
+
+                lead_thread = threading.Thread(target=call_dowellconnection, args=(*lead_management_reports, "update", field, update_field))
+                lead_thread.start()
+
+                account_thread = threading.Thread(target=call_dowellconnection, args=(*account_management_reports, "insert", insert_to_account_report, update_field))
+                account_thread.start()
+
+                hr_thread.join()
+                candidate_thread.join()
+                lead_thread.join()
+                account_thread.join()
+
+                if not candidate_thread.is_alive() and not hr_thread.is_alive() and not lead_thread.is_alive() and not account_thread.is_alive():
                     return Response({"message": "Candidate has been Rejected"}, status=status.HTTP_200_OK)
                 else:
                     return Response({"message": "operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
