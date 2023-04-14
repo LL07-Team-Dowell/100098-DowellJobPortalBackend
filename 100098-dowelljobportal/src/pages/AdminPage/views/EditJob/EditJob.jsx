@@ -837,9 +837,44 @@ const Wrapper = styled.section`
     }
 
     @media only screen and (max-width: 900px){
-      .container{
-        padding-right: 4rem;
+      main {
+        padding: 0 40px;
       }
+      .container{
+        .job__details{
+          padding: 0px 0px;
+          border-radius: 10px;
+          margin: auto;
+          width: 95%;
+        }
+
+        .job__details form .gernaral__term {
+          padding-bottom: 4px;
+          color: #005734;
+          font-weight: 600;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .add__item svg{
+            width: 100%;
+          }
+
+          .add__item label{
+            display: none;
+          }
+
+          .gernaral__term {
+            display: flex;
+          }
+
+          .item p{
+            width: 200px;
+          }
+      }
+
+      }
+
       .staff__Jobs__Layout__Navigation__Container.admin .admin__View__Title__Container {
         justify-content: space-between;
         width: auto !important;
@@ -851,18 +886,9 @@ const Wrapper = styled.section`
         }
       }
     }
+
     @media only screen and (max-width: 510px){
-        .stateofjob{
-          position: relative;
-         label{
-          width: 10rem;
-         }
-         .data{
-          position: absolute;
-          bottom: -13px;
-          right: 0;
-         }
-        }
+        
     }
 
     
