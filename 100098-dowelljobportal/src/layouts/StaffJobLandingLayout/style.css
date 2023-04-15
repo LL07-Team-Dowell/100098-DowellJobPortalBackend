@@ -266,7 +266,7 @@
     }
     .staff__Jobs__Layout__Content__Container .jobs__Layout__Content {
         width: 100%;
-        margin-left: 0;
+        margin-left: -2.5rem;
         padding-top: 4%;
     }
     .staff__Jobs__Layout__Navigation__Container .jobs__Layout__Icons__Container {

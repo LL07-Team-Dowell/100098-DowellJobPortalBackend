@@ -10,6 +10,7 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { useJobContext } from "../../../../contexts/Jobs";
 
 import { Link, useNavigate } from "react-router-dom";
+import { Tooltip } from "react-tooltip";
 
 import "./style.css";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
@@ -436,11 +437,18 @@ const AddJob = () => {
                 <button
                   className="terms_button"
                   onClick={() => handleAddTerms("general_terms")}
+                  id="addTermsBtn"
                 >
                   <span>
                     <MdOutlineAddCircle size="2.6rem" color="#005734" />
-                  </span>{" "}
-                  Add General Terms
+                    <Tooltip
+                      anchorId="addTermsBtn"
+                      place="top"
+                      content="Add General Terms"
+                      className="tooltip"
+                    />
+                  </span>
+                  <span className="terms_text">Add General Terms</span>
                 </button>
 
                 <h3>Technical Specifications</h3>
@@ -478,11 +486,18 @@ const AddJob = () => {
                 <button
                   className="terms_button"
                   onClick={() => handleAddTerms("technical_specification")}
+                  id="addSpecBtn"
                 >
                   <span>
                     <MdOutlineAddCircle size="2.6rem" color="#005734" />
-                  </span>{" "}
-                  Add Specifications
+                    <Tooltip
+                      anchorId="addSpecBtn"
+                      place="top"
+                      content="Add Specifications"
+                      className="tooltip"
+                    />
+                  </span>
+                  <span className="terms_text">Add Specifications</span>
                 </button>
 
                 <h3>Payment Terms</h3>
@@ -518,11 +533,18 @@ const AddJob = () => {
                 <button
                   className="terms_button"
                   onClick={() => handleAddTerms("payment_terms")}
+                  id="addPayBtn"
                 >
                   <span>
                     <MdOutlineAddCircle size="2.6rem" color="#005734" />
-                  </span>{" "}
-                  Add Payment Terms
+                    <Tooltip
+                      anchorId="addPayBtn"
+                      place="top"
+                      content="Add Payment Terms"
+                      className="tooltip"
+                    />
+                  </span>
+                  <span className="terms_text">Add Payment Terms</span>
                 </button>
 
                 <h3>Workflow</h3>
@@ -558,11 +580,18 @@ const AddJob = () => {
                 <button
                   className="terms_button"
                   onClick={() => handleAddTerms("workflow_terms")}
+                  id="addWorkBtn"
                 >
                   <span>
                     <MdOutlineAddCircle size="2.6rem" color="#005734" />
-                  </span>{" "}
-                  Add Workflow
+                    <Tooltip
+                      anchorId="addWorkBtn"
+                      place="top"
+                      content="Add Workflow"
+                      className="tooltip"
+                    />
+                  </span>
+                  <span className="terms_text">Add Workflow</span>
                 </button>
 
                 <h3>Others</h3>
@@ -598,11 +627,18 @@ const AddJob = () => {
                 <button
                   className="terms_button"
                   onClick={() => handleAddTerms("other_info")}
+                  id="addOthersBtn"
                 >
                   <span>
                     <MdOutlineAddCircle size="2.6rem" color="#005734" />
-                  </span>{" "}
-                  Add Others
+                    <Tooltip
+                      anchorId="addOthersBtn"
+                      place="top"
+                      content="Add Others"
+                      className="tooltip"
+                    />
+                  </span>
+                  <span className="terms_text">Add Others</span>
                 </button>
               </div>
 

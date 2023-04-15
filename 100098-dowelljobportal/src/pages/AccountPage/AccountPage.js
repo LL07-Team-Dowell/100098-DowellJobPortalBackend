@@ -74,9 +74,9 @@ const AccountPage = () => {
   const handleSearch = (value) => {
     console.log("value", value);
     setSearchValue(value);
-    console.log("value", candidatesData.candidatesToHire);
+    console.log("value", candidatesData.selectedCandidates);
     setFilteredJobs(
-      candidatesData.candidatesToHire.filter(
+      candidatesData.selectedCandidates.filter(
         (job) =>
           job.job_title
             .toLocaleLowerCase()
@@ -352,50 +352,100 @@ const AccountPage = () => {
                     )
                   )
                 ) : showOnboarding ? (
-                  React.Children.toArray(
-                    candidatesData.onboardingCandidates.map((dataitem) => {
-                      return (
-                        <JobCard
-                          buttonText={"View"}
-                          candidateCardView={true}
-                          candidateData={dataitem}
-                          jobAppliedFor={
-                            jobs.find(
-                              (job) => job.job_number === dataitem.job_number
-                            )
-                              ? jobs.find(
-                                  (job) =>
-                                    job.job_number === dataitem.job_number
-                                ).job_title
-                              : ""
-                          }
-                          handleBtnClick={handleViewBtnClick}
-                        />
-                      );
-                    })
+                  searchValue.length >= 1 ? (
+                    React.Children.toArray(
+                      filteredJobs.map((dataitem) => {
+                        return (
+                          <JobCard
+                            buttonText={"View"}
+                            candidateCardView={true}
+                            candidateData={dataitem}
+                            jobAppliedFor={
+                              jobs.find(
+                                (job) => job.job_number === dataitem.job_number
+                              )
+                                ? jobs.find(
+                                    (job) =>
+                                      job.job_number === dataitem.job_number
+                                  ).job_title
+                                : ""
+                            }
+                            handleBtnClick={handleViewBtnClick}
+                          />
+                        );
+                      })
+                    )
+                  ) : (
+                    React.Children.toArray(
+                      candidatesData.onboardingCandidates.map((dataitem) => {
+                        return (
+                          <JobCard
+                            buttonText={"View"}
+                            candidateCardView={true}
+                            candidateData={dataitem}
+                            jobAppliedFor={
+                              jobs.find(
+                                (job) => job.job_number === dataitem.job_number
+                              )
+                                ? jobs.find(
+                                    (job) =>
+                                      job.job_number === dataitem.job_number
+                                  ).job_title
+                                : ""
+                            }
+                            handleBtnClick={handleViewBtnClick}
+                          />
+                        );
+                      })
+                    )
                   )
                 ) : rehireTabActive ? (
-                  React.Children.toArray(
-                    candidatesData.candidatesToRehire.map((dataitem) => {
-                      return (
-                        <JobCard
-                          buttonText={"View"}
-                          candidateCardView={true}
-                          candidateData={dataitem}
-                          jobAppliedFor={
-                            jobs.find(
-                              (job) => job.job_number === dataitem.job_number
-                            )
-                              ? jobs.find(
-                                  (job) =>
-                                    job.job_number === dataitem.job_number
-                                ).job_title
-                              : ""
-                          }
-                          handleBtnClick={handleViewBtnClick}
-                        />
-                      );
-                    })
+                  searchValue.length >= 1 ? (
+                    React.Children.toArray(
+                      filteredJobs.map((dataitem) => {
+                        return (
+                          <JobCard
+                            buttonText={"View"}
+                            candidateCardView={true}
+                            candidateData={dataitem}
+                            jobAppliedFor={
+                              jobs.find(
+                                (job) => job.job_number === dataitem.job_number
+                              )
+                                ? jobs.find(
+                                    (job) =>
+                                      job.job_number === dataitem.job_number
+                                  ).job_title
+                                : ""
+                            }
+                            handleBtnClick={handleViewBtnClick}
+                          />
+                        );
+                      })
+                    )
+                  ) : (
+                    React.Children.toArray(
+                      candidatesData.candidatesToRehire.map((dataitem) => {
+                        return (
+                          <JobCard
+                            buttonText={"View"}
+                            candidateCardView={true}
+                            candidateData={dataitem}
+                            jobAppliedFor={
+                              jobs.find(
+                                (job) => job.job_number === dataitem.job_number
+                              )
+                                ? jobs.find(
+                                    (job) =>
+                                      job.job_number === dataitem.job_number
+                                  ).job_title
+                                : ""
+                            }
+                            handleBtnClick={handleViewBtnClick}
+                          />
+                        );
+                      })
+                    )
                   )
                 ) : (
                   <></>

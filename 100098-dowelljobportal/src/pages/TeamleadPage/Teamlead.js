@@ -44,6 +44,7 @@ const Teamlead = () => {
   const [jobs, setJobs] = useState([]);
   const [showApplicationDetails, setShowApplicationDetails] = useState(false);
   const { userTasks, setUserTasks } = useCandidateTaskContext();
+  console.log("userTasks", userTasks);
   // const [allTasks, setAllTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
@@ -54,6 +55,7 @@ const Teamlead = () => {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [filteredJobs, setFilteredJobs] = useState(jobs);
+  const [filteredTasks, setFilteredTasks] = useState(userTasks);
 
   const handleSearch = (value) => {
     console.log("value", value);
@@ -70,6 +72,18 @@ const Teamlead = () => {
     );
 
     console.log("filteredJobs", filteredJobs);
+  };
+
+  const handleSearchTask = (value) => {
+    console.log("value", value);
+    setSearchValue(value);
+    setFilteredTasks(
+      userTasks.filter((task) =>
+        task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+      )
+    );
+
+    console.log("filteredTasks", filteredTasks);
   };
 
   useEffect(() => {
@@ -380,27 +394,52 @@ const Teamlead = () => {
                     )
                   )
                 ) : rehireTabActive ? (
-                  React.Children.toArray(
-                    candidatesData.candidatesToRehire.map((dataitem) => {
-                      return (
-                        <JobCard
-                          buttonText={"View"}
-                          candidateCardView={true}
-                          candidateData={dataitem}
-                          jobAppliedFor={
-                            jobs.find(
-                              (job) => job.job_number === dataitem.job_number
-                            )
-                              ? jobs.find(
-                                  (job) =>
-                                    job.job_number === dataitem.job_number
-                                ).job_title
-                              : ""
-                          }
-                          handleBtnClick={handleViewBtnClick}
-                        />
-                      );
-                    })
+                  searchValue.length >= 1 ? (
+                    React.Children.toArray(
+                      filteredJobs.map((dataitem) => {
+                        return (
+                          <JobCard
+                            buttonText={"View"}
+                            candidateCardView={true}
+                            candidateData={dataitem}
+                            jobAppliedFor={
+                              jobs.find(
+                                (job) => job.job_number === dataitem.job_number
+                              )
+                                ? jobs.find(
+                                    (job) =>
+                                      job.job_number === dataitem.job_number
+                                  ).job_title
+                                : ""
+                            }
+                            handleBtnClick={handleViewBtnClick}
+                          />
+                        );
+                      })
+                    )
+                  ) : (
+                    React.Children.toArray(
+                      candidatesData.candidatesToRehire.map((dataitem) => {
+                        return (
+                          <JobCard
+                            buttonText={"View"}
+                            candidateCardView={true}
+                            candidateData={dataitem}
+                            jobAppliedFor={
+                              jobs.find(
+                                (job) => job.job_number === dataitem.job_number
+                              )
+                                ? jobs.find(
+                                    (job) =>
+                                      job.job_number === dataitem.job_number
+                                  ).job_title
+                                : ""
+                            }
+                            handleBtnClick={handleViewBtnClick}
+                          />
+                        );
+                      })
+                    )
                   )
                 ) : (
                   <></>
@@ -424,27 +463,58 @@ const Teamlead = () => {
               />
 
               <div className="tasks-container">
-                {React.Children.toArray(
-                  userTasks.map((dataitem) => {
-                    return (
-                      <JobCard
-                        buttonText={"View"}
-                        candidateCardView={true}
-                        candidateData={dataitem}
-                        jobAppliedFor={
-                          jobs.find(
-                            (job) => job.job_number === dataitem.job_number
-                          )
-                            ? jobs.find(
+                {section === "task" ? (
+                  searchValue.length >= 1 ? (
+                    React.Children.toArray(
+                      filteredJobs.map((dataitem) => {
+                        return (
+                          <JobCard
+                            buttonText={"View"}
+                            candidateCardView={true}
+                            candidateData={dataitem}
+                            jobAppliedFor={
+                              jobs.find(
                                 (job) => job.job_number === dataitem.job_number
-                              ).job_title
-                            : ""
-                        }
-                        handleBtnClick={handleViewTaskBtnClick}
-                        taskView={true}
-                      />
-                    );
-                  })
+                              )
+                                ? jobs.find(
+                                    (job) =>
+                                      job.job_number === dataitem.job_number
+                                  ).job_title
+                                : ""
+                            }
+                            handleBtnClick={handleViewTaskBtnClick}
+                            taskView={true}
+                          />
+                        );
+                      })
+                    )
+                  ) : (
+                    React.Children.toArray(
+                      userTasks.map((dataitem) => {
+                        return (
+                          <JobCard
+                            buttonText={"View"}
+                            candidateCardView={true}
+                            candidateData={dataitem}
+                            jobAppliedFor={
+                              jobs.find(
+                                (job) => job.job_number === dataitem.job_number
+                              )
+                                ? jobs.find(
+                                    (job) =>
+                                      job.job_number === dataitem.job_number
+                                  ).job_title
+                                : ""
+                            }
+                            handleBtnClick={handleViewTaskBtnClick}
+                            taskView={true}
+                          />
+                        );
+                      })
+                    )
+                  )
+                ) : (
+                  <></>
                 )}
 
                 {/*<Button
