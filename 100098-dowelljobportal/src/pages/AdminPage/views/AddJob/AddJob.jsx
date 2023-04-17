@@ -23,6 +23,7 @@ const AddJob = () => {
     job_number: crypto.randomUUID(),
     job_title: "",
     skills: "",
+    qualifications: "",
     job_category: "",
     type_of_job: "",
     time_interval: "",
@@ -200,7 +201,15 @@ const AddJob = () => {
                 placeholder={"Enter Skills"}
                 required
               />
-
+              <label htmlFor="qualifications">Qualifications</label>
+              <input
+                type={"text"}
+                name={"qualifications"}
+                value={newJob.qualifications}
+                onChange={(e) => handleChange(e.target.value, e.target.name)}
+                placeholder={"Enter Qualifications"}
+                required
+              />
               <h3>Job Category</h3>
               <div className="job_category">
                 <label htmlFor="freelancer" className="radio">
@@ -235,8 +244,8 @@ const AddJob = () => {
                     type={"radio"}
                     id={"employee"}
                     name="options"
-                    value={"employee"}
-                    checked={selectedOption === "employee"}
+                    value={"Employee"}
+                    checked={selectedOption === "Employee"}
                     onChange={handleOptionChange}
                   />
                   <div className="radio__radio"></div>
