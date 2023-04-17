@@ -146,7 +146,7 @@ function App() {
           element={
             <JobContextProvider>
               {" "}
-              <LandingPage />
+              <LandingPage subAdminView={true}/>
             </JobContextProvider>
           }
         />
@@ -163,7 +163,7 @@ function App() {
           path="/edit-job/:id"
           element={
             <JobContextProvider>
-              <EditJob />
+              <EditJob subAdminView={true}/>
             </JobContextProvider>
           }
         />
@@ -179,7 +179,7 @@ function App() {
           path="/add-job"
           element={
             <JobContextProvider>
-              <AddJob />
+              <AddJob subAdminView={true}/>
             </JobContextProvider>
           }
         />
@@ -187,7 +187,7 @@ function App() {
           path="/user"
           element={
             <JobContextProvider>
-              <AdminUserScreen />
+              <AdminUserScreen subAdminView={true}/>
             </JobContextProvider>
           }
         />
@@ -195,7 +195,7 @@ function App() {
           path="/report"
           element={
             <JobContextProvider>
-              <AdminReports />
+              <AdminReports subAdminView={true}/>
             </JobContextProvider>
           }
         />

@@ -61,30 +61,62 @@ const Teamlead = () => {
     console.log("value", value);
     setSearchValue(value);
     console.log("value", candidatesData.selectedCandidates);
-    setFilteredJobs(
-      candidatesData.selectedCandidates.filter(
-        (job) =>
-          job.job_title
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          job.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
-      )
-    );
+    if ((section === "home" || section == undefined) && selectedTabActive) {
+      setFilteredJobs(
+        candidatesData.selectedCandidates.filter(
+          (job) =>
+            job.job_title
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase()) ||
+            job.applicant
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase())
+        )
+      );
 
-    console.log("filteredJobs", filteredJobs);
+      console.log("filteredJobs", filteredJobs);
+    } else if (section === "rehire" && rehireTabActive) {
+      setFilteredJobs(
+        candidatesData.selectedCandidates.filter(
+          (job) =>
+            job.job_title
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase()) ||
+            job.applicant
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase())
+        )
+      );
+
+      console.log("filteredJobs", filteredJobs);
+    } else if (section === "tasks") {
+      setFilteredTasks(
+        userTasks.filter(
+          (task) =>
+            task.applicant
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase()) ||
+            task.task_title
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase())
+        )
+      );
+
+      console.log("filteredTasks", filteredTasks);
+    }
   };
 
-  const handleSearchTask = (value) => {
-    console.log("value", value);
-    setSearchValue(value);
-    setFilteredTasks(
-      userTasks.filter((task) =>
-        task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
-      )
-    );
+  // const handleSearchTask = (value) => {
+  //   console.log("value", value);
+  //   setSearchValue(value);
+  //   setFilteredTasks(
+  //     userTasks.filter((task) =>
+  //       task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+  //     )
+  //   );
 
-    console.log("filteredTasks", filteredTasks);
-  };
+  //   console.log("filteredTasks", filteredTasks);
+  // };
 
   useEffect(() => {
     const requestData = {

@@ -4,13 +4,13 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 import "./style.css";
 
 
-const AdminUserScreen = () => {
+const AdminUserScreen = ({subAdminView}) => {
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext()
     const handleLogout = () => navigate("/logout");
 
     return <>
-        <StaffJobLandingLayout adminView={true} handleNavIconClick={() => navigate("/add-job")} adminAlternativePageActive={true} pageTitle={"User"} subAdminView={true}>
+        <StaffJobLandingLayout adminView={true} handleNavIconClick={() => navigate("/add-job")} adminAlternativePageActive={true} pageTitle={"User"} subAdminView={subAdminView}>
         <div className="user__Page__Container admin">
 
             <div className="user__Intro__Item__Container">

@@ -75,17 +75,57 @@ const AccountPage = () => {
     console.log("value", value);
     setSearchValue(value);
     console.log("value", candidatesData.selectedCandidates);
-    setFilteredJobs(
-      candidatesData.selectedCandidates.filter(
-        (job) =>
-          job.job_title
-            .toLocaleLowerCase()
-            .includes(value.toLocaleLowerCase()) ||
-          job.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
-      )
-    );
+    if ((section === "home" || section == undefined) && hireTabActive) {
+      setFilteredJobs(
+        candidatesData.selectedCandidates.filter(
+          (job) =>
+            job.job_title
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase()) ||
+            job.applicant
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase())
+        )
+      );
 
-    console.log("filteredJobs", filteredJobs);
+      console.log("filteredJobs", filteredJobs);
+    } else if (section === "onboarding" && showOnboarding) {
+      setFilteredJobs(
+        candidatesData.selectedCandidates.filter(
+          (job) =>
+            job.job_title
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase()) ||
+            job.applicant
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase())
+        )
+      );
+    } else if (section === "rehire" && rehireTabActive) {
+      setFilteredJobs(
+        candidatesData.selectedCandidates.filter(
+          (job) =>
+            job.job_title
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase()) ||
+            job.applicant
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase())
+        )
+      );
+    } else if (section === "rejected") {
+      setFilteredJobs(
+        candidatesData.selectedCandidates.filter(
+          (job) =>
+            job.job_title
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase()) ||
+            job.applicant
+              .toLocaleLowerCase()
+              .includes(value.toLocaleLowerCase())
+        )
+      );
+    }
   };
 
   useEffect(() => {

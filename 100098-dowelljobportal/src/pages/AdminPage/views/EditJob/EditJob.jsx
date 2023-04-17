@@ -18,7 +18,7 @@ import { updateJob } from '../../../../services/adminServices';
 import { toast } from 'react-toastify';
 
 
-function EditJob() {
+function EditJob({subAdminView}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -275,7 +275,7 @@ function EditJob() {
         showAnotherBtn={true}
         btnIcon={<MdArrowBackIos size="1.5rem" />}
         handleNavIcon={() => navigate(-1)}
-        subAdminView={true}
+        subAdminView={subAdminView}
       >
         <Wrapper>
           <div className="container edit__page_Admin__T">

@@ -15,7 +15,7 @@ import { Tooltip } from "react-tooltip";
 import "./style.css";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 
-const AddJob = () => {
+const AddJob = ({subAdminView}) => {
   const { currentUser } = useCurrentUserContext();
   const navigate = useNavigate();
   const { setJobs } = useJobContext();
@@ -166,7 +166,7 @@ const AddJob = () => {
       showAnotherBtn={true}
       btnIcon={<MdArrowBackIos size="1.5rem" />}
       handleNavIcon={() => navigate(-1)}
-      subAdminView={true}
+      subAdminView={subAdminView}
     >
       <div className="job_container">
         {/*<Link to="/" className="navLink">
