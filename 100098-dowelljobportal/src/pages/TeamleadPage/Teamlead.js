@@ -61,6 +61,7 @@ const Teamlead = () => {
     console.log("value", value);
     setSearchValue(value);
     console.log("value", candidatesData.selectedCandidates);
+    console.log("section", section);
     if ((section === "home" || section == undefined) && selectedTabActive) {
       setFilteredJobs(
         candidatesData.selectedCandidates.filter(
@@ -77,7 +78,7 @@ const Teamlead = () => {
       console.log("filteredJobs", filteredJobs);
     } else if (section === "rehire" && rehireTabActive) {
       setFilteredJobs(
-        candidatesData.selectedCandidates.filter(
+        candidatesData.candidatesToRehire.filter(
           (job) =>
             job.job_title
               .toLocaleLowerCase()
@@ -89,16 +90,10 @@ const Teamlead = () => {
       );
 
       console.log("filteredJobs", filteredJobs);
-    } else if (section === "tasks") {
+    } else if (section === "task") {
       setFilteredTasks(
-        userTasks.filter(
-          (task) =>
-            task.applicant
-              .toLocaleLowerCase()
-              .includes(value.toLocaleLowerCase()) ||
-            task.task_title
-              .toLocaleLowerCase()
-              .includes(value.toLocaleLowerCase())
+        userTasks.filter((task) =>
+          task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
         )
       );
 
@@ -368,7 +363,7 @@ const Teamlead = () => {
             <>
               <SelectedCandidates
                 candidatesCount={
-                  selectedTabActive
+                  selectedTabActive 
                     ? candidatesData.selectedCandidates.length
                     : rehireTabActive
                     ? candidatesData.candidatesToRehire.length
@@ -498,7 +493,7 @@ const Teamlead = () => {
                 {section === "task" ? (
                   searchValue.length >= 1 ? (
                     React.Children.toArray(
-                      filteredJobs.map((dataitem) => {
+                      filteredTasks.map((dataitem) => {
                         return (
                           <JobCard
                             buttonText={"View"}
