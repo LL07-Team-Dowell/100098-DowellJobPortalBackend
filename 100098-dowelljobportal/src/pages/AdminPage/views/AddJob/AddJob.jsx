@@ -166,6 +166,7 @@ const AddJob = () => {
       showAnotherBtn={true}
       btnIcon={<MdArrowBackIos size="1.5rem" />}
       handleNavIcon={() => navigate(-1)}
+      subAdminView={true}
     >
       <div className="job_container">
         {/*<Link to="/" className="navLink">

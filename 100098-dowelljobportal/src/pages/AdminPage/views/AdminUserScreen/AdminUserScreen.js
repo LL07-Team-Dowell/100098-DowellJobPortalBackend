@@ -10,7 +10,7 @@ const AdminUserScreen = () => {
     const handleLogout = () => navigate("/logout");
 
     return <>
-        <StaffJobLandingLayout adminView={true} handleNavIconClick={() => navigate("/add-job")} adminAlternativePageActive={true} pageTitle={"User"}>
+        <StaffJobLandingLayout adminView={true} handleNavIconClick={() => navigate("/add-job")} adminAlternativePageActive={true} pageTitle={"User"} subAdminView={true}>
         <div className="user__Page__Container admin">
 
             <div className="user__Intro__Item__Container">

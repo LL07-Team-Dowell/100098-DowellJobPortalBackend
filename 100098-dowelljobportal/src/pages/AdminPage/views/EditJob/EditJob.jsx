@@ -275,6 +275,7 @@ function EditJob() {
         showAnotherBtn={true}
         btnIcon={<MdArrowBackIos size="1.5rem" />}
         handleNavIcon={() => navigate(-1)}
+        subAdminView={true}
       >
         <Wrapper>
           <div className="container edit__page_Admin__T">

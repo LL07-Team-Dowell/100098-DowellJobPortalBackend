@@ -9,10 +9,10 @@ import { accountNavigationLinks } from "../../pages/AccountPage/accountNavigatio
 import { teamleadNavigationLinks } from "../../pages/TeamleadPage/teamleadNavigationLinks";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useMediaQuery } from "@mui/material";
-import { adminNavigationLinks } from "../../pages/AdminPage/views/adminNavigationLinks";
+import { adminNavigationLinks, subAdminNavigationLinks } from "../../pages/AdminPage/views/adminNavigationLinks";
 
 
-const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, runExtraFunctionOnNavItemClick, hideSideBar, adminView, searchValue, setSearchValue, handleNavIconClick, adminAlternativePageActive, pageTitle, hideTitleBar, showAnotherBtn, btnIcon, handleNavIcon }) => {
+const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, runExtraFunctionOnNavItemClick, hideSideBar, adminView, searchValue, setSearchValue, handleNavIconClick, adminAlternativePageActive, pageTitle, hideTitleBar, showAnotherBtn, btnIcon, handleNavIcon, subAdminView }) => {
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     
     return <>
@@ -59,7 +59,7 @@ const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, ru
         </nav>
         <main>
             <div className={`staff__Jobs__Layout__Content__Container ${accountView ? 'account' : ''}`}>
-                { !hideSideBar && <NewSideNavigationBar className={hideTitleBar ? 'full__Height' : ''} links={hrView ? hrNavigationLinks : accountView ? accountNavigationLinks : teamleadView ? teamleadNavigationLinks : adminView ? adminNavigationLinks : []} runExtraFunctionOnNavItemClick={runExtraFunctionOnNavItemClick} /> }
+                { !hideSideBar && <NewSideNavigationBar className={hideTitleBar ? 'full__Height' : ''} links={hrView ? hrNavigationLinks : accountView ? accountNavigationLinks : teamleadView ? teamleadNavigationLinks : adminView ? subAdminView ? subAdminNavigationLinks : adminNavigationLinks : []} runExtraFunctionOnNavItemClick={runExtraFunctionOnNavItemClick} /> }
                 <div className={`jobs__Layout__Content ${adminView ? 'full__Width' : ''}`}>
                     { children }
                 </div>

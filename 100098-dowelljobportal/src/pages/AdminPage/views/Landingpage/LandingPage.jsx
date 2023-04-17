@@ -84,6 +84,7 @@ const LandingPage = () => {
       handleNavIconClick={() => navigate("/add-job")} 
       searchValue={searchValue}
       setSearchValue={handleSearchChange}
+      subAdminView={true}
     >
       <div className="landing-page">
         <div className="cards">

@@ -10,7 +10,7 @@ import { getSettingUserProfileInfo } from "../../../../services/settingServices"
 import { useJobContext } from "../../../../contexts/Jobs";
 import { getApplicationForAdmin } from "../../../../services/adminServices";
 
-const rolesDict = {'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr"};
+const rolesDict = {'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr", "sub_admin":"Sub Admin"};
 
 const AdminSettings = () => {
     const {currentUser, setCurrentUser} = useCurrentUserContext() ; 
