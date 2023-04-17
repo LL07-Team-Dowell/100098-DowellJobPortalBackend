@@ -24,7 +24,7 @@ const AddJob = ({subAdminView}) => {
     job_number: crypto.randomUUID(),
     job_title: "",
     skills: "",
-    qualifications: "",
+    qualification: "",
     job_category: "",
     type_of_job: "",
     time_interval: "",
@@ -203,11 +203,11 @@ const AddJob = ({subAdminView}) => {
                 placeholder={"Enter Skills"}
                 required
               />
-              <label htmlFor="qualifications">Qualifications</label>
+              <label htmlFor="qualification">Qualifications</label>
               <input
                 type={"text"}
-                name={"qualifications"}
-                value={newJob.qualifications}
+                name={"qualification"}
+                value={newJob.qualification}
                 onChange={(e) => handleChange(e.target.value, e.target.name)}
                 placeholder={"Enter Qualifications"}
                 required
