@@ -342,7 +342,7 @@ const AddJob = ({subAdminView}) => {
                     </div>
                   </div>
                 </>
-              ) : newJob.job_category === "employee" ? (
+              ) : newJob.job_category === "Employee" ? (
                 <>
                   <h3>Type of Job</h3>
                   <div className="type_of_job">
