@@ -108,7 +108,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.accountRole
+    testingRoles.accountRole
   ) {
     return (
       <Routes>
@@ -131,6 +131,94 @@ function App() {
       </Routes>
     );
   }
+
+
+  // SUB-ADMIN PAGE
+  if (
+    currentUser.settings_for_profile_info &&
+    currentUser.settings_for_profile_info.profile_info[0].Role ===
+    testingRoles.subAdminRole
+  ) {
+    return (
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <JobContextProvider>
+              {" "}
+              <LandingPage />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/logout"
+          element={
+            <JobContextProvider>
+              {" "}
+              <Logout />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/edit-job/:id"
+          element={
+            <JobContextProvider>
+              <EditJob />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/view-job/:id"
+          element={
+            <JobContextProvider>
+              <ViewJob />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/add-job"
+          element={
+            <JobContextProvider>
+              <AddJob />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/user"
+          element={
+            <JobContextProvider>
+              <AdminUserScreen />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/report"
+          element={
+            <JobContextProvider>
+              <AdminReports />
+            </JobContextProvider>
+          }
+        />
+        {/* <Route
+          path="/settings"
+          element={
+            <JobContextProvider>
+              <AdminSettings />
+            </JobContextProvider>
+          }
+        /> */}
+        <Route
+          path="*"
+          element={
+            <JobContextProvider>
+              <ErrorPage />
+            </JobContextProvider>
+          }
+        />
+      </Routes>
+    );
+  }
+
 
   // ADMIN PAGE
   if (
@@ -227,7 +315,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.hrRole
+    testingRoles.hrRole
   ) {
     return (
       <Routes>
@@ -300,7 +388,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.teamLeadRole
+    testingRoles.teamLeadRole
   ) {
     return (
       <Routes>
