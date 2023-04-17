@@ -307,6 +307,16 @@ function EditJob() {
                   />
                 </div>
                 <div className='input__data'>
+                  <label htmlFor="qualification">Qualification</label>
+                  <input
+                    type="text"
+                    id="qualification"
+                    name="qualification"
+                    defaultValue={qualification}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className='input__data'>
                   <label htmlFor="job_category">Job Category</label>
                   <div className="input__data__row">
                     <div className="data">
