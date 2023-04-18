@@ -58,20 +58,22 @@ function EditJob() {
   const [selectedOption, setSelectedOption] = useState(job_category || "");
   const [active, setActive] = useState(is_active);
   const [typeofOption, setTypeofOption] = useState(type_of_job || "");
-  console.log(typeofOption);
+
+  console.log(general_terms);
+
   useEffect(() => {
     setSelectedOption(job_category);
     setActive(is_active);
-    setTypeofOption(type_of_job)
-  }, [singleJob]);
+    setTypeofOption(type_of_job);
+  }, [job_category]);
 
 
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setUpdateLoading(true);
-    setLoading(false)
+    // setLoading(false)
     console.log(formData);
-    updateJob(formData)
+    await updateJob(formData)
       .then(response => {
         console.log(response)
         if (response.status === 200) {
@@ -82,12 +84,11 @@ function EditJob() {
       .catch(error => console.log(error));
 
     setUpdateLoading(false);
-
   }
 
   useEffect(() => {
     if (jobs.length > 0) return setLoading(false);
-    setLoading(true);
+    // setLoading(true);
     const datass = currentUser.portfolio_info[0].org_id;
     getJobs(datass).then(res => {
       setJobs(res.data.response.data.filter(job => job.data_type === currentUser?.portfolio_info[0]?.data_type));
@@ -106,7 +107,7 @@ function EditJob() {
         formDataUpdates.job_title = job_title;
         formDataUpdates.description = description;
         formDataUpdates.skills = skills;
-        formDataUpdates.job_category = selectedOption;
+        formDataUpdates.job_category = job_category;
         formDataUpdates.time_interval = time_interval;
         formDataUpdates.payment = payment;
         formDataUpdates.type_of_job = typeofOption;
@@ -131,12 +132,13 @@ function EditJob() {
       default:
         break;
     }
+
     setFormData(prevState => ({
       ...prevState,
       ...formDataUpdates
     }));
 
-  }, [payment_terms, data_type, description, general_terms, is_active, selectedOption, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, document_id]);
+  }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -225,45 +227,6 @@ function EditJob() {
   }
 
 
-  // const handleSubmit = async (event) => {
-  //   // event.preventDeafult();
-  //   setUpdateLoading(true);
-  //   alert("clicked")
-  //   // try {
-  //   //   fetch('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
-  //   //     method: 'POST',
-  //   //     headers: {
-  //   //       'Content-Type': 'application/json',
-  //   //     },
-  //   //     body: JSON.stringify(formData),
-  //   //   })
-  //   //     .then((res) => res.json())
-  //   //     .then((data) => {
-  //   //       console.log(data);
-  //   //     });
-  //   // } catch (e) {
-  //   //   setError(e)
-  //   // }
-  //   console.log(formData);
-  //   try {
-  //     const response = await updateJob(formData);
-  //     console.log(formData);
-  //     console.log(response);
-
-  //     // if (response.status === 200) {
-  //     //   formData((prevValue) => [formData, ...prevValue]);
-  //     //   toast.success("Job updation successfully");
-  //     //   navigate("/");
-  //     // } else {
-  //     //   toast.info("Something went wrong");
-  //     // }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-  //   }
-
-  //   setUpdateLoading(false);
-  // };
-
 
   if (loading) return <LoadingSpinner />
 
@@ -283,7 +246,7 @@ function EditJob() {
                 <h3>Job Details</h3>
               </div>
 
-              <form onSubmit={handleSubmit}>
+              <form>
                 <div className='input__data'>
                   <label htmlFor="job_title">Name of Job</label>
                   <input
@@ -599,7 +562,7 @@ function EditJob() {
                     <label>Add Others</label>
                   </div>
                 </div>
-                <button type="submit" className="save__button" disabled={updateLoading}>
+                <button onClick={handleSubmit} className="save__button" disabled={updateLoading}>
                   {updateLoading ? <LittleLoading /> : `Save`}
                 </button>
               </form>
