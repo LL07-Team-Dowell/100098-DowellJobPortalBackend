@@ -77,7 +77,7 @@ const AccountPage = () => {
     console.log("value", candidatesData.selectedCandidates);
     if ((section === "home" || section == undefined) && hireTabActive) {
       setFilteredJobs(
-        candidatesData.selectedCandidates.filter(
+        candidatesData.candidatesToHire.filter(
           (job) =>
             job.job_title
               .toLocaleLowerCase()
@@ -91,7 +91,7 @@ const AccountPage = () => {
       console.log("filteredJobs", filteredJobs);
     } else if (section === "onboarding" && showOnboarding) {
       setFilteredJobs(
-        candidatesData.selectedCandidates.filter(
+        candidatesData.onboardingCandidates.filter(
           (job) =>
             job.job_title
               .toLocaleLowerCase()
@@ -103,7 +103,7 @@ const AccountPage = () => {
       );
     } else if (section === "rehire" && rehireTabActive) {
       setFilteredJobs(
-        candidatesData.selectedCandidates.filter(
+        candidatesData.candidatesToRehire.filter(
           (job) =>
             job.job_title
               .toLocaleLowerCase()
@@ -115,14 +115,8 @@ const AccountPage = () => {
       );
     } else if (section === "rejected") {
       setFilteredJobs(
-        candidatesData.selectedCandidates.filter(
-          (job) =>
-            job.job_title
-              .toLocaleLowerCase()
-              .includes(value.toLocaleLowerCase()) ||
-            job.applicant
-              .toLocaleLowerCase()
-              .includes(value.toLocaleLowerCase())
+        candidatesData.rejectedCandidates.filter((job) =>
+          job.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
         )
       );
     }
