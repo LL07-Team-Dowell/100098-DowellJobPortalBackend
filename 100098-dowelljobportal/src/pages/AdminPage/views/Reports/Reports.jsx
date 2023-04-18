@@ -1,7 +1,7 @@
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout"
 
-const AdminReports = () => {
-    return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Reports"}>
+const AdminReports = ({subAdminView}) => {
+    return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Reports"} subAdminView={subAdminView}>
             <div style={{
                 display:"flex" , alignContent:"center", justifyContent:"center"
             }}>

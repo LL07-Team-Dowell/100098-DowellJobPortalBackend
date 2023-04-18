@@ -13,7 +13,7 @@ import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getApplicationForAdmin } from "../../../../services/adminServices";
 import { useState } from "react";
-const LandingPage = () => {
+const LandingPage = ({subAdminView}) => {
   const { jobs, setJobs , setlist , jobs2 , setjobs2 , searchValue ,setsearchValue  } = useJobContext();
   const handleSearchChange = (value) =>{
     console.log("kasaksldjalksdjalksdjlkjsakl") 
@@ -84,6 +84,7 @@ const LandingPage = () => {
       handleNavIconClick={() => navigate("/add-job")} 
       searchValue={searchValue}
       setSearchValue={handleSearchChange}
+      subAdminView={subAdminView}
     >
       <div className="landing-page">
         <div className="cards">

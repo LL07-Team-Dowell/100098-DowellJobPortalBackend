@@ -24,3 +24,21 @@ export const adminNavigationLinks = [
         text: "Settings",
     },
 ]
+
+export const subAdminNavigationLinks = [
+    {
+        linkAddress: "/",
+        icon: <FiHome />,
+        text: "Home",
+    },
+    {
+        linkAddress: "/add-job",
+        icon: <AiOutlinePlus />,
+        text: "Add job",
+    },
+    {
+        linkAddress: "/report",
+        icon: <TbBrandGoogleAnalytics />,
+        text: "Report",
+    },
+]

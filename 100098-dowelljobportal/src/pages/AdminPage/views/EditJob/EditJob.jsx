@@ -18,7 +18,7 @@ import { updateJob } from '../../../../services/adminServices';
 import { toast } from 'react-toastify';
 
 
-function EditJob() {
+function EditJob({subAdminView}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -58,20 +58,22 @@ function EditJob() {
   const [selectedOption, setSelectedOption] = useState(job_category || "");
   const [active, setActive] = useState(is_active);
   const [typeofOption, setTypeofOption] = useState(type_of_job || "");
-  console.log(typeofOption);
+
+  console.log(general_terms);
+
   useEffect(() => {
     setSelectedOption(job_category);
     setActive(is_active);
-    setTypeofOption(type_of_job)
-  }, [singleJob]);
+    setTypeofOption(type_of_job);
+  }, [job_category]);
 
 
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setUpdateLoading(true);
-    setLoading(false)
+    // setLoading(false)
     console.log(formData);
-    updateJob(formData)
+    await updateJob(formData)
       .then(response => {
         console.log(response)
         if (response.status === 200) {
@@ -82,12 +84,11 @@ function EditJob() {
       .catch(error => console.log(error));
 
     setUpdateLoading(false);
-
   }
 
   useEffect(() => {
     if (jobs.length > 0) return setLoading(false);
-    setLoading(true);
+    // setLoading(true);
     const datass = currentUser.portfolio_info[0].org_id;
     getJobs(datass).then(res => {
       setJobs(res.data.response.data.filter(job => job.data_type === currentUser?.portfolio_info[0]?.data_type));
@@ -106,7 +107,7 @@ function EditJob() {
         formDataUpdates.job_title = job_title;
         formDataUpdates.description = description;
         formDataUpdates.skills = skills;
-        formDataUpdates.job_category = selectedOption;
+        formDataUpdates.job_category = job_category;
         formDataUpdates.time_interval = time_interval;
         formDataUpdates.payment = payment;
         formDataUpdates.type_of_job = typeofOption;
@@ -131,12 +132,13 @@ function EditJob() {
       default:
         break;
     }
+
     setFormData(prevState => ({
       ...prevState,
       ...formDataUpdates
     }));
 
-  }, [payment_terms, data_type, description, general_terms, is_active, selectedOption, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, document_id]);
+  }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -225,45 +227,6 @@ function EditJob() {
   }
 
 
-  // const handleSubmit = async (event) => {
-  //   // event.preventDeafult();
-  //   setUpdateLoading(true);
-  //   alert("clicked")
-  //   // try {
-  //   //   fetch('https://100098.pythonanywhere.com/admin_management/update_jobs/', {
-  //   //     method: 'POST',
-  //   //     headers: {
-  //   //       'Content-Type': 'application/json',
-  //   //     },
-  //   //     body: JSON.stringify(formData),
-  //   //   })
-  //   //     .then((res) => res.json())
-  //   //     .then((data) => {
-  //   //       console.log(data);
-  //   //     });
-  //   // } catch (e) {
-  //   //   setError(e)
-  //   // }
-  //   console.log(formData);
-  //   try {
-  //     const response = await updateJob(formData);
-  //     console.log(formData);
-  //     console.log(response);
-
-  //     // if (response.status === 200) {
-  //     //   formData((prevValue) => [formData, ...prevValue]);
-  //     //   toast.success("Job updation successfully");
-  //     //   navigate("/");
-  //     // } else {
-  //     //   toast.info("Something went wrong");
-  //     // }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-  //   }
-
-  //   setUpdateLoading(false);
-  // };
-
 
   if (loading) return <LoadingSpinner />
 
@@ -275,6 +238,7 @@ function EditJob() {
         showAnotherBtn={true}
         btnIcon={<MdArrowBackIos size="1.5rem" />}
         handleNavIcon={() => navigate(-1)}
+        subAdminView={subAdminView}
       >
         <Wrapper>
           <div className="container edit__page_Admin__T">
@@ -283,7 +247,7 @@ function EditJob() {
                 <h3>Job Details</h3>
               </div>
 
-              <form onSubmit={handleSubmit}>
+              <form>
                 <div className='input__data'>
                   <label htmlFor="job_title">Name of Job</label>
                   <input
@@ -303,6 +267,16 @@ function EditJob() {
                     name="skills"
                     // placeholder='Figma, XD'
                     defaultValue={skills}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className='input__data'>
+                  <label htmlFor="qualification">Qualification</label>
+                  <input
+                    type="text"
+                    id="qualification"
+                    name="qualification"
+                    defaultValue={qualification}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -589,7 +563,7 @@ function EditJob() {
                     <label>Add Others</label>
                   </div>
                 </div>
-                <button type="submit" className="save__button" disabled={updateLoading}>
+                <button onClick={handleSubmit} className="save__button" disabled={updateLoading}>
                   {updateLoading ? <LittleLoading /> : `Save`}
                 </button>
               </form>
@@ -837,9 +811,44 @@ const Wrapper = styled.section`
     }
 
     @media only screen and (max-width: 900px){
-      .container{
-        padding-right: 4rem;
+      main {
+        padding: 0 40px;
       }
+      .container{
+        .job__details{
+          padding: 0px 0px;
+          border-radius: 10px;
+          margin: auto;
+          width: 95%;
+        }
+
+        .job__details form .gernaral__term {
+          padding-bottom: 4px;
+          color: #005734;
+          font-weight: 600;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .add__item svg{
+            width: 100%;
+          }
+
+          .add__item label{
+            display: none;
+          }
+
+          .gernaral__term {
+            display: flex;
+          }
+
+          .item p{
+            width: 200px;
+          }
+      }
+
+      }
+
       .staff__Jobs__Layout__Navigation__Container.admin .admin__View__Title__Container {
         justify-content: space-between;
         width: auto !important;
@@ -851,18 +860,9 @@ const Wrapper = styled.section`
         }
       }
     }
+
     @media only screen and (max-width: 510px){
-        .stateofjob{
-          position: relative;
-         label{
-          width: 10rem;
-         }
-         .data{
-          position: absolute;
-          bottom: -13px;
-          right: 0;
-         }
-        }
+        
     }
 
     
