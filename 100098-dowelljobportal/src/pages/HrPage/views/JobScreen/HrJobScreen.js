@@ -87,51 +87,79 @@ function HrJobScreen() {
     // }).catch(err => {
     //   console.log(err)
     // });
-    getCandidateApplicationsForHr({company_id: currentUser.portfolio_info[0].org_id})
-    .then(res => {
-      const filteredData = res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
+
+    Promise.all([
+      getCandidateApplicationsForHr({company_id: currentUser.portfolio_info[0].org_id}),
+      getJobs2({company_id: currentUser.portfolio_info[0].org_id}),
+      getSettingUserProject(),
+      getCandidateTask({company_id: currentUser.portfolio_info[0].org_id}),
+    ])
+    .then((res) => {
+      const filteredData = res[0].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
       setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
       setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
       setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
-      setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));   
+      setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
+
+      setJobs(res[1].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
+      setLoading(false);
+
+      const list = res[2].data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type);
+      const newList = list.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id);
+      // console.log(newList);
+      setCurrentProjects(newList.project_list);
+
+      const usersWithTasks = [...new Map(res[3].data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [task.applicant, task])).values()];
+      setAllTasks(usersWithTasks.reverse());
+      setLoading(false);
     })
     .catch(err => console.log(err))
 
+    // getCandidateApplicationsForHr({company_id: currentUser.portfolio_info[0].org_id})
+    // .then(res => {
+    //   const filteredData = res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
+    //   setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
+    //   setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
+    //   setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
+    //   setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));   
+    // })
+    // .catch(err => console.log(err))
 
 
-    getJobs2({company_id: currentUser.portfolio_info[0].org_id}).then(res => {
-      setJobs(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
-      setLoading(false)
-    }).catch(err => {
-      console.log(err)
-    });
 
-    getSettingUserProject().then(res => {
-      console.log(res.data)
-      const list = res.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type) ; 
-      const newList = list.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id) ;
-      // console.log({newList  })
-      setCurrentProjects(newList.project_list);
-    }).catch(err => {
-      console.log(err)
-    });
-
-    // fetchCandidateTasks().then(res => {
-    //   const usersWithTasks = [...new Map(res.data.map(task => [ task.user, task ])).values()];
-    //   setAllTasks(usersWithTasks.reverse());
-    //   setLoading(false);
+    // getJobs2({company_id: currentUser.portfolio_info[0].org_id}).then(res => {
+    //   setJobs(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
+    //   setLoading(false)
     // }).catch(err => {
     //   console.log(err)
     // });
+
+    // getSettingUserProject().then(res => {
+    //   console.log(res.data)
+    //   const list = res.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type) ; 
+    //   const newList = list.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id) ;
+    //   // console.log({newList  })
+    //   setCurrentProjects(newList.project_list);
+    // }).catch(err => {
+    //   console.log(err)
+    // });
+
+    // // fetchCandidateTasks().then(res => {
+    // //   const usersWithTasks = [...new Map(res.data.map(task => [ task.user, task ])).values()];
+    // //   setAllTasks(usersWithTasks.reverse());
+    // //   setLoading(false);
+    // // }).catch(err => {
+    // //   console.log(err)
+    // // });
     
 
-    getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
-    }).then(resp => {
-      console.log(resp.data.response.data) ;
-      const usersWithTasks = [...new Map(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [ task.applicant, task ])).values()];
-      setAllTasks(usersWithTasks.reverse());
-      setLoading(false);
-    }).catch(err => console.log(err))
+    // getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
+    // }).then(resp => {
+    //   console.log(resp.data.response.data) ;
+    //   const usersWithTasks = [...new Map(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [ task.applicant, task ])).values()];
+    //   setAllTasks(usersWithTasks.reverse());
+    //   setLoading(false);
+    // })
   }, [])
 
   useEffect(() => {

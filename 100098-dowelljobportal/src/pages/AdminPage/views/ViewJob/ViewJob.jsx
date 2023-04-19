@@ -61,6 +61,8 @@ const ViewJob = () => {
                 <div><h5>TimePeriod:</h5> <span>{time_interval}</span></div>
                 <div><h5>Payment:</h5> <span>{payment}</span></div>
                 <div><h5>Job Type:</h5> <span>{type_of_job}</span></div>
+                <div><h5>Job Category:</h5> <span>{job_category}</span></div>
+                <div><h5>Qualification:</h5> <span>{qualification}</span></div>
             
 
                 {description.length > 0 && <><h4>Job Description:</h4>

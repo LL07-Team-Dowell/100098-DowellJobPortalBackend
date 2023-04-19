@@ -12,7 +12,7 @@ import { useMediaQuery } from "@mui/material";
 import { adminNavigationLinks, subAdminNavigationLinks } from "../../pages/AdminPage/views/adminNavigationLinks";
 
 
-const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, runExtraFunctionOnNavItemClick, hideSideBar, adminView, searchValue, setSearchValue, handleNavIconClick, adminAlternativePageActive, pageTitle, hideTitleBar, showAnotherBtn, btnIcon, handleNavIcon, subAdminView }) => {
+const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, runExtraFunctionOnNavItemClick, hideSideBar, adminView, searchValue, setSearchValue, handleNavIconClick, adminAlternativePageActive, pageTitle, hideTitleBar, showAnotherBtn, btnIcon, handleNavIcon, subAdminView, searchPlaceHolder }) => {
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     
     return <>
@@ -38,10 +38,11 @@ const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, ru
                         </div> :
                         <></>
                 }
+                {/*adminView ? "Search by skill, job" : "Search for job/applicant";*/}
                 {
                     adminView && adminAlternativePageActive ? 
                     <></> :
-                    <SearchBar placeholder={adminView ? "Search by skill, job" : "Search for job/project"} searchValue={searchValue} handleSearchChange={setSearchValue} />
+                    <SearchBar placeholder={adminView ? searchPlaceHolder ? searchPlaceHolder : "Search by skill, job" : "Search for job/applicant"} searchValue={searchValue} handleSearchChange={setSearchValue} />
                 }
                 {
                     hideTitleBar ?
@@ -69,3 +70,4 @@ const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, ru
 }
 
 export default StaffJobLandingLayout;
+
