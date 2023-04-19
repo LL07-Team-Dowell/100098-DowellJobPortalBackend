@@ -29,12 +29,12 @@ const Card = ({
   const { list } = useJobContext();
 
   const { currentUser } = useCurrentUserContext();
-  console.log(currentUser.portfolio_info[0].org_id)
+  // console.log(currentUser.portfolio_info[0].org_id)
   // console.log({job_number}) 
-  const [number , setnumber] = useState(0)
-  useEffect(()=>{
-        setnumber(list.filter(j => j.job_number === job_number).length)
-  },[])
+  const [number, setnumber] = useState(0)
+  useEffect(() => {
+    setnumber(list.filter(j => j.job_number === job_number).length)
+  }, [jobs])
   const date = () => {
     const givenDate = new Date(created_on);
     const timeDiff = new Date().getTime() - givenDate.getTime();
@@ -57,25 +57,25 @@ const Card = ({
   };
   const [is_activee, setIsActive] = useState(is_active);
   const [loading, setLoading] = useState(false);
-  const [deletingLoading , setDeletingLoading] = useState(false) ; 
+  const [deletingLoading, setDeletingLoading] = useState(false);
   const handleDeleteOfJob = async (id) => {
-      console.log("SADASDSADASDSD") ; 
-      setDeletingLoading(true) ; 
+    // console.log("SADASDSADASDSD");
+    setDeletingLoading(true);
 
-    try{
+    try {
       const response = await deleteJob({
         "document_id": _id
-      }) ; 
-      console.log(response) ;
+      });
+      // console.log(response);
       const newJobs = [...jobs];
-      const newJob =  newJobs.filter(job => job._id !== id)
-      console.log({newJob})
-      setJobs(newJob); 
-      setDeletingLoading(false) ; 
+      const newJob = newJobs.filter(job => job._id !== id)
+      // console.log({ newJob })
+      setJobs(newJob);
+      setDeletingLoading(false);
     }
-    catch(err){
-      console.log(err) ; 
-      setDeletingLoading(false) ; 
+    catch (err) {
+      // console.log(err);
+      setDeletingLoading(false);
 
     }
   };
@@ -83,18 +83,18 @@ const Card = ({
   const handleCheckboxChange = () => {
     setIsActive(!is_activee);
     setLoading(true);
-    console.log({ id: _id, is_activee });
+    // console.log({ id: _id, is_activee });
     axios
       .post("https://100098.pythonanywhere.com/admin_management/update_jobs/", {
         document_id: _id,
         is_active: !is_activee,
       })
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
       });
   };
   if (job_title === null) return <></>;
@@ -106,9 +106,9 @@ const Card = ({
           <Link to={`/edit-job/${_id}`}>
             <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
           </Link>
-          {deletingLoading ? <LittleLoading/> : <MdDelete
+          {deletingLoading ? <LittleLoading /> : <MdDelete
             style={{ fontSize: "1.3rem", color: "#000" }}
-            onClick={()=>handleDeleteOfJob(_id)}
+            onClick={() => handleDeleteOfJob(_id)}
             className="delete__icon"
           />}
         </div>
