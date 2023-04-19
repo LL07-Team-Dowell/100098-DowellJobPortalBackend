@@ -14,7 +14,7 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getApplicationForAdmin } from "../../../../services/adminServices";
 import { useState } from "react";
 const LandingPage = ({subAdminView}) => {
-  const { jobs, setJobs , setlist , jobs2 , setjobs2 , searchValue ,setsearchValue  } = useJobContext();
+  const { jobs, setJobs , setlist , jobs2 , setjobs2 , searchValue ,setsearchValue ,resp , setresponse  } = useJobContext();
   const handleSearchChange = (value) =>{
     console.log("kasaksldjalksdjalksdjlkjsakl") 
     setsearchValue(value) ; 
@@ -46,6 +46,7 @@ const LandingPage = ({subAdminView}) => {
           console.log('AAAAAAAA',response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )) ; 
           setJobs(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data"));
           setjobs2(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data")) ; 
+          setresponse(true);
           
         })
         .catch((error) => console.log(error));
@@ -89,7 +90,7 @@ const LandingPage = ({subAdminView}) => {
       <div className="landing-page">
         <div className="cards">
           {
-            jobs.length === 0 && searchValue ? <h1>No Job Found</h1>
+            jobs.length === 0 && searchValue || jobs.length === 0  && resp ? <h1>No Job Found</h1>
             :
             jobs.length > 0 ? (
               jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )
