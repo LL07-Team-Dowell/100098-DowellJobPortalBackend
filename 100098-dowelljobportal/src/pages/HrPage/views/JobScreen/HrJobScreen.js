@@ -25,6 +25,10 @@ import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getCandidateApplicationsForHr, getCandidateTask, getSettingUserProject } from '../../../../services/hrServices';
 import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenAllTasks';
 
+function fuzzySearch(query, text) {
+  const searchRegex = new RegExp(query.split('').join('.*'), 'i');
+  return searchRegex.test(text);
+}
 
 function HrJobScreen() {
   const { currentUser } = useCurrentUserContext();
@@ -153,13 +157,14 @@ function HrJobScreen() {
     // // });
     
 
-    // getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
-    // }).then(resp => {
-    //   console.log(resp.data.response.data) ;
-    //   const usersWithTasks = [...new Map(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [ task.applicant, task ])).values()];
-    //   setAllTasks(usersWithTasks.reverse());
-    //   setLoading(false);
-    // })
+    getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
+    }).then(resp => {
+      console.log(resp.data.response.data) ;
+      const usersWithTasks = [...new Map(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [ task.applicant, task ])).values()];
+      setAllTasks(usersWithTasks.reverse());
+      console.log(usersWithTasks.reverse())
+      setLoading(false);
+    }).catch(err => console.log(err))
   }, [])
 
   useEffect(() => {
@@ -167,7 +172,9 @@ function HrJobScreen() {
     if (jobSearchInput.length < 1) return setSearchActive(false);
     
     setSearchActive(true);
-    setMatchedJobs(jobs.filter(job => job.skills.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase()) || job.job_title.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase())));
+    // setMatchedJobs(jobs.filter(job => job.skills.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase()) || job.job_title.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase())));
+    setMatchedJobs(jobs.filter(job => fuzzySearch(jobSearchInput.toLowerCase(), job.skills.toLowerCase()) || fuzzySearch(jobSearchInput.toLowerCase(), job.job_title.toLowerCase())
+    ))
 
   }, [jobSearchInput])
 

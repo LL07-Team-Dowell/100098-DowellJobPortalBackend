@@ -123,3 +123,25 @@ $main__gray : #7C7C7C ;
             }
 }
 
+@media(max-width:500px){
+  .container .header > div p{
+    font-size: 1.1rem;
+  }
+  .container .header > button {
+    font-size: 1rem;
+  }
+  .container .job-discription {
+    padding: 0.8rem 1.45rem;
+    padding-bottom: 75px;
+    width: 350px;
+    transform: translateX(-20px);
+}
+.container .job-discription > button{
+    width: 5.75rem;
+    transform: translateY(+20px);
+
+}
+.container .job-discription > div{
+  width: 97%;
+}
+}
