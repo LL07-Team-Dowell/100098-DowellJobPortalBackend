@@ -122,14 +122,14 @@ function JobScreen() {
 
     }, [currentJobCategory])
 
-    useEffect(() => {
+    useEffect(async () => {
         if (jobs.length > 0) {
             setAllRequestsDone(true);
             setJobsLoading(false);
             return
         }
         const datass = currentUser.portfolio_info[0].org_id;
-        getJobs(datass).then(res => {
+        await getJobs(datass).then(res => {
             // setJobs(res.data.sort((a, b) => a.title.localeCompare(b.title)));
             const filterJob = res.data.response.data.filter(job => job.data_type === currentUser?.portfolio_info[0].data_type);
             setJobs(filterJob.sort((a, b) => a.job_title.localeCompare(b.job_title)));
@@ -144,13 +144,13 @@ function JobScreen() {
         if (!currentUser) return setLoading(false);
         if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 0) return setLoading(false);
 
-        getAppliedJobs(datass).then(res => {
+        await getAppliedJobs(datass).then(res => {
             const userApplication = res.data.response.data.filter(
                 (application) => application.data_type === currentUser?.portfolio_info[0].data_type
             )
             const currentUserAppliedJobs = userApplication.filter(
-              (application) =>
-                application.username === currentUser.userinfo.username
+                (application) =>
+                    application.username === currentUser.userinfo.username
             );
 
             setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
@@ -179,7 +179,6 @@ function JobScreen() {
     }
 
     return <div className='candidate__Jobs__Wrapper'>
-
         {
             isLoading ? <LoadingSpinner /> :
 

@@ -59,7 +59,9 @@ function EditJob({subAdminView}) {
   const [active, setActive] = useState(is_active);
   const [typeofOption, setTypeofOption] = useState(type_of_job || "");
 
-  console.log(general_terms);
+  // jobs.map(singleJob => {
+  //   if (singleJob.id !== id) return singleJob
+  //   return {…singleJob,//things u edit}
 
   useEffect(() => {
     setSelectedOption(job_category);
@@ -77,6 +79,14 @@ function EditJob({subAdminView}) {
       .then(response => {
         console.log(response)
         if (response.status === 200) {
+          console.log(formData);
+          setJobs(jobs.map((job) => {
+            if (job._id === _id) {
+              return { ...job, ...formData }
+            } else {
+              return job
+            }
+          }))
           navigate(-1);
           toast.success("Job updation successfully");
         }
