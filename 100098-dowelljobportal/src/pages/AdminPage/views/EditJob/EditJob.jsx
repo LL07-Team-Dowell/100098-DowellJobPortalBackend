@@ -8,7 +8,7 @@ import "./EditJob.css";
 import Loading from '../../../../components/LoadingSpinner/LoadingSpinner';
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { MdArrowBackIos } from 'react-icons/md';
+import { MdArrowBackIos, MdOutlineAddCircle } from 'react-icons/md';
 import { useJobContext } from '../../../../contexts/Jobs';
 import { getJobs } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
@@ -16,9 +16,10 @@ import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner
 import LittleLoading from '../../../CandidatePage/views/ResearchAssociatePage/littleLoading';
 import { updateJob } from '../../../../services/adminServices';
 import { toast } from 'react-toastify';
+import { Tooltip } from "react-tooltip";
 
 
-function EditJob({subAdminView}) {
+function EditJob({ subAdminView }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -493,8 +494,14 @@ function EditJob({subAdminView}) {
                     }
                   </div>
 
-                  <div className="add__item">
+                  <div className="add__item" id='addGerarelTerm'>
                     <AiFillPlusCircle onClick={() => handleAddTerm("general_terms")} />
+                    <Tooltip
+                      anchorId="addGerarelTerm"
+                      place="top"
+                      content="Add General Terms"
+                      className="tooltip"
+                    />
                     <label>Add General Terms</label>
                   </div>
                 </div>
@@ -512,8 +519,14 @@ function EditJob({subAdminView}) {
                       }))
                     }
                   </div>
-                  <div className="add__item">
+                  <div className="add__item" id='addSpecifications'>
                     <AiFillPlusCircle onClick={() => handleAddTerm("technical_specification")} />
+                    <Tooltip
+                      anchorId="addSpecifications"
+                      place="top"
+                      content="Add Technical Specifications"
+                      className="tooltip"
+                    />
                     <label>Add Specifications</label>
                   </div>
                 </div>
@@ -532,8 +545,14 @@ function EditJob({subAdminView}) {
                       }))
                     }
                   </div>
-                  <div className="add__item">
+                  <div className="add__item" id='addPayment'>
                     <AiFillPlusCircle onClick={() => handleAddTerm("payment_terms")} />
+                    <Tooltip
+                      anchorId="addPayment"
+                      place="top"
+                      content="Add Payment Terms"
+                      className="tooltip"
+                    />
                     <label>Add Payment Terms</label>
                   </div>
                 </div>
@@ -550,10 +569,19 @@ function EditJob({subAdminView}) {
                       }))
                     }
                   </div>
-                  <div className="add__item">
-                    <AiFillPlusCircle onClick={() => handleAddTerm("workflow_terms")} />
-                    <label>Add Workflow</label>
+                  <div>
+                    <div className="add__item" id='addWorkflow'>
+                      <AiFillPlusCircle onClick={() => handleAddTerm("workflow_terms")} />
+                      <Tooltip
+                        anchorId="addWorkflow"
+                        place="top"
+                        content="Add Workflow"
+                        className="tooltip"
+                      />
+                      <label>Add Workflow</label>
+                    </div>
                   </div>
+
                 </div>
 
                 <div className="gernaral__term">
@@ -568,10 +596,17 @@ function EditJob({subAdminView}) {
                       }))
                     }
                   </div>
-                  <div className="add__item">
+                  <div className="add__item" id='addOthersBtn'>
                     <AiFillPlusCircle onClick={() => handleAddTerm("other_info")} />
+                    <Tooltip
+                      anchorId="addOthersBtn"
+                      place="top"
+                      content="Add Others"
+                      className="tooltip"
+                    />
                     <label>Add Others</label>
                   </div>
+
                 </div>
                 <button onClick={handleSubmit} className="save__button" disabled={updateLoading}>
                   {updateLoading ? <LittleLoading /> : `Save`}
