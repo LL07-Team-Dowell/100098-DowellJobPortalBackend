@@ -42,7 +42,7 @@ const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, ru
                 {
                     adminView && adminAlternativePageActive ? 
                     <></> :
-                    <SearchBar placeholder={adminView ? searchPlaceHolder ? searchPlaceHolder : "Search by skill, job" : "Search for job/applicant"} searchValue={searchValue} handleSearchChange={setSearchValue} />
+                    <SearchBar placeholder={adminView ? "Search by skill, job" : `Search for job/${searchPlaceHolder}`} searchValue={searchValue} handleSearchChange={setSearchValue} />
                 }
                 {
                     hideTitleBar ?

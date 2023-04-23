@@ -371,6 +371,15 @@ const Teamlead = () => {
         hideSideBar={showAddTaskModal}
         searchValue={searchValue}
         setSearchValue={handleSearch}
+        searchPlaceHolder={
+          section === "home"
+            ? "applicant"
+            : section === "task"
+            ? "task"
+            : rehireTabActive
+            ? "rehire"
+            : "applicant"
+        }
       >
         <TitleNavigationBar
           title={

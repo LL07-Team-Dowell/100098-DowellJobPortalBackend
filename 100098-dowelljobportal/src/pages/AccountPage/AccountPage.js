@@ -324,6 +324,17 @@ const AccountPage = () => {
         accountView={true}
         searchValue={searchValue}
         setSearchValue={handleSearch}
+        searchPlaceHolder={
+          section === "home"
+            ? "hire"
+            : section === "rejected"
+            ? "reject"
+            : showOnboarding
+            ? "onboarding"
+            : rehireTabActive
+            ? "rehire"
+            : "hire"
+        }
       >
         <TitleNavigationBar
           title={
