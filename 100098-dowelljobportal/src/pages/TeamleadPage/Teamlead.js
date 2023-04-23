@@ -58,6 +58,17 @@ const Teamlead = () => {
   const [filteredTasks, setFilteredTasks] = useState(userTasks);
 
   const handleSearch = (value) => {
+    const toAnagram = (word) => {
+      return word.toLowerCase().split("").reverse().join("");
+    };
+
+    const isAnagram = (word) => {
+      const anagram = toAnagram(word);
+      return jobs.some(
+        (job) => toAnagram(job.job_title || job.applicant) === anagram
+      );
+    };
+
     console.log("value", value);
     setSearchValue(value);
     console.log("value", candidatesData.selectedCandidates);
