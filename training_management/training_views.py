@@ -8,7 +8,7 @@ from database.event import get_event_id
 from database.database_management import *
 from database.connection import dowellconnection
 import requests
-from training_management.serializers import TrainingSerializer
+from training_management.serializers import TrainingSerializer, UpdateQuestionSerializer
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -16,7 +16,7 @@ class question(APIView):
     def post(self, request):
         data = request.data
         field = {
-            "event_id": get_event_id()["event_id"],
+            "eventId":get_event_id()['event_id'],
             "company_id": data.get("company_id"),
             "data_type": data.get("data_type"),
             "question_link": data.get("question_link"),
@@ -46,6 +46,22 @@ class question(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+class get_all_question(APIView):
+    def get(self, request):
+        data = request.data
+        field = {
+            "company_id": data.get("company_id"),
+        }
+        update_field = {
+            "status": "nothing to update"
+        }
+        question_response = dowellconnection(*questionnaire_modules, "fetch", field, update_field)
+        print(question_response)
+        if question_response:
+            return Response({"message": "List of questions.", "response": json.loads(question_response)}, status=status.HTTP_200_OK)
+        return Response({"error": "No question found"}, status=status.HTTP_304_NOT_MODIFIED)
+
+@method_decorator(csrf_exempt, name='dispatch')
 class get_question(APIView):
     def get(self, request):
         data = request.data
@@ -64,7 +80,34 @@ class get_question(APIView):
         else:
             return Response({"error": "No question found"}, status=status.HTTP_304_NOT_MODIFIED)
 
+@method_decorator(csrf_exempt, name='dispatch')
+class update_question(APIView):
+    def patch(self, request):
+        data = request.data
+        field = {
+            "_id": data.get("document_id"),
+        }
+        print(field)
+        update_field = {
+            "is_active": data.get("is_active")
+        }
+        serializer = UpdateQuestionSerializer(data=update_field)
+        if serializer.is_valid():
+            question_response = dowellconnection(
+                *questionnaire_modules, "update", field, update_field)
+            print(question_response)
+            if question_response:
+                return Response({"message": "Question updated successfully"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message": "Question updating failed"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
+            
 @method_decorator(csrf_exempt, name='dispatch')
 class response(APIView):
 

@@ -24,3 +24,7 @@ class TrainingSerializer(serializers.Serializer):
     #         else:
     #             del fields["code_base_link"]
     #         return fields
+
+
+class UpdateQuestionSerializer(serializers.Serializer):
+    is_active = serializers.BooleanField(required=True)
