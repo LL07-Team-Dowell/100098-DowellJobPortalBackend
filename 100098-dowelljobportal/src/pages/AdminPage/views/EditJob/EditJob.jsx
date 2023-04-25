@@ -688,7 +688,7 @@ const Wrapper = styled.section`
     
     .job__details{
         background-color: #F3F8F4;
-        padding: 40px 35px;
+        padding: 40px 35px !important;
         border-radius: 10px;
         width: 85%;
         margin: auto;
