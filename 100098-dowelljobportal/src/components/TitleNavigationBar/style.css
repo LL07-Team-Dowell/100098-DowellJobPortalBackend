@@ -28,6 +28,7 @@
     font-size: 2rem;
     letter-spacing: 0.05em; 
     margin-left: 8%;
+    transform: translateX(40px);
 }
 
 .title__Navigation__Bar__Container .title__Item .back__Icon__Container {

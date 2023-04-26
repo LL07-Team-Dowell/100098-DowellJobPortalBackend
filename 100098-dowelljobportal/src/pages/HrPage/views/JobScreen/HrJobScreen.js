@@ -142,11 +142,11 @@ function HrJobScreen() {
   useEffect(() => {
     
     if (jobSearchInput.length < 1) return setSearchActive(false);
-    
+    console.log("zebiiiiiiiiiiiiiiiiiiiiiiiii")
     setSearchActive(true);
-    // setMatchedJobs(jobs.filter(job => job.skills.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase()) || job.job_title.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase())));
-    setMatchedJobs(jobs.filter(job => fuzzySearch(jobSearchInput.toLowerCase(), job.skills.toLowerCase()) || fuzzySearch(jobSearchInput.toLowerCase(), job.job_title.toLowerCase())
-    ))
+    setMatchedJobs(jobs.filter(job => job.skills.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase()) || job.job_title.toLocaleLowerCase().includes(jobSearchInput.toLocaleLowerCase())));
+    // setMatchedJobs(jobs.filter(job => fuzzySearch(jobSearchInput.toLowerCase(), job.skills.toLowerCase()) || fuzzySearch(jobSearchInput.toLowerCase(), job.job_title.toLowerCase())
+    // ))
 
   }, [jobSearchInput])
 
