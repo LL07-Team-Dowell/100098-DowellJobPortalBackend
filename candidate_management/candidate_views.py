@@ -89,6 +89,26 @@ class get_job_application(APIView):
                 return Response({"message":"There is no job applications","response":json.loads(response)},status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message":"Parameters are not valid."},status=status.HTTP_400_BAD_REQUEST)
+        
+
+@method_decorator(csrf_exempt, name='dispatch')
+class get_all_onboarded_candidate(APIView):
+    def get(self, request, company_id):
+        print(company_id)
+        field = {
+            "company_id": company_id,
+            "status":"onboard"
+        }
+        print(field)
+        update_field = {
+            "status": "nothing to update"
+        }
+        response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+
+        if response:
+            return Response({"message": "List of onboard Candidate.", "response": json.loads(response)}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "There are no job applications", "response": json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_candidate_application(APIView):

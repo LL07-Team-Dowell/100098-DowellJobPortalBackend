@@ -22,7 +22,7 @@ _Post_ to `/candidate_management/apply_job/`
   "agree_to_all_terms": "<True | False>",
   "company_id": "<company_id>",
   "username": "<username>",
-  "portfolio_name":"<portfolio_name>",
+  "portfolio_name": "<portfolio_name>",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
   "payment": "<payment>",
   "application_submitted_on": "<application_submitted_on>"
@@ -124,5 +124,25 @@ _delete_ to `/candidate_management/delete_candidate_application/`
 ```json
 {
   "message": "candidate application deletion has failed."
+}
+```
+
+_get_ to `/candidate_management/get_all_onboarded_candidate/<str:company_id>`
+
+- Response 200
+
+```json
+{
+  "message": "List of onboard applications.",
+  "response": ["onboard Candidate"]
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There is no job applications",
+  "response": ["Candidate job not exist"]
 }
 ```
