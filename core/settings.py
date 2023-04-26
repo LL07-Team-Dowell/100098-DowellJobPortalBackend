@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'training_management',
     'setting',
     'task_management',
+    'team_task_management',
     'drf_yasg',
     'django.contrib.admin',
     'django.contrib.auth',
