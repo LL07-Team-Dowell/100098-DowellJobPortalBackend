@@ -28,6 +28,7 @@ class create_jobs(APIView):
                     "payment": data.get('payment',),
                     "is_active": data.get('is_active', False),
                     "general_terms":data.get('general_terms'),
+                    "module":data.get("module"),
                     "technical_specification":data.get('technical_specification'),
                     "workflow_terms":data.get('workflow_terms'),
                     "payment_terms":data.get('payment_terms'),
