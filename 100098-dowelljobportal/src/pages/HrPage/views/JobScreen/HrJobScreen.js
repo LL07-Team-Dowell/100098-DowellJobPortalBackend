@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Hr_JobScreen.css';
 import { useNavigationContext } from '../../../../contexts/NavigationContext';
 import ShortlistedScreen from '../ShortlistedScreen/ShortlistedScreen';
+import HrTrainingScreen from '../HrTrainingScreen/HrTrainingScreen';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SelectedCandidates from '../../../TeamleadPage/components/SelectedCandidates/SelectedCandidates';
 import SelectedCandidatesScreen from '../../../TeamleadPage/views/SelectedCandidatesScreen/SelectedCandidatesScreen';
@@ -197,6 +198,7 @@ function HrJobScreen() {
     if (!currentPath) return setCurrentActiveItem("Received");
     if (currentPath === "guest-applications") return setCurrentActiveItem("Guests");
     if (currentPath === "shortlisted") return setCurrentActiveItem("Shortlisted");
+    if (currentPath === "hr-training") return setCurrentActiveItem("Hr Training");
     if (currentPath === "" || currentPath === "home") return setCurrentActiveItem("Received");
 
   }, [location])
@@ -269,6 +271,7 @@ function HrJobScreen() {
   const handleMenuItemClick = (item) => {
     if (item === "Guests") return navigate("/guest-applications");
     if (item === "Shortlisted") return navigate("/shortlisted");
+    if (item === "Hr Training") return navigate("/hr-training");
     
     navigate("/");
   }
@@ -291,10 +294,10 @@ function HrJobScreen() {
   }
 
   return (
-    <StaffJobLandingLayout hrView={true} runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} hideSideBar={showAddTaskModal} searchValue={jobSearchInput} setSearchValue={setJobSearchInput}>
+    <StaffJobLandingLayout hrView={true} runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} hideSideBar={showAddTaskModal} searchValue={jobSearchInput} setSearchValue={setJobSearchInput} searchPlaceHolder={section === "home" ?"received" : section === "guest-applications" ? "guests" : section === "shortlisted" ? "shortlisted" : section === "hr-training" ? "hr-training" : "received"}>
     <div className="hr__Page__Container">
     <TitleNavigationBar className={path === undefined ? "": "view__Application__Navbar"} title={path === undefined ? section === "user" ? "Profile" : section === "tasks" ? "Tasks" : section === "attendance" ? "Attendance" : "Applications" : "Application Details"} hideBackBtn={path === undefined && sub_section === undefined ? true : false} handleBackBtnClick={() => navigate(-1)} />
-    { section !== "user" && section !== "attendance" && section !== "tasks" && path === undefined && sub_section === undefined && <TogglerNavMenuBar menuItems={["Received", "Guests", "Shortlisted"]} currentActiveItem={currentActiveItem} handleMenuItemClick={handleMenuItemClick} /> }
+    { section !== "user" && section !== "attendance" && section !== "tasks" && path === undefined && sub_section === undefined && <TogglerNavMenuBar menuItems={["Received", "Guests", "Shortlisted" , "Hr Training"]} currentActiveItem={currentActiveItem} handleMenuItemClick={handleMenuItemClick} /> }
     {
       sub_section === undefined && section === "home" || section === undefined ? <>
         <div className='hr__wrapper'>
@@ -345,6 +348,10 @@ function HrJobScreen() {
 
           sub_section === undefined && section === "shortlisted" ? <>
             <ShortlistedScreen shortlistedCandidates={candidateData} jobData={jobs} />
+          </> :
+
+          sub_section === undefined && section === "hr-training" ? <>
+            <HrTrainingScreen />
           </> :
 
           sub_section === undefined && section === "guest-applications" ?
