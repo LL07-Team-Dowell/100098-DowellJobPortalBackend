@@ -304,7 +304,7 @@ h3 {
   align-items: center;
   justify-content: center;
 }
-
+/* 
 @media screen and (max-width: 991px) {
   .add_section {
     margin: 2rem 0 0 1.8rem;
@@ -355,4 +355,4 @@ h3 {
     font-size: 0.7rem;
     visibility: visible;
   }
-}
+} */

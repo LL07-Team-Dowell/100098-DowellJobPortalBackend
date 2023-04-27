@@ -17,6 +17,7 @@ import LittleLoading from '../../../CandidatePage/views/ResearchAssociatePage/li
 import { updateJob } from '../../../../services/adminServices';
 import { toast } from 'react-toastify';
 import { Tooltip } from "react-tooltip";
+import { set } from 'date-fns';
 
 
 function EditJob({ subAdminView }) {
@@ -58,8 +59,8 @@ function EditJob({ subAdminView }) {
   const { payment_terms, company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id } = singleJob || {};
   const [selectedOption, setSelectedOption] = useState(job_category || "");
   const [active, setActive] = useState(is_active);
+  console.log(active);
   const [typeofOption, setTypeofOption] = useState(type_of_job || "");
-
   // jobs.map(singleJob => {
   //   if (singleJob.id !== id) return singleJob
   //   return {…singleJob,//things u edit}
@@ -68,7 +69,7 @@ function EditJob({ subAdminView }) {
     setSelectedOption(job_category);
     setActive(is_active);
     setTypeofOption(type_of_job);
-  }, [job_category]);
+  }, [singleJob]);
 
 
   const handleSubmit = async (event) => {
@@ -158,20 +159,23 @@ function EditJob({ subAdminView }) {
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
-    setFormData({ ...formData, job_category: selectedOption })
+    const option = e.target.value;
+    setFormData({ ...formData, job_category: option })
   };
 
   const handltTypeOfOption = (e) => {
     setTypeofOption(e.target.value);
-    setFormData({ ...formData, type_of_job: typeofOption });
-    console.log(typeofOption);
+    const option = e.target.value;
+    setFormData({ ...formData, type_of_job: option });
   }
 
-  const toggleJobStatus = () => {
-    setActive(!active)
+  const toggleJobStatus = (e) => {
+    setActive(!active);
+    const option = !active;
+    console.log(option);
     setFormData({
       ...formData,
-      is_active: active,
+      is_active: option,
     });
   };
 
@@ -688,7 +692,7 @@ const Wrapper = styled.section`
     
     .job__details{
         background-color: #F3F8F4;
-        padding: 40px 35px;
+        padding: 40px 35px !important;
         border-radius: 10px;
         width: 85%;
         margin: auto;
