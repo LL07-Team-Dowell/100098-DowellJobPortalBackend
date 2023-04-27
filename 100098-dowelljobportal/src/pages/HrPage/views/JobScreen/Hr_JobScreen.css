@@ -3,6 +3,7 @@
   max-width: 100%;
   width: 100%;
   margin: 0 auto;
+  
 }
 .hr__wrapper .selected-candidates-container{
   width: 100%;
@@ -37,6 +38,7 @@
   width: 90%;
   margin-left: auto;
   margin-right: auto;
+  transform: translateX(40px);
 }
 
 .job-tile-container:last-child{
