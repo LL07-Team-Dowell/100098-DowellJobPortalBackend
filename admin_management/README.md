@@ -1,5 +1,19 @@
 ### Backend services for Admin view
 
+_changes_ to `admin_management/create_jobs/`
+
+`there is a changes in request body, new field "module" is added`
+
+- Request Body
+
+```json
+{
+  "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
+}
+```
+
+
+
 _Post_ to `admin_management/create_jobs/`
 
 - Request Body
@@ -22,6 +36,7 @@ _Post_ to `admin_management/create_jobs/`
   "workflow_terms": ["term1", "term2"],
   "other_info": ["term1", "term2"],
   "company_id": "<company_id>",
+  "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
   "created_by": "<created_by>",
   "created_on": "<created_on>"

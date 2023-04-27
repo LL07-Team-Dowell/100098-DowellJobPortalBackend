@@ -9,7 +9,8 @@ _Post_ to `training_management/create_question/`
     "company_id": "<company_id>",
     "data_type": "<data_type>",
     "question_link": "<question_link>",
-    "module": "<Frontend | Backend | ...>",
+    "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>
+>",
     "created_on": "<created_on>",
     "created_by": "<created_by>",
     "is_active": "<True | False>",
