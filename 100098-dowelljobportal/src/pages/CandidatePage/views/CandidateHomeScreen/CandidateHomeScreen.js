@@ -36,7 +36,7 @@ function Home({ setHired, setAssignedProjects }) {
       );
       const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
 
-      if (userSelectedJobs.length  >= 1) {
+      if (userSelectedJobs.length >= 1) {
         setAssignedProjects(userSelectedJobs.map((job) => job.project))
         setHired(true);
         setLoading(false);
@@ -75,8 +75,14 @@ function Home({ setHired, setAssignedProjects }) {
           <h1>Join DoWell team</h1>
           <div className='content__Wrappper'>
             <div className='content__Item'>
-              <img src={assets.users_img_1} alt='job category' />
-              <div className='bottom__Content'>
+              {
+                React.Children.toArray(availableJobCategories.slice(0, 2).map(category => {
+                  return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
+                    <img src={assets.users_img_1} alt='job category' />
+                  </Link>
+                }))
+              }
+              {/* <div className='bottom__Content'>
                 {
                   React.Children.toArray(availableJobCategories.slice(0, 2).map(category => {
                     return <Link className='job__Link__Item' to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
@@ -91,11 +97,17 @@ function Home({ setHired, setAssignedProjects }) {
                   }))
                 }
 
-              </div>
+              </div> */}
             </div>
             <div className='content__Item'>
-              <img src={assets.users_img_2} alt='job category' />
-              <div className='bottom__Content'>
+              {
+                React.Children.toArray(availableJobCategories.slice(2).map(category => {
+                  return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
+                    <img src={assets.users_img_2} alt='job category' />
+                  </Link>
+                }))
+              }
+              {/* <div className='bottom__Content'>
                 {
                   React.Children.toArray(availableJobCategories.slice(2).map(category => {
                     return <Link className='job__Link__Item' to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
@@ -110,7 +122,7 @@ function Home({ setHired, setAssignedProjects }) {
                   }))
                 }
 
-              </div>
+              </div> */}
             </div>
           </div>
         </section>

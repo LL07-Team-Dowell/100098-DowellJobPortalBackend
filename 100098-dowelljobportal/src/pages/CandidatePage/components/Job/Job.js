@@ -79,7 +79,7 @@ function JobScreen() {
 
             if (jobCategoryParam === "Freelancer") {
                 setJobSelectionCategories(["Task based", "Time based"])
-                const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.type_of_job === currentJobCategory);
+                const jobsToDisplayForCurrentCategory = matchedJobs?.filter(job => job.type_of_job === currentJobCategory);
                 if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
@@ -100,7 +100,7 @@ function JobScreen() {
         if (!currentJobCategory) return
         if (currentCategory === "Internship") {
             const matchedJobs = jobsMatchingCategory.filter(job => job.type_of_job === currentJobCategory);
-            if (matchedJobs.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
+            if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
         }
 
@@ -109,27 +109,27 @@ function JobScreen() {
         if (currentCategory === "Research Associate") {
 
             const matchedJobs = jobsMatchingCategory.filter(job => job.others[jobKeys.othersResearchAssociateJobType] === currentJobCategory);
-            if (matchedJobs.length === 0) return setJobsToDisplay(jobs.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
+            if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
 
         }
 
         if (currentCategory === "Freelancer") {
             const matchedJobs = jobsMatchingCategory.filter(job => job.type_of_job === currentJobCategory);
-            if (matchedJobs.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
+            if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
         }
 
     }, [currentJobCategory])
 
-    useEffect(async () => {
+    useEffect( () => {
         if (jobs.length > 0) {
             setAllRequestsDone(true);
             setJobsLoading(false);
             return
         }
         const datass = currentUser.portfolio_info[0].org_id;
-        await getJobs(datass).then(res => {
+         getJobs(datass).then(res => {
             // setJobs(res.data.sort((a, b) => a.title.localeCompare(b.title)));
             const filterJob = res.data.response.data.filter(job => job.data_type === currentUser?.portfolio_info[0].data_type);
             setJobs(filterJob.sort((a, b) => a.job_title.localeCompare(b.job_title)));
@@ -144,11 +144,11 @@ function JobScreen() {
         if (!currentUser) return setLoading(false);
         if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 0) return setLoading(false);
 
-        await getAppliedJobs(datass).then(res => {
-            const userApplication = res.data.response.data.filter(
+         getAppliedJobs(datass).then(res => {
+            const userApplication = res.data.response.data?.filter(
                 (application) => application.data_type === currentUser?.portfolio_info[0].data_type
             )
-            const currentUserAppliedJobs = userApplication.filter(
+            const currentUserAppliedJobs = userApplication?.filter(
                 (application) =>
                     application.username === currentUser.userinfo.username
             );
