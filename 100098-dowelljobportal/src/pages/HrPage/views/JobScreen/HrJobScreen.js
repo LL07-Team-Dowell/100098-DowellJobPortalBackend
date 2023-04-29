@@ -25,6 +25,7 @@ import { fetchCandidateTasks, getCandidateApplications, getJobs, getJobs2, getPr
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getCandidateApplicationsForHr, getCandidateTask, getSettingUserProject } from '../../../../services/hrServices';
 import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenAllTasks';
+import HrTrainingQuestions from '../HrTrainingScreen/HrTrainingQuestion';
 
 function fuzzySearch(query, text) {
   const searchRegex = new RegExp(query.split('').join('.*'), 'i');
@@ -352,6 +353,10 @@ function HrJobScreen() {
 
           sub_section === undefined && section === "hr-training" ? <>
             <HrTrainingScreen />
+          </> :
+
+          sub_section === "/hr-training/:module" && section === "hr-training" ? <>
+            <HrTrainingQuestions />
           </> :
 
           sub_section === undefined && section === "guest-applications" ?

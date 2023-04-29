@@ -2,21 +2,22 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineArrowRight } from "react-icons/ai";
 
-function HrTrainingScreenCard({ title, _id }) {
+function HrTrainingScreenCard({ module, handleSendClick }) {
+    if(module === null) return <></>;
   return (
     <>
       <div className="training__card__body">
-        <h2>{title}</h2>
+        <h2>{module}</h2>
         <p className="training__card__description">
           Prepare for a career in front-end Development. Receive
           professional-level training from uxliving lab
         </p>
       </div>
-      <Link to={`/hr-training/${_id}`} style={{color: "black"}}>
-        <div className="action__btn">
+      <Link to={`/hr-training/${module}`} style={{color: "black"}}>
+        <button className="action__btn" onClick={handleSendClick}>
           <span>Create Now</span>
           <AiOutlineArrowRight fontSize="1.4rem" />
-        </div>
+        </button>
       </Link>
     </>
   );

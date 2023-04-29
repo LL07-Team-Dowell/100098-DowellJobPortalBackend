@@ -11,6 +11,7 @@
   /* height: 100%; */
   margin-top: 4rem;
   margin-bottom: 4rem;
+  font-size: 0.9rem;
 }
 
 .training__container {
@@ -54,6 +55,7 @@
 
 .training__cards:hover .svg_component {
   background-color: #005734;
+  transition: 0.8s ease;
 }
 
 .training__cards:hover .svg_component svg {
@@ -79,6 +81,8 @@
   align-items: center;
   gap: 0.8rem;
   cursor: pointer;
+  background: none;
+  border: none;
 }
 
 @media screen and (max-width: 640px) {

@@ -45,6 +45,7 @@ import LoadingPage from "./pages/LoadingPage/LoadingPage";
 import HrTasks from "./pages/HrPage/views/Tasks/HrTasks";
 import CreateTaskScreen from "./pages/TeamleadPage/views/CreateTaskScreen/CreateTaskScreen";
 import { HrJobScreenAllTasksContextProvider } from "./contexts/HrJobScreenAllTasks";
+import HrTrainingQuestions from "./pages/HrPage/views/HrTrainingScreen/HrTrainingQuestion";
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
