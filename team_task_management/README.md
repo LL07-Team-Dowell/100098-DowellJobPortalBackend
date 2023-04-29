@@ -31,7 +31,7 @@ _get_ to `team_task_management/create_get_team/`
 
 - Response 201
 
-````json
+```json
 {
   {
 		"team_name": "team_name",
@@ -46,19 +46,22 @@ _get_ to `team_task_management/create_get_team/`
 	}
 }
 
+
+```
+
 _Post_ to `team_task_management/create_task_team/`
 
 - Request Body
 
 ```json
 {
-	"assignee": "user id",
-    "title": "title",
-    "description": "This field is required.",
-    "team": "Team id",
-	"completed":"True/False"
+  "assignee": "user id",
+  "title": "title",
+  "description": "This field is required.",
+  "team": "Team id",
+  "completed": "True/False"
 }
-````
+```
 
 - Response 201
 
