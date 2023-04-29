@@ -25,7 +25,8 @@ class TeamSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    assignee = UserSerializer()
+    # assignee = UserSerializer(many=True)
+    assignee = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = Task
@@ -33,7 +34,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    user = UserSerializer(many=True)
 
     class Meta:
         model = TeamMember
