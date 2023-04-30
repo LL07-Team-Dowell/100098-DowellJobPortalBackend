@@ -100,6 +100,16 @@ h3 {
   margin-bottom: 2rem;
 }
 
+.job_details .select {
+  padding: 1.1rem 1.1rem 1.1rem 2rem;
+  border-radius: 0.8rem;
+  border: 0.1rem solid var(--primary-color);
+  background-color: #f4f4f4;
+  color: #7e7e7e;
+  font-weight: 400;
+  margin-bottom: 2rem;
+}
+
 .job_category {
   display: flex;
   justify-content: space-between;

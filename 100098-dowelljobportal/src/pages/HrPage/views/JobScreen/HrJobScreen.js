@@ -26,6 +26,9 @@ import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getCandidateApplicationsForHr, getCandidateTask, getSettingUserProject } from '../../../../services/hrServices';
 import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenAllTasks';
 import HrTrainingQuestions from '../HrTrainingScreen/HrTrainingQuestion';
+import { ReactComponent as Frontend } from "../HrTrainingScreen/assets/system3.svg";
+import { ReactComponent as Ux } from "../HrTrainingScreen/assets/ux-design-1.svg";
+import { ReactComponent as Backend } from "../HrTrainingScreen/assets/database-1.svg";
 
 function fuzzySearch(query, text) {
   const searchRegex = new RegExp(query.split('').join('.*'), 'i');
@@ -294,6 +297,51 @@ function HrJobScreen() {
     setShowCurrentCandidateTask(false);
   }
 
+  const trainingCards = [
+    {
+      id: 1,
+      module: "Front-end",
+      description:
+        "Prepare for a career in front-end Development. Receive professional-level training from uxliving lab",
+      svg: <Frontend />,
+    },
+    {
+      id: 2,
+      module: "Back-end",
+      description:
+        "Prepare for a career in Back-end Development. Receive professional-level training from uxliving lab",
+      svg: <Backend />,
+    },
+    {
+      id: 3,
+      module: "UI/UX",
+      description:
+        "Prepare for a career in UI/UX. Receive professional-level training from uxliving lab",
+      svg: <Ux />,
+    },
+    {
+      id: 4,
+      module: "Virtual Assistant",
+      description:
+        "Prepare for a career as a Virtual Assistant . Receive professional-level training from uxliving lab",
+      svg: <Frontend />,
+    },
+    {
+      id: 5,
+      module: "Web",
+      description:
+        "Prepare for a career in Web Development. Receive professional-level training from uxliving lab",
+      svg: <Backend />,
+    },
+    {
+      id: 6,
+      module: "Mobile",
+      description:
+        "Prepare for a career in Mobile Development. Receive professional-level training from uxliving lab",
+      svg: <Ux />,
+    },
+  ];
+
   return (
     <StaffJobLandingLayout hrView={true} runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} hideSideBar={showAddTaskModal} searchValue={jobSearchInput} setSearchValue={setJobSearchInput} searchPlaceHolder={section === "home" ?"received" : section === "guest-applications" ? "guests" : section === "shortlisted" ? "shortlisted" : section === "hr-training" ? "hr-training" : "received"}>
     <div className="hr__Page__Container">
@@ -352,11 +400,11 @@ function HrJobScreen() {
           </> :
 
           sub_section === undefined && section === "hr-training" ? <>
-            <HrTrainingScreen />
+            <HrTrainingScreen trainingCards={trainingCards}/>
           </> :
 
           sub_section === "/hr-training/:module" && section === "hr-training" ? <>
-            <HrTrainingQuestions />
+            <HrTrainingQuestions trainingCards={trainingCards}/>
           </> :
 
           sub_section === undefined && section === "guest-applications" ?

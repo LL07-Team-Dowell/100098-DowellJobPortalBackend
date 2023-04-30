@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { createQuestionForTrainingMangement } from "../../../../services/hrTrainingServices";
 import { NavigationContextProvider } from "../../../../contexts/NavigationContext";
 
-function HrTrainingQuestions({ module }) {
+function HrTrainingQuestions({ trainingCards }) {
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { sub_section } = NavigationContextProvider();
+  const { module } = useParams();
 
   const [questions, setQuestions] = useState({
     company_id: currentUser.portfolio_info[0].org_id,
@@ -41,7 +41,13 @@ function HrTrainingQuestions({ module }) {
               }}
             />
           </button>
-          <p>{}</p>
+          {trainingCards
+            .filter((card) => card.module === module)
+            .map((card) => (
+              <div key={card.id}>
+                <h1>{card.module}</h1>
+              </div>
+            ))}
         </div>
       </div>
     </>
