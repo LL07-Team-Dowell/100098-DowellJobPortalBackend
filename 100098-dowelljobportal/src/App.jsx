@@ -49,7 +49,9 @@ function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
+  const [candidateShortListed, setCandidateShortListed] = useState(false);
   const [assignedProjects, setAssignedProjects] = useState([]);
+  const [shortlistedProject, setShortlistedProjects] = useState([]);
 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
@@ -146,7 +148,7 @@ function App() {
           element={
             <JobContextProvider>
               {" "}
-              <LandingPage subAdminView={true}/>
+              <LandingPage subAdminView={true} />
             </JobContextProvider>
           }
         />
@@ -163,7 +165,7 @@ function App() {
           path="/edit-job/:id"
           element={
             <JobContextProvider>
-              <EditJob subAdminView={true}/>
+              <EditJob subAdminView={true} />
             </JobContextProvider>
           }
         />
@@ -179,7 +181,7 @@ function App() {
           path="/add-job"
           element={
             <JobContextProvider>
-              <AddJob subAdminView={true}/>
+              <AddJob subAdminView={true} />
             </JobContextProvider>
           }
         />
@@ -187,7 +189,7 @@ function App() {
           path="/user"
           element={
             <JobContextProvider>
-              <AdminUserScreen subAdminView={true}/>
+              <AdminUserScreen subAdminView={true} />
             </JobContextProvider>
           }
         />
@@ -195,7 +197,7 @@ function App() {
           path="/report"
           element={
             <JobContextProvider>
-              <AdminReports subAdminView={true}/>
+              <AdminReports subAdminView={true} />
             </JobContextProvider>
           }
         />
@@ -453,6 +455,29 @@ function App() {
 
       <Route path="*" element={<ErrorPage />} />
     </Routes>
+  ) : candidateShortListed ? (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <NavigationContextProvider>
+            <CandidateTaskContextProvider>
+              <CandidateJobsContextProvider>
+                <JobContextProvider>
+                  <AfterSelectionScreen shortlistedProject={shortlistedProject} />
+                </JobContextProvider>
+              </CandidateJobsContextProvider>
+            </CandidateTaskContextProvider>
+          </NavigationContextProvider>
+        }
+      >
+        <Route path=":section" element={<AfterSelectionScreen />} />
+      </Route>
+
+      <Route path="/logout" element={<Logout />} />
+
+      <Route path="*" element={<ErrorPage />} />
+    </Routes>
   ) : (
     <Routes>
       <Route
@@ -462,8 +487,9 @@ function App() {
             <CandidateJobsContextProvider>
               <JobContextProvider>
                 <CandidateHomeScreen
-                  setHired={setCandidateHired}
+                  set={setCandidateHired}
                   setAssignedProjects={setAssignedProjects}
+                  setShortlistedProjects={setShortlistedProjects}
                 />
               </JobContextProvider>
             </CandidateJobsContextProvider>

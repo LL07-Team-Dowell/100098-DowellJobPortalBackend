@@ -13,7 +13,7 @@ import { getCandidateApplications } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getAppliedJobs } from '../../../../services/candidateServices';
 
-function Home({ setHired, setAssignedProjects }) {
+function Home({ setHired, setAssignedProjects, setShortlistedProjects, setShortlisted }) {
 
   const [loading, setLoading] = useState(true);
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
@@ -35,6 +35,14 @@ function Home({ setHired, setAssignedProjects }) {
         (application) => application.username === currentUser.userinfo.username
       );
       const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
+      const userShortlistedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.SHORTLISTED);
+
+      if (userShortlistedJobs.length >= 1) {
+        setShortlistedProjects(userShortlistedJobs.map((job) => job.project))
+        setShortlisted(true)
+        setLoading(false)
+        return;
+      }
 
       if (userSelectedJobs.length >= 1) {
         setAssignedProjects(userSelectedJobs.map((job) => job.project))
