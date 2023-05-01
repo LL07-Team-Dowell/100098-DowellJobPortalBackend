@@ -241,8 +241,8 @@ const AddJob = ({ subAdminView }) => {
                     type={"radio"}
                     id={"freelancer"}
                     name="options"
-                    value={"freelancer"}
-                    checked={selectedOption === "freelancer"}
+                    value={"Freelancer"}
+                    checked={selectedOption === "Freelancer"}
                     onChange={handleOptionChange}
                   />
                   <div className="radio__radio"></div>
@@ -254,8 +254,8 @@ const AddJob = ({ subAdminView }) => {
                     type={"radio"}
                     id={"internship"}
                     name="options"
-                    value={"internship"}
-                    checked={selectedOption === "internship"}
+                    value={"Internship"}
+                    checked={selectedOption === "Internship"}
                     onChange={handleOptionChange}
                   />
                   <div className="radio__radio"></div>
@@ -280,8 +280,8 @@ const AddJob = ({ subAdminView }) => {
                     type={"radio"}
                     id={"research_associate"}
                     name="options"
-                    value={"research_associate"}
-                    checked={selectedOption === "research_associate"}
+                    value={"Research_associate"}
+                    checked={selectedOption === "Research_associate"}
                     onChange={handleOptionChange}
                   />
                   <div className="radio__radio"></div>
@@ -291,7 +291,7 @@ const AddJob = ({ subAdminView }) => {
 
               {newJob.job_category.length < 1 ? (
                 <></>
-              ) : newJob.job_category === "freelancer" ? (
+              ) : newJob.job_category === "Freelancer" ? (
                 <>
                   <h3>Type of Job</h3>
                   <div className="type_of_job">
@@ -327,7 +327,7 @@ const AddJob = ({ subAdminView }) => {
                     </div>
                   </div>
                 </>
-              ) : newJob.job_category === "internship" ? (
+              ) : newJob.job_category === "Internship" ? (
                 <>
                   <h3>Type of Job</h3>
                   <div className="type_of_job">
