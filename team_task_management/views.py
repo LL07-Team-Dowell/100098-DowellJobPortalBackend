@@ -76,7 +76,7 @@ class DeleteTeam(APIView):
             message = {"message": f"Team with id - {team_id} was successfully deleted"}
             return Response(message, status=status.HTTP_200_OK)
         except Team.DoesNotExist:
-            # =====if it doesnt exist, return the reponse below
+            #=====if it doesnt exist, return the reponse below
             return Response({'error': 'Team does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 
