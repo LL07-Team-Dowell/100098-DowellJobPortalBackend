@@ -56,10 +56,10 @@ function EditJob({ subAdminView }) {
   const { id } = useParams();
   // const [newjobs, setNewjobs] = useState([]);
   const singleJob = jobs?.filter(job => job["_id"] === id)[0];
-  const { payment_terms, company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id } = singleJob || {};
+  const { payment_terms, company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, module } = singleJob || {};
   const [selectedOption, setSelectedOption] = useState(job_category || "");
   const [active, setActive] = useState(is_active);
-  console.log(active);
+  console.log(singleJob);
   const [typeofOption, setTypeofOption] = useState(type_of_job || "");
   // jobs.map(singleJob => {
   //   if (singleJob.id !== id) return singleJob
