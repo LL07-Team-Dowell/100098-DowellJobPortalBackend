@@ -4,7 +4,6 @@ _Post_ to `accounts_management/onboard_candidate/`
 
 - Request Body
 
-
 ```json
 {
   "document_id": "<document id>",
@@ -13,7 +12,7 @@ _Post_ to `accounts_management/onboard_candidate/`
   "task": "<task>",
   "status": "<status>",
   "company_id": "<company_id>",
-  "data_type": "<data_type>",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
   "onboarded_on": "<onboarded on>"
 }
 ```
@@ -22,15 +21,23 @@ _Post_ to `accounts_management/onboard_candidate/`
 
 ```json
 {
-  "message": "Candidate has been onboard."
+  "message": "Candidate has been onboarded."
 }
 ```
+- Response 304
+
+```json
+{
+  "message": "HR operation failed"
+}
+```
+
 
 - Response 400
 
 ```json
 {
-  "message": "HR operation failed"
+  "message": "serializer.errors"
 }
 ```
 
@@ -53,12 +60,19 @@ _Post_ to `accounts_management/update_project/`
   "message": "Candidate project and payment has been updated"
 }
 ```
+- Response 304
+
+```json
+{
+  "message": "Failed to update"
+}
+```
 
 - Response 400
 
 ```json
 {
-  "message": "Failed to update."
+  "message": "Parameters are not valid"
 }
 ```
 
@@ -77,15 +91,22 @@ _Post_ to `accounts_management/rehire_candidate/`
 
 ```json
 {
-  "message": "Candidate has been rehire."
+  "message": "Candidate has been rehired"
 }
 ```
 
-- Response 400
+- Response 304
 
 ```json
 {
   "message": "HR operation failed"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
 }
 ```
 _Post_ to `accounts_management/reject_candidate/`
@@ -124,5 +145,6 @@ _Post_ to `accounts_management/reject_candidate/`
 
 ```json
 {
-  "message": "serializers error"
+  "message": "serializer.errors"
 }
+```

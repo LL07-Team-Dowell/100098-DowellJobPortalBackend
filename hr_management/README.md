@@ -20,7 +20,14 @@ _Post_ to `hr_management/shortlisted_candidate/`
 
 ```json
 {
-  "message": "Candidate has been shortlisted."
+  "message": "Candidate has been shortlisted"
+}
+```
+- Response 304
+
+```json
+{
+  "message": "HR operation failed"
 }
 ```
 
@@ -28,7 +35,7 @@ _Post_ to `hr_management/shortlisted_candidate/`
 
 ```json
 {
-  "message": "HR operation failed."
+  "message": "serializer.errors"
 }
 ```
 
@@ -58,11 +65,18 @@ _Post_ to `hr_management/selected_candidate/`
 }
 ```
 
-- Response 204
+- Response 304
 
 ```json
 {
   "message": "HR operation failed"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
 }
 ```
 _Post_ to `hr_management/reject_candidate/`
@@ -89,7 +103,7 @@ _Post_ to `hr_management/reject_candidate/`
 }
 ```
 
-- Response 304
+- Response 500
 
 ```json
 {
@@ -103,3 +117,4 @@ _Post_ to `hr_management/reject_candidate/`
 {
   "message": "serializers error"
 }
+```

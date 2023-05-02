@@ -8,7 +8,7 @@ _changes_ to `admin_management/create_jobs/`
 
 ```json
 {
-  "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
+  "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>"
 }
 ```
 
@@ -23,10 +23,10 @@ _Post_ to `admin_management/create_jobs/`
   "job_number": "<unique number>",
   "job_title": "<Job title>",
   "description": "Description for the job>",
-  "skills": "<Required skills for the job",
+  "skills": "Required skills for the job",
   "qualification": "<Qualifications required for the job>",
-  "job_category": "<freelancer | internship | Employee>",
-  "type_of_job": "<Part time | Full time| Time based | Task based>",
+  "job_category": "<Freelancer | Internship | Employee>",
+  "type_of_job": "< Full time | Part time | Time based | Task based>",
   "payment": "<Payment for the job>",
   "payment_terms": ["term1", "term2"],
   "is_active": "<True| False>",
@@ -63,7 +63,7 @@ _Post_ to `admin_management/create_jobs/`
 
 ```json
 {
-  "error": "field errors"
+  "error": "serializer.errors"
 }
 ```
 
@@ -81,8 +81,8 @@ _Post_ to `admin_management/get_jobs/`
 
 ```json
 {
-  "message": "Requested Job list.",
-  "response": ["list of jobs"]
+  "message": "List of jobs",
+  "response": ["Requested Job list."]
 }
 ```
 
@@ -90,10 +90,11 @@ _Post_ to `admin_management/get_jobs/`
 
 ```json
 {
-  "message": "There is no jobs",
+  "message": "There are no jobs",
   "response": ["list of jobs"]
 }
 ```
+
 
 _Post_ to `admin_management/get_job/`
 
@@ -109,8 +110,8 @@ _Post_ to `admin_management/get_job/`
 
 ```json
 {
-  "message": "Requested Job list.",
-  "response": ["list of jobs"]
+  "message": "Job details",
+  "response": "Job details"
 }
 ```
 
@@ -118,7 +119,7 @@ _Post_ to `admin_management/get_job/`
 
 ```json
 {
-  "message": "There is no jobs",
+  "message": "There are no jobs",
   "response": ["list of jobs"]
 }
 ```
@@ -130,7 +131,7 @@ _Post_ to `admin_management/update_jobs/`
 ```json
 {
     "document_id":"<document_id>",
-    "<update_field : Kindly follow notes to update the database , you should not update other field>"
+    "update_field" : "Kindly follow notes to update the database , you should not update other field"
 }
 ```
 
@@ -138,7 +139,7 @@ _Post_ to `admin_management/update_jobs/`
 
 ```json
 {
-  "message": "Job updation successful."
+  "message": "Job update is successful"
 }
 ```
 
@@ -146,7 +147,14 @@ _Post_ to `admin_management/update_jobs/`
 
 ```json
 {
-  "message": "Job updation has failed."
+  "message": "Job update has failed"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
 }
 ```
 
@@ -164,7 +172,7 @@ _Post_ to `admin_management/delete_job/`
 
 ```json
 {
-  "message": "Job deletion successful."
+  "message": "Job successfully deleted"
 }
 ```
 
@@ -172,7 +180,14 @@ _Post_ to `admin_management/delete_job/`
 
 ```json
 {
-  "message": "Job deletion has failed."
+  "message": "Deleting of Job has failed"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
 }
 ```
 

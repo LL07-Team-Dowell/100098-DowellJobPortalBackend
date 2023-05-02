@@ -20,15 +20,22 @@ _Post_ to `/research_management/apply_job_form`
 
 ```json
 {
-  "message": "Task added successfully."
+  "message": "Task added successfully"
 }
 ```
 
+- Response 304
+
+```json
+{
+  "message": "Failed to add task"
+}
+```
 - Response 400
 
 ```json
 {
-  "message": "failed to add task"
+  "message": "Parameters are not valid"
 }
 ```
 
@@ -49,8 +56,15 @@ _get_ to `/research_management/get_apply_job_form`
 
 ```json
 {
-  "message": "There is no job applications",
+  "message": "There are no job applications",
   "response": ["Candidate job not exist"]
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
 }
 ```
 
@@ -87,7 +101,7 @@ _Post_ to `/research_management/research_job_creation`
 }
 ```
 
-- Response 204
+- Response 400
 
 ```json
 {

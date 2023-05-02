@@ -23,12 +23,19 @@ _Post_ to `task_management/create_task/`
   "message": "Task added successfully and the status is {status}."
 }
 ```
+- Response 304
+
+```json
+{
+  "message": "Failed to add task"
+}
+```
 
 - Response 400
 
 ```json
 {
-  "message": "failed to add task"
+  "message": "Parameters are not valid"
 }
 ```
 
@@ -51,7 +58,7 @@ _Post_ to `task_management/get_task/`
 }
 ```
 
-- Response 400
+- Response 204
 
 ```json
 {
@@ -70,7 +77,7 @@ _Post_ to `task_management/get_cadidate_task/`
 }
 ```
 
-- Response 201
+- Response 200
 
 ```json
 {
@@ -79,7 +86,7 @@ _Post_ to `task_management/get_cadidate_task/`
 }
 ```
 
-- Response 400
+- Response 204
 
 ```json
 {
@@ -106,7 +113,14 @@ _Post_ to `task_management/update_task/`
 
 ```json
 {
-  "message": "Task updation successful."
+  "message": "Task updated successfully"
+}
+```
+- Response 304
+
+```json
+{
+  "message": "Task failed to update"
 }
 ```
 
@@ -114,7 +128,7 @@ _Post_ to `task_management/update_task/`
 
 ```json
 {
-  "message": "Task updation failed"
+  "message": "Parameters are not valid"
 }
 ```
 _delete_ to `task_management/delete_task/`
@@ -127,11 +141,11 @@ _delete_ to `task_management/delete_task/`
 }
 ```
 
-- Response 201
+- Response 200
 
 ```json
 {
-  "message": "Task deletion successful."
+  "message": "Task deleted successfully"
 }
 ```
 
@@ -139,7 +153,7 @@ _delete_ to `task_management/delete_task/`
 
 ```json
 {
-  "message": "Task deletion failed"
+  "message": "Task failed to delete"
 }
 ```
 

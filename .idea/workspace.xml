@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9463d3b8-dabc-4ebc-965a-13adde4f5832" name="Changes" comment="documentation changes" />
+    <list default="true" id="9463d3b8-dabc-4ebc-965a-13adde4f5832" name="Changes" comment="documentation changes">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/team_task_management/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/team_task_management/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/team_task_management/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/team_task_management/views.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,7 +27,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/training_management" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/100098-dowelljobportalbackend" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.DirectoryMappings" />
   </component>
   <component name="RecentsManager">

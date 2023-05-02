@@ -19,7 +19,7 @@ class onboard_candidate(APIView):
         data = request.data
         if data:
             field = {
-                "_id": data.get('document_id'),
+                "document_id": data.get('document_id'),
             }
             update_field = {
                 "status": data.get('status'),
@@ -42,7 +42,7 @@ class onboard_candidate(APIView):
                     *account_management_reports, "insert", insert_to_hr_report, update_field)
                 print(update_response)
                 if update_response or insert_response:
-                    return Response({"message": f"Candidate has been {data.get('status')}"}, status=status.HTTP_200_OK)
+                    return Response({"message": f"Candidate has been {data.get('status')}"}, status=status.HTTP_201_CREATED)
                 else:
                     return Response({"message": "HR operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
@@ -59,7 +59,7 @@ class update_project(APIView):
         data = request.data
         if data:
             field = {
-                "_id": data.get('document_id'),
+                "document_id": data.get('document_id'),
             }
             update_field = {
                 "payment": data.get('payment'),
@@ -71,11 +71,11 @@ class update_project(APIView):
                 *account_management_reports, "update", field, update_field)
             print(update_response)
             if update_response or insert_response:
-                return Response({"message": f"Candidate project and payment has been updated"}, status=status.HTTP_200_OK)
+                return Response({"message": f"Candidate project and payment has been updated"}, status=status.HTTP_201_CREATED)
             else:
                 return Response({"message": "Failed to update."}, status=status.HTTP_304_NOT_MODIFIED)
         else:
-            return Response({"message": "Parametes are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -84,7 +84,7 @@ class rehire_candidate(APIView):
         data = request.data
         if data:
             field = {
-                "_id": data.get('document_id'),
+                "document_id": data.get('document_id'),
             }
             update_field = {
                 "status": data.get('status'),
@@ -99,7 +99,7 @@ class rehire_candidate(APIView):
             else:
                 return Response({"message": "HR operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
-            return Response({"message": "Parametes are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -109,7 +109,7 @@ class reject_candidate(APIView):
         print(data)
         if data:
             field = {
-                "_id": data.get('document_id'),
+                "document_id": data.get('document_id'),
             }
             update_field = {
                 "reject_remarks": data.get('reject_remarks'),
