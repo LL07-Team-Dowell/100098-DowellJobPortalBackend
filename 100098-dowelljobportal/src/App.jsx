@@ -460,18 +460,10 @@ function App() {
       <Route
         path="/"
         element={
-          <NavigationContextProvider>
-            <CandidateTaskContextProvider>
-              <CandidateJobsContextProvider>
-                <JobContextProvider>
-                  <AfterSelectionScreen shortlistedProject={shortlistedProject} />
-                </JobContextProvider>
-              </CandidateJobsContextProvider>
-            </CandidateTaskContextProvider>
-          </NavigationContextProvider>
+          <></>
         }
       >
-        <Route path=":section" element={<AfterSelectionScreen />} />
+        <Route path=":section" element={<></>} />
       </Route>
 
       <Route path="/logout" element={<Logout />} />

@@ -41,6 +41,7 @@ function EditJob({ subAdminView }) {
     workflow_terms: [],
     other_info: [],
     document_id: '',
+    module: ''
   });
   // console.log(formData.job_category);
   // console.log(formData);
@@ -56,11 +57,14 @@ function EditJob({ subAdminView }) {
   const { id } = useParams();
   // const [newjobs, setNewjobs] = useState([]);
   const singleJob = jobs?.filter(job => job["_id"] === id)[0];
-  const { payment_terms, company_id, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, module } = singleJob || {};
+  const { payment_terms, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, module } = singleJob || {};
   const [selectedOption, setSelectedOption] = useState(job_category || "");
   const [active, setActive] = useState(is_active);
   console.log(singleJob);
   const [typeofOption, setTypeofOption] = useState(type_of_job || "");
+  const [secondOption, setSecondOption] = useState("");
+  const [thirdOption, setThirdOption] = useState("");
+
   // jobs.map(singleJob => {
   //   if (singleJob.id !== id) return singleJob
   //   return {…singleJob,//things u edit}
@@ -98,6 +102,15 @@ function EditJob({ subAdminView }) {
     setUpdateLoading(false);
   }
 
+  const handleThirdOptionChange = (e) => {
+    setThirdOption(e.target.value);
+    setFormData((prevValue) => {
+      const copyOfPrevValue = { ...prevValue };
+      copyOfPrevValue["module"] = e.target.value;
+      return copyOfPrevValue;
+    });
+  };
+
   useEffect(() => {
     if (jobs.length > 0) return setLoading(false);
     // setLoading(true);
@@ -116,6 +129,7 @@ function EditJob({ subAdminView }) {
     const formDataUpdates = {};
     switch (true) {
       case job_title?.length > 0:
+        formDataUpdates.module = module;
         formDataUpdates.job_title = job_title;
         formDataUpdates.description = description;
         formDataUpdates.skills = skills;
@@ -461,8 +475,41 @@ function EditJob({ subAdminView }) {
                       required
                     />
                   </div>
-
                 </div>
+
+                <div className='input__data'>
+                  <label htmlFor="module">Module</label>
+                  <select
+                    className="select"
+                    name={"module"}
+                    id="module"
+                    onChange={handleThirdOptionChange}
+                  >
+                    <option value="">{formData.module}</option>
+                    <option value="Frontend" selected={thirdOption === "Frontend"}>
+                      Frontend
+                    </option>
+                    <option value="Backend" selected={thirdOption === "Backend"}>
+                      Backend
+                    </option>
+                    <option value="UI/UX" selected={thirdOption === "UI/UX"}>
+                      UI/UX
+                    </option>
+                    <option
+                      value="Virtual Assistant"
+                      selected={thirdOption === "Virtual Assistant"}
+                    >
+                      Virtual Assitant
+                    </option>
+                    <option value="Web" selected={thirdOption === "Web"}>
+                      Web
+                    </option>
+                    <option value="Mobile" selected={thirdOption === "Mobile"}>
+                      Mobile
+                    </option>
+                  </select>
+                </div>
+
                 <div className='input__data'>
                   <label htmlFor="payment">Payment</label>
                   <input
