@@ -4,6 +4,7 @@ _Post_ to `accounts_management/onboard_candidate/`
 
 - Request Body
 
+
 ```json
 {
   "document_id": "<document id>",
