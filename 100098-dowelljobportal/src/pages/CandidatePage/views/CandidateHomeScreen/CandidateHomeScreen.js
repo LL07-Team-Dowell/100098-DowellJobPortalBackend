@@ -83,13 +83,26 @@ function Home({ setHired, setAssignedProjects, setShortlistedProjects, setShortl
           <h1>Join DoWell team</h1>
           <div className='content__Wrappper'>
             <div className='content__Item'>
+
+              {/* <img src={assets.internship} alt='job category' />
+              <img src={assets.freelaner} alt='job category' />
+              <img src={assets.researcher} alt='job category' /> */}
+
               {
-                React.Children.toArray(availableJobCategories.slice(0, 2).map(category => {
+                React.Children.toArray(availableJobCategories.slice(0, 1).map(category => {
                   return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
-                    <img src={assets.users_img_1} alt='job category' />
+                    <img src={assets.employee} alt='job category' />
                   </Link>
                 }))
               }
+              {
+                React.Children.toArray(availableJobCategories.slice(1, 2).map(category => {
+                  return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
+                    <img src={assets.internship} alt='job category' />
+                  </Link>
+                }))
+              }
+
               {/* <div className='bottom__Content'>
                 {
                   React.Children.toArray(availableJobCategories.slice(0, 2).map(category => {
@@ -109,12 +122,26 @@ function Home({ setHired, setAssignedProjects, setShortlistedProjects, setShortl
             </div>
             <div className='content__Item'>
               {
+                React.Children.toArray(availableJobCategories.slice(2, 3).map(category => {
+                  return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
+                    <img src={assets.researcher} alt='job category' />
+                  </Link>
+                }))
+              }
+              {
+                React.Children.toArray(availableJobCategories.slice(3, 4).map(category => {
+                  return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
+                    <img src={assets.freelaner} alt='job category' />
+                  </Link>
+                }))
+              }
+              {/* {
                 React.Children.toArray(availableJobCategories.slice(2).map(category => {
                   return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
                     <img src={assets.users_img_2} alt='job category' />
                   </Link>
                 }))
-              }
+              } */}
               {/* <div className='bottom__Content'>
                 {
                   React.Children.toArray(availableJobCategories.slice(2).map(category => {

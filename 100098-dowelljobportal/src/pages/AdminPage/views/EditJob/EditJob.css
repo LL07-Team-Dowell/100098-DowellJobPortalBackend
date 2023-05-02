@@ -48,6 +48,12 @@
     outline: 1px solid black;
   }
   
+  select#module {
+    padding: 1.1rem 1.1rem 1.1rem 2rem;
+    border-radius: 10px;
+    border: 1px solid #005734;
+  }
+
   input[type="checkbox"].toggle:checked + label::before {
   }
   

@@ -56,6 +56,7 @@
 
 .candidate__Homepage__Container .main__Content .content__Wrappper .content__Item {
     width: 80%;
+    display: flex;
 }
 
 .candidate__Homepage__Container .main__Content .content__Wrappper .content__Item img {
@@ -173,6 +174,7 @@
         align-items: center;
         justify-content: center;
         flex-direction: row;
+        padding-top: 2rem;
     }
     .candidate__Homepage__Container .main__Content .content__Wrappper .content__Item {
         margin-left: 1.4%;
@@ -182,6 +184,7 @@
         margin-top: 0;
         margin-right: 0;
         margin-bottom: 0;
+        display: flex;
     }
     .candidate__Homepage__Container .main__Content .content__Wrappper .content__Item img {
         /* height: 28rem; */
