@@ -41,7 +41,7 @@ class TeamSerializer(serializers.ModelSerializer):
     def partial_update(self, instance, validated_data):
         instance.team_name = validated_data.get('team_name', instance.team_name)
 
-        # Update members
+
         members_data = validated_data.get('members', [])
         members = []
         for member_data in members_data:
