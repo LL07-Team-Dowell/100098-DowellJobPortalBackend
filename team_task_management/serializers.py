@@ -7,11 +7,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["name"]
 
 class TeamSerializer(serializers.ModelSerializer):
-    members = serializers.ListField(child=serializers.CharField(),required=True)
+    members = serializers.SlugRelatedField(
+        many=True,
+        slug_field='name',
+        queryset=User.objects.all()
+    )
 
     class Meta:
         model = Team
-        fields = ["team_name", "members"]
+        fields = ["id","team_name", "members"]
 
     def create(self, validated_data):
         members_data = validated_data.pop('members')
@@ -22,6 +26,31 @@ class TeamSerializer(serializers.ModelSerializer):
             members.append(member)
         team.members.set(members)
         return team
+    
+    def update(self, instance, validated_data):
+        members_data = validated_data.pop('members', None)
+        instance = super().update(instance, validated_data)
+        if members_data is not None:
+            members = []
+            for member_data in members_data:
+                member, created = User.objects.get_or_create(name=member_data)
+                members.append(member)
+            instance.members.set(members)
+        return instance
+
+    def partial_update(self, instance, validated_data):
+        instance.team_name = validated_data.get('team_name', instance.team_name)
+
+        # Update members
+        members_data = validated_data.get('members', [])
+        members = []
+        for member_data in members_data:
+            member, created = User.objects.get_or_create(name=member_data)
+            members.append(member)
+        instance.members.set(members)
+
+        instance.save()
+        return instance
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -45,4 +74,4 @@ class TeamWithMembers(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ["team_name", "members"]
+        fields = ["id","team_name", "members"]
