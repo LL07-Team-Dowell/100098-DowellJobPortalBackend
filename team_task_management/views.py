@@ -66,3 +66,31 @@ class DeleteTeam(APIView):
             return Response(message, status=status.HTTP_200_OK)
         message = {"error": f"Team with id - {team_id} was not successfully deleted"}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EditTaskAPIView(APIView):
+    def patch(self, request, pk):
+        try:
+            team = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return Response({'error': ' This task does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = TaskEditSerializer(team, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            new_error = {}
+            for field_name, field_errors in serializer.errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
+## this is the api for deleting a team
+class DeleteTask(APIView):
+    def delete(self, request, task_id=None):
+        task = Task.objects.filter(id=task_id)
+        if task.exists():
+            task.delete()
+            message = {"message": f"Task with id - {task_id} was successfully deleted"}
+            return Response(message, status=status.HTTP_200_OK)
+        message = {"error": f"Task with id - {task_id} was not successfully deleted"}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
