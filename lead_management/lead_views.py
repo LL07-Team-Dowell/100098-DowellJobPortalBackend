@@ -17,7 +17,7 @@ class hire_candidate(APIView):
         data = request.data
         if data:
             field = {
-                "document_id": data.get('document_id'),
+                "_id": data.get('document_id'),
             }
             update_field = {
                 "teamlead_remarks": data.get('teamlead_remarks'),
@@ -56,7 +56,7 @@ class rehire_candidate(APIView):
         data = request.data
         if data:
             field = {
-                "document_id": data.get('document_id'),
+                "_id": data.get('document_id'),
             }
             update_field = {
                 "rehire_remarks": data.get('rehire_remarks')
@@ -78,7 +78,7 @@ class reject_candidate(APIView):
         print(data)
         if data:
             field = {
-                "document_id": data.get('document_id'),
+                "_id": data.get('document_id'),
             }
             update_field = {
                 "reject_remarks": data.get('reject_remarks'),

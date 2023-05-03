@@ -1,6 +1,7 @@
 from django.db import models
 
 class User(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -8,6 +9,7 @@ class User(models.Model):
 
 
 class Team(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
     team_name = models.CharField(max_length=255)
     members = models.ManyToManyField(User, through='TeamMember')
 
@@ -24,6 +26,7 @@ class TeamMember(models.Model):
 
 
 class Task(models.Model):
+
     title = models.CharField(max_length=255)
     description = models.TextField()
     assignee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assigned_tasks')

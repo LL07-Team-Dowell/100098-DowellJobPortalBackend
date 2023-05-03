@@ -19,7 +19,7 @@ class onboard_candidate(APIView):
         data = request.data
         if data:
             field = {
-                "document_id": data.get('document_id'),
+                "_id": data.get('document_id'),
             }
             update_field = {
                 "status": data.get('status'),
@@ -59,7 +59,7 @@ class update_project(APIView):
         data = request.data
         if data:
             field = {
-                "document_id": data.get('document_id'),
+                "_id": data.get('document_id'),
             }
             update_field = {
                 "payment": data.get('payment'),
@@ -84,7 +84,7 @@ class rehire_candidate(APIView):
         data = request.data
         if data:
             field = {
-                "document_id": data.get('document_id'),
+                "_id": data.get('document_id'),
             }
             update_field = {
                 "status": data.get('status'),
@@ -109,7 +109,7 @@ class reject_candidate(APIView):
         print(data)
         if data:
             field = {
-                "document_id": data.get('document_id'),
+                "_id": data.get('document_id'),
             }
             update_field = {
                 "reject_remarks": data.get('reject_remarks'),
