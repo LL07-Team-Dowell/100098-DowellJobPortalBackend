@@ -46,39 +46,8 @@ _get_ to `team_task_management/create_get_team/`
 		]
 	}
 }
-
-
 ```
 
-_Post_ to `team_task_management/create_task_team/`
-
-- Request Body
-
-```json
-{
-  "assignee": "user id",
-  "title": "title",
-  "description": "This field is required.",
-  "team": "Team id",
-  "completed": "True/False"
-}
-```
-
-- Response 201
-
-```json
-{
-  "message": "Task created successfully"
-}
-```
-
-- Response 400
-
-```json
-{
-  "message": "serializer.errors"
-}
-```
 _Patch_ to `team_task_management/edit-team-api/<int:pk>/`
 
 - Request Body
@@ -111,5 +80,70 @@ _Patch_ to `team_task_management/edit-team-api/<int:pk>/`
 ```json
 {
   "message": "serializer.errors"
+}
+```
+
+_delete_ to `team_task_management/delete-team/<int:team_id>/`
+
+
+- Response 200
+
+```json
+{"message": f"Team with id - {team_id} was successfully deleted"}
+```
+
+- Response 400
+
+```json
+{
+	"error": "Team with id was not successfully deleted"
+}
+```
+
+_Post_ to `team_task_management/create_task_team/`
+
+- Request Body
+
+```json
+{
+  "assignee": "user name",
+  "title": "title",
+  "description": "This field is required.",
+  "team": "Team id",
+  "completed": "True/False"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Task created successfully"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializer.errors"
+}
+```
+_get_ to `team_task_management/create_team_task/`
+
+- Response 201
+
+```json
+{
+  {
+  
+		"id": "task_id",
+		"title": "Task Title",
+		"description": "Task Description",
+		"assignee": "user name",
+		"completed": false,
+		"team": "team_id"
+	
+	}
 }
 ```
