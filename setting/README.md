@@ -35,11 +35,8 @@ _Post_ to `setting/SettingUserProfileInfo/`
 
 ```json
 {
-    {
-    "message":"serializer.errors"
-    },
-    status=400
-
+    "message":"serializer.errors",
+    "status":"400"
 }
 ```
 
@@ -54,22 +51,21 @@ _get_ to `setting/SettingUserProfileInfo/`
   "owner": "<owner>",
   "data_type": "<data_type>",
   "profile_info": [
-    { "profile_title": "profile_title", "Role": "Role", "project": "project", "version": "version" }
-  ]
-},status=200
+                    { "profile_title": "profile_title", "Role": "Role", "project": "project", "version": "version" }
+                  ],
+  "status":"200"
+}
 ```
 
 - Response 400
 
 ```json
 {
-    {
-    "message":"serializer.errors"
-    },
-    status=400
-
+    "message":"serializer.errors",
+    "status":"400"
 }
 ```
+
 
 _put_ to `SettingUserProfileInfo/<int:pk>`
 
@@ -95,11 +91,8 @@ _put_ to `SettingUserProfileInfo/<int:pk>`
 
 ```json
 {
-    {
-    "message":"serializer.errors"
-    },
-    status=400
-
+    "message":"serializer.errors",
+    "status":"400"
 }
 ```
 
@@ -146,11 +139,8 @@ _Post_ to `setting/SettingUserProject/`
 
 ```json
 {
-    {
-    "message":"serializer.errors"
-    },
-    status=400
-
+    "message":"serializer.errors",
+    "status":"400"
 }
 ```
 
@@ -171,11 +161,8 @@ _get_ to `setting/SettingUserProject/`
 
 ```json
 {
-    {
-    "message":"serializer.errors"
-    },
-    status=400
-
+    "message":"serializer.errors",
+    "status":"400"
 }
 ```
 
@@ -206,10 +193,7 @@ _put_ to `SettingUserProject/<int:pk>`
 
 ```json
 {
-    {
-    "message":"serializer.errors"
-    },
-    status=400
-
+    "message":"serializer.errors",
+    "status":"400"
 }
 ```

@@ -59,7 +59,7 @@ _Post_ to `/candidate_management/get_job_application/`
 
 ```json
 {
-  "message": "List of job apllications.",
+  "message": "List of job apllications",
   "response": ["list of jobs"]
 }
 ```
@@ -87,7 +87,7 @@ _Post_ to `/candidate_management/get_candidate_application/`
 
 ```json
 {
-  "message": "Candidate job apllications.",
+  "message": "Candidate job apllications",
   "response": ["Candidate job"]
 }
 ```
@@ -123,7 +123,7 @@ _delete_ to `/candidate_management/delete_candidate_application/`
 
 ```json
 {
-  "message": "candidate application deletion has failed."
+  "message": "Deleting candidate application has failed"
 }
 ```
 

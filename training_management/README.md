@@ -9,8 +9,7 @@ _Post_ to `training_management/create_question/`
     "company_id": "<company_id>",
     "data_type": "<data_type>",
     "question_link": "<question_link>",
-    "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>
->",
+    "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
     "created_on": "<created_on>",
     "created_by": "<created_by>",
     "is_active": "<True | False>",
@@ -29,7 +28,7 @@ _Post_ to `training_management/create_question/`
 
 ```json
 {
-    "message":"Question creation failed"
+    "message":"Question failed to be created"
 }
 ```
 
@@ -37,7 +36,7 @@ _Post_ to `training_management/create_question/`
 
 ```json
 {
-  "message": "field errors"
+  "message": "serializer.errors"
 }
 ```
 
@@ -73,7 +72,7 @@ __get__ to `training_management/get_all_question/`
 
 ```json
 {
-    "company_id": "<company_id>",
+    "company_id": "<company_id>"
 }
 ```
 
@@ -118,5 +117,63 @@ __patch__ to `training_management/update_question/`
 ```json
 {
     "message":"Question updating failed"
+}
+```
+- Response 400
+
+```json
+{
+    "message":"serializer.errors"
+}
+```
+
+__patch__ to `training_management/update_response/`
+
+- Request Body
+
+```json
+{
+    "document_id": "<document_id>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Candidate has been responded to"
+}
+```
+- Response 304
+
+```json
+{
+  "message": "HR operation failed"
+}
+```
+
+__get__ to `training_management/get_response/`
+
+- Request Body
+
+```json
+{
+    "document_id": "<document_id>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "List of response.",
+  "response": "[List of response]"
+}
+```
+- Response 304
+
+```json
+{
+  "error": "data not found"
 }
 ```
