@@ -130,11 +130,3 @@ _delete_ `team_task_management/delete_team/<str:team_id>/`
   "message": "Team with id - {team_id} was not successfully deleted"
 }
 ```
-
-- Response 404
-
-```json
-{
-  "message": "Team does not exist"
-}
-```

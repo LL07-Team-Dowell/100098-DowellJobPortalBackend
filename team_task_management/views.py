@@ -64,19 +64,11 @@ class EditTeamAPIView(APIView):
 
 
 class DeleteTeam(APIView):
-
     def delete(self, request, team_id):
-        try:
-            # checks if team exists
-            team = Team.objects.get(id=team_id)
+        team = Team.objects.filter(id=team_id)
+        if team.exists():
             team.delete()
-            if team.exists():
-                message = {"error": f"Team with id - {team_id} was not successfully deleted"}
-                return Response(message, status=status.HTTP_400_BAD_REQUEST)
             message = {"message": f"Team with id - {team_id} was successfully deleted"}
             return Response(message, status=status.HTTP_200_OK)
-        except Team.DoesNotExist:
-            # =====if it doesnt exist, return the reponse below
-            return Response({'error': 'Team does not exist'}, status=status.HTTP_404_NOT_FOUND)
-
-
+        message = {"error": f"Team with id - {team_id} was not successfully deleted"}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
