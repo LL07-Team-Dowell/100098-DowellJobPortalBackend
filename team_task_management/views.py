@@ -56,7 +56,7 @@ class EditTeamAPIView(APIView):
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
-## this is the api for deleting a team
+## this is the api for deleting a team 
 class DeleteTeam(APIView):
     def delete(self, request, team_id=None):
         team = Team.objects.filter(id=team_id)
