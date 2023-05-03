@@ -82,6 +82,13 @@ _Patch_ to `team_task_management/edit-team-api/<int:pk>/`
   "message": "serializer.errors"
 }
 ```
+- Response 404
+
+```json
+{
+  "message": "Team does not exist"
+}
+```
 
 _delete_ to `team_task_management/delete-team/<int:team_id>/`
 
@@ -89,7 +96,7 @@ _delete_ to `team_task_management/delete-team/<int:team_id>/`
 - Response 200
 
 ```json
-{"message": f"Team with id - {team_id} was successfully deleted"}
+{"message": "Team with id - {team_id} was successfully deleted"}
 ```
 
 - Response 400
@@ -135,15 +142,70 @@ _get_ to `team_task_management/create_team_task/`
 
 ```json
 {
-  {
-  
 		"id": "task_id",
 		"title": "Task Title",
 		"description": "Task Description",
 		"assignee": "user name",
 		"completed": false,
 		"team": "team_id"
-	
-	}
+}
+```
+
+
+_Patch_ to `team_task_management/edit-task/<int:pk>/`
+
+- Request Body
+
+```json
+{
+    "title": "title of task",
+    "description": " task description",
+    "assignee": "assignee of the task",
+    "team": " id of the team used",
+    "completed": "false/true"
+}
+```
+
+- Response 200
+
+```json
+{
+	"id": "<id>",
+	"title": "title of task",
+    "description": " task description",
+    "assignee": "assignee of the task",
+    "completed": false
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializer.errors"
+}
+```
+- Response 404
+
+```json
+{
+  "message": "This task does not exist"
+}
+```
+
+_delete_ to `team_task_management/delete_task/<int:task_id>/`
+
+
+- Response 200
+
+```json
+{"message": "Task with id - {task_id} was successfully deleted"}
+```
+
+- Response 400
+
+```json
+{
+	"error": "Task with id - {task_id} was not successfully deleted"
 }
 ```
