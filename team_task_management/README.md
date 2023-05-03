@@ -76,3 +76,65 @@ _Post_ to `team_task_management/create_task_team/`
   "message": "serializer.errors"
 }
 ```
+_Post_ to `team_task_management/create_task_team/`
+
+- Request Body
+
+```json
+{
+  "assignee": "user id",
+  "title": "title",
+  "description": "This field is required.",
+  "team": "Team id",
+  "completed": "True/False"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Task created successfully"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializer.errors"
+}
+```
+_delete_ `team_task_management/delete_team/<str:team_id>/`
+
+- Request Body
+
+```json
+{
+  "team_id": "Team id"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Team with id - {team_id} was successfully deleted"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "Team with id - {team_id} was not successfully deleted"
+}
+```
+
+- Response 404
+
+```json
+{
+  "message": "Team does not exist"
+}
+```
