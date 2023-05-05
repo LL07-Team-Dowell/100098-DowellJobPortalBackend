@@ -485,7 +485,6 @@ function EditJob({ subAdminView }) {
                     id="module"
                     onChange={handleThirdOptionChange}
                   >
-                    <option value="">{formData.module}</option>
                     <option value="Frontend" selected={thirdOption === "Frontend"}>
                       Frontend
                     </option>
@@ -499,7 +498,7 @@ function EditJob({ subAdminView }) {
                       value="Virtual Assistant"
                       selected={thirdOption === "Virtual Assistant"}
                     >
-                      Virtual Assitant
+                      Virtual Assistant
                     </option>
                     <option value="Web" selected={thirdOption === "Web"}>
                       Web

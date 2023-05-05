@@ -7,7 +7,13 @@ import researcher from "./images/research.png";
 import map_img from "./images/map.png";
 import logo_img from "./images/dowell-logo.png";
 import dowell_video from "./videos/intro-video.mp4";
-
+import langing_logo from "./images/landing-logo.png";
+import hero_image from "./images/hero_img.png";
+import frontend_icon from "./images/frontend-icon.png";
+import bg_rectang from "./images/bg-rectang.png";
+import lock_screen from "./images/lock.png";
+import dev_img from "./images/developr-img.png";
+import frontendimage from "./images/frontend-image.png"
 
 export {
     users_img_1,
@@ -19,4 +25,11 @@ export {
     map_img,
     logo_img,
     dowell_video,
+    langing_logo,
+    hero_image,
+    frontend_icon,
+    bg_rectang,
+    lock_screen,
+    dev_img,
+    frontendimage
 }
