@@ -345,9 +345,35 @@ function HrJobScreen() {
   return (
     <StaffJobLandingLayout hrView={true} runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} hideSideBar={showAddTaskModal} searchValue={jobSearchInput} setSearchValue={setJobSearchInput} searchPlaceHolder={section === "home" ?"received" : section === "guest-applications" ? "guests" : section === "shortlisted" ? "shortlisted" : section === "hr-training" ? "hr-training" : "received"}>
     <div className="hr__Page__Container">
-    <TitleNavigationBar className={path === undefined ? "": "view__Application__Navbar"} title={path === undefined ? section === "user" ? "Profile" : section === "tasks" ? "Tasks" : sub_section !== undefined && section === "hr-training" ? `${trainingCards.module}` : section === "attendance" ? "Attendance" : "Applications" : "Application Details" 
-  } hideBackBtn={path === undefined && sub_section === undefined ? true : false} handleBackBtnClick={() => navigate(-1)} />
-    { section !== "user" && section !== "attendance" && section !== "tasks" && path === undefined && sub_section === undefined && <TogglerNavMenuBar menuItems={["Received", "Guests", "Shortlisted" , "Hr Training"]} currentActiveItem={currentActiveItem} handleMenuItemClick={handleMenuItemClick} /> }
+    <TitleNavigationBar 
+      className={
+        path === undefined ? "" : "view__Application__Navbar"
+      } 
+      title={
+        path === undefined ? 
+          section === "user" ? "Profile" 
+          : 
+          section === "tasks" ? "Tasks" 
+          : 
+          sub_section !== undefined && section === "hr-training" ? 
+            sub_section ? sub_section : `${trainingCards.module}` 
+          : section === "attendance" ? "Attendance" 
+          : "Applications" : 
+          "Application Details" 
+      } 
+      hideBackBtn={
+        path === undefined && sub_section === undefined ? true : false
+      } 
+      handleBackBtnClick={() => navigate(-1)} 
+    />
+    { 
+      section !== "user" && section !== "attendance" && section !== "tasks" && path === undefined && sub_section === undefined && 
+      <TogglerNavMenuBar 
+        menuItems={["Received", "Guests", "Shortlisted" , "Hr Training"]} 
+        currentActiveItem={currentActiveItem} 
+        handleMenuItemClick={handleMenuItemClick} 
+      /> 
+    }
     {
       sub_section === undefined && section === "home" || section === undefined ? <>
         <div className='hr__wrapper'>
