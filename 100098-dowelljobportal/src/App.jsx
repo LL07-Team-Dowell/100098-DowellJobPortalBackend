@@ -46,6 +46,9 @@ import HrTasks from "./pages/HrPage/views/Tasks/HrTasks";
 import CreateTaskScreen from "./pages/TeamleadPage/views/CreateTaskScreen/CreateTaskScreen";
 import { HrJobScreenAllTasksContextProvider } from "./contexts/HrJobScreenAllTasks";
 import HrTrainingQuestions from "./pages/HrPage/views/HrTrainingScreen/HrTrainingQuestion";
+import CandidateTranningScreen from "./pages/CandidatePage/views/CandidateTranningScreen/CandidateTranningScreen";
+import TraningProgress from "./pages/CandidatePage/views/TraningProgress.js/TraningProgress";
+
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
@@ -53,9 +56,11 @@ function App() {
   const [candidateShortListed, setCandidateShortListed] = useState(false);
   const [assignedProjects, setAssignedProjects] = useState([]);
   const [shortlistedProject, setShortlistedProjects] = useState([]);
-
+  
+  // console.log(JobContextProvider);
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
+  
   if (loading) return <LoadingPage />;
 
   console.log("CURRENT USER", currentUser);
@@ -461,11 +466,11 @@ function App() {
       <Route
         path="/"
         element={
-          <></>
+          <CandidateTranningScreen />
         }
       >
-        <Route path=":section" element={<></>} />
       </Route>
+      <Route path="/traning" element={<TraningProgress />} />
 
       <Route path="/logout" element={<Logout />} />
 
@@ -482,7 +487,7 @@ function App() {
                 <CandidateHomeScreen
                   set={setCandidateHired}
                   setAssignedProjects={setAssignedProjects}
-                  setShortlistedProjects={setShortlistedProjects}
+                  setCandidateShortListed={setCandidateShortListed}
                 />
               </JobContextProvider>
             </CandidateJobsContextProvider>
