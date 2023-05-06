@@ -23,7 +23,7 @@ function Home({ setHired, setAssignedProjects,  setCandidateShortListed }) {
 
   useEffect(() => {
 
-    if (!currentUser) return setLoading(false);
+    if (!currentUser) return;
     if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 0) return setLoading(false);
 
     getAppliedJobs(currentUser?.portfolio_info[0].org_id).then(res => {
@@ -58,11 +58,11 @@ function Home({ setHired, setAssignedProjects,  setCandidateShortListed }) {
       setLoading(false);
     })
 
-  }, [])
+  }, [currentUser, candidateJobs])
 
   const handleLoginLinkClick = (e) => {
     e.preventDefault();
-    window.location.href = dowellLoginUrl
+    window.location.replace(dowellLoginUrl)
   }
 
   if (loading) return <LoadingSpinner />

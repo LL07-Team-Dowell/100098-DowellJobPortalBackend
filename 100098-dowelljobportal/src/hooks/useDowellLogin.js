@@ -96,7 +96,7 @@ export default function useDowellLogin(
         return;
       }
 
-      return (window.location.href = dowellLoginUrl);
+      return (window.location.replace(dowellLoginUrl));
     }
 
     sessionStorage.setItem("session_id", session_id);
