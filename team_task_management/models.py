@@ -42,9 +42,5 @@ class TaskForMember(models.Model):
     completed = models.BooleanField(default=False)
     team_member = models.ForeignKey(TeamMember, on_delete=models.CASCADE, related_name='task_for_member')
 
-
-    class Meta:
-        ordering = ('title',)
-
     def __str__(self):
         return f"{self.title}--[{self.team_member}]"
