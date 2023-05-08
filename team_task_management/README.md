@@ -33,7 +33,6 @@ _get_ to `team_task_management/create_get_team/`
 
 ```json
 {
-  {
     "id":"<team_id>",
 		"team_name": "team_name",
 		"members": [
@@ -44,7 +43,6 @@ _get_ to `team_task_management/create_get_team/`
 				"name": "name"
 			}
 		]
-	}
 }
 ```
 
@@ -107,7 +105,7 @@ _delete_ to `team_task_management/delete-team/<int:team_id>/`
 }
 ```
 
-_Post_ to `team_task_management/create_task_team/`
+_Post_ to `team_task_management/create_team_task/`
 
 - Request Body
 
@@ -136,21 +134,6 @@ _Post_ to `team_task_management/create_task_team/`
   "message": "serializer.errors"
 }
 ```
-_get_ to `team_task_management/create_team_task/`
-
-- Response 201
-
-```json
-{
-		"id": "task_id",
-		"title": "Task Title",
-		"description": "Task Description",
-		"assignee": "user name",
-		"completed": false,
-		"team": "team_id"
-}
-```
-
 
 _Patch_ to `team_task_management/edit-task/<int:pk>/`
 
@@ -193,7 +176,7 @@ _Patch_ to `team_task_management/edit-task/<int:pk>/`
 }
 ```
 
-_delete_ to `team_task_management/delete_task/<int:task_id>/`
+_delete_ to `team_task_management/delete-task/<int:task_id>/`
 
 
 - Response 200
@@ -207,5 +190,54 @@ _delete_ to `team_task_management/delete_task/<int:task_id>/`
 ```json
 {
 	"error": "Task with id - {task_id} was not successfully deleted"
+}
+```
+
+
+_Post_ to `team_task_management/create_member_task/`
+
+- Request Body
+
+```json
+{
+  "assignee": "user name",
+  "title": "title",
+  "description": "This field is required.",
+  "team": "Team id",
+  "team_member": "member id",
+  "completed": "True/False"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Task for member-{member} is created successfully"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializer.errors"
+}
+```
+
+
+_delete_ to `team_task_management/delete-member-task/<int:task_id>/`
+
+- Response 200
+
+```json
+{"message": "Task with id - {task_id} for member - {task.team_member} was successfully deleted"}
+```
+
+- Response 400
+
+```json
+{
+	"error": "Task with id - {task_id} for member - {task.team_member} was not successfully deleted"
 }
 ```

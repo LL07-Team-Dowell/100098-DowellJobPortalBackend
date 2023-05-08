@@ -5,39 +5,41 @@ from .models import Task, Team, TeamMember, User
 from .serializers import *
 from rest_framework.views import APIView
 
+
 class TeamList(generics.ListCreateAPIView):
     queryset = Team.objects.all()
     serializer_class = TeamWithMembers
-    
+
     def post(self, request, *args, **kwargs):
         serializer = TeamSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message":"Team created successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Team created successfully"}, status=status.HTTP_201_CREATED)
         else:
             default_errors = serializer.errors
             new_error = {}
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
 class create_task(generics.ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    
+
     def post(self, request, *args, **kwargs):
         print(request.data)
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message":"Task created successfully"}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Task created successfully"}, status=status.HTTP_201_CREATED)
         else:
             default_errors = serializer.errors
             new_error = {}
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class EditTeamAPIView(APIView):
     def patch(self, request, pk):
@@ -55,6 +57,7 @@ class EditTeamAPIView(APIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
 
 ## this is the api for deleting a team
 class DeleteTeam(APIView):
@@ -84,7 +87,8 @@ class EditTaskAPIView(APIView):
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
-## this is the api for deleting a team
+
+## this is the api for deleting a task
 class DeleteTask(APIView):
     def delete(self, request, task_id=None):
         task = Task.objects.filter(id=task_id)
@@ -93,4 +97,40 @@ class DeleteTask(APIView):
             message = {"message": f"Task with id - {task_id} was successfully deleted"}
             return Response(message, status=status.HTTP_200_OK)
         message = {"error": f"Task with id - {task_id} was not successfully deleted"}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+# this is the api for creating a task for a team member
+class create_member_task(generics.ListCreateAPIView):
+    def post(self, request, *args, **kwargs):
+        # print(request.data)
+        data = request.data
+        team_member = data.get('team_member')  # gets the team_member id from the post request
+        team_member = TeamMember.objects.filter(user=team_member).first()
+        name = f"{team_member.user.name} - ({team_member.team.team_name})"  # gets the member
+        serializer = TaskForMemberSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            # print(TaskForMember.objects.filter(), "====================")
+            return Response({"message": f"Task for member-- {name} is created successfully"},
+                            status=status.HTTP_201_CREATED)
+        else:
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
+
+# this is the api for deleting a task for a member
+class DeleteMemberTask(APIView):
+    def delete(self, request, task_id=None):
+        task = TaskForMember.objects.filter(id=task_id)
+        # print(task, '===================', TaskForMember.objects.filter())
+        if task.exists():
+            task.delete()
+            message = {"message": f"Task with id - {task_id} for member - {task} was successfully deleted"}
+            return Response(message, status=status.HTTP_200_OK)
+        message = {"error": f"Task with id - {task_id} for member - {task} was not successfully deleted"}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
