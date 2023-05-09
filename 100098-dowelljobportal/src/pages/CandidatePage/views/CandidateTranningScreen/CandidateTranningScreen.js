@@ -28,7 +28,6 @@ const Section_2 = styled.div`
     align-items:center;
     flex-direction: column;
     padding: 40px 0;
-    overflow-y: scroll;
     position: relative; 
 
     h1{
@@ -42,7 +41,6 @@ const Section_2 = styled.div`
         flex-wrap:wrap;
         margin:auto;
         justify-content: space-around;
-        overflow-y: scroll;
         position: relative; 
 
         .item-1{
@@ -117,7 +115,6 @@ const Navbar = styled.nav`
   padding: 0 16px;
   height: 5rem;
   background-color: white;
-  overflow-y: scroll;
   position: relative; 
 `;
 
@@ -184,7 +181,6 @@ const Hero = styled.div`
     justify-content: space-around;
     align-items: center;
     height: 90vh;
-    overflow-y: scroll;
     position: relative; 
 
   

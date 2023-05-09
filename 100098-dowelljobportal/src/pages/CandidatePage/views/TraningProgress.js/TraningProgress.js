@@ -14,15 +14,18 @@ function TraningProgress() {
     const Wrapper = styled.div`
         font-family:'poppins';
         background-color:#ffffff;
-        height: 60vh;
+        height: 70vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        position: reletive;
     `
 
     const Section_1 = styled.div`
         border-bottom: 0.1px solid #dfdddd;
         font-family:'poppins';
+        height: 10vh;
+        position: reletive;
     `
 
     const Navbar = styled.nav`
@@ -176,12 +179,8 @@ function TraningProgress() {
             }
 
             .left-content{
-                img{
-                    width: 250px;
-                    height: 170px;
-                }
                 svg{
-                   font-size: 4rem;
+                   font-size: 3rem;
                 }
             }
 
@@ -247,7 +246,7 @@ function TraningProgress() {
                             <span>Training Program</span>
                             <h6>Become a Front-end Developer</h6>
                             <div className="content">
-                                <img src={assets.logo_img} alt="logo" />
+                                <img src={assets.langing_logo} alt="logo" />
                                 <span>Training</span>
                                 <span>.</span>
                                 <span>Apr 2023</span>
