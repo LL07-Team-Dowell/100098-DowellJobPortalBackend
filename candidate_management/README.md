@@ -45,13 +45,21 @@ _Post_ to `/candidate_management/apply_job/`
 }
 ```
 
-_get_ to `/candidate_management/get_job_application/<str:company_id>/`
+_Post_ to `/candidate_management/get_job_application/`
+
+- Request Body
+
+```json
+{
+  "company_id": "<company_id>"
+}
+```
 
 - Response 200
 
 ```json
 {
-  "message": "List of job applications",
+  "message": "List of job apllications",
   "response": ["list of jobs"]
 }
 ```
@@ -65,13 +73,21 @@ _get_ to `/candidate_management/get_job_application/<str:company_id>/`
 }
 ```
 
-_get_ to `/candidate_management/get_candidate_application/<str:document_id>/`
+_Post_ to `/candidate_management/get_candidate_application/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document id>"
+}
+```
 
 - Response 200
 
 ```json
 {
-  "message": "Candidate job applications",
+  "message": "Candidate job apllications",
   "response": ["Candidate job"]
 }
 ```
@@ -118,7 +134,7 @@ _get_ to `/candidate_management/get_all_onboarded_candidate/<str:company_id>`
 ```json
 {
   "message": "List of onboard applications.",
-  "response": ["onboard Candidate"] 
+  "response": ["onboard Candidate"]
 }
 ```
 
