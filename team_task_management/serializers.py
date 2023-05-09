@@ -107,3 +107,19 @@ class TaskEditSerializer(serializers.ModelSerializer):
         instance.team = validated_data.get('team', instance.team)
         instance.save()
         return instance
+
+
+# Serializer for task for a team member
+class TaskForMemberSerializer(serializers.ModelSerializer):
+    assignee = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=User.objects.all()
+    )
+    team_member = serializers.SlugRelatedField(
+        slug_field='user',
+        queryset=TeamMember.objects.all()
+    )
+
+    class Meta:
+        model = TaskForMember
+        fields = ['id', 'title', 'description', "assignee", "completed", "team_member"]

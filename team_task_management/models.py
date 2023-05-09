@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class User(models.Model):
     name = models.CharField(max_length=255)
 
@@ -32,3 +33,14 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class TaskForMember(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    assignee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assigned_task_for_member')
+    completed = models.BooleanField(default=False)
+    team_member = models.ForeignKey(TeamMember, on_delete=models.CASCADE, related_name='task_for_member')
+
+    def __str__(self):
+        return f"{self.title}--[{self.team_member}]"
