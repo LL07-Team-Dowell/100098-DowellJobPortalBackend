@@ -11,13 +11,13 @@ const Wrapper = styled.div`
     background-color:#ffffff;
 
     .container{
-        width: 1300px;
+        width: 1400px;
         margin: auto;
     }
 
-    @media screen and (max-width: 1300px) {
+    @media screen and (max-width: 1400px) {
        .container{
-         width: 95%;
+         width: 99%;
        }
     }
 `
@@ -122,7 +122,7 @@ const Navbar = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-//   border-bottom: 0.1px solid #dfdddd;
+  border-bottom: 1px solid #dfdddd;
   padding: 0 16px;
   height: 5rem;
   background-color: white;
