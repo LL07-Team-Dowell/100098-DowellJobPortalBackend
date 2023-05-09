@@ -9,10 +9,21 @@ import { Link } from 'react-router-dom';
 const Wrapper = styled.div`
     font-family:'poppins';
     background-color:#ffffff;
+
+    .container{
+        width: 1300px;
+        margin: auto;
+    }
+
+    @media screen and (max-width: 1300px) {
+       .container{
+         width: 95%;
+       }
+    }
 `
 
 const Section_1 = styled.div`
-    height: 52rem; 
+    height: 50rem; 
     border-bottom: 0.1px solid #dfdddd;
     position: relative; 
 
@@ -111,7 +122,7 @@ const Navbar = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 0.1px solid #dfdddd;
+//   border-bottom: 0.1px solid #dfdddd;
   padding: 0 16px;
   height: 5rem;
   background-color: white;
@@ -119,7 +130,6 @@ const Navbar = styled.nav`
 `;
 
 const NavbarItem = styled.div`
-
     .item {
         display: flex;
         justify-content: space-around;
@@ -127,9 +137,8 @@ const NavbarItem = styled.div`
         position: relative;
         padding: 0 1rem;
         img{
-            width: 100px;
-            height: 100px;
-            padding: 10px;
+            width: 80px;
+            height: 80px;
         }
         a{
             color: #7E7E7E;
@@ -138,11 +147,12 @@ const NavbarItem = styled.div`
         h1{
             color:#005734;
             font-size: 33px;
+            margin-left: 0.5rem;
         }
 
         input{
             padding: 15px 40px;
-            width: 50rem;
+            width: 30rem;
             background-color: #F5F5F5;
             border: none;
         }
@@ -217,91 +227,93 @@ function CandidateTranningScreen() {
 
     return (
         <Wrapper>
-            <Section_1>
-                <Navbar>
-                    <NavbarItem>
-                        <div className="item right-item">
-                            <img src={assets.langing_logo} alt="logo" />
-                            <h1>Training</h1>
-                        </div>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <div className="item middle-item" id='item'>
-                            <AiOutlineSearch className='svg' />
-                            <input type="text" placeholder='Search for training program' />
-                        </div>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <div className="item left-item">
-                            <div className="home">
-                                <AiFillHome />
-                                <p>Home</p>
+            <div className="container">
+                <Section_1>
+                    <Navbar>
+                        <NavbarItem>
+                            <div className="item right-item">
+                                <img src={assets.langing_logo} alt="logo" />
+                                <h1>Training</h1>
                             </div>
-                            <div className="tranning">
+                        </NavbarItem>
+                        <NavbarItem>
+                            <div className="item middle-item" id='item'>
+                                <AiOutlineSearch className='svg' />
+                                <input type="text" placeholder='Search for training program' />
+                            </div>
+                        </NavbarItem>
+                        <NavbarItem>
+                            <div className="item left-item">
+                                <div className="home">
+                                    <AiFillHome />
+                                    <p>Home</p>
+                                </div>
+                                <div className="tranning">
+                                    <Link to="/traning">
+                                        <AiFillBook />
+                                    </Link>
+                                    <p>Training</p>
+                                </div>
+                            </div>
+                        </NavbarItem>
+                    </Navbar>
+
+                    <Hero>
+                        <div className="left-content">
+                            <h1>Get Training from <br /> Experts</h1>
+                            <br />
+                            <p>a solution for easy and flexible learning, you <br /> can study anywhere through this platform</p>
+                            <br />
+                            <button>
                                 <Link to="/traning">
-                                    <AiFillBook />
+                                    Get started
                                 </Link>
-                                <p>Training</p>
+                            </button>
+                        </div>
+                        <div className="right-content">
+                            <img src={assets.hero_image} alt="hero" />
+                        </div>
+                    </Hero>
+                </Section_1>
+
+                <Section_2>
+                    <h1>Our Training Programs</h1>
+                    <div className="traning-items">
+                        <div className="item-1">
+                            <img src={assets.frontend_icon} alt="frontend" />
+                            <br />
+                            <h2>Front-end</h2>
+                            <br />
+                            <p>Prepare for a career in Front-end Development. Receive professional-level training from uxliving lab</p>
+                            <br />
+                            <button>
+                                <Link to="#">
+                                    Start Now <BiRightArrowAlt />
+                                </Link>
+                            </button>
+
+                            <div className="bottom-img">
+                                <img src={assets.bg_rectang} alt="rectbg" />
                             </div>
                         </div>
-                    </NavbarItem>
-                </Navbar>
-
-                <Hero>
-                    <div className="left-content">
-                        <h1>Get Training from <br /> Experts</h1>
-                        <br />
-                        <p>a solution for easy and flexible learning, you <br /> can study anywhere through this platform</p>
-                        <br />
-                        <button>
-                            <Link to="/traning">
-                                Get started
-                            </Link>
-                        </button>
-                    </div>
-                    <div className="right-content">
-                        <img src={assets.hero_image} alt="hero" />
-                    </div>
-                </Hero>
-            </Section_1>
-
-            <Section_2>
-                <h1>Our Training Programs</h1>
-                <div className="traning-items">
-                    <div className="item-1">
-                        <img src={assets.frontend_icon} alt="frontend" />
-                        <br />
-                        <h2>Front-end</h2>
-                        <br />
-                        <p>Prepare for a career in Front-end Development. Receive professional-level training from uxliving lab</p>
-                        <br />
-                        <button>
-                            <Link to="#">
-                                Start Now <BiRightArrowAlt />
-                            </Link>
-                        </button>
-
-                        <div className="bottom-img">
-                            <img src={assets.bg_rectang} alt="rectbg" />
+                        <div className="item-2">
+                            <img src={assets.lock_screen} alt="" />
+                        </div>
+                        <div className="item-2">
+                            <img src={assets.lock_screen} alt="" />
+                        </div>
+                        <div className="item-2">
+                            <img src={assets.lock_screen} alt="" />
+                        </div>
+                        <div className="item-2">
+                            <img src={assets.lock_screen} alt="" />
+                        </div>
+                        <div className="item-2">
+                            <img src={assets.lock_screen} alt="" />
                         </div>
                     </div>
-                    <div className="item-2">
-                        <img src={assets.lock_screen} alt="" />
-                    </div>
-                    <div className="item-2">
-                        <img src={assets.lock_screen} alt="" />
-                    </div>
-                    <div className="item-2">
-                        <img src={assets.lock_screen} alt="" />
-                    </div>
-                    <div className="item-2">
-                        <img src={assets.lock_screen} alt="" />
-                    </div>
-                    <div className="item-2">
-                        <img src={assets.lock_screen} alt="" />
-                    </div>
-                </div>
-            </Section_2>
+                </Section_2>
+            </div>
         </Wrapper>
     )
 }
