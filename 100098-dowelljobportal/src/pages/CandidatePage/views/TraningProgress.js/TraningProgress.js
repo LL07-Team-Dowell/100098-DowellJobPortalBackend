@@ -24,8 +24,6 @@ function TraningProgress() {
     const Section_1 = styled.div`
         border-bottom: 0.1px solid #dfdddd;
         font-family:'poppins';
-        height: 10vh;
-        position: reletive;
     `
 
     const Navbar = styled.nav`
@@ -70,7 +68,11 @@ function TraningProgress() {
             }
 
             svg{
-                font-size: 25px;
+                font-size: 28px;
+                cursor: pointer;
+                font-weight: 500;
+                margin-right: 1rem;
+                color: #7C7C7C;
             }
 
             .home{
