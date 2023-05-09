@@ -8,12 +8,17 @@ import { Link } from 'react-router-dom';
 
 const Wrapper = styled.div`
     font-family:'poppins';
-    background-color:#F5F5F5;
+    background-color:#ffffff;
 `
 
 const Section_1 = styled.div`
-    height: 100vh;
+    height: 52rem; 
     border-bottom: 1px solid gray;
+    position: relative; 
+
+    a{
+        color: #FFFFFF;
+    }
 `
 
 const Section_2 = styled.div`
@@ -23,7 +28,8 @@ const Section_2 = styled.div`
     align-items:center;
     flex-direction: column;
     padding: 40px 0;
-
+    overflow-y: scroll;
+    position: relative; 
 
     h1{
         text-align:center;
@@ -36,6 +42,8 @@ const Section_2 = styled.div`
         flex-wrap:wrap;
         margin:auto;
         justify-content: space-around;
+        overflow-y: scroll;
+        position: relative; 
 
         .item-1{
             background-color: #FFFFFF;
@@ -48,17 +56,19 @@ const Section_2 = styled.div`
             flex-direction: column;
             justify-content: center;
             margin: 10px 0;
+            box-shadow: 0px 3.34202px 33.4202px 5.01302px rgba(0, 0, 0, 0.06);
 
             img{
                 width:60px;
                 height:60px;
             }
             h2{
-                font-weight:500;
+                font-weight:600;
             }
             p{
                 font-size:12px;
                 font-weight:300;
+                color: #7E7E7E;
             }
             button {
                 border: none;
@@ -70,6 +80,7 @@ const Section_2 = styled.div`
                     border:none;
                     cursor:pointer;
                     color: black;
+                    font-weight: 600;
                     
                     svg{
                         font-size: 25px;
@@ -83,7 +94,8 @@ const Section_2 = styled.div`
                 right: 0px;
                 bottom: -6px;
                 img{
-                    width:70px
+                    width:70px;
+                    height: 50px;
                 }
             }
         }
@@ -103,35 +115,46 @@ const Navbar = styled.nav`
   align-items: center;
   border-bottom: 0.1px solid #dfdddd;
   padding: 0 16px;
-  height: 10vh;
+  height: 5rem;
   background-color: white;
+  overflow-y: scroll;
+  position: relative; 
 `;
 
 const NavbarItem = styled.div`
+
     .item {
         display: flex;
         justify-content: space-around;
         align-items: center;
         position: relative;
+        padding: 0 1rem;
         img{
             width: 100px;
             height: 100px;
             padding: 10px;
         }
+        a{
+            color: #7E7E7E;
+        }
+        
         h1{
             color:#005734;
+            font-size: 33px;
         }
+
         input{
-            padding: 15px 37px;
-            width: 500px;
+            padding: 15px 40px;
+            width: 50rem;
             background-color: #F5F5F5;
             border: none;
         }
         svg.svg {
             max-width: 100%;
-            font-size: 20px;
+            font-size: 22px;
             position: absolute;
-            left: 10px;
+            left: 30px;
+            color: #005734;
         }
         svg{
             font-size: 25px;
@@ -159,11 +182,19 @@ const Hero = styled.div`
     display: flex;
     justify-content: space-around;
     align-items: center;
+    height: 90vh;
+    overflow-y: scroll;
+    position: relative; 
 
+  
     .left-content{
         p{
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 300;
+        }
+
+        h1{
+            font-size: 41px;
         }
         button{
             border: none;
@@ -192,26 +223,28 @@ function CandidateTranningScreen() {
             <Section_1>
                 <Navbar>
                     <NavbarItem>
-                        <div className="item">
+                        <div className="item right-item">
                             <img src={assets.langing_logo} alt="logo" />
                             <h1>Training</h1>
                         </div>
                     </NavbarItem>
                     <NavbarItem>
-                        <div className="item">
+                        <div className="item middle-item" id='item'>
                             <AiOutlineSearch className='svg' />
                             <input type="text" placeholder='Search for training program' />
                         </div>
                     </NavbarItem>
                     <NavbarItem>
-                        <div className="item">
+                        <div className="item left-item">
                             <div className="home">
                                 <AiFillHome />
                                 <p>Home</p>
                             </div>
                             <div className="tranning">
-                                <AiFillBook />
-                                <p>Tranning</p>
+                                <Link to="/traning">
+                                    <AiFillBook />
+                                </Link>
+                                <p>Training</p>
                             </div>
                         </div>
                     </NavbarItem>
@@ -223,7 +256,11 @@ function CandidateTranningScreen() {
                         <br />
                         <p>a solution for easy and flexible learning, you <br /> can study anywhere through this platform</p>
                         <br />
-                        <button>Start Now</button>
+                        <button>
+                            <Link to="/traning">
+                                Get started
+                            </Link>
+                        </button>
                     </div>
                     <div className="right-content">
                         <img src={assets.hero_image} alt="hero" />
