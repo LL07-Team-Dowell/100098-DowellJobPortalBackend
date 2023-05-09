@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 function TraningProgress() {
     const Wrapper = styled.div`
         font-family:'poppins';
-        background-color:#F5F5F5;
+        background-color:#ffffff;
         height: 90vh;
         display: flex;
         flex-direction: column;
@@ -15,7 +15,7 @@ function TraningProgress() {
     `
 
     const Section_1 = styled.div`
-        border-bottom: 1px solid gray;
+        border-bottom: 0.1px solid #dfdddd;
         font-family:'poppins';
     `
 
@@ -23,7 +23,7 @@ function TraningProgress() {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid #F0F0F0;
+        border-bottom: 0.1px solid #dfdddd;
         padding: 0 16px;
         height: 10vh;
         background-color: white;
@@ -86,7 +86,8 @@ function TraningProgress() {
 
     const Section_2 = styled.div`
         padding: 50px;
-        background-color:  #F5F5F5;
+        background-color:  #ffffff;
+        border-bottom: 0.1px solid #dfdddd;
         position: relative;
 
         .left-content{
@@ -120,10 +121,12 @@ function TraningProgress() {
                 margin-right: 15px;
                 border-bottom: 3px solid #005734;
                 color: #005734;
+                cursor: pointer;
             }
 
             .completed{
                 color: #A3A1A1;
+                cursor: pointer;
             }
 
             h5 {

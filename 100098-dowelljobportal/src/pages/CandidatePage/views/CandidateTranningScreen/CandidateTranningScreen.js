@@ -13,7 +13,7 @@ const Wrapper = styled.div`
 
 const Section_1 = styled.div`
     height: 52rem; 
-    border-bottom: 1px solid gray;
+    border-bottom: 0.1px solid #dfdddd;
     position: relative; 
 
     a{
@@ -158,6 +158,7 @@ const NavbarItem = styled.div`
         }
         svg{
             font-size: 25px;
+            cursor: pointer;
         }
         .home{
             width: 100px;
@@ -279,7 +280,7 @@ function CandidateTranningScreen() {
                         <p>Prepare for a career in Front-end Development. Receive professional-level training from uxliving lab</p>
                         <br />
                         <button>
-                            <Link to="/traning">
+                            <Link to="#">
                                 Start Now <BiRightArrowAlt />
                             </Link>
                         </button>
