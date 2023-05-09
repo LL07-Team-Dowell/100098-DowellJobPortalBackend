@@ -249,6 +249,7 @@ function TraningProgress() {
                             <div className="content">
                                 <img src={assets.logo_img} alt="logo" />
                                 <span>Training</span>
+                                <span>.</span>
                                 <span>Apr 2023</span>
                             </div>
                         </div>
