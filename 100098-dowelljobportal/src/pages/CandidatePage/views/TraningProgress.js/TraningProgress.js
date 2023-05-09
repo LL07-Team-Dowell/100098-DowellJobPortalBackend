@@ -3,12 +3,18 @@ import { IoIosArrowBack } from 'react-icons/io';
 import styled from 'styled-components';
 import * as assets from '../../../../assets/assetsIndex';
 import { useNavigate } from 'react-router-dom';
+import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
+import { FaRegUserCircle } from 'react-icons/fa';
 
 function TraningProgress() {
+    const { currentUser } = useCurrentUserContext();
+    const username = currentUser?.userinfo.username;
+    // console.log(currentUser.userinfo.username);
+
     const Wrapper = styled.div`
         font-family:'poppins';
         background-color:#ffffff;
-        height: 90vh;
+        height: 60vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -103,6 +109,7 @@ function TraningProgress() {
                 padding: 10px 10px;
                 h2{
                     font-weight: 500;
+                    text-transform: capitalize;
                 }
                 h3{
                     font-weight: 400;
@@ -173,6 +180,9 @@ function TraningProgress() {
                     width: 250px;
                     height: 170px;
                 }
+                svg{
+                   font-size: 4rem;
+                }
             }
 
 
@@ -208,9 +218,10 @@ function TraningProgress() {
             <Wrapper>
                 <Section_2>
                     <div className="left-content">
-                        <img src={assets.dev_img} alt="dev" />
+                        {/* <img src={assets.dev_img} alt="dev" /> */}
+                        <FaRegUserCircle />
                         <div className="title">
-                            <h2>Welcome back, George!</h2>
+                            <h2>Welcome back, {username}!</h2>
                             <h3>Front-end Developer</h3>
                         </div>
                     </div>
