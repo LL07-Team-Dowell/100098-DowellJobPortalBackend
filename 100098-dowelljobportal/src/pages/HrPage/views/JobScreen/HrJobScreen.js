@@ -276,7 +276,8 @@ function HrJobScreen() {
     { 
       section !== "user" && section !== "attendance" && section !== "tasks" && path === undefined && sub_section === undefined && 
       <TogglerNavMenuBar 
-        menuItems={["Received", "Guests", "Shortlisted" , "Hr Training"]} 
+        // menuItems={["Received", "Guests", "Shortlisted" , "Hr Training"]} 
+        menuItems={["Received", "Shortlisted" , "Hr Training"]} 
         currentActiveItem={currentActiveItem} 
         handleMenuItemClick={handleMenuItemClick} 
       /> 
