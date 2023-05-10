@@ -3,19 +3,26 @@ import { IoIosArrowBack } from 'react-icons/io';
 import styled from 'styled-components';
 import * as assets from '../../../../assets/assetsIndex';
 import { useNavigate } from 'react-router-dom';
+import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
+import { FaRegUserCircle } from 'react-icons/fa';
 
 function TraningProgress() {
+    const { currentUser } = useCurrentUserContext();
+    const username = currentUser?.userinfo.username;
+    // console.log(currentUser.userinfo.username);
+
     const Wrapper = styled.div`
         font-family:'poppins';
-        background-color:#F5F5F5;
-        height: 90vh;
+        background-color:#ffffff;
+        height: 70vh;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        position: reletive;
     `
 
     const Section_1 = styled.div`
-        border-bottom: 1px solid gray;
+        border-bottom: 0.1px solid #dfdddd;
         font-family:'poppins';
     `
 
@@ -23,7 +30,7 @@ function TraningProgress() {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid #F0F0F0;
+        border-bottom: 0.1px solid #dfdddd;
         padding: 0 16px;
         height: 10vh;
         background-color: white;
@@ -61,7 +68,11 @@ function TraningProgress() {
             }
 
             svg{
-                font-size: 25px;
+                font-size: 28px;
+                cursor: pointer;
+                font-weight: 500;
+                margin-right: 1rem;
+                color: #7C7C7C;
             }
 
             .home{
@@ -86,7 +97,8 @@ function TraningProgress() {
 
     const Section_2 = styled.div`
         padding: 50px;
-        background-color:  #F5F5F5;
+        background-color:  #ffffff;
+        border-bottom: 0.1px solid #dfdddd;
         position: relative;
 
         .left-content{
@@ -102,6 +114,7 @@ function TraningProgress() {
                 padding: 10px 10px;
                 h2{
                     font-weight: 500;
+                    text-transform: capitalize;
                 }
                 h3{
                     font-weight: 400;
@@ -120,10 +133,12 @@ function TraningProgress() {
                 margin-right: 15px;
                 border-bottom: 3px solid #005734;
                 color: #005734;
+                cursor: pointer;
             }
 
             .completed{
                 color: #A3A1A1;
+                cursor: pointer;
             }
 
             h5 {
@@ -166,9 +181,8 @@ function TraningProgress() {
             }
 
             .left-content{
-                img{
-                    width: 250px;
-                    height: 170px;
+                svg{
+                   font-size: 3rem;
                 }
             }
 
@@ -205,9 +219,10 @@ function TraningProgress() {
             <Wrapper>
                 <Section_2>
                     <div className="left-content">
-                        <img src={assets.dev_img} alt="dev" />
+                        {/* <img src={assets.dev_img} alt="dev" /> */}
+                        <FaRegUserCircle />
                         <div className="title">
-                            <h2>Welcome back, George!</h2>
+                            <h2>Welcome back, {username}!</h2>
                             <h3>Front-end Developer</h3>
                         </div>
                     </div>
@@ -233,8 +248,9 @@ function TraningProgress() {
                             <span>Training Program</span>
                             <h6>Become a Front-end Developer</h6>
                             <div className="content">
-                                <img src={assets.logo_img} alt="logo" />
+                                <img src={assets.langing_logo} alt="logo" />
                                 <span>Training</span>
+                                <span>.</span>
                                 <span>Apr 2023</span>
                             </div>
                         </div>
