@@ -26,9 +26,7 @@ import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getCandidateApplicationsForHr, getCandidateTask, getSettingUserProject } from '../../../../services/hrServices';
 import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenAllTasks';
 import HrTrainingQuestions from '../HrTrainingScreen/HrTrainingQuestion';
-import { ReactComponent as Frontend } from "../HrTrainingScreen/assets/system3.svg";
-import { ReactComponent as Ux } from "../HrTrainingScreen/assets/ux-design-1.svg";
-import { ReactComponent as Backend } from "../HrTrainingScreen/assets/database-1.svg";
+import { trainingCards } from '../HrTrainingScreen/hrTrainingCards';
 
 function fuzzySearch(query, text) {
   const searchRegex = new RegExp(query.split('').join('.*'), 'i');
@@ -123,53 +121,7 @@ function HrJobScreen() {
       setLoading(false);
     })
     .catch(err => console.log(err))
-
-    // getCandidateApplicationsForHr({company_id: currentUser.portfolio_info[0].org_id})
-    // .then(res => {
-    //   const filteredData = res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
-    //   setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
-    //   setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
-    //   setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
-    //   setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));   
-    // })
-    // .catch(err => console.log(err))
-
-
-
-    // getJobs2({company_id: currentUser.portfolio_info[0].org_id}).then(res => {
-    //   setJobs(res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
-    //   setLoading(false)
-    // }).catch(err => {
-    //   console.log(err)
-    // });
-
-    // getSettingUserProject().then(res => {
-    //   console.log(res.data)
-    //   const list = res.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type) ; 
-    //   const newList = list.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id) ;
-    //   // console.log({newList  })
-    //   setCurrentProjects(newList.project_list);
-    // }).catch(err => {
-    //   console.log(err)
-    // });
-
-    // // fetchCandidateTasks().then(res => {
-    // //   const usersWithTasks = [...new Map(res.data.map(task => [ task.user, task ])).values()];
-    // //   setAllTasks(usersWithTasks.reverse());
-    // //   setLoading(false);
-    // // }).catch(err => {
-    // //   console.log(err)
-    // // });
     
-
-    getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
-    }).then(resp => {
-      console.log(resp.data.response.data) ;
-      const usersWithTasks = [...new Map(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [ task.applicant, task ])).values()];
-      setAllTasks(usersWithTasks.reverse());
-      console.log(usersWithTasks.reverse())
-      setLoading(false);
-    }).catch(err => console.log(err))
   }, [])
 
   useEffect(() => {
@@ -296,51 +248,6 @@ function HrJobScreen() {
     setShowCurrentCandidateAttendance(false);
     setShowCurrentCandidateTask(false);
   }
-
-  const trainingCards = [
-    {
-      id: 1,
-      module: "Frontend",
-      description:
-        "Prepare for a career in front-end Development. Receive professional-level training from uxliving lab",
-      svg: <Frontend />,
-    },
-    {
-      id: 2,
-      module: "Backend",
-      description:
-        "Prepare for a career in Back-end Development. Receive professional-level training from uxliving lab",
-      svg: <Backend />,
-    },
-    {
-      id: 3,
-      module: "UI/UX",
-      description:
-        "Prepare for a career in UI/UX. Receive professional-level training from uxliving lab",
-      svg: <Ux />,
-    },
-    {
-      id: 4,
-      module: "Virtual Assistant",
-      description:
-        "Prepare for a career as a Virtual Assistant . Receive professional-level training from uxliving lab",
-      svg: <Frontend />,
-    },
-    {
-      id: 5,
-      module: "Web",
-      description:
-        "Prepare for a career in Web Development. Receive professional-level training from uxliving lab",
-      svg: <Backend />,
-    },
-    {
-      id: 6,
-      module: "Mobile",
-      description:
-        "Prepare for a career in Mobile Development. Receive professional-level training from uxliving lab",
-      svg: <Ux />,
-    },
-  ];
 
   return (
     <StaffJobLandingLayout hrView={true} runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} hideSideBar={showAddTaskModal} searchValue={jobSearchInput} setSearchValue={setJobSearchInput} searchPlaceHolder={section === "home" ?"received" : section === "guest-applications" ? "guests" : section === "shortlisted" ? "shortlisted" : section === "hr-training" ? "hr-training" : "received"}>

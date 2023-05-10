@@ -1,12 +1,30 @@
 import React, { useEffect, useState } from "react";
 import "./Hr_TrainingScreen.css";
-import { ReactComponent as Frontend } from "./assets/system3.svg";
-import { ReactComponent as Ux } from "./assets/ux-design-1.svg";
-import { ReactComponent as Backend } from "./assets/database-1.svg";
 import { Link } from "react-router-dom";
 import { AiOutlineArrowRight } from "react-icons/ai";
+import { getTrainingManagementQuestions } from "../../../../services/hrTrainingServices";
+import { useHrJobScreenAllTasksContext } from "../../../../contexts/HrJobScreenAllTasks";
 
 function HrTrainingScreen({ trainingCards }) {
+  const { questions, setQuestions } = useHrJobScreenAllTasksContext();
+
+  useEffect(() => {
+    getTrainingManagementQuestions({
+      document_id: crypto.randomUUID(),
+    })
+      .then((res) => {
+        setQuestions(res.data);
+        console.log(res.data);
+
+        if (res.data.length === 0) {
+          console.log("No data");
+        } else if (res.data.length > 0) {
+          console.log("Data is present");
+        }
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
     <div className="training__wrapper">
       <div className="training__header">

@@ -39,6 +39,7 @@ import {
   managementReHireCanditate,
   managementRejectProject,
 } from "../../../../services/accountServices";
+import { configureSettingUserProfileInfo } from "../../../../services/settingServices";
 
 const SelectedCandidatesScreen = ({
   selectedCandidateData,
@@ -257,17 +258,34 @@ const SelectedCandidatesScreen = ({
           username: selectedCandidateData.username,
           company_id: currentUser.portfolio_info[0].org_id,
           data_type: currentUser.portfolio_info[0].data_type,
-          rejected_on: new Date()
-        }
+          rejected_on: new Date(),
+        };
 
+        //Rejection Function For Account page
+        Promise.all([
+          managementRejectProject(data),
+          configureSettingUserProfileInfo({
+            company_id: currentUser.portfolio_info[0].org_id,
+            org_name: currentUser.portfolio_info[0].org_name,
+            owner: currentUser.userinfo.username,
+            data_type: currentUser.portfolio_info[0].data_type,
+            profile_info: [
+              {
+                profile_title: selectedCandidateData.portfolio_name,
+                Role: "Viewer",
+                version: "1.0",
+              },
+            ],
+          }),
+        ])
+          .then((resp) => console.log(resp))
+          .catch((error) => console.log(error));
 
-        //Rejection Function For Teamlead
-        managementRejectProject(data)
-          .then(resp => console.log(resp))
-          .catch(error => console.log(error))
+        // managementRejectProject(data)
+        //   .then(resp => console.log(resp))
+        //   .catch(error => console.log(error))
+
         return updateShowCandidate(false);
-
-
 
       case teamLeadActions.MOVE_TO_HIRED:
         if (!selectedCandidateData) return;
@@ -330,9 +348,28 @@ const SelectedCandidatesScreen = ({
         if (!selectedCandidateData) return;
 
         //Rejection Function For teamlead
-        rejectCandidateApplicationForTeamLead(data)
-          .then(resp => console.log(resp))
-          .catch(error => console.log(error))
+        Promise.all([
+          rejectCandidateApplicationForTeamLead(data),
+          configureSettingUserProfileInfo({
+            company_id: currentUser.portfolio_info[0].org_id,
+            org_name: currentUser.portfolio_info[0].org_name,
+            owner: currentUser.userinfo.username,
+            data_type: currentUser.portfolio_info[0].data_type,
+            profile_info: [
+              {
+                profile_title: selectedCandidateData.portfolio_name,
+                Role: "Viewer",
+                version: "1.0",
+              },
+            ],
+          }),
+        ])
+          .then((resp) => console.log(resp))
+          .catch((error) => console.log(error));
+
+        // rejectCandidateApplicationForTeamLead(data)
+        //   .then((resp) => console.log(resp))
+        //   .catch((error) => console.log(error));
 
         updateCandidateData((prevCandidates) => {
           return prevCandidates.filter(
@@ -341,7 +378,6 @@ const SelectedCandidatesScreen = ({
         });
 
         return navigate("/shortlisted");
-
 
       case hrPageActions.MOVE_TO_SHORTLISTED:
         if (!selectedCandidateData) return;
@@ -430,13 +466,29 @@ const SelectedCandidatesScreen = ({
         //   job: selectedCandidateData.job,
         // });
 
-
         //Rejection Function For HR
-        rejectCandidateApplicationforHr(data)
-          .then(resp => console.log(resp))
-          .catch(error => console.log(error))
+        Promise.all([
+          rejectCandidateApplicationforHr(data),
+          configureSettingUserProfileInfo({
+            company_id: currentUser.portfolio_info[0].org_id,
+            org_name: currentUser.portfolio_info[0].org_name,
+            owner: currentUser.userinfo.username,
+            data_type: currentUser.portfolio_info[0].data_type,
+            profile_info: [
+              {
+                profile_title: selectedCandidateData.portfolio_name,
+                Role: "Viewer",
+                version: "1.0",
+              },
+            ],
+          }),
+        ])
+          .then((resp) => console.log(resp))
+          .catch((error) => console.log(error));
 
-
+        // rejectCandidateApplicationforHr(data)
+        //   .then((resp) => console.log(resp))
+        //   .catch((error) => console.log(error));
 
         updateCandidateData((prevCandidates) => {
           return prevCandidates.filter(
@@ -460,7 +512,7 @@ const SelectedCandidatesScreen = ({
         newFormData.append(
           "email",
           selectedCandidateData.others[
-          mutableNewApplicationStateNames.others_applicant_email
+            mutableNewApplicationStateNames.others_applicant_email
           ]
         );
         newFormData.append(
@@ -469,7 +521,8 @@ const SelectedCandidatesScreen = ({
             `${dowellLoginUrl}register`
           )} to complete your application for the '${jobTitle}' job before ${formatDateAndTime(
             interviewDate
-          )}.\nYour username is ${selectedCandidateData[mutableNewApplicationStateNames.applicant]
+          )}.\nYour username is ${
+            selectedCandidateData[mutableNewApplicationStateNames.applicant]
           }`
         );
 
@@ -493,9 +546,10 @@ const SelectedCandidatesScreen = ({
         });
 
         toast.success(
-          `Successfully sent mail to ${selectedCandidateData.others[
-          mutableNewApplicationStateNames.others_applicant_email
-          ]
+          `Successfully sent mail to ${
+            selectedCandidateData.others[
+              mutableNewApplicationStateNames.others_applicant_email
+            ]
           }`
         );
 
@@ -527,7 +581,7 @@ const SelectedCandidatesScreen = ({
           handleViewApplicationBtnClick={() =>
             handleViewApplicationBtnClick
               ? handleViewApplicationBtnClick()
-              : () => { }
+              : () => {}
           }
         />
 
@@ -556,7 +610,7 @@ const SelectedCandidatesScreen = ({
                 placeholder={"Write here"}
                 value={
                   selectedCandidateData[
-                  mutableNewApplicationStateNames.hr_remarks
+                    mutableNewApplicationStateNames.hr_remarks
                   ]
                 }
                 readOnly={true}
@@ -583,16 +637,17 @@ const SelectedCandidatesScreen = ({
                   )}
                 </h2>
                 <textarea
-                  placeholder={`${initialMeet
-                    ? `${selectedCandidateData.hr_remarks}`
-                    : "Write here"
-                    }`}
+                  placeholder={`${
+                    initialMeet
+                      ? `${selectedCandidateData.hr_remarks}`
+                      : "Write here"
+                  }`}
                   readOnly={initialMeet ? true : false}
                   value={
                     initialMeet
                       ? selectedCandidateData[
-                      mutableNewApplicationStateNames.hr_remarks
-                      ]
+                          mutableNewApplicationStateNames.hr_remarks
+                        ]
                       : remarks
                   }
                   onChange={(e) => setRemarks(e.target.value)}
@@ -609,7 +664,7 @@ const SelectedCandidatesScreen = ({
                   placeholder="Remarks by Hr"
                   value={
                     selectedCandidateData[
-                    mutableNewApplicationStateNames.hr_remarks
+                      mutableNewApplicationStateNames.hr_remarks
                     ]
                   }
                   readOnly={true}
@@ -673,7 +728,7 @@ const SelectedCandidatesScreen = ({
           <PaymentDetails
             candidatePlatform={changeToTitleCase(
               selectedCandidateData[
-              mutableNewApplicationStateNames.freelancePlatform
+                mutableNewApplicationStateNames.freelancePlatform
               ]
             )}
             handlePlatformSelectionClick={(selection) =>
@@ -685,23 +740,26 @@ const SelectedCandidatesScreen = ({
         )}
 
         <div
-          className={`candidate-status-container ${showOnboarding ? "onboarding-active" : ""
-            }`}
+          className={`candidate-status-container ${
+            showOnboarding ? "onboarding-active" : ""
+          }`}
         >
           {/* <h2>Status {accountPage && rehireTabActive ? <span>&#x00028;by Team Lead&#x00029;</span> : ''}</h2> */}
           <div
-            className={`status-options-container ${rehireTabActive ? "rehire" : ""
-              }`}
+            className={`status-options-container ${
+              rehireTabActive ? "rehire" : ""
+            }`}
           >
             {rehireTabActive ? (
               <button
-                className={`status-option green-color ${accountPage
-                  ? selectedCandidateData.status ===
-                    candidateStatuses.TEAMLEAD_TOREHIRE
-                    ? "active"
+                className={`status-option green-color ${
+                  accountPage
+                    ? selectedCandidateData.status ===
+                      candidateStatuses.TEAMLEAD_TOREHIRE
+                      ? "active"
+                      : ""
                     : ""
-                  : ""
-                  }`}
+                }`}
                 ref={ref3}
                 onClick={() => handleClick(ref3, false)}
                 disabled={accountPage ? true : disabled}
@@ -718,14 +776,16 @@ const SelectedCandidatesScreen = ({
             {hrPageActive ? (
               <>
                 <button
-                  className={`status-option green-bg ${initialMeet ? "green-color" : "orange-color"
-                    } ${initialMeet
+                  className={`status-option green-bg ${
+                    initialMeet ? "green-color" : "orange-color"
+                  } ${
+                    initialMeet
                       ? ""
                       : selectedCandidateData.status ===
                         candidateStatuses.SHORTLISTED
-                        ? "active"
-                        : ""
-                    }`}
+                      ? "active"
+                      : ""
+                  }`}
                   ref={ref7}
                   onClick={() =>
                     handleClick(
@@ -734,8 +794,8 @@ const SelectedCandidatesScreen = ({
                       initialMeet
                         ? hrPageActions.MOVE_TO_SELECTED
                         : guestApplication
-                          ? hrPageActions.MOVE_TO_PENDING
-                          : hrPageActions.MOVE_TO_SHORTLISTED
+                        ? hrPageActions.MOVE_TO_PENDING
+                        : hrPageActions.MOVE_TO_SHORTLISTED
                     )
                   }
                   disabled={
@@ -743,30 +803,33 @@ const SelectedCandidatesScreen = ({
                       ? disabled
                       : selectedCandidateData.status ===
                         candidateStatuses.SHORTLISTED
-                        ? true
-                        : disabled
+                      ? true
+                      : disabled
                   }
                 >
                   {/* <BsStopCircle className='status-icon' /> */}
                   {/* <br /><br/> */}
-                  <div className="textt">{`${initialMeet
-                    ? "Selected"
-                    : guestApplication
+                  <div className="textt">{`${
+                    initialMeet
+                      ? "Selected"
+                      : guestApplication
                       ? "Pending"
                       : "Shortlisted"
-                    }`}</div>
+                  }`}</div>
                 </button>
               </>
             ) : (
               <button
-                className={`status-option green-bg ${rehireTabActive ? "green-color" : "orange-color"
-                  } ${accountPage && rehireTabActive
+                className={`status-option green-bg ${
+                  rehireTabActive ? "green-color" : "orange-color"
+                } ${
+                  accountPage && rehireTabActive
                     ? selectedCandidateData.status ===
                       candidateStatuses.TEAMLEAD_TOREHIRE
                       ? "active"
                       : "none"
                     : ""
-                  }`}
+                }`}
                 ref={ref1}
                 onClick={() =>
                   handleClick(
@@ -775,12 +838,12 @@ const SelectedCandidatesScreen = ({
                     hireTabActive
                       ? accountPageActions.MOVE_TO_ONBOARDING
                       : showOnboarding
-                        ? teamleadPageActive
-                          ? teamLeadActions.MOVE_TO_REHIRE
-                          : accountPageActions.MOVE_TO_REHIRE
-                        : rehireTabActive
-                          ? teamLeadActions.MOVE_TO_REHIRE
-                          : teamLeadActions.MOVE_TO_HIRED
+                      ? teamleadPageActive
+                        ? teamLeadActions.MOVE_TO_REHIRE
+                        : accountPageActions.MOVE_TO_REHIRE
+                      : rehireTabActive
+                      ? teamLeadActions.MOVE_TO_REHIRE
+                      : teamLeadActions.MOVE_TO_HIRED
                   )
                 }
                 disabled={accountPage && rehireTabActive ? true : disabled}
@@ -788,14 +851,15 @@ const SelectedCandidatesScreen = ({
                 {/* <BsStopCircle className='status-icon' /> */}
                 {/* <br /><br/> */}
                 <div className="textt">
-                  {`${rehireTabActive
-                    ? "ReHire"
-                    : hireTabActive
+                  {`${
+                    rehireTabActive
+                      ? "ReHire"
+                      : hireTabActive
                       ? "Onboarding"
                       : showOnboarding
-                        ? "ReHire"
-                        : "Hire"
-                    }`}
+                      ? "ReHire"
+                      : "Hire"
+                  }`}
                 </div>
               </button>
             )}

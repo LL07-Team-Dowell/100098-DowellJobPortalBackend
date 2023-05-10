@@ -86,6 +86,7 @@ const CreateTaskScreen = ({
     setCurrentApplicantTasks(applicantTasks);
     setSelectOption(Array.from(new Set(applicantTasks.map((d) => d.project))));
   }, [userTasks, applicant]);
+  
 
   useEffect(() => {
     // const newData = userTasks.filter((d) => d.project === selectedProject);
