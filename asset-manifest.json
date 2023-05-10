@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/100098-DowellJobPortal/static/css/main.71bf4300.css",
-    "main.js": "/100098-DowellJobPortal/static/js/main.5026e9bc.js",
+    "main.css": "/100098-DowellJobPortal/static/css/main.90149b28.css",
+    "main.js": "/100098-DowellJobPortal/static/js/main.6f510526.js",
     "static/js/787.3d6e4b15.chunk.js": "/100098-DowellJobPortal/static/js/787.3d6e4b15.chunk.js",
     "static/media/intro-video.mp4": "/100098-DowellJobPortal/static/media/intro-video.2d1439d0707aa1ea6d32.mp4",
     "static/media/cities.png": "/100098-DowellJobPortal/static/media/cities.3e0ea410bfe189d462d3.png",
@@ -23,6 +23,8 @@
     "static/media/ux-design-1.svg": "/100098-DowellJobPortal/static/media/ux-design-1.d4fa3c20f5867b7d37c2ca065eef45c9.svg",
     "static/media/database-1.svg": "/100098-DowellJobPortal/static/media/database-1.8d97ecac3cefa37328f862c2d859a2da.svg",
     "static/media/message.svg": "/100098-DowellJobPortal/static/media/message.8bca43a946cbdaaa14794d2f760c6bd1.svg",
+    "static/media/addbtn.svg": "/100098-DowellJobPortal/static/media/addbtn.542f2b467194095005fce122892072aa.svg",
+    "static/media/deletebtn.svg": "/100098-DowellJobPortal/static/media/deletebtn.f548f5f668192ef4bd81d176138b9245.svg",
     "index.html": "/100098-DowellJobPortal/index.html",
     "static/media/two.svg": "/100098-DowellJobPortal/static/media/two.75956cc15cded2d8521fe0b89b49092d.svg",
     "static/media/three.svg": "/100098-DowellJobPortal/static/media/three.e1feaa3093ae7dc082f7ee95e8440244.svg",
@@ -32,12 +34,12 @@
     "static/media/backpage.svg": "/100098-DowellJobPortal/static/media/backpage.3d9040928503cd5c04b6499fa8f376af.svg",
     "static/media/plus.svg": "/100098-DowellJobPortal/static/media/plus.f1bdc5a4ee49cf352188ee9867aa84d1.svg",
     "static/media/selectorArrow.svg": "/100098-DowellJobPortal/static/media/selectorArrow.a2bb23a6d3ef612222ea1181867b9561.svg",
-    "main.71bf4300.css.map": "/100098-DowellJobPortal/static/css/main.71bf4300.css.map",
-    "main.5026e9bc.js.map": "/100098-DowellJobPortal/static/js/main.5026e9bc.js.map",
+    "main.90149b28.css.map": "/100098-DowellJobPortal/static/css/main.90149b28.css.map",
+    "main.6f510526.js.map": "/100098-DowellJobPortal/static/js/main.6f510526.js.map",
     "787.3d6e4b15.chunk.js.map": "/100098-DowellJobPortal/static/js/787.3d6e4b15.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.71bf4300.css",
-    "static/js/main.5026e9bc.js"
+    "static/css/main.90149b28.css",
+    "static/js/main.6f510526.js"
   ]
 }
