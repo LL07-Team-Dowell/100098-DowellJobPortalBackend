@@ -12,6 +12,10 @@ function TraningProgress({ shorlistedUser }) {
 
     const username = shorlistedUser[0]?.applicant;
     const shortlistedate = shorlistedUser[0].shortlisted_on;
+    const date = new Date(shortlistedate);
+    const formattedDate = date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+
+
     // console.log(currentUser.userinfo.username);
 
     const Wrapper = styled.div`
@@ -159,7 +163,7 @@ function TraningProgress({ shorlistedUser }) {
             .right-content{
                 padding: 10px 30px;
                 span {
-                    font-weight: 500;
+                    font-weight: 400;
                     font-size: 13px;
                     color: #7E7E7E;
                 }
@@ -253,7 +257,7 @@ function TraningProgress({ shorlistedUser }) {
                                 <img src={assets.langing_logo} alt="logo" />
                                 <span>Training</span>
                                 <span>.</span>
-                                <span>{shortlistedate}</span>
+                                <span>{formattedDate}</span>
                             </div>
                         </div>
                         <div className="bottom-content">
