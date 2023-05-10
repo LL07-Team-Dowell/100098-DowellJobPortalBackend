@@ -5,3 +5,10 @@ export const getSettingUserProfileInfo = async () => {
     "setting/SettingUserProfileInfo/"
   );
 };
+
+export const configureSettingUserProfileInfo = async (dataToPost) => {
+  return await currentBackendAxiosInstance.post(
+    "setting/SettingUserProfileInfo/",
+    dataToPost
+  );
+}

@@ -275,7 +275,6 @@ function EditJob({ subAdminView }) {
               <div className="job__detail__title">
                 <h3>Job Details</h3>
               </div>
-
               <form>
                 <div className='input__data'>
                   <label htmlFor="job_title">Name of Job</label>

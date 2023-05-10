@@ -41,36 +41,6 @@ const AccountPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [filteredJobs, setFilteredJobs] = useState(jobs);
 
-  // async function getApplications () {
-  //     const response = await myAxiosInstance.get(routes.Applications);
-  //     const candidatesToHire = response.data.filter(application => application.status === candidateStatuses.TEAMLEAD_HIRE);
-  //     const candidatesToRehire = response.data.filter(application => application.status === candidateStatuses.TO_REHIRE || application.status === candidateStatuses.TEAMLEAD_TOREHIRE);
-  //     const candidatesOnboarding = response.data.filter(application => application.status === candidateStatuses.ONBOARDING);
-  //     const candidatesRejected = response.data.filter(application => application.status === candidateStatuses.REJECTED);
-
-  //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_CANDIDATES_TO_HIRE, payload: {
-  //         stateToChange: initialCandidatesDataStateNames.candidatesToHire,
-  //         value: candidatesToHire,
-  //     }});
-
-  //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_REHIRED_CANDIDATES, payload: {
-  //         stateToChange: initialCandidatesDataStateNames.candidatesToRehire,
-  //         value: candidatesToRehire,
-  //     }});
-
-  //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES, payload: {
-  //         stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
-  //         value: candidatesOnboarding,
-  //     }});
-
-  //     dispatchToCandidatesData({ type: candidateDataReducerActions.UPDATE_REJECTED_CANDIDATES, payload: {
-  //         stateToChange: initialCandidatesDataStateNames.rejectedCandidates,
-  //         value: candidatesRejected,
-  //     }});
-
-  //     return
-  // }
-
   const handleSearch = (value) => {
     console.log("value", value);
     setSearchValue(value);
@@ -192,72 +162,6 @@ const AccountPage = () => {
       .catch((err) => {
         console.log(err);
       });
-
-    // getJobs2(requestData)
-    //   .then((res) => {
-    //     const jobsMatchingCurrentCompany = res.data.response.data.filter(
-    //       (job) => job.data_type === currentUser?.portfolio_info[0].data_type
-    //     );
-    //     setJobs(jobsMatchingCurrentCompany);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-
-    // getCandidateApplicationsForTeamLead(requestData)
-    //   .then((response) => {
-    //     const applicationForMatching = response.data.response.data.filter(
-    //       (application) =>
-    //         application.data_type === currentUser?.portfolio_info[0].data_type
-    //     );
-    //     const candidatesToHire = applicationForMatching.filter(
-    //       (application) =>
-    //         application.status === candidateStatuses.TEAMLEAD_HIRE
-    //     );
-    //     const candidatesToRehire = applicationForMatching.filter(
-    //       (application) =>
-    //         application.status === candidateStatuses.TO_REHIRE ||
-    //         application.status === candidateStatuses.TEAMLEAD_TOREHIRE
-    //     );
-    //     const candidatesOnboarding = applicationForMatching.filter(
-    //       (application) => application.status === candidateStatuses.ONBOARDING
-    //     );
-    //     const candidatesRejected = applicationForMatching.filter(
-    //       (application) => application.status === candidateStatuses.REJECTED
-    //     );
-
-    //     dispatchToCandidatesData({
-    //       type: candidateDataReducerActions.UPDATE_CANDIDATES_TO_HIRE,
-    //       payload: {
-    //         stateToChange: initialCandidatesDataStateNames.candidatesToHire,
-    //         value: candidatesToHire,
-    //       },
-    //     });
-
-    //     dispatchToCandidatesData({
-    //       type: candidateDataReducerActions.UPDATE_REHIRED_CANDIDATES,
-    //       payload: {
-    //         stateToChange: initialCandidatesDataStateNames.candidatesToRehire,
-    //         value: candidatesToRehire,
-    //       },
-    //     });
-
-    //     dispatchToCandidatesData({
-    //       type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES,
-    //       payload: {
-    //         stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
-    //         value: candidatesOnboarding,
-    //       },
-    //     });
-
-    //     dispatchToCandidatesData({
-    //       type: candidateDataReducerActions.UPDATE_REJECTED_CANDIDATES,
-    //       payload: {
-    //         stateToChange: initialCandidatesDataStateNames.rejectedCandidates,
-    //         value: candidatesRejected,
-    //       },
-    //     });
-    //   })
   }, []);
 
   useEffect(() => {

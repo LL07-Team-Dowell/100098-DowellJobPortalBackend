@@ -5,10 +5,11 @@ export const useHrJobScreenAllTasksContext = () => {
 }
 export const HrJobScreenAllTasksContextProvider = ({ children }) => {
             const [ allTasks, setAllTasks ] = useState([]);
+            const [questions, setQuestions] = useState([]);
 
 
             return (
-            <HrJobScreenAllTasksContext.Provider value={{ allTasks, setAllTasks }}>
+            <HrJobScreenAllTasksContext.Provider value={{ allTasks, setAllTasks, questions, setQuestions }}>
             {children}
             </HrJobScreenAllTasksContext.Provider>
             )
