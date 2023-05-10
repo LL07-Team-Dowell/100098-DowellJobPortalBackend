@@ -99,7 +99,7 @@ function TraningProgress({ shorlistedUser }) {
     `;
 
     const Section_2 = styled.div`
-        padding: 50px;
+        padding: 50px 76px;
         background-color:  #ffffff;
         border-bottom: 0.1px solid #dfdddd;
         position: relative;
@@ -151,7 +151,7 @@ function TraningProgress({ shorlistedUser }) {
     `
 
     const Section_3 = styled.div`
-        padding: 50px;
+        padding: 50px 76px;
         position: relative;
 
         .traning_section {
