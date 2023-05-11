@@ -6,9 +6,16 @@ import { useNavigate } from 'react-router-dom';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { FaRegUserCircle } from 'react-icons/fa';
 
-function TraningProgress() {
-    const { currentUser } = useCurrentUserContext();
-    const username = currentUser?.userinfo.username;
+function TraningProgress({ shorlistedUser }) {
+    // console.log(shorlistedUser[0].shortlisted_on);
+    // const { currentUser } = useCurrentUserContext();
+
+    const username = shorlistedUser[0]?.applicant;
+    const shortlistedate = shorlistedUser[0].shortlisted_on;
+    const date = new Date(shortlistedate);
+    const formattedDate = date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+
+
     // console.log(currentUser.userinfo.username);
 
     const Wrapper = styled.div`
@@ -96,7 +103,7 @@ function TraningProgress() {
     `;
 
     const Section_2 = styled.div`
-        padding: 50px;
+        padding: 50px 76px;
         background-color:  #ffffff;
         border-bottom: 0.1px solid #dfdddd;
         position: relative;
@@ -104,11 +111,11 @@ function TraningProgress() {
         .left-content{
                 display: flex;
                 align-items: center;            
-            img {
-                height: 90px;
-                width: 90px;
-                border-radius: 60px;
-            }
+
+                svg{
+                    font-size: 3rem;
+                }
+
 
             .title{
                 padding: 10px 10px;
@@ -148,16 +155,15 @@ function TraningProgress() {
     `
 
     const Section_3 = styled.div`
-        padding: 50px;
+        padding: 50px 76px;
         position: relative;
 
         .traning_section {
             display: flex;
-            align-items: center;
             .right-content{
-                padding: 0 30px;
+                padding: 10px 30px;
                 span {
-                    font-weight: 300;
+                    font-weight: 400;
                     font-size: 13px;
                     color: #7E7E7E;
                 }
@@ -181,8 +187,8 @@ function TraningProgress() {
             }
 
             .left-content{
-                svg{
-                   font-size: 3rem;
+                img {
+                    height: 200px;
                 }
             }
 
@@ -251,7 +257,7 @@ function TraningProgress() {
                                 <img src={assets.langing_logo} alt="logo" />
                                 <span>Training</span>
                                 <span>.</span>
-                                <span>Apr 2023</span>
+                                <span>{formattedDate}</span>
                             </div>
                         </div>
                         <div className="bottom-content">

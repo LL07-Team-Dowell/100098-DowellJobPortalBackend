@@ -55,15 +55,15 @@ function App() {
   const [candidateHired, setCandidateHired] = useState(false);
   const [candidateShortListed, setCandidateShortListed] = useState(false);
   const [assignedProjects, setAssignedProjects] = useState([]);
-  const [shortlistedProject, setShortlistedProjects] = useState([]);
-  
-  // console.log(JobContextProvider);
+  const [shorlistedUser, setshorlistedUser] = useState([]);
+
+  console.log(shorlistedUser);
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
-  
+
   if (loading) return <LoadingPage />;
 
-  console.log("CURRENT USER", currentUser);
+  // console.log("CURRENT USER", currentUser);
 
   // // NO LOGGED IN USER VIEW
   // if (!currentUser) {
@@ -470,7 +470,9 @@ function App() {
         }
       >
       </Route>
-      <Route path="/traning" element={<TraningProgress />} />
+      <Route path="/traning" element={<TraningProgress
+        shorlistedUser={shorlistedUser}
+      />} />
 
       <Route path="/logout" element={<Logout />} />
 
@@ -488,6 +490,7 @@ function App() {
                   set={setCandidateHired}
                   setAssignedProjects={setAssignedProjects}
                   setCandidateShortListed={setCandidateShortListed}
+                  setshorlistedUser={setshorlistedUser}
                 />
               </JobContextProvider>
             </CandidateJobsContextProvider>
