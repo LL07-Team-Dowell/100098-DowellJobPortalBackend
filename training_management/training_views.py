@@ -94,7 +94,7 @@ class update_question(APIView):
         print(field)
         update_field = {
             "is_active": data.get("is_active"),
-            "question_link": data.get("question_link")  # I just added this morning
+            "question_link": data.get("question_link")
         }
         serializer = UpdateQuestionSerializer(data=update_field)
         if serializer.is_valid():
