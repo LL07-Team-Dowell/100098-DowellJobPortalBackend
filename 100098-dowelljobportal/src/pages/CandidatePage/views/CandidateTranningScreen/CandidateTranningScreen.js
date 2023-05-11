@@ -10,7 +10,7 @@ const Wrapper = styled.div`
     font-family:'poppins';
     background-color:#ffffff;
 
-    .container{
+    .container-training{
         width: 1400px;
         margin: auto;
     }
@@ -137,8 +137,8 @@ const NavbarItem = styled.div`
         position: relative;
         padding: 0 1rem;
         img{
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
         }
         a{
             color: #7E7E7E;
@@ -227,7 +227,7 @@ function CandidateTranningScreen() {
 
     return (
         <Wrapper>
-            <div className="container">
+            <div className="container-training">
                 <Section_1>
                     <Navbar>
                         <NavbarItem>

@@ -13,7 +13,7 @@ import { getCandidateApplications } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getAppliedJobs } from '../../../../services/candidateServices';
 
-function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorlistedUser }) {
+function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorlistedJob }) {
 
   const [loading, setLoading] = useState(true);
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
@@ -39,7 +39,7 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
       console.log(userShortlistedJobs);
       if (userShortlistedJobs.length >= 1) {
         setCandidateShortListed(true);
-        setshorlistedUser(userShortlistedJobs);
+        setshorlistedJob(userShortlistedJobs);
         setLoading(false);
         return;
       }
