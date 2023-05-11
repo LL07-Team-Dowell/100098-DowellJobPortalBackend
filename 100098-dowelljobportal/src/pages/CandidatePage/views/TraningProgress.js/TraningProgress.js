@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { IoIosArrowBack } from 'react-icons/io';
 import styled from 'styled-components';
 import * as assets from '../../../../assets/assetsIndex';
@@ -9,7 +9,8 @@ import { FaRegUserCircle } from 'react-icons/fa';
 function TraningProgress({ shorlistedJob }) {
     // console.log(shorlistedJob[0].shortlisted_on);
     // const { currentUser } = useCurrentUserContext();
-
+    const [complete, setComplete] = useState(false);
+    console.log(complete);
     const username = shorlistedJob[0]?.applicant;
     const shortlistedate = shorlistedJob[0].shortlisted_on;
     const date = new Date(shortlistedate);
@@ -129,22 +130,24 @@ function TraningProgress({ shorlistedJob }) {
             display: flex;
             position: absolute;
             bottom: 3px;
-            left: 80px;
+            left: 70px;
 
             .progress {
-                margin-right: 15px;
-                border-bottom: 3px solid #005734;
+                border-bottom: 4px solid #005734;
                 color: #005734;
                 cursor: pointer;
+                font-size: 18px;
             }
 
             .completed{
                 color: #A3A1A1;
                 cursor: pointer;
+                font-size: 18px;
             }
 
             h5 {
                 font-weight: 400;
+                margin: 0 20px;
             }
         }
     `
@@ -157,28 +160,35 @@ function TraningProgress({ shorlistedJob }) {
             display: flex;
             .right-content{
                 padding: 10px 30px;
-                span {
-                    font-weight: 400;
-                    font-size: 13px;
+                .traninning-program{
+                    font-size: 18px;
                     color: #7E7E7E;
+                    font-weight: 300;
                 }
+
                 h6 {
-                    font-size: 1.2rem;
-                    font-weight: 500;
+                    font-size: 21px;
+                    font-weight: 600;
                 }
                 .content{
                     display: flex;
                     align-items: center;
+                    
                     img{
                         height:50px;
                         width:50px;
                     }
-                    span{
-                        font-size: 13px;
-                        color: #7E7E7E;
-                        margin-left: 5px;
+
+                    .traninng-tag{
+                        font-size: 18px;
+                        color: #A6A6A6;
+                        font-weight: 300;
+                        margin-right: 10px;
                     }
+
+                   
                 }
+                
             }
 
             .left-content{
@@ -193,10 +203,10 @@ function TraningProgress({ shorlistedJob }) {
                 right: 3rem;
                 bottom: 3rem;
                 color: #038953;
-                font-size: 1rem;
                 border: 1px solid #038953;
                 padding: 6px 20px;
                 cursor: pointer;
+                font-size: 18px;
             }
         }
     `
@@ -231,11 +241,11 @@ function TraningProgress({ shorlistedJob }) {
 
                     </div>
                     <div className="bar-bottom">
-                        <div className="progress">
-                            <h5>In Progress</h5>
+                        <div className={complete ? "completed" : "progress"}>
+                            <h5 onClick={() => setComplete(false)}>In Progress</h5>
                         </div>
-                        <div className="completed">
-                            <h5>Completed</h5>
+                        <div className={complete ? "progress" : "completed"}>
+                            <h5 onClick={() => setComplete(true)}>Completed</h5>
                         </div>
                     </div>
                 </Section_2>
@@ -246,21 +256,23 @@ function TraningProgress({ shorlistedJob }) {
                             <img src={assets.frontendimage} alt="frontend" />
                         </div>
                         <div className="right-content">
-                            <span>Training Program</span>
+                            <span className='traninning-program'>Training Program</span>
                             <h6>Become a Front-end Developer</h6>
                             <div className="content">
                                 <img src={assets.langing_logo} alt="logo" />
-                                <span>Training</span>
-                                <span>.</span>
-                                <span>{formattedDate}</span>
+                                <span className='traninng-tag'>Training</span>
+                                <span className='traninng-tag'> . </span>
+                                <span className='traninng-tag'>{formattedDate}</span>
                             </div>
                         </div>
                         <div className="bottom-content">
-                            Start Now
+                            {
+                                complete ? "Preview Form" : "Start Now"
+                            }
                         </div>
                     </div>
                 </Section_3>
-            </Wrapper>
+            </Wrapper >
         </>
 
     )
