@@ -28,3 +28,4 @@ class TrainingSerializer(serializers.Serializer):
 
 class UpdateQuestionSerializer(serializers.Serializer):
     is_active = serializers.BooleanField(required=True)
+    question_link = serializers.URLField(required=True)
