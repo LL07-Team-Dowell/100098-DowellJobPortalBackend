@@ -100,7 +100,8 @@ __patch__ to `training_management/update_question/`
 ```json
 {
     "document_id": "<document_id>",
-    "is_active":"<true|false>"
+    "is_active":"<true|false>",
+    "question_link":"<link to the question>"
 }
 ```
 

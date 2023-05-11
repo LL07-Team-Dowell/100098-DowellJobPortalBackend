@@ -16,7 +16,7 @@ class question(APIView):
     def post(self, request):
         data = request.data
         field = {
-            "eventId":get_event_id()['event_id'],
+            "eventId": get_event_id()['event_id'],
             "company_id": data.get("company_id"),
             "data_type": data.get("data_type"),
             "question_link": data.get("question_link"),
@@ -58,8 +58,10 @@ class get_all_question(APIView):
         question_response = dowellconnection(*questionnaire_modules, "fetch", field, update_field)
         print(question_response)
         if question_response:
-            return Response({"message": "List of questions.", "response": json.loads(question_response)}, status=status.HTTP_200_OK)
+            return Response({"message": "List of questions.", "response": json.loads(question_response)},
+                            status=status.HTTP_200_OK)
         return Response({"error": "No question found"}, status=status.HTTP_304_NOT_MODIFIED)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_question(APIView):
@@ -76,9 +78,11 @@ class get_question(APIView):
             *questionnaire_modules, "fetch", field, update_field)
         print(question_response)
         if question_response:
-            return Response({"message": "List of questions.", "response": json.loads(question_response)}, status=status.HTTP_200_OK)
+            return Response({"message": "List of questions.", "response": json.loads(question_response)},
+                            status=status.HTTP_200_OK)
         else:
             return Response({"error": "No question found"}, status=status.HTTP_304_NOT_MODIFIED)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class update_question(APIView):
@@ -89,7 +93,8 @@ class update_question(APIView):
         }
         print(field)
         update_field = {
-            "is_active": data.get("is_active")
+            "is_active": data.get("is_active"),
+            "question_link": data.get("question_link")
         }
         serializer = UpdateQuestionSerializer(data=update_field)
         if serializer.is_valid():
@@ -107,7 +112,7 @@ class update_question(APIView):
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
-            
+
 @method_decorator(csrf_exempt, name='dispatch')
 class response(APIView):
 
@@ -177,6 +182,7 @@ class get_response(APIView):
             *response_modules, "fetch", field, update_field)
         print(response)
         if response:
-            return Response({"message": "List of response.", "response": json.loads(response)}, status=status.HTTP_200_OK)
+            return Response({"message": "List of response.", "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
         else:
             return Response({"error": "data not found"}, status=status.HTTP_304_NOT_MODIFIED)

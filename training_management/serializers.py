@@ -11,11 +11,10 @@ class TrainingSerializer(serializers.Serializer):
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
     question_link = serializers.URLField(allow_null=False)
     module = serializers.ChoiceField(
-        choices=MODULE_CHOICE, allow_null=False, allow_blank=False,)
+        choices=MODULE_CHOICE, allow_null=False, allow_blank=False, )
     created_on = serializers.CharField(allow_null=False, allow_blank=False)
     created_by = serializers.CharField(allow_null=False, allow_blank=False)
     is_active = serializers.BooleanField(required=True)
-
 
     # def get_fields(self):
     #         fields = super().get_fields()
@@ -28,3 +27,4 @@ class TrainingSerializer(serializers.Serializer):
 
 class UpdateQuestionSerializer(serializers.Serializer):
     is_active = serializers.BooleanField(required=True)
+    question_link = serializers.URLField(required=True)
