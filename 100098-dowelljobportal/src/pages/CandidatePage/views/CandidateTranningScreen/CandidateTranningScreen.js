@@ -24,7 +24,7 @@ const Wrapper = styled.div`
 
 const Section_1 = styled.div`
     height: 50rem; 
-    border-bottom: 0.1px solid #dfdddd;
+    border-bottom: 1px solid #dfdddd;
     position: relative; 
 
     a{

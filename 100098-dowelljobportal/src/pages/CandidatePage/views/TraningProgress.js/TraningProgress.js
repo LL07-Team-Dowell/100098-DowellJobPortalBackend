@@ -6,12 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { FaRegUserCircle } from 'react-icons/fa';
 
-function TraningProgress({ shorlistedUser }) {
-    // console.log(shorlistedUser[0].shortlisted_on);
+function TraningProgress({ shorlistedJob }) {
+    // console.log(shorlistedJob[0].shortlisted_on);
     // const { currentUser } = useCurrentUserContext();
 
-    const username = shorlistedUser[0]?.applicant;
-    const shortlistedate = shorlistedUser[0].shortlisted_on;
+    const username = shorlistedJob[0]?.applicant;
+    const shortlistedate = shorlistedJob[0].shortlisted_on;
     const date = new Date(shortlistedate);
     const formattedDate = date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -21,7 +21,7 @@ function TraningProgress({ shorlistedUser }) {
     const Wrapper = styled.div`
         font-family:'poppins';
         background-color:#ffffff;
-        height: 70vh;
+        height: 30rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -29,17 +29,18 @@ function TraningProgress({ shorlistedUser }) {
     `
 
     const Section_1 = styled.div`
-        border-bottom: 0.1px solid #dfdddd;
+        border-bottom: 1px solid #dfdddd;
         font-family:'poppins';
+        height: 6rem;
     `
 
     const Navbar = styled.nav`
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 0.1px solid #dfdddd;
+        border-bottom: 1px solid #dfdddd;
         padding: 0 16px;
-        height: 10vh;
+        height: 5rem;
         background-color: white;
     `;
 
@@ -48,13 +49,7 @@ function TraningProgress({ shorlistedUser }) {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            position: relative;
 
-            img{
-                width: 120px;
-                height: 120px;
-                padding: 10px;
-            }
 
             h1{
                 color:#005734;
@@ -78,7 +73,7 @@ function TraningProgress({ shorlistedUser }) {
                 font-size: 28px;
                 cursor: pointer;
                 font-weight: 500;
-                margin-right: 1rem;
+                margin-right: 2.2rem;
                 color: #7C7C7C;
             }
 
@@ -105,7 +100,7 @@ function TraningProgress({ shorlistedUser }) {
     const Section_2 = styled.div`
         padding: 50px 76px;
         background-color:  #ffffff;
-        border-bottom: 0.1px solid #dfdddd;
+        border-bottom: 1px solid #dfdddd;
         position: relative;
 
         .left-content{
