@@ -30,6 +30,7 @@ function TraningProgress({ shorlistedJob }) {
     `
 
     const Section_1 = styled.div`
+        font-family:'poppins';
         border-bottom: 1px solid #dfdddd;
         font-family:'poppins';
         height: 6rem;
