@@ -487,7 +487,7 @@ function App() {
             <CandidateJobsContextProvider>
               <JobContextProvider>
                 <CandidateHomeScreen
-                  set={setCandidateHired}
+                  setHired={setCandidateHired}
                   setAssignedProjects={setAssignedProjects}
                   setCandidateShortListed={setCandidateShortListed}
                   setshorlistedJob={setshorlistedJob}

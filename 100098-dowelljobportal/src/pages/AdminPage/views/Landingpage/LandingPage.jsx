@@ -45,8 +45,8 @@ const LandingPage = ({subAdminView}) => {
         )
         .then((response) => {
           console.log('AAAAAAAA',response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )) ; 
-          setJobs(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data"));
-          setjobs2(response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data")) ; 
+          setJobs(response.data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data"));
+          setjobs2(response.data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data")) ; 
           setresponse(true);
           
         })

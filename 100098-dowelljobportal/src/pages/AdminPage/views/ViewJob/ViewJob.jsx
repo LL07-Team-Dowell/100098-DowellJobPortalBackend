@@ -44,7 +44,7 @@ const ViewJob = () => {
         },[])
         console.log({singleJob})
         const {company_id , created_by , created_on , data_type , description , document_id , eventId , general_terms , is_active , job_category , job_number , job_title , other_info , payment
- , qualification , skills , technical_specification, time_interval , type_of_job ,workflow_terms , _id        } = singleJob ; 
+ , qualification , skills , technical_specification, time_interval , type_of_job ,workflow_terms , _id, module        } = singleJob ; 
 //  console.log({singleJob})
     if (loading || !singleJob ) return  <Loading/>
         return <>
@@ -63,6 +63,7 @@ const ViewJob = () => {
                 <div><h5>Job Type:</h5> <span>{type_of_job}</span></div>
                 <div><h5>Job Category:</h5> <span>{job_category}</span></div>
                 <div><h5>Qualification:</h5> <span>{qualification}</span></div>
+                { module && <div><h5>Module:</h5> <span>{module}</span></div> }
             
 
                 {description.length > 0 && <><h4>Job Description:</h4>
