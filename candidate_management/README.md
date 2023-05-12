@@ -17,6 +17,7 @@ _Post_ to `/candidate_management/apply_job/`
   "academic_qualification_type": "<academic_qualification_type>",
   "academic_qualification": "<academic_qualification>",
   "country": "<location function>",
+  "module":"<module>",
   "internet_speed": "<internet_speed>",
   "other_info": ["term1", "term2"],
   "agree_to_all_terms": "<True | False>",

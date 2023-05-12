@@ -38,6 +38,7 @@ class apply_job(APIView):
             "hr_remarks": "",
             "teamlead_remarks": "",
             "rehire_remarks": "",
+            "module": data.get("module"),
             "server_discord_link": "https://discord.gg/Qfw7nraNPS",
             "product_discord_link": "",
             "payment": data.get('payment'),
