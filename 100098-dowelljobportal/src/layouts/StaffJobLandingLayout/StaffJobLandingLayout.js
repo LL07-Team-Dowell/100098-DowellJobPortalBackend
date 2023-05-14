@@ -10,9 +10,11 @@ import { teamleadNavigationLinks } from "../../pages/TeamleadPage/teamleadNaviga
 import { AiOutlinePlus } from "react-icons/ai";
 import { useMediaQuery } from "@mui/material";
 import { adminNavigationLinks, subAdminNavigationLinks } from "../../pages/AdminPage/views/adminNavigationLinks";
+import ProgressTracker from "../../pages/AdminPage/views/Landingpage/component/progressTracker";
+import BlurBackground from "../../pages/AdminPage/views/Landingpage/component/blur";
 
 
-const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, runExtraFunctionOnNavItemClick, hideSideBar, adminView, searchValue, setSearchValue, handleNavIconClick, adminAlternativePageActive, pageTitle, hideTitleBar, showAnotherBtn, btnIcon, handleNavIcon, subAdminView, searchPlaceHolder }) => {
+const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, runExtraFunctionOnNavItemClick, hideSideBar, adminView, searchValue, setSearchValue, handleNavIconClick, adminAlternativePageActive, pageTitle, hideTitleBar, showAnotherBtn, btnIcon, handleNavIcon, subAdminView, searchPlaceHolder, showLoadingOverlay, modelDurationInSec }) => {
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     
     return <>
@@ -61,6 +63,12 @@ const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, ru
         <main>
             <div className={`staff__Jobs__Layout__Content__Container ${accountView ? 'account' : ''}`}>
                 { !hideSideBar && <NewSideNavigationBar className={hideTitleBar ? 'full__Height' : ''} links={hrView ? hrNavigationLinks : accountView ? accountNavigationLinks : teamleadView ? teamleadNavigationLinks : adminView ? subAdminView ? subAdminNavigationLinks : adminNavigationLinks : []} runExtraFunctionOnNavItemClick={runExtraFunctionOnNavItemClick} /> }
+                {
+                    showLoadingOverlay && 
+                    <BlurBackground>
+                        <ProgressTracker durationInSec={modelDurationInSec} />
+                    </BlurBackground>
+                }
                 <div className={`jobs__Layout__Content ${adminView ? 'full__Width' : ''}`}>
                     { children }
                 </div>

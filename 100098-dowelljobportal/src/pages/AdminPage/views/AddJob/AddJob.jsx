@@ -40,7 +40,7 @@ const AddJob = ({ subAdminView }) => {
     module: "",
     data_type: currentUser.portfolio_info[0].data_type,
     created_by: currentUser.userinfo.username,
-    created_on: new Date(), 
+    created_on: new Date(),
   });
 
   const [selectedOption, setSelectedOption] = useState("");
@@ -165,7 +165,10 @@ const AddJob = ({ subAdminView }) => {
       console.log(response.data);
 
       if (response.status === 201) {
-        setJobs((prevValue) => [newJob, ...prevValue]);
+        setJobs((prevValue) => [
+          { ...newJob, newly_created: true },
+          ...prevValue,
+        ]);
         toast.success("Job created successfully");
         navigate("/");
       } else {
@@ -435,7 +438,7 @@ const AddJob = ({ subAdminView }) => {
                   value="Virtual Assistant"
                   selected={thirdOption === "Virtual Assistant"}
                 >
-                  Virtual Assitant
+                  Virtual Assistant
                 </option>
                 <option value="Web" selected={thirdOption === "Web"}>
                   Web

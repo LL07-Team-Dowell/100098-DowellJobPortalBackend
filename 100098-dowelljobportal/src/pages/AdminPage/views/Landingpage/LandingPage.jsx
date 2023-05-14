@@ -11,9 +11,12 @@ import Loading from "../../../CandidatePage/views/ResearchAssociatePage/Loading"
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { getApplicationForAdmin } from "../../../../services/adminServices";
+import { getApplicationForAdmin, getJobsFromAdmin } from "../../../../services/adminServices";
 import { useState } from "react";
 const LandingPage = ({subAdminView}) => {
+
+  const [ stateTrackingProgress , setstateTrackingProgress ] = useState(false) ;
+
   const { jobs, setJobs , setlist , jobs2 , setjobs2 , searchValue ,setsearchValue ,resp , setresponse  } = useJobContext();
   const handleSearchChange = (value) =>{
     console.log("kasaksldjalksdjalksdjlkjsakl") 
@@ -35,14 +38,8 @@ const LandingPage = ({subAdminView}) => {
   // console.log("jobs", jobs);
   useEffect(() => {
     if (jobs.length === 0) {
-      axios
-        .post(
-          "https://100098.pythonanywhere.com/admin_management/get_jobs/",
-          {
-            company_id: currentUser.portfolio_info[0].org_id,
-          },
-          []
-        )
+
+      getJobsFromAdmin({ company_id: currentUser.portfolio_info[0].org_id })
         .then((response) => {
           console.log('AAAAAAAA',response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )) ; 
           setJobs(response.data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type ).filter(job => job.data_type !== "archive_data"));
@@ -87,6 +84,8 @@ const LandingPage = ({subAdminView}) => {
       searchValue={searchValue}
       setSearchValue={handleSearchChange}
       subAdminView={subAdminView}
+      showLoadingOverlay={stateTrackingProgress}
+      modelDurationInSec={5.81}
     >
       <div className="landing-page">
         <div className="cards">
@@ -96,7 +95,7 @@ const LandingPage = ({subAdminView}) => {
             jobs.length > 0 ? (
               jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )
                 .map((job, index) => (
-                  <Card {...job} key={index} jobs={jobs} setJobs={setJobs} />
+                  <Card {...job} key={index} jobs={jobs} setJobs={setJobs} setShowOverlay={setstateTrackingProgress} />
                 ))
             ) : (
               <Loading />

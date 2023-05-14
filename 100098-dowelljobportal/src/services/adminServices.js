@@ -21,3 +21,7 @@ export const updateJob = async(data)=>{
 export const getApplicationForAdmin = async (data) => {
   return await currentBackendAxiosInstance.post("candidate_management/get_job_application/",data)
 }
+
+export const getJobsFromAdmin = async (data) => {
+  return await currentBackendAxiosInstance.post("admin_management/get_jobs/",data)
+}
