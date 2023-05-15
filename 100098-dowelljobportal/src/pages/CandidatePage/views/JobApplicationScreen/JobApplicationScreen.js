@@ -151,6 +151,7 @@ const JobApplicationScreen = () => {
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.job_title, value: currentJob.job_title } });
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_NUMBER, payload: { stateToChange: mutableNewApplicationStateNames.job_number, value: currentJob.job_number } });
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_PAYMENT, payload: { stateToChange: mutableNewApplicationStateNames.payment, value: currentJob.payment } });
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_MODULE, payload: { stateToChange: mutableNewApplicationStateNames.module, value: currentJob.module } });
 
         console.log(currentJob);
         // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_TIME_INTERVAL, payload: { stateToChange: mutableNewApplicationStateNames.time_interval, value: currentJob.time_interval } });
