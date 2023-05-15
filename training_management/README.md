@@ -7,6 +7,7 @@ _Post_ to `training_management/create_question/`
 ```json
 {
     "company_id": "<company_id>",
+    "document_id":"<document_id>",
     "data_type": "<data_type>",
     "question_link": "<question_link>",
     "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",

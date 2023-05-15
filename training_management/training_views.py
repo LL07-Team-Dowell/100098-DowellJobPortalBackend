@@ -17,6 +17,7 @@ class question(APIView):
         data = request.data
         field = {
             "eventId": get_event_id()['event_id'],
+            "_id": data.get("document_id"),
             "company_id": data.get("company_id"),
             "data_type": data.get("data_type"),
             "question_link": data.get("question_link"),
