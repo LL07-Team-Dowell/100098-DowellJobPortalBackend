@@ -33,7 +33,7 @@ const Section_1 = styled.div`
 `
 
 const Section_2 = styled.div`
-    height: 110vh;
+    height: 58rem;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -190,7 +190,7 @@ const Hero = styled.div`
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 90vh;
+    height: 42rem;
     position: relative; 
 
   
