@@ -10,6 +10,6 @@ export const createQuestionForTrainingMangement = async (dataToPost) => {
 
 export const getTrainingManagementQuestions = async () => {
   return await currentBackendAxiosInstance.get(
-    "training_management/get_question/"
+    "training_management/get_all_question/"
   );
 };

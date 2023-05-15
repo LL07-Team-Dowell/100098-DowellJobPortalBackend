@@ -27,6 +27,7 @@ import { getCandidateApplicationsForHr, getCandidateTask, getSettingUserProject 
 import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenAllTasks';
 import HrTrainingQuestions from '../HrTrainingScreen/HrTrainingQuestion';
 import { trainingCards } from '../HrTrainingScreen/hrTrainingCards';
+import { getTrainingManagementQuestions } from '../../../../services/hrTrainingServices';
 
 function fuzzySearch(query, text) {
   const searchRegex = new RegExp(query.split('').join('.*'), 'i');
@@ -59,6 +60,7 @@ function HrJobScreen() {
   const [ showCurrentCandidateAttendance, setShowCurrentCandidateAttendance ] = useState(false);
   const [ guestApplications, setGuestApplications ] = useState([]);
   const [ currentActiveItem, setCurrentActiveItem ] = useState("Received");
+  const [ trackingProgress, setTrackingProgress ] = useState(false);
   
   const handleEditTaskBtnClick = (currentData) => {
     setEditTaskActive(true);
@@ -100,6 +102,7 @@ function HrJobScreen() {
       getJobs2({company_id: currentUser.portfolio_info[0].org_id}),
       getSettingUserProject(),
       getCandidateTask({company_id: currentUser.portfolio_info[0].org_id}),
+      getTrainingManagementQuestions({company_id: currentUser.portfolio_info[0].org_id})
     ])
     .then((res) => {
       const filteredData = res[0].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
@@ -119,6 +122,10 @@ function HrJobScreen() {
       const usersWithTasks = [...new Map(res[3].data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [task.applicant, task])).values()];
       setAllTasks(usersWithTasks.reverse());
       setLoading(false);
+
+      // const questionsList = [...new Map(res[4].data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(question => [question.module, question])).values()];
+      // console.log(questionsList.reverse().find(p => p.module === trainingCards.module));
+      // setQuestions(questionsList.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id).questions);
     })
     .catch(err => console.log(err))
     
@@ -250,7 +257,16 @@ function HrJobScreen() {
   }
 
   return (
-    <StaffJobLandingLayout hrView={true} runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} hideSideBar={showAddTaskModal} searchValue={jobSearchInput} setSearchValue={setJobSearchInput} searchPlaceHolder={section === "home" ?"received" : section === "guest-applications" ? "guests" : section === "shortlisted" ? "shortlisted" : section === "hr-training" ? "hr-training" : "received"}>
+    <StaffJobLandingLayout 
+      hrView={true} 
+      runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} 
+      hideSideBar={showAddTaskModal} 
+      searchValue={jobSearchInput} 
+      setSearchValue={setJobSearchInput}
+      showLoadingOverlay={trackingProgress}
+      modelDurationInSec={5.69} 
+      searchPlaceHolder={section === "home" ?"received" : section === "guest-applications" ? "guests" : section === "shortlisted" ? "shortlisted" : section === "hr-training" ? "hr-training" : "received"}
+    >
     <div className="hr__Page__Container">
     <TitleNavigationBar 
       className={
@@ -335,11 +351,11 @@ function HrJobScreen() {
           </> :
 
           sub_section === undefined && section === "hr-training" ? <>
-            <HrTrainingScreen trainingCards={trainingCards}/>
+            <HrTrainingScreen trainingCards={trainingCards} setShowOverlay={setTrackingProgress}/>
           </> :
 
           sub_section !== undefined && section === "hr-training" ? <>
-            <HrTrainingQuestions trainingCards={trainingCards}/>
+            <HrTrainingQuestions />
           </> :
 
           sub_section === undefined && section === "guest-applications" ?
