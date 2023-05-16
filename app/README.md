@@ -2,7 +2,7 @@
 
 
 ### account management view-------------------------------------------------
-_Post_ to `accounts_management/onboard_candidate/`
+_Post_ to `onboard_candidate/`
 
 - Request Body
 
@@ -42,7 +42,7 @@ _Post_ to `accounts_management/onboard_candidate/`
   "message": "serializer.errors"
 }
 ```
-_Post_ to `accounts_management/update_project/`
+_Post_ to `update_project/`
 
 - Request Body
 
@@ -76,7 +76,7 @@ _Post_ to `accounts_management/update_project/`
   "message": "Parameters are not valid"
 }
 ```
-_Post_ to `accounts_management/rehire_candidate/`
+_Post_ to `rehire_candidate/`
 
 - Request Body
 
@@ -109,7 +109,7 @@ _Post_ to `accounts_management/rehire_candidate/`
   "message": "Parameters are not valid"
 }
 ```
-_Post_ to `accounts_management/reject_candidate/`
+_Post_ to `reject_candidate/`
 
 - Request Body
 
@@ -146,5 +146,184 @@ _Post_ to `accounts_management/reject_candidate/`
 ```json
 {
   "message": "serializer.errors"
+}
+```
+
+### admin management view-------------------------------------------------
+
+_Post_ to `create_jobs/`
+
+- Request Body
+
+```json
+{
+  "job_number": "<unique number>",
+  "job_title": "<Job title>",
+  "description": "Description for the job>",
+  "skills": "Required skills for the job",
+  "qualification": "<Qualifications required for the job>",
+  "job_category": "<Freelancer | Internship | Employee>",
+  "type_of_job": "< Full time | Part time | Time based | Task based>",
+  "payment": "<Payment for the job>",
+  "payment_terms": ["term1", "term2"],
+  "is_active": "<True| False>",
+  "time_interval": "<Time interval for the job>",
+  "general_terms": ["term1", "term2"],
+  "technical_specification": ["term1", "term2"],
+  "workflow_terms": ["term1", "term2"],
+  "other_info": ["term1", "term2"],
+  "company_id": "<company_id>",
+  "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "created_by": "<created_by>",
+  "created_on": "<created_on>"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Job creation was successful."
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "Job creation has failed"
+}
+```
+
+- Response 400
+
+```json
+{
+  "error": "serializer.errors"
+}
+```
+
+_Post_ to `get_jobs/`
+
+- Request Body
+
+```json
+{
+  "company_id": "<company_id>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "List of jobs",
+  "response": ["Requested Job list."]
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There are no jobs",
+  "response": ["list of jobs"]
+}
+```
+
+_Post_ to `get_job/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document_id>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Job details",
+  "response": "Job details"
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There are no jobs",
+  "response": ["list of jobs"]
+}
+```
+
+
+_Post_ to `update_jobs/`
+
+- Request Body
+
+```json
+{
+    "document_id":"<document_id>",
+    "update_field" : "Kindly follow notes to update the database , you should not update other field"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Job update is successful"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Job update has failed"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
+
+_Post_ to `delete_job/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document_id>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Job successfully deleted"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Job not successfully deleted"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
 }
 ```

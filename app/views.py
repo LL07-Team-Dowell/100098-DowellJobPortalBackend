@@ -317,9 +317,9 @@ class delete_job(APIView):
             response = dowellconnection(*jobs, "update", field, update_field)
             # print(response)
             if response:
-                return Response({"message": "Job deletion successful."}, status=status.HTTP_200_OK)
+                return Response({"message": "Job successfully deleted"}, status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Job deletion has failed."}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Job not successfully deleted"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
