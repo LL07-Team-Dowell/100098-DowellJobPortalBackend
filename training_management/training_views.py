@@ -65,10 +65,9 @@ class get_all_question(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_question(APIView):
-    def get(self, request):
-        data = request.data
+    def get(self, request , document_id ):
         field = {
-            "_id": data.get("document_id"),
+            "_id": document_id,
         }
         print(field)
         update_field = {
