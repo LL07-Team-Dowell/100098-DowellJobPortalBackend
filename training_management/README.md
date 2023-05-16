@@ -6,13 +6,14 @@ _Post_ to `training_management/create_question/`
 
 ```json
 {
+    "eventId": "event_id",
     "company_id": "<company_id>",
     "data_type": "<data_type>",
     "question_link": "<question_link>",
     "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
     "created_on": "<created_on>",
     "created_by": "<created_by>",
-    "is_active": "<True | False>",
+    "is_active": "<True | False>"
 }
 ```
 
@@ -46,7 +47,7 @@ __get__ to `training_management/get_question/`
 
 ```json
 {
-    "document_id": "<document_id>",
+    "document_id": "<document_id>"
 }
 ```
 
@@ -58,7 +59,7 @@ __get__ to `training_management/get_question/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
@@ -84,7 +85,7 @@ __get__ to `training_management/get_all_question/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
@@ -128,13 +129,46 @@ __patch__ to `training_management/update_question/`
 }
 ```
 
+__Post__ to `training_management/create_response/`
+
+- Request Body
+
+```json
+{
+    "event_id":"event_id",
+    "company_id": "company_id",
+    "data_type":"data_type",
+    "module": "module",
+    "project_name": "project_name",
+    "username": "username",
+    "code_base_link": "code_base_link",
+    "live_link": "live_link",
+    "documentation_link": "documentation_link",
+    "started_on": "started_on",
+    "submitted_on": "submitted_on",
+    "rating": "rating"
+}
+```
+
+- Response 201
+
+```json
+{
+  "info": "Response has been created"
+}
+```
+
+
 __patch__ to `training_management/update_response/`
 
 - Request Body
 
 ```json
 {
-    "document_id": "<document_id>"
+    "document_id": "<document_id>",
+    "code_base_link": "code_base_link",
+    "live_link": "live_link",
+    "documentation_link": "documentation_link"
 }
 ```
 
@@ -171,7 +205,7 @@ __get__ to `training_management/get_response/`
   "response": "[List of response]"
 }
 ```
-- Response 304
+- Response 204
 
 ```json
 {
