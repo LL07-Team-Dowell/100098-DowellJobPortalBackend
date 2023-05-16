@@ -47,15 +47,15 @@ class question(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_all_question(APIView):
-    def get(self, request):
-        data = request.data
+    def get(self, request ,company_id):
         field = {
-            "company_id": data.get("company_id"),
+            "company_id": company_id,
         }
         update_field = {
             "status": "nothing to update"
         }
         question_response = dowellconnection(*questionnaire_modules, "fetch", field, update_field)
+        print("----respoonse from dowelconnection---",question_response)
         print(question_response)
         if question_response:
             return Response({"message": "List of questions.", "response": json.loads(question_response)},
@@ -65,10 +65,9 @@ class get_all_question(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_question(APIView):
-    def get(self, request):
-        data = request.data
+    def get(self, request , document_id ):
         field = {
-            "_id": data.get("document_id"),
+            "_id": document_id,
         }
         print(field)
         update_field = {
@@ -81,7 +80,7 @@ class get_question(APIView):
             return Response({"message": "List of questions.", "response": json.loads(question_response)},
                             status=status.HTTP_200_OK)
         else:
-            return Response({"error": "No question found"}, status=status.HTTP_204_NOT_MODIFIED)
+            return Response({"error": "No question found"}, status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -185,4 +184,4 @@ class get_response(APIView):
             return Response({"message": "List of response.", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
-                    return Response({"error": "data not found"}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"error": "data not found"}, status=status.HTTP_204_NO_CONTENT)

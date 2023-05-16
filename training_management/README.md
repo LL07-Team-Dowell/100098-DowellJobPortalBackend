@@ -41,7 +41,7 @@ _Post_ to `training_management/create_question/`
 }
 ```
 
-__get__ to `training_management/get_question/`
+__get__ to `training_management/get_question/<str:document_id>/`
 
 - Request Body
 
@@ -67,7 +67,7 @@ __get__ to `training_management/get_question/`
 }
 ```
 
-__get__ to `training_management/get_all_question/`
+__get__ to `training_management/get_all_question/<str:company_id>/`
 
 - Request Body
 
