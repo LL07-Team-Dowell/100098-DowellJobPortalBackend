@@ -9,9 +9,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import AccountSerializer, RejectSerializer
 from .serializers import AdminSerializer
-from .database.event import get_event_id
-from .database.database_management import *
-from .database.connection import dowellconnection
+from .helper import get_event_id, dowellconnection
+from .constant import *
 
 
 # Create your views here.
