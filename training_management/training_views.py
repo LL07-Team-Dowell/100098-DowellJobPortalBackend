@@ -47,15 +47,15 @@ class question(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_all_question(APIView):
-    def get(self, request):
-        data = request.data
+    def get(self, request ,company_id):
         field = {
-            "company_id": data.get("company_id"),
+            "company_id": company_id,
         }
         update_field = {
             "status": "nothing to update"
         }
         question_response = dowellconnection(*questionnaire_modules, "fetch", field, update_field)
+        print("----respoonse from dowelconnection---",question_response)
         print(question_response)
         if question_response:
             return Response({"message": "List of questions.", "response": json.loads(question_response)},
