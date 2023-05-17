@@ -174,9 +174,8 @@ class update_response(APIView):
             "rating": data.get("rating"),
             "status":data.get("status")
         }
-        insert_to_hr_report = {
-                "_id": data.get('document_id'),
-                "status":data.get("status")
+        insert_to_hr_report = {   
+            "status":data.get("status")
             }
         insert_to_response = dowellconnection(
             *response_modules, "update", field, update_field)
