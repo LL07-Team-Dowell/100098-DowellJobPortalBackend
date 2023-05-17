@@ -28,6 +28,11 @@ urlpatterns = [
     path('selected_candidate/', selected_candidate.as_view()),
     path('reject_candidate/', reject_candidate.as_view()),
 
+    # lead management------------------------------------------------
+    path('hire_candidate/', hire_candidate.as_view()),
+    path('rehire_candidate/', rehire_candidate.as_view()),
+    path('reject_candidate/', reject_candidate.as_view()),
+
     # training management--------------------------------------------
     path('create_question/', create_question.as_view()),
     path("get_question/<str:document_id>/", get_question.as_view()),
