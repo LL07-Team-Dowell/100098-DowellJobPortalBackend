@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components';
 import * as assets from '../../../../assets/assetsIndex';
 import { AiFillBook, AiFillHome, AiOutlineSearch } from 'react-icons/ai';
 import { BiRightArrowAlt } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
+import { getAllQuestions } from '../../../../services/commonServices';
 
 
 const Wrapper = styled.div`
@@ -278,7 +279,41 @@ const Hero = styled.div`
 `
 
 function CandidateTranningScreen({ shorlistedJob }) {
-  console.log(shorlistedJob);
+  const [allquestions, setAllQuestions] = useState([]);
+  const [uniqueItems, setUniqueItems] = useState([]);
+  const uniqueTags = new Set();
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      if (shorlistedJob.length > 0) {
+        const companyId = shorlistedJob[0].company_id;
+        const response = await getAllQuestions(companyId);
+        const allquestions = response.data.response.data;
+        setAllQuestions(allquestions);
+      }
+    };
+
+    fetchQuestions();
+  }, [shorlistedJob]);
+
+  useEffect(() => {
+    if (allquestions.length > 0) {
+      const updatedUniqueItems = [];
+      uniqueTags.clear();
+
+      allquestions.forEach((item) => {
+        if (!uniqueTags.has(item.module)) {
+          uniqueTags.add(item.module);
+          updatedUniqueItems.push(item);
+        }
+      });
+
+      setUniqueItems(updatedUniqueItems);
+    }
+  }, [allquestions]);
+
+
+
   return (
     <Wrapper>
       <div className="container-training">
@@ -336,14 +371,20 @@ function CandidateTranningScreen({ shorlistedJob }) {
           <div className="traning-items">
             {
               shorlistedJob.map((item => {
-                return <div className="item-1">
+                const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
+                console.log(matchModule);
+                return < div className="item-1" >
                   <img src={assets.frontend_icon} alt="frontend" />
                   <h2>{item?.module}</h2>
                   <p>Prepare for a career in {item.module} Development. Receive professional-level training from uxliving lab</p>
                   <button>
-                    <Link to="#">
-                      Start Now <BiRightArrowAlt />
-                    </Link>
+                    {matchModule && (
+                      <Link to={matchModule.question_link} target='_blank'>
+                        Start Now <BiRightArrowAlt />
+                      </Link>
+                    ) || <Link to="">
+                        Start Now <BiRightArrowAlt />
+                      </Link>}
                   </button>
 
                   <div className="bottom-img">
@@ -399,8 +440,8 @@ function CandidateTranningScreen({ shorlistedJob }) {
             </div> */}
           </div>
         </Section_2>
-      </div>
-    </Wrapper>
+      </div >
+    </Wrapper >
   )
 }
 
