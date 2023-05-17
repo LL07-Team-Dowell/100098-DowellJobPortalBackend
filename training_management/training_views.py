@@ -140,7 +140,7 @@ class response(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class update_response(APIView):
+class submit_response(APIView):
     def patch(self, request):
         data = request.data
         field = {
@@ -149,22 +149,44 @@ class update_response(APIView):
         update_field = {
             "code_base_link": data.get("code_base_link"),
             "live_link": data.get("live_link"),
-            "documentation_link": data.get("documentation_link"),
-        }
-        insert_to_hr_report = {
-            "status": "hire",
+            "documentation_link": data.get("documentation_link"),  
+            "answer_link": data.get("answer_link"), 
+            "submitted_on": data.get("submitted_on"), 
         }
         insert_to_response = dowellconnection(
-            *response_modules, "insert", field, update_field)
+            *response_modules, "update", field, update_field)
+        
+        if insert_to_response:
+            return Response({"message": "Response has been submitted"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class update_response(APIView):
+    def patch(self, request):
+        data = request.data
+        field = {
+            "_id": data.get('document_id'),
+        }
+        update_field = {
+            "data_type": data.get("data_type"),
+            "submitted_on": data.get("submitted_on"),
+            "rating": data.get("rating"),
+            "status":data.get("status")
+        }
+        insert_to_hr_report = {
+                "_id": data.get('document_id'),
+                "status":data.get("status")
+            }
+        insert_to_response = dowellconnection(
+            *response_modules, "update", field, update_field)
         update_to_hr = dowellconnection(
             *hr_management_reports, "update", insert_to_hr_report, update_field)
-        print(field)
 
         if insert_to_response or update_to_hr:
             return Response({"message": f"Candidate has been {data.get('status')}"}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "HR operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
-
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_response(APIView):
