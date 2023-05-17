@@ -8,7 +8,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
-    UpdateQuestionSerializer, CandidateSerializer
+    UpdateQuestionSerializer, CandidateSerializer, HRSerializer
 
 from .helper import get_event_id, dowellconnection
 from .constant import *
@@ -330,7 +330,7 @@ class update_jobs(APIView):
 class delete_job(APIView):
 
     def delete(self, request):
-        data  = request.data
+        data = request.data
         field = {
             "_id": data.get('document_id')
         }
@@ -632,8 +632,9 @@ class get_all_onboarded_candidate(APIView):
                 return Response({"message": f"List of {field['status']} Candidates", "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
             else:
-                return Response({"message": f"There are no {field['status']} Candidates", "response": json.loads(response)},
-                                status=status.HTTP_204_NO_CONTENT)
+                return Response(
+                    {"message": f"There are no {field['status']} Candidates", "response": json.loads(response)},
+                    status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message": "Parameters are not valid."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -678,3 +679,160 @@ class delete_candidate_application(APIView):
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 # api for candidate management ends here______________________
+
+
+# api for hr management starts here______________________
+@method_decorator(csrf_exempt, name='dispatch')
+class shortlisted_candidate(APIView):
+
+    def post(self, request):
+        data = request.data
+        if data:
+            field = {
+                "_id": data.get('document_id'),
+            }
+            update_field = {
+                "hr_remarks": data.get('hr_remarks'),
+                "status": data.get('status'),
+                "shortlisted_on": data.get('shortlisted_on')
+            }
+            insert_to_hr_report = {
+                "event_id": get_event_id()["event_id"],
+                "applicant": data.get('applicant'),
+                "hr_remarks": data.get('hr_remarks'),
+                "status": data.get('status'),
+                "company_id": data.get('company_id'),
+                "data_type": data.get('data_type'),
+                "shortlisted_on": data.get('shortlisted_on')
+            }
+            serializer = HRSerializer(data=data)
+            if serializer.is_valid():
+                def call_dowellconnection(*args):
+                    dowellconnection(*args)
+
+                update_response_thread = threading.Thread(target=call_dowellconnection, args=(
+                    *candidate_management_reports, "update", field, update_field))
+                update_response_thread.start()
+
+                insert_response_thread = threading.Thread(target=call_dowellconnection, args=(
+                    *hr_management_reports, "update", insert_to_hr_report, update_field))
+
+                insert_response_thread.start()
+                # print(update_response_thread,insert_response_thread)
+                update_response_thread.join()
+                insert_response_thread.join()
+
+                if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
+                    return Response({"message": f"Candidate has been {data.get('status')}"}, status=status.HTTP_201_CREATED)
+                else:
+                    return Response({"message": "Hr operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+            else:
+                default_errors = serializer.errors
+                new_error = {}
+                for field_name, field_errors in default_errors.items():
+                    new_error[field_name] = field_errors[0]
+                return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class selected_candidate(APIView):
+    def post(self, request):
+        data = request.data
+        if data:
+            field = {
+                "_id": data.get('document_id'),
+            }
+            update_field = {
+                "hr_remarks": data.get('hr_remarks'),
+                "project": data.get('project'),
+                "product_discord_link": data.get('product_discord_link'),
+                "status": data.get('status'),
+                "selected_on": data.get('selected_on')
+            }
+            insert_to_hr_report = {
+                "event_id": get_event_id()["event_id"],
+                "applicant": data.get('applicant'),
+                "hr_remarks": data.get('hr_remarks'),
+                "project": data.get('project'),
+                "product_discord_link": data.get('product_discord_link'),
+                "status": data.get('status'),
+                "company_id": data.get('company_id'),
+                "data_type": data.get('data_type'),
+                "selected_on": data.get('selected_on')
+            }
+
+            def call_dowellconnection(*args):
+                dowellconnection(*args)
+
+            update_response_thread = threading.Thread(target=call_dowellconnection, args=(
+                *candidate_management_reports, "update", field, update_field))
+            update_response_thread.start()
+
+            insert_response_thread = threading.Thread(target=call_dowellconnection, args=(
+                *hr_management_reports, "update", insert_to_hr_report, update_field))
+
+            insert_response_thread.start()
+            # print(update_response_thread,insert_response_thread)
+            update_response_thread.join()
+            insert_response_thread.join()
+
+            if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
+                return Response({"message": f"Candidate has been {data.get('status')}"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message": "Hr operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class reject_candidate(APIView):
+    def post(self, request):
+        data = request.data
+        print(data)
+        if data:
+            field = {
+                "_id": data.get('document_id'),
+            }
+            update_field = {
+                "reject_remarks": data.get('reject_remarks'),
+                "status": "Rejected",
+                "data_type": data.get('data_type'),
+                "rejected_on": data.get('rejected_on')
+            }
+            insert_to_hr_report = {
+                "company_id": data.get('company_id'),
+                "applicant": data.get('applicant'),
+                "username": data.get("username"),
+                "reject_remarks": data.get('reject_remarks'),
+                "status": "Rejected",
+                "data_type": data.get('data_type'),
+                "rejected_on": data.get('rejected_on')
+            }
+            serializer = RejectSerializer(data=data)
+            if serializer.is_valid():
+                def call_dowellconnection(*args):
+                    dowellconnection(*args)
+
+                candidate_thread = threading.Thread(target=call_dowellconnection,
+                                                    args=(*candidate_management_reports, "update", field, update_field))
+                candidate_thread.start()
+
+                hr_thread = threading.Thread(target=call_dowellconnection,
+                                             args=(*hr_management_reports, "insert", insert_to_hr_report, update_field))
+                hr_thread.start()
+
+                candidate_thread.join()
+                hr_thread.join()
+
+                if not candidate_thread.is_alive() and not hr_thread.is_alive():
+                    return Response({"message": "Candidate has been Rejected"}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"message": "operation failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                default_errors = serializer.errors
+                new_error = {}
+                for field_name, field_errors in default_errors.items():
+                    new_error[field_name] = field_errors[0]
+                return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+# api for hr management ends here________________________

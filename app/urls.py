@@ -23,6 +23,10 @@ urlpatterns = [
     path('get_all_onboarded_candidate/<str:company_id>/', get_all_onboarded_candidate.as_view()),
     path('delete_candidate_application/', delete_candidate_application.as_view()),
 
+    # hr management--------------------------------------------------
+    path('shortlisted_candidate/', shortlisted_candidate.as_view()),
+    path('selected_candidate/', selected_candidate.as_view()),
+    path('reject_candidate/', reject_candidate.as_view()),
 
     # training management--------------------------------------------
     path('create_question/', create_question.as_view()),
