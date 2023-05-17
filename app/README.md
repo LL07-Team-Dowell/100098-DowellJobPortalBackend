@@ -440,13 +440,17 @@ __patch__ to `update_question/`
 }
 ```
 
-__patch__ to `training_management/update_response/`
+__patch__ to `update_response/`
 
 - Request Body
 
 ```json
 {
-    "document_id": "<document_id>"
+    "document_id": "<document_id>",
+    "code_base_link": "code_base_link",
+    "live_link": "live_link",
+    "documentation_link": "documentation_link",
+    "status": "<Hired|Rejected>"
 }
 ```
 
@@ -465,7 +469,7 @@ __patch__ to `training_management/update_response/`
 }
 ```
 
-__get__ to `training_management/get_response/<str:document_id>/`
+__get__ to `get_response/<str:document_id>/`
 
 - Request Body
 
@@ -488,5 +492,144 @@ __get__ to `training_management/get_response/<str:document_id>/`
 ```json
 {
   "error": "data not found"
+}
+```
+
+_Post_ to `/apply_job/`
+
+- Request Body
+
+```json
+{
+  "job_number": "<job _number of already created jobs",
+  "job_title": "<job title of already created jobs>",
+  "job_category": "<Freelancer | Internship | Employee>",
+  "applicant": "<applicant name>",
+  "applicant_email": "<applicant email>",
+  "feedBack": "<feedback>",
+  "freelancePlatform": "<freelancePlatform>",
+  "freelancePlatformUrl": "<freelancePlatformUrl>",
+  "academic_qualification_type": "<academic_qualification_type>",
+  "academic_qualification": "<academic_qualification>",
+  "country": "<location function>",
+  "internet_speed": "<internet_speed>",
+  "other_info": ["term1", "term2"],
+  "agree_to_all_terms": "<True | False>",
+  "company_id": "<company_id>",
+  "username": "<username>",
+  "portfolio_name": "<portfolio_name>",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "payment": "<payment>",
+  "application_submitted_on": "<application_submitted_on>"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Application received."
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "Application not recieved"
+}
+```
+
+
+_get_ to `/get_job_application/<str:company_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "List of job applications",
+  "response": ["list of jobs"]
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There is no job applications",
+  "response": ["list of jobs"]
+}
+```
+
+_get_ to `/get_candidate_application/<str:document_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "Candidate job applications",
+  "response": ["Candidate job"]
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There is no job applications",
+  "response": ["Candidate job not exist"]
+}
+```
+
+_delete_ to `/delete_candidate_application/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document id>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "candidate application deleted successfully."
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Deleting candidate application has failed"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
+
+_get_ to `/get_all_onboarded_candidate/<str:company_id>`
+
+- Response 200
+
+```json
+{
+  "message": "List of onboard applications.",
+  "response": ["onboard Candidate"] 
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There is no job applications",
+  "response": ["Candidate job not exist"]
 }
 ```

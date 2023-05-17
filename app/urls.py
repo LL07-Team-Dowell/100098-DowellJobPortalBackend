@@ -14,9 +14,14 @@ urlpatterns = [
     path('get_jobs/<str:company_id>/', get_jobs.as_view()),
     path('get_job/<str:document_id>/', get_job.as_view()),
     path('update_jobs/', update_jobs.as_view()),
-    path('delete_job/<str:document_id>/', delete_job.as_view()),
+    path('delete_job/', delete_job.as_view()),
 
     # candidate management-------------------------------------------
+    path('apply_job/', apply_job.as_view()),
+    path('get_job_application/<str:company_id>/', get_job_application.as_view()),
+    path('get_candidate_application/<str:document_id>/', get_candidate_application.as_view()),
+    path('get_all_onboarded_candidate/<str:company_id>/', get_all_onboarded_candidate.as_view()),
+    path('delete_candidate_application/', delete_candidate_application.as_view()),
 
 
     # training management--------------------------------------------
