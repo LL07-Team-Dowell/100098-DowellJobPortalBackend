@@ -502,3 +502,4 @@ class get_response(APIView):
             return Response({"error": "data not found"}, status=status.HTTP_304_NOT_MODIFIED)
 
 # api for training management ends here______________________
+
