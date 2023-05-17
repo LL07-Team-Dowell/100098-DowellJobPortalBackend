@@ -353,7 +353,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
               }), [])
             }
 
-            {
+            {/* {
               shorlistedJob.length % 3 === 1 ? <>
                 <div className="item-2">
                   <img src={assets.lock_screen} alt="" />
@@ -366,7 +366,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
                   <img src={assets.lock_screen} alt="" />
                 </div>
               </> : <></>
-            }
+            } */}
 
             {/* <div className="item-1">
               <img src={assets.frontend_icon} alt="frontend" />
