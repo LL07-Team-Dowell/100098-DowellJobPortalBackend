@@ -66,7 +66,7 @@ class onboard_candidate(APIView):
                 update_response_thread.join()
                 insert_response_thread.join()
 
-                if not update_response_thread.is_alive() and not insert_responser_thread.is_alive():
+                if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
                     return Response({"message": f"Candidate has been {data.get('status')}"},
                                     status=status.HTTP_200_OK)
                 else:
@@ -108,7 +108,7 @@ class update_project(APIView):
             update_response_thread.join()
             insert_response_thread.join()
 
-            if not update_response_thread.is_alive() and not insert_responser_thread.is_alive():
+            if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
                 return Response({"message": f"Candidate project and payment has been updated"},
                                 status=status.HTTP_200_OK)
             else:
@@ -144,7 +144,7 @@ class rehire_candidate(APIView):
             update_response_thread.join()
             insert_response_thread.join()
 
-            if not update_response_thread.is_alive() and not insert_responser_thread.is_alive():
+            if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
                 return Response({"message": "Candidate has been Rehired"}, status=status.HTTP_200_OK)
             else:
                 return Response({"message": "operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
