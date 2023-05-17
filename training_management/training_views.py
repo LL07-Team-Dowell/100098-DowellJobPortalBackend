@@ -36,7 +36,7 @@ class question(APIView):
             if question_response:
                 return Response({"message": "Question created successfully"}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Question creation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Question failed to be created"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -60,7 +60,7 @@ class get_all_question(APIView):
         if question_response:
             return Response({"message": "List of questions.", "response": json.loads(question_response)},
                             status=status.HTTP_200_OK)
-        return Response({"error": "No question found"}, status=status.HTTP_304_NOT_MODIFIED)
+        return Response({"error": "No question found"}, status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -80,7 +80,7 @@ class get_question(APIView):
             return Response({"message": "List of questions.", "response": json.loads(question_response)},
                             status=status.HTTP_200_OK)
         else:
-            return Response({"error": "No question found"}, status=status.HTTP_304_NOT_MODIFIED)
+            return Response({"error": "No question found"}, status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -184,4 +184,4 @@ class get_response(APIView):
             return Response({"message": "List of response.", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
-            return Response({"error": "data not found"}, status=status.HTTP_304_NOT_MODIFIED)
+            return Response({"error": "data not found"}, status=status.HTTP_204_NO_CONTENT)
