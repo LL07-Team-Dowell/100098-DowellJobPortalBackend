@@ -7,8 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import AccountSerializer, RejectSerializer
-from .serializers import AdminSerializer
+from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
+    UpdateQuestionSerializer
+
 from .helper import get_event_id, dowellconnection
 from .constant import *
 
@@ -50,16 +51,27 @@ class onboard_candidate(APIView):
             }
             serializer = AccountSerializer(data=data)
             if serializer.is_valid():
-                update_response = dowellconnection(
-                    *candidate_management_reports, "update", field, update_field)
-                insert_response = dowellconnection(
-                    *account_management_reports, "insert", insert_to_hr_report, update_field)
-                print(update_response)
-                if update_response or insert_response:
+                def call_dowellconnection(*args):
+                    dowellconnection(*args)
+
+                update_response_thread = threading.Thread(target=call_dowellconnection, args=(
+                    *candidate_management_reports, "update", field, update_field))
+                update_response_thread.start()
+
+                insert_response_thread = threading.Thread(target=call_dowellconnection, args=(
+                    *account_management_reports, "update", insert_to_hr_report, update_field))
+
+                insert_response_thread.start()
+                # print(update_response_thread,insert_response_thread)
+                update_response_thread.join()
+                insert_response_thread.join()
+
+                if not update_response_thread.is_alive() and not insert_responser_thread.is_alive():
                     return Response({"message": f"Candidate has been {data.get('status')}"},
-                                    status=status.HTTP_201_CREATED)
+                                    status=status.HTTP_200_OK)
                 else:
                     return Response({"message": "HR operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+
             else:
                 default_errors = serializer.errors
                 new_error = {}
@@ -70,7 +82,7 @@ class onboard_candidate(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class update_project(APIView):
-    def post(self, request):
+    def patch(self, request):
         data = request.data
         if data:
             field = {
@@ -80,16 +92,27 @@ class update_project(APIView):
                 "payment": data.get('payment'),
                 "project": data.get('project')
             }
-            update_response = dowellconnection(
-                *candidate_management_reports, "update", field, update_field)
-            insert_response = dowellconnection(
-                *account_management_reports, "update", field, update_field)
-            print(update_response)
-            if update_response or insert_response:
+
+            def call_dowellconnection(*args):
+                dowellconnection(*args)
+
+            update_response_thread = threading.Thread(target=call_dowellconnection, args=(
+                *candidate_management_reports, "update", field, update_field))
+            update_response_thread.start()
+
+            insert_response_thread = threading.Thread(target=call_dowellconnection, args=(
+                *account_management_reports, "update", field, update_field))
+
+            insert_response_thread.start()
+            # print(update_response_thread,insert_response_thread)
+            update_response_thread.join()
+            insert_response_thread.join()
+
+            if not update_response_thread.is_alive() and not insert_responser_thread.is_alive():
                 return Response({"message": f"Candidate project and payment has been updated"},
-                                status=status.HTTP_201_CREATED)
+                                status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Failed to update."}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Failed to update"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -105,15 +128,26 @@ class rehire_candidate(APIView):
             update_field = {
                 "status": data.get('status'),
             }
-            update_response = dowellconnection(
-                *candidate_management_reports, "update", field, update_field)
-            insert_response = dowellconnection(
-                *account_management_reports, "update", field, update_field)
-            print(update_response)
-            if update_response or insert_response:
-                return Response({"message": f"Candidate has been {data.get('status')}"}, status=status.HTTP_200_OK)
+
+            def call_dowellconnection(*args):
+                dowellconnection(*args)
+
+            update_response_thread = threading.Thread(target=call_dowellconnection, args=(
+                *candidate_management_reports, "update", field, update_field))
+            update_response_thread.start()
+
+            insert_response_thread = threading.Thread(target=call_dowellconnection, args=(
+                *account_management_reports, "update", field, update_field))
+
+            insert_response_thread.start()
+            # print(update_response_thread,insert_response_thread)
+            update_response_thread.join()
+            insert_response_thread.join()
+
+            if not update_response_thread.is_alive() and not insert_responser_thread.is_alive():
+                return Response({"message": "Candidate has been Rehired"}, status=status.HTTP_200_OK)
             else:
-                return Response({"message": "HR operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -232,56 +266,48 @@ class create_jobs(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class get_jobs(APIView):
 
-    def post(self, request):
-        data = request.data
-        if data:
-            field = {
-                "company_id": data.get('company_id'),
-            }
-            update_field = {
-                "status": "nothing to update"
-            }
-            response = dowellconnection(*jobs, "fetch", field, update_field)
-            # print(response)
-            if response:
-                return Response({"message": "List of jobs.", "response": json.loads(response)},
-                                status=status.HTTP_200_OK)
-            else:
-                return Response({"message": "There is no jobs", "response": json.loads(response)},
-                                status=status.HTTP_204_NO_CONTENT)
+    def get(self, request, company_id):
+        field = {
+            "company_id": company_id,
+        }
+        update_field = {
+            "status": "nothing to update"
+        }
+        response = dowellconnection(*jobs, "fetch", field, update_field)
+        # print(response)
+        if response:
+            return Response({"message": "List of jobs.", "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "There is no jobs", "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_job(APIView):
 
-    def post(self, request):
-        data = request.data
-        if data:
-            field = {
-                "_id": data.get('document_id')
-            }
-            update_field = {
-                "status": "nothing to update"
-            }
-            response = dowellconnection(*jobs, "fetch", field, update_field)
-            # print(response)
-            if response:
-                return Response({"message": "Job details.", "response": json.loads(response)},
-                                status=status.HTTP_200_OK)
-            else:
-                return Response({"message": "There is no jobs", "response": json.loads(response)},
-                                status=status.HTTP_204_NO_CONTENT)
+    def get(self, request, document_id):
+        field = {
+            "_id": document_id
+        }
+        update_field = {
+            "status": "nothing to update"
+        }
+        response = dowellconnection(*jobs, "fetch", field, update_field)
+        # print(response)
+        if response:
+            return Response({"message": "Job details.", "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "There is no jobs", "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 # update the jobs
 @method_decorator(csrf_exempt, name='dispatch')
 class update_jobs(APIView):
 
-    def post(self, request):
+    def patch(self, request):
         data = request.data
         print(data)
         if data:
@@ -292,9 +318,9 @@ class update_jobs(APIView):
             response = dowellconnection(*jobs, "update", field, update_field)
             # print(response)
             if response:
-                return Response({"message": "Job updation successful."}, status=status.HTTP_200_OK)
+                return Response({"message": "Job update is successful."}, status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Job updation has failed."}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Job update has failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -303,31 +329,27 @@ class update_jobs(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class delete_job(APIView):
 
-    def post(self, request):
-        data = request.data
-        print(data)
-        if data:
-            field = {
-                "_id": data.get('document_id')
-            }
-            update_field = {
-                "data_type": "archive_data"
-            }
-            response = dowellconnection(*jobs, "update", field, update_field)
-            # print(response)
-            if response:
-                return Response({"message": "Job successfully deleted"}, status=status.HTTP_200_OK)
-            else:
-                return Response({"message": "Job not successfully deleted"}, status=status.HTTP_304_NOT_MODIFIED)
+    def delete(self, request, document_id=None):
+        field = {
+            "_id": document_id
+        }
+        update_field = {
+            "data_type": "archive_data"
+        }
+        response = dowellconnection(*jobs, "update", field, update_field)
+        # print(response)
+        if response:
+            return Response({"message": "Job successfully deleted"}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Job not successfully deleted"}, status=status.HTTP_304_NOT_MODIFIED)
+
 
 # api for admin management ends here______________________
 
 
 # api for training management starts here______________________
 @method_decorator(csrf_exempt, name='dispatch')
-class question(APIView):
+class create_question(APIView):
     def post(self, request):
         data = request.data
         field = {
@@ -351,7 +373,7 @@ class question(APIView):
             if question_response:
                 return Response({"message": "Question created successfully"}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Question creation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Question failed to be created"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -375,7 +397,7 @@ class get_all_question(APIView):
         if question_response:
             return Response({"message": "List of questions.", "response": json.loads(question_response)},
                             status=status.HTTP_200_OK)
-        return Response({"error": "No question found"}, status=status.HTTP_304_NOT_MODIFIED)
+        return Response({"error": "No question found"}, status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -395,7 +417,7 @@ class get_question(APIView):
             return Response({"message": "List of questions.", "response": json.loads(question_response)},
                             status=status.HTTP_200_OK)
         else:
-            return Response({"error": "No question found"}, status=status.HTTP_304_NOT_MODIFIED)
+            return Response({"error": "No question found"}, status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -469,24 +491,33 @@ class update_response(APIView):
         insert_to_hr_report = {
             "status": "hire",
         }
-        insert_to_response = dowellconnection(
-            *response_modules, "insert", field, update_field)
-        update_to_hr = dowellconnection(
-            *hr_management_reports, "update", insert_to_hr_report, update_field)
-        print(field)
 
-        if insert_to_response or update_to_hr:
+        def call_dowellconnection(*args):
+            dowellconnection(*args)
+
+        insert_to_response_thread = threading.Thread(target=call_dowellconnection, args=(
+            *response_modules, "insert", field, update_field))
+        insert_to_response_thread.start()
+
+        update_to_hr_thread = threading.Thread(target=call_dowellconnection, args=(
+            *hr_management_reports, "update", insert_to_hr_report, update_field))
+
+        update_to_hr_thread.start()
+        # print(insert_to_response_thread,update_to_hr_thread)
+        update_to_hr_thread.join()
+        insert_to_response_thread.join()
+
+        if not insert_to_response_thread.is_alive() and not update_to_hr_thread.is_alive():
             return Response({"message": f"Candidate has been {data.get('status')}"}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": "HR operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+            return Response({"message": "Hr operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_response(APIView):
-    def get(self, request):
-        data = request.data
+    def get(self, request, document_id):
         field = {
-            "_id": data.get('document_id'),
+            "_id": document_id,
         }
         print(field)
         update_field = {
