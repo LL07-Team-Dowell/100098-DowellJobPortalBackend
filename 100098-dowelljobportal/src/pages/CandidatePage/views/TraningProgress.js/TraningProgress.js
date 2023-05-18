@@ -132,7 +132,7 @@ function TraningProgress({ shorlistedJob }) {
     `;
 
     const Section_2 = styled.div`
-        padding: 10px 76px;
+        padding: 50px 76px;
         background-color:  #ffffff;
         border-bottom: 1px solid #dfdddd;
         position: relative;
