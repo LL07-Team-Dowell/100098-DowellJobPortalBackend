@@ -44,53 +44,45 @@ class create_task(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_task(APIView):
-    def post(self, request):
-        data = request.data
-        if data:
-            field = {
-                "company_id": data.get('company_id')
-            }
-            update_field = {
-                "status": "Nothing to update"
-            }
-            response = dowellconnection(*task_management_reports, "fetch", field, update_field)
-            print(response)
-            if response:
-                return Response({"message": "List of the task", "response": json.loads(response)},
-                                status=status.HTTP_200_OK)
-            else:
-                return Response({"message": "There is no task", "response": json.loads(response)},
-                                status=status.HTTP_204_NO_CONTENT)
+    def get(self, request, company_id):
+        field = {
+            "company_id": company_id
+        }
+        update_field = {
+            "status": "Nothing to update"
+        }
+        response = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        print(response)
+        if response:
+            return Response({"message": "List of the task", "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Parametes are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "There is no task", "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class get_cadidate_task(APIView):
-    def post(self, request):
-        data = request.data
-        if data:
-            field = {
-                "_id": data.get('document_id')
-            }
-            update_field = {
-                "status": "Nothing to update"
-            }
-            response = dowellconnection(*task_management_reports, "fetch", field, update_field)
-            print(response)
-            if response:
-                return Response({"message": "List of the task", "response": json.loads(response)},
-                                status=status.HTTP_200_OK)
-            else:
-                return Response({"message": "There is no task", "response": json.loads(response)},
-                                status=status.HTTP_204_NO_CONTENT)
+class get_candidate_task(APIView):
+    def get(self, request, document_id):
+        field = {
+            "_id": document_id
+        }
+        update_field = {
+            "status": "Nothing to update"
+        }
+        response = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        print(response)
+        if response:
+            return Response({"message": "List of the task", "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Parametes are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "There is no task", "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class update_task(APIView):
-    def post(self, request):
+    def patch(self, request):
         data = request.data
         if data:
             field = {

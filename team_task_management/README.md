@@ -1,6 +1,6 @@
 ### Backend services for Task management view
 
-_Post_ to `team_task_management/create_get_team/`
+_Post_ to `team_task_management/create_team/`
 
 - Request Body
 
@@ -24,25 +24,6 @@ _Post_ to `team_task_management/create_get_team/`
 ```json
 {
   "message": "serializer.errors"
-}
-```
-
-_get_ to `team_task_management/create_get_team/`
-
-- Response 201
-
-```json
-{
-    "id":"<team_id>",
-		"team_name": "team_name",
-		"members": [
-			{
-				"name": "name"
-			},
-			{
-				"name": "name"
-			}
-		]
 }
 ```
 

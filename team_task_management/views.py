@@ -6,7 +6,7 @@ from .serializers import *
 from rest_framework.views import APIView
 
 
-class TeamList(generics.ListCreateAPIView):
+class create_team(generics.ListCreateAPIView):
     queryset = Team.objects.all()
     serializer_class = TeamWithMembers
 
