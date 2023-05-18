@@ -118,11 +118,10 @@ class response(APIView):
     def post(self, request):
         data = request.data
         field = {
-            "event_id": get_event_id()["event_id"],
+            "eventId": get_event_id()["event_id"],
             "company_id": data.get("company_id"),
             "data_type": data.get("data_type"),
             "module": data.get("module"),
-            "project_name": data.get("project_name"),
             "username": data.get("username"),
             "code_base_link": data.get("code_base_link"),
             "live_link": data.get("live_link"),
