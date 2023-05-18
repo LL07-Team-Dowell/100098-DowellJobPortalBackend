@@ -39,7 +39,7 @@ _Post_ to `task_management/create_task/`
 }
 ```
 
-_Post_ to `task_management/get_task/`
+_Get_ to `task_management/get_task/<str:company_id>/`
 
 - Request Body
 
@@ -67,7 +67,7 @@ _Post_ to `task_management/get_task/`
 }
 ```
 
-_Post_ to `task_management/get_cadidate_task/`
+_Get_ to `task_management/get_candidate_task/<str:document_id/`
 
 - Request Body
 
@@ -95,7 +95,7 @@ _Post_ to `task_management/get_cadidate_task/`
 }
 ```
 
-_Post_ to `task_management/update_task/`
+_Patch_ to `task_management/update_task/`
 
 - Request Body
 
