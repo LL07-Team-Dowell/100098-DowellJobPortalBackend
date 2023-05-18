@@ -1,23 +1,55 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoIosArrowBack } from 'react-icons/io';
 import styled from 'styled-components';
 import * as assets from '../../../../assets/assetsIndex';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { FaRegUserCircle } from 'react-icons/fa';
+import { getAllQuestions } from '../../../../services/commonServices';
 
 function TraningProgress({ shorlistedJob }) {
     // console.log(shorlistedJob[0].shortlisted_on);
     // const { currentUser } = useCurrentUserContext();
     const [complete, setComplete] = useState(false);
-    console.log(complete);
     const username = shorlistedJob[0]?.applicant;
     const shortlistedate = shorlistedJob[0].shortlisted_on;
     const date = new Date(shortlistedate);
     const formattedDate = date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
+    //Get All Questions
+    const [allquestions, setAllQuestions] = useState([]);
+    const [uniqueItems, setUniqueItems] = useState([]);
+    const uniqueTags = new Set();
 
-    // console.log(currentUser.userinfo.username);
+    useEffect(() => {
+        const fetchQuestions = async () => {
+            if (shorlistedJob.length > 0) {
+                const companyId = shorlistedJob[0].company_id;
+                const response = await getAllQuestions(companyId);
+                const allquestions = response.data.response.data;
+                setAllQuestions(allquestions);
+            }
+        };
+
+        fetchQuestions();
+    }, [shorlistedJob]);
+
+    useEffect(() => {
+        if (allquestions.length > 0) {
+            const updatedUniqueItems = [];
+            uniqueTags.clear();
+
+            allquestions.forEach((item) => {
+                if (!uniqueTags.has(item.module)) {
+                    uniqueTags.add(item.module);
+                    updatedUniqueItems.push(item);
+                }
+            });
+
+            setUniqueItems(updatedUniqueItems);
+        }
+    }, [allquestions]);
+
 
     const Wrapper = styled.div`
         font-family:'poppins';
@@ -33,7 +65,7 @@ function TraningProgress({ shorlistedJob }) {
         font-family:'poppins';
         border-bottom: 1px solid #dfdddd;
         font-family:'poppins';
-        height: 6rem;
+        height: 14rem;
     `
 
     const Navbar = styled.nav`
@@ -155,10 +187,10 @@ function TraningProgress({ shorlistedJob }) {
 
     const Section_3 = styled.div`
         padding: 50px 76px;
-        position: relative;
-
+        
         .traning_section {
             display: flex;
+            position: relative;
             .right-content{
                 padding: 10px 30px;
                 .traninning-program{
@@ -235,7 +267,7 @@ function TraningProgress({ shorlistedJob }) {
                         <FaRegUserCircle />
                         <div className="title">
                             <h2>Welcome back, {username}!</h2>
-                            <h3>Front-end Developer</h3>
+                            <h3>Candidate</h3>
                         </div>
                     </div>
                     <div className="right-content">
@@ -252,26 +284,38 @@ function TraningProgress({ shorlistedJob }) {
                 </Section_2>
 
                 <Section_3>
-                    <div className="traning_section">
-                        <div className="left-content">
-                            <img src={assets.frontendimage} alt="frontend" />
-                        </div>
-                        <div className="right-content">
-                            <span className='traninning-program'>Training Program</span>
-                            <h6>Become a Front-end Developer</h6>
-                            <div className="content">
-                                <img src={assets.langing_logo} alt="logo" />
-                                <span className='traninng-tag'>Training</span>
-                                <span className='traninng-tag'> . </span>
-                                <span className='traninng-tag'>{formattedDate}</span>
+
+                    {
+                        shorlistedJob.map((item => {
+                            const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
+
+                            return <div className="traning_section">
+                                <div className="left-content">
+                                    <img src={assets.frontendimage} alt="frontend" />
+                                </div>
+                                <div className="right-content">
+                                    <span className='traninning-program'>Training Program</span>
+                                    <h6>Become a {item.module} Developer</h6>
+                                    <div className="content">
+                                        <img src={assets.langing_logo} alt="logo" />
+                                        <span className='traninng-tag'>Training</span>
+                                        <span className='traninng-tag'> . </span>
+                                        <span className='traninng-tag'>{formattedDate}</span>
+                                    </div>
+                                </div>
+                                <div className="bottom-content">
+                                    {matchModule && (
+                                        <Link to={matchModule.question_link} target='_blank'>
+                                            {complete ? "Preview Form" : "Start Now"}
+                                        </Link>
+                                    ) || <Link to="#">
+                                            {complete ? "Preview Form" : "Start Now"}
+                                        </Link>}
+                                </div>
+
                             </div>
-                        </div>
-                        <div className="bottom-content">
-                            {
-                                complete ? "Preview Form" : "Start Now"
-                            }
-                        </div>
-                    </div>
+                        }))
+                    }
                 </Section_3>
             </Wrapper >
         </>
