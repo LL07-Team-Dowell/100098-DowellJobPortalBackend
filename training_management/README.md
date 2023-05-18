@@ -6,7 +6,6 @@ _Post_ to `training_management/create_question/`
 
 ```json
 {
-    "eventId": "event_id",
     "company_id": "<company_id>",
     "data_type": "<data_type>",
     "question_link": "<question_link>",
@@ -119,11 +118,9 @@ __Post__ to `training_management/create_response/`
 
 ```json
 {
-    "event_id":"event_id",
     "company_id": "company_id",
     "data_type":"data_type",
     "module": "module",
-    "project_name": "project_name",
     "username": "username",
     "started_on": "started_on",
 
