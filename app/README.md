@@ -1191,14 +1191,7 @@ __patch__ to `update_response/`
 ```
 
 __get__ to `get_response/<str:document_id>/`
-
-- Request Body
-
-```json
-{
-    "document_id": "<document_id>"
-}
-```
+`
 
 - Response 200
 
@@ -1248,14 +1241,6 @@ __patch__ to `submit_response/`
 ```
 
 __get__ to `get_all_responses/<str:company_id>/`
-
-- Request Body
-
-```json
-{
-    "company_id": "<company_id>"
-}
-```
 
 - Response 200
 
