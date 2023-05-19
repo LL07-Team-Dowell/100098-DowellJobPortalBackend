@@ -42,14 +42,6 @@ _Post_ to `training_management/create_question/`
 
 __get__ to `training_management/get_question/<str:document_id>/`
 
-- Request Body
-
-```json
-{
-    "document_id": "<document_id>"
-}
-```
-
 - Response 200
 
 ```json
@@ -68,13 +60,6 @@ __get__ to `training_management/get_question/<str:document_id>/`
 
 __get__ to `training_management/get_all_question/<str:company_id>/`
 
-- Request Body
-
-```json
-{
-    "company_id": "<company_id>"
-}
-```
 
 - Response 200
 
