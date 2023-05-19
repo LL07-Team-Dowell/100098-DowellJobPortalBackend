@@ -466,7 +466,9 @@ function App() {
       <Route
         path="/"
         element={
-          <CandidateTranningScreen />
+          <CandidateTranningScreen
+            shorlistedJob={shorlistedJob}
+          />
         }
       >
       </Route>

@@ -8,6 +8,7 @@ export const newJobApplicationDataReducerActions = {
     UPDATE_FREELANCE_PLATFORM_URL: "update_freelance_platform_url",
     UPDATE_AGREE_TO_ALL: "update_agree_to_all_terms",
     UPDATE_PAYMENT: "payment",
+    UPDATE_MODULE: "module",
     UPDATE_QUALIFICATIONS: "update_qualifications",
     UPDATE_FEEDBACK: "update_feedback",
     UPDATE_OTHERS: "update_others",
@@ -41,6 +42,7 @@ export const newJobApplicationDataReducer = (currentState, action) => {
             }
         case newJobApplicationDataReducerActions.UPDATE_USERNAME:
         case newJobApplicationDataReducerActions.UPDATE_PAYMENT:
+        case newJobApplicationDataReducerActions.UPDATE_MODULE:
         case newJobApplicationDataReducerActions.UPDATE_JOB_NUMBER:
         case newJobApplicationDataReducerActions.UPDATE_DATA_TYPE:
         case newJobApplicationDataReducerActions.UPDATE_COMPANY_ID:
