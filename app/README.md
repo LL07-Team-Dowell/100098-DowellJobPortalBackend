@@ -1222,7 +1222,64 @@ __get__ to `get_response/<str:document_id>/`
   "response": "[List of response]"
 }
 ```
+- Response 204
+
+```json
+{
+  "error": "data not found"
+}
+```
+
+__patch__ to `submit_response/`
+
+- Request Body
+
+```json
+{
+    "document_id": "<document_id>",
+    "code_base_link": "<code_base_link>",
+    "live_link": "<live_link>",
+    "documentation_link": "<documentation_link>",
+    "answer_link": "<answer_link>",
+    "submitted_on": "<submitted_on>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Response has been submitted"
+}
+```
+
 - Response 304
+
+```json
+{
+    "message":"operation failed"
+}
+```
+
+__get__ to `get_all_responses/<str:company_id>/`
+
+- Request Body
+
+```json
+{
+    "company_id": "<company_id>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "List of responses",
+  "response": "[List of response]"
+}
+```
+- Response 204
 
 ```json
 {
