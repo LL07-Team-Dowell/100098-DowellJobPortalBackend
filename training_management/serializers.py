@@ -4,6 +4,7 @@ from rest_framework import serializers
 class TrainingSerializer(serializers.Serializer):
     DATA_TYPE_CHOICE = (("Real_Data", "Real_Data"), ("Learning_Data", "Learning_Data"),
                         ("Testing_Data", "Testing_Data"), ("Archived_Data", "Archived_Data"))
+
     MODULE_CHOICE = (("Frontend", "Frontend"), ("Backend", "Backend"),
                      ("UI/UX", "UI/UX"), ("Virtual Assistant", "Virtual Assistant"),
                      ("Web", "Web"), ("Mobile", "Mobile"))

@@ -221,3 +221,20 @@ __get__ to `training_management/get_response/`
   "error": "data not found"
 }
 ```
+__get__ to `training_management/get_all_responses/:company_id/`
+
+- Response 200
+
+```json
+{
+  "message": "List of responses.",
+  "response": "[List of responses]"
+}
+```
+- Response 204
+
+```json
+{
+  "error": "data not found"
+}
+```
