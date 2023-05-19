@@ -48,6 +48,7 @@ import { HrJobScreenAllTasksContextProvider } from "./contexts/HrJobScreenAllTas
 import HrTrainingQuestions from "./pages/HrPage/views/HrTrainingScreen/HrTrainingQuestion";
 import CandidateTranningScreen from "./pages/CandidatePage/views/CandidateTranningScreen/CandidateTranningScreen";
 import TraningProgress from "./pages/CandidatePage/views/TraningProgress.js/TraningProgress";
+import { ResponsesContextProvider } from "./contexts/Responses";
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -466,19 +467,24 @@ function App() {
       <Route
         path="/"
         element={
+          <ResponsesContextProvider>
           <CandidateTranningScreen
             shorlistedJob={shorlistedJob}
           />
+          </ResponsesContextProvider>
         }
       >
       </Route>
-      <Route path="/traning" element={<TraningProgress
+      <Route path="/traning" element={
+      <ResponsesContextProvider>
+      <TraningProgress
         shorlistedJob={shorlistedJob}
-      />} />
+      /></ResponsesContextProvider>} />
+      
 
-      <Route path="/logout" element={<Logout />} />
+      <Route path="/logout" element={<ResponsesContextProvider><Logout /> </ResponsesContextProvider>} />
 
-      <Route path="*" element={<ErrorPage />} />
+      <Route path="*" element={<ResponsesContextProvider><ErrorPage /></ResponsesContextProvider>} />
     </Routes>
   ) : (
     <Routes>

@@ -3,8 +3,11 @@ import styled from 'styled-components';
 import * as assets from '../../../../assets/assetsIndex';
 import { AiFillBook, AiFillHome, AiOutlineSearch } from 'react-icons/ai';
 import { BiRightArrowAlt } from 'react-icons/bi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getAllQuestions } from '../../../../services/commonServices';
+import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
+import { useResponsesContext } from '../../../../contexts/Responses';
+import { createTrainingManagementResponse } from '../../../../services/hrTrainingServices';
 
 
 const Wrapper = styled.div`
@@ -279,6 +282,10 @@ const Hero = styled.div`
 `
 
 function CandidateTranningScreen({ shorlistedJob }) {
+  const { currentUser } = useCurrentUserContext();
+  console.log({currentUser})
+  const {responses , setresponses} = useResponsesContext()
+  let navigate = useNavigate()
   const [allquestions, setAllQuestions] = useState([]);
   const [uniqueItems, setUniqueItems] = useState([]);
   const uniqueTags = new Set();
@@ -312,7 +319,18 @@ function CandidateTranningScreen({ shorlistedJob }) {
     }
   }, [allquestions]);
 
-
+  const createResp = () => {
+    createTrainingManagementResponse({company_id: currentUser.portfolio_info[0].org_id, data_type:currentUser.portfolio_info[0].data_type,username:currentUser.userinfo.username,started_on:new Date().toString() , module:item?.module})
+    .then(resp => {
+      console.log(resp)
+      setresponses([...responses , {company_id: currentUser.portfolio_info[0].org_id, data_type:currentUser.portfolio_info[0].data_type,username:currentUser.userinfo.username,started_on:new Date().toString() , module:item?.module}]) ; 
+      const url = "https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/tree/backend/training_management"
+      window.open(url, '_blank') ;
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
 
   return (
     <Wrapper>
@@ -379,9 +397,23 @@ function CandidateTranningScreen({ shorlistedJob }) {
                   <p>Prepare for a career in {item.module} Development. Receive professional-level training from uxliving lab</p>
                   <button>
                     {matchModule && (
-                      <Link to={matchModule.question_link} target='_blank'>
-                        Start Now <BiRightArrowAlt />
-                      </Link>
+                      // <Link to={matchModule.question_link} target='_blank'>
+                      //   Start Now <BiRightArrowAlt />
+                      // </Link>
+                      <button onClick={createResp} style={{
+                        alignItems: 'center',
+                        fontSize: '16px',
+                        backgroundColor: '#FFFFFF',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: 'black',
+                        fontWeight: '600',
+                        fontFamily: 'poppins',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}>
+                      Start Now <BiRightArrowAlt />
+                      </button>
                     ) || <Link to="">
                         Start Now <BiRightArrowAlt />
                       </Link>}

@@ -20,3 +20,8 @@ export const editTrainingManagementQuestion = async (data) => {
     data
   )
 }
+export const createTrainingManagementResponse = async (data) => {
+  return await currentBackendAxiosInstance.post(
+    "training_management/create_response/" , data
+  )
+}
