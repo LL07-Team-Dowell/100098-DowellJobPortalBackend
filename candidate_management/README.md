@@ -46,21 +46,14 @@ _Post_ to `/candidate_management/apply_job/`
 }
 ```
 
-_Post_ to `/candidate_management/get_job_application/`
+_Get_ to `/candidate_management/get_job_application/<str:company_id>/`
 
-- Request Body
-
-```json
-{
-  "company_id": "<company_id>"
-}
-```
 
 - Response 200
 
 ```json
 {
-  "message": "List of job apllications",
+  "message": "List of job applications",
   "response": ["list of jobs"]
 }
 ```
@@ -74,21 +67,14 @@ _Post_ to `/candidate_management/get_job_application/`
 }
 ```
 
-_Post_ to `/candidate_management/get_candidate_application/`
+_Get_ to `/candidate_management/get_candidate_application/<str:document_id>/`
 
-- Request Body
-
-```json
-{
-  "document_id": "<document id>"
-}
-```
 
 - Response 200
 
 ```json
 {
-  "message": "Candidate job apllications",
+  "message": "Candidate job applications",
   "response": ["Candidate job"]
 }
 ```

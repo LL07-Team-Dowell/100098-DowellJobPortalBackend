@@ -102,7 +102,7 @@ class update_task(APIView):
             else:
                 return Response({"message": "Task updation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
-            return Response({"message": "Parametes are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')

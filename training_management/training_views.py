@@ -47,7 +47,7 @@ class question(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_all_question(APIView):
-    def get(self, request ,company_id):
+    def get(self, request, company_id):
         field = {
             "company_id": company_id,
         }
@@ -55,7 +55,7 @@ class get_all_question(APIView):
             "status": "nothing to update"
         }
         question_response = dowellconnection(*questionnaire_modules, "fetch", field, update_field)
-        print("----respoonse from dowelconnection---",question_response)
+        print("----response from dowelconnection---", question_response)
         print(question_response)
         if question_response:
             return Response({"message": "List of questions.", "response": json.loads(question_response)},
@@ -65,7 +65,7 @@ class get_all_question(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_question(APIView):
-    def get(self, request , document_id ):
+    def get(self, request, document_id):
         field = {
             "_id": document_id,
         }
@@ -148,17 +148,18 @@ class submit_response(APIView):
         update_field = {
             "code_base_link": data.get("code_base_link"),
             "live_link": data.get("live_link"),
-            "documentation_link": data.get("documentation_link"),  
-            "answer_link": data.get("answer_link"), 
-            "submitted_on": data.get("submitted_on"), 
+            "documentation_link": data.get("documentation_link"),
+            "answer_link": data.get("answer_link"),
+            "submitted_on": data.get("submitted_on"),
         }
         insert_to_response = dowellconnection(
             *response_modules, "update", field, update_field)
-        
+
         if insert_to_response:
             return Response({"message": "Response has been submitted"}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class update_response(APIView):
@@ -171,11 +172,11 @@ class update_response(APIView):
             "data_type": data.get("data_type"),
             "submitted_on": data.get("submitted_on"),
             "rating": data.get("rating"),
-            "status":data.get("status")
+            "status": data.get("status")
         }
-        insert_to_hr_report = {   
-            "status":data.get("status")
-            }
+        insert_to_hr_report = {
+            "status": data.get("status")
+        }
         insert_to_response = dowellconnection(
             *response_modules, "update", field, update_field)
         update_to_hr = dowellconnection(
@@ -186,12 +187,12 @@ class update_response(APIView):
         else:
             return Response({"message": "HR operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
 
+
 @method_decorator(csrf_exempt, name='dispatch')
 class get_response(APIView):
-    def get(self, request):
-        data = request.data
+    def get(self, request, document_id):
         field = {
-            "_id": data.get('document_id'),
+            "_id": document_id,
         }
         print(field)
         update_field = {
