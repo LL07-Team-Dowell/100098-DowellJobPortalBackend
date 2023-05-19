@@ -13,3 +13,10 @@ export const getTrainingManagementQuestions = async (company_id) => {
     `training_management/get_all_question/${company_id}/`
   );
 };
+
+export const editTrainingManagementQuestion = async (data) => {
+  return await currentBackendAxiosInstance.patch(
+    'training_management/update_question/',
+    data
+  )
+}

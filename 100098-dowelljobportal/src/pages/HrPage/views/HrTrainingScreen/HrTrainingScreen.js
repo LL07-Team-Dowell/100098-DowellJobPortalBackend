@@ -38,9 +38,9 @@ function HrTrainingScreen({ trainingCards, setShowOverlay, setQuestions }) {
         (question) => question.module === module
       );
 
-      console.log(questionToEdit);
+      if (!questionToEdit) return;
 
-      // navigate(`/hr-training/${questionToEdit.module}`);
+      navigate(`/hr-training/${questionToEdit.module}?questionId=${questionToEdit._id}`);
     } catch (error) {
       console.log(error);
     }
@@ -66,7 +66,7 @@ function HrTrainingScreen({ trainingCards, setShowOverlay, setQuestions }) {
               ?.question_link ? (
               <div className="edit">
                 <Link
-                  to={`/hr-training/${encodeURIComponent(card.module)}`}
+                  to={`/hr-training/${encodeURIComponent(card.module)}?questionId=${questions.find((question) => question.module === card.module)?._id}`}
                   className="edit__btn"
                   onClick={
                     questions.find(
@@ -79,7 +79,7 @@ function HrTrainingScreen({ trainingCards, setShowOverlay, setQuestions }) {
                               encodeURIComponent(questions.find(
                                 (question) => question.module === card.module
                               )?.module)
-                            }`
+                            }?questionId=${questions.find((question) => question.module === card.module)?._id}`
                           )
                   }
                 >

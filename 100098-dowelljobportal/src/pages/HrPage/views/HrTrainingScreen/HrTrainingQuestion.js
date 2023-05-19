@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { createQuestionForTrainingMangement } from "../../../../services/hrTrainingServices";
+import { createQuestionForTrainingMangement, editTrainingManagementQuestion } from "../../../../services/hrTrainingServices";
 import "./Hr_TrainingQuestion.css";
 import { toast } from "react-toastify";
 import DropdownButton from "../../../TeamleadPage/components/DropdownButton/Dropdown";
@@ -22,9 +22,10 @@ function HrTrainingQuestions() {
     "Image",
     "Video",
   ]);
-
+  const [ existingQuestion, setExistingQuestion ] = useState(false);
+  const [ params, setParams ] = useSearchParams();
   const { sub_section } = useParams();
-  const { setQuestions } = useHrJobScreenAllTasksContext();
+  const { questions, setQuestions } = useHrJobScreenAllTasksContext();
   
   const navigate = useNavigate();
 
@@ -67,6 +68,36 @@ function HrTrainingQuestions() {
     }
 
     setIsLoading(true);
+    
+    if (existingQuestion) {
+      const updateQuestionData = {
+        "document_id": params.get('questionId'),
+        "is_active": true,
+        "question_link": question.question_link
+      }
+
+      try {
+        const res = await editTrainingManagementQuestion(updateQuestionData);
+        
+        const currentQuestions = questions.slice();
+        const currentQuestionIndex = questions.findIndex(question => question._id === updateQuestionData.document_id);
+        
+        if (currentQuestionIndex !== -1) {
+          currentQuestions[currentQuestionIndex].question_link = updateQuestionData.question_link;
+          setQuestions(currentQuestions)
+        }
+
+        toast.success("Question updated successfully");
+        navigate("/hr-training");
+
+      } catch (error) {
+        toast.error("Question failed to be created");
+      }
+
+      setIsLoading(false);
+      return
+    }
+
     try {
       const newQuestion = {
         ...question,
@@ -92,6 +123,17 @@ function HrTrainingQuestions() {
 
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    const questionId = params.get('questionId');
+    if (!questionId) return setExistingQuestion(false);
+
+    const foundQuestion = questions.find(question => question._id === questionId);
+    if (!foundQuestion) return setExistingQuestion(false);
+
+    setExistingQuestion(true);
+    setQuestion((prevValue) => { return {...prevValue, question_link: foundQuestion?.question_link } });
+  }, [params])
 
   // useEffect(() => {
   //   if (selectOption.length < 1) return;
@@ -142,7 +184,7 @@ function HrTrainingQuestions() {
                       {isLoading ? (
                         <LoadingSpinner width={25} height={25} color="#fff" />
                       ) : (
-                        <div>Send</div>
+                        <div>{existingQuestion ? "Update" : "Send"}</div>
                       )}
                     </div>
                   </button>
