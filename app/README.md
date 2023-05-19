@@ -206,13 +206,6 @@ _Post_ to `create_jobs/`
 
 _Get_ to `get_jobs/<str:company_id>/`
 
-- Request Body
-
-```json
-{
-  "company_id": "<company_id>"
-}
-```
 
 - Response 200
 
@@ -234,13 +227,6 @@ _Get_ to `get_jobs/<str:company_id>/`
 
 _Get_ to `get_job/<str:document_id>/`
 
-- Request Body
-
-```json
-{
-  "document_id": "<document_id>"
-}
-```
 
 - Response 200
 
