@@ -132,9 +132,9 @@ const Teamlead = () => {
     Promise.all([
       getJobs2(requestData),
       getCandidateApplicationsForTeamLead(requestData),
-      getCandidateTaskForTeamLead({
-        company_id: currentUser?.portfolio_info[0].org_id,
-      }),
+      getCandidateTaskForTeamLead(
+        currentUser?.portfolio_info[0].org_id,
+      ),
     ])
       .then((res) => {
         console.log("res", res);

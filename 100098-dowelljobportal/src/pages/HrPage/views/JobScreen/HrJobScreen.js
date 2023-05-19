@@ -94,7 +94,7 @@ function HrJobScreen() {
       getCandidateApplicationsForHr({company_id: currentUser.portfolio_info[0].org_id}),
       getJobs2({company_id: currentUser.portfolio_info[0].org_id}),
       getSettingUserProject(),
-      getCandidateTask({company_id: currentUser.portfolio_info[0].org_id}),
+      getCandidateTask(currentUser.portfolio_info[0].org_id),
       getTrainingManagementQuestions(currentUser.portfolio_info[0].org_id),
     ])
     .then((res) => {

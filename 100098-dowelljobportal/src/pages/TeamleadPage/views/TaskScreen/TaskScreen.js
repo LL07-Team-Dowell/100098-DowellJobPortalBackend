@@ -31,8 +31,7 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
     const [value, onChange] = useState(new Date());
 
     useEffect(()=>{
-        getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
-        })
+        getCandidateTask(currentUser.portfolio_info[0].org_id)
         .then(resp =>{ setUserTasks(resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username));console.log('a;aaaa',resp.data.response.data ,resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username)) })
     },[]); 
     useEffect(()=>{
@@ -50,7 +49,7 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
         if (!currentUser) return navigate(-1);
         if (userTasks.length > 0) return
 
-        getCandidateTask({ company_id: currentUser.portfolio_info[0].org_id }).then(res => {
+        getCandidateTask(currentUser.portfolio_info[0].org_id).then(res => {
             const tasksForCurrentUser = res.data.response.data.filter(v => v.applicant === currentUser.userinfo.username);
             setUserTasks(tasksForCurrentUser);
             settaskdetail2(userTasks.filter(d => new Date(d.task_created_date).toDateString() === new Date().toLocaleDateString()))

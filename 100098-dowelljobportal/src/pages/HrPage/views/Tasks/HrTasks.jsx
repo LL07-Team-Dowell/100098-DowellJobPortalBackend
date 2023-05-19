@@ -33,10 +33,12 @@ const HrTasks = () => {
             const navigate = useNavigate();
             useEffect(()=>{
               setloading(true)
-              getCandidateTask({company_id:currentUser.portfolio_info[0].org_id
-              })
+              getCandidateTask(currentUser.portfolio_info[0].org_id)
               .then(resp =>{ setdata(resp.data.response.data.filter(v => v.applicant === applicant));setloading(false);console.log(resp.data.response.data) })
-              .catch(err => console.log(err));
+              .catch(err => {
+                console.log(err)
+                setloading(false)
+              });
           },[]); 
             // List 
             const List = Array.from(new Set(data.map(d => d.project))) ; 

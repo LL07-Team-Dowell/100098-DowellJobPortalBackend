@@ -42,9 +42,9 @@ const CreateTaskScreen = ({
 
   useEffect(() => {
     if (userTasks.length > 0) return setLoading(false);
-    getCandidateTaskForTeamLead({
-      company_id: currentUser?.portfolio_info[0].org_id,
-    })
+    getCandidateTaskForTeamLead(
+      currentUser?.portfolio_info[0].org_id,
+    )
       .then((res) => {
         setLoading(false);
         setUserTasks(

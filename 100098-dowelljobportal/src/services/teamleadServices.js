@@ -29,10 +29,9 @@ export const rejectCandidateApplicationForTeamLead = async (data) =>{
   )
 }
 
-export const getCandidateTaskForTeamLead = async (data) => {
-  return await currentBackendAxiosInstance.post(
-    "/task_management/get_task/",
-    data
+export const getCandidateTaskForTeamLead = async (companyId) => {
+  return await currentBackendAxiosInstance.get(
+    `/task_management/get_task/${companyId}/`
   );
 }
 
