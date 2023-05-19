@@ -105,8 +105,7 @@ function HrJobScreen() {
       setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
 
       setJobs(res[1].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
-      setLoading(false);
-
+      
       const list = res[2].data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type);
       const newList = list.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id);
       // console.log(newList);
@@ -114,13 +113,15 @@ function HrJobScreen() {
 
       const usersWithTasks = [...new Map(res[3].data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [task.applicant, task])).values()];
       setAllTasks(usersWithTasks.reverse());
-      setLoading(false);
 
       setQuestions(res[4].data.response.data.filter(question => question.data_type === currentUser.portfolio_info[0].data_type));
       setLoading(false);
       
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      console.log(err)
+      setLoading(false);
+    })
     
   }, [])
 
