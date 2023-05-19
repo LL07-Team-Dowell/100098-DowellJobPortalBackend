@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from .models import *
 
 
 # account serializers__________________________________________________________________________
@@ -166,3 +167,141 @@ class LeadSerializer(serializers.Serializer):
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
     hired_on = serializers.CharField(allow_null=False, allow_blank=False)
     document_id = serializers.CharField(allow_null=False, allow_blank=False)
+
+
+# task serializers________________________________________________________________
+class TaskSerializer(serializers.Serializer):
+    pass
+
+    # DATA_TYPE_CHOICE = (("Real_Data", "Real_Data"), ("Learning_Data", "Learning_Data"),
+    #                     ("Testing_Data", "Testing_Data"), ("Archived_Data", "Archived_Data"))
+
+    # data_type = serializers.ChoiceField(allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
+
+    # def update(self, instance, validated_data):
+    #     instance.data_type = validated_data.get('data_type', instance.data_type)
+    #     instance.save()
+    #     return instance
+
+
+# team task serializers___________________________________________________________
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["name"]
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    members = serializers.ListField()
+
+    class Meta:
+        model = Team
+        fields = ["id", "team_name", "members"]
+
+    def create(self, validated_data):
+        members_data = validated_data.pop('members')
+        team = Team.objects.create(**validated_data)
+        members = []
+        for member_data in members_data:
+            member, created = User.objects.get_or_create(name=member_data)
+            members.append(member)
+        team.members.set(members)
+        return team
+
+
+class TeamEditSerializer(serializers.ModelSerializer):
+    members = serializers.SlugRelatedField(
+        many=True,
+        slug_field='name',
+        queryset=User.objects.all()
+    )
+
+    class Meta:
+        model = Team
+        fields = ["id", "team_name", "members"]
+
+    def update(self, instance, validated_data):
+        members_data = validated_data.pop('members', None)
+        instance = super().update(instance, validated_data)
+        if members_data is not None:
+            members = []
+            for member_data in members_data:
+                member, created = User.objects.get_or_create(name=member_data)
+                members.append(member)
+            instance.members.set(members)
+        return instance
+
+    def partial_update(self, instance, validated_data):
+        instance.team_name = validated_data.get('team_name', instance.team_name)
+        members_data = validated_data.get('members', [])
+        members = []
+        for member_data in members_data:
+            member, created = User.objects.get_or_create(name=member_data)
+            members.append(member)
+        instance.members.set(members)
+        instance.save()
+        return instance
+
+
+class TeamTaskSerializer(serializers.ModelSerializer):
+    assignee = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=User.objects.all()
+    )
+
+    class Meta:
+        model = Task
+        fields = ['id', 'title', 'description', "assignee", "completed", "team"]
+
+
+class TeamMemberSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=True)
+
+    class Meta:
+        model = TeamMember
+        fields = '__all__'
+
+
+class TeamWithMembers(serializers.ModelSerializer):
+    members = UserSerializer(many=True)
+
+    class Meta:
+        model = Team
+        fields = ["id", "team_name", "members"]
+
+
+# Serializer to edit task
+class TaskEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ["id", "title", "description", "assignee", "completed", "team"]
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        instance.save()
+        return instance
+
+    def partial_update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+        instance.assignee = validated_data.get('assignee', instance.assignee)
+        instance.completed = validated_data.get('completed', instance.completed)
+        instance.team = validated_data.get('team', instance.team)
+        instance.save()
+        return instance
+
+
+# Serializer for task for a team member
+class TaskForMemberSerializer(serializers.ModelSerializer):
+    assignee = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=User.objects.all()
+    )
+    team_member = serializers.SlugRelatedField(
+        slug_field='user',
+        queryset=TeamMember.objects.all()
+    )
+
+    class Meta:
+        model = TaskForMember
+        fields = ['id', 'title', 'description', "assignee", "completed", "team_member"]

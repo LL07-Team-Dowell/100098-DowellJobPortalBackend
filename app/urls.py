@@ -33,6 +33,23 @@ urlpatterns = [
     path('rehire_candidate/', rehire_candidate.as_view()),
     path('reject_candidate/', reject_candidate.as_view()),
 
+    # task management------------------------------------------------
+    path('create_task/', create_task.as_view()),
+    path('get_task/<str:company_id>/', get_task.as_view()),
+    path('get_candidate_task/<str:document_id>/', get_candidate_task.as_view()),
+    path('update_task/', update_task.as_view()),
+    path('delete_task/', delete_task.as_view()),
+
+    # team task management--------------------------------------------
+    path('create_team/', create_team.as_view()),
+    path('create_team_task/', create_team_task.as_view()),
+    path('create_member_task/', create_member_task.as_view()),
+    path('edit_team/<int:pk>/', EditTeamAPIView.as_view(), name='team-retrieve-update-destroy'),
+    path('delete_team/<int:team_id>/', DeleteTeam.as_view(), name="delete_team"),
+    path('edit_task/<int:pk>/', EditTaskAPIView.as_view(), name='edit_task'),
+    path('delete_task/<int:task_id>/', DeleteTask.as_view(), name="delete_task"),
+    path('delete_member_task/<int:task_id>/', DeleteMemberTask.as_view(), name="delete_task_for_member"),
+
     # training management--------------------------------------------
     path('create_question/', create_question.as_view()),
     path("get_question/<str:document_id>/", get_question.as_view()),

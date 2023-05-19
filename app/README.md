@@ -327,173 +327,7 @@ _Delete_ to `delete_job/`
   "message": "Parameters are not valid"
 }
 ```
-### training management view-------------------------------------------------
-_Post_ to `create_question/`
 
-- Request Body
-
-```json
-{
-    "company_id": "<company_id>",
-    "data_type": "<data_type>",
-    "question_link": "<question_link>",
-    "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
-    "created_on": "<created_on>",
-    "created_by": "<created_by>",
-    "is_active": "<True | False>"
-}
-```
-
-- Response 201
-
-```json
-{
-  "message": "Question created successfully"
-}
-```
-
-- Response 304
-
-```json
-{
-    "message":"Question failed to be created"
-}
-```
-
-- Response 400
-
-```json
-{
-  "message": "serializer.errors"
-}
-```
-
-__get__ to `get_question/<str:document_id>/`
-
-- Response 200
-
-```json
-{
-  "message": "List of questions"
-}
-```
-
-- Response 204
-
-```json
-{
-    "message":"No question found"
-}
-```
-
-__get__ to `get_all_question/<str:company_id>/`
-`
-
-- Response 200
-
-```json
-{
-  "message": "List of questions"
-}
-```
-
-- Response 204
-
-```json
-{
-    "message":"No question found"
-}
-```
-
-
-__patch__ to `update_question/`
-
-- Request Body
-
-```json
-{
-    "document_id": "<document_id>",
-    "is_active":"<true|false>"
-}
-```
-
-- Response 201
-
-```json
-{
-  "message": "Question updated successfully"
-}
-```
-
-- Response 304
-
-```json
-{
-    "message":"Question updating failed"
-}
-```
-- Response 400
-
-```json
-{
-    "message":"serializer.errors"
-}
-```
-
-__patch__ to `update_response/`
-
-- Request Body
-
-```json
-{
-    "document_id": "<document_id>",
-    "code_base_link": "code_base_link",
-    "live_link": "live_link",
-    "documentation_link": "documentation_link",
-    "status": "<Hired|Rejected>"
-}
-```
-
-- Response 200
-
-```json
-{
-  "message": "Candidate has been responded to"
-}
-```
-- Response 304
-
-```json
-{
-  "message": "HR operation failed"
-}
-```
-
-__get__ to `get_response/<str:document_id>/`
-
-- Request Body
-
-```json
-{
-    "document_id": "<document_id>"
-}
-```
-
-- Response 200
-
-```json
-{
-  "message": "List of response.",
-  "response": "[List of response]"
-}
-```
-- Response 304
-
-```json
-{
-  "error": "data not found"
-}
-```
 ### candidate management view-------------------------------------------------
 _Post_ to `/apply_job/`
 
@@ -850,3 +684,548 @@ _Post_ to `reject_candidate/`
 {
   "message": "serializers error"
 }
+```
+
+### task management view-------------------------------------------------
+
+_Post_ to `task_management/create_task/`
+
+- Request Body
+
+```json
+{
+  "project": "[<project name 1>,<project name 2>,<project name 3>]",
+  "applicant": "<applicant name>",
+  "task": "<task>",
+  "task_added_by": "<task added name>",
+  "data_type": "<data_type>",
+  "company_id": "<company_id>",
+  "task_created_date": "<task created date>"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Task added successfully and the status is {status}."
+}
+```
+- Response 304
+
+```json
+{
+  "message": "Failed to add task"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
+
+_Get_ to `task_management/get_task/<str:company_id>/`
+
+
+- Response 201
+
+```json
+{
+  "message": "List of the task.",
+  "response": ["List of the task."]
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There is no task",
+  "response": ["There is no task"]
+}
+```
+
+_Get_ to `task_management/get_candidate_task/<str:document_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "List of the task.",
+  "response": ["List of the task."]
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There is no task",
+  "response": ["There is no task"]
+}
+```
+
+_Patch_ to `task_management/update_task/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document id>",
+  "task": "<task>",
+  "status": "<status>",
+  "task_added_by": "<task added name>",
+  "task_updated_date": "task updated date"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Task updated successfully"
+}
+```
+- Response 304
+
+```json
+{
+  "message": "Task failed to update"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
+_delete_ to `task_management/delete_task/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document id>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Task deleted successfully"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Task failed to delete"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
+
+### team task management view-------------------------------------------------
+_Post_ to `create_team/`
+
+- Request Body
+
+```json
+{
+  "team_name": "team name",
+  "members": ["list of members"]
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Team created successfully"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializer.errors"
+}
+```
+
+_Patch_ to `edit_team/<int:pk>/`
+
+- Request Body
+
+```json
+{
+    "team_name": "New Team Name",
+    "members": [
+        "New Member 1",
+			"New Member 2"
+    ]
+}
+```
+
+- Response 200
+
+```json
+{
+	"id": "<id>",
+	"team_name": "New Team Name",
+	"members": [
+		"New Member 1",
+		"New Member 2"
+	]
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializer.errors"
+}
+```
+- Response 404
+
+```json
+{
+  "message": "Team does not exist"
+}
+```
+
+_delete_ to `delete_team/<int:team_id>/`
+
+
+- Response 200
+
+```json
+{"message": "Team with id - {team_id} was successfully deleted"}
+```
+
+- Response 400
+
+```json
+{
+	"error": "Team with id was not successfully deleted"
+}
+```
+
+_Post_ to `create_team_task/`
+
+- Request Body
+
+```json
+{
+  "assignee": "user name",
+  "title": "title",
+  "description": "This field is required.",
+  "team": "Team id",
+  "completed": "True/False"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Task created successfully"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializer.errors"
+}
+```
+
+_Patch_ to `edit_task/<int:pk>/`
+
+- Request Body
+
+```json
+{
+    "title": "title of task",
+    "description": " task description",
+    "assignee": "assignee of the task",
+    "team": " id of the team used",
+    "completed": "false/true"
+}
+```
+
+- Response 200
+
+```json
+{
+	"id": "<id>",
+	"title": "title of task",
+    "description": " task description",
+    "assignee": "assignee of the task",
+    "completed": false
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializer.errors"
+}
+```
+- Response 404
+
+```json
+{
+  "message": "This task does not exist"
+}
+```
+
+_delete_ to `delete_task/<int:task_id>/`
+
+
+- Response 200
+
+```json
+{"message": "Task with id - {task_id} was successfully deleted"}
+```
+
+- Response 400
+
+```json
+{
+	"error": "Task with id - {task_id} was not successfully deleted"
+}
+```
+
+
+_Post_ to `create_member_task/`
+
+- Request Body
+
+```json
+{
+  "assignee": "user name",
+  "title": "title",
+  "description": "This field is required.",
+  "team": "Team id",
+  "team_member": "member id",
+  "completed": "True/False"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Task for member-{member} is created successfully"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializer.errors"
+}
+```
+
+
+_delete_ to `delete_member_task/<int:task_id>/`
+
+- Response 200
+
+```json
+{"message": "Task with id - {task_id} for member - {task.team_member} was successfully deleted"}
+```
+
+- Response 400
+
+```json
+{
+	"error": "Task with id - {task_id} for member - {task.team_member} was not successfully deleted"
+}
+```
+
+### training management view-------------------------------------------------
+_Post_ to `create_question/`
+
+- Request Body
+
+```json
+{
+    "company_id": "<company_id>",
+    "data_type": "<data_type>",
+    "question_link": "<question_link>",
+    "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
+    "created_on": "<created_on>",
+    "created_by": "<created_by>",
+    "is_active": "<True | False>"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Question created successfully"
+}
+```
+
+- Response 304
+
+```json
+{
+    "message":"Question failed to be created"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "serializer.errors"
+}
+```
+
+__get__ to `get_question/<str:document_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "List of questions"
+}
+```
+
+- Response 204
+
+```json
+{
+    "message":"No question found"
+}
+```
+
+__get__ to `get_all_question/<str:company_id>/`
+`
+
+- Response 200
+
+```json
+{
+  "message": "List of questions"
+}
+```
+
+- Response 204
+
+```json
+{
+    "message":"No question found"
+}
+```
+
+
+__patch__ to `update_question/`
+
+- Request Body
+
+```json
+{
+    "document_id": "<document_id>",
+    "is_active":"<true|false>"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Question updated successfully"
+}
+```
+
+- Response 304
+
+```json
+{
+    "message":"Question updating failed"
+}
+```
+- Response 400
+
+```json
+{
+    "message":"serializer.errors"
+}
+```
+
+__patch__ to `update_response/`
+
+- Request Body
+
+```json
+{
+    "document_id": "<document_id>",
+    "code_base_link": "code_base_link",
+    "live_link": "live_link",
+    "documentation_link": "documentation_link",
+    "status": "<Hired|Rejected>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Candidate has been responded to"
+}
+```
+- Response 304
+
+```json
+{
+  "message": "HR operation failed"
+}
+```
+
+__get__ to `get_response/<str:document_id>/`
+
+- Request Body
+
+```json
+{
+    "document_id": "<document_id>"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "List of response.",
+  "response": "[List of response]"
+}
+```
+- Response 304
+
+```json
+{
+  "error": "data not found"
+}
+```

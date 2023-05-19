@@ -4,11 +4,14 @@ import json
 import threading
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import status
+from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .models import Task, Team, TeamMember, User, TaskForMember
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
-    UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer
+    UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, TeamTaskSerializer, \
+    TeamWithMembers, TeamSerializer, TeamMemberSerializer, TeamEditSerializer, TaskForMemberSerializer, \
+    TaskEditSerializer
 
 from .helper import get_event_id, dowellconnection
 from .constant import *
@@ -974,4 +977,257 @@ class reject_candidate(APIView):
                     new_error[field_name] = field_errors[0]
                 return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
+
 # api for lead management ends here________________________
+
+
+# api for task management starts here________________________
+@method_decorator(csrf_exempt, name='dispatch')
+class create_task(APIView):
+    def post(self, request):
+        data = request.data
+        if data:
+            field = {
+                "eventId": get_event_id()["event_id"],
+                "project": data.get('project'),
+                "applicant": data.get('applicant'),
+                "task": data.get('task'),
+                "status": "Incomplete",
+                "task_added_by": data.get('task_added_by'),
+                "data_type": data.get('data_type'),
+                "company_id": data.get('company_id'),
+                "task_created_date": data.get('task_created_date'),
+                "task_updated_date": ""
+            }
+            update_field = {
+                "status": "Nothing to update"
+            }
+            insert_response = dowellconnection(*task_management_reports, "insert", field, update_field)
+            print(insert_response)
+            if insert_response:
+                return Response({"message": f"Task added successfully and the status is {field['status']}"},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "failed to add task"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_request)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class get_task(APIView):
+    def get(self, request, company_id):
+        field = {
+            "company_id": company_id
+        }
+        update_field = {
+            "status": "Nothing to update"
+        }
+        response = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        print(response)
+        if response:
+            return Response({"message": "List of the task", "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "There is no task", "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class get_candidate_task(APIView):
+    def get(self, request, document_id):
+        field = {
+            "_id": document_id
+        }
+        update_field = {
+            "status": "Nothing to update"
+        }
+        response = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        print(response)
+        if response:
+            return Response({"message": "List of the task", "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "There is no task", "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class update_task(APIView):
+    def patch(self, request):
+        data = request.data
+        if data:
+            field = {
+                "_id": data.get('document_id')
+            }
+            update_field = {
+                "status": data.get('status'),
+                "task": data.get('task'),
+                "task_added_by": data.get('task_added_by'),
+                "task_updated_date": data.get('task_updated_date')
+
+            }
+            response = dowellconnection(*task_management_reports, "update", field, update_field)
+            print(response)
+            if response:
+                return Response({"message": "Task updation successful"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Task updation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class delete_task(APIView):
+    def delete(self, request):
+        data = request.data
+        if data:
+            field = {
+                "_id": data.get('document_id')
+            }
+            update_field = {
+                "data_type": "Archived_Data"
+            }
+            response = dowellconnection(*task_management_reports, "update", field, update_field)
+            if response:
+                return Response({"message": "Task deletion successful."}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Task deletion has failed."}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# api for task management ends here________________________
+
+
+# api for team_task management starts here__________________________
+class create_team(generics.ListCreateAPIView):
+    queryset = Team.objects.all()
+    serializer_class = TeamWithMembers
+
+    def post(self, request, *args, **kwargs):
+        serializer = TeamSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Team created successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
+
+class create_team_task(generics.ListCreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TeamTaskSerializer
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = TeamTaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Task created successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EditTeamAPIView(APIView):
+    def patch(self, request, pk):
+        try:
+            team = Team.objects.get(pk=pk)
+        except Team.DoesNotExist:
+            return Response({'error': 'Team does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = TeamEditSerializer(team, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
+
+## this is the api for deleting a team
+class DeleteTeam(APIView):
+    def delete(self, request, team_id=None):
+        team = Team.objects.filter(id=team_id)
+        if team.exists():
+            team.delete()
+            message = {"message": f"Team with id - {team_id} was successfully deleted"}
+            return Response(message, status=status.HTTP_200_OK)
+        message = {"error": f"Team with id - {team_id} was not successfully deleted"}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EditTaskAPIView(APIView):
+    def patch(self, request, pk):
+        try:
+            team = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return Response({'error': ' This task does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = TaskEditSerializer(team, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            new_error = {}
+            for field_name, field_errors in serializer.errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
+
+## this is the api for deleting a task
+class DeleteTask(APIView):
+    def delete(self, request, task_id=None):
+        task = Task.objects.filter(id=task_id)
+        if task.exists():
+            task.delete()
+            message = {"message": f"Task with id - {task_id} was successfully deleted"}
+            return Response(message, status=status.HTTP_200_OK)
+        message = {"error": f"Task with id - {task_id} was not successfully deleted"}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+# this is the api for creating a task for a team member
+class create_member_task(generics.ListCreateAPIView):
+    def post(self, request, *args, **kwargs):
+        # print(request.data)
+        data = request.data
+        team_member = data.get('team_member')  # gets the team_member id from the post request
+        team_member = TeamMember.objects.filter(user=team_member).first()
+        print(team_member)
+        name = f"{team_member.user.name} - ({team_member.team.team_name})"  # gets the member
+        serializer = TaskForMemberSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            # print(TaskForMember.objects.filter(), "====================")
+            return Response({"message": f"Task for member-- {name} is created successfully"},
+                            status=status.HTTP_201_CREATED)
+        else:
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
+
+# this is the api for deleting a task for a member
+class DeleteMemberTask(APIView):
+    def delete(self, request, task_id=None):
+        task = TaskForMember.objects.filter(id=task_id)
+        # print(task, '===================', TaskForMember.objects.filter())
+        if task.exists():
+            task.delete()
+            message = {"message": f"Task with id - {task_id} for member - {task} was successfully deleted"}
+            return Response(message, status=status.HTTP_200_OK)
+        message = {"error": f"Task with id - {task_id} for member - {task} was not successfully deleted"}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+# api for team_task management ends here____________________________
