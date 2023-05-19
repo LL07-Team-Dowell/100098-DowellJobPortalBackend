@@ -28,6 +28,7 @@ import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenA
 import HrTrainingQuestions from '../HrTrainingScreen/HrTrainingQuestion';
 import { trainingCards } from '../HrTrainingScreen/hrTrainingCards';
 import { getTrainingManagementQuestions } from '../../../../services/hrTrainingServices';
+import { set } from 'date-fns';
 
 function fuzzySearch(query, text) {
   const searchRegex = new RegExp(query.split('').join('.*'), 'i');
@@ -36,6 +37,7 @@ function fuzzySearch(query, text) {
 
 function HrJobScreen() {
   const { currentUser } = useCurrentUserContext();
+  const { setQuestions } = useHrJobScreenAllTasksContext();
   const { section, sub_section, path } = useNavigationContext();
   const [jobs, setJobs] = useState([]);
   const [ appliedJobs, setAppliedJobs ] = useState([]);
@@ -88,21 +90,12 @@ function HrJobScreen() {
 
   useEffect(() => {
 
-    // getCandidateApplications().then(res => {
-    //   setAppliedJobs(res.data.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
-    //   setGuestApplications(res.data.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
-    //   setCandidateData(res.data.filter(application => application.status === candidateStatuses.SHORTLISTED));
-    //   setHiredCandidates(res.data.filter(application => application.status === candidateStatuses.ONBOARDING));   
-    // }).catch(err => {
-    //   console.log(err)
-    // });
-
     Promise.all([
       getCandidateApplicationsForHr({company_id: currentUser.portfolio_info[0].org_id}),
       getJobs2({company_id: currentUser.portfolio_info[0].org_id}),
       getSettingUserProject(),
       getCandidateTask({company_id: currentUser.portfolio_info[0].org_id}),
-      getTrainingManagementQuestions({company_id: currentUser.portfolio_info[0].org_id})
+      getTrainingManagementQuestions(currentUser.portfolio_info[0].org_id),
     ])
     .then((res) => {
       const filteredData = res[0].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
@@ -123,9 +116,9 @@ function HrJobScreen() {
       setAllTasks(usersWithTasks.reverse());
       setLoading(false);
 
-      // const questionsList = [...new Map(res[4].data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(question => [question.module, question])).values()];
-      // console.log(questionsList.reverse().find(p => p.module === trainingCards.module));
-      // setQuestions(questionsList.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id).questions);
+      setQuestions(res[4].data.response.data.filter(question => question.data_type === currentUser.portfolio_info[0].data_type));
+      setLoading(false);
+      
     })
     .catch(err => console.log(err))
     
@@ -350,8 +343,10 @@ function HrJobScreen() {
             <ShortlistedScreen shortlistedCandidates={candidateData} jobData={jobs} />
           </> :
 
+          isLoading ? <LoadingSpinner /> :
+
           sub_section === undefined && section === "hr-training" ? <>
-            <HrTrainingScreen trainingCards={trainingCards} setShowOverlay={setTrackingProgress}/>
+            <HrTrainingScreen trainingCards={trainingCards} setShowOverlay={setTrackingProgress} setQuestions={setQuestions}/>
           </> :
 
           sub_section !== undefined && section === "hr-training" ? <>

@@ -1,30 +1,51 @@
 import React, { useEffect, useState } from "react";
 import "./Hr_TrainingScreen.css";
-import { Link } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { getTrainingManagementQuestions } from "../../../../services/hrTrainingServices";
 import { useHrJobScreenAllTasksContext } from "../../../../contexts/HrJobScreenAllTasks";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 
-function HrTrainingScreen({ trainingCards, setShowOverlay }) {
-  const { questions, setQuestions } = useHrJobScreenAllTasksContext();
+function HrTrainingScreen({ trainingCards, setShowOverlay, setQuestions }) {
+  const { questions } = useHrJobScreenAllTasksContext();
+  // console.log(questions);
+
+  const { navigate } = useNavigate();
 
   const { currentUser } = useCurrentUserContext();
 
-  const fetchCreatedQuestions = async (e) => {
+  const fetchCreatedQuestions = async (e, module) => {
     e.preventDefault();
 
     setShowOverlay(true);
 
     try {
-      const response = await getTrainingManagementQuestions({
-        company_id: currentUser.portfolio_info[0].org_id,
-      });
+      const response = await getTrainingManagementQuestions(
+        currentUser.portfolio_info[0].org_id
+      );
+      console.log(response.data);
 
-      const ListOfQuestions = response.data;
+      const dataGottenFromQuestions = response.data.response.data
+        .reverse()
+        .filter(
+          (question) =>
+            question.data_type === currentUser.portfolio_info[0].data_type
+        );
+
+      setQuestions(dataGottenFromQuestions);
+
+      const questionToEdit = dataGottenFromQuestions.find(
+        (question) => question.module === module
+      );
+
+      console.log(questionToEdit);
+
+      // navigate(`/hr-training/${questionToEdit.module}`);
     } catch (error) {
       console.log(error);
     }
+
+    setShowOverlay(false);
   };
 
   const handleClick = (e, link) => {
@@ -42,12 +63,25 @@ function HrTrainingScreen({ trainingCards, setShowOverlay }) {
           <div className="training__cards" key={card.id}>
             <div className="svg_component">{card.svg}</div>
             {questions.find((question) => question.module === card.module)
-              ?.newly_created ? (
+              ?.question_link ? (
               <div className="edit">
                 <Link
-                  to={`/hr-training/${card.module}`}
+                  to={`/hr-training/${encodeURIComponent(card.module)}`}
                   className="edit__btn"
-                  onClick={fetchCreatedQuestions}
+                  onClick={
+                    questions.find(
+                      (question) => question.module === card.module
+                    )?.newly_created
+                      ? (e) => fetchCreatedQuestions(e, card.module)
+                      : () =>
+                          navigate(
+                            `/hr-training/${
+                              encodeURIComponent(questions.find(
+                                (question) => question.module === card.module
+                              )?.module)
+                            }`
+                          )
+                  }
                 >
                   {card.action}
                 </Link>
@@ -79,7 +113,7 @@ function HrTrainingScreen({ trainingCards, setShowOverlay }) {
               </Link>
             ) : (
               <Link
-                to={`/hr-training/${card.module}`}
+                to={`/hr-training/${encodeURIComponent(card.module)}`}
                 style={{ color: "black" }}
               >
                 <button className="action__btn">

@@ -27,6 +27,7 @@ export const trainingCards = [
       "Prepare for a career in UI/UX. Receive professional-level training from uxliving lab",
     svg: <Ux />,
     action: <RiEdit2Fill style={{ fontSize: "1.4rem", color: "#000" }} />,
+    // escapeSlash: true,
   },
   {
     id: 4,

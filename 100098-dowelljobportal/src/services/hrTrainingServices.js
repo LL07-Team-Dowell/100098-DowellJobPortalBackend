@@ -8,8 +8,8 @@ export const createQuestionForTrainingMangement = async (dataToPost) => {
   return response;
 };
 
-export const getTrainingManagementQuestions = async () => {
+export const getTrainingManagementQuestions = async (company_id) => {
   return await currentBackendAxiosInstance.get(
-    "training_management/get_all_question/"
+    `training_management/get_all_question/${company_id}/`
   );
 };
