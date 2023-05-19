@@ -18,9 +18,9 @@ function HrTrainingQuestions() {
   const [selectedOption, setSelectedOption] = useState("Link");
   const [selectOption, setSelectOption] = useState([
     "Link",
-    "Text",
-    "Image",
-    "Video",
+    // "Text",
+    // "Image",
+    // "Video",
   ]);
   const [ existingQuestion, setExistingQuestion ] = useState(false);
   const [ params, setParams ] = useSearchParams();
