@@ -60,7 +60,6 @@ __get__ to `training_management/get_question/<str:document_id>/`
 
 __get__ to `training_management/get_all_question/<str:company_id>/`
 
-
 - Response 200
 
 ```json
@@ -123,12 +122,8 @@ __Post__ to `training_management/create_response/`
     "data_type":"data_type",
     "module": "module",
     "username": "username",
-    "code_base_link": "code_base_link",
-    "live_link": "live_link",
-    "documentation_link": "documentation_link",
     "started_on": "started_on",
-    "submitted_on": "submitted_on",
-    "rating": "rating"
+
 }
 ```
 
@@ -141,16 +136,18 @@ __Post__ to `training_management/create_response/`
 ```
 
 
-__patch__ to `training_management/update_response/`
+
+__patch__ to `training_management/submit_response/`
 
 - Request Body
 
 ```json
 {
-    "document_id": "<document_id>",
+    "document_id": "document_id",
     "code_base_link": "code_base_link",
-    "live_link": "live_link",
-    "documentation_link": "documentation_link"
+    "answer_link": "answer_link",
+    "documentation_link": "documentation_link",
+    "submitted_on": "submitted_on"
 }
 ```
 
@@ -158,7 +155,37 @@ __patch__ to `training_management/update_response/`
 
 ```json
 {
-  "message": "Candidate has been responded to"
+  "message": "Response has been submitted"
+}
+```
+- Response 304
+
+```json
+{
+  "message": "HR operation failed"
+}
+```
+
+
+__patch__ to `training_management/update_response/`
+
+- Request Body
+
+```json
+{
+      "document_id": "document_id",
+      "rating": "rating",
+      "data_type":"data_type",
+      "submitted_on": "submitted_on",
+      "status":"status"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Candidate has been {status}"
 }
 ```
 - Response 304

@@ -22,6 +22,7 @@ class CandidateSerializer(serializers.Serializer):
     payment = serializers.CharField(allow_null=False, allow_blank=False)
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
     username = serializers.CharField(allow_null=False, allow_blank=False)
+    module = serializers.CharField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
     application_submitted_on = serializers.CharField(
