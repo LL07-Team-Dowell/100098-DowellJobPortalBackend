@@ -587,7 +587,7 @@ const SelectedCandidatesScreen = ({
 
         {!hrPageActive && (
           <AssignedProjectDetails
-            assignedProject={selectedCandidateData.assigned_project}
+            assignedProject={selectedCandidateData.project && Array.isArray(selectedCandidateData.project) ? selectedCandidateData.project[0] : ""}
             removeDropDownIcon={true}
           />
         )}

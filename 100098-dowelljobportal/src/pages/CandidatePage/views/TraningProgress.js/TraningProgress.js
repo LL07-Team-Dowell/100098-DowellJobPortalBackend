@@ -399,13 +399,13 @@ function TraningProgress({ shorlistedJob }) {
                                 </div>
                                 <div className="bottom-content">
                                     {
-                                        responses.find(response => response.module === item.module) ?
+                                        responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
                                             responses.find(response => response.module === item.module)?.submitted_on ?
-                                            <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module)?._id, true)}>
+                                            <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?._id, true)}>
                                                 {"Preview Form"}
                                             </Link> 
                                             :
-                                            <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module)?._id)}>
+                                            <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?._id)}>
                                                 {"Submit Now"}
                                             </Link> 
                                         :
@@ -417,7 +417,7 @@ function TraningProgress({ shorlistedJob }) {
                                         >
                                             {
                                                 submitInitialResponseLoading ? <>Please wait...</> :
-                                                responses.find(response => response.module === item.module) ?
+                                                responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
                                                 <>
                                                     Submit Now
                                                 </> :

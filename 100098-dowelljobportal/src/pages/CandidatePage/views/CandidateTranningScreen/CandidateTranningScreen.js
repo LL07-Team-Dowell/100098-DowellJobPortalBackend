@@ -429,7 +429,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
                     <p>Prepare for a career in {item.module} Development. Receive professional-level training from uxliving lab</p>
                     <button 
                       onClick={
-                        responses.find(response => response.module === item.module) ?
+                        responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
                           () => navigate('/traning')
                         :
                           () => createResp(item.module, matchModule?.question_link)
@@ -448,7 +448,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
                     >
                       {
                         submitInitialResponseLoading ? <>Please wait...</> :
-                        responses.find(response => response.module === item.module) ?
+                        responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
                         <>
                           View Now <BiRightArrowAlt />
                         </> :
