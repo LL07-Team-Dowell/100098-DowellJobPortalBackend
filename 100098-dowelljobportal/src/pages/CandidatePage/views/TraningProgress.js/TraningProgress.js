@@ -50,10 +50,8 @@ function TraningProgress({ shorlistedJob }) {
                 try {
                     const responsesData = await (await getAllTrainingResponses(currentUser?.portfolio_info[0]?.org_id)).data
                     setresponses(responsesData.response.data);
-                    setQuestionsLoading(false);
                 } catch (error) {
                     console.log(error);
-                    setQuestionsLoading(false);
                 }
                 
                 setQuestionsLoading(false);
