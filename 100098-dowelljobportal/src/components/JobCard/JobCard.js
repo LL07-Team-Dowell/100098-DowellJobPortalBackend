@@ -61,9 +61,9 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 <div className="vertical__Seperator lg"></div>
                 <div className="detail__Item">
                     <AiFillCheckCircle className="status__Icon green__Color" />
-                    <span className="job__Highlight__Item">Interview scheduled</span>
+                    <span className="job__Highlight__Item">Join discord for interview</span>
                     <br />
-                    <span>{guestUser ? 'Interview to be scheduled' : `${(job.others[mutableNewApplicationStateNames.others_scheduled_interview_date] && job.others[mutableNewApplicationStateNames.others_scheduled_interview_date] !== "") ? formatDateAndTime(job.others[mutableNewApplicationStateNames.others_scheduled_interview_date]) : formatDateAndTime(interviewDetails.created)}`}</span>
+                    <span>{guestUser ? 'Interview to be scheduled' : `${formatDateAndTime(interviewDetails.application_submitted_on)}`}</span>
                 </div>
             </div>
         }

@@ -49,6 +49,11 @@ export const excludedApplicantInfo = [
   "server_discord_link",
   "job_category",
   "portfolio_name",
+  "product_discord_link",
+  "shortlisted_on",
+  "onboarded_on",
+  "selected_on",
+  "payment,"
 ];
 
 export const mutableNewApplicationStateNames = {

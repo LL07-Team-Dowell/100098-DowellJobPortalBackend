@@ -319,13 +319,20 @@ function CandidateTranningScreen({ shorlistedJob }) {
     }
   }, [allquestions]);
 
-  const createResp = () => {
-    createTrainingManagementResponse({company_id: currentUser.portfolio_info[0].org_id, data_type:currentUser.portfolio_info[0].data_type,username:currentUser.userinfo.username,started_on:new Date().toString() , module:item?.module})
+  const createResp = (itemModule, itemQuestionLink) => {
+    const dataToPost = {
+      company_id: currentUser.portfolio_info[0].org_id, 
+      data_type: currentUser.portfolio_info[0].data_type,
+      username:currentUser.userinfo.username,
+      started_on:new Date().toString(), 
+      module: itemModule
+    }
+
+    createTrainingManagementResponse(dataToPost)
     .then(resp => {
       console.log(resp)
-      setresponses([...responses , {company_id: currentUser.portfolio_info[0].org_id, data_type:currentUser.portfolio_info[0].data_type,username:currentUser.userinfo.username,started_on:new Date().toString() , module:item?.module}]) ; 
-      const url = "https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/tree/backend/training_management"
-      window.open(url, '_blank') ;
+      setresponses([...responses , dataToPost]);
+      window.open(itemQuestionLink, '_blank') ;
     })
     .catch(err => {
       console.log(err)
@@ -390,17 +397,19 @@ function CandidateTranningScreen({ shorlistedJob }) {
             {
               shorlistedJob.map((item => {
                 const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
-                console.log(matchModule);
+                // console.log(matchModule);
+                if (!matchModule) return <></>
+
                 return < div className="item-1" >
                   <img src={assets.frontend_icon} alt="frontend" />
                   <h2>{item?.module}</h2>
                   <p>Prepare for a career in {item.module} Development. Receive professional-level training from uxliving lab</p>
                   <button>
-                    {matchModule && (
+                    {(
                       // <Link to={matchModule.question_link} target='_blank'>
                       //   Start Now <BiRightArrowAlt />
                       // </Link>
-                      <button onClick={createResp} style={{
+                      <button onClick={() => createResp(item.module, matchModule?.question_link)} style={{
                         alignItems: 'center',
                         fontSize: '16px',
                         backgroundColor: '#FFFFFF',
@@ -410,13 +419,10 @@ function CandidateTranningScreen({ shorlistedJob }) {
                         fontWeight: '600',
                         fontFamily: 'poppins',
                         display: 'flex',
-                        alignItems: 'center'
                       }}>
                       Start Now <BiRightArrowAlt />
                       </button>
-                    ) || <Link to="">
-                        Start Now <BiRightArrowAlt />
-                      </Link>}
+                    )}
                   </button>
 
                   <div className="bottom-img">

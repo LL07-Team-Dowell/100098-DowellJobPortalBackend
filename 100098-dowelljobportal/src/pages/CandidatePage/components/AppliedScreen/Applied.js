@@ -67,6 +67,7 @@ function Applied() {
         console.log(currentUserAppliedJobs);
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.PENDING_SELECTION) } })
         return setLoading(false);
 
       } catch (error) {
@@ -99,13 +100,26 @@ function Applied() {
 
           currentNavigationTab === "Applied" ? <>
             {
-              React.Children.toArray(candidateJobs.appliedJobs.map(appliedJob => {
+              React.Children.toArray(candidateJobs.currentUserApplications.map(application => {
                 return <JobCard
-                  job={appliedJob}
+                  job={candidateJobs.appliedJobs.find(job => job.job_number === application.job_number)}
                   showCandidateAppliedJob={true}
                   buttonText={"View"}
-                  candidateData={candidateJobs.currentUserApplications.find(application => application.job_number === appliedJob.job_number)}
-                  handleBtnClick={(job) => navigate("/applied/view_job_application", { state: { jobToView: job, applicationDetails: candidateJobs.currentUserApplications.find(application => application.job_number === appliedJob.job_number) } })}
+                  candidateData={application}
+                  handleBtnClick={
+                    candidateJobs.appliedJobs.find(job => job.job_number === application.job_number) ? 
+                      () => navigate(
+                        "/applied/view_job_application", 
+                        { 
+                          state: { 
+                            jobToView: candidateJobs.appliedJobs.find(job => job.job_number === application.job_number), 
+                            applicationDetails: application
+                          } 
+                        }
+                      )
+                    :
+                    () => {}
+                  }
                 />
               }))
             }
@@ -115,15 +129,13 @@ function Applied() {
               {
                 React.Children.toArray(candidateJobs.userInterviews.map(interview => {
                   return <JobCard
-                    job={candidateJobs.appliedJobs.find(appliedJob => appliedJob.id === interview.job_applied)}
+                    job={candidateJobs.appliedJobs.find(job => job.job_number === interview.job_number)}
                     interviewDetails={interview}
                     showCandidateInterview={true}
-                    guestUser={currentUser.role === process.env.REACT_APP_GUEST_ROLE ? true : false}
-                    currentApplicationStatus={candidateJobs.currentUserApplications.find(application => application.job === interview.job_applied).status}
+                    guestUser={false}
+                    currentApplicationStatus={interview?.status}
                     handleBtnClick={
-                      () => candidateJobs.currentUserApplications.find(application => application.job === interview.job_applied).others[mutableNewApplicationStateNames.hr_discord_link] ?
-                        window.location.href = candidateJobs.currentUserApplications.find(application => application.job === interview.job_applied).others[mutableNewApplicationStateNames.hr_discord_link] :
-                        () => { }
+                      () => window.open(interview.server_discord_link, "_blank")
                     }
                     buttonText={"Discord"}
                   />
