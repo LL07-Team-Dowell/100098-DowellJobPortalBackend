@@ -349,13 +349,13 @@ function EditJob({ subAdminView }) {
                     <div className="data">
                       <input
                         type="radio"
-                        id="research associate"
+                        id="research_associate"
                         name="options"
-                        value="Research Associate"
-                        checked={selectedOption === 'Research Associate'}
+                        value="Research_Associate"
+                        checked={selectedOption === 'Research_Associate'}
                         onChange={handleOptionChange}
                       />
-                      <label htmlFor="research associate">Research Associate</label>
+                      <label htmlFor="research_associate">Research Associate</label>
                     </div>
                   </div>
                 </div>
@@ -494,8 +494,8 @@ function EditJob({ subAdminView }) {
                       UI/UX
                     </option>
                     <option
-                      value="Virtual Assistant"
-                      selected={thirdOption === "Virtual Assistant"}
+                      value="Virtual_Assistant"
+                      selected={thirdOption === "Virtual_Assistant"}
                     >
                       Virtual Assistant
                     </option>

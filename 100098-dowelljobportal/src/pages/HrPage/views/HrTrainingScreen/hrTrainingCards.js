@@ -31,7 +31,7 @@ export const trainingCards = [
   },
   {
     id: 4,
-    module: "Virtual Assistant",
+    module: "Virtual_Assistant",
     description:
       "Prepare for a career as a Virtual Assistant . Receive professional-level training from uxliving lab",
     svg: <Frontend />,
