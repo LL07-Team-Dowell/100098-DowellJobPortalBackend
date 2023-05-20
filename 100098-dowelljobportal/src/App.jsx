@@ -468,18 +468,21 @@ function App() {
         path="/"
         element={
           <ResponsesContextProvider>
-          <CandidateTranningScreen
-            shorlistedJob={shorlistedJob}
-          />
+            <CandidateTranningScreen
+              shorlistedJob={shorlistedJob}
+            />
           </ResponsesContextProvider>
         }
       >
       </Route>
       <Route path="/traning" element={
-      <ResponsesContextProvider>
-      <TraningProgress
-        shorlistedJob={shorlistedJob}
-      /></ResponsesContextProvider>} />
+        <ResponsesContextProvider>
+          <TraningProgress
+            shorlistedJob={shorlistedJob}
+          />
+        </ResponsesContextProvider>
+        } 
+      />
       
 
       <Route path="/logout" element={<ResponsesContextProvider><Logout /> </ResponsesContextProvider>} />
