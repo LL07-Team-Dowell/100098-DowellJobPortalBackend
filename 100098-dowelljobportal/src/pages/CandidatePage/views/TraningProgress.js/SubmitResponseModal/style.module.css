@@ -1,0 +1,98 @@
+.modal__Overlay {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(1px);
+    z-index: 9999;
+    overflow-y: auto;
+}
+
+.modal__Container {
+    position: absolute;
+    background-color: #fff;
+    width: 70%;
+    padding: 2% 3%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 10px;
+    animation: fadeIn 0.4s ease-in-out;
+    font-family: "Poppins", sans-serif;
+    --green-color: #005734;
+    --grey-color: #F0F0F0;
+}
+
+.close__Container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.header {
+    color: var(--green-color);
+    font-size: 1.6rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 15px;
+}
+
+.label,
+.label > * {
+    display: block;
+}
+
+.label {
+    margin: 10px 0 20px;
+    width: 100%;
+}
+
+.label input {
+    font-family: inherit;
+    width: 100%;
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid var(--grey-color);
+    padding: 1%;
+    transition: 0.3s ease-in-out;
+}
+
+.label input:focus-within {
+    border-color: var(--green-color);
+}
+
+.btn {
+    display: block;
+    outline: none;
+    border: none;
+    padding: 1.5% 3%;
+    transition: .3s ease-in-out;
+    border-radius: 10px;
+    margin-left: auto;
+    background-color: var(--green-color);
+    color: white;
+    cursor: pointer;
+}
+
+.btn[disabled],
+.btn:disabled {
+    filter: brightness(0.6);
+    cursor: not-allowed;
+}
+
+.required {
+    color: red;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    } to {
+        opacity: 1;
+    }
+}

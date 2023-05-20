@@ -6,10 +6,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { FaRegUserCircle } from 'react-icons/fa';
 import { getAllQuestions } from '../../../../services/commonServices';
+import { useResponsesContext } from '../../../../contexts/Responses';
+import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
+import { createTrainingManagementResponse } from '../../../../services/hrTrainingServices';
+import SubmitResponseModal from './SubmitResponseModal/SubmitResponseModal';
+import { toast } from 'react-toastify';
+import { candidateSubmitResponse } from '../../../../services/candidateServices';
 
 function TraningProgress({ shorlistedJob }) {
     // console.log(shorlistedJob[0].shortlisted_on);
-    // const { currentUser } = useCurrentUserContext();
+    const { currentUser } = useCurrentUserContext();
     const [complete, setComplete] = useState(false);
     const username = shorlistedJob[0]?.applicant;
     const shortlistedate = shorlistedJob[0].shortlisted_on;
@@ -17,9 +23,20 @@ function TraningProgress({ shorlistedJob }) {
     const formattedDate = date.toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
     //Get All Questions
-    const [allquestions, setAllQuestions] = useState([]);
+    const {responses , setresponses, allquestions, setAllQuestions} = useResponsesContext()
     const [uniqueItems, setUniqueItems] = useState([]);
     const uniqueTags = new Set();
+    const [ questionsLoading, setQuestionsLoading ] = useState(true);
+    const [ submitInitialResponseLoading, setSubmitInitialResponseLoading ] = useState(false);
+    const [ showSubmitModal, setShowSubmitModal ] = useState(false);
+    const [ submitBtnDisabled, setSubmitBtnDisabled ] = useState(false);
+    const initialResponseStateObj = {
+        "answer_link": "",
+        "code_base_link": "",
+        "documentation_link": "",
+    }
+    const [ submitDataToSend, setSubmitDataToSend ] = useState(initialResponseStateObj);
+    const [ currentResponse, setCurrentResponse ] = useState(null);
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -28,9 +45,11 @@ function TraningProgress({ shorlistedJob }) {
                 const response = await getAllQuestions(companyId);
                 const allquestions = response.data.response.data;
                 setAllQuestions(allquestions);
+                setQuestionsLoading(false);
             }
         };
 
+        if (allquestions.length > 0) return setQuestionsLoading(false);
         fetchQuestions();
     }, [shorlistedJob]);
 
@@ -248,6 +267,65 @@ function TraningProgress({ shorlistedJob }) {
         nevigate(-1);
     }
 
+    const createResp = (itemModule, itemQuestionLink) => {
+        const dataToPost = {
+          company_id: currentUser.portfolio_info[0].org_id, 
+          data_type: currentUser.portfolio_info[0].data_type,
+          username:currentUser.userinfo.username,
+          started_on: new Date().toString(), 
+          module: itemModule
+        }
+    
+        setSubmitInitialResponseLoading(true);
+    
+        createTrainingManagementResponse(dataToPost)
+        .then(resp => {
+          console.log(resp)
+          setresponses([...responses , dataToPost]);
+          setSubmitInitialResponseLoading(false);
+          window.open(itemQuestionLink, '_blank');
+        })
+        .catch(err => {
+          console.log(err)
+          setSubmitInitialResponseLoading(false);
+        })
+    }
+
+    const handleSubmitNowClick = (e, itemId, disableInputs=false) => {
+        e.preventDefault();
+        if (disableInputs) return toast.info("Feature in development");
+        setShowSubmitModal(true);
+        setCurrentResponse(itemId)
+    }
+
+    const handleSubmitResponse = async () => {
+        if (submitDataToSend.answer_link.length < 1) return toast.info("Please enter the link to your answer");
+
+        if (!currentResponse) return
+        const currentResponses = responses.slice();
+        const foundResponseIndex = currentResponses.findIndex(response => response._id === currentResponse);
+        if (foundResponseIndex === -1) return
+
+        setSubmitBtnDisabled(true);
+
+        try {
+
+            const res = (await candidateSubmitResponse(submitDataToSend)).data;
+            const updatedResponse = { ...currentResponses[foundResponseIndex], ...submitDataToSend, submitted_on: new Date() };
+            currentResponses[foundResponseIndex] = updatedResponse;
+            setresponses(currentResponses);
+            toast.info("Successfully submitted training response!");
+            setSubmitDataToSend(initialResponseStateObj);
+
+        } catch (error) {
+            console.log(error);
+        }
+
+        setSubmitBtnDisabled(false);
+        setCurrentResponse(null);
+        setShowSubmitModal(false);
+    }
+
     return (
         <>
             <Section_1>
@@ -286,9 +364,16 @@ function TraningProgress({ shorlistedJob }) {
                 <Section_3>
 
                     {
+                        questionsLoading ? <LoadingSpinner /> :
+                        complete ? <>
+                            
+                        </> 
+                        :
+                        
                         shorlistedJob.map((item => {
                             const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
 
+                            if (!matchModule) return <></>
                             return <div className="traning_section">
                                 <div className="left-content">
                                     <img src={assets.frontendimage} alt="frontend" />
@@ -304,13 +389,34 @@ function TraningProgress({ shorlistedJob }) {
                                     </div>
                                 </div>
                                 <div className="bottom-content">
-                                    {matchModule && (
-                                        <Link to={matchModule.question_link} target='_blank'>
-                                            {complete ? "Preview Form" : "Start Now"}
+                                    {
+                                        responses.find(response => response.module === item.module) ?
+                                            responses.find(response => response.module === item.module)?.submitted_on ?
+                                            <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module)?._id, true)}>
+                                                {"Preview Form"}
+                                            </Link> 
+                                            :
+                                            <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module)?._id)}>
+                                                {"Submit Now"}
+                                            </Link> 
+                                        :
+                                        <Link 
+                                            onClick={
+                                                (e) => createResp(e, item.module, matchModule?.question_link)
+                                            }
+                                        >
+                                            {
+                                                submitInitialResponseLoading ? <>Please wait...</> :
+                                                responses.find(response => response.module === item.module) ?
+                                                <>
+                                                    Submit Now
+                                                </> :
+                                                <>
+                                                    Start Now
+                                                </>
+                                            }
                                         </Link>
-                                    ) || <Link to="#">
-                                            {complete ? "Preview Form" : "Start Now"}
-                                        </Link>}
+                                    }
                                 </div>
 
                             </div>
@@ -318,6 +424,15 @@ function TraningProgress({ shorlistedJob }) {
                     }
                 </Section_3>
             </Wrapper >
+            {
+                showSubmitModal && <SubmitResponseModal 
+                    closeModal={() => { setShowSubmitModal(false); setCurrentResponse(null) }}
+                    submitBtnDisabled={submitBtnDisabled}
+                    handleSubmitBtnClick={() => handleSubmitResponse()}
+                    handleInputChange={(key, value) => setSubmitDataToSend((prevData) => { return { ...prevData, [key]: value }})}
+                    inputValues={submitDataToSend}
+                />
+            }
         </>
 
     )

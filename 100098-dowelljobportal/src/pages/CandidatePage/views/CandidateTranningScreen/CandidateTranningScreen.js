@@ -4,10 +4,11 @@ import * as assets from '../../../../assets/assetsIndex';
 import { AiFillBook, AiFillHome, AiOutlineSearch } from 'react-icons/ai';
 import { BiRightArrowAlt } from 'react-icons/bi';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAllQuestions } from '../../../../services/commonServices';
+import { getAllQuestions, getAllTrainingResponses } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { useResponsesContext } from '../../../../contexts/Responses';
 import { createTrainingManagementResponse } from '../../../../services/hrTrainingServices';
+import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 
 
 const Wrapper = styled.div`
@@ -284,11 +285,12 @@ const Hero = styled.div`
 function CandidateTranningScreen({ shorlistedJob }) {
   const { currentUser } = useCurrentUserContext();
   console.log({currentUser})
-  const {responses , setresponses} = useResponsesContext()
+  const {responses , setresponses, allquestions, setAllQuestions} = useResponsesContext()
   let navigate = useNavigate()
-  const [allquestions, setAllQuestions] = useState([]);
   const [uniqueItems, setUniqueItems] = useState([]);
   const uniqueTags = new Set();
+  const [ questionsLoading, setQuestionsLoading ] = useState(true);
+  const [ submitInitialResponseLoading, setSubmitInitialResponseLoading ] = useState(false);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -297,8 +299,11 @@ function CandidateTranningScreen({ shorlistedJob }) {
         const response = await getAllQuestions(companyId);
         const allquestions = response.data.response.data;
         setAllQuestions(allquestions);
+        setQuestionsLoading(false);
       }
     };
+
+    if (allquestions.length > 0) return setQuestionsLoading(false);
 
     fetchQuestions();
   }, [shorlistedJob]);
@@ -319,23 +324,39 @@ function CandidateTranningScreen({ shorlistedJob }) {
     }
   }, [allquestions]);
 
+  useEffect(() => {
+
+    if (responses.length > 0) return
+    
+    getAllTrainingResponses(currentUser?.portfolio_info[0]?.org_id).then(res => {
+      setresponses(res.data.response.data ? res.data.response.data : []);
+    }).catch(err => {
+      console.log(err)
+    })
+
+  }, [])
+
   const createResp = (itemModule, itemQuestionLink) => {
     const dataToPost = {
       company_id: currentUser.portfolio_info[0].org_id, 
       data_type: currentUser.portfolio_info[0].data_type,
       username:currentUser.userinfo.username,
-      started_on:new Date().toString(), 
+      started_on: new Date().toString(), 
       module: itemModule
     }
+
+    setSubmitInitialResponseLoading(true);
 
     createTrainingManagementResponse(dataToPost)
     .then(resp => {
       console.log(resp)
       setresponses([...responses , dataToPost]);
-      window.open(itemQuestionLink, '_blank') ;
+      setSubmitInitialResponseLoading(false);
+      window.open(itemQuestionLink, '_blank');
     })
     .catch(err => {
       console.log(err)
+      setSubmitInitialResponseLoading(false);
     })
   }
 
@@ -391,25 +412,29 @@ function CandidateTranningScreen({ shorlistedJob }) {
         </Section_1>
 
         <Section_2>
-          <h1>Our Training Programs</h1>
+          <h1>Your Training Programs</h1>
           <br />
-          <div className="traning-items">
-            {
-              shorlistedJob.map((item => {
-                const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
-                // console.log(matchModule);
-                if (!matchModule) return <></>
+          {
+            questionsLoading ? <LoadingSpinner /> :
+            <div className="traning-items">
+              {
+                shorlistedJob.map((item => {
+                  const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
+                  // console.log(matchModule);
+                  if (!matchModule) return <></>
 
-                return < div className="item-1" >
-                  <img src={assets.frontend_icon} alt="frontend" />
-                  <h2>{item?.module}</h2>
-                  <p>Prepare for a career in {item.module} Development. Receive professional-level training from uxliving lab</p>
-                  <button>
-                    {(
-                      // <Link to={matchModule.question_link} target='_blank'>
-                      //   Start Now <BiRightArrowAlt />
-                      // </Link>
-                      <button onClick={() => createResp(item.module, matchModule?.question_link)} style={{
+                  return < div className="item-1" >
+                    <img src={assets.frontend_icon} alt="frontend" />
+                    <h2>{item?.module}</h2>
+                    <p>Prepare for a career in {item.module} Development. Receive professional-level training from uxliving lab</p>
+                    <button 
+                      onClick={
+                        responses.find(response => response.module === item.module) ?
+                          () => navigate('/traning')
+                        :
+                          () => createResp(item.module, matchModule?.question_link)
+                      } 
+                      style={{
                         alignItems: 'center',
                         fontSize: '16px',
                         backgroundColor: '#FFFFFF',
@@ -419,64 +444,73 @@ function CandidateTranningScreen({ shorlistedJob }) {
                         fontWeight: '600',
                         fontFamily: 'poppins',
                         display: 'flex',
-                      }}>
-                      Start Now <BiRightArrowAlt />
-                      </button>
-                    )}
-                  </button>
+                      }}
+                    >
+                      {
+                        submitInitialResponseLoading ? <>Please wait...</> :
+                        responses.find(response => response.module === item.module) ?
+                        <>
+                          View Now <BiRightArrowAlt />
+                        </> :
+                        <>
+                          Start Now <BiRightArrowAlt />
+                        </>
+                      }
+                    </button>
 
-                  <div className="bottom-img">
-                    <img src={assets.bg_rectang} alt="rectbg" />
+                    <div className="bottom-img">
+                      <img src={assets.bg_rectang} alt="rectbg" />
+                    </div>
                   </div>
-                </div>
-              }), [])
-            }
+                }), [])
+              }
 
-            {/* {
-              shorlistedJob.length % 3 === 1 ? <>
-                <div className="item-2">
-                  <img src={assets.lock_screen} alt="" />
-                </div>
-              </> : <></>
-            }
-            {
-              shorlistedJob.length % 3 === 2 ? <>
-                <div className="item-2">
-                  <img src={assets.lock_screen} alt="" />
-                </div>
-              </> : <></>
-            } */}
+              {/* {
+                shorlistedJob.length % 3 === 1 ? <>
+                  <div className="item-2">
+                    <img src={assets.lock_screen} alt="" />
+                  </div>
+                </> : <></>
+              }
+              {
+                shorlistedJob.length % 3 === 2 ? <>
+                  <div className="item-2">
+                    <img src={assets.lock_screen} alt="" />
+                  </div>
+                </> : <></>
+              } */}
 
-            {/* <div className="item-1">
-              <img src={assets.frontend_icon} alt="frontend" />
-              <h2>Front-end</h2>
-              <p>Prepare for a career in Front-end Development. Receive professional-level training from uxliving lab</p>
-              <button>
-                <Link to="#">
-                  Start Now <BiRightArrowAlt />
-                </Link>
-              </button>
+              {/* <div className="item-1">
+                <img src={assets.frontend_icon} alt="frontend" />
+                <h2>Front-end</h2>
+                <p>Prepare for a career in Front-end Development. Receive professional-level training from uxliving lab</p>
+                <button>
+                  <Link to="#">
+                    Start Now <BiRightArrowAlt />
+                  </Link>
+                </button>
 
-              <div className="bottom-img">
-                <img src={assets.bg_rectang} alt="rectbg" />
+                <div className="bottom-img">
+                  <img src={assets.bg_rectang} alt="rectbg" />
+                </div>
+              </div> */}
+              {/* <div className="item-2">
+                <img src={assets.lock_screen} alt="" />
               </div>
-            </div> */}
-            {/* <div className="item-2">
-              <img src={assets.lock_screen} alt="" />
+              <div className="item-2">
+                <img src={assets.lock_screen} alt="" />
+              </div>
+              <div className="item-2">
+                <img src={assets.lock_screen} alt="" />
+              </div>
+              <div className="item-2">
+                <img src={assets.lock_screen} alt="" />
+              </div>
+              <div className="item-2">
+                <img src={assets.lock_screen} alt="" />
+              </div> */}
             </div>
-            <div className="item-2">
-              <img src={assets.lock_screen} alt="" />
-            </div>
-            <div className="item-2">
-              <img src={assets.lock_screen} alt="" />
-            </div>
-            <div className="item-2">
-              <img src={assets.lock_screen} alt="" />
-            </div>
-            <div className="item-2">
-              <img src={assets.lock_screen} alt="" />
-            </div> */}
-          </div>
+          }
         </Section_2>
       </div >
     </Wrapper >

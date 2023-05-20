@@ -24,3 +24,7 @@ export const getCandidateTask= async (companyId) => {
 export const createCandidateTask = async (data) => {
     return await currentBackendAxiosInstance.post("task_management/create_task/",data)
 }
+
+export const candidateSubmitResponse = async (data) => {
+    return await currentBackendAxiosInstance.patch("training_management/submit_response/", data)
+}

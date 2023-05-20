@@ -13,7 +13,7 @@ import { afterSelectionLinks, loggedInCandidateNavLinks } from "../../pages/Cand
 import { dowellLoginUrl } from "../../services/axios";
 import { useMediaQuery } from "@mui/material";
 
-const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation }) => {
+const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, hideSearch }) => {
     const [ searchValue, setSearchValue ] = useState("");
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     const [ screenTitle, setScreenTitle ] = useState("Tasks");
@@ -43,7 +43,14 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation }
                         <img src={logo} alt={"dowell logo"} />
                     </Link>
                 }
-                { afterSelection ? <TitleNavigationBar title={screenTitle} hideBackBtn={true} /> : <SearchBar placeholder={"Search for job/project"} searchValue={searchValue} handleSearchChange={setSearchValue} /> }
+                { 
+                    afterSelection ? 
+                        <TitleNavigationBar title={screenTitle} hideBackBtn={true} /> 
+                    : hideSearch ? 
+                        <></> 
+                    :  
+                        <SearchBar placeholder={"Search for job/project"} searchValue={searchValue} handleSearchChange={setSearchValue} /> 
+                }
                 { 
                     user && <div className="jobs__Layout__Icons__Container">
                         { 
