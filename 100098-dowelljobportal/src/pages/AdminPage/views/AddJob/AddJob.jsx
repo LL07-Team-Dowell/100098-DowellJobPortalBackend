@@ -435,8 +435,8 @@ const AddJob = ({ subAdminView }) => {
                   UI/UX
                 </option>
                 <option
-                  value="Virtual Assistant"
-                  selected={thirdOption === "Virtual Assistant"}
+                  value="Virtual_Assistant"
+                  selected={thirdOption === "Virtual_Assistant"}
                 >
                   Virtual Assistant
                 </option>
