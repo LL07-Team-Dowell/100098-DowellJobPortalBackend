@@ -5,7 +5,7 @@ import * as assets from '../../../../assets/assetsIndex';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { FaRegUserCircle } from 'react-icons/fa';
-import { getAllQuestions } from '../../../../services/commonServices';
+import { getAllQuestions, getAllTrainingResponses } from '../../../../services/commonServices';
 import { useResponsesContext } from '../../../../contexts/Responses';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 import { createTrainingManagementResponse } from '../../../../services/hrTrainingServices';
@@ -45,6 +45,17 @@ function TraningProgress({ shorlistedJob }) {
                 const response = await getAllQuestions(companyId);
                 const allquestions = response.data.response.data;
                 setAllQuestions(allquestions);
+                if (responses.length > 10) return setQuestionsLoading(false);
+
+                try {
+                    const responsesData = await (await getAllTrainingResponses(currentUser?.portfolio_info[0]?.org_id)).data
+                    setresponses(responsesData.response.data);
+                    setQuestionsLoading(false);
+                } catch (error) {
+                    console.log(error);
+                    setQuestionsLoading(false);
+                }
+                
                 setQuestionsLoading(false);
             }
         };
@@ -401,6 +412,7 @@ function TraningProgress({ shorlistedJob }) {
                                             </Link> 
                                         :
                                         <Link 
+                                            to={'#'}
                                             onClick={
                                                 (e) => createResp(e, item.module, matchModule?.question_link)
                                             }
