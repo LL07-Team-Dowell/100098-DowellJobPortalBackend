@@ -37,12 +37,12 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
       const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
       const userShortlistedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.SHORTLISTED);
       console.log(userShortlistedJobs);
-      // if (userShortlistedJobs.length >= 1) {
-      //   setCandidateShortListed(true);
-      //   setshorlistedJob(userShortlistedJobs);
-      //   setLoading(false);
-      //   return;
-      // }
+      if (userShortlistedJobs.length >= 1) {
+        setCandidateShortListed(true);
+        setshorlistedJob(userShortlistedJobs);
+        setLoading(false);
+        return;
+      }
 
       if (userSelectedJobs.length >= 1) {
         setAssignedProjects(userSelectedJobs.map((job) => job.project))
