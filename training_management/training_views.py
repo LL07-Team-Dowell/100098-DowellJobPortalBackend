@@ -211,14 +211,14 @@ class get_all_responses(APIView):
     def get(self, request, company_id):
         data = request.data
         field = {
-            "_id": company_id,
+            "company_id": company_id,
         }
         print(field)
         update_field = {
             "status": "nothing to update"
         }
         response = dowellconnection(
-            *response_modules, "find", field, update_field)
+            *response_modules, "fetch", field, update_field)
         print(response)
         if response:
             return Response({"message": "List of response.", "response": json.loads(response)},
