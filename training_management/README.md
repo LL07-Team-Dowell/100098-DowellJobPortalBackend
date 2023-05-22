@@ -145,6 +145,7 @@ __patch__ to `training_management/submit_response/`
 {
     "document_id": "document_id",
     "code_base_link": "code_base_link",
+    "video_link":"video_link",
     "answer_link": "answer_link",
     "documentation_link": "documentation_link",
     "submitted_on": "submitted_on"
