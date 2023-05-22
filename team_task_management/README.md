@@ -7,6 +7,7 @@ _Post_ to `team_task_management/create_team/`
 ```json
 {
   "team_name": "team name",
+  "company_id": "company_id",
   "members": ["list of members"]
 }
 ```
@@ -27,6 +28,26 @@ _Post_ to `team_task_management/create_team/`
 }
 ```
 
+_Get_ to `team_task_management/get_team/<str:company_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "Team with company_id - {company_id} available",
+  "response": "[List of teams]"
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "Team with company_id - {company_id} not found"
+}
+```
+
+
 _Patch_ to `team_task_management/edit-team-api/<int:pk>/`
 
 - Request Body
@@ -34,6 +55,7 @@ _Patch_ to `team_task_management/edit-team-api/<int:pk>/`
 ```json
 {
     "team_name": "New Team Name",
+    "company_id": "company_id",
     "members": [
         "New Member 1",
 			"New Member 2"

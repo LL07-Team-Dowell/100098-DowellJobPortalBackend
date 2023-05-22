@@ -10,6 +10,7 @@ class User(models.Model):
 
 class Team(models.Model):
     team_name = models.CharField(max_length=255)
+    company_id = models.CharField(max_length=255, null=True, )
     members = models.ManyToManyField(User, through='TeamMember')
 
     def __str__(self):

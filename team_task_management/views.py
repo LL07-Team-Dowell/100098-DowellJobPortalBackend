@@ -3,6 +3,8 @@ from rest_framework import status
 from rest_framework import generics, permissions
 from .models import Task, Team, TeamMember, User
 from .serializers import *
+import json
+from django.core import serializers
 from rest_framework.views import APIView
 
 
@@ -21,6 +23,18 @@ class create_team(generics.ListCreateAPIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
+
+class get_team(generics.ListCreateAPIView):
+    def get(self, request, company_id):
+        team = Team.objects.filter(company_id=company_id)
+        if team.exists():
+            team_json = serializers.serialize('json', team)
+            return Response({"message": f"Team with company_id - {company_id} available",
+                             "response": json.loads(team_json)},
+                            status=status.HTTP_200_OK)
+        message = {"message": f"Team with company_id - {company_id} not found"}
+        return Response(message, status=status.HTTP_204_NO_CONTENT)
 
 
 class create_task(generics.ListCreateAPIView):
