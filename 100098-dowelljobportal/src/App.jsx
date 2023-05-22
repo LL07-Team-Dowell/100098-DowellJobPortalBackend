@@ -49,6 +49,7 @@ import HrTrainingQuestions from "./pages/HrPage/views/HrTrainingScreen/HrTrainin
 import CandidateTranningScreen from "./pages/CandidatePage/views/CandidateTranningScreen/CandidateTranningScreen";
 import TraningProgress from "./pages/CandidatePage/views/TraningProgress.js/TraningProgress";
 import { ResponsesContextProvider } from "./contexts/Responses";
+import Index from "./pages/TeamleadPage/views/CreateMembersTask/Index";
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -431,6 +432,14 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <CreateTaskScreen />
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path="/create-task"
+          element={
+            <CandidateTaskContextProvider>
+              <Index />
             </CandidateTaskContextProvider>
           }
         />
