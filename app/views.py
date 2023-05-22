@@ -1241,11 +1241,15 @@ class submit_response(APIView):
         update_field = {
             "code_base_link": data.get("code_base_link"),
             "live_link": data.get("live_link"),
-
+            "video_link": data.get("video_link"),
             "documentation_link": data.get("documentation_link"),
             "answer_link": data.get("answer_link"),
             "submitted_on": data.get("submitted_on"),
         }
+        if update_field["video_link"] == "":
+            return Response({"Error": "Video Link Field is required and can not be empty"})
+        if update_field["answer_link"] == "":
+            return Response({"Error": "Answer Link Field is required and can not be empty"})
         insert_to_response = dowellconnection(
             *response_modules, "update", field, update_field)
 
