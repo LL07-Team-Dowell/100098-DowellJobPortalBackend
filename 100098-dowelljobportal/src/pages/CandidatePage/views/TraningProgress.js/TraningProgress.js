@@ -37,6 +37,7 @@ function TraningProgress({ shorlistedJob }) {
     }
     const [ submitDataToSend, setSubmitDataToSend ] = useState(initialResponseStateObj);
     const [ currentResponse, setCurrentResponse ] = useState(null);
+    const [ formIsReadOnly, setFormIsReadOnly ] = useState(false);
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -277,6 +278,8 @@ function TraningProgress({ shorlistedJob }) {
     }
 
     const createResp = (itemModule, itemQuestionLink) => {
+        if (submitInitialResponseLoading) return
+
         const dataToPost = {
           company_id: currentUser.portfolio_info[0].org_id, 
           data_type: currentUser.portfolio_info[0].data_type,
@@ -302,7 +305,24 @@ function TraningProgress({ shorlistedJob }) {
 
     const handleSubmitNowClick = (e, itemId, disableInputs=false) => {
         e.preventDefault();
-        if (disableInputs) return toast.info("Feature in development");
+        if (disableInputs) {
+            setShowSubmitModal(true);
+            setFormIsReadOnly(true);
+
+            const currentResponses = responses.slice();
+            const foundResponse = currentResponses.find(response => response._id === itemId);
+            if (!foundResponse) return
+
+            setSubmitDataToSend((prevValue) => {
+                return {
+                    ...prevValue,
+                    "answer_link": foundResponse?.answer_link,
+                    "code_base_link": foundResponse?.code_base_link,
+                    "documentation_link": foundResponse?.documentation_link,
+                }
+            })
+            return;
+        }
         setShowSubmitModal(true);
         setCurrentResponse(itemId)
     }
@@ -323,7 +343,7 @@ function TraningProgress({ shorlistedJob }) {
             const updatedResponse = { ...currentResponses[foundResponseIndex], ...submitDataToSend, submitted_on: new Date() };
             currentResponses[foundResponseIndex] = updatedResponse;
             setresponses(currentResponses);
-            toast.info("Successfully submitted training response!");
+            toast.success("Successfully submitted training response!");
             setSubmitDataToSend(initialResponseStateObj);
 
         } catch (error) {
@@ -333,6 +353,13 @@ function TraningProgress({ shorlistedJob }) {
         setSubmitBtnDisabled(false);
         setCurrentResponse(null);
         setShowSubmitModal(false);
+    }
+
+    const handleCloseResponseModal = () => {
+        setShowSubmitModal(false); 
+        setCurrentResponse(null);
+        setFormIsReadOnly(false);
+        setSubmitDataToSend(initialResponseStateObj);
     }
 
     return (
@@ -375,14 +402,39 @@ function TraningProgress({ shorlistedJob }) {
                     {
                         questionsLoading ? <LoadingSpinner /> :
                         complete ? <>
-                            
+                            {
+                                React.Children.toArray(responses.filter((response) => response.submitted_on && response.username === currentUser.userinfo.username).map(response => {
+                                    return <>
+                                        <div className="traning_section">
+                                            <div className="left-content">
+                                                <img src={assets.frontendimage} alt="frontend" />
+                                            </div>
+                                            <div className="right-content">
+                                                <span className='traninning-program'>Training Program</span>
+                                                <h6>Become a {response.module} Developer</h6>
+                                                <div className="content">
+                                                    <img src={assets.langing_logo} alt="logo" />
+                                                    <span className='traninng-tag'>Training</span>
+                                                    <span className='traninng-tag'> . </span>
+                                                    <span className='traninng-tag'>{formattedDate}</span>
+                                                </div>
+                                            </div>
+                                            <div className="bottom-content">
+                                                <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, response?._id, true)}>
+                                                    {"Preview Form"}
+                                                </Link> 
+                                            </div>
+                                        </div>
+                                    </>
+                                }))
+                            }
                         </> 
                         :
                         
                         shorlistedJob.map((item => {
                             const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
 
-                            if (!matchModule) return <></>
+                            if ((!matchModule) || (responses.find(response => response.module === item.module)?.submitted_on)) return <></>
                             return <div className="traning_section">
                                 <div className="left-content">
                                     <img src={assets.frontendimage} alt="frontend" />
@@ -400,11 +452,6 @@ function TraningProgress({ shorlistedJob }) {
                                 <div className="bottom-content">
                                     {
                                         responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
-                                            responses.find(response => response.module === item.module)?.submitted_on ?
-                                            <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?._id, true)}>
-                                                {"Preview Form"}
-                                            </Link> 
-                                            :
                                             <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?._id)}>
                                                 {"Submit Now"}
                                             </Link> 
@@ -436,11 +483,12 @@ function TraningProgress({ shorlistedJob }) {
             </Wrapper >
             {
                 showSubmitModal && <SubmitResponseModal 
-                    closeModal={() => { setShowSubmitModal(false); setCurrentResponse(null) }}
+                    closeModal={handleCloseResponseModal}
                     submitBtnDisabled={submitBtnDisabled}
                     handleSubmitBtnClick={() => handleSubmitResponse()}
                     handleInputChange={(key, value) => setSubmitDataToSend((prevData) => { return { ...prevData, [key]: value }})}
                     inputValues={submitDataToSend}
+                    inputValuesAreReadOnly={formIsReadOnly}
                 />
             }
         </>

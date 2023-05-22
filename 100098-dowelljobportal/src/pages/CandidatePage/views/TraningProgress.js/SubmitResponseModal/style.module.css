@@ -60,10 +60,12 @@
     border: 1px solid var(--grey-color);
     padding: 1%;
     transition: 0.3s ease-in-out;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 2px;
 }
 
 .label input:focus-within {
     border-color: var(--green-color);
+    box-shadow: none;
 }
 
 .btn {
