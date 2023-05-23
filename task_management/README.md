@@ -41,13 +41,6 @@ _Post_ to `task_management/create_task/`
 
 _Get_ to `task_management/get_task/<str:company_id>/`
 
-- Request Body
-
-```json
-{
-  "company_id": "<company_id>"
-}
-```
 
 - Response 201
 
@@ -67,15 +60,7 @@ _Get_ to `task_management/get_task/<str:company_id>/`
 }
 ```
 
-_Get_ to `task_management/get_candidate_task/<str:document_id/`
-
-- Request Body
-
-```json
-{
-  "document_id": "<document id>"
-}
-```
+_Get_ to `task_management/get_candidate_task/<str:document_id>/`
 
 - Response 200
 
@@ -137,7 +122,7 @@ _delete_ to `task_management/delete_task/`
 
 ```json
 {
-  "document_id": "<document id>",
+  "document_id": "<document id>"
 }
 ```
 

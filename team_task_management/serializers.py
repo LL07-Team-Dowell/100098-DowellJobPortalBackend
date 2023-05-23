@@ -13,7 +13,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ["id", "team_name", "members"]
+        fields = ["id", "team_name","company_id", "members"]
 
     def create(self, validated_data):
         members_data = validated_data.pop('members')
@@ -35,7 +35,7 @@ class TeamEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ["id", "team_name", "members"]
+        fields = ["id", "team_name","company_id", "members"]
 
     def update(self, instance, validated_data):
         members_data = validated_data.pop('members', None)
@@ -50,6 +50,7 @@ class TeamEditSerializer(serializers.ModelSerializer):
 
     def partial_update(self, instance, validated_data):
         instance.team_name = validated_data.get('team_name', instance.team_name)
+        instance.company_id = validated_data.get('company_id', instance.company_id)
         members_data = validated_data.get('members', [])
         members = []
         for member_data in members_data:
