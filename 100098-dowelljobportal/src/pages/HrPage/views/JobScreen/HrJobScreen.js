@@ -104,7 +104,7 @@ function HrJobScreen() {
       setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
       setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
 
-      setJobs(res[1].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
+      setJobs(res[1].data.response.data.reverse().filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
       
       const list = res[2].data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type);
       const newList = list.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id);
@@ -286,8 +286,8 @@ function HrJobScreen() {
     { 
       section !== "user" && section !== "attendance" && section !== "tasks" && path === undefined && sub_section === undefined && 
       <TogglerNavMenuBar 
-        // menuItems={["Received", "Guests", "Shortlisted" , "Hr Training"]} 
-        menuItems={["Received", "Shortlisted" , "Hr Training"]} 
+        menuItems={["Received", "Guests", "Shortlisted" , "Hr Training"]} 
+        // menuItems={["Received", "Shortlisted" , "Hr Training"]} 
         currentActiveItem={currentActiveItem} 
         handleMenuItemClick={handleMenuItemClick} 
       /> 
