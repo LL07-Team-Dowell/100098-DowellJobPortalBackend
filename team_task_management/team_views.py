@@ -25,6 +25,10 @@ class create_team(APIView):
             }
             if field["members"] == "":
                 return Response({"Error": "Members Field is required and can not be empty"})
+            if field["team_name"] == "":
+                return Response({"Error": "Team Name Field is required and can not be empty"})
+            if field["document_id"] == "":
+                return Response({"Error": "Document Id Field is required and can not be empty"})
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field)
             if response:
