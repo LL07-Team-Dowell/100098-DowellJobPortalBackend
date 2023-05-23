@@ -3,9 +3,9 @@ from team_task_management.team_views import *
 
 urlpatterns = [
     path('create_team/', create_team.as_view()),
-    path('get_team/', get_team.as_view()),
+    path('get_team/<str:document_id>/', get_team.as_view()),
     path('create_team_task/', create_task.as_view()),
-    path('get_team_task/', get_task.as_view()),
+    path('get_team_task/<str:task_id>/', get_task.as_view()),
 
     # path('create_member_task/', create_member_task.as_view()),
     # path('edit-team-api/<int:pk>/', EditTeamAPIView.as_view(), name='team-retrieve-update-destroy'),
