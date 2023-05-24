@@ -227,6 +227,18 @@ h3 {
   transition: 0.3s ease;
 }
 
+.payment_section {
+  display: flex;
+  justify-content: space-between;
+}
+
+.currency {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  margin: 0;
+  height: 2.4rem;
+  color: #7e7e7e;
+}
+
 .terms {
   display: flex;
   flex-direction: column;
@@ -262,7 +274,7 @@ h3 {
 }
 
 .add_terms .terms_input {
-  width: 100%;
+  width: 80%;
   margin: 0;
   padding: 0.5rem;
   border-radius: 0.3rem;
@@ -278,6 +290,11 @@ h3 {
   align-items: center;
   border: none;
   background-color: transparent;
+  margin-right: 11rem;
+}
+
+.terms_remove svg{
+  margin-bottom: 1rem;
 }
 
 .terms_text {

@@ -14,6 +14,7 @@ import { Tooltip } from "react-tooltip";
 
 import "./style.css";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
+import DropdownButton from "../../../TeamleadPage/components/DropdownButton/Dropdown";
 
 const AddJob = ({ subAdminView }) => {
   const { currentUser } = useCurrentUserContext();
@@ -47,6 +48,8 @@ const AddJob = ({ subAdminView }) => {
   const [secondOption, setSecondOption] = useState("");
   const [thirdOption, setThirdOption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [forthOption, setForthOption] = useState("Select Currency");
+  const [currency, setCurrency] = useState(["USD", "NGN", "GBP", "RE"]);
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -83,6 +86,17 @@ const AddJob = ({ subAdminView }) => {
     });
   };
 
+  const handlePaymentChange = (valueEntered, inputName) => {
+    const filteredValue = valueEntered.replace(/\D/g, "");
+    setNewJob((prevValue) => {
+      const copyOfPrevValue = { ...prevValue };
+      copyOfPrevValue[inputName] = filteredValue;
+      return copyOfPrevValue;
+    });
+  };
+
+  
+  
   const handleAddTerms = (termsKey) => {
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
@@ -92,7 +106,7 @@ const AddJob = ({ subAdminView }) => {
       return copyOfPrevValue;
     });
   };
-
+  
   const handleRemoveTerms = (termsKey, index) => {
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
@@ -102,7 +116,7 @@ const AddJob = ({ subAdminView }) => {
       return copyOfPrevValue;
     });
   };
-
+  
   const handleTermsChange = (valueEntered, termsKey, index) => {
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
@@ -112,7 +126,7 @@ const AddJob = ({ subAdminView }) => {
       return copyOfPrevValue;
     });
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(newJob);
@@ -158,6 +172,14 @@ const AddJob = ({ subAdminView }) => {
       );
       return;
     }
+
+      //concatenate the numeric input with the currency on submit
+      // const payment = `${newJob.payment} ${forthOption}`
+      // setNewJob((prevValue) => {
+      //   const copyOfPrevValue = { ...prevValue };
+      //   copyOfPrevValue["payment"] = payment;
+      //   return copyOfPrevValue;
+      // });
 
     setIsLoading(true);
     try {
@@ -448,15 +470,30 @@ const AddJob = ({ subAdminView }) => {
                 </option>
               </select>
 
-              <label htmlFor="payment">Payment</label>
-              <input
-                type="text"
-                name={"payment"}
-                value={newJob.payment}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-                placeholder={"Enter your amount"}
-                required
-              />
+              <div>
+                <label htmlFor="payment">Payment</label>
+                <div className="payment_section">
+                  <input
+                    type="text"
+                    name={"payment"}
+                    value={newJob.payment}
+                    onChange={(e) =>
+                      handlePaymentChange(e.target.value, e.target.name)
+                    }
+                    placeholder={"Enter your amount"}
+                    required
+                  />
+                  <DropdownButton
+                    className="currency"
+                    currentSelection={forthOption}
+                    handleSelectionClick={(value) => {
+                      setForthOption(value);
+                    }}
+                    selections={currency}
+                    removeDropDownIcon={false}
+                  />
+                </div>
+              </div>
 
               <label htmlFor="description">Description</label>
               <input
