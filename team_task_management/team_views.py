@@ -24,11 +24,14 @@ class create_team(APIView):
                 "status": "nothing to update"
             }
             if field["members"] == "":
-                return Response({"Error": "Members Field is required and can not be empty"})
+                return Response({"Error": "Members Field is required and can not be empty"},
+                                status=status.HTTP_204_NO_CONTENT)
             if field["team_name"] == "":
-                return Response({"Error": "Team Name Field is required and can not be empty"})
+                return Response({"Error": "Team Name Field is required and can not be empty"},
+                                status=status.HTTP_204_NO_CONTENT)
             if field["document_id"] == "":
-                return Response({"Error": "Document Id Field is required and can not be empty"})
+                return Response({"Error": "Document Id Field is required and can not be empty"},
+                                status=status.HTTP_204_NO_CONTENT)
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field)
             if response:
@@ -41,13 +44,12 @@ class create_team(APIView):
 class get_team(APIView):
     def get(self, request, document_id):
         field = {
-            "document_id": data.get("document_id"),
+            "document_id": document_id,
         }
         update_field = {
             "status": "nothing to update"
         }
-        response = dowellconnection(
-            *team_management_modules, "fetch", field, update_field)
+        response = dowellconnection(*team_management_modules, "fetch", field, update_field)
         if response:
             return Response({"message": f"Teams with id - {document_id} available",
                              "response": json.loads(response)},
@@ -75,15 +77,20 @@ class create_task(APIView):
                 "status": "nothing to update"
             }
             if field["task_id"] == "":
-                return Response({"Error": "Task Id Field is required and can not be empty"})
+                return Response({"Error": "Task Id Field is required and can not be empty"},
+                                status=status.HTTP_204_NO_CONTENT)
             if field["title"] == "":
-                return Response({"Error": "Title Field is required and can not be empty"})
+                return Response({"Error": "Title Field is required and can not be empty"},
+                                status=status.HTTP_204_NO_CONTENT)
             if field["description"] == "":
-                return Response({"Error": "Description Field is required and can not be empty"})
+                return Response({"Error": "Description Field is required and can not be empty"},
+                                status=status.HTTP_204_NO_CONTENT)
             if field["assignee"] == "":
-                return Response({"Error": "Assignee Field is required and can not be empty"})
+                return Response({"Error": "Assignee Field is required and can not be empty"},
+                                status=status.HTTP_204_NO_CONTENT)
             if field["team_name"] == "":
-                return Response({"Error": "Team Name Field is required and can not be empty"})
+                return Response({"Error": "Team Name Field is required and can not be empty"},
+                                status=status.HTTP_204_NO_CONTENT)
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field)
             if response:
