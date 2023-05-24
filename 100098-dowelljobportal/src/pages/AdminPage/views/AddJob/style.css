@@ -230,6 +230,7 @@ h3 {
 .payment_section {
   display: flex;
   justify-content: space-between;
+  gap: 2rem;
 }
 
 .currency {
@@ -237,6 +238,10 @@ h3 {
   margin: 0;
   height: 2.4rem;
   color: #7e7e7e;
+}
+
+.payment_input {
+  width: 100%;
 }
 
 .terms {

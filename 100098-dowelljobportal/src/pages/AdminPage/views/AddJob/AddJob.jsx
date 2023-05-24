@@ -48,8 +48,8 @@ const AddJob = ({ subAdminView }) => {
   const [secondOption, setSecondOption] = useState("");
   const [thirdOption, setThirdOption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [forthOption, setForthOption] = useState("Select Currency");
-  const [currency, setCurrency] = useState(["USD", "NGN", "GBP", "RE"]);
+  const [currency, setCurrency] = useState("Select Currency");
+  const currencyList = ["USD", "NGN", "GBP", "RE"];
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -95,8 +95,6 @@ const AddJob = ({ subAdminView }) => {
     });
   };
 
-  
-  
   const handleAddTerms = (termsKey) => {
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
@@ -106,7 +104,7 @@ const AddJob = ({ subAdminView }) => {
       return copyOfPrevValue;
     });
   };
-  
+
   const handleRemoveTerms = (termsKey, index) => {
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
@@ -116,7 +114,7 @@ const AddJob = ({ subAdminView }) => {
       return copyOfPrevValue;
     });
   };
-  
+
   const handleTermsChange = (valueEntered, termsKey, index) => {
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
@@ -126,7 +124,7 @@ const AddJob = ({ subAdminView }) => {
       return copyOfPrevValue;
     });
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(newJob);
@@ -173,17 +171,14 @@ const AddJob = ({ subAdminView }) => {
       return;
     }
 
-      //concatenate the numeric input with the currency on submit
-      // const payment = `${newJob.payment} ${forthOption}`
-      // setNewJob((prevValue) => {
-      //   const copyOfPrevValue = { ...prevValue };
-      //   copyOfPrevValue["payment"] = payment;
-      //   return copyOfPrevValue;
-      // });
+    //concatenate the numeric input with the currency on submit
 
     setIsLoading(true);
     try {
-      const response = await addNewJob(newJob);
+      const response = await addNewJob({
+        ...newJob,
+        payment: `${newJob.payment} ${currency}`,
+      });
       console.log(response.data);
 
       if (response.status === 201) {
@@ -473,8 +468,18 @@ const AddJob = ({ subAdminView }) => {
               <div>
                 <label htmlFor="payment">Payment</label>
                 <div className="payment_section">
+                  <DropdownButton
+                    className="currency"
+                    currentSelection={currency}
+                    handleSelectionClick={(value) => {
+                      setCurrency(value);
+                    }}
+                    selections={currencyList}
+                    removeDropDownIcon={false}
+                  />
                   <input
                     type="text"
+                    className="payment_input"
                     name={"payment"}
                     value={newJob.payment}
                     onChange={(e) =>
@@ -482,15 +487,6 @@ const AddJob = ({ subAdminView }) => {
                     }
                     placeholder={"Enter your amount"}
                     required
-                  />
-                  <DropdownButton
-                    className="currency"
-                    currentSelection={forthOption}
-                    handleSelectionClick={(value) => {
-                      setForthOption(value);
-                    }}
-                    selections={currency}
-                    removeDropDownIcon={false}
                   />
                 </div>
               </div>
