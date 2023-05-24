@@ -1218,6 +1218,7 @@ __patch__ to `submit_response/`
     "document_id": "<document_id>",
     "code_base_link": "<code_base_link>",
     "live_link": "<live_link>",
+    "video_link": "video_link",
     "documentation_link": "<documentation_link>",
     "answer_link": "<answer_link>",
     "submitted_on": "<submitted_on>"

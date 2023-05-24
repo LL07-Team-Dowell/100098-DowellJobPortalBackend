@@ -1042,6 +1042,7 @@ class DeleteMemberTask(APIView):
         message = {"error": f"Task with id - {task_id} for member - {task} was not successfully deleted"}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
+
 # api for team_task management ends here____________________________
 
 
@@ -1247,9 +1248,11 @@ class submit_response(APIView):
             "submitted_on": data.get("submitted_on"),
         }
         if update_field["video_link"] == "":
-            return Response({"Error": "Video Link Field is required and can not be empty"})
+            return Response({"Error": "Video Link Field is required and can not be empty"},
+                            status=status.HTTP_204_NO_CONTENT)
         if update_field["answer_link"] == "":
-            return Response({"Error": "Answer Link Field is required and can not be empty"})
+            return Response({"Error": "Answer Link Field is required and can not be empty"},
+                            status=status.HTTP_204_NO_CONTENT)
         insert_to_response = dowellconnection(
             *response_modules, "update", field, update_field)
 
@@ -1277,6 +1280,5 @@ class get_all_responses(APIView):
                             status=status.HTTP_200_OK)
         else:
             return Response({"error": "data not found"}, status=status.HTTP_204_NO_CONTENT)
-
 
 # api for training management ends here______________________
