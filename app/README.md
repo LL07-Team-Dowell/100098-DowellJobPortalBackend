@@ -825,6 +825,7 @@ _delete_ to `task_management/delete_task/`
 ```
 
 ### team task management view-------------------------------------------------
+
 _Post_ to `create_team/`
 
 - Request Body
@@ -832,6 +833,7 @@ _Post_ to `create_team/`
 ```json
 {
   "team_name": "team name",
+  "document_id": "document_id",
   "members": ["list of members"]
 }
 ```
@@ -843,73 +845,40 @@ _Post_ to `create_team/`
   "message": "Team created successfully"
 }
 ```
-
-- Response 400
-
+-Response 204 
 ```json
 {
-  "message": "serializer.errors"
+  "Error": "<[List of members]|Document Id|Team Name> Field is required and can not be empty"
 }
 ```
 
-_Patch_ to `edit_team/<int:pk>/`
-
-- Request Body
+- Response 304
 
 ```json
 {
-    "team_name": "New Team Name",
-    "members": [
-        "New Member 1",
-			"New Member 2"
-    ]
+  "message": "Team Creation Failed"
 }
 ```
+
+_Get_ to `get_team/<str:document_id>/`
 
 - Response 200
 
 ```json
 {
-	"id": "<id>",
-	"team_name": "New Team Name",
-	"members": [
-		"New Member 1",
-		"New Member 2"
-	]
+  "message": "Teams with id - {document_id} available",
+  "response": "[List of teams]"
 }
 ```
 
-- Response 400
+- Response 204
 
 ```json
 {
-  "message": "serializer.errors"
-}
-```
-- Response 404
-
-```json
-{
-  "message": "Team does not exist"
+  "message": "There is no team"
 }
 ```
 
-_delete_ to `delete_team/<int:team_id>/`
-
-
-- Response 200
-
-```json
-{"message": "Team with id - {team_id} was successfully deleted"}
-```
-
-- Response 400
-
-```json
-{
-	"error": "Team with id was not successfully deleted"
-}
-```
 
 _Post_ to `create_team_task/`
 
@@ -917,11 +886,13 @@ _Post_ to `create_team_task/`
 
 ```json
 {
-  "assignee": "user name",
+  
+  "task_id": "task_id",
   "title": "title",
   "description": "This field is required.",
-  "team": "Team id",
-  "completed": "True/False"
+  "assignee": "user name",
+  "completed": "True/False",
+  "team_name": "team_name"
 }
 ```
 
@@ -933,120 +904,41 @@ _Post_ to `create_team_task/`
 }
 ```
 
-- Response 400
-
+-Response 204 
 ```json
 {
-  "message": "serializer.errors"
+  "Error": "<Task Id|Title|Description|Assignee|Team Name> Field is required and can not be empty"
 }
 ```
 
-_Patch_ to `edit_task/<int:pk>/`
-
-- Request Body
+- Response 304
 
 ```json
 {
-    "title": "title of task",
-    "description": " task description",
-    "assignee": "assignee of the task",
-    "team": " id of the team used",
-    "completed": "false/true"
+  "message": "Task Creation Failed"
 }
 ```
+
+
+_Get_ to `get_team_task/<str:task_id>/`
 
 - Response 200
 
 ```json
 {
-	"id": "<id>",
-	"title": "title of task",
-    "description": " task description",
-    "assignee": "assignee of the task",
-    "completed": false
+  "message": "Tasks with id - {task_id} available",
+  "response": "[List of teams]"
 }
 ```
 
-- Response 400
+- Response 204
 
 ```json
 {
-  "message": "serializer.errors"
-}
-```
-- Response 404
-
-```json
-{
-  "message": "This task does not exist"
+  "message": "There is no task"
 }
 ```
 
-_delete_ to `delete_task/<int:task_id>/`
-
-
-- Response 200
-
-```json
-{"message": "Task with id - {task_id} was successfully deleted"}
-```
-
-- Response 400
-
-```json
-{
-	"error": "Task with id - {task_id} was not successfully deleted"
-}
-```
-
-
-_Post_ to `create_member_task/`
-
-- Request Body
-
-```json
-{
-  "assignee": "user name",
-  "title": "title",
-  "description": "This field is required.",
-  "team": "Team id",
-  "team_member": "member id",
-  "completed": "True/False"
-}
-```
-
-- Response 201
-
-```json
-{
-  "message": "Task for member-{member} is created successfully"
-}
-```
-
-- Response 400
-
-```json
-{
-  "message": "serializer.errors"
-}
-```
-
-
-_delete_ to `delete_member_task/<int:task_id>/`
-
-- Response 200
-
-```json
-{"message": "Task with id - {task_id} for member - {task.team_member} was successfully deleted"}
-```
-
-- Response 400
-
-```json
-{
-	"error": "Task with id - {task_id} for member - {task.team_member} was not successfully deleted"
-}
-```
 
 ### training management view-------------------------------------------------
 _Post_ to `create_question/`

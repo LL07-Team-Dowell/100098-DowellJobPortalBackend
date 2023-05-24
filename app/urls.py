@@ -42,13 +42,9 @@ urlpatterns = [
 
     # team task management--------------------------------------------
     path('create_team/', create_team.as_view()),
-    path('create_team_task/', create_team_task.as_view()),
-    path('create_member_task/', create_member_task.as_view()),
-    path('edit_team/<int:pk>/', EditTeamAPIView.as_view(), name='team-retrieve-update-destroy'),
-    path('delete_team/<int:team_id>/', DeleteTeam.as_view(), name="delete_team"),
-    path('edit_task/<int:pk>/', EditTaskAPIView.as_view(), name='edit_task'),
-    path('delete_task/<int:task_id>/', DeleteTask.as_view(), name="delete_task"),
-    path('delete_member_task/<int:task_id>/', DeleteMemberTask.as_view(), name="delete_task_for_member"),
+    path('get_team/<str:document_id>/', get_team.as_view()),
+    path('create_team_task/', create_task.as_view()),
+    path('get_team_task/<str:task_id>/', get_task.as_view()),
 
     # training management--------------------------------------------
     path('create_question/', create_question.as_view()),
