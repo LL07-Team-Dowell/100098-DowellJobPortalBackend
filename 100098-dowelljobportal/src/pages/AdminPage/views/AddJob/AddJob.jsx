@@ -507,7 +507,7 @@ const AddJob = ({ subAdminView }) => {
                   {React.Children.toArray(
                     newJob.general_terms.map((term, index) => {
                       return (
-                        <div className="add_terms">
+                        <div className="add_terms" key={index}>
                           <input
                             className="terms_input"
                             placeholder="Enter terms"
@@ -523,7 +523,9 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("general_terms")}
+                            onClick={() =>
+                              handleRemoveTerms("general_terms", index)
+                            }
                           >
                             <MdCancel size="1.2rem" color="#b8b8b8" />
                           </button>
@@ -554,7 +556,7 @@ const AddJob = ({ subAdminView }) => {
                   {React.Children.toArray(
                     newJob.technical_specification.map((term, index) => {
                       return (
-                        <div className="add_terms">
+                        <div className="add_terms" key={index}>
                           <input
                             className="terms_input"
                             placeholder="Enter terms"
@@ -571,7 +573,7 @@ const AddJob = ({ subAdminView }) => {
                           <button
                             className="terms_remove"
                             onClick={() =>
-                              handleRemoveTerms("technical_specification")
+                              handleRemoveTerms("technical_specification", index)
                             }
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
@@ -603,7 +605,7 @@ const AddJob = ({ subAdminView }) => {
                   {React.Children.toArray(
                     newJob.payment_terms.map((term, index) => {
                       return (
-                        <div className="add_terms">
+                        <div className="add_terms" key={index}>
                           <input
                             className="terms_input"
                             placeholder="Enter terms"
@@ -619,7 +621,7 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("payment_terms")}
+                            onClick={() => handleRemoveTerms("payment_terms", index)}
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
                           </button>
@@ -650,7 +652,7 @@ const AddJob = ({ subAdminView }) => {
                   {React.Children.toArray(
                     newJob.workflow_terms.map((term, index) => {
                       return (
-                        <div className="add_terms">
+                        <div className="add_terms" key={index}>
                           <input
                             className="terms_input"
                             placeholder="Enter terms"
@@ -666,7 +668,7 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("workflow_terms")}
+                            onClick={() => handleRemoveTerms("workflow_terms", index)}
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
                           </button>
@@ -697,7 +699,7 @@ const AddJob = ({ subAdminView }) => {
                   {React.Children.toArray(
                     newJob.other_info.map((term, index) => {
                       return (
-                        <div className="add_terms">
+                        <div className="add_terms" key={index}>
                           <input
                             className="terms_input"
                             placeholder="Enter terms"
@@ -713,7 +715,7 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("other_info")}
+                            onClick={() => handleRemoveTerms("other_info", index)}
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
                           </button>
