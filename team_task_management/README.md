@@ -7,7 +7,7 @@ _Post_ to `team_task_management/create_team/`
 ```json
 {
   "team_name": "team name",
-  "document_id": "document_id",
+  "company_id": "company_id",
   "members": ["list of members"]
 }
 ```
@@ -17,12 +17,6 @@ _Post_ to `team_task_management/create_team/`
 ```json
 {
   "message": "Team created successfully"
-}
-```
--Response 204 
-```json
-{
-  "Error": "<[List of members]]|Document Id|Team Name> Field is required and can not be empty"
 }
 ```
 
@@ -41,6 +35,25 @@ _Get_ to `team_task_management/get_team/<str:document_id>/`
 ```json
 {
   "message": "Teams with id - {document_id} available",
+  "response": "[List of teams]"
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There is no team"
+}
+```
+
+_Get_ to `team_task_management/get_all_teams/<str:company_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "Teams with company id - {company_id} available",
   "response": "[List of teams]"
 }
 ```
@@ -75,13 +88,6 @@ _Post_ to `team_task_management/create_team_task/`
 ```json
 {
   "message": "Task created successfully"
-}
-```
-
--Response 204 
-```json
-{
-  "Error": "<Task Id|Title|Description|Assignee|Team Name> Field is required and can not be empty"
 }
 ```
 
