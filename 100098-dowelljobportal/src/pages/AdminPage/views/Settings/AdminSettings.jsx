@@ -9,6 +9,7 @@ import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner
 import { getSettingUserProfileInfo } from "../../../../services/settingServices";
 import { useJobContext } from "../../../../contexts/Jobs";
 import { getApplicationForAdmin } from "../../../../services/adminServices";
+import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 
 const rolesDict = {'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr", "sub_admin":"Sub Admin", "group_lead":"Group Lead"};
 
@@ -32,6 +33,9 @@ const AdminSettings = () => {
   useEffect(() => {
     if (firstSelection.length > 0) {
       const status = list.reverse().find(p => p.portfolio_name === firstSelection)?.status;
+      const selectedPortfolioIsOwner = currentUser?.userportfolio?.find(user => user.portfolio_name === firstSelection && user.role === 'owner');
+
+      if (selectedPortfolioIsOwner) return setuserstatus(candidateStatuses.ONBOARDING);
       if (!status) return setuserstatus('');
       setuserstatus(status);
     }
