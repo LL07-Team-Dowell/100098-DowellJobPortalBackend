@@ -918,7 +918,7 @@ class create_team(APIView):
             field = {
                 "eventId": get_event_id()['event_id'],
                 "team_name": data.get("team_name"),
-                "document_id": data.get("document_id"),
+                "company_id": data.get("company_id"),
                 "members": data.get("members")
             }
             update_field = {
@@ -930,8 +930,8 @@ class create_team(APIView):
             if field["team_name"] == "":
                 return Response({"Error": "Team Name Field is required and can not be empty"},
                                 status=status.HTTP_204_NO_CONTENT)
-            if field["document_id"] == "":
-                return Response({"Error": "Document Id Field is required and can not be empty"},
+            if field["company_id"] == "":
+                return Response({"Error": "Company Id Field is required and can not be empty"},
                                 status=status.HTTP_204_NO_CONTENT)
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field)
@@ -945,7 +945,7 @@ class create_team(APIView):
 class get_team(APIView):
     def get(self, request, document_id):
         field = {
-            "document_id": document_id,
+            "_id": document_id,
         }
         update_field = {
             "status": "nothing to update"
@@ -958,6 +958,25 @@ class get_team(APIView):
         else:
             return Response({"message": "There is no team", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class get_all_teams(APIView):  # all teams
+    def get(self, request, company_id):
+        field = {
+            "company_id": company_id,
+        }
+        update_field = {
+            "status": "nothing to update"
+        }
+        response = dowellconnection(*team_management_modules, "fetch", field, update_field)
+        if response:
+            return Response({"message": f"Teams with company id - {company_id} available",
+                             "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "There is no team", "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+
 
 
 @method_decorator(csrf_exempt, name='dispatch')

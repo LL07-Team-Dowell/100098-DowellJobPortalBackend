@@ -833,7 +833,7 @@ _Post_ to `create_team/`
 ```json
 {
   "team_name": "team name",
-  "document_id": "document_id",
+  "company_id": "company_id",
   "members": ["list of members"]
 }
 ```
@@ -878,6 +878,27 @@ _Get_ to `get_team/<str:document_id>/`
   "message": "There is no team"
 }
 ```
+
+
+_Get_ to `team_task_management/get_all_teams/<str:company_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "Teams with company id - {company_id} available",
+  "response": "[List of teams]"
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There is no team"
+}
+```
+
 
 
 _Post_ to `create_team_task/`
