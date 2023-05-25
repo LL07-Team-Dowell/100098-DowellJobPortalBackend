@@ -24,9 +24,9 @@ export const rejectCandidateApplicationforHr = async (data) => {
 }
 
 export const getSettingUserProject = async () => {
-    return await currentBackendAxiosInstance.get('setting/SettingUserProject/')
+  return await currentBackendAxiosInstance.get('setting/SettingUserProject/')
 }
 
-export const getJob = async (data) =>{
+export const getJob = async (data) => {
   return await currentBackendAxiosInstance.post("admin_management/get_job/", data)
 }
