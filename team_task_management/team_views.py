@@ -23,15 +23,6 @@ class create_team(APIView):
             update_field = {
                 "status": "nothing to update"
             }
-            if field["members"] == "":
-                return Response({"Error": "Members Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["team_name"] == "":
-                return Response({"Error": "Team Name Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["company_id"] == "":
-                return Response({"Error": "Company Id Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field)
             if response:
@@ -95,21 +86,6 @@ class create_task(APIView):
             update_field = {
                 "status": "nothing to update"
             }
-            if field["task_id"] == "":
-                return Response({"Error": "Task Id Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["title"] == "":
-                return Response({"Error": "Title Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["description"] == "":
-                return Response({"Error": "Description Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["assignee"] == "":
-                return Response({"Error": "Assignee Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["team_name"] == "":
-                return Response({"Error": "Team Name Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field)
             if response:

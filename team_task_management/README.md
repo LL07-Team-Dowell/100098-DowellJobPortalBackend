@@ -19,12 +19,6 @@ _Post_ to `team_task_management/create_team/`
   "message": "Team created successfully"
 }
 ```
--Response 204 
-```json
-{
-  "Error": "<[List of members]]|Document Id|Team Name> Field is required and can not be empty"
-}
-```
 
 - Response 304
 
@@ -94,13 +88,6 @@ _Post_ to `team_task_management/create_team_task/`
 ```json
 {
   "message": "Task created successfully"
-}
-```
-
--Response 204 
-```json
-{
-  "Error": "<Task Id|Title|Description|Assignee|Team Name> Field is required and can not be empty"
 }
 ```
 
