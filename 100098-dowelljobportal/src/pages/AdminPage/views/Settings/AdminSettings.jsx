@@ -92,7 +92,7 @@ const AdminSettings = () => {
     setLoading(true);
     getSettingUserProfileInfo().then(resp => { setSettingUsetProfileInfo(resp.data); setLoading(false); console.log(resp.data.reverse()) }).catch(err => { console.log(err); setLoading(false) })
     if (list.length < 1) {
-      getApplicationForAdmin({ company_id: currentUser?.portfolio_info[0].org_id })
+      getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
         .then(resp => {
           setlist(resp.data.response.data?.filter(j => currentUser.portfolio_info[0].data_type === j.data_type));
         })
