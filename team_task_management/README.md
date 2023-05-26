@@ -66,6 +66,23 @@ _Get_ to `team_task_management/get_all_teams/<str:company_id>/`
 }
 ```
 
+_Delete_ to `team_task_management/delete_team/<int:team_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "Team with id {team_id} has been deleted"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Team with id {team_id} failed to be deleted"
+}
+```
 
 _Post_ to `team_task_management/create_team_task/`
 
@@ -116,5 +133,23 @@ _Get_ to `team_task_management/get_team_task/<str:task_id>/`
 ```json
 {
   "message": "There is no task"
+}
+```
+
+_Delete_ to `team_task_management/delete_task/<int:task_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "Task with id {task_id} has been deleted"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Task with id {task_id} failed to be deleted"
 }
 ```
