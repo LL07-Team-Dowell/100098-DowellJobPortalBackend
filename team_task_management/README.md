@@ -28,6 +28,34 @@ _Post_ to `team_task_management/create_team/`
 }
 ```
 
+_patch_ to `team_task_management/edit_team/<str:document_id>/`
+
+- Request Body
+
+```json
+{
+  "team_name": "team name",
+  "members": ["list of members"]
+}
+
+```
+- Response 200
+
+```json
+{
+  "message": "Team with id - {document_id} Updated Successfully", 
+  "response": "response"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Team with id - {document_id} Update Failed"
+}
+```
+
 _Get_ to `team_task_management/get_team/<str:document_id>/`
 
 - Response 200
