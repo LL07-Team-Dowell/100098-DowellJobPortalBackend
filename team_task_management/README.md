@@ -169,8 +169,8 @@ _patch_ to `team_task_management/edit_team/<str:document_id>/`
 
 ```json
 {
-  "team_name": "team name",
-  "members": ["list of members"]
+  "message": "Team with id - {document_id} Updated Successfully", 
+  "response": "response"
 }
 ```
 
@@ -178,6 +178,6 @@ _patch_ to `team_task_management/edit_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Team Updating Failed"
+  "message": "Team with id - {document_id} Update Failed"
 }
 ```

@@ -46,10 +46,11 @@ class edit_team(APIView):
             response = dowellconnection(
                 *team_management_modules, "update", field, update_field)
             if response:
-                return Response({"response": json.loads(response)},
+                return Response({"message": f"Team with id - {document_id} Updated Successfully",
+                                 "response": json.loads(response)},
                             status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Team Updating Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": f"Team with id - {document_id} Update Failed"}, status=status.HTTP_304_NOT_MODIFIED)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_team(APIView):  ## single team
