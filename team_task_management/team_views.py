@@ -70,6 +70,23 @@ class get_all_teams(APIView):  # all teams
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+class delete_team(APIView):
+    def delete(self, request, team_id):
+        field = {
+            "_id": team_id
+        }
+        update_field = {
+            "data_type": "Archived_Data"
+        }
+        response = dowellconnection(*task_management_reports, "update", field, update_field)
+        if response:
+            return Response({"message": f"Team with id {team_id} has been deleted"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": f"Team with id {team_id} failed to be deleted"},
+                            status=status.HTTP_304_NOT_MODIFIED)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
 class create_task(APIView):
     def post(self, request):
         data = request.data
@@ -113,3 +130,20 @@ class get_task(APIView):
             return Response({"message": "There is no task",
                              "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class delete_task(APIView):
+    def delete(self, request, task_id):
+        field = {
+            "_id": task_id
+        }
+        update_field = {
+            "data_type": "Archived_Data"
+        }
+        response = dowellconnection(*task_management_reports, "update", field, update_field)
+        if response:
+            return Response({"message": f"Task with id {task_id} has been deleted"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": f"Task with id {task_id} failed to be deleted"},
+                            status=status.HTTP_304_NOT_MODIFIED)
