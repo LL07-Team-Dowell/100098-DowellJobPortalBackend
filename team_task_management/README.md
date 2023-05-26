@@ -153,3 +153,31 @@ _Delete_ to `team_task_management/delete_task/<int:task_id>/`
   "message": "Task with id {task_id} failed to be deleted"
 }
 ```
+
+_patch_ to `team_task_management/edit_team/<str:document_id>/`
+
+- Request Body
+
+```json
+{
+  "team_name": "team name",
+  "members": ["list of members"]
+}
+
+```
+- Response 200
+
+```json
+{
+  "team_name": "team name",
+  "members": ["list of members"]
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Team Updating Failed"
+}
+```

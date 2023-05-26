@@ -32,6 +32,26 @@ class create_team(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+class edit_team(APIView):
+    def patch(self, request,document_id):
+        data = request.data
+        if data:
+            field = {
+                "_id": document_id, 
+            }
+            update_field = {
+                "members": data.get("members"),
+                "team_name": data.get("team_name"),
+            }
+            response = dowellconnection(
+                *team_management_modules, "update", field, update_field)
+            if response:
+                return Response({"response": json.loads(response)},
+                            status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Team Updating Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+
+@method_decorator(csrf_exempt, name='dispatch')
 class get_team(APIView):  ## single team
     def get(self, request, document_id):
         field = {
