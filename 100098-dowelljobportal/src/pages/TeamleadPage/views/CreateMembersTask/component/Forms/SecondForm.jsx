@@ -3,13 +3,19 @@ import { useValues } from '../../context/Values'
 import axios from 'axios'
 import { useState } from 'react';
 import Checkbox from '../Checkbox';
+import { initialState } from '../../context/Values';
+import { useCurrentUserContext } from '../../../../../../contexts/CurrentUserContext';
 const SecondForm = ({}) => {
+  const { currentUser } = useCurrentUserContext();
+
   const {data ,setdata} = useValues() ; 
   const [task , settask] = useState({choosed:false , value:""});
   const [choosedTeam , setChoosedTeam] = useState({choosed:false , value:""})
   const [loading ,setloading] = useState(false) ; 
   const {individual_task , team_task} = data ;
-  const [teams ,setteams] = useState([])
+  const [teams ,setteams] = useState([]) ; 
+  const [projectname , setprojectname] = useState("") ; 
+  const [singlemembertask ,setsinglemembertask] =useState("") ;   
   useEffect(()=>{
       if(task.choosed || !team_task){
         setloading(true) ; 
@@ -18,12 +24,7 @@ const SecondForm = ({}) => {
         .catch(err => console.log(err))
       }
   },[team_task ,task])
-//   useEffect(()=>{
-//     axios("https://100098.pythonanywhere.com/team_task_management/create_get_team/")
-//     .then(resp =>{ setteams(resp.data);console.log(resp.data);setdata({...data , TeamsSelected:resp.data})})
-//     .catch(err => console.log(err))
-// },[])
-  console.log("TeamsSelected",data.TeamsSelected)
+
 const patchTeam = () => {
     const id = data.TeamsSelected.find(m => m.team_name === choosedTeam.value)["id"] 
     const teamName = data.TeamsSelected.find(m => m.team_name === choosedTeam.value)["team_name"] 
@@ -58,7 +59,27 @@ const patchTeam = () => {
                 setdata({...data , membersEditTeam:[...data.TeamsSelected.find(v => v.team_name === choosedTeam.value).members.map(v => v.name)]})
               }
             },[choosedTeam])
-
+            const createSingleMemberTask = () => {
+              console.log("ala said : applicant:",data.selected_members[0])
+              axios.post("https://100098.pythonanywhere.com/task_management/create_task/",{
+              project:[projectname] ,
+              applicant:data.selected_members[0] ,
+              task:singlemembertask,
+              task_added_by:currentUser.userinfo.username,
+              company_id: currentUser.portfolio_info[0].org_id,
+              data_type:currentUser.portfolio_info[0].data_type , 
+              task_created_date: new Date().toString() , 
+            })
+            .then(resp => {
+              alert("good") ; 
+              console.log(resp) ; 
+              setdata(initialState) ; 
+              
+            })
+            .catch(err => {
+              console.log(err)
+            })
+            }
                       if(loading)return <h1>Loading...</h1>
   return (
     <div>   
@@ -137,8 +158,13 @@ const patchTeam = () => {
                                             {member}
                                           </label>
                                 )}
-                                <input type="text"  placeholder='project name'/>
+                                <input type="text"  placeholder='project name' value={projectname} onChange={e => setprojectname(e.target.value)}/>
+                                {/* 
+  const [singlemembertask ,setsinglemembertask] =useState("") ;   
+                                 */}
+                                <input type="text"  placeholder='project name' value={singlemembertask} onChange={e => setsinglemembertask(e.target.value)}/>
 
+                        <button onClick={createSingleMemberTask}>add Task for single member</button>
                                    </>
             }
             

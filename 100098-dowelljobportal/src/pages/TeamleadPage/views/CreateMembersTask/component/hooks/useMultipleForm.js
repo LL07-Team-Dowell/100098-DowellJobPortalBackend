@@ -14,7 +14,9 @@ export const  useMultistepForm = (steps) =>  {
                 return i - 1
               })
             }
-           
+            function backfirst() {
+              setCurrentStepIndex(0)
+            }
             return {
               currentStepIndex,
               step: steps[currentStepIndex],
@@ -23,5 +25,6 @@ export const  useMultistepForm = (steps) =>  {
               isLastStep: currentStepIndex === steps.length - 1,
               next,
               back,
+              backfirst,
             }
           }

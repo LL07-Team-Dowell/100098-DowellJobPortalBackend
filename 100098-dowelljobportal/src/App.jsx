@@ -50,6 +50,7 @@ import CandidateTranningScreen from "./pages/CandidatePage/views/CandidateTranni
 import TraningProgress from "./pages/CandidatePage/views/TraningProgress.js/TraningProgress";
 import { ResponsesContextProvider } from "./contexts/Responses";
 import Index from "./pages/TeamleadPage/views/CreateMembersTask/Index";
+import { ValuesProvider } from './pages/TeamleadPage/views/CreateMembersTask/context/Values';
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -439,7 +440,9 @@ function App() {
           path="/create-task"
           element={
             <CandidateTaskContextProvider>
+              <ValuesProvider>
               <Index />
+              </ValuesProvider>
             </CandidateTaskContextProvider>
           }
         />
