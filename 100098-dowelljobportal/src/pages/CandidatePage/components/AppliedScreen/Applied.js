@@ -81,11 +81,8 @@ function Applied() {
     })
 
     //console.log(candidateJobs);
-
     // getAllCandidateInterviews().then(res => {
-
     //   setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": res.data.filter(meeting => meeting.applicant === currentUser.username) } });
-
     // }).catch(err => {
     //   console.log(err)
     // });

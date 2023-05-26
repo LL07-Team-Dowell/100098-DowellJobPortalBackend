@@ -14,6 +14,7 @@ import { Tooltip } from "react-tooltip";
 
 import "./style.css";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
+import DropdownButton from "../../../TeamleadPage/components/DropdownButton/Dropdown";
 
 const AddJob = ({ subAdminView }) => {
   const { currentUser } = useCurrentUserContext();
@@ -47,6 +48,8 @@ const AddJob = ({ subAdminView }) => {
   const [secondOption, setSecondOption] = useState("");
   const [thirdOption, setThirdOption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [currency, setCurrency] = useState("Select Currency");
+  const currencyList = ["USD", "NGN", "GBP", "RE"];
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -79,6 +82,15 @@ const AddJob = ({ subAdminView }) => {
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
       copyOfPrevValue[inputName] = valueEntered;
+      return copyOfPrevValue;
+    });
+  };
+
+  const handlePaymentChange = (valueEntered, inputName) => {
+    const filteredValue = valueEntered.replace(/\D/g, "");
+    setNewJob((prevValue) => {
+      const copyOfPrevValue = { ...prevValue };
+      copyOfPrevValue[inputName] = filteredValue;
       return copyOfPrevValue;
     });
   };
@@ -159,9 +171,14 @@ const AddJob = ({ subAdminView }) => {
       return;
     }
 
+    //concatenate the numeric input with the currency on submit
+
     setIsLoading(true);
     try {
-      const response = await addNewJob(newJob);
+      const response = await addNewJob({
+        ...newJob,
+        payment: `${newJob.payment} ${currency}`,
+      });
       console.log(response.data);
 
       if (response.status === 201) {
@@ -448,15 +465,31 @@ const AddJob = ({ subAdminView }) => {
                 </option>
               </select>
 
-              <label htmlFor="payment">Payment</label>
-              <input
-                type="text"
-                name={"payment"}
-                value={newJob.payment}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-                placeholder={"Enter your amount"}
-                required
-              />
+              <div>
+                <label htmlFor="payment">Payment</label>
+                <div className="payment_section">
+                  <DropdownButton
+                    className="currency"
+                    currentSelection={currency}
+                    handleSelectionClick={(value) => {
+                      setCurrency(value);
+                    }}
+                    selections={currencyList}
+                    removeDropDownIcon={false}
+                  />
+                  <input
+                    type="text"
+                    className="payment_input"
+                    name={"payment"}
+                    value={newJob.payment}
+                    onChange={(e) =>
+                      handlePaymentChange(e.target.value, e.target.name)
+                    }
+                    placeholder={"Enter your amount"}
+                    required
+                  />
+                </div>
+              </div>
 
               <label htmlFor="description">Description</label>
               <input
@@ -474,7 +507,7 @@ const AddJob = ({ subAdminView }) => {
                   {React.Children.toArray(
                     newJob.general_terms.map((term, index) => {
                       return (
-                        <div className="add_terms">
+                        <div className="add_terms" key={index}>
                           <input
                             className="terms_input"
                             placeholder="Enter terms"
@@ -490,7 +523,9 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("general_terms")}
+                            onClick={() =>
+                              handleRemoveTerms("general_terms", index)
+                            }
                           >
                             <MdCancel size="1.2rem" color="#b8b8b8" />
                           </button>
@@ -521,7 +556,7 @@ const AddJob = ({ subAdminView }) => {
                   {React.Children.toArray(
                     newJob.technical_specification.map((term, index) => {
                       return (
-                        <div className="add_terms">
+                        <div className="add_terms" key={index}>
                           <input
                             className="terms_input"
                             placeholder="Enter terms"
@@ -538,7 +573,7 @@ const AddJob = ({ subAdminView }) => {
                           <button
                             className="terms_remove"
                             onClick={() =>
-                              handleRemoveTerms("technical_specification")
+                              handleRemoveTerms("technical_specification", index)
                             }
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
@@ -570,7 +605,7 @@ const AddJob = ({ subAdminView }) => {
                   {React.Children.toArray(
                     newJob.payment_terms.map((term, index) => {
                       return (
-                        <div className="add_terms">
+                        <div className="add_terms" key={index}>
                           <input
                             className="terms_input"
                             placeholder="Enter terms"
@@ -586,7 +621,7 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("payment_terms")}
+                            onClick={() => handleRemoveTerms("payment_terms", index)}
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
                           </button>
@@ -617,7 +652,7 @@ const AddJob = ({ subAdminView }) => {
                   {React.Children.toArray(
                     newJob.workflow_terms.map((term, index) => {
                       return (
-                        <div className="add_terms">
+                        <div className="add_terms" key={index}>
                           <input
                             className="terms_input"
                             placeholder="Enter terms"
@@ -633,7 +668,7 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("workflow_terms")}
+                            onClick={() => handleRemoveTerms("workflow_terms", index)}
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
                           </button>
@@ -664,7 +699,7 @@ const AddJob = ({ subAdminView }) => {
                   {React.Children.toArray(
                     newJob.other_info.map((term, index) => {
                       return (
-                        <div className="add_terms">
+                        <div className="add_terms" key={index}>
                           <input
                             className="terms_input"
                             placeholder="Enter terms"
@@ -680,7 +715,7 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("other_info")}
+                            onClick={() => handleRemoveTerms("other_info", index)}
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
                           </button>

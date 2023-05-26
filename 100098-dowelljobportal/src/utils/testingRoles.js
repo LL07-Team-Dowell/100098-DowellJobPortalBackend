@@ -3,5 +3,6 @@ export const testingRoles = {
   hrRole: "Hr",
   teamLeadRole: "Proj_Lead",
   candidateRole: "Candidate",
-  subAdminRole:"sub_admin"
+  subAdminRole:"sub_admin",
+  groupLeadRole:"group_lead"
 };

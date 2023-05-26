@@ -9,8 +9,9 @@ import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner
 import { getSettingUserProfileInfo } from "../../../../services/settingServices";
 import { useJobContext } from "../../../../contexts/Jobs";
 import { getApplicationForAdmin } from "../../../../services/adminServices";
+import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 
-const rolesDict = {'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr", "sub_admin":"Sub Admin"};
+const rolesDict = {'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr", "sub_admin":"Sub Admin", "group_lead":"Group Lead"};
 
 const AdminSettings = () => {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -32,6 +33,9 @@ const AdminSettings = () => {
   useEffect(() => {
     if (firstSelection.length > 0) {
       const status = list.reverse().find(p => p.portfolio_name === firstSelection)?.status;
+      const selectedPortfolioIsOwner = currentUser?.userportfolio?.find(user => user.portfolio_name === firstSelection && user.role === 'owner');
+
+      if (selectedPortfolioIsOwner) return setuserstatus(candidateStatuses.ONBOARDING);
       if (!status) return setuserstatus('');
       setuserstatus(status);
     }
@@ -88,7 +92,7 @@ const AdminSettings = () => {
     setLoading(true);
     getSettingUserProfileInfo().then(resp => { setSettingUsetProfileInfo(resp.data); setLoading(false); console.log(resp.data.reverse()) }).catch(err => { console.log(err); setLoading(false) })
     if (list.length < 1) {
-      getApplicationForAdmin({ company_id: currentUser?.portfolio_info[0].org_id })
+      getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
         .then(resp => {
           setlist(resp.data.response.data?.filter(j => currentUser.portfolio_info[0].data_type === j.data_type));
         })

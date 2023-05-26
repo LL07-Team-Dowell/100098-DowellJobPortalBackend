@@ -99,7 +99,9 @@ const AccountPage = () => {
 
     Promise.all([
       getJobs2(requestData),
-      getCandidateApplicationsForTeamLead(requestData),
+      getCandidateApplicationsForTeamLead(
+        currentUser?.portfolio_info[0].org_id
+      ),
     ])
       .then((res) => {
         const jobsMatchingCurrentCompany = res[0].data.response.data.filter(

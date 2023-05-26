@@ -49,8 +49,11 @@ import HrTrainingQuestions from "./pages/HrPage/views/HrTrainingScreen/HrTrainin
 import CandidateTranningScreen from "./pages/CandidatePage/views/CandidateTranningScreen/CandidateTranningScreen";
 import TraningProgress from "./pages/CandidatePage/views/TraningProgress.js/TraningProgress";
 import { ResponsesContextProvider } from "./contexts/Responses";
+<<<<<<< HEAD
 import Index from "./pages/TeamleadPage/views/CreateMembersTask/Index";
 import { ValuesProvider } from './pages/TeamleadPage/views/CreateMembersTask/context/Values';
+=======
+>>>>>>> 4b43687693b7642eb4964eae0b8e7e52905afeb2
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -436,6 +439,7 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
+<<<<<<< HEAD
         <Route
           path="/create-task"
           element={
@@ -446,6 +450,8 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
+=======
+>>>>>>> 4b43687693b7642eb4964eae0b8e7e52905afeb2
       </Routes>
     );
   }
