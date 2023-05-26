@@ -7,6 +7,7 @@ const Teams = () => {
   const { currentUser } = useCurrentUserContext();
     console.log(currentUser.portfolio_info[0].org_id)
   const {data , setdata} = useValues() ;
+  
   return (
     <div>{data.TeamsSelected.map(v => <li>{v.team_name} </li>)}</div>
   )

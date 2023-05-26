@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Checkbox from '../Checkbox';
 import { initialState } from '../../context/Values';
 import { useCurrentUserContext } from '../../../../../../contexts/CurrentUserContext';
+import { toast } from 'react-toastify';
 const SecondForm = ({}) => {
   const { currentUser } = useCurrentUserContext();
 
@@ -16,14 +17,14 @@ const SecondForm = ({}) => {
   const [teams ,setteams] = useState([]) ; 
   const [projectname , setprojectname] = useState("") ; 
   const [singlemembertask ,setsinglemembertask] =useState("") ;   
-  useEffect(()=>{
-      if(task.choosed || !team_task){
-        setloading(true) ; 
-        axios(`https://100098.pythonanywhere.com/candidate_management/get_all_onboarded_candidate/63a2b3fb2be81449d3a30d3f/`,)
-        .then(resp =>{ setdata({...data , memebers:[...data.memebers , resp.data.response.data.map(v =>v.username)]}); setloading(false)})
-        .catch(err => console.log(err))
-      }
-  },[team_task ,task])
+  // useEffect(()=>{
+  //     if(task.choosed || !team_task){
+  //       setloading(true) ; 
+  //       axios(`https://100098.pythonanywhere.com/candidate_management/get_all_onboarded_candidate/63a2b3fb2be81449d3a30d3f/`)
+  //       .then(resp =>{ setdata({...data , memebers:[...data.memebers , resp.data.response.data.map(v =>v.username)]}); setloading(false)})
+  //       .catch(err => console.log(err))
+  //     }
+  // },[team_task ,task])
 
 const patchTeam = () => {
     const id = data.TeamsSelected.find(m => m.team_name === choosedTeam.value)["id"] 
@@ -71,9 +72,9 @@ const patchTeam = () => {
               task_created_date: new Date().toString() , 
             })
             .then(resp => {
-              alert("good") ; 
               console.log(resp) ; 
               setdata(initialState) ; 
+              toast("task created ")
               
             })
             .catch(err => {
@@ -167,7 +168,7 @@ const patchTeam = () => {
                         <button onClick={createSingleMemberTask}>add Task for single member</button>
                                    </>
             }
-            
+            {/* asdasdasd */}
     </div>
   )
 }
