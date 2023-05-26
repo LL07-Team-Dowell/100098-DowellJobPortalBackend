@@ -907,7 +907,7 @@ _patch_ to `edit_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Team Updated successfully", 
+  "message": "Team with id - {document_id} Updated Successfully", 
   "response": "response"
 }
 ```
@@ -916,7 +916,7 @@ _patch_ to `edit_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Team Updating Failed"
+  "message": "Team with id - {document_id} Update Failed"
 }
 ```
 

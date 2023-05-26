@@ -1010,7 +1010,7 @@ class delete_team(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class create_task(APIView):
+class create_team_task(APIView):
     def post(self, request):
         data = request.data
         if data:
@@ -1035,7 +1035,7 @@ class create_task(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class get_task(APIView):
+class get_team_task(APIView):
     def get(self, request, task_id):
         field = {
             "task_id": task_id,
