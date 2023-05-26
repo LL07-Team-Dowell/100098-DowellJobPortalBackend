@@ -845,13 +845,6 @@ _Post_ to `create_team/`
   "message": "Team created successfully"
 }
 ```
--Response 204 
-```json
-{
-  "Error": "<[List of members]|Document Id|Team Name> Field is required and can not be empty"
-}
-```
-
 - Response 304
 
 ```json
@@ -880,7 +873,7 @@ _Get_ to `get_team/<str:document_id>/`
 ```
 
 
-_Get_ to `team_task_management/get_all_teams/<str:company_id>/`
+_Get_ to `get_all_teams/<str:company_id>/`
 
 - Response 200
 
@@ -899,6 +892,51 @@ _Get_ to `team_task_management/get_all_teams/<str:company_id>/`
 }
 ```
 
+_patch_ to `edit_team/<str:document_id>/`
+
+- Request Body
+
+```json
+{
+  "team_name": "team name",
+  "members": ["list of members"]
+}
+
+```
+- Response 200
+
+```json
+{
+  "message": "Team Updated successfully", 
+  "response": "response"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Team Updating Failed"
+}
+```
+
+_Delete_ to `delete_team/<int:team_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "Team with id {team_id} has been deleted"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Team with id {team_id} failed to be deleted"
+}
+```
 
 
 _Post_ to `create_team_task/`
@@ -922,13 +960,6 @@ _Post_ to `create_team_task/`
 ```json
 {
   "message": "Task created successfully"
-}
-```
-
--Response 204 
-```json
-{
-  "Error": "<Task Id|Title|Description|Assignee|Team Name> Field is required and can not be empty"
 }
 ```
 
@@ -959,7 +990,23 @@ _Get_ to `get_team_task/<str:task_id>/`
   "message": "There is no task"
 }
 ```
+_Delete_ to `delete_team_task/<int:task_id>/`
 
+- Response 200
+
+```json
+{
+  "message": "Task with id {task_id} has been deleted"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Task with id {task_id} failed to be deleted"
+}
+```
 
 ### training management view-------------------------------------------------
 _Post_ to `create_question/`

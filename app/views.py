@@ -924,15 +924,6 @@ class create_team(APIView):
             update_field = {
                 "status": "nothing to update"
             }
-            if field["members"] == "":
-                return Response({"Error": "Members Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["team_name"] == "":
-                return Response({"Error": "Team Name Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["company_id"] == "":
-                return Response({"Error": "Company Id Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field)
             if response:
@@ -959,6 +950,7 @@ class get_team(APIView):
             return Response({"message": "There is no team", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
 
+
 @method_decorator(csrf_exempt, name='dispatch')
 class get_all_teams(APIView):  # all teams
     def get(self, request, company_id):
@@ -978,6 +970,44 @@ class get_all_teams(APIView):  # all teams
                             status=status.HTTP_204_NO_CONTENT)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class edit_team(APIView):
+    def patch(self, request, document_id):
+        data = request.data
+        if data:
+            field = {
+                "_id": document_id,
+            }
+            update_field = {
+                "members": data.get("members"),
+                "team_name": data.get("team_name"),
+            }
+            response = dowellconnection(
+                *team_management_modules, "update", field, update_field)
+            if response:
+                return Response({"message": "Team Updated successfully",
+                                 "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Team Updating Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class delete_team(APIView):
+    def delete(self, request, team_id):
+        field = {
+            "_id": team_id
+        }
+        update_field = {
+            "data_type": "Archived_Data"
+        }
+        response = dowellconnection(*task_management_reports, "update", field, update_field)
+        if response:
+            return Response({"message": f"Team with id {team_id} has been deleted"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": f"Team with id {team_id} failed to be deleted"},
+                            status=status.HTTP_304_NOT_MODIFIED)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class create_task(APIView):
@@ -996,21 +1026,6 @@ class create_task(APIView):
             update_field = {
                 "status": "nothing to update"
             }
-            if field["task_id"] == "":
-                return Response({"Error": "Task Id Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["title"] == "":
-                return Response({"Error": "Title Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["description"] == "":
-                return Response({"Error": "Description Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["assignee"] == "":
-                return Response({"Error": "Assignee Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
-            if field["team_name"] == "":
-                return Response({"Error": "Team Name Field is required and can not be empty"},
-                                status=status.HTTP_204_NO_CONTENT)
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field)
             if response:
@@ -1038,6 +1053,23 @@ class get_task(APIView):
             return Response({"message": "There is no task",
                              "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class delete_team_task(APIView):
+    def delete(self, request, task_id):
+        field = {
+            "_id": task_id
+        }
+        update_field = {
+            "data_type": "Archived_Data"
+        }
+        response = dowellconnection(*task_management_reports, "update", field, update_field)
+        if response:
+            return Response({"message": f"Task with id {task_id} has been deleted"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": f"Task with id {task_id} failed to be deleted"},
+                            status=status.HTTP_304_NOT_MODIFIED)
 
 
 # api for team_task management ends here____________________________

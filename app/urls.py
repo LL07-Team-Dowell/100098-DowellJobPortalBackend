@@ -44,8 +44,11 @@ urlpatterns = [
     path('create_team/', create_team.as_view()),
     path('get_team/<str:document_id>/', get_team.as_view()),
     path('get_all_teams/<str:company_id>/', get_all_teams.as_view()),
+    path('edit_team/<str:document_id>/', edit_team.as_view(), ),
+    path('delete_team/<int:team_id>/', delete_team.as_view()),
     path('create_team_task/', create_task.as_view()),
     path('get_team_task/<str:task_id>/', get_task.as_view()),
+    path('delete_team_task/<int:task_id>/', delete_team_task.as_view(),
 
     # training management--------------------------------------------
     path('create_question/', create_question.as_view()),
