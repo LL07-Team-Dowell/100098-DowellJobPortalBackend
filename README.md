@@ -2,8 +2,17 @@
 
 Hello frontend developers!
 
-<h3>This is the active branch you would be building from. 
+This is the active branch you would be building from. 
+
 <br />
+
+## Table of Contents
+- [Getting started](#getting-started)
+- [Development](#development)
+
+<br />
+
+### Getting started
 <b>Please read this very well before starting any work.</b>
 </h3>
 
@@ -56,9 +65,26 @@ git pull origin frontend
 git add .
 git commit -m "Descriptive message here"
 ```
+- Pull again from the `frontend` branch when done working
+```bash
+git pull origin frontend
+```
 - Push your changes to your branch
 ```bash
 git push origin <your-name-frontend>
 ```
 
 - That's all. <b>Happy hacking!</b>
+
+### Development
+- There are 2 fonts(Inter and Poppins) specified in the figma design for this project and they have already been imported in the `index.html` file. 
+
+- To use a specific font (for example `Inter`), you can just declare the font-family in your css file like so:
+
+```css
+    font-family: 'Inter', sans-serif;
+```
+
+- Images you may need is inside the `public/src/assets` folder
+
+- I have added a package: `react-icons` that you can use for icons. This is its documentation: [React icons documentation](https://react-icons.github.io/react-icons)
