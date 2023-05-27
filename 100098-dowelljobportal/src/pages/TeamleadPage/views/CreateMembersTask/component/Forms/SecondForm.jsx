@@ -2,7 +2,7 @@ import React  ,{useEffect} from 'react'
 import { useValues } from '../../context/Values'
 import axios from 'axios'
 import { useState } from 'react';
-import Checkbox from '../Checkbox';
+// import Checkbox from '../Checkbox';
 import { initialState } from '../../context/Values';
 import { useCurrentUserContext } from '../../../../../../contexts/CurrentUserContext';
 import { toast } from 'react-toastify';
@@ -126,7 +126,7 @@ const patchTeam = () => {
                                 {data.memebers.map((member , i) => 
                                                 <>
                                               
-                                              <Checkbox choosedTeamValue={choosedTeam.value} Member={member} key={i} />
+                                              {/* <Checkbox choosedTeamValue={choosedTeam.value} Member={member} key={i} /> */}
                                               </>
                                 
                                   )}

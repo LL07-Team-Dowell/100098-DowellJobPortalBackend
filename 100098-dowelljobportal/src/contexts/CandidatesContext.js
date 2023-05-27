@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useReducer, useState } from "react";
 import { candidateDataReducer } from "../reducers/CandidateDataReducer";
 
 export const initialCandidatesData = {
@@ -26,9 +26,10 @@ export const useCandidateContext = () => {
 export const CandidateContextProvider = ({ children }) => {
 
     const [ candidatesData, dispatchToCandidatesData ] = useReducer(candidateDataReducer, initialCandidatesData);
+    const [ candidatesDataLoaded, setCandidatesDataLoaded ] = useState(false);
 
     return (
-        <CandidateContext.Provider value={{ candidatesData, dispatchToCandidatesData }}>
+        <CandidateContext.Provider value={{ candidatesData, dispatchToCandidatesData, candidatesDataLoaded, setCandidatesDataLoaded }}>
             {children}
         </CandidateContext.Provider>
     )
