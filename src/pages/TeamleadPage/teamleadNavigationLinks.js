@@ -16,9 +16,10 @@ export const teamleadNavigationLinks = [
         linkAddress: "/user",
         icon: <FiUser />, 
         text: "User",
-    },{
-        linkAddress: "/create-task",
-        icon: <FiEdit />, 
-        text: "Create Task"
-    }
+    },
+    // {
+    //     linkAddress: "/create-task",
+    //     icon: <FiEdit />, 
+    //     text: "Create Task"
+    // }
 ]
