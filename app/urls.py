@@ -3,8 +3,9 @@ from .views import *
 
 urlpatterns = [
     path('', serverStatus.as_view()),
+
     # accounts management-------------------------------------------
-    path('onboard_candidate/', onboard_candidate.as_view()),
+    path('onboard_candidate/<document_id>', onboard_candidate.as_view()),
     path('update_project/', update_project.as_view()),
     path('rehire_candidate/', rehire_candidate.as_view()),
     path('reject_candidate/', reject_candidate.as_view()),
