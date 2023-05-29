@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { initialState } from '../../context/Values';
 import { useCurrentUserContext } from '../../../../../../contexts/CurrentUserContext';
 import { toast } from 'react-toastify';
+import Checkbox from '../Checkbox';
 const SecondForm = ({}) => {
   const { currentUser } = useCurrentUserContext();
 
@@ -56,7 +57,9 @@ const patchTeam = () => {
                         setdata({...data , team_name:e.target.value}) ; 
                       }
             useEffect(()=>{
+              console.log("PLEASE BRO WORK")
               if(choosedTeam.value){
+                console.log(data.TeamsSelected.find(v => v.team_name === choosedTeam.value).members.map(v => v.name))
                 setdata({...data , membersEditTeam:[...data.TeamsSelected.find(v => v.team_name === choosedTeam.value).members.map(v => v.name)]})
               }
             },[choosedTeam])
@@ -73,14 +76,15 @@ const patchTeam = () => {
             })
             .then(resp => {
               console.log(resp) ; 
-              setdata(initialState) ; 
+              setdata({...initialState , RESP_INDV_TASK:"Response" ,TeamsSelected:data.TeamsSelected}) ; 
               toast("task created ")
-              
+
             })
             .catch(err => {
               console.log(err)
             })
             }
+            console.log({choosedTeam})
                       if(loading)return <h1>Loading...</h1>
   return (
     <div>   
@@ -122,11 +126,11 @@ const patchTeam = () => {
                               : 
                               <>
                               <h1>{choosedTeam.value}</h1>
-                                {choosedTeam.value} asdasdasd
+                                {choosedTeam.value} 
                                 {data.memebers.map((member , i) => 
                                                 <>
                                               
-                                              {/* <Checkbox choosedTeamValue={choosedTeam.value} Member={member} key={i} /> */}
+                                              <Checkbox choosedTeamValue={choosedTeam.value} Member={member} key={i} />
                                               </>
                                 
                                   )}

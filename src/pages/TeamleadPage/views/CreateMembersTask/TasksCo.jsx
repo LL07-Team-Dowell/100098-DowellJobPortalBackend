@@ -11,7 +11,7 @@ import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext'
 import Alert from './Alert'
 import { toast } from 'react-toastify'
 import { initialState } from './context/Values'
-function TasksCo() {
+const  TasksCo = ({bback}) => {
   const { currentUser } = useCurrentUserContext();
   const {data , setdata} = useValues() ;
   console.log({currentUser})
@@ -27,6 +27,7 @@ function TasksCo() {
     <SecondForm  />,
     <ThirdForm/>,
   ])
+
   const buttonFunction = ()=>{
     const {individual_task , team_task, selected_members , team_name , members} = data ;
     console.log({currentStepIndex , individual_task , team_task})
@@ -54,7 +55,7 @@ function TasksCo() {
                 .then(resp =>{
                   setloading(false) ;
                   const id =  resp.data.response.data.find(v=>v.team_name === team_name)["_id"]
-                  setdata({...data , TeamsSelected:resp.data.response.data,teamName:team_name ,team:id});
+                  setdata({...data , TeamsSelected:resp.data.response.data,teamName:team_name ,team:id  , RESP_INDV_TASK:""});
                   toast("team created succesfully.") ; 
                   next() ;           
                 })
@@ -77,7 +78,7 @@ function TasksCo() {
               .then(r => {console.log(r.data);
                 setloading(false)
                 toast("task created successfully.") ; 
-                setdata(initialState) ; 
+                setdata({...initialState ,TeamsSelected:data.TeamsSelected}) ; 
                 backfirst()
               })
               .catch(e => {console.log(e);
@@ -90,7 +91,12 @@ function TasksCo() {
           }
         }
   }
-
+    useEffect(()=>{
+      if(data.RESP_INDV_TASK){
+        backfirst() ;
+        setdata({...data , RESP_INDV_TASK:"",TeamsSelected:data.TeamsSelected})
+      }
+    },[data])
   if(err) return <h4>{err}</h4>
   if(loading) return <h1>Loading...</h1>
     return (
@@ -102,9 +108,12 @@ function TasksCo() {
 
       <form onSubmit={e => e.preventDefault()}>
       {step}
-   <button onClick={buttonFunction}>Next</button>
+  {!(data.individual_task && currentStepIndex === 1) && <button onClick={buttonFunction}>Next</button>}
    {
     isFirstStep || <button onClick={back}>Back</button>
+   }
+   {
+    isFirstStep && <button onClick={bback}> Back</button>
    }
       </form>
     </div>
