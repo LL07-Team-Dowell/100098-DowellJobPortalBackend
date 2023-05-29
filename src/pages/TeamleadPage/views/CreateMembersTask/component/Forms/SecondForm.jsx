@@ -9,33 +9,15 @@ import { toast } from 'react-toastify';
 import Checkbox from '../Checkbox';
 const SecondForm = ({}) => {
   const { currentUser } = useCurrentUserContext();
-
   const {data ,setdata} = useValues() ; 
   const [task , settask] = useState({choosed:false , value:""});
-  const [choosedTeam , setChoosedTeam] = useState({choosed:false , value:""})
+  const [choosedTeam , setChoosedTeam] = useState({choosed:false , value:"",id:null})
   const [loading ,setloading] = useState(false) ; 
   const {individual_task , team_task} = data ;
   const [teams ,setteams] = useState([]) ; 
   const [projectname , setprojectname] = useState("") ; 
-  const [singlemembertask ,setsinglemembertask] =useState("") ;   
-  // useEffect(()=>{
-  //     if(task.choosed || !team_task){
-  //       setloading(true) ; 
-  //       axios(`https://100098.pythonanywhere.com/candidate_management/get_all_onboarded_candidate/63a2b3fb2be81449d3a30d3f/`)
-  //       .then(resp =>{ setdata({...data , memebers:[...data.memebers , resp.data.response.data.map(v =>v.username)]}); setloading(false)})
-  //       .catch(err => console.log(err))
-  //     }
-  // },[team_task ,task])
-
-const patchTeam = () => {
-    const id = data.TeamsSelected.find(m => m.team_name === choosedTeam.value)["id"] 
-    const teamName = data.TeamsSelected.find(m => m.team_name === choosedTeam.value)["team_name"] 
-    console.log({id , teamName})
-    axios.patch(`https://100098.pythonanywhere.com/team_task_management/edit-team-api/${id}/`,{ "team_name":teamName ,
-    "members":data?.membersEditTeam})
-    .then(resp => console.log(resp))
-    .catch(err => {console.log(err);console.log({team:data?.membersEditTeam})})
-}
+  const [singlemembertask ,setsinglemembertask] =useState("") ;
+     
             const handleCheckboxChange = (event) => {
                         const value = event.target.value;
                         if (event.target.checked) {
@@ -57,12 +39,15 @@ const patchTeam = () => {
                         setdata({...data , team_name:e.target.value}) ; 
                       }
             useEffect(()=>{
-              console.log("PLEASE BRO WORK")
+              console.log({id:choosedTeam.id})
               if(choosedTeam.value){
-                console.log(data.TeamsSelected.find(v => v.team_name === choosedTeam.value).members.map(v => v.name))
-                setdata({...data , membersEditTeam:[...data.TeamsSelected.find(v => v.team_name === choosedTeam.value).members.map(v => v.name)]})
+              console.log("PLEASE BRO WORK 1")
+                console.log({choosedValue:data.TeamsSelected.find(v => v.team_name === choosedTeam.value).members})
+                setdata({...data , membersEditTeam:[...data.TeamsSelected.find(v => v.team_name === choosedTeam.value).members]})
               }
             },[choosedTeam])
+
+
             const createSingleMemberTask = () => {
               console.log("ala said : applicant:",data.selected_members[0])
               axios.post("https://100098.pythonanywhere.com/task_management/create_task/",{
@@ -84,7 +69,16 @@ const patchTeam = () => {
               console.log(err)
             })
             }
-            console.log({choosedTeam})
+
+            // patcg
+            const patchTeam = () => {
+              const id = data.TeamsSelected.find(m => m.team_name === choosedTeam.value)["id"] 
+              const teamName = data.TeamsSelected.find(m => m.team_name === choosedTeam.value)["team_name"] 
+              axios.patch(`https://100098.pythonanywhere.com/team_task_management/edit_team/${choosedTeam.id}/`,{ "team_name":teamName ,
+              "members":data?.membersEditTeam})
+              .then(resp => {console.log(resp); toast(`members of team ${teamName} is updated !`) ; setdata({...initialState ,RESP_INDV_TASK:"Response", TeamsSelected:data.TeamsSelected })}) 
+              .catch(err => {console.log(err);console.log({team:data?.membersEditTeam})})
+          }
                       if(loading)return <h1>Loading...</h1>
   return (
     <div>   
@@ -121,16 +115,15 @@ const patchTeam = () => {
                               !choosedTeam.choosed ? 
                               
                               data.TeamsSelected.map(v => <>
-                                <button onClick={()=>setChoosedTeam({choosed:true , value:v.team_name})}>{v.team_name}</button> <br />
+                                <button onClick={()=>setChoosedTeam({choosed:true , value:v.team_name ,id:v._id})}>{v.team_name}</button> <br />
                               </>) 
                               : 
                               <>
                               <h1>{choosedTeam.value}</h1>
-                                {choosedTeam.value} 
                                 {data.memebers.map((member , i) => 
                                                 <>
                                               
-                                              <Checkbox choosedTeamValue={choosedTeam.value} Member={member} key={i} />
+                                              <Checkbox choosedTeamValue={choosedTeam.value} membersEditTeam={data.membersEditTeam} Member={member} key={i} />
                                               </>
                                 
                                   )}
