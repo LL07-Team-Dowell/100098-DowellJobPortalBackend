@@ -94,3 +94,12 @@ response_modules = [
     "1000981013",
     "ABCDE"
 ]
+
+team_management_modules = [
+    "jobportal",
+    "jobportal",
+    "team_management_report",
+    "team_management_report",
+    "1201001",
+    "ABCDE",
+]
