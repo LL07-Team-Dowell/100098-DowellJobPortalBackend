@@ -674,7 +674,7 @@ _Post_ to `reject_candidate/`
 
 ### task management view-------------------------------------------------
 
-_Post_ to `task_management/create_task/`
+_Post_ to `create_task/`
 
 - Request Body
 
@@ -713,7 +713,7 @@ _Post_ to `task_management/create_task/`
 }
 ```
 
-_Get_ to `task_management/get_task/<str:company_id>/`
+_Get_ to `get_task/<str:company_id>/`
 
 
 - Response 201
@@ -734,7 +734,7 @@ _Get_ to `task_management/get_task/<str:company_id>/`
 }
 ```
 
-_Get_ to `task_management/get_candidate_task/<str:document_id>/`
+_Get_ to `get_candidate_task/<str:document_id>/`
 
 - Response 200
 
@@ -754,7 +754,7 @@ _Get_ to `task_management/get_candidate_task/<str:document_id>/`
 }
 ```
 
-_Patch_ to `task_management/update_task/`
+_Patch_ to `update_task/`
 
 - Request Body
 
@@ -790,7 +790,7 @@ _Patch_ to `task_management/update_task/`
   "message": "Parameters are not valid"
 }
 ```
-_delete_ to `task_management/delete_task/`
+_delete_ to `delete_task/`
 
 - Request Body
 
@@ -859,7 +859,7 @@ _Get_ to `get_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Teams with id - {document_id} available",
+  "message": "Teams available",
   "response": "[List of teams]"
 }
 ```
@@ -907,7 +907,7 @@ _patch_ to `edit_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Team with id - {document_id} Updated Successfully", 
+  "message": "Team Updated Successfully", 
   "response": "response"
 }
 ```
@@ -916,7 +916,7 @@ _patch_ to `edit_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Team with id - {document_id} Update Failed"
+  "message": "Team Update Failed"
 }
 ```
 
@@ -926,7 +926,7 @@ _Delete_ to `delete_team/<int:team_id>/`
 
 ```json
 {
-  "message": "Team with id {team_id} has been deleted"
+  "message": "Team has been deleted"
 }
 ```
 
@@ -934,7 +934,7 @@ _Delete_ to `delete_team/<int:team_id>/`
 
 ```json
 {
-  "message": "Team with id {team_id} failed to be deleted"
+  "message": "Team failed to be deleted"
 }
 ```
 
@@ -996,7 +996,7 @@ _Delete_ to `delete_team_task/<int:task_id>/`
 
 ```json
 {
-  "message": "Task with id {task_id} has been deleted"
+  "message": "Task has been deleted"
 }
 ```
 
@@ -1004,7 +1004,7 @@ _Delete_ to `delete_team_task/<int:task_id>/`
 
 ```json
 {
-  "message": "Task with id {task_id} failed to be deleted"
+  "message": "Task failed to be deleted"
 }
 ```
 

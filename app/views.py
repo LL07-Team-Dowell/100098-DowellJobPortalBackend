@@ -943,7 +943,7 @@ class get_team(APIView):
         }
         response = dowellconnection(*team_management_modules, "fetch", field, update_field)
         if response:
-            return Response({"message": f"Teams with id - {document_id} available",
+            return Response({"message": f"Teams available",
                              "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
@@ -1003,9 +1003,9 @@ class delete_team(APIView):
         }
         response = dowellconnection(*task_management_reports, "update", field, update_field)
         if response:
-            return Response({"message": f"Team with id {team_id} has been deleted"}, status=status.HTTP_200_OK)
+            return Response({"message": f"Team has been deleted"}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": f"Team with id {team_id} failed to be deleted"},
+            return Response({"message": f"Team failed to be deleted"},
                             status=status.HTTP_304_NOT_MODIFIED)
 
 
