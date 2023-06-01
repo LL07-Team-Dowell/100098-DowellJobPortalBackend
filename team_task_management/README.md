@@ -43,7 +43,7 @@ _patch_ to `team_task_management/edit_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Team with id - {document_id} Updated Successfully", 
+  "message": "Team Updated Successfully", 
   "response": "response"
 }
 ```
@@ -52,7 +52,7 @@ _patch_ to `team_task_management/edit_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Team with id - {document_id} Update Failed"
+  "message": "Team Update Failed"
 }
 ```
 
@@ -62,7 +62,7 @@ _Get_ to `team_task_management/get_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Teams with id - {document_id} available",
+  "message": "Teams available",
   "response": "[List of teams]"
 }
 ```
