@@ -81,9 +81,10 @@
 .jobs__Layout__Content__Container .jobs__Layout__Content {
     width: calc(100% - 4.6rem);
     height: 100%;
-    margin-left: 4.6rem;
+    margin-left: 2.1rem;
     position: fixed;
     overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .chat__With__CS__Icon {
