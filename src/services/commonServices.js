@@ -1,36 +1,4 @@
-import { currentBackendAxiosInstance, formerBackendAxiosInstance } from "./axios"
-
-export const getJobs = async () => {
-    return await formerBackendAxiosInstance.get("/jobs/get_jobs/");
-}
-
-export const getCandidateApplications = async () => {
-    return await formerBackendAxiosInstance.get("/jobs/get_applications/");
-}
-
-export const getAllCandidateInterviews = async () => {
-    return await formerBackendAxiosInstance.get("/jobs/meeting/");
-}
-
-export const fetchCandidateTasks = async () => {
-    return await formerBackendAxiosInstance.get("/jobs/get_tasks/")
-}
-
-export const getProjects = async () => {
-    return await formerBackendAxiosInstance.get("/jobs/project/");
-}
-
-export const updateSingleTask = async (taskIdToUpdate, dataToPost) => {
-    return await formerBackendAxiosInstance.post("/jobs/update_task/" + taskIdToUpdate, dataToPost)
-}
-
-export const addNewTask = async (data) => {
-    return await formerBackendAxiosInstance.post("/jobs/add_new_task/", data)
-}
-
-export const updateCandidateApplication = async (applicationId, data) => {
-    return await formerBackendAxiosInstance.post("/jobs/update_application/" + applicationId + "/", data)
-}
+import { currentBackendAxiosInstance, formerBackendAxiosInstance, liveStatusBackendAxiosInstance } from "./axios"
 
 export const getJobs2 = async (data) => {
     return await currentBackendAxiosInstance.post("admin_management/get_jobs/",data )
@@ -42,4 +10,12 @@ export const getAllQuestions = async (company_id)=>{
 
 export const getAllTrainingResponses = async (company_id) => {
     return await currentBackendAxiosInstance.get(`training_management/get_all_responses/${company_id}`)
+}
+
+export const getUserLiveStatus = async () => {
+    return await liveStatusBackendAxiosInstance.get("live_status")
+}
+
+export const postUserLiveStatus = async (data) => {
+    return await liveStatusBackendAxiosInstance.post("live_status", data)
 }
