@@ -12,8 +12,8 @@ class AdminSerializer(serializers.Serializer):
                         ("Testing_Data", "Testing_Data"), ("Archived_Data", "Archived_Data"))
 
     MODULE_CHOICE = (("Frontend", "Frontend"), ("Backend", "Backend"),
-                     ("UI/UX", "UI/UX"), ("Virtual Assistant",
-                      "Virtual Assistant"), ("Web", "Web"), ("Mobile", "Mobile"))
+                     ("UI/UX", "UI/UX"), ("Virtual_Assistant",
+                      "Virtual_Assistant"), ("Web", "Web"), ("Mobile", "Mobile"))
 
     job_number=serializers.CharField(allow_null=False, allow_blank=False)
     job_title=serializers.CharField(allow_null=False, allow_blank=False)
