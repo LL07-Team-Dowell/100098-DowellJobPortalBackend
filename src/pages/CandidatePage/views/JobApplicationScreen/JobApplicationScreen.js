@@ -27,6 +27,7 @@ import { toast } from "react-toastify";
 import { jobKeys } from "../../../AdminPage/utils/jobKeys";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { useJobContext } from "../../../../contexts/Jobs";
+import axios from "axios";
 
 
 
@@ -57,6 +58,32 @@ const JobApplicationScreen = () => {
     const addToRefsArray = (elem, arrayToAddTo) => {
         if (elem && !arrayToAddTo.current.includes(elem)) arrayToAddTo.current.push(elem)
     }
+    const [testResult, setTestResult] = useState(null);
+    const [error, setError] = useState(null);
+    console.log(testResult);
+    console.log(error);
+
+    const netSpeed = (e) => {
+        e.preventDefault()
+        const apiKey = "SOM6476e34f85968"; // Your API Key here
+        const domainName = "ll07-team-dowell.github.io"; // Your domain or sub-domain here
+
+        // Make the API call
+        fetch(`https://${domainName}/api/api.php?test=download&api=${apiKey}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data && data.result === 'success') {
+                    setTestResult(data);
+                } else {
+                    setError({ message: 'Error occurred during the speed test.' });
+                }
+            })
+            .catch((error) => {
+                setError({ message: error.message });
+            });
+    };
+
+
 
 
     useEffect(() => {
@@ -429,8 +456,9 @@ const JobApplicationScreen = () => {
 
                                     <div className="job__Application__Item">
                                         <h2>Enter Your Internet Speed<span className="required-indicator">*</span></h2>
-                                        <label className="input__Text__Container">
+                                        <label className="input__Text__Container speed__button">
                                             <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Enter Your Internet Speed'} value={newApplicationData.internet_speed} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED, payload: { stateToChange: mutableNewApplicationStateNames.internet_speed, value: e.target.value } })} />
+                                            <button onClick={(e) => netSpeed(e)}>Internet Speed</button>
                                         </label>
                                     </div>
 
