@@ -33,11 +33,11 @@ class create_team(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class edit_team(APIView):
-    def patch(self, request,document_id):
+    def patch(self, request, document_id):
         data = request.data
         if data:
             field = {
-                "_id": document_id, 
+                "_id": document_id,
             }
             update_field = {
                 "members": data.get("members"),
@@ -48,9 +48,10 @@ class edit_team(APIView):
             if response:
                 return Response({"message": f"Team Updated Successfully",
                                  "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
+                                status=status.HTTP_200_OK)
             else:
                 return Response({"message": f"Team Update Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_team(APIView):  ## single team
