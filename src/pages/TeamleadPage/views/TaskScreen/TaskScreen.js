@@ -11,7 +11,6 @@ import { Calendar } from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import { getDaysInMonth } from "../../../../helpers/helpers";
 import { differenceInCalendarDays } from 'date-fns';
-import { fetchCandidateTasks } from "../../../../services/commonServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getCandidateTask } from "../../../../services/candidateServices";
 

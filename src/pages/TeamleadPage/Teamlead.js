@@ -21,7 +21,7 @@ import StaffJobLandingLayout from "../../layouts/StaffJobLandingLayout/StaffJobL
 import TitleNavigationBar from "../../components/TitleNavigationBar/TitleNavigationBar";
 import TogglerNavMenuBar from "../../components/TogglerNavMenuBar/TogglerNavMenuBar";
 import JobCard from "../../components/JobCard/JobCard";
-import { fetchCandidateTasks, getJobs2 } from "../../services/commonServices";
+import { getJobs2 } from "../../services/commonServices";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import { useJobContext } from "../../contexts/Jobs";
 import {

@@ -21,7 +21,7 @@ import TitleNavigationBar from '../../../../components/TitleNavigationBar/TitleN
 import TogglerNavMenuBar from '../../../../components/TogglerNavMenuBar/TogglerNavMenuBar';
 import JobCard from '../../../../components/JobCard/JobCard';
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
-import { fetchCandidateTasks, getCandidateApplications, getJobs, getJobs2, getProjects } from '../../../../services/commonServices';
+import { getJobs2 } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getCandidateApplicationsForHr, getCandidateTask, getSettingUserProject } from '../../../../services/hrServices';
 import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenAllTasks';
@@ -59,7 +59,7 @@ function HrJobScreen() {
   const [ currentCandidateProject, setCurrentCandidateProject ] = useState(null);
   const [ currentSortOption, setCurrentSortOption ] = useState(null);
   const [ sortResults, setSortResults ] = useState([]);
-  const [ showCurrentCandidateAttendance, setShowCurrentCandidateAttendance ] = useState(false);
+  // const [ showCurrentCandidateAttendance, setShowCurrentCandidateAttendance ] = useState(false);
   const [ guestApplications, setGuestApplications ] = useState([]);
   const [ currentActiveItem, setCurrentActiveItem ] = useState("Received");
   const [ trackingProgress, setTrackingProgress ] = useState(false);
@@ -234,26 +234,17 @@ function HrJobScreen() {
   }
 
   const handleTaskItemClick = (data) => {
-    // setCurrentTeamMember(data.user);
-    // setShowCurrentCandidateTask(true);
     navigate(`/new-task-screen/?applicant=${data.applicant}`)
   }
 
   const handleAttendanceItemClick = (data) => {
-    // setCurrentTeamMember(data.user);
-    // setShowCurrentCandidateAttendance(true);
     navigate(`/new-task-screen/?applicant=${data.applicant}&attendance=true`)
-  }
-
-  const hideTaskAndAttendaceView = () => {
-    setShowCurrentCandidateAttendance(false);
-    setShowCurrentCandidateTask(false);
   }
 
   return (
     <StaffJobLandingLayout 
       hrView={true} 
-      runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} 
+      // runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} 
       hideSideBar={showAddTaskModal} 
       searchValue={jobSearchInput} 
       setSearchValue={setJobSearchInput}
@@ -402,7 +393,7 @@ function HrJobScreen() {
 
           isLoading ? <LoadingSpinner /> :
 
-          showCurrentCandidateAttendance ? <AttendanceScreen className="hr__Page" currentUser={currentTeamMember} assignedProject={currentCandidateProject} /> :
+          // showCurrentCandidateAttendance ? <AttendanceScreen className="hr__Page" currentUser={currentTeamMember} assignedProject={currentCandidateProject} /> :
           
           <>
 

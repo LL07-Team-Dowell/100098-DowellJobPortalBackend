@@ -7,7 +7,6 @@ import { candidateStatuses } from '../../utils/candidateStatuses';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 import { useCandidateJobsContext } from '../../../../contexts/CandidateJobsContext';
-import { getAllCandidateInterviews, getCandidateApplications, } from '../../../../services/commonServices';
 import { getAppliedJobs, getJobs } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 
@@ -18,27 +17,6 @@ function Applied() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
-
-  //   const [appliedjob, setAppliedJob] = useState([]);
-  //   const getAppliedData = async () => {
-  //   const response = await myAxiosInstance.get(routes.Applications);
-  //   const jobsResponse = await myAxiosInstance.get(routes.Jobs);
-
-  //   if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 1) return setLoading(false);
-
-  //   const currentUserApplications = response.data.filter(application => application.applicant === currentUser.username);
-  //   const currentUserAppliedJobs = jobsResponse.data.filter((currentJob) => currentUserApplications.find(({ job }) => currentJob.id === job));
-  //   setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs }});
-  //   setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications }});
-  //   return setLoading(false);
-  // }
-
-  // const getUserInterviews = async () => {
-  //   const response = await myAxiosInstance.get(routes.Meeting);
-  //   setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": response.data.filter(meeting => meeting.applicant === currentUser.username) }});
-  //   return
-  // }
-
 
   useEffect(() => {
     if (candidateJobs.appliedJobs.length > 0) return setLoading(false);
@@ -79,13 +57,6 @@ function Applied() {
       console.log(err);
       setLoading(false);
     })
-
-    //console.log(candidateJobs);
-    // getAllCandidateInterviews().then(res => {
-    //   setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": res.data.filter(meeting => meeting.applicant === currentUser.username) } });
-    // }).catch(err => {
-    //   console.log(err)
-    // });
 
   }, [])
 

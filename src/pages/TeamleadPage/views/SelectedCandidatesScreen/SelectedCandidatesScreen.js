@@ -19,7 +19,6 @@ import {
   formatDateAndTime,
 } from "../../../../helpers/helpers";
 import { toast } from "react-toastify";
-import { updateCandidateApplication } from "../../../../services/commonServices";
 import { sendMail } from "../../../../services/mailServices";
 import { dowellLoginUrl } from "../../../../services/axios";
 import { getUserDetails } from "../../../../services/authServices";
@@ -244,13 +243,6 @@ const SelectedCandidatesScreen = ({
           },
         });
 
-        // selectedCandidateData.others[mutableNewApplicationStateNames.others_team_lead_remarks] = remarks;
-        // await updateCandidateApplication(selectedCandidateData.id, {
-        //   applicant: selectedCandidateData.applicant,
-        //   status: candidateStatuses.REJECTED,
-        //   job: selectedCandidateData.job,
-        // });
-
         const data = {
           document_id: selectedCandidateData._id,
           reject_remarks: remarks,
@@ -280,10 +272,6 @@ const SelectedCandidatesScreen = ({
         ])
           .then((resp) => console.log(resp))
           .catch((error) => console.log(error));
-
-        // managementRejectProject(data)
-        //   .then(resp => console.log(resp))
-        //   .catch(error => console.log(error))
 
         return updateShowCandidate(false);
 
@@ -367,10 +355,6 @@ const SelectedCandidatesScreen = ({
           .then((resp) => console.log(resp))
           .catch((error) => console.log(error));
 
-        // rejectCandidateApplicationForTeamLead(data)
-        //   .then((resp) => console.log(resp))
-        //   .catch((error) => console.log(error));
-
         updateCandidateData((prevCandidates) => {
           return prevCandidates.filter(
             (candidate) => candidate.id !== selectedCandidateData.id
@@ -399,7 +383,6 @@ const SelectedCandidatesScreen = ({
           document_id: selectedCandidateData["_id"],
         };
         await changeCandidateStatusToShortlisted(testData);
-        // await updateCandidateApplication(selectedCandidateData.id, { applicant: selectedCandidateData.applicant, status: candidateStatuses.SHORTLISTED, job: selectedCandidateData.job, [mutableNewApplicationStateNames.hr_remarks]: remarks })
 
         updateCandidateData((prevCandidates) => {
           return [...prevCandidates, selectedCandidateData];
@@ -447,8 +430,6 @@ const SelectedCandidatesScreen = ({
         };
         await addSelectedCandidate(selectData);
 
-        // await updateCandidateApplication(selectedCandidateData.id, { applicant: selectedCandidateData.applicant, status: candidateStatuses.SELECTED, job: selectedCandidateData.job, others: { ...selectedCandidateData.others, [mutableNewApplicationStateNames.hr_discord_link] : hrDiscordLink, [mutableNewApplicationStateNames.assigned_project]: assignedProject } })
-
         updateCandidateData((prevCandidates) => {
           return prevCandidates.filter(
             (candidate) => candidate["_id"] !== selectedCandidateData["_id"]
@@ -459,12 +440,6 @@ const SelectedCandidatesScreen = ({
 
       case hrPageActions.MOVE_TO_REJECTED:
         if (!selectedCandidateData) return;
-
-        // await updateCandidateApplication(selectedCandidateData.id, {
-        //   applicant: selectedCandidateData.applicant,
-        //   status: candidateStatuses.REJECTED,
-        //   job: selectedCandidateData.job,
-        // });
 
         //Rejection Function For HR
         Promise.all([
@@ -485,10 +460,6 @@ const SelectedCandidatesScreen = ({
         ])
           .then((resp) => console.log(resp))
           .catch((error) => console.log(error));
-
-        // rejectCandidateApplicationforHr(data)
-        //   .then((resp) => console.log(resp))
-        //   .catch((error) => console.log(error));
 
         updateCandidateData((prevCandidates) => {
           return prevCandidates.filter(
@@ -533,17 +504,17 @@ const SelectedCandidatesScreen = ({
             "An error occurred while trying to send the mail to the applicant"
           );
 
-        await updateCandidateApplication(selectedCandidateData.id, {
-          applicant: selectedCandidateData.applicant,
-          status: candidateStatuses.PENDING_SELECTION,
-          job: selectedCandidateData.job,
-          [mutableNewApplicationStateNames.hr_remarks]: remarks,
-          others: {
-            ...selectedCandidateData.others,
-            [mutableNewApplicationStateNames.others_scheduled_interview_date]:
-              interviewDate,
-          },
-        });
+        // await updateCandidateApplication(selectedCandidateData.id, {
+        //   applicant: selectedCandidateData.applicant,
+        //   status: candidateStatuses.PENDING_SELECTION,
+        //   job: selectedCandidateData.job,
+        //   [mutableNewApplicationStateNames.hr_remarks]: remarks,
+        //   others: {
+        //     ...selectedCandidateData.others,
+        //     [mutableNewApplicationStateNames.others_scheduled_interview_date]:
+        //       interviewDate,
+        //   },
+        // });
 
         toast.success(
           `Successfully sent mail to ${

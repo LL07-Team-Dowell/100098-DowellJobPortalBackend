@@ -5,7 +5,6 @@ import { IoIosArrowBack } from "react-icons/io";
 
 import "./style.css";
 import { useNavigate } from "react-router-dom";
-import { addNewTask, updateSingleTask } from "../../../../services/commonServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { createCandidateTask } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
@@ -107,60 +106,60 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
 
     const handleNewTaskBtnClick = async () => {
 
-        setDisabled(true);
+        // setDisabled(true);
 
-        const dataToSend = { ...newTaskDetails };
-        dataToSend.user = newTaskDetails.username;
-        delete dataToSend["username"];
+        // const dataToSend = { ...newTaskDetails };
+        // dataToSend.user = newTaskDetails.username;
+        // delete dataToSend["username"];
 
-        try{
+        // try{
 
-            const response = await addNewTask(dataToSend);
+        //     const response = await addNewTask(dataToSend);
             
-            if (!afterSelectionScreen) updateTasks(prevTasks => { return [ ...prevTasks.filter(task => task.user !== dataToSend.user) ] });
-            updateTasks(prevTasks => { return [ response.data, ...prevTasks ] } );
-            closeTaskScreen();
-            (afterSelectionScreen || hrPageActive) ? navigate("/tasks") : navigate("/task");
+        //     if (!afterSelectionScreen) updateTasks(prevTasks => { return [ ...prevTasks.filter(task => task.user !== dataToSend.user) ] });
+        //     updateTasks(prevTasks => { return [ response.data, ...prevTasks ] } );
+        //     closeTaskScreen();
+        //     (afterSelectionScreen || hrPageActive) ? navigate("/tasks") : navigate("/task");
 
-        } catch (err) {
-            console.log(err);
-            setDisabled(false);
-        }
+        // } catch (err) {
+        //     console.log(err);
+        //     setDisabled(false);
+        // }
 
     }
 
     const handleUpdateTaskBtnClick = async () => {
 
-        setDisabled(true);
+        // setDisabled(true);
 
-        const dataToSend = { ...newTaskDetails };
-        dataToSend.user = newTaskDetails.username;
-        delete dataToSend["username"];
+        // const dataToSend = { ...newTaskDetails };
+        // dataToSend.user = newTaskDetails.username;
+        // delete dataToSend["username"];
 
-        try{
+        // try{
 
-            await updateSingleTask(taskToEdit.id + "/", dataToSend)
+        //     await updateSingleTask(taskToEdit.id + "/", dataToSend)
             
-            taskToEdit.title = dataToSend.title;
-            taskToEdit.description = dataToSend.description;
+        //     taskToEdit.title = dataToSend.title;
+        //     taskToEdit.description = dataToSend.description;
 
-            updateTasks(prevTasks => prevTasks.map(task => {
+        //     updateTasks(prevTasks => prevTasks.map(task => {
                 
-                if (task.id === taskToEdit.id) {
-                    return { ...task, title: dataToSend.title, description: dataToSend.description }
-                }
+        //         if (task.id === taskToEdit.id) {
+        //             return { ...task, title: dataToSend.title, description: dataToSend.description }
+        //         }
 
-                return task;
+        //         return task;
 
-            }) );
+        //     }) );
 
-            closeTaskScreen();
-            navigate("/task");
+        //     closeTaskScreen();
+        //     navigate("/task");
 
-        } catch (err) {
-            console.log(err);
-            setDisabled(false);
-        }
+        // } catch (err) {
+        //     console.log(err);
+        //     setDisabled(false);
+        // }
 
     }
     

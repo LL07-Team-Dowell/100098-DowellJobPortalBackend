@@ -10,7 +10,6 @@ import JobCard from '../../../../components/JobCard/JobCard';
 import TitleNavigationBar from '../../../../components/TitleNavigationBar/TitleNavigationBar';
 import { changeToTitleCase } from '../../../../helpers/helpers';
 import { useCandidateJobsContext } from '../../../../contexts/CandidateJobsContext';
-// import { getJobs } from '../../../../services/commonServices';
 import { getAppliedJobs, getJobs } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { useJobContext } from '../../../../contexts/Jobs';

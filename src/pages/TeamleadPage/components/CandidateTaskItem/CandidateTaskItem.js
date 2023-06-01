@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { formatDateAndTime } from "../../../../helpers/helpers";
-import { updateSingleTask } from "../../../../services/commonServices";
 import { candidateUpdateTaskForTeamLead } from "../../../../services/teamleadServices";
 import CustomHr from "../CustomHr/CustomHr";
 import DropdownButton from "../DropdownButton/Dropdown";

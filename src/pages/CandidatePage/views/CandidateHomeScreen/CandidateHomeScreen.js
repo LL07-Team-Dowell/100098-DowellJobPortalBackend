@@ -9,7 +9,6 @@ import "./style.css";
 import { useCandidateJobsContext } from '../../../../contexts/CandidateJobsContext';
 import { useMediaQuery } from '@mui/material';
 import { dowellLoginUrl } from '../../../../services/axios';
-import { getCandidateApplications } from '../../../../services/commonServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getAppliedJobs } from '../../../../services/candidateServices';
 

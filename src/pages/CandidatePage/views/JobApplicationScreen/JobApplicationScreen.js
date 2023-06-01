@@ -19,7 +19,6 @@ import { IoMdShare, IoIosArrowRoundForward } from "react-icons/io";
 import { VscCalendar } from "react-icons/vsc";
 import { BsClock } from "react-icons/bs";
 import { useMediaQuery } from "@mui/material";
-// import { getJobs } from "../../../../services/commonServices";
 import { getJobs } from '../../../../services/candidateServices';
 import { dowellLoginUrl } from "../../../../services/axios";
 import { submitNewApplication } from "../../../../services/candidateServices";

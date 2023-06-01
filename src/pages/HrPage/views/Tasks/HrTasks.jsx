@@ -7,7 +7,6 @@ import TitleNavigationBar from '../../../../components/TitleNavigationBar/TitleN
 import AssignedProjectDetails from '../../../../pages/TeamleadPage/components/AssignedProjectDetails/AssignedProjectDetails.js' ;
 import TaskScreen from '../../../TeamleadPage/views/TaskScreen/TaskScreen.js';
 import {useNavigate, useSearchParams} from 'react-router-dom'
-import { fetchCandidateTasks } from '../../../../services/commonServices'; 
 import './index.scss'
 import { differenceInCalendarDays } from 'date-fns';
 import { getCandidateTask } from '../../../../services/candidateServices';

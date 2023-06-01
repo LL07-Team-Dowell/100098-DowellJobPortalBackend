@@ -12,7 +12,6 @@ import { IoMdShare } from "react-icons/io";
 import { VscCalendar } from "react-icons/vsc";
 import { BsClock } from "react-icons/bs";
 import { useMediaQuery } from "@mui/material";
-import { getJobs } from "../../../../services/commonServices";
 import { dowellLoginUrl } from "../../../../services/axios";
 import { jobKeys } from "../../../AdminPage/utils/jobKeys";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
@@ -22,7 +21,7 @@ const SingleJobScreen = () => {
     const { jobTitle } = useParams();
     const [ allJobs, setAllJobs ] = useState([]);
     const [ currentJob, setCurrentJob ] = useState(null);
-    const [ loading, setLoading ] = useState(true);
+    const [ loading, setLoading ] = useState(false);
     const [ jobSaved, setJobSaved ] = useState(false);
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     const navigate = useNavigate();
@@ -30,13 +29,13 @@ const SingleJobScreen = () => {
 
     useEffect(() => {
 
-        getJobs().then(res => {
-            setAllJobs(res.data);
-            setLoading(false);
-        }).catch(err => {
-            console.log(err);
-            setLoading(false);
-        })
+        // getJobs().then(res => {
+        //     setAllJobs(res.data);
+        //     setLoading(false);
+        // }).catch(err => {
+        //     console.log(err);
+        //     setLoading(false);
+        // })
 
     }, [])
 

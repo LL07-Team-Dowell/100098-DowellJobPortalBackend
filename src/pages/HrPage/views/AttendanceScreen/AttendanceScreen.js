@@ -9,7 +9,6 @@ import ApplicantIntro from "../../../TeamleadPage/components/ApplicantIntro/Appl
 import CustomHr from "../../../TeamleadPage/components/CustomHr/CustomHr";
 import AssignedProjectDetails from "../../../TeamleadPage/components/AssignedProjectDetails/AssignedProjectDetails";
 import { getDaysInMonth } from "../../../../helpers/helpers";
-import { fetchCandidateTasks } from "../../../../services/commonServices";
 
 
 const AttendanceScreen = ({ currentUser, className, assignedProject }) => {
@@ -24,23 +23,23 @@ const AttendanceScreen = ({ currentUser, className, assignedProject }) => {
 
         if (!currentUser) return navigate(-1);
 
-        fetchCandidateTasks().then(response => {
+        // fetchCandidateTasks().then(response => {
         
-            const tasksForCurrentUser = response.data.filter(task => task.user === currentUser).reverse();
-            setUserTasks(tasksForCurrentUser);
-            setTasksToShow(tasksForCurrentUser.filter(task => new Date(task.created).toLocaleDateString() === new Date().toLocaleDateString()));
+        //     const tasksForCurrentUser = response.data.filter(task => task.user === currentUser).reverse();
+        //     setUserTasks(tasksForCurrentUser);
+        //     setTasksToShow(tasksForCurrentUser.filter(task => new Date(task.created).toLocaleDateString() === new Date().toLocaleDateString()));
     
-            const datesUserHasTask = [...new Set(tasksForCurrentUser.map(task => [ new Date(task.created) ])).values()].flat();
-            setDatesToStyle(datesUserHasTask);
+        //     const datesUserHasTask = [...new Set(tasksForCurrentUser.map(task => [ new Date(task.created) ])).values()].flat();
+        //     setDatesToStyle(datesUserHasTask);
             
-        }).catch(err => {
-            console.log(err);
-        });
+        // }).catch(err => {
+        //     console.log(err);
+        // });
 
-        const today = new Date();
+        // const today = new Date();
 
-        setDaysInMonth(getDaysInMonth(today));
-        setCurrentMonth(today.toLocaleDateString("en-us", {month: "long"}));
+        // setDaysInMonth(getDaysInMonth(today));
+        // setCurrentMonth(today.toLocaleDateString("en-us", {month: "long"}));
 
     }, [])
 
