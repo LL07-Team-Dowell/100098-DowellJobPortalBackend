@@ -12,12 +12,16 @@ import TitleNavigationBar from "../../components/TitleNavigationBar/TitleNavigat
 import { afterSelectionLinks, loggedInCandidateNavLinks } from "../../pages/CandidatePage/utils/afterSelectionLinks";
 import { dowellLoginUrl } from "../../services/axios";
 import { useMediaQuery } from "@mui/material";
+import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
+import { teamManagementProductName } from "../../utils/utils";
 
 const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, hideSearch }) => {
     const [ searchValue, setSearchValue ] = useState("");
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     const [ screenTitle, setScreenTitle ] = useState("Tasks");
     const location = useLocation();
+    const { currentUser } = useCurrentUserContext();
+    const [ isSuperUser, setIsSuperUser ] = useState(false);
 
     useEffect(() => {
         
@@ -27,6 +31,13 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
         setScreenTitle("Tasks")
 
     }, [location])
+
+    useEffect(() => {
+        const teamManagementProduct = currentUser?.portfolio_info?.find(portfolio => portfolio.product === teamManagementProductName);
+        if (!teamManagementProduct || teamManagementProduct.member_type !== 'owner') return setIsSuperUser(false);
+
+        setIsSuperUser(true);
+    }, [currentUser])
 
     const handleChatIconClick = () => toast.info("Still in development")
 
@@ -73,7 +84,13 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
         </nav>
         <main>
             <div className="jobs__Layout__Content__Container">
-                { !hideSideNavigation && user && <NewSideNavigationBar links={afterSelection ? afterSelectionLinks : loggedInCandidateNavLinks} /> }
+                { 
+                    !hideSideNavigation && user && 
+                    <NewSideNavigationBar 
+                        links={afterSelection ? afterSelectionLinks : loggedInCandidateNavLinks} 
+                        superUser={isSuperUser}
+                    /> 
+                }
                 <div className="jobs__Layout__Content">
                     { children }
                 </div>

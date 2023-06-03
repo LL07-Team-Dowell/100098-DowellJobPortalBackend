@@ -12,10 +12,22 @@ import { useMediaQuery } from "@mui/material";
 import { adminNavigationLinks, subAdminNavigationLinks } from "../../pages/AdminPage/views/adminNavigationLinks";
 import ProgressTracker from "../../pages/AdminPage/views/Landingpage/component/progressTracker";
 import BlurBackground from "../../pages/AdminPage/views/Landingpage/component/blur";
+import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
+import { useEffect, useState } from "react";
+import { teamManagementProductName } from "../../utils/utils";
 
 
 const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, runExtraFunctionOnNavItemClick, hideSideBar, adminView, searchValue, setSearchValue, handleNavIconClick, adminAlternativePageActive, pageTitle, hideTitleBar, showAnotherBtn, btnIcon, handleNavIcon, subAdminView, searchPlaceHolder, showLoadingOverlay, modelDurationInSec }) => {
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
+    const { currentUser } = useCurrentUserContext();
+    const [ isSuperUser, setIsSuperUser ] = useState(false);
+
+    useEffect(() => {
+        const teamManagementProduct = currentUser?.portfolio_info?.find(portfolio => portfolio.product === teamManagementProductName);
+        if (!teamManagementProduct || teamManagementProduct.member_type !== 'owner') return setIsSuperUser(false);
+
+        setIsSuperUser(true);
+    }, [currentUser])
     
     return <>
     <nav style={{ display: hideTitleBar ? "none" : "block" }}>
@@ -62,7 +74,37 @@ const StaffJobLandingLayout = ({ children, hrView, accountView, teamleadView, ru
         </nav>
         <main>
             <div className={`staff__Jobs__Layout__Content__Container ${accountView ? 'account' : ''}`}>
-                { !hideSideBar && <NewSideNavigationBar className={hideTitleBar ? 'full__Height' : ''} links={hrView ? hrNavigationLinks : accountView ? accountNavigationLinks : teamleadView ? teamleadNavigationLinks : adminView ? subAdminView ? subAdminNavigationLinks : adminNavigationLinks : []} runExtraFunctionOnNavItemClick={runExtraFunctionOnNavItemClick} /> }
+                { 
+                    !hideSideBar && 
+                    <NewSideNavigationBar 
+                        className={
+                            hideTitleBar ? 
+                                'full__Height' 
+                                : 
+                            ''
+                        } 
+                        links={
+                            hrView ? 
+                                hrNavigationLinks 
+                                : 
+                                accountView ? 
+                                    accountNavigationLinks 
+                                : 
+                                    teamleadView ? 
+                                teamleadNavigationLinks 
+                                : 
+                                    adminView ? 
+                                        subAdminView ? 
+                                            subAdminNavigationLinks 
+                                            : 
+                                            adminNavigationLinks 
+                                : 
+                                []
+                        } 
+                        runExtraFunctionOnNavItemClick={runExtraFunctionOnNavItemClick} 
+                        superUser={isSuperUser}
+                    /> 
+                }
                 {
                     showLoadingOverlay && 
                     <BlurBackground>

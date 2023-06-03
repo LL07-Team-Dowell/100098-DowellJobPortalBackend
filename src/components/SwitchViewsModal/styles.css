@@ -1,0 +1,46 @@
+.switch__Views__Modal {
+    --white-color: #fff;
+    --green-color: #005734;
+}
+
+.switch__Views__Modal {
+    position: fixed;
+    border-radius: 10px;
+    box-shadow: 0px 1.85594px 12.373px rgba(0, 0, 0, 0.3);
+    left: 5rem;
+    width: 13rem;
+    z-index: 99;
+    background-color: var(--white-color);
+    bottom: 12%;
+    color: black;
+}
+
+.switch__Views__Modal ul {
+    list-style: none;
+    padding: 6%;
+}
+
+.switch__Views__Modal ul li {
+    width: 100%;
+    padding: 4%;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+}
+
+.switch__Views__Modal ul li:last-child {
+    margin-bottom: 0;
+}
+
+.switch__Views__Modal ul li:hover {
+    background-color: var(--green-color);
+    color: var(--white-color);
+}
+
+.switch__Views__Modal .switch__View__Close__Icon {
+    width: max-content;
+    margin: 3% 3% 0 auto;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
