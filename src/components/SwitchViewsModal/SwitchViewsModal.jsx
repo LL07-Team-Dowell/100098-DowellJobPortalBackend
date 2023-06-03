@@ -4,15 +4,20 @@ import './styles.css';
 import { AiOutlineClose } from 'react-icons/ai';
 import { useCurrentUserContext } from '../../contexts/CurrentUserContext';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 
 const SwitchViewsModal = ({ handleCloseModal }) => {
     const { currentUser, setCurrentUser } = useCurrentUserContext();
+    const navigate = useNavigate();
 
     const handleItemClick = (item) => {
         handleCloseModal();
         
         if (item === testingRoles.groupLeadRole) return toast.info('Still in development');
+        
+        navigate("/");
+
         if (item === 'default') {
             const copyOfCurrentUser = structuredClone(currentUser);
             delete copyOfCurrentUser.settings_for_profile_info;
