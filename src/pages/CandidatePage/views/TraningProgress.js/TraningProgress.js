@@ -13,6 +13,7 @@ import SubmitResponseModal from './SubmitResponseModal/SubmitResponseModal';
 import { toast } from 'react-toastify';
 import { candidateSubmitResponse } from '../../../../services/candidateServices';
 
+
 function TraningProgress({ shorlistedJob }) {
     // console.log(shorlistedJob[0].shortlisted_on);
     const { currentUser } = useCurrentUserContext();
@@ -39,6 +40,19 @@ function TraningProgress({ shorlistedJob }) {
     const [submitDataToSend, setSubmitDataToSend] = useState(initialResponseStateObj);
     const [currentResponse, setCurrentResponse] = useState(null);
     const [formIsReadOnly, setFormIsReadOnly] = useState(false);
+
+    //Question Link for view question
+    const [questionsLink, setQuestionsLink] = useState('');
+    const [showIframe, setShowIframe] = useState(false);
+    const handleClose = () => {
+        setShowIframe(false)
+    }
+
+    const handleViewQuestions = (event, link) => {
+        event.preventDefault();
+        setQuestionsLink(link);
+        setShowIframe(true);
+    };
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -81,10 +95,34 @@ function TraningProgress({ shorlistedJob }) {
     }, [allquestions]);
 
 
+    const WrapperQna = styled.section`
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh; /* Adjust as needed */
+        margin: 0;
+        padding: 0;
+    .iframe-container {
+        width: 80%; /* Adjust the width as needed */
+        height: 500px; /* Adjust the height as needed */
+        border: none; /* Remove iframe border */
+        border-radius: 8px; /* Apply border radius for a rounded appearance */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+        position: absolute;
+        top: 20%;
+    }
+    
+    iframe {
+        width: 100%;
+        height: 100%;
+    }
+  
+`
+
     const Wrapper = styled.div`
         font-family:'poppins';
         background-color:#ffffff;
-        height: 30rem;
+        // height: 30rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -95,7 +133,7 @@ function TraningProgress({ shorlistedJob }) {
         font-family:'poppins';
         border-bottom: 1px solid #dfdddd;
         font-family:'poppins';
-        height: 14rem;
+        // height: 14rem;
     `
 
     const Navbar = styled.nav`
@@ -251,6 +289,14 @@ function TraningProgress({ shorlistedJob }) {
 
                    
                 }
+
+                .right-bottom-content{
+                    color: #038953;
+                    border: 1px solid #038953;
+                    width: 190px;
+                    padding: 8px 20px;
+                    cursor: pointer;
+                }
                 
             }
 
@@ -273,6 +319,9 @@ function TraningProgress({ shorlistedJob }) {
             }
         }
     `
+
+
+
     const nevigate = useNavigate();
     const nevigateButton = () => {
         nevigate(-1);
@@ -502,7 +551,15 @@ function TraningProgress({ shorlistedJob }) {
                                                 <span className='traninng-tag'> . </span>
                                                 <span className='traninng-tag'>{formattedDate}</span>
                                             </div>
+
+                                            <div className="right-bottom-content">
+                                                <Link to="#" onClick={(event) => handleViewQuestions(event, matchModule.question_link)}>
+                                                    {"View Question"}
+                                                    {console.log(matchModule.question_link)}
+                                                </Link>
+                                            </div>
                                         </div>
+
                                         <div className="bottom-content">
                                             {
                                                 responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
@@ -529,7 +586,6 @@ function TraningProgress({ shorlistedJob }) {
                                                     </Link>
                                             }
                                         </div>
-
                                     </div>
                                 }))
                     }
@@ -545,6 +601,17 @@ function TraningProgress({ shorlistedJob }) {
                     inputValuesAreReadOnly={formIsReadOnly}
                 />
             }
+
+            {/* {questionsLink && <ViewQuestion questionsLink={questionsLink} showframe={showframe} />} */}
+            <WrapperQna>
+                {showIframe && (
+                    <div className="iframe-container">
+                        <iframe src={questionsLink} title="Questions"></iframe>
+                        <button onClick={handleClose}>Close</button>
+                    </div>
+                )}
+            </WrapperQna>
+
         </>
 
     )
