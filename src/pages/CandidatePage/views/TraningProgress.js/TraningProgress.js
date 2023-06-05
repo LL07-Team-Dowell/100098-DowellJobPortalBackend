@@ -256,6 +256,19 @@ function TraningProgress({ shorlistedJob }) {
     const Section_3 = styled.div`
         padding: 50px 76px;
         
+        .view-question {
+            color: #038953;
+            border: 1px solid #038953;
+            width: 190px;
+            padding: 8px 20px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 0;
+            left: 20rem;
+            top: 8rem;
+            height: 2.5rem;
+        }
+
         .traning_section {
             display: flex;
             position: relative;
@@ -297,7 +310,6 @@ function TraningProgress({ shorlistedJob }) {
                     padding: 8px 20px;
                     cursor: pointer;
                 }
-                
             }
 
             .left-content{
@@ -523,6 +535,12 @@ function TraningProgress({ shorlistedJob }) {
                                                         </Link>
                                                 }
                                             </div> */}
+                                            <div className="view-question">
+                                                <Link to="#" onClick={(event) => handleViewQuestions(event, matchModule.question_link)}>
+                                                    {"View Question"}
+                                                    {console.log(matchModule.question_link)}
+                                                </Link>
+                                            </div>
                                             <div className="bottom-content">
                                                 <Link to={'#'}>
                                                     {"Preview Form"}
