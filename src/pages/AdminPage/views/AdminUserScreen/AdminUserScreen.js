@@ -2,11 +2,32 @@ import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import "./style.css";
-
+import { getUserLiveStatus, postUserLiveStatus } from "../../../../services/commonServices";
+import React from "react";
+import { teamManagementProductName } from "../../../../utils/utils"; 
 
 const AdminUserScreen = ({subAdminView}) => {
+    const [success ,setsuccsess] = React.useState(false) ;  
+    React.useEffect(()=>{
+       const checkActive = setInterval(()=>{
+           getUserLiveStatus()
+           .then(resp => {console.log(resp);setsuccsess(true)}) 
+           .catch(err => {console.log(err);setsuccsess(false);}); 
+       },60000)
+       return () => clearInterval(checkActive)
+   },[])
+   React.useEffect(()=>{
+   postUserLiveStatus({product:teamManagementProductName , session_id:sessionStorage.getItem("session_id")})
+           .then(resp => {
+               console.log(resp)
+           })
+           .catch(err => console.log("asdad"))
+   },[])
+
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext()
+    console.log(currentUser) ;
+    
     const handleLogout = () => navigate("/logout");
 
     return <>
@@ -28,15 +49,16 @@ const AdminUserScreen = ({subAdminView}) => {
             </div>
             <div className="user__Intro__Item">
                 <h2>First Name</h2>
-                <span>{currentUser?.first_name}</span>
+                <span>{currentUser?.userinfo.first_name}</span>
             </div>
-            {
-                currentUser?.last_name !== "" &&
-                <div className="user__Intro__Item">
+            <div className="user__Intro__Item">
                     <h2>Last Name</h2>
-                    <span>{currentUser?.last_name}</span>
+                    <span>{currentUser?.userinfo.last_name}</span>
                 </div>
-            }
+            <div className="user__Intro__Item" style={{display:"flex",gap:5,alignItems:"center"}}>
+                <h2>Active Status</h2>
+                <div style={success ? successStatus : failedStatus}></div>
+            </div>
             <div className="user__Intro__Item">
                 <h2>Role</h2>
                 <span>Admin</span>
@@ -50,3 +72,11 @@ const AdminUserScreen = ({subAdminView}) => {
 }
 
 export default AdminUserScreen;
+const defaultStatus = {
+    backgroundColor:"gray" ,
+    width:10,
+    height:10,
+    borderRadius:"50%"
+}
+const successStatus = {...defaultStatus , backgroundColor:"green"} ; 
+const failedStatus = {...defaultStatus , backgroundColor:"red"} ; 

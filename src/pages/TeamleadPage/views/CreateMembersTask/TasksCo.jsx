@@ -79,7 +79,8 @@ const  TasksCo = ({bback}) => {
                 setloading(false)
                 toast("task created successfully.") ; 
                 setdata({...initialState ,TeamsSelected:data.TeamsSelected}) ; 
-                backfirst()
+                // backfirst()
+                bback() ; 
               })
               .catch(e => {console.log(e);
                 seterr("something went wrong try again ..")
@@ -93,7 +94,8 @@ const  TasksCo = ({bback}) => {
   }
     useEffect(()=>{
       if(data.RESP_INDV_TASK){
-        backfirst() ;
+        // backfirst() ;
+        bback() ;
         setdata({...data , RESP_INDV_TASK:"",TeamsSelected:data.TeamsSelected})
       }
     },[data])

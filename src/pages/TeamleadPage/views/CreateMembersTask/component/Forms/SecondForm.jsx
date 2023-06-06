@@ -160,9 +160,9 @@ const SecondForm = ({}) => {
                                 {/* 
   const [singlemembertask ,setsinglemembertask] =useState("") ;   
                                  */}
-                                <input type="text"  placeholder='project name' value={singlemembertask} onChange={e => setsinglemembertask(e.target.value)}/>
+                                <input type="text"  placeholder='task name'  value={singlemembertask} onChange={e => setsinglemembertask(e.target.value)}/>
 
-                        <button onClick={createSingleMemberTask}>add Task for single member</button>
+                        <button onClick={(projectname && singlemembertask) ? createSingleMemberTask : alert("all inputs are required!")}>add Task for single member</button>
                                    </>
             }
             {/* asdasdasd */}
