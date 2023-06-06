@@ -50,7 +50,7 @@ import CandidateTranningScreen from "./pages/CandidatePage/views/CandidateTranni
 import TraningProgress from "./pages/CandidatePage/views/TraningProgress.js/TraningProgress";
 import { ResponsesContextProvider } from "./contexts/Responses";
 import Index from "./pages/TeamleadPage/views/CreateMembersTask/Index";
-import { ValuesProvider } from './pages/TeamleadPage/views/CreateMembersTask/context/Values';
+import { ValuesProvider } from "./pages/TeamleadPage/views/CreateMembersTask/context/Values";
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -119,7 +119,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-    testingRoles.accountRole
+      testingRoles.accountRole
   ) {
     return (
       <Routes>
@@ -143,12 +143,11 @@ function App() {
     );
   }
 
-
   // SUB-ADMIN PAGE
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-    testingRoles.subAdminRole
+      testingRoles.subAdminRole
   ) {
     return (
       <Routes>
@@ -230,7 +229,6 @@ function App() {
     );
   }
 
-
   // ADMIN PAGE
   if (
     currentUser.portfolio_info &&
@@ -240,7 +238,8 @@ function App() {
     ) &&
     currentUser.portfolio_info.find(
       (item) => item.product === "Team Management"
-    ).member_type === "owner"
+    ).member_type === "owner" &&
+    !currentUser.settings_for_profile_info?.fakeSuperUserInfo
   ) {
     return (
       <Routes>
@@ -326,7 +325,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-    testingRoles.hrRole
+      testingRoles.hrRole
   ) {
     return (
       <Routes>
@@ -399,7 +398,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-    testingRoles.teamLeadRole
+      testingRoles.teamLeadRole
   ) {
     return (
       <Routes>
@@ -481,26 +480,36 @@ function App() {
         path="/"
         element={
           <ResponsesContextProvider>
-            <CandidateTranningScreen
-              shorlistedJob={shorlistedJob}
-            />
+            <CandidateTranningScreen shorlistedJob={shorlistedJob} />
           </ResponsesContextProvider>
         }
-      >
-      </Route>
-      <Route path="/traning" element={
-        <ResponsesContextProvider>
-          <TraningProgress
-            shorlistedJob={shorlistedJob}
-          />
-        </ResponsesContextProvider>
-        } 
+      ></Route>
+      <Route
+        path="/traning"
+        element={
+          <ResponsesContextProvider>
+            <TraningProgress shorlistedJob={shorlistedJob} />
+          </ResponsesContextProvider>
+        }
       />
-      
 
-      <Route path="/logout" element={<ResponsesContextProvider><Logout /> </ResponsesContextProvider>} />
+      <Route
+        path="/logout"
+        element={
+          <ResponsesContextProvider>
+            <Logout />{" "}
+          </ResponsesContextProvider>
+        }
+      />
 
-      <Route path="*" element={<ResponsesContextProvider><ErrorPage /></ResponsesContextProvider>} />
+      <Route
+        path="*"
+        element={
+          <ResponsesContextProvider>
+            <ErrorPage />
+          </ResponsesContextProvider>
+        }
+      />
     </Routes>
   ) : (
     <Routes>

@@ -138,6 +138,8 @@ const AddJob = ({ subAdminView }) => {
       "description",
       "job_category",
       "module",
+      "qualification",
+      "general_terms",
     ];
 
     if (newJob.job_category === "research_associate") {
@@ -167,6 +169,24 @@ const AddJob = ({ subAdminView }) => {
     } else if (fields.find((field) => newJob[field] === "")) {
       toast.info(
         `Please select ${fields.find((field) => newJob[field] === "")} field`
+      );
+      return;
+    }
+    if (newJob.qualification === "") {
+      toast.info("Please input qualification");
+      return;
+    } else if (fields.find((field) => newJob[field] === "")) {
+      toast.info(
+        `Please input ${fields.find((field) => newJob[field] === "")}`
+      );
+      return;
+    }
+    if (newJob.general_terms.length === 0) {
+      toast.info("Please input general term");
+      return;
+    } else if (fields.find((field) => newJob[field] === "")) {
+      toast.info(
+        `Please input ${fields.find((field) => newJob[field] === "")}`
       );
       return;
     }

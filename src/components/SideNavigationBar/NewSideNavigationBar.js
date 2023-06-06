@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./style.css";
 import { FiEdit } from "react-icons/fi";
+import { FaUsersCog } from "react-icons/fa";
+import SwitchViewsModal from "../SwitchViewsModal/SwitchViewsModal";
 
-const NewSideNavigationBar = ({ className, links, runExtraFunctionOnNavItemClick }) => {
+const NewSideNavigationBar = ({ className, links, runExtraFunctionOnNavItemClick, superUser }) => {
     
     const navigate = useNavigate();
+    const [ showViewsModal, setShowViewsModal ] = useState(false);
 
     const handleNavItemClick = (e, addressToNavigateTo) => {
         e.preventDefault();
@@ -13,6 +16,11 @@ const NewSideNavigationBar = ({ className, links, runExtraFunctionOnNavItemClick
         if (runExtraFunctionOnNavItemClick && typeof runExtraFunctionOnNavItemClick === "function") runExtraFunctionOnNavItemClick();
 
         navigate(addressToNavigateTo)
+    }
+
+    const handleSuperLinkItemClick = (e) => {
+        e.preventDefault();
+        setShowViewsModal(!showViewsModal);
     }
 
     return <>
@@ -33,6 +41,17 @@ const NewSideNavigationBar = ({ className, links, runExtraFunctionOnNavItemClick
                                     </Link>
                                 </li>
                             }))
+                        }
+                        {
+                            superUser && <li>
+                                <Link to={'/'} onClick={handleSuperLinkItemClick}>
+                                    <FaUsersCog />
+                                    <span>Switch Views</span>
+                                </Link>
+                            </li>
+                        }
+                        {
+                            showViewsModal && <SwitchViewsModal handleCloseModal={() => setShowViewsModal(false)} />
                         }
                     </>
                 </ul>
