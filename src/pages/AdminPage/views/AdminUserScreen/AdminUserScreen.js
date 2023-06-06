@@ -10,19 +10,14 @@ const AdminUserScreen = ({subAdminView}) => {
     const [success ,setsuccsess] = React.useState(false) ;  
     React.useEffect(()=>{
        const checkActive = setInterval(()=>{
-           getUserLiveStatus()
-           .then(resp => {console.log(resp);setsuccsess(true)}) 
-           .catch(err => {console.log(err);setsuccsess(false);}); 
+        //    getUserLiveStatus()
+        Promise.all([getUserLiveStatus(),postUserLiveStatus({product:teamManagementProductName , session_id:sessionStorage.getItem("session_id")})])
+           .then(resp => {console.log(resp[0],resp[1]);setsuccsess(true)}) 
+           .catch(err => {console.log(err[0],err[1]);setsuccsess(false);}); 
        },60000)
        return () => clearInterval(checkActive)
    },[])
-   React.useEffect(()=>{
-   postUserLiveStatus({product:teamManagementProductName , session_id:sessionStorage.getItem("session_id")})
-           .then(resp => {
-               console.log(resp)
-           })
-           .catch(err => console.log("asdad"))
-   },[])
+  
 
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext()
