@@ -1,14 +1,23 @@
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import {getUserLiveStatus , postUserLiveStatus } from "../../../../services/commonServices" ; 
 import "./style.css";
+import { FiberPinRounded } from "@mui/icons-material";
 
 
 const UserScreen = () => {
     const { currentUser } = useCurrentUserContext();
+
+    console.log({currentUser}) ;
     const navigate = useNavigate();
 
     const handleLogout = () => navigate("/logout");
-
+    // React.useEffect(()=>{
+    //     getUserLiveStatus()
+    //         .then(resp => console.log(resp)) 
+    //         .catch(err => console.log(err)) ; 
+    // },[])
     return <>
         <div className="user__Page__Container teamlead">
 
@@ -26,7 +35,7 @@ const UserScreen = () => {
                 <span>{currentUser?.userinfo.email}</span>
             </div>
             <div className="user__Intro__Item">
-                <h2>First Name</h2>
+                <h2>First Name </h2>
                 <span>{currentUser.first_name}</span>
             </div>
             {
@@ -41,6 +50,14 @@ const UserScreen = () => {
                 <span>TeamLead</span>
             </div>
             <div className="user__Intro__Item">
+                <h2>Role</h2>
+                <span>TeamLead</span>
+            </div>
+            {/* <div className="user__Intro__Item" style={{display:"flex",gap:5,alignItems:"center"}}>
+                <h2>Active Status</h2>
+                <div style={successStatus}></div>
+            </div> */}
+            <div className="user__Intro__Item">
                 <h2>Project</h2>
                 <span>{currentUser.settings_for_profile_info.profile_info[0]?.project}</span>
             </div>
@@ -52,3 +69,11 @@ const UserScreen = () => {
 }
 
 export default UserScreen;
+const defaultStatus = {
+    backgroundColor:"gray" ,
+    width:10,
+    height:10,
+    borderRadius:"50%"
+}
+const successStatus = {...defaultStatus , backgroundColor:"green"} ; 
+const failedStatus = {...defaultStatus , backgroundColor:"red"} ; 

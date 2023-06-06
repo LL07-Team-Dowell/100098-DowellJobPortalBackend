@@ -1,0 +1,15 @@
+.container{
+            width: 70%;
+            margin: auto;
+            flex-flow: wrap;
+            display: flex;
+            gap:20px ; 
+            .first-button{
+                        width: 45%;
+                        height: 200px;
+                        border: none;
+                        background: linear-gradient(to right, 60% white, 40% green);
+
+
+            }
+}
