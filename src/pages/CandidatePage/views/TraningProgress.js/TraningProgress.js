@@ -99,7 +99,7 @@ function TraningProgress({ shorlistedJob }) {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 100vh; /* Adjust as needed */
+        // height: 100vh; /* Adjust as needed */
         margin: 0;
         padding: 0;
     .iframe-container {
