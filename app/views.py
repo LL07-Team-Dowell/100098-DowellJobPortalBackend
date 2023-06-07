@@ -1,17 +1,17 @@
-from django.shortcuts import render
-import requests
 import json
+import requests
 import threading
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
-    UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer
-
-from .helper import get_event_id, dowellconnection
 from .constant import *
+from .helper import get_event_id, dowellconnection
+from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
+    UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
+    SubmitResponseSerializer
 
 
 # Create your views here.
@@ -19,7 +19,6 @@ from .constant import *
 # api for job portal begins here---------------------------
 @method_decorator(csrf_exempt, name='dispatch')
 class serverStatus(APIView):
-
     def get(self, request):
         return Response({"info": "Welcome to Dowell-Job-Portal-Version 2.0"}, status=status.HTTP_200_OK)
 
@@ -29,7 +28,7 @@ class serverStatus(APIView):
 
 # api for account management begins here______________________
 @method_decorator(csrf_exempt, name='dispatch')
-class onboard_candidate(APIView):
+class accounts_onboard_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
@@ -68,7 +67,7 @@ class onboard_candidate(APIView):
 
                 if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
                     return Response({"message": f"Candidate has been {data.get('status')}"},
-                                    status=status.HTTP_200_OK)
+                                    status=status.HTTP_201_CREATED)
                 else:
                     return Response({"message": "HR operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
 
@@ -81,7 +80,7 @@ class onboard_candidate(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class update_project(APIView):
+class accounts_update_project(APIView):
     def patch(self, request):
         data = request.data
         if data:
@@ -118,7 +117,7 @@ class update_project(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class rehire_candidate(APIView):
+class accounts_rehire_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
@@ -147,13 +146,13 @@ class rehire_candidate(APIView):
             if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
                 return Response({"message": "Candidate has been Rehired"}, status=status.HTTP_200_OK)
             else:
-                return Response({"message": "operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class reject_candidate(APIView):
+class accounts_reject_candidate(APIView):
     def post(self, request):
         data = request.data
         print(data)
@@ -193,8 +192,9 @@ class reject_candidate(APIView):
                                                args=(*lead_management_reports, "update", field, update_field))
                 lead_thread.start()
 
-                account_thread = threading.Thread(target=call_dowellconnection, args=(
-                    *account_management_reports, "insert", insert_to_account_report, update_field))
+                account_thread = threading.Thread(target=call_dowellconnection,
+                                                  args=(*account_management_reports, "insert", insert_to_account_report,
+                                                        update_field))
                 account_thread.start()
 
                 hr_thread.join()
@@ -205,7 +205,7 @@ class reject_candidate(APIView):
                 if not candidate_thread.is_alive() and not hr_thread.is_alive() and not lead_thread.is_alive() and not account_thread.is_alive():
                     return Response({"message": "Candidate has been Rejected"}, status=status.HTTP_200_OK)
                 else:
-                    return Response({"message": "operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                    return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
                 default_errors = serializer.errors
                 new_error = {}
@@ -218,7 +218,7 @@ class reject_candidate(APIView):
 
 # api for admin management starts here______________________
 @method_decorator(csrf_exempt, name='dispatch')
-class create_jobs(APIView):
+class admin_create_jobs(APIView):
     def post(self, request):
         data = request.data
         field = {
@@ -253,7 +253,7 @@ class create_jobs(APIView):
             if response:
                 return Response({"message": "Job creation was successful."}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Job creation has failed"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Job creation has failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -262,9 +262,28 @@ class create_jobs(APIView):
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class admin_get_job(APIView):
+    def get(self, request, document_id):
+        field = {
+            "_id": document_id
+        }
+        update_field = {
+            "status": "nothing to update"
+        }
+        response = dowellconnection(*jobs, "fetch", field, update_field)
+        # print(response)
+        if response:
+            return Response({"message": "Job details.", "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "There is no jobs", "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+
+
 # get jobs based on company id
 @method_decorator(csrf_exempt, name='dispatch')
-class get_jobs(APIView):
+class admin_get_all_jobs(APIView):
 
     def get(self, request, company_id):
         field = {
@@ -283,30 +302,9 @@ class get_jobs(APIView):
                             status=status.HTTP_204_NO_CONTENT)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class get_job(APIView):
-
-    def get(self, request, document_id):
-        field = {
-            "_id": document_id
-        }
-        update_field = {
-            "status": "nothing to update"
-        }
-        response = dowellconnection(*jobs, "fetch", field, update_field)
-        # print(response)
-        if response:
-            return Response({"message": "Job details.", "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "There is no jobs", "response": json.loads(response)},
-                            status=status.HTTP_204_NO_CONTENT)
-
-
 # update the jobs
 @method_decorator(csrf_exempt, name='dispatch')
-class update_jobs(APIView):
-
+class admin_update_jobs(APIView):
     def patch(self, request):
         data = request.data
         print(data)
@@ -318,7 +316,7 @@ class update_jobs(APIView):
             response = dowellconnection(*jobs, "update", field, update_field)
             # print(response)
             if response:
-                return Response({"message": "Job update is successful."}, status=status.HTTP_200_OK)
+                return Response({"message": "Job update was successful"}, status=status.HTTP_200_OK)
             else:
                 return Response({"message": "Job update has failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
@@ -327,12 +325,10 @@ class update_jobs(APIView):
 
 # delete the jobs
 @method_decorator(csrf_exempt, name='dispatch')
-class delete_job(APIView):
-
-    def delete(self, request):
-        data = request.data
+class admin_delete_job(APIView):
+    def delete(self, request, document_id):
         field = {
-            "_id": data.get('document_id')
+            "_id": document_id
         }
         update_field = {
             "data_type": "archive_data"
@@ -350,7 +346,7 @@ class delete_job(APIView):
 
 # api for candidate management starts here______________________
 @method_decorator(csrf_exempt, name='dispatch')
-class apply_job(APIView):
+class candidate_apply_job(APIView):
     def post(self, request):
         data = request.data
         field = {
@@ -395,9 +391,9 @@ class apply_job(APIView):
         if serializer.is_valid():
             response = dowellconnection(*candidate_management_reports, "insert", field, update_field)
             if response:
-                return Response({"message": "Application received."}, status=status.HTTP_201_CREATED)
+                return Response({"message": "Application received"}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Application not received"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Application not received"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -407,7 +403,7 @@ class apply_job(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class get_job_application(APIView):
+class candidate_get_job_application(APIView):
 
     def get(self, request, company_id):
         field = {
@@ -420,6 +416,25 @@ class get_job_application(APIView):
         print(response)
         if response:
             return Response({"message": "List of job applications.", "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "There are no job applications", "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class get_candidate_application(APIView):
+    def get(self, request, document_id):
+        field = {
+            "_id": document_id
+        }
+        update_field = {
+            "status": "nothing to update"
+        }
+        response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        print(response)
+        if response:
+            return Response({"message": "Candidate job applications", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
             return Response({"message": "There are no job applications", "response": json.loads(response)},
@@ -441,54 +456,32 @@ class get_all_onboarded_candidate(APIView):
             response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
 
             if response:
-                return Response({"message": f"List of {field['status']} Candidates", "response": json.loads(response)},
+                return Response({"message": f"List of {field['status']} Candidates",
+                                 "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
             else:
-                return Response(
-                    {"message": f"There are no {field['status']} Candidates", "response": json.loads(response)},
-                    status=status.HTTP_204_NO_CONTENT)
+                return Response({"message": f"There are no {field['status']} Candidates",
+                                 "response": json.loads(response)},
+                                status=status.HTTP_204_NO_CONTENT)
         else:
-            return Response({"message": "Parameters are not valid."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-@method_decorator(csrf_exempt, name='dispatch')
-class get_candidate_application(APIView):
-    def get(self, request, document_id):
-        field = {
-            "_id": document_id
-        }
-        update_field = {
-            "status": "nothing to update"
-        }
-        response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
-        print(response)
-        if response:
-            return Response({"message": "Candidate job apllications.", "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "There is no job applications", "response": json.loads(response)},
-                            status=status.HTTP_204_NO_CONTENT)
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class delete_candidate_application(APIView):
-    def delete(self, request):
-        data = request.data
-        if data:
-            field = {
-                "_id": data.get('document_id')
-            }
-            update_field = {
-                "data_type": "Archived_Data"
-            }
-            response = dowellconnection(*candidate_management_reports, "update", field, update_field)
-            if response:
-                return Response({"message": "candidate application deleted successfully."}, status=status.HTTP_200_OK)
-            else:
-                return Response({"message": "candidate application deletion has failed."},
-                                status=status.HTTP_304_NOT_MODIFIED)
+    def delete(self, request, document_id):
+        field = {
+            "_id": document_id
+        }
+        update_field = {
+            "data_type": "Archived_Data"
+        }
+        response = dowellconnection(*candidate_management_reports, "update", field, update_field)
+        if response:
+            return Response({"message": "Candidate application deleted successfully."}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Deleting candidate application has failed"},
+                            status=status.HTTP_304_NOT_MODIFIED)
 
 
 # api for candidate management ends here______________________
@@ -496,8 +489,7 @@ class delete_candidate_application(APIView):
 
 # api for hr management starts here______________________
 @method_decorator(csrf_exempt, name='dispatch')
-class shortlisted_candidate(APIView):
-
+class hr_shortlisted_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
@@ -549,7 +541,7 @@ class shortlisted_candidate(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class selected_candidate(APIView):
+class hr_selected_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
@@ -599,7 +591,7 @@ class selected_candidate(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class reject_candidate(APIView):
+class hr_reject_candidate(APIView):
     def post(self, request):
         data = request.data
         print(data)
@@ -641,7 +633,7 @@ class reject_candidate(APIView):
                 if not candidate_thread.is_alive() and not hr_thread.is_alive():
                     return Response({"message": "Candidate has been Rejected"}, status=status.HTTP_200_OK)
                 else:
-                    return Response({"message": "operation failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    return Response({"message": "Hr Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
                 default_errors = serializer.errors
                 new_error = {}
@@ -655,7 +647,7 @@ class reject_candidate(APIView):
 
 # api for lead management starts here________________________
 @method_decorator(csrf_exempt, name='dispatch')
-class hire_candidate(APIView):
+class lead_hire_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
@@ -708,7 +700,7 @@ class hire_candidate(APIView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class rehire_candidate(APIView):
+class lead_rehire_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
@@ -724,13 +716,13 @@ class rehire_candidate(APIView):
             if update_response:
                 return Response({"message": f"Candidate has been {update_field['status']}"}, status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Lead Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class reject_candidate(APIView):
+class lead_reject_candidate(APIView):
     def post(self, request):
         data = request.data
         print(data)
@@ -778,7 +770,7 @@ class reject_candidate(APIView):
                 if not hr_thread.is_alive() and not candidate_thread.is_alive() and not lead_thread.is_alive():
                     return Response({"message": "Candidate has been Rejected"}, status=status.HTTP_200_OK)
                 else:
-                    return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                    return Response({"message": "Lead Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
                 default_errors = serializer.errors
                 new_error = {}
@@ -814,10 +806,10 @@ class create_task(APIView):
             insert_response = dowellconnection(*task_management_reports, "insert", field, update_field)
             print(insert_response)
             if insert_response:
-                return Response({"message": f"Task added successfully and the status is {field['status']}"},
-                                status=status.HTTP_200_OK)
+                return Response({"message": f"Task has been created successfully"},
+                                status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "failed to add task"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Task failed to be Created"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_request)
 
@@ -834,10 +826,10 @@ class get_task(APIView):
         response = dowellconnection(*task_management_reports, "fetch", field, update_field)
         print(response)
         if response:
-            return Response({"message": "List of the task", "response": json.loads(response)},
+            return Response({"message": "List of the tasks", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
-            return Response({"message": "There is no task", "response": json.loads(response)},
+            return Response({"message": "There are no tasks", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
 
 
@@ -853,10 +845,10 @@ class get_candidate_task(APIView):
         response = dowellconnection(*task_management_reports, "fetch", field, update_field)
         print(response)
         if response:
-            return Response({"message": "List of the task", "response": json.loads(response)},
+            return Response({"message": "List of the tasks", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
-            return Response({"message": "There is no task", "response": json.loads(response)},
+            return Response({"message": "There are no tasks", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
 
 
@@ -878,31 +870,27 @@ class update_task(APIView):
             response = dowellconnection(*task_management_reports, "update", field, update_field)
             print(response)
             if response:
-                return Response({"message": "Task updation successful"}, status=status.HTTP_200_OK)
+                return Response({"message": "Task updated successfully"}, status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Task updation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Task failed to be updated"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class delete_task(APIView):
-    def delete(self, request):
-        data = request.data
-        if data:
-            field = {
-                "_id": data.get('document_id')
-            }
-            update_field = {
-                "data_type": "Archived_Data"
-            }
-            response = dowellconnection(*task_management_reports, "update", field, update_field)
-            if response:
-                return Response({"message": "Task deletion successful."}, status=status.HTTP_200_OK)
-            else:
-                return Response({"message": "Task deletion has failed."}, status=status.HTTP_304_NOT_MODIFIED)
+    def delete(self, request, document_id):
+        field = {
+            "_id": document_id
+        }
+        update_field = {
+            "data_type": "Archived_Data"
+        }
+        response = dowellconnection(*task_management_reports, "update", field, update_field)
+        if response:
+            return Response({"message": "Task deleted successfully"}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Task failed to be deleted"}, status=status.HTTP_304_NOT_MODIFIED)
 
 
 # api for task management ends here________________________
@@ -929,7 +917,9 @@ class create_team(APIView):
             if response:
                 return Response({"message": "Team created successfully"}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Team Creation Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Team failed to be created"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -989,7 +979,9 @@ class edit_team(APIView):
                                  "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Team Updating Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Team failed to be updated"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -1016,7 +1008,6 @@ class create_team_task(APIView):
         if data:
             field = {
                 "eventId": get_event_id()['event_id'],
-                "task_id": data.get("task_id"),
                 'title': data.get("title"),
                 'description': data.get("description"),
                 "assignee": data.get("assignee"),
@@ -1032,13 +1023,42 @@ class create_team_task(APIView):
                 return Response({"message": "Task created successfully"}, status=status.HTTP_201_CREATED)
             else:
                 return Response({"message": "Task Creation Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class edit_team_task(APIView):
+    def patch(self, request, task_id):
+        data = request.data
+        if data:
+            field = {
+                "_id": task_id,
+            }
+            update_field = {
+                "title": data.get("title"),
+                "description": data.get("description"),
+                "assignee": data.get("assignee"),
+                "completed": data.get("completed"),
+                "team_name": data.get("team_name"),
+            }
+            response = dowellconnection(
+                *team_management_modules, "update", field, update_field)
+            if response:
+                return Response({"message": "Team Task Updated successfully",
+                                 "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Team Task failed to be updated"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_team_task(APIView):
     def get(self, request, task_id):
         field = {
-            "task_id": task_id,
+            "_id": task_id,
         }
         update_field = {
             "status": "nothing to update"
@@ -1059,7 +1079,7 @@ class get_team_task(APIView):
 class delete_team_task(APIView):
     def delete(self, request, task_id):
         field = {
-            "_id": task_id
+            "task_id": task_id
         }
         update_field = {
             "data_type": "Archived_Data"
@@ -1069,6 +1089,73 @@ class delete_team_task(APIView):
             return Response({"message": f"Task with id {task_id} has been deleted"}, status=status.HTTP_200_OK)
         else:
             return Response({"message": f"Task with id {task_id} failed to be deleted"},
+                            status=status.HTTP_304_NOT_MODIFIED)
+
+
+# this is the api for creating a task for a team member
+@method_decorator(csrf_exempt, name='dispatch')
+class create_member_task(APIView):
+    def post(self, request):
+        data = request.data
+        # print(request.data)
+        if data:
+            field = {
+                "eventId": get_event_id()['event_id'],
+                'title': data.get("title"),
+                'description': data.get("description"),
+                "assignee": data.get("assignee"),
+                "completed": data.get("completed"),
+                "team_name": data.get("team_name"),
+                "team_member": data.get("team_member"),
+            }
+            update_field = {
+                "status": "nothing to update"
+            }
+            response = dowellconnection(
+                *team_management_modules, "insert", field, update_field)
+            if response:
+                return Response({"message": "Task for member created successfully"}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message": "Task for member Creation Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class get_member_task(APIView):
+    def get(self, request, task_id):
+        field = {
+            "_id": task_id,
+        }
+        update_field = {
+            "status": "nothing to update"
+        }
+        response = dowellconnection(
+            *team_management_modules, "fetch", field, update_field)
+        if response:
+            return Response({"message": f"Member Task with id - {task_id} available",
+                             "response": json.loads(response)},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "There is no task",
+                             "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class delete_member_task(APIView):
+    def delete(self, request, task_id):
+        field = {
+            "task_id": task_id
+        }
+        update_field = {
+            "data_type": "Archived_Data"
+        }
+        response = dowellconnection(*task_management_reports, "update", field, update_field)
+        if response:
+            return Response({"message": f"Member Task with id {task_id} has been deleted"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": f"Member Task with id {task_id} failed to be deleted"},
                             status=status.HTTP_304_NOT_MODIFIED)
 
 
@@ -1134,7 +1221,7 @@ class get_question(APIView):
         field = {
             "_id": document_id,
         }
-        print(field)
+        # print(field)
         update_field = {
             "status": "nothing to update"
         }
@@ -1166,7 +1253,7 @@ class update_question(APIView):
                 *questionnaire_modules, "update", field, update_field)
             print(question_response)
             if question_response:
-                return Response({"message": "Question updated successfully"}, status=status.HTTP_201_CREATED)
+                return Response({"message": "Question updated successfully"}, status=status.HTTP_200_OK)
             else:
                 return Response({"message": "Question updating failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
@@ -1179,29 +1266,36 @@ class update_question(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class response(APIView):
-
     def post(self, request):
         data = request.data
-        field = {
-            "event_id": get_event_id()["event_id"],
-            "company_id": data.get("company_id"),
-            "data_type": data.get("data_type"),
-            "module": data.get("module"),
-            "project_name": data.get("project_name"),
-            "username": data.get("username"),
-            "code_base_link": data.get("code_base_link"),
-            "live_link": data.get("live_link"),
-            "documentation_link": data.get("documentation_link"),
-            "started_on": data.get("started_on"),
-            "submitted_on": data.get("submitted_on"),
-            "rating": data.get("rating")
-        }
-        update_field = {
+        if data:
+            field = {
+                "event_id": get_event_id()["event_id"],
+                "company_id": data.get("company_id"),
+                "data_type": data.get("data_type"),
+                "module": data.get("module"),
+                "project_name": data.get("project_name"),
+                "username": data.get("username"),
+                "code_base_link": data.get("code_base_link"),
+                "live_link": data.get("live_link"),
+                "documentation_link": data.get("documentation_link"),
+                "started_on": data.get("started_on"),
+                "submitted_on": data.get("submitted_on"),
+                "rating": data.get("rating")
+            }
+            update_field = {
 
-        }
-        insert_response = dowellconnection(
-            *response_modules, "insert", field, update_field)
-        return Response({"info": insert_response}, status=status.HTTP_201_CREATED)
+            }
+            insert_response = dowellconnection(
+                *response_modules, "insert", field, update_field)
+            if insert_response:
+                return Response(
+                    {"message": "Response has been created successfully", "info": json.loads(insert_response)},
+                    status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message": "Response failed to be Created"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -1217,7 +1311,7 @@ class update_response(APIView):
             "documentation_link": data.get("documentation_link"),
         }
         insert_to_hr_report = {
-            "status": "hire",
+            "status": data.get("status"),
         }
 
         def call_dowellconnection(*args):
@@ -1238,7 +1332,8 @@ class update_response(APIView):
         if not insert_to_response_thread.is_alive() and not update_to_hr_thread.is_alive():
             return Response({"message": f"Candidate has been {data.get('status')}"}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Hr operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+            return Response({"message": f"Candidate has been {data.get('status')}"},
+                            status=status.HTTP_304_NOT_MODIFIED)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -1255,7 +1350,7 @@ class get_response(APIView):
             *response_modules, "fetch", field, update_field)
         print(response)
         if response:
-            return Response({"message": "List of response.", "response": json.loads(response)},
+            return Response({"message": "List of responses", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
             return Response({"error": "data not found"}, status=status.HTTP_204_NO_CONTENT)
@@ -1276,26 +1371,28 @@ class submit_response(APIView):
             "answer_link": data.get("answer_link"),
             "submitted_on": data.get("submitted_on"),
         }
-        if update_field["video_link"] == "":
-            return Response({"Error": "Video Link Field is required and can not be empty"},
-                            status=status.HTTP_204_NO_CONTENT)
-        if update_field["answer_link"] == "":
-            return Response({"Error": "Answer Link Field is required and can not be empty"},
-                            status=status.HTTP_204_NO_CONTENT)
-        insert_to_response = dowellconnection(
-            *response_modules, "update", field, update_field)
+        serializer = SubmitResponseSerializer(data=update_field)
+        if serializer.is_valid():
+            insert_to_response = dowellconnection(
+                *response_modules, "update", field, update_field)
 
-        if insert_to_response:
-            return Response({"message": "Response has been submitted"}, status=status.HTTP_200_OK)
+            if insert_to_response:
+                return Response({"message": "Response has been submitted"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
-            return Response({"message": "operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_all_responses(APIView):
     def get(self, request, company_id):
         field = {
-            "_id": company_id,
+            "company_id": company_id,
         }
         print(field)
         update_field = {
