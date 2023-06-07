@@ -8,7 +8,7 @@ _changes_ to `admin_management/create_jobs/`
 
 ```json
 {
-  "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>"
+  "module": "<Frontend | Backend | UI/UX | Virtual_Assistant |Web | Mobile>"
 }
 ```
 
