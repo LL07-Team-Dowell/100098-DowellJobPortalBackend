@@ -432,6 +432,7 @@ function TraningProgress({ shorlistedJob }) {
                 <Navbar>
                     <NavbarItem>
                         <div className="item">
+                            {/* <IoIosArrowBack onClick={nevigateButton} /> */}
                             <IoIosArrowBack onClick={nevigateButton} />
                             <h1>My Training</h1>
                         </div>
