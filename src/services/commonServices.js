@@ -1,4 +1,4 @@
-import { currentBackendAxiosInstance, formerBackendAxiosInstance, liveStatusBackendAxiosInstance } from "./axios"
+import { currentBackendAxiosInstance, liveStatusBackendAxiosInstance } from "./axios"
 
 export const getJobs2 = async (data) => {
     return await currentBackendAxiosInstance.post("admin_management/get_jobs/",data )
@@ -13,9 +13,9 @@ export const getAllTrainingResponses = async (company_id) => {
 }
 
 export const getUserLiveStatus = async () => {
-    return await liveStatusBackendAxiosInstance.get("live_status")
+    return await liveStatusBackendAxiosInstance.get("api/live_users")
 }
 
 export const postUserLiveStatus = async (data) => {
-    return await liveStatusBackendAxiosInstance.post("live_status", data)
+    return await liveStatusBackendAxiosInstance.post("en/live_status", data)
 }
