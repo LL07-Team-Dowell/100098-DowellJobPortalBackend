@@ -51,6 +51,7 @@ function TraningProgress({ shorlistedJob }) {
     const handleViewQuestions = (event, link) => {
         event.preventDefault();
         setQuestionsLink(link);
+        console.log(link);
         setShowIframe(true);
     };
 
@@ -102,7 +103,7 @@ function TraningProgress({ shorlistedJob }) {
         // height: 100vh; /* Adjust as needed */
         margin: 0;
         padding: 0;
-    .iframe-container {
+        .iframe-container {
         width: 80%; /* Adjust the width as needed */
         height: 500px; /* Adjust the height as needed */
         border: none; /* Remove iframe border */
@@ -536,9 +537,8 @@ function TraningProgress({ shorlistedJob }) {
                                                 }
                                             </div> */}
                                             <div className="view-question">
-                                                <Link to="#" onClick={(event) => handleViewQuestions(event, matchModule.question_link)}>
+                                                <Link to={matchModule.question_link} target='_blank'>
                                                     {"View Question"}
-                                                    {console.log(matchModule.question_link)}
                                                 </Link>
                                             </div>
                                             <div className="bottom-content">
@@ -571,9 +571,8 @@ function TraningProgress({ shorlistedJob }) {
                                             </div>
 
                                             <div className="right-bottom-content">
-                                                <Link to="#" onClick={(event) => handleViewQuestions(event, matchModule.question_link)}>
+                                                <Link to={matchModule.question_link} target='_blank'>
                                                     {"View Question"}
-                                                    {console.log(matchModule.question_link)}
                                                 </Link>
                                             </div>
                                         </div>
