@@ -9,13 +9,14 @@ import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 import { RiTeamFill } from 'react-icons/ri';
 import "./index.scss"
+import { getAllTeams } from '../../../../services/createMembersTasks';
 const Index = () => {
   const { currentUser } = useCurrentUserContext();
   const {data , setdata} = useValues() ;
   const [impLoading , setImpLoading] = useState(false) ; 
   useEffect(()=>{
     setImpLoading(true)
-    axios(`https://100098.pythonanywhere.com/team_task_management/get_all_teams/${currentUser.portfolio_info[0].org_id}/`)
+    getAllTeams(currentUser.portfolio_info[0].org_id)
     .then(resp =>{ 
       console.log(resp.data.response.data)
       setdata({...data , TeamsSelected:resp.data.response.data});

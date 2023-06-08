@@ -7,6 +7,7 @@ import { initialState } from '../../context/Values';
 import { useCurrentUserContext } from '../../../../../../contexts/CurrentUserContext';
 import { toast } from 'react-toastify';
 import Checkbox from '../Checkbox';
+import { EditTeam } from '../../../../../../services/createMembersTasks';
 const SecondForm = ({}) => {
   const { currentUser } = useCurrentUserContext();
   const {data ,setdata} = useValues() ; 
@@ -74,7 +75,7 @@ const SecondForm = ({}) => {
             const patchTeam = () => {
               const id = data.TeamsSelected.find(m => m.team_name === choosedTeam.value)["id"] 
               const teamName = data.TeamsSelected.find(m => m.team_name === choosedTeam.value)["team_name"] 
-              axios.patch(`https://100098.pythonanywhere.com/team_task_management/edit_team/${choosedTeam.id}/`,{ "team_name":teamName ,
+              EditTeam(choosedTeam.id,{ "team_name":teamName ,
               "members":data?.membersEditTeam})
               .then(resp => {console.log(resp); toast(`members of team ${teamName} is updated !`) ; setdata({...initialState ,RESP_INDV_TASK:"Response", TeamsSelected:data.TeamsSelected })}) 
               .catch(err => {console.log(err);console.log({team:data?.membersEditTeam})})

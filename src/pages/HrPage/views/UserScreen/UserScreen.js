@@ -14,7 +14,12 @@ const UserScreen = () => {
     React.useEffect(()=>{
         const checkActive = setInterval(()=>{
          Promise.all([getUserLiveStatus(),postUserLiveStatus({product:teamManagementProductName , session_id:sessionStorage.getItem("session_id")})])
-            .then(resp => {console.log(resp[0],resp[1]);setsuccsess(true)}) 
+            .then(resp => {
+                console.log(resp[0],resp[1]);
+                if(resp[0]){
+                    setsuccsess(true) ; 
+                }
+            }) 
             .catch(err => {console.log(err[0],err[1]);setsuccsess(false);}); 
         },60000)
         return () => clearInterval(checkActive)
