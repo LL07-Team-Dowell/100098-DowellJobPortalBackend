@@ -1,10 +1,10 @@
 ###url change log
 
-##account management apis============
-'accounts_management/onboard_candidate/'  -------->   'accounts_onboard_candidate/'
-'accounts_management/update_project/'  -------->   'accounts_update_project/'
-'accounts_management/rehire_candidate/'  -------->   'accounts_rehire_candidate/'
-'accounts_management/reject_candidate/'  --------   'accounts_reject_candidate/'
+##account management apis---------
+_Post_ to 'accounts_management/onboard_candidate/'  -------->   'accounts_onboard_candidate/'
+_Post_ to 'accounts_management/update_project/'  -------->   'accounts_update_project/'
+_Post_ to 'accounts_management/rehire_candidate/'  -------->   'accounts_rehire_candidate/'
+_Post_ to 'accounts_management/reject_candidate/'  --------   'accounts_reject_candidate/'
 
 ##admin management apis===========
 'admin_management/create_jobs/'   -------->   'admin_create_jobs/'
