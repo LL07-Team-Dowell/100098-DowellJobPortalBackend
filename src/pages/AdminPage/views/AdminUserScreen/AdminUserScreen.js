@@ -34,9 +34,9 @@ const AdminUserScreen = ({subAdminView}) => {
                     <h2>User Name</h2>
                     <span>{ currentUser?.userinfo.username }</span>    
                 </div>
-                <div className="edit__Btn">
+                {/* <div className="edit__Btn">
                     Edit
-                </div>
+                </div> */}
             </div>
             <div className="user__Intro__Item">
                 <h2>Email</h2>
@@ -51,7 +51,7 @@ const AdminUserScreen = ({subAdminView}) => {
                     <span>{currentUser?.userinfo.last_name}</span>
                 </div>
             <div className="user__Intro__Item" style={{display:"flex",gap:5,alignItems:"center"}}>
-                <h2>Active Status</h2>
+                <h2>Live Status</h2>
                 <div style={success ? successStatus : failedStatus}></div>
             </div>
             <div className="user__Intro__Item">
