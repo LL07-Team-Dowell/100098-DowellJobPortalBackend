@@ -1,5 +1,6 @@
 import { FiEdit, FiHome, FiUser } from "react-icons/fi";
 import { ImStack } from "react-icons/im";
+import {GiTeamIdea} from "react-icons/gi";
 
 export const teamleadNavigationLinks = [
     {
@@ -14,8 +15,8 @@ export const teamleadNavigationLinks = [
     },
     {
         linkAddress: "/create-task",
-        icon: <FiEdit />, 
-        text: "Create Task"
+        icon: <GiTeamIdea />, 
+        text: "Team tasks"
     },
     {
         linkAddress: "/user",
