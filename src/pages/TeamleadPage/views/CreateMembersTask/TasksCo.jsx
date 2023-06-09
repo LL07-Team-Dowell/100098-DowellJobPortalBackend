@@ -10,7 +10,8 @@ import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/Sta
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext'
 import Alert from './Alert'
 import { toast } from 'react-toastify'
-import { initialState } from './context/Values'
+import { initialState } from './context/Values' 
+import { createTeam, createTeamTask, getAllTeams } from '../../../../services/createMembersTasks'
 const  TasksCo = ({bback}) => {
   const { currentUser } = useCurrentUserContext();
   const {data , setdata} = useValues() ;
@@ -43,7 +44,7 @@ const  TasksCo = ({bback}) => {
         // Creating a team 
         else if(currentStepIndex === 1 && selected_members.length > 0){
           setloading(true)
-          axios.post(`https://100098.pythonanywhere.com/team_task_management/create_team/`,{
+          createTeam({
             team_name,
             members: selected_members , 
             company_id: currentUser.portfolio_info[0].org_id,
@@ -51,7 +52,7 @@ const  TasksCo = ({bback}) => {
           .then(resp => {
             console.log(resp.data) ; 
             console.log({team_name})
-              axios(`https://100098.pythonanywhere.com/team_task_management/get_all_teams/${currentUser.portfolio_info[0].org_id}/`)
+              getAllTeams()
                 .then(resp =>{
                   setloading(false) ;
                   const id =  resp.data.response.data.find(v=>v.team_name === team_name)["_id"]
@@ -73,7 +74,7 @@ const  TasksCo = ({bback}) => {
           // Creating a Team Task 
           if(data.discription && data.taskName){
               setloading(true) ;
-              axios.post("https://100098.pythonanywhere.com/team_task_management/create_team_task/",{assignee:currentUser.userinfo.username
+              createTeamTask({assignee:currentUser.userinfo.username
               ,title:data.taskName ,description:data.discription,team:data.teamId , completed:false})
               .then(r => {console.log(r.data);
                 setloading(false)

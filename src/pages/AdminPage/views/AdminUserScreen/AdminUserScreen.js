@@ -12,8 +12,8 @@ const AdminUserScreen = ({subAdminView}) => {
        const checkActive = setInterval(()=>{
         //    getUserLiveStatus()
         Promise.all([getUserLiveStatus(),postUserLiveStatus({product:teamManagementProductName , session_id:sessionStorage.getItem("session_id")})])
-           .then(resp => {console.log(resp[0],resp[1]);setsuccsess(true)}) 
-           .catch(err => {console.log(err[0],err[1]);setsuccsess(false);}); 
+            .then(resp => {console.log(resp[0],resp[1]);setsuccsess(true)}) 
+            .catch(err => {console.log(err[0],err[1]);setsuccsess(false);}); 
        },60000)
        return () => clearInterval(checkActive)
    },[])
