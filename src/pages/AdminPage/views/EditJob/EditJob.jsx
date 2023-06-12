@@ -25,7 +25,6 @@ function EditJob({ subAdminView }) {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [updateLoading, setUpdateLoading] = useState(false)
-  // console.log(updateLoading)
   const [formData, setFormData] = useState({
     job_title: '',
     skills: '',
@@ -43,19 +42,10 @@ function EditJob({ subAdminView }) {
     document_id: '',
     module: ''
   });
-  // console.log(formData.job_category);
-  // console.log(formData);
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setLoading(false)
-  //   }, 10000)
-  // }, []);
-
 
   const { currentUser } = useCurrentUserContext();
   const { jobs, setJobs } = useJobContext();
   const { id } = useParams();
-  // const [newjobs, setNewjobs] = useState([]);
   const singleJob = jobs?.filter(job => job["_id"] === id)[0];
   const { payment_terms, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, module } = singleJob || {};
   const [selectedOption, setSelectedOption] = useState(job_category || "");
@@ -125,46 +115,78 @@ function EditJob({ subAdminView }) {
   }, [id])
 
 
+  // useEffect(() => {
+  //   const formDataUpdates = {};
+  //   switch (true) {
+  //     case job_title?.length > 0:
+  //       formDataUpdates.module = module;
+  //       formDataUpdates.job_title = job_title;
+  //       formDataUpdates.description = description;
+  //       formDataUpdates.skills = skills;
+  //       formDataUpdates.job_category = job_category;
+  //       formDataUpdates.time_interval = time_interval;
+  //       formDataUpdates.payment = payment;
+  //       formDataUpdates.type_of_job = typeofOption;
+  //       formDataUpdates.is_active = is_active;
+  //       formDataUpdates.document_id = _id;
+  //       break;
+  //     case general_terms?.length > 0:
+  //       formDataUpdates.general_terms = general_terms;
+  //       break;
+  //     case technical_specification?.length > 0:
+  //       formDataUpdates.technical_specification = technical_specification;
+  //       break;
+  //     case payment_terms?.length > 0:
+  //       formDataUpdates.payment_terms = payment_terms;
+  //       break;
+  //     case workflow_terms?.length > 0:
+  //       formDataUpdates.workflow_terms = workflow_terms;
+  //       break;
+  //     case other_info?.length > 0:
+  //       formDataUpdates.other_info = other_info;
+  //       break;
+  //     default:
+  //       break;
+  //   }
+
+  //   setFormData(prevState => ({
+  //     ...prevState,
+  //     ...formDataUpdates
+  //   }));
+
+  // }, []);
+
+
   useEffect(() => {
-    const formDataUpdates = {};
-    switch (true) {
-      case job_title?.length > 0:
-        formDataUpdates.module = module;
-        formDataUpdates.job_title = job_title;
-        formDataUpdates.description = description;
-        formDataUpdates.skills = skills;
-        formDataUpdates.job_category = job_category;
-        formDataUpdates.time_interval = time_interval;
-        formDataUpdates.payment = payment;
-        formDataUpdates.type_of_job = typeofOption;
-        formDataUpdates.is_active = is_active;
-        formDataUpdates.document_id = _id;
-        break;
-      case general_terms?.length > 0:
-        formDataUpdates.general_terms = general_terms;
-        break;
-      case technical_specification?.length > 0:
-        formDataUpdates.technical_specification = technical_specification;
-        break;
-      case payment_terms?.length > 0:
-        formDataUpdates.payment_terms = payment_terms;
-        break;
-      case workflow_terms?.length > 0:
-        formDataUpdates.workflow_terms = workflow_terms;
-        break;
-      case other_info?.length > 0:
-        formDataUpdates.other_info = other_info;
-        break;
-      default:
-        break;
+    if (singleJob) {
+      const formDataUpdates = {};
+
+      if (singleJob.job_title?.length > 0) {
+        formDataUpdates.module = singleJob.module;
+        formDataUpdates.job_title = singleJob.job_title;
+        formDataUpdates.description = singleJob.description;
+        formDataUpdates.skills = singleJob.skills;
+        formDataUpdates.job_category = singleJob.job_category;
+        formDataUpdates.time_interval = singleJob.time_interval;
+        formDataUpdates.payment = singleJob.payment;
+        formDataUpdates.type_of_job = singleJob.type_of_job;
+        formDataUpdates.is_active = singleJob.is_active;
+        formDataUpdates.document_id = singleJob._id;
+        formDataUpdates.general_terms = singleJob.general_terms;
+        formDataUpdates.technical_specification = singleJob.technical_specification;
+        formDataUpdates.payment_terms = singleJob.payment_terms;
+        formDataUpdates.workflow_terms = singleJob.workflow_terms;
+        formDataUpdates.other_info = singleJob.other_info;
+      }
+
+      setFormData(prevState => ({
+        ...prevState,
+        ...formDataUpdates
+      }));
     }
+  }, [singleJob]);
 
-    setFormData(prevState => ({
-      ...prevState,
-      ...formDataUpdates
-    }));
 
-  }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
