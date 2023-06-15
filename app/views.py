@@ -8,10 +8,12 @@ from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
-from .helper import get_event_id, dowellconnection
+from .helper import get_event_id, dowellconnection, call_notification
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
     SubmitResponseSerializer
+import datetime
+from dateutil.relativedelta import relativedelta
 
 
 # Create your views here.
@@ -347,8 +349,36 @@ class admin_delete_job(APIView):
 # api for candidate management starts here______________________
 @method_decorator(csrf_exempt, name='dispatch')
 class candidate_apply_job(APIView):
+    def is_eligible_to_apply(self, applicant_email):
+        data = self.request.data
+        field = {
+            "applicant": data.get('applicant'),
+            "applicant_email": data.get('applicant_email'),
+            "username": data.get('username'),
+        }
+        update_field = {
+            "status": "nothing to update"
+        }
+        applicant = dowellconnection(*rejected_reports_modules, "fetch", field, update_field)
+        rejected_reports_modules = []
+        rejected_reports_modules.append(applicant)
+
+        # Check if applicant is present in rejected_reports_modules
+        if applicant is not None:
+            rejected_on = applicant.get("rejected_on")
+            if rejected_on:
+                three_months_after = rejected_on + relativedelta(months=3)
+                current_date = datetime.timezone.now().date()
+                if current_date >= three_months_after:
+                    return True
+
+        return False
+
     def post(self, request):
         data = request.data
+        applicant_email = data.get("applicant_email")
+        if not self.is_eligible_to_apply(applicant_email):
+            return Response({"message": "Not eligible to apply yet."}, status=status.HTTP_400_BAD_REQUEST)
         field = {
             "eventId": get_event_id()['event_id'],
             "job_number": data.get('job_number'),
@@ -370,6 +400,7 @@ class candidate_apply_job(APIView):
             "hr_remarks": "",
             "teamlead_remarks": "",
             "rehire_remarks": "",
+            "module": data.get("module"),
             "server_discord_link": "https://discord.gg/Qfw7nraNPS",
             "product_discord_link": "",
             "payment": data.get('payment'),
@@ -387,13 +418,14 @@ class candidate_apply_job(APIView):
         update_field = {
             "status": "nothing to update"
         }
+
         serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
-            response = dowellconnection(*candidate_management_reports, "insert", field, update_field)
+            response = dowellconnection(*rejected_reports_modules, "fetch", field, update_field)
             if response:
-                return Response({"message": "Application received"}, status=status.HTTP_201_CREATED)
+                return Response({"message": "Application received."}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Application not received"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Application failed to receive."}, status=status.HTTP_400_BAD_REQUEST)
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -491,8 +523,26 @@ class delete_candidate_application(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class hr_shortlisted_candidate(APIView):
     def post(self, request):
+
         data = request.data
         if data:
+            # call the notification api-----
+            notify_data = {
+                "created_by": data.get('applicant'),
+                "org_id": data.get('company_id'),
+                "org_name": "Dowell hr",
+                "data_type": "String Data",
+                "user_type": "Shortlisted Candidate",
+                "from_field": data.get('company_id'),
+                "to": data.get('applicant'),
+                "desc": "Notification for action",
+                "meant_for": data.get('applicant'),
+                "type_of_notification": "notify"
+            }
+            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+            details = call_notification(url=url, request_type='post', data=notify_data)
+
+            # continue shortlisting api-----
             field = {
                 "_id": data.get('document_id'),
             }
@@ -508,11 +558,15 @@ class hr_shortlisted_candidate(APIView):
                 "status": data.get('status'),
                 "company_id": data.get('company_id'),
                 "data_type": data.get('data_type'),
-                "shortlisted_on": data.get('shortlisted_on')
+                "shortlisted_on": data.get('shortlisted_on'),
+                "notified": details['isSuccess'],
+                "notification_id": details['inserted_id']
             }
+
             serializer = HRSerializer(data=data)
             if serializer.is_valid():
                 def call_dowellconnection(*args):
+
                     dowellconnection(*args)
 
                 update_response_thread = threading.Thread(target=call_dowellconnection, args=(
@@ -528,7 +582,12 @@ class hr_shortlisted_candidate(APIView):
                 insert_response_thread.join()
 
                 if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
-                    return Response({"message": f"Candidate has been {data.get('status')}"},
+
+                    return Response({"message": f"Candidate has been {data.get('status')}",
+                                     "notification": {"notified": insert_to_hr_report['notified'],
+                                                      "notification_id": insert_to_hr_report['notification_id']
+                                                      }
+                                     },
                                     status=status.HTTP_201_CREATED)
                 else:
                     return Response({"message": "Hr operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
@@ -545,6 +604,23 @@ class hr_selected_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
+            # call the notification api-----
+            notify_data = {
+                "created_by": data.get('applicant'),
+                "org_id": data.get('company_id'),
+                "org_name": "Dowell hr",
+                "data_type": "String Data",
+                "user_type": "Shortlisted Candidate",
+                "from_field": data.get('company_id'),
+                "to": data.get('applicant'),
+                "desc": "Notification for action",
+                "meant_for": data.get('applicant'),
+                "type_of_notification": "notify"
+            }
+            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+            create_notification = call_notification(url=url, request_type='post', data=notify_data)
+
+            # continue selection api-----
             field = {
                 "_id": data.get('document_id'),
             }
@@ -564,7 +640,10 @@ class hr_selected_candidate(APIView):
                 "status": data.get('status'),
                 "company_id": data.get('company_id'),
                 "data_type": data.get('data_type'),
-                "selected_on": data.get('selected_on')
+                "selected_on": data.get('selected_on'),
+                "notified": create_notification['isSuccess'],
+                "selected": "True",
+                "notification_id": create_notification['inserted_id']
             }
 
             def call_dowellconnection(*args):
@@ -583,7 +662,18 @@ class hr_selected_candidate(APIView):
             insert_response_thread.join()
 
             if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
-                return Response({"message": f"Candidate has been {data.get('status')}"}, status=status.HTTP_201_CREATED)
+                # call the mark as seen notification api-----
+                n_id = insert_to_hr_report['notification_id']
+                url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+
+                return Response({"message": f"Candidate has been {data.get('status')}",
+                                 "notification": {"notified": insert_to_hr_report['notified'],
+                                                  "seen": patch_notification['isSuccess'],
+                                                  "notification_id": insert_to_hr_report['notification_id']
+                                                  }
+                                 },
+                                status=status.HTTP_201_CREATED)
             else:
                 return Response({"message": "Hr operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
