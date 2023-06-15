@@ -103,6 +103,7 @@ team_management_modules = [
     "1201001",
     "ABCDE",
 ]
+
 rejected_reports_modules = [
 "jobportal",
 "jobportal",
