@@ -341,8 +341,8 @@ _Post_ to `candidate_apply_job/`
 - Response 201
 
 ```json
-{
-  "message": "Application received"
+{"message": "Application received.",
+  "Eligibility": "True/False"
 }
 ```
 
@@ -460,6 +460,8 @@ _Post_ to `hr_shortlisted_candidate/`
   "applicant": "<applicant name>",
   "company_id": "<company_id>",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "company_name": "<company_name>", 
+  "user_type": "<Freelancer | Internship | Employee>",
   "shortlisted_on": "<shortlisted_on>"
 }
 ```
@@ -499,8 +501,10 @@ _Post_ to `hr_selected_candidate/`
   "project": "[<project name 1>,<project name 2>,<project name 3>]",
   "product_discord_link": "<link>",
   "applicant": "<applicant name>",
-  "company_id": "<company id>",
+  "company_id": "<company_id>",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "company_name": "<company_name>", 
+  "user_type": "<Freelancer | Internship | Employee>",
   "selected_on": "<selected on>"
 }
 ```

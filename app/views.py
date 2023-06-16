@@ -36,7 +36,7 @@ class accounts_onboard_candidate(APIView):
         data = request.data
         if data:
             field = {
-                "_id": document_id,
+                "_id": data.get("document_id"),
             }
             update_field = {
                 "status": data.get("status"),
@@ -375,6 +375,7 @@ class admin_delete_job(APIView):
 
 
 # api for candidate management starts here______________________
+
 @method_decorator(csrf_exempt, name='dispatch')
 class candidate_apply_job(APIView):
     def is_eligible_to_apply(self, applicant_email):
@@ -387,16 +388,21 @@ class candidate_apply_job(APIView):
         update_field = {
             "status": "nothing to update"
         }
-        applicant = dowellconnection(*rejected_reports_modules, "fetch", field, update_field)
-        rejected_reports_modules = []
-        rejected_reports_modules.append(applicant)
+        applicant = dowellconnection(*hr_management_reports, "fetch", field, update_field)
+        # rejected_reports_modules = []
+        # rejected_reports_modules.append(applicant)
 
         # Check if applicant is present in rejected_reports_modules
         if applicant is not None:
-            rejected_on = applicant.get("rejected_on")
+            rejected_dates = [datetime.datetime.strptime(item["rejected_on"], '%m/%d/%Y') for item in
+                              json.loads(applicant)["data"]]
+            rejected_on = max(rejected_dates)  # get last date
+            # print(rejected_on, "=======================")
             if rejected_on:
                 three_months_after = rejected_on + relativedelta(months=3)
-                current_date = datetime.timezone.now().date()
+                #print(rejected_on, "=======================", three_months_after)
+                current_date = datetime.datetime.today()
+                print(rejected_on, "==========", three_months_after,"=========",current_date)
                 if current_date >= three_months_after:
                     return True
 
@@ -428,7 +434,6 @@ class candidate_apply_job(APIView):
             "hr_remarks": "",
             "teamlead_remarks": "",
             "rehire_remarks": "",
-            "module": data.get("module"),
             "server_discord_link": "https://discord.gg/Qfw7nraNPS",
             "product_discord_link": "",
             "payment": data.get('payment'),
@@ -451,7 +456,9 @@ class candidate_apply_job(APIView):
         if serializer.is_valid():
             response = dowellconnection(*rejected_reports_modules, "fetch", field, update_field)
             if response:
-                return Response({"message": "Application received."}, status=status.HTTP_201_CREATED)
+                return Response({"message": "Application received.",
+                                 "Eligibility": self.is_eligible_to_apply(applicant_email)
+                                 }, status=status.HTTP_201_CREATED)
             else:
                 return Response({"message": "Application failed to receive."}, status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -460,7 +467,6 @@ class candidate_apply_job(APIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-
 
 @method_decorator(csrf_exempt, name='dispatch')
 class candidate_get_job_application(APIView):
@@ -561,9 +567,9 @@ class hr_shortlisted_candidate(APIView):
             notify_data = {
                 "created_by": data.get('applicant'),
                 "org_id": data.get('company_id'),
-                "org_name": "Dowell hr",
-                "data_type": "String Data",
-                "user_type": "Shortlisted Candidate",
+                "org_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
                 "from_field": data.get('company_id'),
                 "to": data.get('applicant'),
                 "desc": "Notification for action",
@@ -588,7 +594,9 @@ class hr_shortlisted_candidate(APIView):
                 "hr_remarks": data.get('hr_remarks'),
                 "status": data.get('status'),
                 "company_id": data.get('company_id'),
+                "company_name": data.get('company_name'),
                 "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
                 "shortlisted_on": data.get('shortlisted_on'),
                 "notified": details['isSuccess'],
                 "notification_id": details['inserted_id']
@@ -639,9 +647,9 @@ class hr_selected_candidate(APIView):
             notify_data = {
                 "created_by": data.get('applicant'),
                 "org_id": data.get('company_id'),
-                "org_name": "Dowell hr",
-                "data_type": "String Data",
-                "user_type": "Shortlisted Candidate",
+                "org_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
                 "from_field": data.get('company_id'),
                 "to": data.get('applicant'),
                 "desc": "Notification for action",
@@ -650,6 +658,7 @@ class hr_selected_candidate(APIView):
             }
             url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
             create_notification = call_notification(url=url, request_type='post', data=notify_data)
+            print(create_notification,"================")
 
             # continue selection api-----
             field = {
@@ -670,7 +679,9 @@ class hr_selected_candidate(APIView):
                 "product_discord_link": data.get('product_discord_link'),
                 "status": data.get('status'),
                 "company_id": data.get('company_id'),
+                "company_name": data.get('company_name'),
                 "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
                 "selected_on": data.get('selected_on'),
                 "notified": create_notification['isSuccess'],
                 "selected": "True",
