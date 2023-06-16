@@ -3,11 +3,17 @@ from .views import *
 
 urlpatterns = [
     path('', serverStatus.as_view()),
+
     # accounts management-------------------------------------------
     path('accounts_onboard_candidate/', accounts_onboard_candidate.as_view()),
     path('accounts_update_project/', accounts_update_project.as_view()),
     path('accounts_rehire_candidate/', accounts_rehire_candidate.as_view()),
     path('accounts_reject_candidate/', accounts_reject_candidate.as_view()),
+    path('onboard_candidate/<document_id>', onboard_candidate.as_view()),
+    path('update_project/', update_project.as_view()),
+    path('rehire_candidate/', rehire_candidate.as_view()),
+    path('reject_candidate/', reject_candidate.as_view()),
+
 
     # admin management-------------------------------------------
     path('admin_create_jobs/', admin_create_jobs.as_view()),
