@@ -1,11 +1,11 @@
 import { currentBackendAxiosInstance } from "./axios"
 
 export const changeCandidateStatusToShortlisted = async (data) => {
-  return await currentBackendAxiosInstance.post("hr_management/shortlisted_candidate/", data)
+  return await currentBackendAxiosInstance.post("hr_shortlisted_candidate/", data)
 }
 
 export const addSelectedCandidate = async (data) => {
-  return await currentBackendAxiosInstance.post("hr_management/selected_candidate/", data)
+  return await currentBackendAxiosInstance.post("hr_selected_candidate/", data)
 }
 
 export const getCandidateApplicationsForHr = async (company_id) => {
@@ -20,13 +20,13 @@ export const getCandidateTask = async (companyId) => {
 }
 
 export const rejectCandidateApplicationforHr = async (data) => {
-  return await currentBackendAxiosInstance.post("hr_management/reject_candidate/", data)
+  return await currentBackendAxiosInstance.post("hr_reject_candidate/", data)
 }
 
 export const getSettingUserProject = async () => {
   return await currentBackendAxiosInstance.get('setting/SettingUserProject/')
 }
 
-export const getJob = async (data) => {
-  return await currentBackendAxiosInstance.post("admin_management/get_job/", data)
+export const getJob = async (data,document_id) => {
+  return await currentBackendAxiosInstance.post(`admin_get_job/${document_id}/`, data)
 }
