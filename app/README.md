@@ -1398,3 +1398,6 @@ __get__ to `get_all_responses/<str:company_id>/`
   "error": "data not found"
 }
 ```
+
+
+# Change Log Link :- https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend-v2/app/CHANGELOG.md
