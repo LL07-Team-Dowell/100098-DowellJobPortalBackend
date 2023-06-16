@@ -28,13 +28,41 @@ _Post_ to `team_task_management/create_team/`
 }
 ```
 
+_patch_ to `team_task_management/edit_team/<str:document_id>/`
+
+- Request Body
+
+```json
+{
+  "team_name": "team name",
+  "members": ["list of members"]
+}
+
+```
+- Response 200
+
+```json
+{
+  "message": "Team Updated Successfully", 
+  "response": "response"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Team Update Failed"
+}
+```
+
 _Get_ to `team_task_management/get_team/<str:document_id>/`
 
 - Response 200
 
 ```json
 {
-  "message": "Teams with id - {document_id} available",
+  "message": "Teams available",
   "response": "[List of teams]"
 }
 ```
@@ -169,8 +197,8 @@ _patch_ to `team_task_management/edit_team/<str:document_id>/`
 
 ```json
 {
-  "team_name": "team name",
-  "members": ["list of members"]
+  "message": "Team with id - {document_id} Updated Successfully", 
+  "response": "response"
 }
 ```
 
@@ -178,6 +206,6 @@ _patch_ to `team_task_management/edit_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Team Updating Failed"
+  "message": "Team with id - {document_id} Update Failed"
 }
 ```

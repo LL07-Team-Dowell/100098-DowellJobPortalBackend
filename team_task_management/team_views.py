@@ -33,11 +33,11 @@ class create_team(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class edit_team(APIView):
-    def patch(self, request,document_id):
+    def patch(self, request, document_id):
         data = request.data
         if data:
             field = {
-                "_id": document_id, 
+                "_id": document_id,
             }
             update_field = {
                 "members": data.get("members"),
@@ -46,10 +46,12 @@ class edit_team(APIView):
             response = dowellconnection(
                 *team_management_modules, "update", field, update_field)
             if response:
-                return Response({"response": json.loads(response)},
-                            status=status.HTTP_200_OK)
+                return Response({"message": f"Team Updated Successfully",
+                                 "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Team Updating Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": f"Team Update Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_team(APIView):  ## single team
@@ -62,7 +64,7 @@ class get_team(APIView):  ## single team
         }
         response = dowellconnection(*team_management_modules, "fetch", field, update_field)
         if response:
-            return Response({"message": f"Teams with id - {document_id} available",
+            return Response({"message": f"Teams available",
                              "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
