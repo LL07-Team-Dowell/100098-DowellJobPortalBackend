@@ -5,51 +5,60 @@ urlpatterns = [
     path('', serverStatus.as_view()),
 
     # accounts management-------------------------------------------
+    path('accounts_onboard_candidate/', accounts_onboard_candidate.as_view()),
+    path('accounts_update_project/', accounts_update_project.as_view()),
+    path('accounts_rehire_candidate/', accounts_rehire_candidate.as_view()),
+    path('accounts_reject_candidate/', accounts_reject_candidate.as_view()),
     path('onboard_candidate/<document_id>', onboard_candidate.as_view()),
     path('update_project/', update_project.as_view()),
     path('rehire_candidate/', rehire_candidate.as_view()),
     path('reject_candidate/', reject_candidate.as_view()),
 
+
     # admin management-------------------------------------------
-    path('create_jobs/', create_jobs.as_view()),
-    path('get_jobs/<str:company_id>/', get_jobs.as_view()),
-    path('get_job/<str:document_id>/', get_job.as_view()),
-    path('update_jobs/', update_jobs.as_view()),
-    path('delete_job/', delete_job.as_view()),
+    path('admin_create_jobs/', admin_create_jobs.as_view()),
+    path('admin_get_job/<str:document_id>/', admin_get_job.as_view()),
+    path('admin_get_all_jobs/<str:company_id>/', admin_get_all_jobs.as_view()),
+    path('admin_update_jobs/', admin_update_jobs.as_view()),
+    path('admin_delete_job/<str:document_id>/', admin_delete_job.as_view()),
 
     # candidate management-------------------------------------------
-    path('apply_job/', apply_job.as_view()),
-    path('get_job_application/<str:company_id>/', get_job_application.as_view()),
-    path('get_candidate_application/<str:document_id>/', get_candidate_application.as_view()),
+    path('candidate_apply_job/', candidate_apply_job.as_view()),
+    path('candidate_get_job_application/<str:company_id>/', candidate_get_job_application.as_view()),
     path('get_all_onboarded_candidate/<str:company_id>/', get_all_onboarded_candidate.as_view()),
-    path('delete_candidate_application/', delete_candidate_application.as_view()),
+    path('get_candidate_application/<str:document_id>/', get_candidate_application.as_view()),
+    path('delete_candidate_application/<str:document_id>/', delete_candidate_application.as_view()),
 
     # hr management--------------------------------------------------
-    path('shortlisted_candidate/', shortlisted_candidate.as_view()),
-    path('selected_candidate/', selected_candidate.as_view()),
-    path('reject_candidate/', reject_candidate.as_view()),
+    path('hr_shortlisted_candidate/', hr_shortlisted_candidate.as_view()),
+    path('hr_selected_candidate/', hr_selected_candidate.as_view()),
+    path('hr_reject_candidate/', hr_reject_candidate.as_view()),
 
     # lead management------------------------------------------------
-    path('hire_candidate/', hire_candidate.as_view()),
-    path('rehire_candidate/', rehire_candidate.as_view()),
-    path('reject_candidate/', reject_candidate.as_view()),
+    path('lead_hire_candidate/', lead_hire_candidate.as_view()),
+    path('lead_rehire_candidate/', lead_rehire_candidate.as_view()),
+    path('lead_reject_candidate/', lead_reject_candidate.as_view()),
 
     # task management------------------------------------------------
     path('create_task/', create_task.as_view()),
     path('get_task/<str:company_id>/', get_task.as_view()),
     path('get_candidate_task/<str:document_id>/', get_candidate_task.as_view()),
     path('update_task/', update_task.as_view()),
-    path('delete_task/', delete_task.as_view()),
+    path('delete_task/<str:document_id>/', delete_task.as_view()),
 
     # team task management--------------------------------------------
     path('create_team/', create_team.as_view()),
     path('get_team/<str:document_id>/', get_team.as_view()),
     path('get_all_teams/<str:company_id>/', get_all_teams.as_view()),
-    path('edit_team/<str:document_id>/', edit_team.as_view(), ),
+    path('edit_team/<str:document_id>/', edit_team.as_view()),
     path('delete_team/<int:team_id>/', delete_team.as_view()),
     path('create_team_task/', create_team_task.as_view()),
+    path('edit_team_task/<str:task_id>/', edit_team_task.as_view()),
     path('get_team_task/<str:task_id>/', get_team_task.as_view()),
     path('delete_team_task/<int:task_id>/', delete_team_task.as_view()),
+    path('create_member_task/', create_member_task.as_view()),
+    path('get_member_task/<str:task_id>/', get_member_task.as_view()),
+    path('delete_member_task/<int:task_id>/', delete_member_task.as_view()),
 
     # training management--------------------------------------------
     path('create_question/', create_question.as_view()),

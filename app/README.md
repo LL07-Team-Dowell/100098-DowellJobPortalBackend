@@ -2,7 +2,7 @@
 
 
 ### account management view-------------------------------------------------
-_Post_ to `onboard_candidate/`
+_Post_ to `accounts_onboard_candidate/`
 
 - Request Body
 
@@ -42,7 +42,7 @@ _Post_ to `onboard_candidate/`
   "message": "serializer.errors"
 }
 ```
-_Patch_ to `update_project/`
+_Patch_ to `accounts_update_project/`
 
 - Request Body
 
@@ -54,7 +54,7 @@ _Patch_ to `update_project/`
 }
 ```
 
-- Response 201
+- Response 200
 
 ```json
 {
@@ -76,7 +76,7 @@ _Patch_ to `update_project/`
   "message": "Parameters are not valid"
 }
 ```
-_Post_ to `rehire_candidate/`
+_Post_ to `accounts_rehire_candidate/`
 
 - Request Body
 
@@ -87,7 +87,7 @@ _Post_ to `rehire_candidate/`
 }
 ```
 
-- Response 201
+- Response 200
 
 ```json
 {
@@ -99,7 +99,7 @@ _Post_ to `rehire_candidate/`
 
 ```json
 {
-  "message": "operation failed"
+  "message": "Operation failed"
 }
 ```
 - Response 400
@@ -109,7 +109,7 @@ _Post_ to `rehire_candidate/`
   "message": "Parameters are not valid"
 }
 ```
-_Post_ to `reject_candidate/`
+_Post_ to `accounts_reject_candidate/`
 
 - Request Body
 
@@ -137,7 +137,7 @@ _Post_ to `reject_candidate/`
 
 ```json
 {
-  "message": "operation failed"
+  "message": "Operation failed"
 }
 ```
 
@@ -151,7 +151,7 @@ _Post_ to `reject_candidate/`
 
 ### admin management view-------------------------------------------------
 
-_Post_ to `create_jobs/`
+_Post_ to `admin_create_jobs/`
 
 - Request Body
 
@@ -188,7 +188,7 @@ _Post_ to `create_jobs/`
 }
 ```
 
-- Response 400
+- Response 304
 
 ```json
 {
@@ -204,28 +204,8 @@ _Post_ to `create_jobs/`
 }
 ```
 
-_Get_ to `get_jobs/<str:company_id>/`
 
-
-- Response 200
-
-```json
-{
-  "message": "List of jobs",
-  "response": ["Requested Job list."]
-}
-```
-
-- Response 204
-
-```json
-{
-  "message": "There are no jobs",
-  "response": ["list of jobs"]
-}
-```
-
-_Get_ to `get_job/<str:document_id>/`
+_Get_ to `admin_get_job/<str:document_id>/`
 
 
 - Response 200
@@ -247,7 +227,29 @@ _Get_ to `get_job/<str:document_id>/`
 ```
 
 
-_Patch_ to `update_jobs/`
+_Get_ to `admin_get_all_jobs/<str:company_id>/`
+
+
+- Response 200
+
+```json
+{
+  "message": "List of jobs",
+  "response": ["Requested Job list."]
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There are no jobs",
+  "response": ["list of jobs"]
+}
+```
+
+
+_Patch_ to `admin_update_jobs/`
 
 - Request Body
 
@@ -281,15 +283,7 @@ _Patch_ to `update_jobs/`
 }
 ```
 
-_Delete_ to `delete_job/`
-
-- Request Body
-
-```json
-{
-  "document_id": "<document_id>"
-}
-```
+_Delete_ to `admin_delete_job/<str:document_id>/`
 
 - Response 200
 
@@ -315,7 +309,7 @@ _Delete_ to `delete_job/`
 ```
 
 ### candidate management view-------------------------------------------------
-_Post_ to `/apply_job/`
+_Post_ to `candidate_apply_job/`
 
 - Request Body
 
@@ -348,20 +342,27 @@ _Post_ to `/apply_job/`
 
 ```json
 {
-  "message": "Application received."
+  "message": "Application received"
 }
 ```
 
+- Response 304
+
+```json
+{
+  "message": "Application not received"
+}
+```
 - Response 400
 
 ```json
 {
-  "message": "Application not recieved"
+  "message": "Serializers.errors"
 }
 ```
 
 
-_get_ to `/get_job_application/<str:company_id>/`
+_get_ to `candidate_get_job_application/<str:company_id>/`
 
 - Response 200
 
@@ -381,7 +382,7 @@ _get_ to `/get_job_application/<str:company_id>/`
 }
 ```
 
-_get_ to `/get_candidate_application/<str:document_id>/`
+_get_ to `get_candidate_application/<str:document_id>/`
 
 - Response 200
 
@@ -396,34 +397,28 @@ _get_ to `/get_candidate_application/<str:document_id>/`
 
 ```json
 {
-  "message": "There is no job applications",
+  "message": "There are no job applications",
   "response": ["Candidate job not exist"]
 }
 ```
 
-_delete_ to `/delete_candidate_application/`
-
-- Request Body
-
-```json
-{
-  "document_id": "<document id>"
-}
-```
+_get_ to `get_all_onboarded_candidate/<str:company_id>/`
 
 - Response 200
 
 ```json
 {
-  "message": "candidate application deleted successfully."
+  "message": "List of onboarded Candidates",
+  "response": ["List of onboarded Candidates"] 
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
-  "message": "Deleting candidate application has failed"
+  "message": "There is no onboarded Candidates",
+  "response": ["onboarded Candidates do not exist"]
 }
 ```
 - Response 400
@@ -434,27 +429,26 @@ _delete_ to `/delete_candidate_application/`
 }
 ```
 
-_get_ to `/get_all_onboarded_candidate/<str:company_id>`
+_delete_ to `delete_candidate_application/<str:document_id>/`
 
 - Response 200
 
 ```json
 {
-  "message": "List of onboard applications.",
-  "response": ["onboard Candidate"] 
+  "message": "Candidate application deleted successfully."
 }
 ```
 
-- Response 204
+- Response 304
 
 ```json
 {
-  "message": "There is no job applications",
-  "response": ["Candidate job not exist"]
+  "message": "Deleting candidate application has failed"
 }
 ```
+
 ### hr management view-------------------------------------------------
-_Post_ to `shortlisted_candidate/`
+_Post_ to `hr_shortlisted_candidate/`
 
 - Request Body
 
@@ -493,7 +487,7 @@ _Post_ to `shortlisted_candidate/`
 }
 ```
 
-_Post_ to `selected_candidate/`
+_Post_ to `hr_selected_candidate/`
 
 - Request Body
 
@@ -515,7 +509,7 @@ _Post_ to `selected_candidate/`
 
 ```json
 {
-  "message": "Candidate has been selected."
+  "message": "Candidate has been selected"
 }
 ```
 
@@ -533,7 +527,7 @@ _Post_ to `selected_candidate/`
   "message": "Parameters are not valid"
 }
 ```
-_Post_ to `reject_candidate/`
+_Post_ to `hr_reject_candidate/`
 
 - Request Body
 
@@ -553,15 +547,15 @@ _Post_ to `reject_candidate/`
 
 ```json
 {
-  "message": "Candidate has been Rejected."
+  "message": "Candidate has been Rejected"
 }
 ```
 
-- Response 500
+- Response 304
 
 ```json
 {
-  "message": "operation failed"
+  "message": "Hr Operation failed"
 }
 ```
 
@@ -574,7 +568,7 @@ _Post_ to `reject_candidate/`
 ```
 
 ### lead management view-------------------------------------------------
-_Post_ to `hire_candidate/`
+_Post_ to `lead_hire_candidate/`
 
 - Request Body
 
@@ -594,19 +588,26 @@ _Post_ to `hire_candidate/`
 
 ```json
 {
-  "message": "Candidate has been Onboarding."
+  "message": "Candidate has been Hired"
 }
 ```
 
-- Response 400
+- Response 304
 
 ```json
 {
   "message": "Lead operation failed"
 }
 ```
+- Response 400
 
-_Post_ to `rehire_candidate/`
+```json
+{
+  "message": "serializer.errors"
+}
+```
+
+_Post_ to `lead_rehire_candidate/`
 
 - Request Body
 
@@ -625,14 +626,21 @@ _Post_ to `rehire_candidate/`
 }
 ```
 
+- Response 304
+
+```json
+{
+  "message": "Lead operation failed"
+}
+```
 - Response 400
 
 ```json
 {
-  "message": "HR operation failed"
+  "message": "Parameters are not valid"
 }
 ```
-_Post_ to `reject_candidate/`
+_Post_ to `lead_reject_candidate/`
 
 - Request Body
 
@@ -652,7 +660,7 @@ _Post_ to `reject_candidate/`
 
 ```json
 {
-  "message": "Candidate has been Rejected."
+  "message": "Candidate has been Rejected"
 }
 ```
 
@@ -660,7 +668,7 @@ _Post_ to `reject_candidate/`
 
 ```json
 {
-  "message": "operation failed"
+  "message": "Lead Operation failed"
 }
 ```
 
@@ -674,7 +682,7 @@ _Post_ to `reject_candidate/`
 
 ### task management view-------------------------------------------------
 
-_Post_ to `task_management/create_task/`
+_Post_ to `create_task/`
 
 - Request Body
 
@@ -694,14 +702,14 @@ _Post_ to `task_management/create_task/`
 
 ```json
 {
-  "message": "Task added successfully and the status is {status}."
+  "message": "Task has been created successfully"
 }
 ```
 - Response 304
 
 ```json
 {
-  "message": "Failed to add task"
+  "message": "Task failed to be Created"
 }
 ```
 
@@ -713,35 +721,15 @@ _Post_ to `task_management/create_task/`
 }
 ```
 
-_Get_ to `task_management/get_task/<str:company_id>/`
+_Get_ to `get_task/<str:company_id>/`
 
-
-- Response 201
-
-```json
-{
-  "message": "List of the task.",
-  "response": ["List of the task."]
-}
-```
-
-- Response 204
-
-```json
-{
-  "message": "There is no task",
-  "response": ["There is no task"]
-}
-```
-
-_Get_ to `task_management/get_candidate_task/<str:document_id>/`
 
 - Response 200
 
 ```json
 {
-  "message": "List of the task.",
-  "response": ["List of the task."]
+  "message": "List of the tasks",
+  "response": ["List of the tasks"]
 }
 ```
 
@@ -749,12 +737,32 @@ _Get_ to `task_management/get_candidate_task/<str:document_id>/`
 
 ```json
 {
-  "message": "There is no task",
+  "message": "There are no tasks",
   "response": ["There is no task"]
 }
 ```
 
-_Patch_ to `task_management/update_task/`
+_Get_ to `get_candidate_task/<str:document_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "List of the tasks",
+  "response": ["List of the tasks"]
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There are no tasks",
+  "response": ["There is no tasks"]
+}
+```
+
+_Patch_ to `update_task/`
 
 - Request Body
 
@@ -768,7 +776,7 @@ _Patch_ to `task_management/update_task/`
 }
 ```
 
-- Response 201
+- Response 200
 
 ```json
 {
@@ -779,7 +787,7 @@ _Patch_ to `task_management/update_task/`
 
 ```json
 {
-  "message": "Task failed to update"
+  "message": "Task failed to be updated"
 }
 ```
 
@@ -790,15 +798,7 @@ _Patch_ to `task_management/update_task/`
   "message": "Parameters are not valid"
 }
 ```
-_delete_ to `task_management/delete_task/`
-
-- Request Body
-
-```json
-{
-  "document_id": "<document id>"
-}
-```
+_delete_ to `delete_task/<str:document_id>/`
 
 - Response 200
 
@@ -812,17 +812,10 @@ _delete_ to `task_management/delete_task/`
 
 ```json
 {
-  "message": "Task failed to delete"
+  "message": "Task failed to be deleted"
 }
 ```
 
-- Response 400
-
-```json
-{
-  "message": "Parameters are not valid"
-}
-```
 
 ### team task management view-------------------------------------------------
 
@@ -849,7 +842,14 @@ _Post_ to `create_team/`
 
 ```json
 {
-  "message": "Team Creation Failed"
+  "message": "Team failed to be created"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
 }
 ```
 
@@ -859,7 +859,7 @@ _Get_ to `get_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Teams with id - {document_id} available",
+  "message": "Teams available",
   "response": "[List of teams]"
 }
 ```
@@ -907,7 +907,7 @@ _patch_ to `edit_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Team with id - {document_id} Updated Successfully", 
+  "message": "Team Updated Successfully", 
   "response": "response"
 }
 ```
@@ -916,7 +916,14 @@ _patch_ to `edit_team/<str:document_id>/`
 
 ```json
 {
-  "message": "Team with id - {document_id} Update Failed"
+  "message": "Team failed to be updated"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
 }
 ```
 
@@ -926,7 +933,7 @@ _Delete_ to `delete_team/<int:team_id>/`
 
 ```json
 {
-  "message": "Team with id {team_id} has been deleted"
+  "message": "Team has been deleted"
 }
 ```
 
@@ -934,7 +941,7 @@ _Delete_ to `delete_team/<int:team_id>/`
 
 ```json
 {
-  "message": "Team with id {team_id} failed to be deleted"
+  "message": "Team failed to be deleted"
 }
 ```
 
@@ -945,8 +952,6 @@ _Post_ to `create_team_task/`
 
 ```json
 {
-  
-  "task_id": "task_id",
   "title": "title",
   "description": "This field is required.",
   "assignee": "user name",
@@ -970,7 +975,51 @@ _Post_ to `create_team_task/`
   "message": "Task Creation Failed"
 }
 ```
+- Response 400
 
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
+
+
+_patch_ to `edit_team_task/<str:task_id>/`
+
+- Request Body
+
+```json
+{
+    "title": "title",
+    "description": "description",
+    "assignee": "assignee",
+    "completed": "<True | False>",
+    "team_name": "team_name"
+}
+```
+- Response 200
+
+```json
+{
+  "message": "Team Task Updated successfully", 
+  "response": "response"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Team Task failed to be updated"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
 
 _Get_ to `get_team_task/<str:task_id>/`
 
@@ -996,7 +1045,7 @@ _Delete_ to `delete_team_task/<int:task_id>/`
 
 ```json
 {
-  "message": "Task with id {task_id} has been deleted"
+  "message": "Task has been deleted"
 }
 ```
 
@@ -1004,9 +1053,88 @@ _Delete_ to `delete_team_task/<int:task_id>/`
 
 ```json
 {
-  "message": "Task with id {task_id} failed to be deleted"
+  "message": "Task failed to be deleted"
 }
 ```
+
+
+_Post_ to `create_member_task/`
+
+- Request Body
+
+```json
+{
+  "title": "title",
+  "description": "This field is required.",
+  "assignee": "user name",
+  "completed": "True/False",
+  "team_name": "team_name",
+  "team_member": "team_member"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Task for member created successfully"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Task for member Creation Failed"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
+
+
+_Get_ to `get_member_task/<str:task_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "Member Task with id - {task_id} available",
+  "response": "[List of teams]"
+}
+```
+
+- Response 204
+
+```json
+{
+  "message": "There is no task"
+}
+```
+_Delete_ to `delete_team_task/<int:task_id>/`
+
+- Response 200
+
+```json
+{
+  "message": "Member Task with id {task_id} has been deleted"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Member Task with id {task_id} failed to be deleted"
+}
+```
+
+
+
 
 ### training management view-------------------------------------------------
 _Post_ to `create_question/`
@@ -1094,11 +1222,12 @@ __patch__ to `update_question/`
 ```json
 {
     "document_id": "<document_id>",
-    "is_active":"<true|false>"
+    "is_active":"<true|false>",
+    "question_link": "question_link"
 }
 ```
 
-- Response 201
+- Response 200
 
 ```json
 {
@@ -1121,6 +1250,50 @@ __patch__ to `update_question/`
 }
 ```
 
+_Post_ to `create_response/`
+
+- Request Body
+
+```json
+{
+    "company_id": "company_id",
+    "data_type": "<Real_Data|Learning_Data|Testing_Data|Archived_Data>",
+    "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
+    "project_name": "project_name",
+    "username": "username",
+    "code_base_link": "code_base_link",
+    "live_link": "live_link",
+    "documentation_link": "documentation_link",
+    "started_on": "started_on",
+    "submitted_on": "submitted_on",
+    "rating": "rating"
+}
+```
+
+- Response 201
+
+```json
+{
+  "message": "Response has been created successfully"
+}
+```
+
+- Response 304
+
+```json
+{
+    "message":"Response failed to be Created"
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
+
 __patch__ to `update_response/`
 
 - Request Body
@@ -1139,14 +1312,14 @@ __patch__ to `update_response/`
 
 ```json
 {
-  "message": "Candidate has been responded to"
+  "message": "Candidate has been {Hired|Rejected}"
 }
 ```
 - Response 304
 
 ```json
 {
-  "message": "HR operation failed"
+  "message": "Candidate has been {Hired|Rejected}"
 }
 ```
 
@@ -1157,8 +1330,8 @@ __get__ to `get_response/<str:document_id>/`
 
 ```json
 {
-  "message": "List of response.",
-  "response": "[List of response]"
+  "message": "List of responses",
+  "response": "[List of responses]"
 }
 ```
 - Response 204
@@ -1198,6 +1371,13 @@ __patch__ to `submit_response/`
 ```json
 {
     "message":"operation failed"
+}
+```
+- Response 400
+
+```json
+{
+    "message":"serializers.error"
 }
 ```
 

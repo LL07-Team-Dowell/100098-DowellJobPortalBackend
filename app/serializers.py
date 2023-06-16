@@ -41,9 +41,9 @@ class AdminSerializer(serializers.Serializer):
     DATA_TYPE_CHOICE = (("Real_Data", "Real_Data"), ("Learning_Data", "Learning_Data"),
                         ("Testing_Data", "Testing_Data"), ("Archived_Data", "Archived_Data"))
 
-    MODULE_CHOICE = (("Frontend", "Frontend"), ("Backend", "Backend"),
-                     ("UI/UX", "UI/UX"), ("Virtual Assistant",
-                                          "Virtual Assistant"), ("Web", "Web"), ("Mobile", "Mobile"))
+    MODULE_CHOICE = (("Frontend", "Frontend"), ("Backend", "Backend"), ("UI/UX", "UI/UX"),
+                     ("Virtual Assistant", "Virtual Assistant"),
+                     ("Web", "Web"), ("Mobile", "Mobile"))
 
     job_number = serializers.CharField(allow_null=False, allow_blank=False)
     job_title = serializers.CharField(allow_null=False, allow_blank=False)
@@ -162,7 +162,8 @@ class TaskSerializer(serializers.Serializer):
 class TrainingSerializer(serializers.Serializer):
     DATA_TYPE_CHOICE = (("Real_Data", "Real_Data"), ("Learning_Data", "Learning_Data"),
                         ("Testing_Data", "Testing_Data"), ("Archived_Data", "Archived_Data"))
-    MODULE_CHOICE = (("Frontend", "Frontend"), ("Backend", "Backend"))
+    MODULE_CHOICE = (("Frontend", "Frontend"), ("Backend", "Backend"), ("UI/UX", "UI/UX"),
+                     ("Virtual Assistant", "Virtual Assistant"), ("Web", "Web"), ("Mobile", "Mobile"))
 
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(
@@ -185,3 +186,8 @@ class TrainingSerializer(serializers.Serializer):
 
 class UpdateQuestionSerializer(serializers.Serializer):
     is_active = serializers.BooleanField(required=True)
+
+
+class SubmitResponseSerializer(serializers.Serializer):
+    video_link = serializers.URLField(allow_null=False, allow_blank=False, required=True)
+    answer_link = serializers.URLField(allow_null=False, allow_blank=False, required=True)

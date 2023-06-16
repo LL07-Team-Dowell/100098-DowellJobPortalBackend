@@ -63,4 +63,19 @@ def get_event_id():
     else:
         return json.loads(r.text)['error']
 
-# print(respose['event_id'])
+
+# print(response['event_id'])
+
+def call_notification(url, request_type, data):  ## calling  notification api
+    if request_type == 'post':
+        notification = requests.post(url, data)
+        details = notification.json()
+        return details
+    elif request_type == 'get':
+        notification = requests.get(url)
+        details = notification.json()
+        return details
+    elif request_type == 'patch':
+        notification = requests.patch(url, data)
+        details = notification.json()
+        return details
