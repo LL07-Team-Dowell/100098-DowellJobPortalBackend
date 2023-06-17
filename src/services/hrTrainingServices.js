@@ -2,7 +2,7 @@ import { currentBackendAxiosInstance } from "./axios";
 
 export const createQuestionForTrainingMangement = async (dataToPost) => {
   const response = await currentBackendAxiosInstance.post(
-    "training_management/create_question/",
+    "create_question/",
     dataToPost
   );
   return response;
@@ -10,18 +10,18 @@ export const createQuestionForTrainingMangement = async (dataToPost) => {
 
 export const getTrainingManagementQuestions = async (company_id) => {
   return await currentBackendAxiosInstance.get(
-    `training_management/get_all_question/${company_id}/`
+    `get_all_question/${company_id}/`
   );
 };
 
 export const editTrainingManagementQuestion = async (data) => {
   return await currentBackendAxiosInstance.patch(
-    'training_management/update_question/',
+    'update_question/',
     data
   )
 }
 export const createTrainingManagementResponse = async (data) => {
   return await currentBackendAxiosInstance.post(
-    "training_management/create_response/" , data
+    "create_response/" , data
   )
 }

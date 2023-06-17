@@ -16,7 +16,7 @@ export const getCandidateApplicationsForHr = async (company_id) => {
 
 
 export const getCandidateTask = async (companyId) => {
-  return await currentBackendAxiosInstance.get(`task_management/get_task/${companyId}/`)
+  return await currentBackendAxiosInstance.get(`get_task/${companyId}/`)
 }
 
 export const rejectCandidateApplicationforHr = async (data) => {

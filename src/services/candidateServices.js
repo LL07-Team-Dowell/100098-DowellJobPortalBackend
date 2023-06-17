@@ -17,15 +17,15 @@ export const getAppliedJobs = async (company_id) => {
 };
 
 export const getCandidateTask= async (companyId) => {
-    return await currentBackendAxiosInstance.get(`task_management/get_task/${companyId}/`)
+    return await currentBackendAxiosInstance.get(`get_task/${companyId}/`)
 }
 
 
 
 export const createCandidateTask = async (data) => {
-    return await currentBackendAxiosInstance.post("task_management/create_task/",data)
+    return await currentBackendAxiosInstance.post("create_task/",data)
 }
 
 export const candidateSubmitResponse = async (data) => {
-    return await currentBackendAxiosInstance.patch("training_management/submit_response/", data)
+    return await currentBackendAxiosInstance.patch("submit_response/", data)
 }
