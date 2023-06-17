@@ -14,7 +14,6 @@ urlpatterns = [
     path('rehire_candidate/', accounts_rehire_candidate.as_view()),
     path('reject_candidate/', accounts_reject_candidate.as_view()),
 
-
     # admin management-------------------------------------------
     path('admin_create_jobs/', admin_create_jobs.as_view()),
     path('admin_get_job/<str:document_id>/', admin_get_job.as_view()),
