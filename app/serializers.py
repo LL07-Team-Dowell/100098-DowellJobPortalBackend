@@ -6,26 +6,37 @@ from .models import *
 class AccountSerializer(serializers.Serializer):
     DATA_TYPE_CHOICE = (("Real_Data", "Real_Data"), ("Learning_Data", "Learning_Data"),
                         ("Testing_Data", "Testing_Data"), ("Archived_Data", "Archived_Data"))
+    JOB_CATEGORY_CHOICE = (("Freelancer", "Freelancer"),
+                           ("Internship", "Internship"), ("Employee", "Employee"))
+
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     project = serializers.ListField(required=True, allow_empty=False)
     task = serializers.CharField(allow_null=False, allow_blank=False)
     status = serializers.CharField(allow_null=False, allow_blank=False)
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    company_name = serializers.CharField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
+    user_type = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE)
     onboarded_on = serializers.CharField(allow_null=False, allow_blank=False)
 
 
 class RejectSerializer(serializers.Serializer):
     DATA_TYPE_CHOICE = (("Real_Data", "Real_Data"), ("Learning_Data", "Learning_Data"),
                         ("Testing_Data", "Testing_Data"), ("Archived_Data", "Archived_Data"))
+    JOB_CATEGORY_CHOICE = (("Freelancer", "Freelancer"),
+                           ("Internship", "Internship"), ("Employee", "Employee"))
 
     document_id = serializers.CharField(allow_null=False, allow_blank=False)
     reject_remarks = serializers.CharField(allow_null=False, allow_blank=False)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    company_name = serializers.CharField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
+    user_type = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE)
     rejected_on = serializers.CharField(allow_null=False, allow_blank=False)
     username = serializers.CharField(allow_null=False, allow_blank=False)
 

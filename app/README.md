@@ -15,6 +15,8 @@ _Post_ to `accounts_onboard_candidate/`
   "status": "<status>",
   "company_id": "<company_id>",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "company_name": "<company_name>", 
+  "user_type": "<Freelancer | Internship | Employee>",
   "onboarded_on": "<onboarded on>"
 }
 ```
@@ -23,7 +25,10 @@ _Post_ to `accounts_onboard_candidate/`
 
 ```json
 {
-  "message": "Candidate has been onboarded."
+  "message": "Candidate has been onboarded.",
+  "notification": {"notified": "True/False",
+                  "notification_id": "notification id"
+                    }
 }
 ```
 - Response 304
@@ -50,7 +55,12 @@ _Patch_ to `accounts_update_project/`
 {
   "document id": "<document id>",
   "project": "[<project name 1>,<project name 2>,<project name 3>]",
-  "payment": "<payment>"
+  "payment": "<payment>",
+  "applicant": "applicant",
+  "company_id": "company_id",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "company_name": "<company_name>", 
+  "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
 
@@ -58,7 +68,11 @@ _Patch_ to `accounts_update_project/`
 
 ```json
 {
-  "message": "Candidate project and payment has been updated"
+  "message": "Candidate project and payment has been updated",
+  "notification": {"notified": "True/False",
+                    "seen": "True/False",
+                  "notification_id": "notification id"
+                    }
 }
 ```
 - Response 304
@@ -83,7 +97,12 @@ _Post_ to `accounts_rehire_candidate/`
 ```json
 {
   "document_id": "<document id>",
-  "status": "<status>"
+  "status": "<status>",
+  "applicant": "applicant",
+  "company_id": "company_id",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "company_name": "<company_name>", 
+  "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
 
@@ -91,7 +110,10 @@ _Post_ to `accounts_rehire_candidate/`
 
 ```json
 {
-  "message": "Candidate has been rehired"
+  "message": "Candidate has been rehired",
+  "notification": {"notified": "True/False",
+                  "notification_id": "notification id"
+                    }
 }
 ```
 
@@ -121,7 +143,9 @@ _Post_ to `accounts_reject_candidate/`
     "username": "<username>",
     "company_id": "<company id>",
     "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-    "rejected_on": "<rejected on>"
+    "rejected_on": "<rejected on>",
+    "company_name": "<company_name>", 
+    "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
 
@@ -129,7 +153,10 @@ _Post_ to `accounts_reject_candidate/`
 
 ```json
 {
-  "message": "Candidate has been Rejected."
+  "message": "Candidate has been Rejected.",
+  "notification": {"notified": "True/False",
+                  "notification_id": "notification id"
+                    }
 }
 ```
 

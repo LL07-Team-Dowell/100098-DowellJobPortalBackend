@@ -35,6 +35,22 @@ class accounts_onboard_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
+            # call the notification api-----
+            notify_data = {
+                "created_by": data.get('applicant'),
+                "org_id": data.get('company_id'),
+                "org_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "from_field": data.get('company_id'),
+                "to": data.get('applicant'),
+                "desc": "Notification for action",
+                "meant_for": data.get('applicant'),
+                "type_of_notification": "notify"
+            }
+            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+            create_notification = call_notification(url=url, request_type='post', data=notify_data)
+            # continue with the onboard candidate api----------------
             field = {
                 "_id": data.get("document_id"),
             }
@@ -49,7 +65,11 @@ class accounts_onboard_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
+                "company_name": data.get('company_name'),
+                "user_type": data.get('user_type'),
                 "onboarded_on": data.get("onboarded_on"),
+                "notified": create_notification['isSuccess'],
+                "notification_id": create_notification['inserted_id']
             }
             serializer = AccountSerializer(data=data)
             if serializer.is_valid():
@@ -69,11 +89,14 @@ class accounts_onboard_candidate(APIView):
                 insert_response_thread.join()
 
                 if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
-                    return Response({"message": f"Candidate has been {data.get('status')}"},
+                    return Response({"message": f"Candidate has been {data.get('status')}",
+                                     "notification": {"notified": insert_to_hr_report['notified'],
+                                                      "notification_id": insert_to_hr_report['notification_id']
+                                                      }
+                                     },
                                     status=status.HTTP_201_CREATED)
                 else:
                     return Response({"message": "HR operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
-
             else:
                 default_errors = serializer.errors
                 new_error = {}
@@ -82,18 +105,43 @@ class accounts_onboard_candidate(APIView):
                 return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @method_decorator(csrf_exempt, name='dispatch')
 class accounts_update_project(APIView):
     def patch(self, request):
         data = request.data
         if data:
+            # call the notification api-----
+            notify_data = {
+                "created_by": data.get('applicant'),
+                "org_id": data.get('company_id'),
+                "org_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "from_field": data.get('company_id'),
+                "to": data.get('applicant'),
+                "desc": "Notification for action",
+                "meant_for": data.get('applicant'),
+                "type_of_notification": "notify"
+            }
+            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+            create_notification = call_notification(url=url, request_type='post', data=notify_data)
+            print(create_notification, "================")
+
+            # continue update project api-----
             field = {
                 "_id": data.get("document_id"),
             }
             update_field = {
                 "payment": data.get("payment"),
                 "project": data.get("project"),
+                "applicant": data.get("applicant"),
+                "company_id": data.get("company_id"),
+                "company_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "notified": create_notification['isSuccess'],
+                "selected": "True",
+                "notification_id": create_notification['inserted_id']
             }
 
             def call_dowellconnection(*args):
@@ -112,7 +160,18 @@ class accounts_update_project(APIView):
             insert_response_thread.join()
 
             if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
-                return Response({"message": f"Candidate project and payment has been updated"},
+                # call the mark as seen notification api-----
+                n_id = update_field['notification_id']
+                url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+
+                return Response({"message": f"Candidate project and payment has been updated",
+                                 "notification": {"notified": update_field['notified'],
+                                                  "seen": patch_notification['isSuccess'],
+                                                  "notification_id": update_field['notification_id']
+                                                  }
+                                 },
+
                                 status=status.HTTP_200_OK)
             else:
                 return Response({"message": "Failed to update"}, status=status.HTTP_304_NOT_MODIFIED)
@@ -123,17 +182,41 @@ class accounts_update_project(APIView):
             )
 
 
-
 @method_decorator(csrf_exempt, name='dispatch')
 class accounts_rehire_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
+            # call the notification api-----
+            notify_data = {
+                "created_by": data.get('applicant'),
+                "org_id": data.get('company_id'),
+                "org_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "from_field": data.get('company_id'),
+                "to": data.get('applicant'),
+                "desc": "Notification for action",
+                "meant_for": data.get('applicant'),
+                "type_of_notification": "notify"
+            }
+            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+            create_notification = call_notification(url=url, request_type='post', data=notify_data)
+            # continue with the rehire candidate api----------------
+
             field = {
                 "_id": data.get("document_id"),
             }
             update_field = {
                 "status": data.get("status"),
+                "applicant": data.get("applicant"),
+                "company_id": data.get("company_id"),
+                "company_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "notified": create_notification['isSuccess'],
+                "selected": "True",
+                "notification_id": create_notification['inserted_id']
             }
 
             def call_dowellconnection(*args):
@@ -152,7 +235,11 @@ class accounts_rehire_candidate(APIView):
             insert_response_thread.join()
 
             if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
-                return Response({"message": "Candidate has been Rehired"}, status=status.HTTP_200_OK)
+                return Response({"message": "Candidate has been Rehired",
+                                 "notification": {"notified": update_field['notified'],
+                                                  "notification_id": update_field['notification_id']
+                                                  }
+                                 }, status=status.HTTP_200_OK)
             else:
                 return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
@@ -162,13 +249,29 @@ class accounts_rehire_candidate(APIView):
             )
 
 
-
 @method_decorator(csrf_exempt, name='dispatch')
 class accounts_reject_candidate(APIView):
     def post(self, request):
         data = request.data
         print(data)
         if data:
+            # call the notification api-----
+            notify_data = {
+                "created_by": data.get('applicant'),
+                "org_id": data.get('company_id'),
+                "org_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "from_field": data.get('company_id'),
+                "to": data.get('applicant'),
+                "desc": "Notification for action",
+                "meant_for": data.get('applicant'),
+                "type_of_notification": "notify"
+            }
+            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+            create_notification = call_notification(url=url, request_type='post', data=notify_data)
+            # continue with the reject candidate api----------------
+
             field = {
                 "_id": data.get("document_id"),
             }
@@ -186,6 +289,11 @@ class accounts_reject_candidate(APIView):
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
                 "rejected_on": data.get("rejected_on"),
+                "company_name": data.get('company_name'),
+                "user_type": data.get('user_type'),
+                "notified": create_notification['isSuccess'],
+                "selected": "True",
+                "notification_id": create_notification['inserted_id']
             }
             serializer = RejectSerializer(data=data)
             if serializer.is_valid():
@@ -220,16 +328,14 @@ class accounts_reject_candidate(APIView):
                 lead_thread.join()
                 account_thread.join()
 
-                if (
-                    not candidate_thread.is_alive()
-                    and not hr_thread.is_alive()
-                    and not lead_thread.is_alive()
-                    and not account_thread.is_alive()
-                ):
-                    return Response(
-                        {"message": "Candidate has been Rejected"},
-                        status=status.HTTP_200_OK,
-                    )
+                if (not candidate_thread.is_alive() and not hr_thread.is_alive() and not lead_thread.is_alive()
+                        and not account_thread.is_alive()):
+                    return Response({"message": "Candidate has been Rejected",
+                                     "notification": {"notified": insert_to_account_report['notified'],
+                                                      "notification_id": insert_to_account_report['notification_id']}
+                                     },
+                                    status=status.HTTP_200_OK,
+                                    )
                 else:
                     return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
@@ -307,7 +413,6 @@ class admin_get_job(APIView):
         else:
             return Response({"message": "There is no jobs", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
-
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -400,9 +505,9 @@ class candidate_apply_job(APIView):
             # print(rejected_on, "=======================")
             if rejected_on:
                 three_months_after = rejected_on + relativedelta(months=3)
-                #print(rejected_on, "=======================", three_months_after)
+                # print(rejected_on, "=======================", three_months_after)
                 current_date = datetime.datetime.today()
-                print(rejected_on, "==========", three_months_after,"=========",current_date)
+                print(rejected_on, "==========", three_months_after, "=========", current_date)
                 if current_date >= three_months_after:
                     return True
 
@@ -467,6 +572,7 @@ class candidate_apply_job(APIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class candidate_get_job_application(APIView):
@@ -548,9 +654,6 @@ class delete_candidate_application(APIView):
         else:
             return Response({"message": "There is no job applications", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
-
-
-
 
 
 # api for candidate management ends here______________________
@@ -658,7 +761,7 @@ class hr_selected_candidate(APIView):
             }
             url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
             create_notification = call_notification(url=url, request_type='post', data=notify_data)
-            print(create_notification,"================")
+            print(create_notification, "================")
 
             # continue selection api-----
             field = {
@@ -1486,14 +1589,12 @@ class get_response(APIView):
         response = dowellconnection(*response_modules, "fetch", field, update_field)
         print(response)
         if response:
-
             return Response({"message": "List of responses", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
             return Response(
                 {"message": "List of response.", "response": json.loads(response)},
                 status=status.HTTP_200_OK,
             )
-
 
 
 @method_decorator(csrf_exempt, name='dispatch')
