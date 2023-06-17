@@ -35,7 +35,7 @@ export const getCandidateTaskForTeamLead = async (companyId) => {
 };
 
 export const candidateUpdateTaskForTeamLead = async (data) => {
-  return await currentBackendAxiosInstance.post(
+  return await currentBackendAxiosInstance.patch(
     "update_task/",
     data
   );
