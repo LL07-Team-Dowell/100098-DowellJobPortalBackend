@@ -5,11 +5,11 @@ export const getJobs2 = async (data) => {
 }
 
 export const getAllQuestions = async (company_id)=>{
-    return await currentBackendAxiosInstance.get(`training_management/get_all_question/${company_id}`);
+    return await currentBackendAxiosInstance.get(`get_all_question/${company_id}`);
 }
 
 export const getAllTrainingResponses = async (company_id) => {
-    return await currentBackendAxiosInstance.get(`training_management/get_all_responses/${company_id}`)
+    return await currentBackendAxiosInstance.get(`get_all_responses/${company_id}`)
 }
 
 export const getUserLiveStatus = async () => {
