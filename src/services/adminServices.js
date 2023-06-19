@@ -9,12 +9,12 @@ export const addNewJob = async (dataToPost) => {
 };
 
 export const deleteJob = async (data , document_id) => {
-  return await currentBackendAxiosInstance.post(`admin_delete_job/${document_id}/`,data)
+  return await currentBackendAxiosInstance.delete(`admin_delete_job/${document_id}/`,data)
 }
 
 export const updateJob = async(data)=>{
   console.log(data);
-  return await currentBackendAxiosInstance.post("admin_update_jobs/", data)
+  return await currentBackendAxiosInstance.patch("admin_update_jobs/", data)
 }
 
 
