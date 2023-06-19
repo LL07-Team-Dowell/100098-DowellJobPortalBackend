@@ -2,7 +2,7 @@
 
 
 ### account management view-------------------------------------------------
-_Post_ to `accounts_onboard_candidate/`
+__Post__ to `accounts_onboard_candidate/`
 
 - Request Body
 
@@ -47,7 +47,7 @@ _Post_ to `accounts_onboard_candidate/`
   "message": "serializer.errors"
 }
 ```
-_Patch_ to `accounts_update_project/`
+__Patch__ to `accounts_update_project/`
 
 - Request Body
 
@@ -90,7 +90,7 @@ _Patch_ to `accounts_update_project/`
   "message": "Parameters are not valid"
 }
 ```
-_Post_ to `accounts_rehire_candidate/`
+__Post__ to `accounts_rehire_candidate/`
 
 - Request Body
 
@@ -131,7 +131,7 @@ _Post_ to `accounts_rehire_candidate/`
   "message": "Parameters are not valid"
 }
 ```
-_Post_ to `accounts_reject_candidate/`
+__Post__ to `accounts_reject_candidate/`
 
 - Request Body
 
@@ -178,7 +178,7 @@ _Post_ to `accounts_reject_candidate/`
 
 ### admin management view-------------------------------------------------
 
-_Post_ to `admin_create_jobs/`
+__Post__ to `admin_create_jobs/`
 
 - Request Body
 
@@ -232,7 +232,7 @@ _Post_ to `admin_create_jobs/`
 ```
 
 
-_Get_ to `admin_get_job/<str:document_id>/`
+__Get__ to `admin_get_job/<str:document_id>/`
 
 
 - Response 200
@@ -254,7 +254,7 @@ _Get_ to `admin_get_job/<str:document_id>/`
 ```
 
 
-_Get_ to `admin_get_all_jobs/<str:company_id>/`
+__Get__ to `admin_get_all_jobs/<str:company_id>/`
 
 
 - Response 200
@@ -276,7 +276,7 @@ _Get_ to `admin_get_all_jobs/<str:company_id>/`
 ```
 
 
-_Patch_ to `admin_update_jobs/`
+__Patch__ to `admin_update_jobs/`
 
 - Request Body
 
@@ -310,7 +310,7 @@ _Patch_ to `admin_update_jobs/`
 }
 ```
 
-_Delete_ to `admin_delete_job/<str:document_id>/`
+__Delete__ to `admin_delete_job/<str:document_id>/`
 
 - Response 200
 
@@ -336,7 +336,7 @@ _Delete_ to `admin_delete_job/<str:document_id>/`
 ```
 
 ### candidate management view-------------------------------------------------
-_Post_ to `candidate_apply_job/`
+__Post__ to `candidate_apply_job/`
 
 - Request Body
 
@@ -389,7 +389,7 @@ _Post_ to `candidate_apply_job/`
 ```
 
 
-_get_ to `candidate_get_job_application/<str:company_id>/`
+__Get__ to `candidate_get_job_application/<str:company_id>/`
 
 - Response 200
 
@@ -409,7 +409,7 @@ _get_ to `candidate_get_job_application/<str:company_id>/`
 }
 ```
 
-_get_ to `get_candidate_application/<str:document_id>/`
+__Get__ to `get_candidate_application/<str:document_id>/`
 
 - Response 200
 
@@ -429,7 +429,7 @@ _get_ to `get_candidate_application/<str:document_id>/`
 }
 ```
 
-_get_ to `get_all_onboarded_candidate/<str:company_id>/`
+__Get__ to `get_all_onboarded_candidate/<str:company_id>/`
 
 - Response 200
 
@@ -456,7 +456,7 @@ _get_ to `get_all_onboarded_candidate/<str:company_id>/`
 }
 ```
 
-_delete_ to `delete_candidate_application/<str:document_id>/`
+__Delete__ to `delete_candidate_application/<str:document_id>/`
 
 - Response 200
 
@@ -475,7 +475,7 @@ _delete_ to `delete_candidate_application/<str:document_id>/`
 ```
 
 ### hr management view-------------------------------------------------
-_Post_ to `hr_shortlisted_candidate/`
+__Post__ to `hr_shortlisted_candidate/`
 
 - Request Body
 
@@ -516,7 +516,7 @@ _Post_ to `hr_shortlisted_candidate/`
 }
 ```
 
-_Post_ to `hr_selected_candidate/`
+__Post__ to `hr_selected_candidate/`
 
 - Request Body
 
@@ -558,7 +558,7 @@ _Post_ to `hr_selected_candidate/`
   "message": "Parameters are not valid"
 }
 ```
-_Post_ to `hr_reject_candidate/`
+__Post__ to `hr_reject_candidate/`
 
 - Request Body
 
@@ -599,7 +599,7 @@ _Post_ to `hr_reject_candidate/`
 ```
 
 ### lead management view-------------------------------------------------
-_Post_ to `lead_hire_candidate/`
+__Post__ to `lead_hire_candidate/`
 
 - Request Body
 
@@ -638,7 +638,7 @@ _Post_ to `lead_hire_candidate/`
 }
 ```
 
-_Post_ to `lead_rehire_candidate/`
+__Post__ to `lead_rehire_candidate/`
 
 - Request Body
 
@@ -671,7 +671,7 @@ _Post_ to `lead_rehire_candidate/`
   "message": "Parameters are not valid"
 }
 ```
-_Post_ to `lead_reject_candidate/`
+__Post__ to `lead_reject_candidate/`
 
 - Request Body
 
@@ -713,7 +713,7 @@ _Post_ to `lead_reject_candidate/`
 
 ### task management view-------------------------------------------------
 
-_Post_ to `create_task/`
+__Post__ to `create_task/`
 
 - Request Body
 
@@ -752,7 +752,7 @@ _Post_ to `create_task/`
 }
 ```
 
-_Get_ to `get_task/<str:company_id>/`
+__Get__ to `get_task/<str:company_id>/`
 
 
 - Response 200
@@ -773,7 +773,7 @@ _Get_ to `get_task/<str:company_id>/`
 }
 ```
 
-_Get_ to `get_candidate_task/<str:document_id>/`
+__Get__ to `get_candidate_task/<str:document_id>/`
 
 - Response 200
 
@@ -793,7 +793,7 @@ _Get_ to `get_candidate_task/<str:document_id>/`
 }
 ```
 
-_Patch_ to `update_task/`
+__Patch__ to `update_task/`
 
 - Request Body
 
@@ -829,7 +829,7 @@ _Patch_ to `update_task/`
   "message": "Parameters are not valid"
 }
 ```
-_delete_ to `delete_task/<str:document_id>/`
+__Delete__ to `delete_task/<str:document_id>/`
 
 - Response 200
 
@@ -850,7 +850,7 @@ _delete_ to `delete_task/<str:document_id>/`
 
 ### team task management view-------------------------------------------------
 
-_Post_ to `create_team/`
+__Post__ to `create_team/`
 
 - Request Body
 
@@ -884,7 +884,7 @@ _Post_ to `create_team/`
 }
 ```
 
-_Get_ to `get_team/<str:document_id>/`
+__Get__ to `get_team/<str:document_id>/`
 
 - Response 200
 
@@ -904,7 +904,7 @@ _Get_ to `get_team/<str:document_id>/`
 ```
 
 
-_Get_ to `get_all_teams/<str:company_id>/`
+__Get__ to `get_all_teams/<str:company_id>/`
 
 - Response 200
 
@@ -923,7 +923,7 @@ _Get_ to `get_all_teams/<str:company_id>/`
 }
 ```
 
-_patch_ to `edit_team/<str:document_id>/`
+__Patch__ to `edit_team/<str:document_id>/`
 
 - Request Body
 
@@ -958,7 +958,7 @@ _patch_ to `edit_team/<str:document_id>/`
 }
 ```
 
-_Delete_ to `delete_team/<int:team_id>/`
+__Delete__ to `delete_team/<int:team_id>/`
 
 - Response 200
 
@@ -977,7 +977,7 @@ _Delete_ to `delete_team/<int:team_id>/`
 ```
 
 
-_Post_ to `create_team_task/`
+__Post__ to `create_team_task/`
 
 - Request Body
 
@@ -1015,7 +1015,7 @@ _Post_ to `create_team_task/`
 ```
 
 
-_patch_ to `edit_team_task/<str:task_id>/`
+__Patch__ to `edit_team_task/<str:task_id>/`
 
 - Request Body
 
@@ -1052,7 +1052,7 @@ _patch_ to `edit_team_task/<str:task_id>/`
 }
 ```
 
-_Get_ to `get_team_task/<str:task_id>/`
+__Get__ to `get_team_task/<str:task_id>/`
 
 - Response 200
 
@@ -1070,7 +1070,7 @@ _Get_ to `get_team_task/<str:task_id>/`
   "message": "There is no task"
 }
 ```
-_Delete_ to `delete_team_task/<int:task_id>/`
+__Delete__ to `delete_team_task/<int:task_id>/`
 
 - Response 200
 
@@ -1089,7 +1089,7 @@ _Delete_ to `delete_team_task/<int:task_id>/`
 ```
 
 
-_Post_ to `create_member_task/`
+__Post__ to `create_member_task/`
 
 - Request Body
 
@@ -1128,7 +1128,7 @@ _Post_ to `create_member_task/`
 ```
 
 
-_Get_ to `get_member_task/<str:task_id>/`
+__Get__ to `get_member_task/<str:task_id>/`
 
 - Response 200
 
@@ -1146,7 +1146,7 @@ _Get_ to `get_member_task/<str:task_id>/`
   "message": "There is no task"
 }
 ```
-_Delete_ to `delete_team_task/<int:task_id>/`
+__Delete__ to `delete_team_task/<int:task_id>/`
 
 - Response 200
 
@@ -1168,7 +1168,7 @@ _Delete_ to `delete_team_task/<int:task_id>/`
 
 
 ### training management view-------------------------------------------------
-_Post_ to `create_question/`
+__Post__ to `create_question/`
 
 - Request Body
 
@@ -1281,7 +1281,7 @@ __patch__ to `update_question/`
 }
 ```
 
-_Post_ to `create_response/`
+__Post__ to `create_response/`
 
 - Request Body
 
@@ -1429,6 +1429,198 @@ __get__ to `get_all_responses/<str:company_id>/`
   "error": "data not found"
 }
 ```
+
+### settings view-------------------------------------------------
+
+__post__ to `settinguserprofileinfo/`
+
+- Request Body
+
+```json
+{
+  "company_id": "<company_id>",
+  "org_name": "<org_name>",
+  "owner": "<owner>",
+  "data_type": "<data_type>",
+  "profile_info": [
+    {
+      "profile_title": "profile_title",
+      "Role": "Role",
+      "project": "project",
+      "version": "version"
+    }
+  ]
+}
+```
+
+- Response 201
+
+```json
+{
+  "success": "Profile info '[{'profile_title': 'Apple', 'Role': 'lead','project': 'project', 'version': 'C1'}]' created successfully"
+}
+```
+
+- Response 400
+
+```json
+{
+    "message":"serializer.errors",
+}
+```
+
+__get__ to `settinguserprofileinfo/`
+
+- Response 200
+
+```json
+{
+  "company_id": "<company_id>",
+  "org_name": "<org_name>",
+  "owner": "<owner>",
+  "data_type": "<data_type>",
+  "profile_info": [
+                    { "profile_title": "profile_title", "Role": "Role", "project": "project", "version": "version" }
+                  ],
+  "status":"200"
+}
+```
+
+- Response 400
+
+```json
+{
+    "message":"serializer.errors"
+}
+```
+
+
+__put__ to `settinguserprofileinfo/<int:pk>`
+
+- Request Body
+
+```json
+{
+  "profile_title": "<profile_title>",
+  "Role": "<Role>",
+  "project": "<project>"
+}
+```
+
+- Response 201
+
+```json
+{
+  "success": "Profile info [{'profile_title': 'Apple', 'Role': 'lead', 'version': 'C1'}]"
+}
+```
+
+- Response 400
+
+```json
+{
+    "message":"serializer.errors"
+}
+```
+
+**Notes: Post_example**
+
+```json
+{
+  "company_id": "1002",
+  "org_name": "Dowell",
+  "owner": "Mannish",
+  "data_type": "real data",
+  "profile_info": [
+    { "profile_title": "Apple", "Role": "lead", "version": "C1" }
+  ]
+}
+```
+
+__post__ to `settinguserproject/`
+
+- Request Body
+
+```json
+{
+  "company_id": "<company_id>",
+  "data_type": "<data_type>",
+  "project_list": [{ "project_name1": "peach", "project_name2": "group lead" }]
+}
+```
+
+- Response 201
+
+```json
+{
+  "id": "id",
+  "company_id": "<company_id>",
+  "data_type": "<data_type>",
+  "project_list": [{ "project_name1": "peach", "project_name2": "group lead" }]
+}
+```
+
+- Response 400
+
+```json
+{
+    "message":"serializer.errors",
+    "status":"400"
+}
+```
+
+__get__ to `settinguserproject/`
+
+- Response 200
+
+```json
+{
+  "id": "id",
+  "company_id": "<company_id>",
+  "data_type": "<data_type>",
+  "project_list": [{ "project_name1": "peach", "project_name2": "group lead" }]
+},status=200
+```
+
+- Response 400
+
+```json
+{
+    "message":"serializer.errors"
+}
+```
+
+__put__ to `settinguserproject/<int:pk>`
+
+- Request Body
+
+```json
+{
+  "company_id": "<company_id>",
+  "data_type": "<data_type>",
+  "project_list": [{ "project_name1": "peach", "project_name2": "group lead" }]
+}
+```
+
+- Response 201
+
+```json
+{
+  "id": "id",
+  "company_id": "<company_id>",
+  "data_type": "<data_type>",
+  "project_list": [{ "project_name1": "peach", "project_name2": "group lead" }]
+}
+```
+
+- Response 400
+
+```json
+{
+    "message":"serializer.errors"
+}
+```
+
 
 
 # Change Log Link :- https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend-v2/app/CHANGELOG.md

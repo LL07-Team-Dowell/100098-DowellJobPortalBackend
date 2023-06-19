@@ -8,10 +8,11 @@ from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
-from .helper import get_event_id, dowellconnection, call_notification
+from .helper import get_event_id, dowellconnection, call_notification, update_number, update_string
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
-    SubmitResponseSerializer
+    SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
+    SettingUserProjectSerializer, UpdateSettingUserProjectSerializer, SettingUserProfileInfo, UserProject
 import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -1649,3 +1650,64 @@ class get_all_responses(APIView):
             return Response({"error": "data not found"}, status=status.HTTP_204_NO_CONTENT)
 
 # api for training management ends here______________________
+
+# api for setting starts here___________________________
+@method_decorator(csrf_exempt, name='dispatch')
+class SettingUserProfileInfoView(APIView):
+    serializer_class = SettingUserProfileInfoSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        profiles = SettingUserProfileInfo.objects.all()
+        serializer = self.serializer_class(profiles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def put(self, request, pk, *args, **kwargs):
+        data=request.data
+        setting = SettingUserProfileInfo.objects.get(pk=pk)
+        serializer = UpdateSettingUserProfileInfoSerializer(setting,data=request.data)
+        if serializer.is_valid():
+            current_version = setting.profile_info[-1]["version"]
+            setting.profile_info.append({'profile_info': data['profile_title'], 'Role': data['Role'], 'version': update_number(current_version)})
+            setting.save()
+            old_version = setting.profile_info[-2]["version"]
+            setting.profile_info[-2]["version"] = update_string(old_version)
+            setting.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class SettingUserProjectView(APIView):
+    serializer_class = SettingUserProjectSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        profiles = UserProject.objects.all()
+        serializer = self.serializer_class(profiles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request, pk):
+        my_model = UserProject.objects.get(pk=pk)
+        serializer = SettingUserProjectSerializer(my_model, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_201_CREATED)
+    
+    
+# api for setting ends here____________________________
