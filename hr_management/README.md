@@ -88,6 +88,7 @@ _Post_ to `hr_management/reject_candidate/`
     "document_id":"<document id>",
     "reject_remarks": "<reject remark>",
     "applicant": "<applicant>",
+    "applicant_email": "<applicant email>",
     "username": "<username>",
     "company_id": "<company id>",
     "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",

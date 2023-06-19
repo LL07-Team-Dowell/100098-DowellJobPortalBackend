@@ -104,6 +104,7 @@ class reject_candidate(APIView):
             insert_to_hr_report={
                 "company_id":data.get('company_id'),
                 "applicant":data.get('applicant'),
+                "applicant_email": data.get('applicant_email'),
                 "username" : data.get("username"),
                 "reject_remarks":data.get('reject_remarks'),
                 "status":"Rejected",
