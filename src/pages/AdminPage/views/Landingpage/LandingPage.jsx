@@ -39,7 +39,7 @@ const LandingPage = ({subAdminView}) => {
   useEffect(() => {
     if (jobs.length === 0) {
 
-      getJobsFromAdmin({ company_id: currentUser.portfolio_info[0].org_id })
+      getJobsFromAdmin(currentUser.portfolio_info[0].org_id)
         .then((response) => {
           console.log('AAAAAAAA',response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )) ; 
           setJobs(response.data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type ));

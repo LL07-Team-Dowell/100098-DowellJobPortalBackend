@@ -20,10 +20,10 @@ export const updateJob = async(data)=>{
 
 export const getApplicationForAdmin = async (company_id) => {
   return await currentBackendAxiosInstance.get(
-    `candidate_management/get_job_application/${company_id}/`
+    `candidate_get_job_application/${company_id}/`
   );
 };
 
-export const getJobsFromAdmin = async (data , company_id) => {
-  return await currentBackendAxiosInstance.post(`admin_get_all_jobs/${company_id}`,data)
+export const getJobsFromAdmin = async (company_id) => {
+  return await currentBackendAxiosInstance.get(`admin_get_all_jobs/${company_id}`)
 }

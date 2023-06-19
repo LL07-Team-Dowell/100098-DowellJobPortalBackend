@@ -107,9 +107,9 @@ const Card = ({
     setShowOverlay(true);
 
     try {
-      const response = await getJobsFromAdmin({
-        company_id: currentUser.portfolio_info[0].org_id,
-      });
+      const response = await getJobsFromAdmin(
+        currentUser.portfolio_info[0].org_id
+      );
 
       const dataGottenFromJobs = response.data.response.data
         .reverse()
