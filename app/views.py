@@ -832,6 +832,24 @@ class hr_reject_candidate(APIView):
         data = request.data
         print(data)
         if data:
+            # call the notification api-----
+            notify_data = {
+                "created_by": data.get('applicant'),
+                "org_id": data.get('company_id'),
+                "org_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "from_field": data.get('company_id'),
+                "to": data.get('applicant'),
+                "desc": "Notification for action",
+                "meant_for": data.get('applicant'),
+                "type_of_notification": "notify"
+            }
+            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+            create_notification = call_notification(url=url, request_type='post', data=notify_data)
+            print(create_notification, "================")
+
+            # continue reject api-----
             field = {
                 "_id": data.get('document_id'),
             }
@@ -848,7 +866,12 @@ class hr_reject_candidate(APIView):
                 "reject_remarks": data.get('reject_remarks'),
                 "status": "Rejected",
                 "data_type": data.get('data_type'),
-                "rejected_on": data.get('rejected_on')
+                "rejected_on": data.get('rejected_on'),
+                "company_name": data.get('company_name'),
+                "user_type": data.get('user_type'),
+                "notified": create_notification['isSuccess'],
+                "Rejected": "True",
+                "notification_id": create_notification['inserted_id']
             }
             serializer = RejectSerializer(data=data)
             if serializer.is_valid():
@@ -867,7 +890,16 @@ class hr_reject_candidate(APIView):
                 hr_thread.join()
 
                 if not candidate_thread.is_alive() and not hr_thread.is_alive():
-                    return Response({"message": "Candidate has been Rejected"}, status=status.HTTP_200_OK)
+                    # call the mark as seen notification api-----
+                    n_id = insert_to_hr_report['notification_id']
+                    url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                    patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+
+                    return Response({"message": "Candidate has been Rejected",
+                                        "notification": {"notified": insert_to_hr_report['notified'],
+                                                         "rejected": patch_notification['isSuccess'],
+                                                      "notification_id": insert_to_hr_report['notification_id']
+                                                      }}, status=status.HTTP_200_OK)
                 else:
                     return Response({"message": "Hr Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
@@ -887,6 +919,24 @@ class lead_hire_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
+            # call the notification api-----
+            notify_data = {
+                "created_by": data.get('applicant'),
+                "org_id": data.get('company_id'),
+                "org_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "from_field": data.get('company_id'),
+                "to": data.get('applicant'),
+                "desc": "Notification for action",
+                "meant_for": data.get('applicant'),
+                "type_of_notification": "notify"
+            }
+            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+            create_notification = call_notification(url=url, request_type='post', data=notify_data)
+            print(create_notification, "================")
+
+            # continue hire api-----
             field = {
                 "_id": data.get('document_id'),
             }
@@ -901,8 +951,13 @@ class lead_hire_candidate(APIView):
                 "teamlead_remarks": data.get('teamlead_remarks'),
                 "status": data.get('status'),
                 "company_id": data.get('company_id'),
+                "company_name": data.get('company_name'),
                 "data_type": data.get('data_type'),
-                "hired_on": data.get('hired_on')
+                "user_type": data.get('user_type'),
+                "hired_on": data.get('hired_on'),
+                "notified": create_notification['isSuccess'],
+                "Hired": "True",
+                "notification_id": create_notification['inserted_id']
             }
             serializer = LeadSerializer(data=data)
             if serializer.is_valid():
@@ -922,7 +977,16 @@ class lead_hire_candidate(APIView):
                 insert_response_thread.join()
 
                 if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
-                    return Response({"message": f"Candidate has been {data.get('status')}"},
+                    # call the mark as seen notification api-----
+                    n_id = insert_to_lead_report['notification_id']
+                    url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                    patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+
+                    return Response({"message": f"Candidate has been {data.get('status')}",
+                                     "notification": {"notified": insert_to_lead_report['notified'],
+                                                      "Hired": patch_notification['isSuccess'],
+                                                      "notification_id": insert_to_lead_report['notification_id']
+                                                      }},
                                     status=status.HTTP_201_CREATED)
                 else:
                     return Response({"message": "Lead operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
@@ -940,17 +1004,53 @@ class lead_rehire_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
+            # call the notification api-----
+            notify_data = {
+                "created_by": data.get('applicant'),
+                "org_id": data.get('company_id'),
+                "org_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "from_field": data.get('company_id'),
+                "to": data.get('applicant'),
+                "desc": "Notification for action",
+                "meant_for": data.get('applicant'),
+                "type_of_notification": "notify"
+            }
+            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+            create_notification = call_notification(url=url, request_type='post', data=notify_data)
+            print(create_notification, "================")
+
+            # continue rehire api-----
             field = {
                 "_id": data.get('document_id'),
             }
             update_field = {
                 "rehire_remarks": data.get('rehire_remarks'),
-                "status": "Rehired"
+                "status": "Rehired",
+                "applicant": data.get('applicant'),
+                "company_id": data.get('company_id'),
+                "company_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "rehired_on": data.get('rehired_on'),
+                "notified": create_notification['isSuccess'],
+                "Rehired": "True",
+                "notification_id": create_notification['inserted_id']
             }
             update_response = dowellconnection(*candidate_management_reports, "update", field, update_field)
             print(update_response)
             if update_response:
-                return Response({"message": f"Candidate has been {update_field['status']}"}, status=status.HTTP_200_OK)
+                # call the mark as seen notification api-----
+                n_id = update_field['notification_id']
+                url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+
+                return Response({"message": f"Candidate has been {update_field['status']}",
+                                 "notification": {"notified": update_field['notified'],
+                                                         "rehired": patch_notification['isSuccess'],
+                                                      "notification_id": update_field['notification_id']
+                                                      }}, status=status.HTTP_200_OK)
             else:
                 return Response({"message": "Lead Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
@@ -963,6 +1063,24 @@ class lead_reject_candidate(APIView):
         data = request.data
         print(data)
         if data:
+            # call the notification api-----
+            notify_data = {
+                "created_by": data.get('applicant'),
+                "org_id": data.get('company_id'),
+                "org_name": data.get('company_name'),
+                "data_type": data.get('data_type'),
+                "user_type": data.get('user_type'),
+                "from_field": data.get('company_id'),
+                "to": data.get('applicant'),
+                "desc": "Notification for action",
+                "meant_for": data.get('applicant'),
+                "type_of_notification": "notify"
+            }
+            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+            create_notification = call_notification(url=url, request_type='post', data=notify_data)
+            print(create_notification, "================")
+
+            # continue reject api-----
             field = {
                 "_id": data.get('document_id'),
             }
@@ -979,7 +1097,12 @@ class lead_reject_candidate(APIView):
                 "reject_remarks": data.get('reject_remarks'),
                 "status": "Rejected",
                 "data_type": data.get('data_type'),
-                "rejected_on": data.get('rejected_on')
+                "rejected_on": data.get('rejected_on'),
+                "company_name": data.get('company_name'),
+                "user_type": data.get('user_type'),
+                "notified": create_notification['isSuccess'],
+                "selected": "True",
+                "notification_id": create_notification['inserted_id']
             }
 
             serializer = RejectSerializer(data=data)
@@ -1004,7 +1127,16 @@ class lead_reject_candidate(APIView):
                 lead_thread.join()
 
                 if not hr_thread.is_alive() and not candidate_thread.is_alive() and not lead_thread.is_alive():
-                    return Response({"message": "Candidate has been Rejected"}, status=status.HTTP_200_OK)
+                    # call the mark as seen notification api-----
+                    n_id = insert_to_lead_report['notification_id']
+                    url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                    patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+
+                    return Response({"message": "Candidate has been Rejected",
+                                     "notification": {"notified": insert_to_lead_report['notified'],
+                                                         "rejected": patch_notification['isSuccess'],
+                                                      "notification_id": insert_to_lead_report['notification_id']
+                                                      }}, status=status.HTTP_200_OK)
                 else:
                     return Response({"message": "Lead Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
