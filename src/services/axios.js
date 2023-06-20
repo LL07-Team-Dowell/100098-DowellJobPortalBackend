@@ -40,7 +40,7 @@ const locationAxiosInstance = axios.create({
 
 const currentBackendAxiosInstance = axios.create({
     baseURL: currentBaseURL,
-    withCredentials: true,
+    // withCredentials: true,
 })
 
 const liveStatusBackendAxiosInstance = axios.create({
