@@ -27,6 +27,7 @@ __Post__ to `accounts_onboard_candidate/`
 {
   "message": "Candidate has been onboarded.",
   "notification": {"notified": "True/False",
+                  "onboarded": "True/False",
                   "notification_id": "notification id"
                     }
 }
@@ -112,6 +113,7 @@ __Post__ to `accounts_rehire_candidate/`
 {
   "message": "Candidate has been rehired",
   "notification": {"notified": "True/False",
+                    "rehired": "True/False",
                   "notification_id": "notification id"
                     }
 }
@@ -155,6 +157,7 @@ __Post__ to `accounts_reject_candidate/`
 {
   "message": "Candidate has been Rejected.",
   "notification": {"notified": "True/False",
+                  "rejected": "True/False",
                   "notification_id": "notification id"
                     }
 }
@@ -570,7 +573,9 @@ __Post__ to `hr_reject_candidate/`
     "username": "<username>",
     "company_id": "<company id>",
     "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-    "rejected_on": "<rejected on>"
+    "rejected_on": "<rejected on>",
+    "company_name": "<company_name>", 
+  "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
 
@@ -579,6 +584,10 @@ __Post__ to `hr_reject_candidate/`
 ```json
 {
   "message": "Candidate has been Rejected"
+  "notification": {"notified": "True/False",
+                    "Rejected": "True/False",
+                  "notification_id": "notification id"
+                    }
 }
 ```
 
@@ -611,7 +620,9 @@ __Post__ to `lead_hire_candidate/`
   "applicant": "<applicant name>",
   "company_id": "<company_id>",
   "data_type": "<data_type>",
-  "hired_on": "<hired_on>"
+  "hired_on": "<hired_on>",
+  "company_name": "<company_name>", 
+  "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
 
@@ -619,7 +630,11 @@ __Post__ to `lead_hire_candidate/`
 
 ```json
 {
-  "message": "Candidate has been Hired"
+  "message": "Candidate has been Hired",
+  "notification": {"notified": "True/False",
+                  "Hired": "True/False",
+                  "notification_id": "notification id"
+                    }
 }
 ```
 
@@ -645,7 +660,13 @@ __Post__ to `lead_rehire_candidate/`
 ```json
 {
   "document_id": "<document id>",
-  "rehire_remarks": "<rehire remarks>"
+  "rehire_remarks": "<rehire remarks>",
+  "applicant": "hardik",
+  "company_id": "63a2b3fb2be81449d3a30d9h",
+  "data_type": "Real_Data",
+  "rehired_on": "12/12/2022",
+  "company_name": "<company_name>", 
+  "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
 
@@ -653,7 +674,11 @@ __Post__ to `lead_rehire_candidate/`
 
 ```json
 {
-  "message": "Candidate has been rehired"
+  "message": "Candidate has been rehired",
+  "notification": {"notified": "True/False",
+                  "rehired": "True/False",
+                  "notification_id": "notification id"
+                    }                                                
 }
 ```
 
@@ -683,7 +708,10 @@ __Post__ to `lead_reject_candidate/`
     "username": "<username>",
     "company_id": "<company id>",
     "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-    "rejected_on": "<rejected on>"
+    "rejected_on": "<rejected on>",
+    "status": "Rejected",
+    "company_name": "<company_name>", 
+    "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
 
@@ -691,7 +719,11 @@ __Post__ to `lead_reject_candidate/`
 
 ```json
 {
-  "message": "Candidate has been Rejected"
+  "message": "Candidate has been Rejected",
+  "notification": {"notified": "True/False",
+                  "rejected": "True/False",
+                  "notification_id": "notification id"
+                    }
 }
 ```
 

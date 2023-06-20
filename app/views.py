@@ -90,8 +90,14 @@ class accounts_onboard_candidate(APIView):
                 insert_response_thread.join()
 
                 if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
+                    # call the mark as seen notification api-----
+                    n_id = insert_to_hr_report['notification_id']
+                    url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                    patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+
                     return Response({"message": f"Candidate has been {data.get('status')}",
                                      "notification": {"notified": insert_to_hr_report['notified'],
+                                                      "onboarded":patch_notification['isSuccess'],
                                                       "notification_id": insert_to_hr_report['notification_id']
                                                       }
                                      },
@@ -236,8 +242,14 @@ class accounts_rehire_candidate(APIView):
             insert_response_thread.join()
 
             if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
+                # call the mark as seen notification api-----
+                n_id = update_field['notification_id']
+                url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+
                 return Response({"message": "Candidate has been Rehired",
                                  "notification": {"notified": update_field['notified'],
+                                                  "rehired": patch_notification['isSuccess'],
                                                   "notification_id": update_field['notification_id']
                                                   }
                                  }, status=status.HTTP_200_OK)
@@ -331,8 +343,14 @@ class accounts_reject_candidate(APIView):
 
                 if (not candidate_thread.is_alive() and not hr_thread.is_alive() and not lead_thread.is_alive()
                         and not account_thread.is_alive()):
+                    # call the mark as seen notification api-----
+                    n_id = insert_to_account_report['notification_id']
+                    url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                    patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+
                     return Response({"message": "Candidate has been Rejected",
                                      "notification": {"notified": insert_to_account_report['notified'],
+                                                      "rejected": patch_notification['isSuccess'],
                                                       "notification_id": insert_to_account_report['notification_id']}
                                      },
                                     status=status.HTTP_200_OK,
@@ -896,7 +914,7 @@ class hr_reject_candidate(APIView):
                     patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
 
                     return Response({"message": "Candidate has been Rejected",
-                                        "notification": {"notified": insert_to_hr_report['notified'],
+                                    "notification": {"notified": insert_to_hr_report['notified'],
                                                          "rejected": patch_notification['isSuccess'],
                                                       "notification_id": insert_to_hr_report['notification_id']
                                                       }}, status=status.HTTP_200_OK)
