@@ -3,7 +3,7 @@ import "./index.scss";
 import { testJobToWorkWith } from "../../../../utils/testData";
 import { light } from "@mui/material/styles/createPalette";
 import { MdArrowBackIosNew } from "react-icons/md";
-import { addNewJob } from '../../../../services/adminServices';
+import { addNewJob, getJobsFromAdmin } from '../../../../services/adminServices';
 import Loading from '../../../CandidatePage/views/ResearchAssociatePage/Loading';
 // AiFillEdit 
 import { AiFillEdit } from "react-icons/ai"
@@ -27,8 +27,7 @@ const ViewJob = () => {
         useEffect(()=>{
             setLoading(true) ; 
             if(jobs.length === 0 ){
-                axios.post("https://100098.pythonanywhere.com/admin_management/get_jobs/",{
-                company_id: currentUser.portfolio_info[0].org_id,},[])
+                getJobsFromAdmin(currentUser.portfolio_info[0].org_id)
                 .then(resp => {
                     const JOBS = resp.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type ) ; 
                     setsingleJob(JOBS.filter(job => job["_id"] === id)[0]) ; 

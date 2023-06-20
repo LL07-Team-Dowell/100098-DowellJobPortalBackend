@@ -1,7 +1,7 @@
 import { currentBackendAxiosInstance, liveStatusBackendAxiosInstance } from "./axios"
 
 export const getJobs2 = async (data) => {
-    return await currentBackendAxiosInstance.post("admin_management/get_jobs/",data )
+    return await currentBackendAxiosInstance.get(`admin_get_all_jobs/${data.company_id}/`)
 }
 
 export const getAllQuestions = async (company_id)=>{
