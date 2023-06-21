@@ -90,6 +90,7 @@ class accounts_onboard_candidate(APIView):
                 insert_response_thread.join()
 
                 if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
+                    
                     return Response({"message": f"Candidate has been {data.get('status')}",
                                      "notification": {"notified": insert_to_hr_report['notified'],
                                                       "notification_id": insert_to_hr_report['notification_id']
@@ -417,11 +418,11 @@ class admin_create_jobs(APIView):
         }
         update_field = {"status": "nothing to update"}
         serializer = AdminSerializer(data=field)
-        print(serializer,"=========================")
+        #print(serializer,"=========================")
         if serializer.is_valid():
             response = dowellconnection(*jobs, "insert", field, update_field)
-            print(response)
-            if response:
+            print(response,"=========================")
+            if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": "Job creation was successful.",
                                 "notification": {"notified": field['notified'],
                                                       "created": field['created'],
@@ -429,7 +430,8 @@ class admin_create_jobs(APIView):
                     status=status.HTTP_201_CREATED,
                 )
             else:
-                return Response({"message": "Job creation has failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Job creation has failed","response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -449,11 +451,15 @@ class admin_get_job(APIView):
         }
         response = dowellconnection(*jobs, "fetch", field, update_field)
         # print(response)
-        if response:
-            return Response({"message": "Job details.", "response": json.loads(response)},
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":"Job details do not exist","response":json.loads(response)},
                             status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "List of jobs.", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
-            return Response({"message": "There is no jobs", "response": json.loads(response)},
+            return Response({"message": "There are no jobs", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
 
 
@@ -467,10 +473,14 @@ class admin_get_all_jobs(APIView):
             "status": "nothing to update"
         }
         response = dowellconnection(*jobs, "fetch", field, update_field)
-        # print(response)
-        if response:
-            return Response({"message": "List of jobs.", "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
+        #print(response)
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":"There is no job with the company id","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": "List of jobs.", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
             return Response({"message": "There is no jobs", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
@@ -481,16 +491,16 @@ class admin_get_all_jobs(APIView):
 class admin_update_jobs(APIView):
     def patch(self, request):
         data = request.data
-        print(data)
         if data:
             field = {"_id": data.get("document_id")}
             update_field = data
             response = dowellconnection(*jobs, "update", field, update_field)
-            # print(response)
-            if response:
-                return Response({"message": "Job update was successful"}, status=status.HTTP_200_OK)
+            print(response)
+            if json.loads(response)["isSuccess"] ==True:
+                
+                return Response({"message": "Job update was successful", "response": json.loads(response)}, status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Job update has failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Job update has failed", "response": json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(
                 {"message": "Parameters are not valid"},
@@ -503,7 +513,6 @@ class admin_update_jobs(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class admin_delete_job(APIView):
     def delete(self, request, document_id):
-        data = request.data
         field = {
             "_id": document_id
         }
@@ -513,9 +522,13 @@ class admin_delete_job(APIView):
         response = dowellconnection(*jobs, "update", field, update_field)
         print(response)
         if json.loads(response)["isSuccess"] ==True:
-            return Response({"message": "Job successfully deleted"}, status=status.HTTP_200_OK)
+            if len(json.loads(response)["data"])==0:
+                    return Response({"message":"There is no job with the id","response":json.loads(response)},
+                                status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": "Job successfully deleted"},
+                                    status=status.HTTP_200_OK)
         else:
-            print(response)
             return Response({"message": "Job not successfully deleted",
                              "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
         
@@ -546,17 +559,19 @@ class candidate_apply_job(APIView):
         if applicant is not None:
             rejected_dates = [datetime.datetime.strptime(item["rejected_on"], '%m/%d/%Y') for item in
                               json.loads(applicant)["data"]]
-            print(rejected_dates,"=============================")
+            #print(rejected_dates,"=============================")
             if len(rejected_dates) >= 1:
                 rejected_on = max(rejected_dates)  # get last date
-                # print(rejected_on, "=======================")
+                #print(rejected_on, "=======================")
                 if rejected_on:
                     three_months_after = rejected_on + relativedelta(months=3)
                     # print(rejected_on, "=======================", three_months_after)
                     current_date = datetime.datetime.today()
                     print(rejected_on, "==========", three_months_after, "=========", current_date)
-                    if current_date >= three_months_after:
+                    if current_date >= three_months_after or current_date == datetime.datetime.today():
                         return True
+                return True
+            else:
                 return True
 
         return False
@@ -565,7 +580,10 @@ class candidate_apply_job(APIView):
         data = request.data
         applicant_email = data.get("applicant_email")
         if not self.is_eligible_to_apply(applicant_email):
-            return Response({"message": "Not eligible to apply yet."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Not eligible to apply yet.",
+                             "response":{"applicant": data.get('applicant'),
+                                         "applicant_email": data.get('applicant_email'),
+                                         "username": data.get('username')}}, status=status.HTTP_400_BAD_REQUEST)
         field = {
             "eventId": get_event_id()['event_id'],
             "job_number": data.get('job_number'),
@@ -608,7 +626,7 @@ class candidate_apply_job(APIView):
         serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
             response = dowellconnection(*rejected_reports_modules, "fetch", field, update_field)
-            if response:
+            if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": "Application received.",
                                  "Eligibility": self.is_eligible_to_apply(applicant_email),
 
@@ -636,8 +654,12 @@ class candidate_get_job_application(APIView):
         response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
         print(response)
         if json.loads(response)["isSuccess"] ==True:
-            return Response({"message": "List of job applications.", "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":"There is no job with the company id","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": "List of jobs applications", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
             return Response({"message": "There are no job applications", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
@@ -655,8 +677,12 @@ class get_candidate_application(APIView):
         response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
         print(response)
         if json.loads(response)["isSuccess"] ==True:
-            return Response({"message": "Candidate job applications", "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":"There is no candidate job applications with the document id","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": "Candidate job applications", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
             return Response({"message": "There are no job applications", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
@@ -677,9 +703,12 @@ class get_all_onboarded_candidate(APIView):
             response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
 
             if json.loads(response)["isSuccess"] ==True:
-                return Response({"message": f"List of {field['status']} Candidates",
-                                 "response": json.loads(response)},
-                                status=status.HTTP_200_OK)
+                if len(json.loads(response)["data"])==0:
+                    return Response({"message":f"There is no {field['status']} Candidates with this company id","response":json.loads(response)},
+                                status=status.HTTP_204_NO_CONTENT)
+                else:
+                    return Response({"message": f"List of {field['status']} Candidates", "response": json.loads(response)},
+                                    status=status.HTTP_200_OK)
             else:
                 return Response({"message": f"There are no {field['status']} Candidates",
                                  "response": json.loads(response)},
@@ -700,7 +729,8 @@ class delete_candidate_application(APIView):
         response = dowellconnection(*candidate_management_reports, "update", field, update_field)
         print(response, "================================",)
         if json.loads(response)["isSuccess"] == True:
-            return Response({"message": "Candidate application deleted successfully."}, status=status.HTTP_200_OK)
+            return Response({"message": "Candidate application deleted successfully", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
             return Response({"message": "There is no job applications", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
@@ -1089,7 +1119,7 @@ class lead_rehire_candidate(APIView):
             }
             update_response = dowellconnection(*candidate_management_reports, "update", field, update_field)
             print(update_response)
-            if update_response:
+            if json.loads(update_response)["isSuccess"] ==True:
                 # call the mark as seen notification api-----
                 n_id = update_field['notification_id']
                 url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
@@ -1222,7 +1252,7 @@ class create_task(APIView):
             }
             insert_response = dowellconnection(*task_management_reports, "insert", field, update_field)
             print(insert_response)
-            if insert_response:
+            if json.loads(insert_response)["isSuccess"] ==True:
                 return Response({"message": f"Task has been created successfully"},
                                 status=status.HTTP_201_CREATED)
             else:
@@ -1242,9 +1272,13 @@ class get_task(APIView):
         }
         response = dowellconnection(*task_management_reports, "fetch", field, update_field)
         print(response)
-        if response:
-            return Response({"message": "List of the tasks", "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":f"There is no task with this company id","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": f"List of Task", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
             return Response({"message": "There are no tasks", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
@@ -1261,9 +1295,13 @@ class get_candidate_task(APIView):
         }
         response = dowellconnection(*task_management_reports, "fetch", field, update_field)
         print(response)
-        if response:
-            return Response({"message": "List of the tasks", "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":f"There is no task with this document id","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": f"List of the tasks", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
             return Response({"message": "There are no tasks", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
@@ -1286,10 +1324,11 @@ class update_task(APIView):
             }
             response = dowellconnection(*task_management_reports, "update", field, update_field)
             print(response)
-            if response:
+            if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": "Task updated successfully"}, status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Task failed to be updated"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Task failed to be updated",
+                                 "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1304,10 +1343,12 @@ class delete_task(APIView):
             "data_type": "Archived_Data"
         }
         response = dowellconnection(*task_management_reports, "update", field, update_field)
-        if response:
+        print(response)
+        if json.loads(response)["isSuccess"] ==True:
             return Response({"message": "Task deleted successfully"}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Task failed to be deleted"}, status=status.HTTP_304_NOT_MODIFIED)
+            return Response({"message": "Task failed to be deleted",
+                             "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
 
 
 # api for task management ends here________________________
@@ -1331,28 +1372,33 @@ class create_team(APIView):
             }
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field)
-            if response:
+            print(response)
+            if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": "Team created successfully"}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Team failed to be created"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Team failed to be created","response":json.loads(response)}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_team(APIView):
-    def get(self, request, document_id):
+    def get(self, request, team_id):
         field = {
-            "_id": document_id,
+            "_id": team_id,
         }
         update_field = {
             "status": "nothing to update"
         }
         response = dowellconnection(*team_management_modules, "fetch", field, update_field)
-        if response:
-            return Response({"message": f"Teams available",
-                             "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
+        print(response)
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":f"There is no team available with ths document id","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": f"Teams available", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
             return Response({"message": "There is no team", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
@@ -1368,10 +1414,14 @@ class get_all_teams(APIView):  # all teams
             "status": "nothing to update"
         }
         response = dowellconnection(*team_management_modules, "fetch", field, update_field)
-        if response:
-            return Response({"message": f"Teams with company id - {company_id} available",
-                             "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
+        print(response)
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":f"There is no teams with this company id","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": f"Teams with company id - {company_id} available", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
             return Response({"message": "There is no team", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
@@ -1379,11 +1429,11 @@ class get_all_teams(APIView):  # all teams
 
 @method_decorator(csrf_exempt, name='dispatch')
 class edit_team(APIView):
-    def patch(self, request, document_id):
+    def patch(self, request, team_id):
         data = request.data
         if data:
             field = {
-                "_id": document_id,
+                "_id": team_id,
             }
             update_field = {
                 "members": data.get("members"),
@@ -1391,12 +1441,13 @@ class edit_team(APIView):
             }
             response = dowellconnection(
                 *team_management_modules, "update", field, update_field)
-            if response:
+            print(response)
+            if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": "Team Updated successfully",
                                  "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Team failed to be updated"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Team failed to be updated", "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1410,12 +1461,13 @@ class delete_team(APIView):
         update_field = {
             "data_type": "Archived_Data"
         }
-        response = dowellconnection(*task_management_reports, "update", field, update_field)
-        if response:
+        response = dowellconnection(*team_management_modules, "update", field, update_field)
+        print(response)
+        if json.loads(response)["isSuccess"] ==True:
             return Response({"message": f"Team has been deleted"}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": f"Team failed to be deleted"},
-                            status=status.HTTP_304_NOT_MODIFIED)
+            return Response({"message": f"Team failed to be deleted", "response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -1434,12 +1486,12 @@ class create_team_task(APIView):
             update_field = {
                 "status": "nothing to update"
             }
-            response = dowellconnection(
-                *team_management_modules, "insert", field, update_field)
-            if response:
-                return Response({"message": "Task created successfully"}, status=status.HTTP_201_CREATED)
+            response = dowellconnection(*task_management_reports, "insert", field, update_field)
+            print(response)
+            if json.loads(response)["isSuccess"] ==True:
+                return Response({"message": "Task created successfully", "response":json.loads(response)}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Task Creation Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Task Creation Failed","response":json.loads(response)}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1460,13 +1512,14 @@ class edit_team_task(APIView):
                 "team_name": data.get("team_name"),
             }
             response = dowellconnection(
-                *team_management_modules, "update", field, update_field)
-            if response:
+                *task_management_reports, "update", field, update_field)
+            print(response)
+            if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": "Team Task Updated successfully",
                                  "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Team Task failed to be updated"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Team Task failed to be updated", "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1481,11 +1534,15 @@ class get_team_task(APIView):
             "status": "nothing to update"
         }
         response = dowellconnection(
-            *team_management_modules, "fetch", field, update_field)
-        if response:
-            return Response({"message": f"Tasks with id - {task_id} available",
-                             "response": json.loads(response)},
-                            status=status.HTTP_200_OK)
+            *task_management_reports, "fetch", field, update_field)
+        print(response)
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":f"There is no tasks with this task id","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": f"Tasks with task id - {task_id} available", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
             return Response({"message": "There is no task",
                              "response": json.loads(response)},
@@ -1496,17 +1553,19 @@ class get_team_task(APIView):
 class delete_team_task(APIView):
     def delete(self, request, task_id):
         field = {
-            "task_id": task_id
+            "_id": task_id
         }
         update_field = {
             "data_type": "Archived_Data"
         }
         response = dowellconnection(*task_management_reports, "update", field, update_field)
-        if response:
-            return Response({"message": f"Task with id {task_id} has been deleted"}, status=status.HTTP_200_OK)
+        print(response)
+        if json.loads(response)["isSuccess"] ==True:
+            return Response({"message": f"Tasks with task id - {task_id} has been deleted", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
-            return Response({"message": f"Task with id {task_id} failed to be deleted"},
-                            status=status.HTTP_304_NOT_MODIFIED)
+            return Response({"message": f"Task with id {task_id} failed to be deleted", "response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 # this is the api for creating a task for a team member
@@ -1528,12 +1587,12 @@ class create_member_task(APIView):
             update_field = {
                 "status": "nothing to update"
             }
-            response = dowellconnection(
-                *team_management_modules, "insert", field, update_field)
-            if response:
-                return Response({"message": "Task for member created successfully"}, status=status.HTTP_201_CREATED)
+            response = dowellconnection(*task_management_reports, "insert", field, update_field)
+            print(response)
+            if json.loads(response)["isSuccess"] ==True:
+                return Response({"message": "Task for member created successfully", "response":json.loads(response)}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Task for member Creation Failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Task for member Creation Failed", "response":json.loads(response)}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1547,11 +1606,14 @@ class get_member_task(APIView):
         update_field = {
             "status": "nothing to update"
         }
-        response = dowellconnection(
-            *team_management_modules, "fetch", field, update_field)
-        if response:
-            return Response({"message": f"Member Task with id - {task_id} available",
-                             "response": json.loads(response)},
+        response = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        print(response)
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":f"There is no member tasks with this task id","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": f"Member Task with task id - {task_id} available", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
             return Response({"message": "There is no task",
@@ -1563,17 +1625,18 @@ class get_member_task(APIView):
 class delete_member_task(APIView):
     def delete(self, request, task_id):
         field = {
-            "task_id": task_id
+            "_id": task_id
         }
         update_field = {
             "data_type": "Archived_Data"
         }
         response = dowellconnection(*task_management_reports, "update", field, update_field)
-        if response:
-            return Response({"message": f"Member Task with id {task_id} has been deleted"}, status=status.HTTP_200_OK)
+        print(response)
+        if json.loads(response)["isSuccess"] ==True:
+            return Response({"message": f"Member Task with id {task_id} has been deleted", "response":json.loads(response)}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": f"Member Task with id {task_id} failed to be deleted"},
-                            status=status.HTTP_304_NOT_MODIFIED)
+            return Response({"message": f"Member Task with id {task_id} failed to be deleted","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 # api for team_task management ends here____________________________
@@ -1597,17 +1660,15 @@ class create_question(APIView):
         update_field = {"status": "nothing to update"}
         serializer = TrainingSerializer(data=field)
         if serializer.is_valid():
-            question_response = dowellconnection(
-                *questionnaire_modules, "insert", field, update_field
-            )
+            question_response = dowellconnection(*questionnaire_modules, "insert", field, update_field)
             print(question_response)
-            if question_response:
+            if json.loads(question_response)["isSuccess"] ==True:
                 return Response(
-                    {"message": "Question created successfully"},
+                    {"message": "Question created successfully","response":json.loads(question_response)},
                     status=status.HTTP_201_CREATED,
                 )
             else:
-                return Response({"message": "Question failed to be created"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Question failed to be created","response":json.loads(response)}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -1623,13 +1684,15 @@ class get_all_question(APIView):
             "company_id": company_id,
         }
         update_field = {"status": "nothing to update"}
-        question_response = dowellconnection(
-            *questionnaire_modules, "fetch", field, update_field
-        )
+        question_response = dowellconnection(*questionnaire_modules, "fetch", field, update_field)
         print("----response from dowelconnection---", question_response)
         print(question_response)
-        if question_response:
-            return Response({"message": "List of questions.", "response": json.loads(question_response)},
+        if json.loads(question_response)["isSuccess"] ==True:
+            if len(json.loads(question_response)["data"])==0:
+                return Response({"message":f"There is no questions","response":json.loads(question_response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": f"List of questions", "response": json.loads(question_response)},
                             status=status.HTTP_200_OK)
         return Response({"error": "No question found"}, status=status.HTTP_204_NO_CONTENT)
 
@@ -1644,18 +1707,15 @@ class get_question(APIView):
         update_field = {
             "status": "nothing to update"
         }
-        question_response = dowellconnection(
-            *questionnaire_modules, "fetch", field, update_field
-        )
+        question_response = dowellconnection(*questionnaire_modules, "fetch", field, update_field)
         print(question_response)
-        if question_response:
-            return Response(
-                {
-                    "message": "List of questions.",
-                    "response": json.loads(question_response),
-                },
-                status=status.HTTP_200_OK,
-            )
+        if json.loads(question_response)["isSuccess"] ==True:
+            if len(json.loads(question_response)["data"])==0:
+                return Response({"message":f"There is no questions","response":json.loads(question_response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": f"List of questions", "response": json.loads(question_response)},
+                            status=status.HTTP_200_OK)
         else:
             return Response({"error": "No question found"}, status=status.HTTP_204_NO_CONTENT)
 
@@ -1678,8 +1738,12 @@ class update_question(APIView):
                 *questionnaire_modules, "update", field, update_field
             )
             print(question_response)
-            if question_response:
-                return Response({"message": "Question updated successfully"}, status=status.HTTP_200_OK)
+            if json.loads(question_response)["isSuccess"] ==True:
+                return Response({"message": f"Question updated successfully", "response": json.loads(question_response)},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response({"message": f"Question failed to update", "response": json.loads(question_response)}, status=status.HTTP_204_NO_CONTENT)
+                
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -1712,7 +1776,8 @@ class response(APIView):
             }
             insert_response = dowellconnection(
                 *response_modules, "insert", field, update_field)
-            if insert_response:
+            print(insert_response)
+            if json.loads(insert_response)["isSuccess"] ==True:
                 return Response(
                     {"message": "Response has been created successfully", "info": json.loads(insert_response)},
                     status=status.HTTP_201_CREATED)
@@ -1766,17 +1831,20 @@ class get_response(APIView):
         field = {
             "_id": document_id,
         }
-        print(field)
         update_field = {"status": "nothing to update"}
         response = dowellconnection(*response_modules, "fetch", field, update_field)
         print(response)
-        if response:
-            return Response({"message": "List of responses", "response": json.loads(response)},
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":f"There is no responses","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": f"List of responses", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
-            return Response(
-                {"message": "List of response.", "response": json.loads(response)},
-                status=status.HTTP_200_OK,
-            )
+            
+        else:
+            return Response({"message": "Response failed to be updated","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -1798,11 +1866,15 @@ class submit_response(APIView):
         if serializer.is_valid():
             insert_to_response = dowellconnection(
                 *response_modules, "update", field, update_field)
+            print(insert_to_response)
 
-            if insert_to_response:
-                return Response({"message": "Response has been submitted"}, status=status.HTTP_200_OK)
+            if json.loads(insert_to_response)["isSuccess"] ==True:
+                return Response({"message": f"Response submitted", "response": json.loads(insert_to_response)},
+                                status=status.HTTP_200_OK)
             else:
-                return Response({"message": "operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Response failed to be submitted","response":json.loads(insert_to_response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -1822,13 +1894,17 @@ class get_all_responses(APIView):
             "status": "nothing to update"
         }
         response = dowellconnection(
-            *response_modules, "find", field, update_field)
+            *response_modules, "fetch", field, update_field)
         print(response)
-        if response:
-            return Response({"message": "List of responses", "response": json.loads(response)},
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":f"There is no responses","response":json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": f"List of responses", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
-            return Response({"error": "data not found"}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"message":f"There is no responses","response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
 
 # api for training management ends here______________________
 
