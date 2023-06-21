@@ -7,7 +7,7 @@ export const submitNewApplication = async (data) => {
 export const getJobs = async (datass) => {
     console.log(datass);
     const data = { "company_id": datass };
-    return await currentBackendAxiosInstance.post("/admin_management/get_jobs/", data)
+    return await currentBackendAxiosInstance.get(`admin_get_all_jobs/${datass}/`)
 }
 
 export const getAppliedJobs = async (company_id) => {

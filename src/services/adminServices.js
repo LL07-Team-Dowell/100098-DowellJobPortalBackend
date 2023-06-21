@@ -25,5 +25,5 @@ export const getApplicationForAdmin = async (company_id) => {
 };
 
 export const getJobsFromAdmin = async (company_id) => {
-  return await currentBackendAxiosInstance.get(`admin_get_all_jobs/${company_id}`)
+  return await currentBackendAxiosInstance.get(`admin_get_all_jobs/${company_id}/`)
 }
