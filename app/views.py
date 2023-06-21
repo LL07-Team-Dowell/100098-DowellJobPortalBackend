@@ -90,14 +90,8 @@ class accounts_onboard_candidate(APIView):
                 insert_response_thread.join()
 
                 if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
-                    # call the mark as seen notification api-----
-                    n_id = insert_to_hr_report['notification_id']
-                    url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
-                    patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
-
                     return Response({"message": f"Candidate has been {data.get('status')}",
                                      "notification": {"notified": insert_to_hr_report['notified'],
-                                                      "onboarded":patch_notification['isSuccess'],
                                                       "notification_id": insert_to_hr_report['notification_id']
                                                       }
                                      },
@@ -373,6 +367,24 @@ class accounts_reject_candidate(APIView):
 class admin_create_jobs(APIView):
     def post(self, request):
         data = request.data
+        # call the notification api-----
+        notify_data = {
+            "created_by": data.get('applicant'),
+            "org_id": data.get('company_id'),
+            "org_name": data.get('company_name'),
+            "data_type": data.get('data_type'),
+            "user_type": data.get('user_type'),
+            "from_field": data.get('company_id'),
+            "to": data.get('applicant'),
+            "desc": "Notification for action",
+            "meant_for": data.get('applicant'),
+            "type_of_notification": "notify"
+        }
+        url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
+        create_notification = call_notification(url=url, request_type='post', data=notify_data)
+        print(create_notification, "================")
+
+        # continue create job api-----
         field = {
             "eventId": get_event_id()["event_id"],
             "job_number": data.get("job_number"),
@@ -395,14 +407,25 @@ class admin_create_jobs(APIView):
             "data_type": data.get("data_type"),
             "created_by": data.get("created_by"),
             "created_on": data.get("created_on"),
+
+            "applicant": data.get("applicant"),
+            "company_name": data.get('company_name'),
+            "user_type": data.get('user_type'),
+            "notified": create_notification['isSuccess'],
+            "created": "True",
+            "notification_id": create_notification['inserted_id']
         }
         update_field = {"status": "nothing to update"}
         serializer = AdminSerializer(data=field)
+        print(serializer,"=========================")
         if serializer.is_valid():
             response = dowellconnection(*jobs, "insert", field, update_field)
+            print(response)
             if response:
-                return Response(
-                    {"message": "Job creation was successful."},
+                return Response({"message": "Job creation was successful.",
+                                "notification": {"notified": field['notified'],
+                                                      "created": field['created'],
+                                                      "notification_id": field['notification_id']}},
                     status=status.HTTP_201_CREATED,
                 )
             else:
@@ -488,11 +511,14 @@ class admin_delete_job(APIView):
             "data_type": "archive_data"
         }
         response = dowellconnection(*jobs, "update", field, update_field)
-        # print(response)
-        if response:
+        print(response)
+        if json.loads(response)["isSuccess"] ==True:
             return Response({"message": "Job successfully deleted"}, status=status.HTTP_200_OK)
         else:
-            return Response({"message": "Job not successfully deleted"}, status=status.HTTP_304_NOT_MODIFIED)
+            print(response)
+            return Response({"message": "Job not successfully deleted",
+                             "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
+        
 
 
 # api for admin management ends here______________________
@@ -520,15 +546,18 @@ class candidate_apply_job(APIView):
         if applicant is not None:
             rejected_dates = [datetime.datetime.strptime(item["rejected_on"], '%m/%d/%Y') for item in
                               json.loads(applicant)["data"]]
-            rejected_on = max(rejected_dates)  # get last date
-            # print(rejected_on, "=======================")
-            if rejected_on:
-                three_months_after = rejected_on + relativedelta(months=3)
-                # print(rejected_on, "=======================", three_months_after)
-                current_date = datetime.datetime.today()
-                print(rejected_on, "==========", three_months_after, "=========", current_date)
-                if current_date >= three_months_after:
-                    return True
+            print(rejected_dates,"=============================")
+            if len(rejected_dates) >= 1:
+                rejected_on = max(rejected_dates)  # get last date
+                # print(rejected_on, "=======================")
+                if rejected_on:
+                    three_months_after = rejected_on + relativedelta(months=3)
+                    # print(rejected_on, "=======================", three_months_after)
+                    current_date = datetime.datetime.today()
+                    print(rejected_on, "==========", three_months_after, "=========", current_date)
+                    if current_date >= three_months_after:
+                        return True
+                return True
 
         return False
 
@@ -581,7 +610,8 @@ class candidate_apply_job(APIView):
             response = dowellconnection(*rejected_reports_modules, "fetch", field, update_field)
             if response:
                 return Response({"message": "Application received.",
-                                 "Eligibility": self.is_eligible_to_apply(applicant_email)
+                                 "Eligibility": self.is_eligible_to_apply(applicant_email),
+
                                  }, status=status.HTTP_201_CREATED)
             else:
                 return Response({"message": "Application failed to receive."}, status=status.HTTP_400_BAD_REQUEST)
@@ -605,7 +635,7 @@ class candidate_get_job_application(APIView):
         }
         response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
         print(response)
-        if response:
+        if json.loads(response)["isSuccess"] ==True:
             return Response({"message": "List of job applications.", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
@@ -624,7 +654,7 @@ class get_candidate_application(APIView):
         }
         response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
         print(response)
-        if response:
+        if json.loads(response)["isSuccess"] ==True:
             return Response({"message": "Candidate job applications", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
@@ -646,7 +676,7 @@ class get_all_onboarded_candidate(APIView):
             }
             response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
 
-            if response:
+            if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": f"List of {field['status']} Candidates",
                                  "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
@@ -668,7 +698,8 @@ class delete_candidate_application(APIView):
             "data_type": "Archived_Data"
         }
         response = dowellconnection(*candidate_management_reports, "update", field, update_field)
-        if response:
+        print(response, "================================",)
+        if json.loads(response)["isSuccess"] == True:
             return Response({"message": "Candidate application deleted successfully."}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "There is no job applications", "response": json.loads(response)},

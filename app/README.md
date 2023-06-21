@@ -27,7 +27,6 @@ __Post__ to `accounts_onboard_candidate/`
 {
   "message": "Candidate has been onboarded.",
   "notification": {"notified": "True/False",
-                  "onboarded": "True/False",
                   "notification_id": "notification id"
                     }
 }
@@ -206,7 +205,10 @@ __Post__ to `admin_create_jobs/`
   "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
   "created_by": "<created_by>",
-  "created_on": "<created_on>"
+  "created_on": "<created_on>",
+  "applicant": "applicant",
+  "company_name": "company_name",
+  "user_type": "user_type",
 }
 ```
 
@@ -484,7 +486,6 @@ __Post__ to `hr_shortlisted_candidate/`
 
 ```json
 {
-  "document_id": "<document id>",
   "hr_remarks": "<hr remarks>",
   "status": "<status>",
   "applicant": "<applicant name>",
