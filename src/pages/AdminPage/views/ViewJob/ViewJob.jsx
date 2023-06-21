@@ -47,7 +47,7 @@ const ViewJob = () => {
 //  console.log({singleJob})
     if (loading || !singleJob ) return  <Loading/>
         return <>
-        <div className="container">
+        <div className="viewJob-container">
             <div className="header">
                 <div>
                     <button onClick={() => navigate(-1)} style={{ position: "relative" }}><MdArrowBackIosNew style={{ color: "#005734", position: 'absolute', fontSize: 25, top: "20%", left: "21%" }} /></button>
