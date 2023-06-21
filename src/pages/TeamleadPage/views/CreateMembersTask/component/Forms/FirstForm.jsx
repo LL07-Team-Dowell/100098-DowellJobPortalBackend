@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useValues } from '../../context/Values';
+import './index.scss';
 
 const FirstForm = () => {
   const [selectedOption, setSelectedOption] = useState('');

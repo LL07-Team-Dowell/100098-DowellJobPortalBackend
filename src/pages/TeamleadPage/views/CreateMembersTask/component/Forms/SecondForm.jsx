@@ -8,6 +8,8 @@ import { useCurrentUserContext } from '../../../../../../contexts/CurrentUserCon
 import { toast } from 'react-toastify';
 import Checkbox from '../Checkbox';
 import { EditTeam } from '../../../../../../services/createMembersTasks';
+import { AiOutlinePlusCircle } from 'react-icons/ai';
+import './index.scss';
 const SecondForm = ({}) => {
   const { currentUser } = useCurrentUserContext();
   const {data ,setdata} = useValues() ; 
@@ -18,7 +20,7 @@ const SecondForm = ({}) => {
   const [teams ,setteams] = useState([]) ; 
   const [projectname , setprojectname] = useState("") ; 
   const [singlemembertask ,setsinglemembertask] =useState("") ;
-     
+  const [toggleCheckboxes , settoggleCheckboxes] = useState(false)
             const handleCheckboxChange = (event) => {
                         const value = event.target.value;
                         if (event.target.checked) {
@@ -27,7 +29,7 @@ const SecondForm = ({}) => {
                                     setdata({...data ,selected_members:data.selected_members.filter((box) => box !== value)});
                         }
                       };
-                      const handleCheckboxChange2 = (event) => {
+              const handleCheckboxChange2 = (event) => {
                         const value = event.target.value;
                         if (event.target.checked) {
                                     setdata({...data , selected_members:[ value]});
@@ -39,6 +41,9 @@ const SecondForm = ({}) => {
                         console.log({...data , team_name:e.target.value}) ; 
                         setdata({...data , team_name:e.target.value}) ; 
                       }
+              const selectAll = () => {
+                setdata({...data,selected_members:data.members.map(member => member)})
+              }
             useEffect(()=>{
               console.log({id:choosedTeam.id})
               if(choosedTeam.value){
@@ -88,28 +93,78 @@ const SecondForm = ({}) => {
                         <>
                         {
                           (!task.choosed) ? <>
-                          <button onClick={()=>{settask({choosed:true , value:"new Team"})}}>Create a new Team</button>
-                          <button onClick={()=>{settask({choosed:true , value:"existing Team"})}}>Use an existing Team</button>
+                          <div className='create_team_parent'>
+                          <div className='Create_Team' onClick={()=>{settask({choosed:true , value:"new Team"})}}>
+                            <div>
+                            <div><AiOutlinePlusCircle className='icon'/></div>
+                            <h4>Create a Team</h4>
+                            <p>Bring everyone together and get to work. Work together in team to increase productivity</p>
+                            </div>
+                          </div>
+                          <div className='Existing_Team' onClick={()=>{settask({choosed:true , value:"existing Team"})}}>
+                            <div>
+                            <div><AiOutlinePlusCircle className='icon'/></div>
+                            <h4>Use an existing Team</h4>
+                            <p>Bring everyone together and get to work. Work together in team to increase productivity</p>
+                            </div>
+                          </div>
+                          </div>
 
                           </> :
                           <>
                           {
                             (task.value === "new Team") ? 
-                            <>
+                            <div className='create_your_team'>
+                            <h2 className=''>Create Your  Team</h2>
+                            <label htmlFor="team_name">Team Name</label>
+                            <input 
+                              type="text"
+                              id='team_name'
+                              className=''
+                              placeholder='Choose a Team Name'
+                              onChange={changeTeamName}
+                            />
+                            <br />
+                            <label htmlFor="team_description">Team Description</label>
+                            <textarea 
+                              type="text"
+                              id='team_description'
+                              className=''
+                              placeholder='Choose a Team Name'
+                              rows={10}
+                            />
+                            <br />
+
+                            <label htmlFor="">add Member</label>
+                            <div className='add_member_input' onClick={()=>settoggleCheckboxes(!toggleCheckboxes)}>
+                              <p>Choose team members</p>
+                              <AiOutlinePlusCircle className='icon'/>
+                            </div>
+                            <br />
+                            {toggleCheckboxes ? 
+                            <div className="checkboxes">
+                            <p>
+                                                <input
+                                                  type="checkbox"
+                                                  onChange={selectAll}
+                                                />
+                                              Select All
+                                              </p>
                              {data.memebers.map((member , i) => 
-                                                <label>
+                                                <p>
                                                 <input
                                                   type="checkbox"
                                                   value={member}
                                                   onChange={handleCheckboxChange}
                                                 />
                                                 {member}
-                                              </label>
+                                              </p>
                                   )}
+                            </div>: null}
                               <br />
-                              <input type="text" placeholder='' onChange={changeTeamName}  />
+                              {/* <input type="text" placeholder='' onChange={changeTeamName}  /> */}
                             
-                            </>
+                            </div>
                             :
                             <>
                             {
@@ -158,9 +213,6 @@ const SecondForm = ({}) => {
                                           </label>
                                 )}
                                 <input type="text"  placeholder='project name' value={projectname} onChange={e => setprojectname(e.target.value)}/>
-                                {/* 
-  const [singlemembertask ,setsinglemembertask] =useState("") ;   
-                                 */}
                                 <input type="text"  placeholder='task name'  value={singlemembertask} onChange={e => setsinglemembertask(e.target.value)}/>
 
                         <button onClick={(projectname && singlemembertask) ? createSingleMemberTask : alert("all inputs are required!")}>add Task for single member</button>

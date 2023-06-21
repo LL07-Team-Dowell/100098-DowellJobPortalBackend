@@ -15,6 +15,7 @@ const rolesDict = {'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr", "sub
 
 const AdminSettings = () => {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
+  console.log({CURRENTUSER:currentUser})
   const [firstSelection, setFirstSelection] = useState("");
   const [secondSelection, setSecondSelection] = useState("");
   const [data, setData] = useState("");

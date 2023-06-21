@@ -1,0 +1,124 @@
+.create_team_parent{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3rem;
+}
+.Create_Team ,.Existing_Team {
+            width: 19rem;
+            min-height: 19rem;
+            padding:40px ; 
+
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+            div{
+
+                        >div{
+                                    width: 3.75rem;
+                                    height: 3.75rem;
+                                    padding:10px;
+                                    margin: auto;
+                                    margin-bottom: 20px;
+
+                                    background-color: rgba(225, 251, 226, 1);
+            
+                                    border-radius: 10px;
+
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;    
+                                    
+                                    .icon{
+                                                color: rgba(121, 224, 25, 0.679);
+                                                font-size: 30px;
+                                                font-weight: bold;
+                                    }
+                                    
+                                    
+                        }
+                        h4{
+                                    font-size: large;
+                                    font-weight: bold;
+                        }
+                        p{          
+                                    margin-top: 10px;
+                                    color: rgba(126, 126, 126, 1);
+                                    font-size: 15px;
+                                    line-height: 1.7;
+                        }
+            }
+}
+
+.create_your_team{
+
+            h2{
+                        margin-bottom: 10px;
+            }
+
+            >input{
+                        width:450px ;
+                        padding:8px 10px;
+                        margin-top: 5px;
+                        
+                        border:1px solid gainsboro;
+                        border-radius: 7px;
+
+                        display: block;
+            }
+            
+
+            >label{
+                        font-weight: 600;
+                        font-size: large;
+            }
+
+            #team_description{
+                        width:450px ;
+                        padding:8px 10px;
+                        margin-top: 5px;
+
+                        border:1px solid gainsboro;
+                        border-radius: 7px;
+
+                        display: block;
+
+            }
+
+            .add_member_input{
+                        width:450px ;
+                        padding:8px 10px;
+                        margin-top: 5px;
+
+                        border:1px solid gainsboro;
+                        border-radius: 7px;
+
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+
+                        cursor: pointer;
+
+                        p{
+                                    color: gray;
+
+                                    font-size: 13px;
+                        }
+                        >.icon{
+                                    color: rgb(0, 64, 0);
+                                    font-size: 18px;
+                                    font-weight: 900;
+                        }
+            }
+            .checkboxes{
+                        background-color:#F5F5F5;
+                        padding: 15px;
+                        border-radius: 10px;
+                        
+            }
+}

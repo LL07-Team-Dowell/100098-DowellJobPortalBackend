@@ -2,6 +2,7 @@ import React , {useState ,useEffect} from 'react'
 import { useValues } from '../../context/Values';
 import axios from 'axios';
 import { useCurrentUserContext } from '../../../../../../contexts/CurrentUserContext';
+import './index.scss';
 
 const ThirdForm = () => {
   const { currentUser } = useCurrentUserContext();
