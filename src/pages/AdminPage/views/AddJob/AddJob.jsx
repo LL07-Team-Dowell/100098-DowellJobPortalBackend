@@ -140,6 +140,10 @@ const AddJob = ({ subAdminView }) => {
       "module",
       "qualification",
       "general_terms",
+      "technical_specification",
+      "payment_terms",
+      "workflow_terms",
+      "other_info",
     ];
 
     if (newJob.job_category === "research_associate") {
@@ -181,8 +185,23 @@ const AddJob = ({ subAdminView }) => {
       );
       return;
     }
-    if (newJob.general_terms.length === 0) {
-      toast.info("Please input general term");
+    if (
+      newJob.general_terms.length === 0 ||
+      newJob.technical_specification.length === 0 ||
+      newJob.payment_terms.length === 0 ||
+      newJob.workflow_terms.length === 0 ||
+      newJob.other_info.length === 0
+    ) {
+      toast.info("Please fill in the required Terms");
+      return;
+    } else if (
+      newJob.general_terms.some((term) => term.trim() === "") ||
+      newJob.technical_specification.some((term) => term.trim() === "") ||
+      newJob.payment_terms.some((term) => term.trim() === "") ||
+      newJob.workflow_terms.some((term) => term.trim() === "") ||
+      newJob.other_info.some((term) => term.trim() === "")
+    ) {
+      toast.info("Please fill in all the required Terms");
       return;
     } else if (fields.find((field) => newJob[field] === "")) {
       toast.info(
@@ -190,8 +209,6 @@ const AddJob = ({ subAdminView }) => {
       );
       return;
     }
-
-    //concatenate the numeric input with the currency on submit
 
     setIsLoading(true);
     try {
@@ -593,7 +610,10 @@ const AddJob = ({ subAdminView }) => {
                           <button
                             className="terms_remove"
                             onClick={() =>
-                              handleRemoveTerms("technical_specification", index)
+                              handleRemoveTerms(
+                                "technical_specification",
+                                index
+                              )
                             }
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
@@ -641,7 +661,9 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("payment_terms", index)}
+                            onClick={() =>
+                              handleRemoveTerms("payment_terms", index)
+                            }
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
                           </button>
@@ -688,7 +710,9 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("workflow_terms", index)}
+                            onClick={() =>
+                              handleRemoveTerms("workflow_terms", index)
+                            }
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
                           </button>
@@ -735,7 +759,9 @@ const AddJob = ({ subAdminView }) => {
                           />
                           <button
                             className="terms_remove"
-                            onClick={() => handleRemoveTerms("other_info", index)}
+                            onClick={() =>
+                              handleRemoveTerms("other_info", index)
+                            }
                           >
                             <MdCancel size="1rem" color="#b8b8b8" />
                           </button>
