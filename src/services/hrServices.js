@@ -10,7 +10,7 @@ export const addSelectedCandidate = async (data) => {
 
 export const getCandidateApplicationsForHr = async (company_id) => {
   return await currentBackendAxiosInstance.get(
-    `/candidate_management/get_job_application/${company_id}/`
+    `candidate_get_job_application/${company_id}/`
   );
 };
 
@@ -24,7 +24,7 @@ export const rejectCandidateApplicationforHr = async (data) => {
 }
 
 export const getSettingUserProject = async () => {
-  return await currentBackendAxiosInstance.get('setting/SettingUserProject/')
+  return await currentBackendAxiosInstance.get('settinguserproject/')
 }
 
 export const getJob = async (data,document_id) => {
