@@ -78,3 +78,52 @@ inset 0 0 5px #000;
 	min-height: 100vh;
 	overflow: hidden;
 }}
+
+
+.teams_data{
+	width: 100%;
+	padding:15px;
+
+	
+	>div:first-child{
+		
+		display: flex;
+		gap: 10px;
+		flex-wrap: wrap;
+		
+		>li{	
+			position: relative;
+
+			width: 32%;
+			min-height: 250px;
+			padding:15px ; 
+
+			border: 1px solid rgb(226, 219, 219);
+			border-radius: 12px;
+
+			list-style: none;
+			cursor: pointer;
+
+			transition: .3s all;
+			&:hover{
+				box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+			}
+
+			button{
+				position: absolute;
+
+				width: 60%;
+				font-weight: bolder;
+				bottom: 20px;
+				left: 20px;
+
+				border: none;
+				background-color: white;
+
+				display: flex;
+				align-items: center;
+				gap: 12px;
+			}
+		}
+	}
+}
