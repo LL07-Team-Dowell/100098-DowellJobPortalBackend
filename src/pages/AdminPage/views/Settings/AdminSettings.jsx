@@ -11,11 +11,11 @@ import { useJobContext } from "../../../../contexts/Jobs";
 import { getApplicationForAdmin } from "../../../../services/adminServices";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 
-const rolesDict = {'Dept_Lead':'Account' ,"Proj_Lead":'Teamlead',"Hr":"Hr", "sub_admin":"Sub Admin", "group_lead":"Group Lead"};
+const rolesDict = { 'Dept_Lead': 'Account', "Proj_Lead": 'Teamlead', "Hr": "Hr", "sub_admin": "Sub Admin", "group_lead": "Group Lead" };
 
 const AdminSettings = () => {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
-  console.log({CURRENTUSER:currentUser})
+  console.log({ CURRENTUSER: currentUser })
   const [firstSelection, setFirstSelection] = useState("");
   const [secondSelection, setSecondSelection] = useState("");
   const [data, setData] = useState("");
@@ -100,6 +100,7 @@ const AdminSettings = () => {
         .catch(err => console.log(err))
     }
   }, [])
+
   const submit = () => {
     const { org_id, org_name, data_type, owner_name } = options1[0];
     const teamManagementProduct = currentUser.portfolio_info.find(item => item.product === "Team Management");

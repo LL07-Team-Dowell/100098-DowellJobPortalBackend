@@ -13,14 +13,14 @@ import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getApplicationForAdmin, getJobsFromAdmin } from "../../../../services/adminServices";
 import { useState } from "react";
-const LandingPage = ({subAdminView}) => {
+const LandingPage = ({ subAdminView }) => {
 
-  const [ stateTrackingProgress , setstateTrackingProgress ] = useState(false) ;
+  const [stateTrackingProgress, setstateTrackingProgress] = useState(false);
 
-  const { jobs, setJobs , setlist , jobs2 , setjobs2 , searchValue ,setsearchValue ,resp , setresponse  } = useJobContext();
-  const handleSearchChange = (value) =>{
-    console.log("kasaksldjalksdjalksdjlkjsakl") 
-    setsearchValue(value) ; 
+  const { jobs, setJobs, setlist, jobs2, setjobs2, searchValue, setsearchValue, resp, setresponse } = useJobContext();
+  const handleSearchChange = (value) => {
+    console.log("kasaksldjalksdjalksdjlkjsakl")
+    setsearchValue(value);
     setJobs(jobs2.filter(job => job.job_title.toLowerCase().includes(value.toLowerCase()) || job.skills.toLowerCase().includes(value.toLowerCase())))
 
   }
@@ -32,6 +32,7 @@ const LandingPage = ({subAdminView}) => {
       })
       .catch(err => console.log(err))
   }, [])
+
   const navigate = useNavigate();
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   // console.log("currentUser", currentUser)
@@ -41,11 +42,11 @@ const LandingPage = ({subAdminView}) => {
 
       getJobsFromAdmin(currentUser.portfolio_info[0].org_id)
         .then((response) => {
-          console.log('AAAAAAAA',response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )) ; 
-          setJobs(response.data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type ));
-          setjobs2(response.data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type )) ; 
+          console.log('AAAAAAAA', response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
+          setJobs(response.data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
+          setjobs2(response.data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
           setresponse(true);
-          
+
         })
         .catch((error) => console.log(error));
     }
@@ -90,17 +91,17 @@ const LandingPage = ({subAdminView}) => {
       <div className="landing-page">
         <div className="cards">
           {
-            jobs.length === 0 && searchValue || jobs.length === 0  && resp ? <h1>No Job Found</h1>
-            :
-            jobs.length > 0 ? (
-              jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type )
-                .map((job, index) => (
-                  <Card {...job} key={index} jobs={jobs} setJobs={setJobs} setShowOverlay={setstateTrackingProgress} />
-                ))
-            ) : (
-              <Loading />
-            )}
-          
+            jobs.length === 0 && searchValue || jobs.length === 0 && resp ? <h1>No Job Found</h1>
+              :
+              jobs.length > 0 ? (
+                jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
+                  .map((job, index) => (
+                    <Card {...job} key={index} jobs={jobs} setJobs={setJobs} setShowOverlay={setstateTrackingProgress} />
+                  ))
+              ) : (
+                <Loading />
+              )}
+
         </div>
       </div>
     </StaffJobLandingLayout>

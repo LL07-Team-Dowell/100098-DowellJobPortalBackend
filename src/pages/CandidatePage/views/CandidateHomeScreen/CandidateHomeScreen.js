@@ -58,7 +58,7 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
       setLoading(false);
     })
 
-  }, [currentUser, candidateJobs])
+  }, [currentUser])
 
   const handleLoginLinkClick = (e) => {
     e.preventDefault();
