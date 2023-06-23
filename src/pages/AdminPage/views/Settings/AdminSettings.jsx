@@ -89,18 +89,18 @@ const AdminSettings = () => {
   const handleSecondSelectionChange = (event) => {
     setSecondSelection(event.target.value);
   };
-  // useEffect(() => {
-  //   setLoading(true);
-  //   getSettingUserProfileInfo().then(resp => { setSettingUsetProfileInfo(resp.data); setLoading(false); console.log(resp.data.reverse()) }).catch(err => { console.log(err); setLoading(false) })
-  //   if (list.length < 1) {
-  //     getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
-  //       .then(resp => {
-  //         setlist(resp.data.response.data?.filter(j => currentUser.portfolio_info[0].data_type === j.data_type));
-  //       })
-  //       .catch(err => console.log(err))
-  //   }
-  // }, [])
-  
+  useEffect(() => {
+    setLoading(true);
+    getSettingUserProfileInfo().then(resp => { setSettingUsetProfileInfo(resp.data); setLoading(false); console.log(resp.data.reverse()) }).catch(err => { console.log(err); setLoading(false) })
+    if (list.length < 1) {
+      getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
+        .then(resp => {
+          setlist(resp.data.response.data?.filter(j => currentUser.portfolio_info[0].data_type === j.data_type));
+        })
+        .catch(err => console.log(err))
+    }
+  }, [])
+
   const submit = () => {
     const { org_id, org_name, data_type, owner_name } = options1[0];
     const teamManagementProduct = currentUser.portfolio_info.find(item => item.product === "Team Management");
