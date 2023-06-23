@@ -208,7 +208,7 @@ __Post__ to `admin_create_jobs/`
   "created_on": "<created_on>",
   "applicant": "applicant",
   "company_name": "company_name",
-  "user_type": "user_type",
+  "user_type": "<Freelancer | Internship | Employee>",
 }
 ```
 

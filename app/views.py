@@ -74,8 +74,16 @@ class accounts_onboard_candidate(APIView):
             }
             serializer = AccountSerializer(data=data)
             if serializer.is_valid():
+                c_r=[]
+                a_r=[]
                 def call_dowellconnection(*args):
-                    dowellconnection(*args)
+                    d=dowellconnection(*args)
+                    arg=args
+                    #print(d,*args,"=======================")
+                    if "candidate_report" in args:
+                        c_r.append(d)
+                    if "account_report" in args:
+                        a_r.append(d)
 
                 update_response_thread = threading.Thread(target=call_dowellconnection, args=(
                     *candidate_management_reports, "update", field, update_field))
@@ -90,15 +98,21 @@ class accounts_onboard_candidate(APIView):
                 insert_response_thread.join()
 
                 if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
+                    #print(json.loads(c_r[0])["isSuccess"],"====",a_r)
                     
-                    return Response({"message": f"Candidate has been {data.get('status')}",
-                                     "notification": {"notified": insert_to_hr_report['notified'],
-                                                      "notification_id": insert_to_hr_report['notification_id']
-                                                      }
-                                     },
-                                    status=status.HTTP_201_CREATED)
+                    if json.loads(c_r[0])["isSuccess"] ==True:
+                        return Response({"message": f"Candidate has been {data.get('status')}",
+                                        "notification": {"notified": insert_to_hr_report['notified'],
+                                                            "notification_id": insert_to_hr_report['notification_id']},
+                                        "response":json.loads(c_r[0])},
+                            status=status.HTTP_201_CREATED,
+                        )
+                    else:
+                        return Response({"message": "Operation has failed","response": json.loads(c_r[0])},
+                                    status=status.HTTP_204_NO_CONTENT)
+                    
                 else:
-                    return Response({"message": "HR operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                    return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
                 default_errors = serializer.errors
                 new_error = {}
@@ -146,8 +160,16 @@ class accounts_update_project(APIView):
                 "notification_id": create_notification['inserted_id']
             }
 
+            c_r=[]
+            a_r=[]
             def call_dowellconnection(*args):
-                dowellconnection(*args)
+                d=dowellconnection(*args)
+                arg=args
+                print(d,*args,"=======================")
+                if "candidate_report" in args:
+                    c_r.append(d)
+                if "account_report" in args:
+                    a_r.append(d)
 
             update_response_thread = threading.Thread(target=call_dowellconnection, args=(
                 *candidate_management_reports, "update", field, update_field))
@@ -167,14 +189,17 @@ class accounts_update_project(APIView):
                 url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
                 patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
 
-                return Response({"message": f"Candidate project and payment has been updated",
-                                 "notification": {"notified": update_field['notified'],
-                                                  "seen": patch_notification['isSuccess'],
-                                                  "notification_id": update_field['notification_id']
-                                                  }
-                                 },
-
-                                status=status.HTTP_200_OK)
+                if json.loads(c_r[0])["isSuccess"] ==True:
+                    return Response({"message": f"Candidate project and payment has been updated",
+                                    "notification": {"notified": update_field['notified'],
+                                                     "seen": patch_notification['isSuccess'],
+                                                     "notification_id": update_field['notification_id']},
+                                    "response":json.loads(c_r[0])},
+                        status=status.HTTP_201_CREATED,
+                    )
+                else:
+                    return Response({"message": "Failed to update","response": json.loads(c_r[0])},
+                                status=status.HTTP_204_NO_CONTENT)
             else:
                 return Response({"message": "Failed to update"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
@@ -221,8 +246,16 @@ class accounts_rehire_candidate(APIView):
                 "notification_id": create_notification['inserted_id']
             }
 
+            c_r=[]
+            a_r=[]
             def call_dowellconnection(*args):
-                dowellconnection(*args)
+                d=dowellconnection(*args)
+                arg=args
+                print(d,*args,"=======================")
+                if "candidate_report" in args:
+                    c_r.append(d)
+                if "account_report" in args:
+                    a_r.append(d)
 
             update_response_thread = threading.Thread(target=call_dowellconnection, args=(
                 *candidate_management_reports, "update", field, update_field))
@@ -242,12 +275,18 @@ class accounts_rehire_candidate(APIView):
                 url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
                 patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
 
-                return Response({"message": "Candidate has been Rehired",
-                                 "notification": {"notified": update_field['notified'],
-                                                  "rehired": patch_notification['isSuccess'],
-                                                  "notification_id": update_field['notification_id']
-                                                  }
-                                 }, status=status.HTTP_200_OK)
+                
+                if json.loads(c_r[0])["isSuccess"] ==True:
+                    return Response({"message": f"Candidate has been rehired",
+                                    "notification": {"notified": update_field['notified'],
+                                                     "rehired": patch_notification['isSuccess'],
+                                                     "notification_id": update_field['notification_id']},
+                                    "response":json.loads(c_r[0])},
+                        status=status.HTTP_200_OK,
+                    )
+                else:
+                    return Response({"message": "Operation failed","response": json.loads(c_r[0])},
+                                status=status.HTTP_204_NO_CONTENT)
             else:
                 return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
@@ -306,8 +345,16 @@ class accounts_reject_candidate(APIView):
             serializer = RejectSerializer(data=data)
             if serializer.is_valid():
 
+                c_r=[]
+                a_r=[]
                 def call_dowellconnection(*args):
-                    dowellconnection(*args)
+                    d=dowellconnection(*args)
+                    arg=args
+                    print(d,*args,"=======================")
+                    if "candidate_report" in args:
+                        c_r.append(d)
+                    if "account_report" in args:
+                        a_r.append(d)
 
                 candidate_thread = threading.Thread(
                     target=call_dowellconnection,
@@ -343,13 +390,17 @@ class accounts_reject_candidate(APIView):
                     url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
                     patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
 
-                    return Response({"message": "Candidate has been Rejected",
-                                     "notification": {"notified": insert_to_account_report['notified'],
-                                                      "rejected": patch_notification['isSuccess'],
-                                                      "notification_id": insert_to_account_report['notification_id']}
-                                     },
-                                    status=status.HTTP_200_OK,
-                                    )
+                    if json.loads(c_r[0])["isSuccess"] ==True:
+                        return Response({"message": f"Candidate has been Rejected",
+                                        "notification": {"notified": insert_to_account_report['notified'],
+                                                        "rejected": patch_notification['isSuccess'],
+                                                        "notification_id": insert_to_account_report['notification_id']},
+                                        "response":json.loads(c_r[0])},
+                            status=status.HTTP_200_OK,
+                        )
+                    else:
+                        return Response({"message": "Operation failed","response": json.loads(c_r[0])},
+                                    status=status.HTTP_204_NO_CONTENT)
                 else:
                     return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
@@ -383,7 +434,7 @@ class admin_create_jobs(APIView):
         }
         url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
         create_notification = call_notification(url=url, request_type='post', data=notify_data)
-        print(create_notification, "================")
+        #print(create_notification, "=============")
 
         # continue create job api-----
         field = {
@@ -408,7 +459,6 @@ class admin_create_jobs(APIView):
             "data_type": data.get("data_type"),
             "created_by": data.get("created_by"),
             "created_on": data.get("created_on"),
-
             "applicant": data.get("applicant"),
             "company_name": data.get('company_name'),
             "user_type": data.get('user_type'),
@@ -421,12 +471,13 @@ class admin_create_jobs(APIView):
         #print(serializer,"=========================")
         if serializer.is_valid():
             response = dowellconnection(*jobs, "insert", field, update_field)
-            print(response,"=========================")
+            #print(response,"=========================")
             if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": "Job creation was successful.",
                                 "notification": {"notified": field['notified'],
                                                       "created": field['created'],
-                                                      "notification_id": field['notification_id']}},
+                                                      "notification_id": field['notification_id']},
+                                 "response":json.loads(response)},
                     status=status.HTTP_201_CREATED,
                 )
             else:
@@ -459,7 +510,7 @@ class admin_get_job(APIView):
                 return Response({"message": "List of jobs.", "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
         else:
-            return Response({"message": "There are no jobs", "response": json.loads(response)},
+            return Response({"message": "There are no jobs with this id", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
 
 
@@ -522,11 +573,7 @@ class admin_delete_job(APIView):
         response = dowellconnection(*jobs, "update", field, update_field)
         print(response)
         if json.loads(response)["isSuccess"] ==True:
-            if len(json.loads(response)["data"])==0:
-                    return Response({"message":"There is no job with the id","response":json.loads(response)},
-                                status=status.HTTP_204_NO_CONTENT)
-            else:
-                return Response({"message": "Job successfully deleted"},
+            return Response({"message": "Job successfully deleted"},
                                     status=status.HTTP_200_OK)
         else:
             return Response({"message": "Job not successfully deleted",
@@ -567,7 +614,7 @@ class candidate_apply_job(APIView):
                     three_months_after = rejected_on + relativedelta(months=3)
                     # print(rejected_on, "=======================", three_months_after)
                     current_date = datetime.datetime.today()
-                    print(rejected_on, "==========", three_months_after, "=========", current_date)
+                    #print(rejected_on, "==========", three_months_after, "=========", current_date)
                     if current_date >= three_months_after or current_date == datetime.datetime.today():
                         return True
                 return True
@@ -625,14 +672,14 @@ class candidate_apply_job(APIView):
 
         serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
-            response = dowellconnection(*rejected_reports_modules, "fetch", field, update_field)
+            response = dowellconnection(*rejected_reports_modules, "insert", field, update_field)
             if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": "Application received.",
                                  "Eligibility": self.is_eligible_to_apply(applicant_email),
-
+                                 "response": json.loads(response),
                                  }, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Application failed to receive."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Application failed to receive.","response": json.loads(response)}, status=status.HTTP_400_BAD_REQUEST)
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -694,15 +741,16 @@ class get_all_onboarded_candidate(APIView):
         data = company_id
         if data:
             field = {
-                "company_id": company_id,
+                #"company_id": company_id,
                 "status": "onboarded"
             }
             update_field = {
-                "status": "nothing to update"
+                "status": "onboarded"
             }
             response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
 
             if json.loads(response)["isSuccess"] ==True:
+                #print(response,"==========================++++")
                 if len(json.loads(response)["data"])==0:
                     return Response({"message":f"There is no {field['status']} Candidates with this company id","response":json.loads(response)},
                                 status=status.HTTP_204_NO_CONTENT)
@@ -787,9 +835,16 @@ class hr_shortlisted_candidate(APIView):
 
             serializer = HRSerializer(data=data)
             if serializer.is_valid():
+                c_r=[]
+                h_r=[]
                 def call_dowellconnection(*args):
-
-                    dowellconnection(*args)
+                    d=dowellconnection(*args)
+                    arg=args
+                    print(d,*args,"=======================")
+                    if "candidate_report" in args:
+                        c_r.append(d)
+                    if "hr_report" in args:
+                        h_r.append(d)
 
                 update_response_thread = threading.Thread(target=call_dowellconnection, args=(
                     *candidate_management_reports, "update", field, update_field))
@@ -805,14 +860,18 @@ class hr_shortlisted_candidate(APIView):
 
                 if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
 
-                    return Response({"message": f"Candidate has been {data.get('status')}",
-                                     "notification": {"notified": insert_to_hr_report['notified'],
-                                                      "notification_id": insert_to_hr_report['notification_id']
-                                                      }
-                                     },
-                                    status=status.HTTP_201_CREATED)
+                    if json.loads(c_r[0])["isSuccess"] ==True:
+                        return Response({"message": f"Candidate has been {data.get('status')}",
+                                        "notification": {"notified": insert_to_hr_report['notified'],
+                                                            "notification_id": insert_to_hr_report['notification_id']},
+                                        "response":json.loads(c_r[0])},
+                            status=status.HTTP_201_CREATED,
+                        )
+                    else:
+                        return Response({"message": "Operation has failed","response": json.loads(c_r[0])},
+                                    status=status.HTTP_204_NO_CONTENT)
                 else:
-                    return Response({"message": "Hr operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                    return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
                 default_errors = serializer.errors
                 new_error = {}
@@ -871,8 +930,16 @@ class hr_selected_candidate(APIView):
                 "notification_id": create_notification['inserted_id']
             }
 
+            c_r=[]
+            h_r=[]
             def call_dowellconnection(*args):
-                dowellconnection(*args)
+                d=dowellconnection(*args)
+                arg=args
+                print(d,*args,"=======================")
+                if "candidate_report" in args:
+                    c_r.append(d)
+                if "hr_report" in args:
+                    h_r.append(d)
 
             update_response_thread = threading.Thread(target=call_dowellconnection, args=(
                 *candidate_management_reports, "update", field, update_field))
@@ -892,13 +959,17 @@ class hr_selected_candidate(APIView):
                 url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
                 patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
 
-                return Response({"message": f"Candidate has been {data.get('status')}",
-                                 "notification": {"notified": insert_to_hr_report['notified'],
-                                                  "seen": patch_notification['isSuccess'],
-                                                  "notification_id": insert_to_hr_report['notification_id']
-                                                  }
-                                 },
-                                status=status.HTTP_201_CREATED)
+                if json.loads(c_r[0])["isSuccess"] ==True:
+                    return Response({"message": f"Candidate has been {data.get('status')}",
+                                    "notification": {"notified": insert_to_hr_report['notified'],
+                                                     "seen": patch_notification['isSuccess'],
+                                                        "notification_id": insert_to_hr_report['notification_id']},
+                                    "response":json.loads(c_r[0])},
+                        status=status.HTTP_201_CREATED,
+                    )
+                else:
+                    return Response({"message": "Hr Operation has failed","response": json.loads(c_r[0])},
+                                status=status.HTTP_204_NO_CONTENT)
             else:
                 return Response({"message": "Hr operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
         else:
@@ -954,8 +1025,16 @@ class hr_reject_candidate(APIView):
             }
             serializer = RejectSerializer(data=data)
             if serializer.is_valid():
+                c_r=[]
+                h_r=[]
                 def call_dowellconnection(*args):
-                    dowellconnection(*args)
+                    d=dowellconnection(*args)
+                    arg=args
+                    print(d,*args,"=======================")
+                    if "candidate_report" in args:
+                        c_r.append(d)
+                    if "hr_report" in args:
+                        h_r.append(d)
 
                 candidate_thread = threading.Thread(target=call_dowellconnection,
                                                     args=(*candidate_management_reports, "update", field, update_field))
@@ -974,11 +1053,17 @@ class hr_reject_candidate(APIView):
                     url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
                     patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
 
-                    return Response({"message": "Candidate has been Rejected",
-                                    "notification": {"notified": insert_to_hr_report['notified'],
-                                                         "rejected": patch_notification['isSuccess'],
-                                                      "notification_id": insert_to_hr_report['notification_id']
-                                                      }}, status=status.HTTP_200_OK)
+                    if json.loads(c_r[0])["isSuccess"] ==True:
+                        return Response({"message": f"Candidate has been {insert_to_hr_report['status']}",
+                                        "notification": {"notified": insert_to_hr_report['notified'],
+                                                        "rejected": patch_notification['isSuccess'],
+                                                            "notification_id": insert_to_hr_report['notification_id']},
+                                        "response":json.loads(c_r[0])},
+                            status=status.HTTP_201_CREATED,
+                        )
+                    else:
+                        return Response({"message": "Hr Operation has failed","response": json.loads(c_r[0])},
+                                    status=status.HTTP_204_NO_CONTENT)
                 else:
                     return Response({"message": "Hr Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
@@ -1040,8 +1125,16 @@ class lead_hire_candidate(APIView):
             }
             serializer = LeadSerializer(data=data)
             if serializer.is_valid():
+                c_r=[]
+                l_r=[]
                 def call_dowellconnection(*args):
-                    dowellconnection(*args)
+                    d=dowellconnection(*args)
+                    arg=args
+                    print(d,*args,"=======================")
+                    if "candidate_report" in args:
+                        c_r.append(d)
+                    if "hr_report" in args:
+                        l_r.append(d)
 
                 update_response_thread = threading.Thread(target=call_dowellconnection, args=(
                     *candidate_management_reports, "update", field, update_field))
@@ -1061,12 +1154,17 @@ class lead_hire_candidate(APIView):
                     url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
                     patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
 
-                    return Response({"message": f"Candidate has been {data.get('status')}",
-                                     "notification": {"notified": insert_to_lead_report['notified'],
-                                                      "Hired": patch_notification['isSuccess'],
-                                                      "notification_id": insert_to_lead_report['notification_id']
-                                                      }},
-                                    status=status.HTTP_201_CREATED)
+                    if json.loads(c_r[0])["isSuccess"] ==True:
+                        return Response({"message": f"Candidate has been {insert_to_lead_report['status']}",
+                                        "notification": {"notified": insert_to_lead_report['notified'],
+                                                        "Hired": patch_notification['isSuccess'],
+                                                            "notification_id": insert_to_lead_report['notification_id']},
+                                        "response":json.loads(c_r[0])},
+                            status=status.HTTP_201_CREATED,
+                        )
+                    else:
+                        return Response({"message": "Hr Operation has failed","response": json.loads(c_r[0])},
+                                    status=status.HTTP_204_NO_CONTENT)
                 else:
                     return Response({"message": "Lead operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
 
@@ -1129,9 +1227,10 @@ class lead_rehire_candidate(APIView):
                                  "notification": {"notified": update_field['notified'],
                                                          "rehired": patch_notification['isSuccess'],
                                                       "notification_id": update_field['notification_id']
-                                                      }}, status=status.HTTP_200_OK)
+                                                      },
+                                "response":json.loads(update_response)}, status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Lead Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Lead Operation failed","response":json.loads(update_response)}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1186,8 +1285,16 @@ class lead_reject_candidate(APIView):
 
             serializer = RejectSerializer(data=data)
             if serializer.is_valid():
+                c_r=[]
+                l_r=[]
                 def call_dowellconnection(*args):
-                    dowellconnection(*args)
+                    d=dowellconnection(*args)
+                    arg=args
+                    print(d,*args,"=======================")
+                    if "candidate_report" in args:
+                        c_r.append(d)
+                    if "hr_report" in args:
+                        l_r.append(d)
 
                 hr_thread = threading.Thread(target=call_dowellconnection,
                                              args=(*hr_management_reports, "update", field, update_field))
@@ -1211,13 +1318,19 @@ class lead_reject_candidate(APIView):
                     url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
                     patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
 
-                    return Response({"message": "Candidate has been Rejected",
-                                     "notification": {"notified": insert_to_lead_report['notified'],
-                                                         "rejected": patch_notification['isSuccess'],
-                                                      "notification_id": insert_to_lead_report['notification_id']
-                                                      }}, status=status.HTTP_200_OK)
+                    if json.loads(c_r[0])["isSuccess"] ==True:
+                        return Response({"message": f"Candidate has been {insert_to_lead_report['status']}",
+                                        "notification": {"notified": insert_to_lead_report['notified'],
+                                                        "rejected": patch_notification['isSuccess'],
+                                                            "notification_id": insert_to_lead_report['notification_id']},
+                                        "response":json.loads(c_r[0])},
+                            status=status.HTTP_201_CREATED,
+                        )
+                    else:
+                        return Response({"message": "Hr Operation has failed","response": json.loads(c_r[0])},
+                                    status=status.HTTP_204_NO_CONTENT)
                 else:
-                    return Response({"message": "Lead Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                    return Response({"message": "Lead Operation failed","response":json.loads(c_r[0])}, status=status.HTTP_304_NOT_MODIFIED)
             else:
                 default_errors = serializer.errors
                 new_error = {}
@@ -1253,10 +1366,12 @@ class create_task(APIView):
             insert_response = dowellconnection(*task_management_reports, "insert", field, update_field)
             print(insert_response)
             if json.loads(insert_response)["isSuccess"] ==True:
-                return Response({"message": f"Task has been created successfully"},
+                return Response({"message": f"Task has been created successfully",
+                                 "response":json.loads(insert_response)},
                                 status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Task failed to be Created"}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Task failed to be Created",
+                                 "response":json.loads(insert_response)}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_request)
 
@@ -1325,7 +1440,8 @@ class update_task(APIView):
             response = dowellconnection(*task_management_reports, "update", field, update_field)
             print(response)
             if json.loads(response)["isSuccess"] ==True:
-                return Response({"message": "Task updated successfully"}, status=status.HTTP_200_OK)
+                return Response({"message": "Task updated successfully",
+                                 "response":json.loads(response)}, status=status.HTTP_200_OK)
             else:
                 return Response({"message": "Task failed to be updated",
                                  "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
@@ -1345,7 +1461,8 @@ class delete_task(APIView):
         response = dowellconnection(*task_management_reports, "update", field, update_field)
         print(response)
         if json.loads(response)["isSuccess"] ==True:
-            return Response({"message": "Task deleted successfully"}, status=status.HTTP_200_OK)
+            return Response({"message": "Task deleted successfully",
+                             "response":json.loads(response)}, status=status.HTTP_200_OK)
         else:
             return Response({"message": "Task failed to be deleted",
                              "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
@@ -1374,7 +1491,7 @@ class create_team(APIView):
                 *team_management_modules, "insert", field, update_field)
             print(response)
             if json.loads(response)["isSuccess"] ==True:
-                return Response({"message": "Team created successfully"}, status=status.HTTP_201_CREATED)
+                return Response({"message": "Team created successfully","response":json.loads(response)}, status=status.HTTP_201_CREATED)
             else:
                 return Response({"message": "Team failed to be created","response":json.loads(response)}, status=status.HTTP_304_NOT_MODIFIED)
         else:
@@ -1464,7 +1581,7 @@ class delete_team(APIView):
         response = dowellconnection(*team_management_modules, "update", field, update_field)
         print(response)
         if json.loads(response)["isSuccess"] ==True:
-            return Response({"message": f"Team has been deleted"}, status=status.HTTP_200_OK)
+            return Response({"message": f"Team has been deleted","response":json.loads(response)}, status=status.HTTP_200_OK)
         else:
             return Response({"message": f"Team failed to be deleted", "response":json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
@@ -1694,7 +1811,7 @@ class get_all_question(APIView):
             else:
                 return Response({"message": f"List of questions", "response": json.loads(question_response)},
                             status=status.HTTP_200_OK)
-        return Response({"error": "No question found"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"error": "No question found", "response": json.loads(question_response)}, status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -1717,7 +1834,7 @@ class get_question(APIView):
                 return Response({"message": f"List of questions", "response": json.loads(question_response)},
                             status=status.HTTP_200_OK)
         else:
-            return Response({"error": "No question found"}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"error": "No question found","response": json.loads(question_response)}, status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -1803,8 +1920,16 @@ class update_response(APIView):
             "status": data.get("status"),
         }
 
+        r_m=[]
+        h_r=[]
         def call_dowellconnection(*args):
-            dowellconnection(*args)
+            d=dowellconnection(*args)
+            arg=args
+            print(d,*args,"=======================")
+            if "Response_report" in args:
+                r_m.append(d)
+            if "hr_report" in args:
+                h_r.append(d)
 
         insert_to_response_thread = threading.Thread(target=call_dowellconnection, args=(
             *response_modules, "insert", field, update_field))
@@ -1819,7 +1944,17 @@ class update_response(APIView):
         insert_to_response_thread.join()
 
         if not insert_to_response_thread.is_alive() and not update_to_hr_thread.is_alive():
-            return Response({"message": f"Candidate has been {data.get('status')}"}, status=status.HTTP_200_OK)
+            if json.loads(r_m[0])["isSuccess"] ==True:
+                return Response({"message": f"Candidate has been {data.get('status')}",
+                                #"notification": {"notified": insert_to_hr_report['notified'],
+                                #                    "notification_id": insert_to_hr_report['notification_id']},
+                                "response":json.loads(r_m[0])},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response({"message": f"Candidate has been {data.get('status')}",
+                                 "response": json.loads(r_m[0])},
+                            status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message": f"Candidate has been {data.get('status')}"},
                             status=status.HTTP_304_NOT_MODIFIED)
