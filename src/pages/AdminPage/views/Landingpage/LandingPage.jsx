@@ -25,13 +25,13 @@ const LandingPage = ({ subAdminView }) => {
 
   }
 
-  // useEffect(() => {
-  //   getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
-  //     .then(resp => {
-  //       setlist(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type));
-  //     })
-  //     .catch(err => console.log(err))
-  // }, [])
+  useEffect(() => {
+    getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
+      .then(resp => {
+        setlist(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type));
+      })
+      .catch(err => console.log(err))
+  }, [])
 
   const navigate = useNavigate();
   const { currentUser, setCurrentUser } = useCurrentUserContext();
