@@ -143,13 +143,7 @@ const SecondForm = ({}) => {
                             <br />
                             {toggleCheckboxes ? 
                             <div className="checkboxes">
-                            <p>
-                                                <input
-                                                  type="checkbox"
-                                                  onChange={selectAll}
-                                                />
-                                              Select All
-                                              </p>
+                            
                              {data.memebers.map((member , i) => 
                                                 <p>
                                                 <input
@@ -171,14 +165,13 @@ const SecondForm = ({}) => {
                               !choosedTeam.choosed ? 
                               
                               data.TeamsSelected.map(v => <>
-                                <button onClick={()=>setChoosedTeam({choosed:true , value:v.team_name ,id:v._id})}>{v.team_name}</button> <br />
+                                <li onClick={()=>setChoosedTeam({choosed:true , value:v.team_name ,id:v._id})}>{v.team_name}</li> <br />
                               </>) 
                               : 
                               <>
                               <h1>{choosedTeam.value}</h1>
                                 {data.memebers.map((member , i) => 
                                                 <>
-                                              
                                               <Checkbox choosedTeamValue={choosedTeam.value} membersEditTeam={data.membersEditTeam} Member={member} key={i} />
                                               </>
                                 
