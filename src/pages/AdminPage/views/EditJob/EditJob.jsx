@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import { AiFillPlusCircle } from 'react-icons/ai';
-import { BsFillBookmarkFill } from 'react-icons/bs';
-import { IoIosArrowBack } from "react-icons/io";
 import "./EditJob.css";
-import Loading from '../../../../components/LoadingSpinner/LoadingSpinner';
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { MdArrowBackIos, MdOutlineAddCircle } from 'react-icons/md';
+import { useNavigate, useParams } from 'react-router-dom';
+import { MdArrowBackIos } from 'react-icons/md';
 import { useJobContext } from '../../../../contexts/Jobs';
 import { getJobs } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
@@ -17,7 +14,6 @@ import LittleLoading from '../../../CandidatePage/views/ResearchAssociatePage/li
 import { updateJob } from '../../../../services/adminServices';
 import { toast } from 'react-toastify';
 import { Tooltip } from "react-tooltip";
-import { set } from 'date-fns';
 
 
 function EditJob({ subAdminView }) {
@@ -70,24 +66,30 @@ function EditJob({ subAdminView }) {
     event.preventDefault();
     setUpdateLoading(true);
     // setLoading(false)
-    console.log(formData);
-    await updateJob(formData)
-      .then(response => {
-        console.log(response)
-        if (response.status === 200) {
-          console.log(formData);
-          setJobs(jobs.map((job) => {
-            if (job._id === _id) {
-              return { ...job, ...formData }
-            } else {
-              return job
-            }
-          }))
-          navigate(-1);
-          toast.success("Job updation successfully");
-        }
-      })
-      .catch(error => console.log(error));
+    // console.log(formData);
+    if (formData.general_terms.length > 0) {
+      await updateJob(formData)
+        .then(response => {
+          console.log(response)
+          if (response.status === 200) {
+            console.log(formData);
+            setJobs(jobs.map((job) => {
+              if (job._id === _id) {
+                return { ...job, ...formData }
+              } else {
+                return job
+              }
+            }))
+            navigate(-1);
+            toast.success("Job updation successfully");
+          }
+        })
+        .catch(error => console.log(error));
+    } else {
+      toast.warning("Genaral Terms Shouldn't be empty");
+
+    }
+
 
     setUpdateLoading(false);
   }
