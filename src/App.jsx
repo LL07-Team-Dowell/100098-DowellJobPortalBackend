@@ -444,6 +444,14 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
+        <Route
+          path="/create-task/ala/"
+          element={
+            <CandidateTaskContextProvider>
+                <h1>ala</h1>
+            </CandidateTaskContextProvider>
+          }
+        />
 
         <Route path="*" element={<ErrorPage />} />
       </Routes>
