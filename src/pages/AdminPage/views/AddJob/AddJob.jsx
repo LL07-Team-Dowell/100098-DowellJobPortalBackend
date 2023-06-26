@@ -96,11 +96,17 @@ const AddJob = ({ subAdminView }) => {
   };
 
   const handleAddTerms = (termsKey) => {
+    const newTerms = newJob[termsKey].slice();
+
+    if (newTerms === "") {
+      toast.info("Please enter a valid term");
+      return;
+    }
+
+    const updatedTerms = [...newJob[termsKey], newTerms];
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
-      const copyOfArray = copyOfPrevValue[termsKey].slice();
-      copyOfArray.push("");
-      copyOfPrevValue[termsKey] = copyOfArray;
+      copyOfPrevValue[termsKey] = updatedTerms;
       return copyOfPrevValue;
     });
   };
@@ -185,30 +191,36 @@ const AddJob = ({ subAdminView }) => {
       );
       return;
     }
-    if (
-      newJob.general_terms.length === 0 ||
-      newJob.technical_specification.length === 0 ||
-      newJob.payment_terms.length === 0 ||
-      newJob.workflow_terms.length === 0 ||
-      newJob.other_info.length === 0
-    ) {
-      toast.info("Please fill in the required Terms");
-      return;
-    } else if (
-      newJob.general_terms.some((term) => term.trim() === "") ||
-      newJob.technical_specification.some((term) => term.trim() === "") ||
-      newJob.payment_terms.some((term) => term.trim() === "") ||
-      newJob.workflow_terms.some((term) => term.trim() === "") ||
-      newJob.other_info.some((term) => term.trim() === "")
-    ) {
-      toast.info("Please fill in all the required Terms");
-      return;
-    } else if (fields.find((field) => newJob[field] === "")) {
-      toast.info(
-        `Please input ${fields.find((field) => newJob[field] === "")}`
-      );
-      return;
-    }
+
+    const isEveryGeneralTermFilled = newJob.general_terms.every(
+      (term) => term.length > 0
+    );
+    if (!isEveryGeneralTermFilled)
+      return toast.info("No general term can be left empty");
+
+    const isEveryTechnicalTermFilled = newJob.technical_specification.every(
+      (term) => term.length > 0
+    );
+    if (!isEveryTechnicalTermFilled)
+      return toast.info("No technical term can be left empty");
+
+    const isEveryPaymentTermFilled = newJob.payment_terms.every(
+      (term) => term.length > 0
+    );
+    if (!isEveryPaymentTermFilled)
+      return toast.info("No payment term can be left empty");
+
+    const isEveryWorkflowTermFilled = newJob.workflow_terms.every(
+      (term) => term.length > 0
+    );
+    if (!isEveryWorkflowTermFilled)
+      return toast.info("No workflow term can be left empty");
+
+    const isEveryOtherInfoTermFilled = newJob.other_info.every(
+      (term) => term.length > 0
+    );
+    if (!isEveryOtherInfoTermFilled)
+      return toast.info("No other info term can be left empty");
 
     setIsLoading(true);
     try {
