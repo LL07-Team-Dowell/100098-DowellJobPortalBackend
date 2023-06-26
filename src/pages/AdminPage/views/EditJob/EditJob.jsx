@@ -62,12 +62,17 @@ function EditJob({ subAdminView }) {
   }, [singleJob]);
 
 
+  // console.log(formData?.general_terms);
+  // if (formData.general_terms[0] == "") {
+  //   alert("empty string not allow")
+  // }
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setUpdateLoading(true);
     // setLoading(false)
     // console.log(formData);
-    if (formData.general_terms.length > 0) {
+    if (formData.general_terms.length > 0 && formData.general_terms[0] !== "") {
       await updateJob(formData)
         .then(response => {
           console.log(response)
@@ -81,13 +86,12 @@ function EditJob({ subAdminView }) {
               }
             }))
             navigate(-1);
-            toast.success("Job updation successfully");
+            toast.success("Job updated successfully");
           }
         })
         .catch(error => console.log(error));
     } else {
-      toast.warning("Genaral Terms Shouldn't be empty");
-
+      toast.warning("General Terms should not be empty");
     }
 
 
