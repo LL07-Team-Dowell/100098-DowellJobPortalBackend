@@ -51,6 +51,8 @@ import TraningProgress from "./pages/CandidatePage/views/TraningProgress.js/Tran
 import { ResponsesContextProvider } from "./contexts/Responses";
 import Index from "./pages/TeamleadPage/views/CreateMembersTask/Index";
 import { ValuesProvider } from "./pages/TeamleadPage/views/CreateMembersTask/context/Values";
+import StaffJobLandingLayout from "./layouts/StaffJobLandingLayout/StaffJobLandingLayout";
+import CreateTeam from "./pages/TeamleadPage/views/CreateMembersTask/views/CreateTeam";
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -445,10 +447,12 @@ function App() {
           }
         />
         <Route
-          path="/create-task/ala/"
+          path="/create-task/create-new-team/"
           element={
             <CandidateTaskContextProvider>
-                <h1>ala</h1>
+              <StaffJobLandingLayout teamleadView={true}>
+                <CreateTeam/>
+              </StaffJobLandingLayout>
             </CandidateTaskContextProvider>
           }
         />

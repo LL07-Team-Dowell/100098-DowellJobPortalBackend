@@ -5,17 +5,26 @@ import './index.scss';
 const FirstForm = () => {
   const [selectedOption, setSelectedOption] = useState('');
   const {data , setdata} = useValues() ;
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
+  const [selectedOption1,setSelectedOption1] = useState(false)
+  const [selectedOption2,setSelectedOption2] = useState(false)
+  
+  const selectOption1 = () => {
+    setdata({...data ,individual_task:true ,team_task:false  })
+    setSelectedOption1(true)
+    setSelectedOption2(false)
   }
-  console.log({individual_task:data.individual_task,team_task:data.team_task})
+  const selectOption2 = () => {
+    setdata({...data ,individual_task:false ,team_task:true  })
+    setSelectedOption2(true)
+    setSelectedOption1(false)
+  }
   return (
     <div>
-    <label htmlFor="option1">Individual Task:</label>
-    <input type="radio" id="option1" name="options" value="option1"  onChange={()=> {setdata({...data ,individual_task:true ,team_task:false  });console.log("donner un nombre")}}  required/>
+    <label className="card-label" htmlFor="option1" style={selectedOption1 ? {backgroundColor:"green",color:"white"}:{}}>Individual Task:
+    <input type="radio" id="option1" name="options" value="option1"   onChange={selectOption1}  required/></label>
 
-    <label htmlFor="option2">Team Task:</label>
-    <input type="radio" id="option2" name="options" value="option2"  onChange={()=> {setdata({...data ,individual_task:false ,team_task:true  })}} required />
+    <label className="card-label" htmlFor="option2" style={selectedOption2 ? {backgroundColor:"green",color:"white"}:{}}>Team Task:
+    <input type="radio" id="option2" name="options" value="option2"  onChange={selectOption2} required /></label>
 
     <p>Selected option: {selectedOption}</p>
   </div>

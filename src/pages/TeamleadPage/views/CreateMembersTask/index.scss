@@ -127,3 +127,57 @@ inset 0 0 5px #000;
 		}
 	}
 }
+.create-new-team-header{
+	>div{
+		width: 80%;
+		margin: auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		>div{
+			display: flex;
+			gap: 10px;
+			button{
+				position: relative;
+				width: 40px;
+				height: 35px;
+				border: none;
+				outline: none;
+				background-color: white;
+				box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+				border-radius: 5px;
+				::after{
+					content: "";
+					width: 100%;
+					height: 100%;
+					position: absolute;
+					top:0;
+					bottom: 0;
+					box-shadow: #005734 0px 7px 29px 0px;
+					background-color: red;
+					cursor: pointer;
+				}
+				
+				span{
+					font-weight: 500;
+				}
+			}
+		}
+	}
+}
+.create-new-team-btn{
+	background-color: #005734;
+	color: white;
+	font-weight: 600;
+	width: 150px;
+	height: 40px;
+	text-align: center;
+	padding: 10px;
+	border-radius: 9px;
+	display: flex;
+	font-weight: 400;
+	align-items: center;
+	gap: 10px;
+}
+.create-new-team-header{
+}
