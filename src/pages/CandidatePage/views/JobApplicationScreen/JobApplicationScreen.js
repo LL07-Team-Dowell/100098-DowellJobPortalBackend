@@ -457,7 +457,7 @@ const JobApplicationScreen = () => {
                                         <h2>Enter Your Internet Speed<span className="required-indicator">*</span></h2>
                                         <label className="input__Text__Container speed__button">
                                             <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Enter Your Internet Speed'} value={newApplicationData.internet_speed} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED, payload: { stateToChange: mutableNewApplicationStateNames.internet_speed, value: e.target.value } })} />
-                                            <button onClick={(e) => netSpeed(e)}>Internet Speed</button>
+                                            {/* <button onClick={(e) => netSpeed(e)}>Internet Speed</button> */}
                                         </label>
                                     </div>
 
