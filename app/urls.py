@@ -2,6 +2,7 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+    # job portal-------------------------------------------
     path('', serverStatus.as_view()),
 
     # accounts management-------------------------------------------
