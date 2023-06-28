@@ -16,11 +16,8 @@ class AccountSerializer(serializers.Serializer):
     task = serializers.CharField(allow_null=False, allow_blank=False)
     status = serializers.CharField(allow_null=False, allow_blank=False)
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
-    company_name = serializers.CharField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
-    user_type = serializers.ChoiceField(
-        allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE)
     onboarded_on = serializers.CharField(allow_null=False, allow_blank=False)
 
 
@@ -34,11 +31,8 @@ class RejectSerializer(serializers.Serializer):
     reject_remarks = serializers.CharField(allow_null=False, allow_blank=False)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
-    company_name = serializers.CharField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
-    user_type = serializers.ChoiceField(
-        allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE)
     rejected_on = serializers.CharField(allow_null=False, allow_blank=False)
     username = serializers.CharField(allow_null=False, allow_blank=False)
 
@@ -135,11 +129,8 @@ class HRSerializer(serializers.Serializer):
     status = serializers.CharField(allow_null=False, allow_blank=False)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
-    company_name = serializers.CharField(allow_null=False, allow_blank=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE)
-    user_type = serializers.ChoiceField(
-        allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE)
     shortlisted_on = serializers.CharField(allow_null=False, allow_blank=False)
 
 

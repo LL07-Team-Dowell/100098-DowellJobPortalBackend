@@ -58,9 +58,12 @@ def get_event_id():
     }
 
     r = requests.post(url, json=data)
+    
     if r.status_code == 201:
+        #print("r->", r.text,json.loads(r.text))
         return json.loads(r.text)
     else:
+        #print("r---->", r.text,json.loads(r.text))
         return json.loads(r.text)['error']
 
 

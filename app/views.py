@@ -66,8 +66,8 @@ class accounts_onboard_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
-                "company_name": data.get('company_name'),
-                "user_type": data.get('user_type'),
+                #"company_name": data.get('company_name'),
+                #"user_type": data.get('user_type'),
                 "onboarded_on": data.get("onboarded_on"),
                 #"notified": create_notification['isSuccess'],
                 #"notification_id": create_notification['inserted_id']
@@ -78,7 +78,6 @@ class accounts_onboard_candidate(APIView):
                 a_r=[]
                 def call_dowellconnection(*args):
                     d=dowellconnection(*args)
-                    arg=args
                     #print(d,*args,"=======================")
                     if "candidate_report" in args:
                         c_r.append(d)
@@ -150,11 +149,11 @@ class accounts_update_project(APIView):
             update_field = {
                 "payment": data.get("payment"),
                 "project": data.get("project"),
-                "applicant": data.get("applicant"),
-                "company_id": data.get("company_id"),
-                "company_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
+                #"applicant": data.get("applicant"),
+                #"company_id": data.get("company_id"),
+                #"company_name": data.get('company_name'),
+                #"data_type": data.get('data_type'),
+                #"user_type": data.get('user_type'),
                 #"notified": create_notification['isSuccess'],
                 #"updated": "True",
                 #"notification_id": create_notification['inserted_id']
@@ -164,8 +163,7 @@ class accounts_update_project(APIView):
             a_r=[]
             def call_dowellconnection(*args):
                 d=dowellconnection(*args)
-                arg=args
-                print(d,*args,"=======================")
+                #print(d,*args,"=======================")
                 if "candidate_report" in args:
                     c_r.append(d)
                 if "account_report" in args:
@@ -184,6 +182,7 @@ class accounts_update_project(APIView):
             insert_response_thread.join()
 
             if not update_response_thread.is_alive() and not insert_response_thread.is_alive():
+                #print(c_r,'::::::')
                 if json.loads(c_r[0])["isSuccess"] ==True:
                     return Response({"message": f"Candidate project and payment has been updated",
                                     #"notification": {"notified": update_field['notified'],
@@ -231,11 +230,11 @@ class accounts_rehire_candidate(APIView):
             }
             update_field = {
                 "status": data.get("status"),
-                "applicant": data.get("applicant"),
-                "company_id": data.get("company_id"),
-                "company_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
+                #"applicant": data.get("applicant"),
+                #"company_id": data.get("company_id"),
+                #"company_name": data.get('company_name'),
+                #"data_type": data.get('data_type'),
+                #"user_type": data.get('user_type'),
                 #"notified": create_notification['isSuccess'],
                 #"rehired": "True",
                 #"notification_id": create_notification['inserted_id']
@@ -245,7 +244,6 @@ class accounts_rehire_candidate(APIView):
             a_r=[]
             def call_dowellconnection(*args):
                 d=dowellconnection(*args)
-                arg=args
                 print(d,*args,"=======================")
                 if "candidate_report" in args:
                     c_r.append(d)
@@ -326,8 +324,8 @@ class accounts_reject_candidate(APIView):
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
                 "rejected_on": data.get("rejected_on"),
-                "company_name": data.get('company_name'),
-                "user_type": data.get('user_type'),
+                #"company_name": data.get('company_name'),
+                #"user_type": data.get('user_type'),
                 #"notified": create_notification['isSuccess'],
                 #"selected": "True",
                 #"notification_id": create_notification['inserted_id']
@@ -339,7 +337,6 @@ class accounts_reject_candidate(APIView):
                 a_r=[]
                 def call_dowellconnection(*args):
                     d=dowellconnection(*args)
-                    arg=args
                     print(d,*args,"=======================")
                     if "candidate_report" in args:
                         c_r.append(d)
@@ -445,9 +442,9 @@ class admin_create_jobs(APIView):
             "data_type": data.get("data_type"),
             "created_by": data.get("created_by"),
             "created_on": data.get("created_on"),
-            "applicant": data.get("applicant"),
-            "company_name": data.get('company_name'),
-            "user_type": data.get('user_type'),
+            #"applicant": data.get("applicant"),
+            #"company_name": data.get('company_name'),
+            #"user_type": data.get('user_type'),
             #"notified": create_notification['isSuccess'],
             #"created": "True",
             #"notification_id": create_notification['inserted_id']
@@ -849,9 +846,9 @@ class hr_shortlisted_candidate(APIView):
                 "hr_remarks": data.get('hr_remarks'),
                 "status": data.get('status'),
                 "company_id": data.get('company_id'),
-                "company_name": data.get('company_name'),
+                #"company_name": data.get('company_name'),
                 "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
+                #"user_type": data.get('user_type'),
                 "shortlisted_on": data.get('shortlisted_on'),
                 #"notified": details['isSuccess'],
                 #"notification_id": details['inserted_id']
@@ -863,7 +860,6 @@ class hr_shortlisted_candidate(APIView):
                 h_r=[]
                 def call_dowellconnection(*args):
                     d=dowellconnection(*args)
-                    arg=args
                     print(d,*args,"=======================")
                     if "candidate_report" in args:
                         c_r.append(d)
@@ -945,9 +941,9 @@ class hr_selected_candidate(APIView):
                 "product_discord_link": data.get('product_discord_link'),
                 "status": data.get('status'),
                 "company_id": data.get('company_id'),
-                "company_name": data.get('company_name'),
+                #"company_name": data.get('company_name'),
                 "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
+                #"user_type": data.get('user_type'),
                 "selected_on": data.get('selected_on'),
                 #"notified": create_notification['isSuccess'],
                 #"selected": "True",
@@ -1041,8 +1037,8 @@ class hr_reject_candidate(APIView):
                 "status": "Rejected",
                 "data_type": data.get('data_type'),
                 "rejected_on": data.get('rejected_on'),
-                "company_name": data.get('company_name'),
-                "user_type": data.get('user_type'),
+                #"company_name": data.get('company_name'),
+                #"user_type": data.get('user_type'),
                 #"notified": create_notification['isSuccess'],
                 #"Rejected": "True",
                 #"notification_id": create_notification['inserted_id']
@@ -1139,9 +1135,9 @@ class lead_hire_candidate(APIView):
                 "teamlead_remarks": data.get('teamlead_remarks'),
                 "status": data.get('status'),
                 "company_id": data.get('company_id'),
-                "company_name": data.get('company_name'),
+                #"company_name": data.get('company_name'),
                 "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
+                #"user_type": data.get('user_type'),
                 "hired_on": data.get('hired_on'),
                 #"notified": create_notification['isSuccess'],
                 #"Hired": "True",
@@ -1153,7 +1149,6 @@ class lead_hire_candidate(APIView):
                 l_r=[]
                 def call_dowellconnection(*args):
                     d=dowellconnection(*args)
-                    arg=args
                     print(d,*args,"=======================")
                     if "candidate_report" in args:
                         c_r.append(d)
@@ -1228,13 +1223,13 @@ class lead_rehire_candidate(APIView):
             }
             update_field = {
                 "rehire_remarks": data.get('rehire_remarks'),
-                "status": "Rehired",
-                "applicant": data.get('applicant'),
-                "company_id": data.get('company_id'),
-                "company_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "rehired_on": data.get('rehired_on'),
+                #"status": "Rehired",
+                #"applicant": data.get('applicant'),
+                #"company_id": data.get('company_id'),
+                #"company_name": data.get('company_name'),
+                #"data_type": data.get('data_type'),
+                #"user_type": data.get('user_type'),
+                #"rehired_on": data.get('rehired_on'),
                 #"notified": create_notification['isSuccess'],
                 #"Rehired": "True",
                 #"notification_id": create_notification['inserted_id']
@@ -1299,8 +1294,8 @@ class lead_reject_candidate(APIView):
                 "status": "Rejected",
                 "data_type": data.get('data_type'),
                 "rejected_on": data.get('rejected_on'),
-                "company_name": data.get('company_name'),
-                "user_type": data.get('user_type'),
+                #"company_name": data.get('company_name'),
+                #"user_type": data.get('user_type'),
                 #"notified": create_notification['isSuccess'],
                 #"selected": "True",
                 #"notification_id": create_notification['inserted_id']
