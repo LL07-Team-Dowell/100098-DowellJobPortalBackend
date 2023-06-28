@@ -266,6 +266,7 @@ const SelectedCandidatesScreen = ({
                 profile_title: selectedCandidateData.portfolio_name,
                 Role: "Viewer",
                 version: "1.0",
+                // project: selectedCandidateData.project,
               },
             ],
           }),
@@ -348,6 +349,7 @@ const SelectedCandidatesScreen = ({
                 profile_title: selectedCandidateData.portfolio_name,
                 Role: "Viewer",
                 version: "1.0",
+                // project: selectedCandidateData.project,
               },
             ],
           }),
@@ -381,6 +383,8 @@ const SelectedCandidatesScreen = ({
           company_id: currentUser.portfolio_info[0].org_id,
           data_type: currentUser.portfolio_info[0].data_type,
           document_id: selectedCandidateData["_id"],
+          // company_name: currentUser.portfolio_info[0].org_name,
+          // user_type: currentUser.userinfo.User_type,
         };
         await changeCandidateStatusToShortlisted(testData);
 
@@ -426,6 +430,8 @@ const SelectedCandidatesScreen = ({
           applicant: selectedCandidateData.applicant,
           company_id: currentUser.portfolio_info[0].org_id,
           data_type: currentUser.portfolio_info[0].data_type,
+          // company_name: currentUser.portfolio_info[0].org_name,
+          // user_type: currentUser.userinfo.User_type,
           selected_on: new Date(),
         };
         await addSelectedCandidate(selectData);
@@ -454,6 +460,7 @@ const SelectedCandidatesScreen = ({
                 profile_title: selectedCandidateData.portfolio_name,
                 Role: "Viewer",
                 version: "1.0",
+                // project: selectedCandidateData.project,
               },
             ],
           }),

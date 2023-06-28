@@ -41,6 +41,9 @@ const AddJob = ({ subAdminView }) => {
     module: "",
     data_type: currentUser.portfolio_info[0].data_type,
     created_by: currentUser.userinfo.username,
+    // applicant: currentUser.userinfo.username,
+    // user_type: currentUser.userinfo.User_type,
+    // company_name: currentUser.portfolio_info[0].org_name,
     created_on: new Date(),
   });
 

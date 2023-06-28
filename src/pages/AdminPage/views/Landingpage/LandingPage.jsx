@@ -35,7 +35,7 @@ const LandingPage = ({ subAdminView }) => {
 
   const navigate = useNavigate();
   const { currentUser, setCurrentUser } = useCurrentUserContext();
-  // console.log("currentUser", currentUser)
+  console.log("currentUser", currentUser)
   // console.log("jobs", jobs);
   useEffect(() => {
     if (jobs.length === 0) {
