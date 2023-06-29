@@ -66,7 +66,7 @@ function App() {
 
   if (loading) return <LoadingPage />;
 
-  // console.log("CURRENT USER", currentUser);
+  console.log("CURRENT USER", currentUser);
 
   // // NO LOGGED IN USER VIEW
   // if (!currentUser) {
@@ -119,7 +119,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.accountRole
+    testingRoles.accountRole
   ) {
     return (
       <Routes>
@@ -147,7 +147,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.subAdminRole
+    testingRoles.subAdminRole
   ) {
     return (
       <Routes>
@@ -325,7 +325,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.hrRole
+    testingRoles.hrRole
   ) {
     return (
       <Routes>
@@ -398,7 +398,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.teamLeadRole
+    testingRoles.teamLeadRole
   ) {
     return (
       <Routes>
@@ -448,7 +448,7 @@ function App() {
           path="/create-task/ala/"
           element={
             <CandidateTaskContextProvider>
-                <h1>ala</h1>
+              <h1>ala</h1>
             </CandidateTaskContextProvider>
           }
         />
