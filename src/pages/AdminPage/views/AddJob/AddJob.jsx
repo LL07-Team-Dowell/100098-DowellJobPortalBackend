@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { BsFillBookmarkFill } from "react-icons/bs";
 import { MdArrowBackIos } from "react-icons/md";
 import { MdOutlineAddCircle } from "react-icons/md";
@@ -52,7 +52,23 @@ const AddJob = ({ subAdminView }) => {
   const [thirdOption, setThirdOption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currency, setCurrency] = useState("Select Currency");
-  const currencyList = ["USD", "NGN", "GBP", "RE"];
+  const currencyList = ["USD", "NGN", "GBP", "RS"];
+
+  const jobTitleRef = useRef(null);
+  const skillsRef = useRef(null);
+  const qualificationRef = useRef(null);
+  const timeIntervalRef = useRef(null);
+  const paymentRef = useRef(null);
+  const descriptionRef = useRef(null);
+
+  // const validateFields = (valueEntered, inputName, ref) => {
+  //   if (valueEntered === "") {
+  //     toast.info(`Please enter the ${inputName}`);
+  //     ref.current.scrollIntoView({ behavior: "smooth" });
+  //     return false;
+  //   }
+  //   return true;
+  // };
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -185,13 +201,49 @@ const AddJob = ({ subAdminView }) => {
       );
       return;
     }
+    // if (newJob.qualification === "") {
+    //   toast.info("Please input qualification");
+    //   return;
+    // } else if (fields.find((field) => newJob[field] === "")) {
+    //   toast.info(
+    //     `Please input ${fields.find((field) => newJob[field] === "")}`
+    //   );
+    //   return;
+    // }
+
+    if (newJob.job_title === "") {
+      toast.info("Please input job title");
+      jobTitleRef.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    if (newJob.skills === "") {
+      toast.info("Please input skills");
+      skillsRef.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    if (newJob.time_interval === "") {
+      toast.info("Please input time interval");
+      timeIntervalRef.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    if (newJob.payment === "") {
+      toast.info("Please input payment");
+      paymentRef.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    if (newJob.description === "") {
+      toast.info("Please input description");
+      descriptionRef.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
     if (newJob.qualification === "") {
       toast.info("Please input qualification");
-      return;
-    } else if (fields.find((field) => newJob[field] === "")) {
-      toast.info(
-        `Please input ${fields.find((field) => newJob[field] === "")}`
-      );
+      qualificationRef.current.scrollIntoView({ behavior: "smooth" });
       return;
     }
 
@@ -285,6 +337,7 @@ const AddJob = ({ subAdminView }) => {
                 onChange={(e) => handleChange(e.target.value, e.target.name)}
                 placeholder={"Enter Name of Job"}
                 required
+                ref={jobTitleRef}
               />
 
               <label htmlFor="skills">Skills</label>
@@ -295,6 +348,7 @@ const AddJob = ({ subAdminView }) => {
                 onChange={(e) => handleChange(e.target.value, e.target.name)}
                 placeholder={"Enter Skills"}
                 required
+                ref={skillsRef}
               />
               <label htmlFor="qualification">Qualifications</label>
               <input
@@ -304,6 +358,7 @@ const AddJob = ({ subAdminView }) => {
                 onChange={(e) => handleChange(e.target.value, e.target.name)}
                 placeholder={"Enter Qualifications"}
                 required
+                ref={qualificationRef}
               />
               <h3>Job Category</h3>
               <div className="job_category">
@@ -468,6 +523,7 @@ const AddJob = ({ subAdminView }) => {
                 onChange={(e) => handleChange(e.target.value, e.target.name)}
                 placeholder={"Enter Time Period"}
                 required
+                ref={timeIntervalRef}
               />
 
               <div className="state_of_job">
@@ -539,6 +595,7 @@ const AddJob = ({ subAdminView }) => {
                     }
                     placeholder={"Enter your amount"}
                     required
+                    ref={paymentRef}
                   />
                 </div>
               </div>
@@ -551,6 +608,7 @@ const AddJob = ({ subAdminView }) => {
                 onChange={(e) => handleChange(e.target.value, e.target.name)}
                 placeholder={"Enter your answer"}
                 required
+                ref={descriptionRef}
               />
 
               <div className="terms">
