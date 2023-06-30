@@ -35,7 +35,7 @@ function TraningProgress({ shorlistedJob }) {
         "answer_link": "",
         "code_base_link": "",
         "documentation_link": "",
-        "explaination_video_link": ""
+        "video_link": ""
     }
     const [submitDataToSend, setSubmitDataToSend] = useState(initialResponseStateObj);
     const [currentResponse, setCurrentResponse] = useState(null);
@@ -353,7 +353,7 @@ function TraningProgress({ shorlistedJob }) {
         createTrainingManagementResponse(dataToPost)
             .then(resp => {
                 console.log(resp)
-                setresponses([...responses, dataToPost]);
+                setresponses([...responses, {...dataToPost, _id: resp.data.info.inserted_id}]);
                 setSubmitInitialResponseLoading(false);
                 window.open(itemQuestionLink, '_blank');
             })
@@ -371,6 +371,7 @@ function TraningProgress({ shorlistedJob }) {
 
             const currentResponses = responses.slice();
             const foundResponse = currentResponses.find(response => response._id === itemId);
+            // console.log(foundResponse);
             if (!foundResponse) return
 
             setSubmitDataToSend((prevValue) => {
@@ -379,7 +380,7 @@ function TraningProgress({ shorlistedJob }) {
                     "answer_link": foundResponse?.answer_link,
                     "code_base_link": foundResponse?.code_base_link,
                     "documentation_link": foundResponse?.documentation_link,
-                    "explaination_video_link": foundResponse?.explaination_video_link
+                    "video_link": foundResponse?.video_link
                 }
             })
             return;
@@ -403,10 +404,11 @@ function TraningProgress({ shorlistedJob }) {
             const res = (await candidateSubmitResponse(submitDataToSend)).data;
             const updatedResponse = { ...currentResponses[foundResponseIndex], ...submitDataToSend, submitted_on: new Date() };
             currentResponses[foundResponseIndex] = updatedResponse;
+            // console.log(currentResponse, updatedResponse);
             setresponses(currentResponses);
             toast.success("Successfully submitted training response!");
             setSubmitDataToSend(initialResponseStateObj);
-
+            setComplete(true);
         } catch (error) {
             console.log(error);
         }
@@ -491,7 +493,7 @@ function TraningProgress({ shorlistedJob }) {
                                     shorlistedJob.map((item => {
                                         const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
 
-                                        if ((!matchModule) || (responses.find(response => response.module === item.module)?.submitted_on)) return <></>
+                                        if ((!matchModule) || (!responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)) || (!responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?.submitted_on)) return <></>
                                         console.log(item);
                                         return <div className="traning_section">
                                             <div className="left-content">
@@ -539,7 +541,7 @@ function TraningProgress({ shorlistedJob }) {
                                                 </Link>
                                             </div>
                                             <div className="bottom-content">
-                                                <Link to={'#'}>
+                                                <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?._id, true)}>
                                                     {"Preview Form"}
                                                 </Link>
                                             </div>
@@ -552,7 +554,7 @@ function TraningProgress({ shorlistedJob }) {
                                 shorlistedJob.map((item => {
                                     const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
 
-                                    if ((!matchModule) || (responses.find(response => response.module === item.module)?.submitted_on)) return <></>
+                                    if ((!matchModule) || (responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?.submitted_on)) return <></>
                                     return <div className="traning_section">
                                         <div className="left-content">
                                             <img src={assets.frontendimage} alt="frontend" />

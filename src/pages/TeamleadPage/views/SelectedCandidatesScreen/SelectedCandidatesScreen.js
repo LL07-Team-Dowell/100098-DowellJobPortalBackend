@@ -17,6 +17,7 @@ import { mutableNewApplicationStateNames } from "../../../../contexts/NewApplica
 import {
   changeToTitleCase,
   formatDateAndTime,
+  validateUrl,
 } from "../../../../helpers/helpers";
 import { toast } from "react-toastify";
 import { sendMail } from "../../../../services/mailServices";
@@ -413,7 +414,7 @@ const SelectedCandidatesScreen = ({
           disableOtherBtns && setDisabled(false);
           const urlPattern =
             /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
-          const isValidUrl = urlPattern.test(hrDiscordLink);
+          const isValidUrl = validateUrl(hrDiscordLink);
           ref.current.classList.toggle("active");
           if (!isValidUrl) {
             setHrDiscordLink("");

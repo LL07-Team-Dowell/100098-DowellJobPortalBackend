@@ -50,6 +50,7 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
             <ul>
                 {
                     React.Children.toArray(Object.keys(testingRoles).map(key => {
+                        if (!testingRolesDict[key]) return <></>
                         return <li onClick={() => handleItemClick(testingRoles[key])}>
                             {testingRolesDict[key]}
                         </li>

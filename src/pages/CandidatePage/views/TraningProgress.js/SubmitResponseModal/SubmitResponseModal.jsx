@@ -29,6 +29,17 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         readOnly={inputValuesAreReadOnly}
                     />
                 </label>
+                <label className={styles.label} htmlFor="input_4">
+                    <span>Link to Explaining Video <span className={styles.required}>*</span></span>
+                    <input
+                        name={"video_link"}
+                        value={inputValues.video_link}
+                        id="input_4"
+                        type='text'
+                        onChange={({ target }) => handleInputChange(target.name, target.value)}
+                        readOnly={inputValuesAreReadOnly}
+                    />
+                </label>
                 <label className={styles.label} htmlFor="input_2">
                     <span>Link to Codebase</span>
                     <input
@@ -51,17 +62,6 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         readOnly={inputValuesAreReadOnly}
                     />
                 </label>
-                <label className={styles.label} htmlFor="input_3">
-                    <span>Link to Explaining Video</span>
-                    <input
-                        name={"video_link"}
-                        value={inputValues.explaination_video_link}
-                        id="input_3"
-                        type='text'
-                        onChange={({ target }) => handleInputChange(target.name, target.value)}
-                        readOnly={inputValuesAreReadOnly}
-                    />
-                </label>
                 {
                     !inputValuesAreReadOnly &&
                     <button
@@ -69,7 +69,11 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         disabled={submitBtnDisabled}
                         onClick={handleSubmitBtnClick}
                     >
-                        Submit
+                        {
+                            submitBtnDisabled ? 
+                                'Please wait...' : 
+                            'Submit'
+                        }
                     </button>
                 }
             </div>
