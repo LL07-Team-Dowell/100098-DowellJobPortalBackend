@@ -411,12 +411,13 @@ const SelectedCandidatesScreen = ({
         }
 
         if (hrDiscordLink.length >= 1) {
-          disableOtherBtns && setDisabled(false);
           const urlPattern =
             /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
           const isValidUrl = validateUrl(hrDiscordLink);
-          ref.current.classList.toggle("active");
           if (!isValidUrl) {
+            disableOtherBtns && setDisabled(false);
+            ref.current.classList.toggle("active");
+          
             setHrDiscordLink("");
             return toast.info("Please add valid discord link for candidate");
           }
