@@ -239,6 +239,10 @@ const Hero = styled.div`
       font-weight: 300;
     }
 
+    a{
+      text-align: left;
+    }
+
     h1 {
       font-size: 41px;
     }
@@ -401,11 +405,12 @@ function CandidateTranningScreen({ shorlistedJob }) {
               <br />
               <p>a solution for easy and flexible learning, you <br /> can study anywhere through this platform</p>
               <br />
-              <button>
-                <Link to="/traning">
+              <Link to="/traning">
+                <button>
                   Get started
-                </Link>
-              </button>
+                </button>
+              </Link>
+
             </div>
             <div className="right-content">
               <img src={assets.hero_image} alt="hero" />

@@ -459,6 +459,30 @@ function App() {
   }
 
   //Provertion Period Page
+  // if (testingRoles.provertionRole === "proverion_period") {
+  //   return <Routes>
+  //     <Route
+  //       path="/"
+  //       element={
+  //         <NavigationContextProvider>
+  //           <CandidateTaskContextProvider>
+  //             <CandidateJobsContextProvider>
+  //               <JobContextProvider>
+  //                 <AfterSelectionScreen assignedProjects={assignedProjects} />
+  //               </JobContextProvider>
+  //             </CandidateJobsContextProvider>
+  //           </CandidateTaskContextProvider>
+  //         </NavigationContextProvider>
+  //       }
+  //     >
+  //       <Route path=":section" element={<AfterSelectionScreen />} />
+  //     </Route>
+
+  //     <Route path="/logout" element={<Logout />} />
+
+  //     <Route path="*" element={<ErrorPage />} />
+  //   </Routes>
+  // }
 
   // CANDIDATE PAGE
   return candidateHired ? (
