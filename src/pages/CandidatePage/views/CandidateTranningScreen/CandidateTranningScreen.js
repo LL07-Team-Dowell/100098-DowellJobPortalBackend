@@ -284,13 +284,13 @@ const Hero = styled.div`
 
 function CandidateTranningScreen({ shorlistedJob }) {
   const { currentUser } = useCurrentUserContext();
-  console.log({currentUser})
-  const {responses , setresponses, allquestions, setAllQuestions} = useResponsesContext()
+  const { responses, setresponses, allquestions, setAllQuestions } = useResponsesContext();
+
   let navigate = useNavigate()
   const [uniqueItems, setUniqueItems] = useState([]);
   const uniqueTags = new Set();
-  const [ questionsLoading, setQuestionsLoading ] = useState(true);
-  const [ submitInitialResponseLoading, setSubmitInitialResponseLoading ] = useState(false);
+  const [questionsLoading, setQuestionsLoading] = useState(true);
+  const [submitInitialResponseLoading, setSubmitInitialResponseLoading] = useState(false);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -303,16 +303,17 @@ function CandidateTranningScreen({ shorlistedJob }) {
       }
     };
 
-    if (allquestions.length > 0) return setQuestionsLoading(false);
-
     fetchQuestions();
+
+    // if (allquestions.length > 0) return setQuestionsLoading(false);
+    console.log(allquestions.length);
+
   }, [shorlistedJob]);
 
   useEffect(() => {
     if (allquestions.length > 0) {
       const updatedUniqueItems = [];
       uniqueTags.clear();
-
       allquestions.forEach((item) => {
         if (!uniqueTags.has(item.module)) {
           uniqueTags.add(item.module);
@@ -327,7 +328,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
   useEffect(() => {
 
     if (responses.length > 0) return
-    
+
     getAllTrainingResponses(currentUser?.portfolio_info[0]?.org_id).then(res => {
       setresponses(res.data.response.data ? res.data.response.data : []);
     }).catch(err => {
@@ -337,27 +338,28 @@ function CandidateTranningScreen({ shorlistedJob }) {
   }, [])
 
   const createResp = (itemModule, itemQuestionLink) => {
+    console.log(itemModule);
     const dataToPost = {
-      company_id: currentUser.portfolio_info[0].org_id, 
+      company_id: currentUser.portfolio_info[0].org_id,
       data_type: currentUser.portfolio_info[0].data_type,
-      username:currentUser.userinfo.username,
-      started_on: new Date().toString(), 
+      username: currentUser.userinfo.username,
+      started_on: new Date().toString(),
       module: itemModule
     }
 
     setSubmitInitialResponseLoading(true);
 
     createTrainingManagementResponse(dataToPost)
-    .then(resp => {
-      console.log(resp)
-      setresponses([...responses , dataToPost]);
-      setSubmitInitialResponseLoading(false);
-      window.open(itemQuestionLink, '_blank');
-    })
-    .catch(err => {
-      console.log(err)
-      setSubmitInitialResponseLoading(false);
-    })
+      .then(resp => {
+        console.log(resp)
+        setresponses([...responses, dataToPost]);
+        setSubmitInitialResponseLoading(false);
+        window.open(itemQuestionLink, '_blank');
+      })
+      .catch(err => {
+        console.log(err)
+        setSubmitInitialResponseLoading(false);
+      })
   }
 
   return (
@@ -416,56 +418,56 @@ function CandidateTranningScreen({ shorlistedJob }) {
           <br />
           {
             questionsLoading ? <LoadingSpinner /> :
-            <div className="traning-items">
-              {
-                shorlistedJob.map((item => {
-                  const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
-                  // console.log(matchModule);
-                  if (!matchModule) return <></>
+              <div className="traning-items">
+                {
+                  shorlistedJob.map((item => {
+                    const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
+                    console.log(item);
+                    if (!matchModule) return <></>
 
-                  return < div className="item-1" >
-                    <img src={assets.frontend_icon} alt="frontend" />
-                    <h2>{item?.module}</h2>
-                    <p>Prepare for a career in {item.module} Development. Receive professional-level training from uxliving lab</p>
-                    <button 
-                      onClick={
-                        responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
-                          () => navigate('/traning')
-                        :
-                          () => createResp(item.module, matchModule?.question_link)
-                      } 
-                      style={{
-                        alignItems: 'center',
-                        fontSize: '16px',
-                        backgroundColor: '#FFFFFF',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: 'black',
-                        fontWeight: '600',
-                        fontFamily: 'poppins',
-                        display: 'flex',
-                      }}
-                    >
-                      {
-                        submitInitialResponseLoading ? <>Please wait...</> :
-                        responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
-                        <>
-                          View Now <BiRightArrowAlt />
-                        </> :
-                        <>
-                          Start Now <BiRightArrowAlt />
-                        </>
-                      }
-                    </button>
+                    return < div className="item-1" >
+                      <img src={assets.frontend_icon} alt="frontend" />
+                      <h2>{item?.module}</h2>
+                      <p>Prepare for a career in {item.module} Development. Receive professional-level training from uxliving lab</p>
+                      <button
+                        onClick={
+                          responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
+                            () => navigate('/traning')
+                            :
+                            () => createResp(item.module, matchModule?.question_link)
+                        }
+                        style={{
+                          alignItems: 'center',
+                          fontSize: '16px',
+                          backgroundColor: '#FFFFFF',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: 'black',
+                          fontWeight: '600',
+                          fontFamily: 'poppins',
+                          display: 'flex',
+                        }}
+                      >
+                        {
+                          submitInitialResponseLoading ? <>Please wait...</> :
+                            responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
+                              <>
+                                View Now <BiRightArrowAlt />
+                              </> :
+                              <>
+                                Start Now <BiRightArrowAlt />
+                              </>
+                        }
+                      </button>
 
-                    <div className="bottom-img">
-                      <img src={assets.bg_rectang} alt="rectbg" />
+                      <div className="bottom-img">
+                        <img src={assets.bg_rectang} alt="rectbg" />
+                      </div>
                     </div>
-                  </div>
-                }), [])
-              }
+                  }), [])
+                }
 
-              {/* {
+                {/* {
                 shorlistedJob.length % 3 === 1 ? <>
                   <div className="item-2">
                     <img src={assets.lock_screen} alt="" />
@@ -480,7 +482,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
                 </> : <></>
               } */}
 
-              {/* <div className="item-1">
+                {/* <div className="item-1">
                 <img src={assets.frontend_icon} alt="frontend" />
                 <h2>Front-end</h2>
                 <p>Prepare for a career in Front-end Development. Receive professional-level training from uxliving lab</p>
@@ -494,7 +496,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
                   <img src={assets.bg_rectang} alt="rectbg" />
                 </div>
               </div> */}
-              {/* <div className="item-2">
+                {/* <div className="item-2">
                 <img src={assets.lock_screen} alt="" />
               </div>
               <div className="item-2">
@@ -509,7 +511,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
               <div className="item-2">
                 <img src={assets.lock_screen} alt="" />
               </div> */}
-            </div>
+              </div>
           }
         </Section_2>
       </div >
