@@ -80,12 +80,17 @@ class CandidateSerializer(serializers.Serializer):
                         ("Testing_Data", "Testing_Data"), ("Archived_Data", "Archived_Data"))
     JOB_CATEGORY_CHOICE = (("Freelancer", "Freelancer"),
                            ("Internship", "Internship"), ("Employee", "Employee"))
+    
+    MODULE_CHOICE = (("Frontend", "Frontend"), ("Backend", "Backend"), ("UI/UX", "UI/UX"),
+                     ("Virtual Assistant", "Virtual Assistant"), ("Web", "Web"), ("Mobile", "Mobile"))
 
     job_number = serializers.CharField(allow_null=False, allow_blank=False)
     job_title = serializers.CharField(allow_null=False, allow_blank=False)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     applicant_email = serializers.EmailField(required=True)
     feedBack = serializers.CharField(allow_null=False, allow_blank=False)
+    module = serializers.ChoiceField(
+        choices=MODULE_CHOICE, allow_null=False, allow_blank=False, )
     academic_qualification_type = serializers.CharField(
         allow_null=False, allow_blank=False)
     academic_qualification = serializers.CharField(
