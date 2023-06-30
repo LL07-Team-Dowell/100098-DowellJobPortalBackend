@@ -5,6 +5,7 @@ import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContex
 import {HiArrowNarrowRight} from 'react-icons/hi'
 // Fetch Teams for that company 
 import { teams ,imageReturn} from '../assets/teamsName';
+import { useNavigate } from 'react-router-dom';
 const Teams = ({back , setChoosedTeam}) => {
   const { currentUser } = useCurrentUserContext();
     console.log(currentUser.portfolio_info[0].org_id)
@@ -21,11 +22,13 @@ const Teams = ({back , setChoosedTeam}) => {
 export default Teams
 
 const Team = ({v,team_name ,setChoosedTeam}) => {
+  const navigate = useNavigate() ; 
   
   return (
-    <li onClick={()=>{setChoosedTeam({choosed:true , value:v.team_name ,id:v._id})}}>
-      <img src={imageReturn(team_name)}  />
-      <h4>{team_name}</h4>
+    <li className='team' onClick={()=>{navigate(`/team-screen-member/${v._id}/team-tasks`)}}>
+      <img src={imageReturn(team_name) !== null ? imageReturn(team_name): null}  />
+      <h2>{team_name}</h2>
+      <p className='paragraph-discription'>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aspernatur sapiente nostrum quibusdam eum odit animi dolorem iusto earum non? </p>
       <button>View More <HiArrowNarrowRight/></button>
     </li>
   )

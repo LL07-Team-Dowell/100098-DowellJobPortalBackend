@@ -1,28 +1,55 @@
 import React, { useState } from 'react';
 import { AiOutlinePlusCircle } from 'react-icons/ai';
 import { useValues } from '../context/Values';
-
+import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContext';
+import { createTeam } from '../../../../../services/createMembersTasks';
+import { useNavigate } from 'react-router-dom';
 const CreateTeam = () => {
+  // USER
+  const { currentUser } = useCurrentUserContext();
+  // DATA
   const { data, setdata } = useValues();
+  // States
   const [showCard, setshowCard] = useState(false);
   const [toggleCheckboxes, settoggleCheckboxes] = useState(false);
-
+  // Navigate 
+  const navigate = useNavigate()
+  // FUNCTIONS
   const changeTeamName = (e) => {
     setdata({ ...data, team_name: e.target.value });
   };
-
   const handleCheckboxChange = (event) => {
     const value = event.target.value;
-    if (event.target.checked) {
-      setdata({ ...data, selected_members: [...data.selected_members, value] });
-    } else {
-      setdata({ ...data, selected_members: data.selected_members.filter((box) => box !== value) });
+    setdata({ ...data, selected_members: [...data.selected_members, value] });
+};
+  const createTeamSubmit = () => {
+    if(data.team_name.length > 0  && data.selected_members.length > 0){
+      createTeam({
+        team_name:data.team_name,
+        company_id:currentUser.portfolio_info[0].org_id,
+        members:data.selected_members
+      })
+      // RESPONSE
+      .then(resp => {
+        console.log(resp)
+        navigate(`/team-screen-member/${resp.data.response.inserted_id}`)
+      })
+      // ERROR
+      .catch(err => {
+        console.log(err)
+      })
+    }else{
+      console.log( data.team_name.length > 0  && data.selected_members.length > 0 )
     }
-  };
+    
+  }
+  
 
+
+  const userIsThere = (user) => data.selected_members.find(newUser => newUser === user)
   return (
     <div className='container' style={{ position: 'relative' }}>
-      <div className='Create_Team' onClick={() => { setshowCard(!showCard) }}>
+      <div className='Create_Team' onClick={() => { setshowCard(true) }}>
         <div>
           <div>
             <AiOutlinePlusCircle className='icon' />
@@ -33,8 +60,9 @@ const CreateTeam = () => {
           </p>
         </div>
       </div>
+
       {showCard ? (
-        <div className='create_your_team' style={{ position: 'absolute', top: '20%', left: '20%', background: 'white', padding: 20 }} tabIndex={0}  onBlur={() =>{setshowCard(false);console.log("asdasdasdjhasdj h askjdhasdjashd") }}>
+        <div className='create_your_team' style={{ position: 'absolute', top: '20%', left: '20%', background: 'white', padding: 20 }} tabIndex={0}  >
           <h2 className=''>Create Your Team</h2>
           <label htmlFor='team_name'>Team Name</label>
           <input
@@ -52,6 +80,7 @@ const CreateTeam = () => {
             className=''
             placeholder='Choose a Team Name'
             rows={10}
+            onChange={e=>setdata({...data,teamDiscription:e.target.value})}
           />
           <br />
           <label htmlFor=''>Add Member</label>
@@ -65,12 +94,13 @@ const CreateTeam = () => {
           <br />
           {toggleCheckboxes ? (
             <div className='checkboxes'>
-              {data.members.map((member, i) => (
+              {data.memebers.map((member, i) => (
                 <p key={i}>
                   <input
                     type='checkbox'
                     value={member}
                     onChange={handleCheckboxChange}
+                    checked={userIsThere(member) !== undefined ? true : false}
                   />
                   {member}
                 </p>
@@ -79,8 +109,8 @@ const CreateTeam = () => {
           ) : null}
           <br />
           <div className="buttons">
-            <button>Next</button>
-            <button>Cancel</button>
+            <button onClick={createTeamSubmit}>Next</button>
+            <button onClick={()=>setshowCard(false)}>Cancel</button>
           </div>
         </div>
       ) : null}

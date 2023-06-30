@@ -17,13 +17,13 @@ export const teams = [
 
 ]
 export const imageReturn = (name) => {
-            if ( name === "Front-end"){
+            if ( name.toLowerCase() === "front-end"){
                         return Front
             }
-            if (name === "Back-end"){
+            if (name.toLowerCase() === "back-end"){
                         return Back
             }
-            if (name === "UI/UX"){
+            if (name.toLowerCase() === "ui/ux"){
                         return UXUI
             }
             return null

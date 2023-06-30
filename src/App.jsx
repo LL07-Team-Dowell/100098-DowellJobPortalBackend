@@ -53,6 +53,9 @@ import Index from "./pages/TeamleadPage/views/CreateMembersTask/Index";
 import { ValuesProvider } from "./pages/TeamleadPage/views/CreateMembersTask/context/Values";
 import StaffJobLandingLayout from "./layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import CreateTeam from "./pages/TeamleadPage/views/CreateMembersTask/views/CreateTeam";
+import { TeamProvider } from "./pages/TeamleadPage/views/CreateMembersTask/context/Team";
+import TeamScreenTasks from "./pages/TeamleadPage/views/CreateMembersTask/views/TeamScreenTasks";
+import TeamScreenMembers from "./pages/TeamleadPage/views/CreateMembersTask/views/TeamScreenMembers";
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -451,7 +454,35 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true}>
-                <CreateTeam/>
+                <ValuesProvider>
+                  <CreateTeam/>
+                </ValuesProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+
+        <Route
+          path="/team-screen-member/:id/team-members"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout teamleadView={true}>
+                <TeamProvider>
+                  <TeamScreenMembers/>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+
+        <Route
+          path="/team-screen-member/:id/team-tasks"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout teamleadView={true}>
+                <TeamProvider>
+                  <TeamScreenTasks/>
+                </TeamProvider>
               </StaffJobLandingLayout>
             </CandidateTaskContextProvider>
           }

@@ -108,12 +108,17 @@ inset 0 0 5px #000;
 			&:hover{
 				box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 			}
-
+			h2{
+				font-weight: 600;
+				margin-top: 10px;
+			}
+			p{
+				color: #7e7e7e;
+			}
 			button{
 				position: absolute;
-
 				width: 60%;
-				font-weight: bolder;
+				font-weight: 600;
 				bottom: 20px;
 				left: 20px;
 
@@ -180,4 +185,21 @@ inset 0 0 5px #000;
 	gap: 10px;
 }
 .create-new-team-header{
+}
+.paragraph-discription{
+	display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.blur{
+	position: absolute;
+	z-index: 0;
+	width: calc(100vw  - 4.6rem);
+	height: calc(100vh  - 6.5rem);
+	background-color: rgba(0,0,0,.3);
+	top:0rem;
+	left: -210px;
 }
