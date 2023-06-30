@@ -3,7 +3,7 @@ import { IoMdClose } from 'react-icons/io';
 
 
 const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnClick, handleInputChange, inputValues, inputValuesAreReadOnly }) => {
-    console.log(inputValues);
+    // console.log(inputValues);
     return <>
         <div className={styles.modal__Overlay}>
             <div className={styles.modal__Container}>

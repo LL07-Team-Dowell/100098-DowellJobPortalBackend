@@ -100,7 +100,6 @@ function TraningProgress({ shorlistedJob }) {
         display: flex;
         align-items: center;
         justify-content: center;
-        // height: 100vh; /* Adjust as needed */
         margin: 0;
         padding: 0;
         .iframe-container {
@@ -123,7 +122,6 @@ function TraningProgress({ shorlistedJob }) {
     const Wrapper = styled.div`
         font-family:'poppins';
         background-color:#ffffff;
-        // height: 30rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -134,7 +132,6 @@ function TraningProgress({ shorlistedJob }) {
         font-family:'poppins';
         border-bottom: 1px solid #dfdddd;
         font-family:'poppins';
-        // height: 14rem;
     `
 
     const Navbar = styled.nav`
@@ -340,7 +337,7 @@ function TraningProgress({ shorlistedJob }) {
         nevigate(-1);
     }
 
-    const createResp = (itemModule, itemQuestionLink) => {
+    const createResp = (e, itemModule, itemQuestionLink) => {
         if (submitInitialResponseLoading) return
 
         const dataToPost = {
