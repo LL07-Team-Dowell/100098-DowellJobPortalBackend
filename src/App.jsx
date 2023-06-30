@@ -65,7 +65,7 @@ function App() {
   const [assignedProjects, setAssignedProjects] = useState([]);
   const [shorlistedJob, setshorlistedJob] = useState([]);
 
-  console.log(shorlistedJob);
+  // console.log(shorlistedJob);
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
 
