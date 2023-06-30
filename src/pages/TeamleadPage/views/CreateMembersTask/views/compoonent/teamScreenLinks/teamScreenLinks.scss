@@ -1,0 +1,19 @@
+.team-screen-member-links{
+    display: flex;
+    padding-top: 20px;
+    gap: 15px;
+    width: 80%;
+    margin: auto;
+    a{
+        color:rgba(34, 34, 34, 0.66);
+        font-size: 18px;
+        font-family: Poppins;
+        font-style: normal;
+        font-weight: 600;
+        
+    }
+    .link-isActive{
+        color: #005734;
+        border-bottom: 2px solid #005734;
+    }
+}

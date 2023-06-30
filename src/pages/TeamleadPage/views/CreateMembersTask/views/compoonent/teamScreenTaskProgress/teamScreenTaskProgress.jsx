@@ -1,0 +1,23 @@
+// styles
+import './teamScreenTaskProgress.scss'
+
+// react
+import React from 'react'
+const TeamScreenTaskProgress = () => {
+  return (
+    <div className='team-screen-task-progress'>
+      <div className='team-screen-task-progress-welcome'>
+        <h2>Hi,Welcome Back!</h2>
+        <p>See your team progress</p>
+      </div>
+      <div className='team-screen-task-progress-data'>
+          <div className='team-screen-task-progress-data-circle'>
+            <span>00%</span>
+          </div>
+          <p>your progess</p>
+      </div>
+    </div>
+  )
+}
+
+export default TeamScreenTaskProgress

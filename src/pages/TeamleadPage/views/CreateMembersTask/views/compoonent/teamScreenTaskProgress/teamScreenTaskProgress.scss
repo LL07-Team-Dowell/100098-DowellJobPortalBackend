@@ -1,0 +1,41 @@
+.team-screen-task-progress {
+        width: 80%;
+        margin: auto;
+        padding:50px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+    .team-screen-task-progress-data{
+        .team-screen-task-progress-data-circle{
+            text-align: center;
+            width: 82px;
+            height: 82px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            border-radius: 50%;
+            background-color: white;
+            position: relative;
+            margin-left: 25px;
+            &::before{
+                content: "";
+                width: 130%;
+                height: 130%;
+                border-radius: 50%;
+                position: absolute;
+                z-index: -1;
+                background-color: #ccc;
+            }
+        }
+        >p{
+            margin-top: 15px;
+            font-weight: 600;
+            color: rgba(124, 124, 124, 1);
+            margin-right: 20px;
+            font-size: 21px;
+        }
+    }
+   
+}

@@ -1,0 +1,32 @@
+.team-screen-members-container{
+    width: 80%;
+    margin: auto;
+    margin-top: 20px;
+    
+    
+}
+
+.add-member-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #005734;
+    border: none;
+    outline: none;
+    color: white;
+    height: 30px;
+    width: 120px;
+    border-radius: 6px;
+    margin-left: auto;
+    margin-right: 10%;
+    cursor: pointer;
+    div{
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        font-weight: 600;
+        width: 155px;
+    }
+}

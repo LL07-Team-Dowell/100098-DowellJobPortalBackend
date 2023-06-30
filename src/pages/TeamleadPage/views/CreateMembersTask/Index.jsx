@@ -10,6 +10,7 @@ import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner
 import { RiTeamFill } from 'react-icons/ri';
 import "./index.scss"
 import { getAllTeams } from '../../../../services/createMembersTasks';
+import Navbar from './component/Navbar';
 const Index = () => {
   const { currentUser } = useCurrentUserContext();
   const {data , setdata} = useValues() ;
@@ -35,11 +36,10 @@ const Index = () => {
   if(impLoading)return <StaffJobLandingLayout teamleadView={true}><LoadingSpinner/></StaffJobLandingLayout> 
   return (
     <StaffJobLandingLayout teamleadView={true}>
+      <Navbar title={"All Teams"} />
       <div className='container'>
-      <button className='first-button' onClick={() => setchoose(2)}>   <RiTeamFill style={iconsStyle}/> <div>Team tasks</div></button>
-    <button className='first-button'  onClick={() => setchoose(1)}> <AiOutlineTeam style={iconsStyle}/><div>Show Teams</div></button>
+      <Teams/>
       </div>
-    
     </StaffJobLandingLayout>
   )
 }

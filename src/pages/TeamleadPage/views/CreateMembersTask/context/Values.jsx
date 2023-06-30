@@ -16,7 +16,8 @@ export const initialState = {
     TeamsSelected:[] ,
     teamId:"" , 
     membersEditTeam:[""] , 
-    RESP_INDV_TASK:""
+    RESP_INDV_TASK:"",
+    teamDescription:""
   }
 export const useValues = () => useContext(CandidateJobsContext);
 // CandidateJobsContextProvider
