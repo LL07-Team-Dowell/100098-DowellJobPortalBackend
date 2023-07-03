@@ -52,7 +52,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
   }
   const userIsThere = (user) => data.selected_members.find(newUser => newUser === user)
   return (
-    <div className='create_your_team' style={{ position: 'absolute', top: '20%', left: '20%', background: 'white', padding: 20 }} tabIndex={0}  >
+    <div className='create_your_team'  tabIndex={0}  >
           <h2 className=''>Create Your Team</h2>
           <label htmlFor='team_name'>Task Name</label>
           <input

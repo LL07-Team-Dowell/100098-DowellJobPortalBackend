@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { AiOutlinePlusCircle } from 'react-icons/ai';
+import { AiOutlineClose, AiOutlinePlusCircle } from 'react-icons/ai';
 import { useValues } from '../context/Values';
 import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContext';
 import { createTeam } from '../../../../../services/createMembersTasks';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../component/Navbar';
 const CreateTeam = () => {
   // USER
   const { currentUser } = useCurrentUserContext();
@@ -24,6 +25,7 @@ const CreateTeam = () => {
 };
   const createTeamSubmit = () => {
     if(data.team_name.length > 0  && data.selected_members.length > 0){
+
       createTeam({
         team_name:data.team_name,
         company_id:currentUser.portfolio_info[0].org_id,
@@ -43,13 +45,14 @@ const CreateTeam = () => {
     }
     
   }
-  
-
 
   const userIsThere = (user) => data.selected_members.find(newUser => newUser === user)
   return (
+    <>
+    <Navbar title=" Create Team" removeButton={true}/> 
     <div className='container' style={{ position: 'relative' }}>
-      <div className='Create_Team' onClick={() => { setshowCard(true) }}>
+      
+      <div style={{marginTop:30}} className=' Create_Team' onClick={() => { setshowCard(true) }}>
         <div>
           <div>
             <AiOutlinePlusCircle className='icon' />
@@ -62,7 +65,8 @@ const CreateTeam = () => {
       </div>
 
       {showCard ? (
-        <div className='create_your_team' style={{ position: 'absolute', top: '20%', left: '20%', background: 'white', padding: 20 }} tabIndex={0}  >
+        <div className='create_your_team  ' tabIndex={0}  >
+          <button className='create_your_team-remove-btn' onClick={() => { setshowCard(false) }}><AiOutlineClose/></button>
           <h2 className=''>Create Your Team</h2>
           <label htmlFor='team_name'>Team Name</label>
           <input
@@ -115,6 +119,7 @@ const CreateTeam = () => {
         </div>
       ) : null}
     </div>
+    </>
   );
 };
 
