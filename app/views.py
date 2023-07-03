@@ -677,6 +677,7 @@ class candidate_apply_job(APIView):
             "selected_on": "",
             "hired_on": "",
             "onboarded_on": "",
+            "module": data.get("module")
             #"notified": details['isSuccess'],
             #"notification_id": details['inserted_id']
         }
