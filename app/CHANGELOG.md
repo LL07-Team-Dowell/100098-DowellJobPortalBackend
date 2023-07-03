@@ -142,3 +142,11 @@
 - _get_ to `setting/SettingUserProject/`   -------->   __get__ to `settinguserproject/`
 
 - _put_ to `SettingUserProject/<int:pk>`   -------->   __put__ to `settinguserproject/<int:pk>`
+
+
+
+### discord apis---------
+
+-                                               -------->   __post__ to `generate_discord_invite/`
+-                                               -------->   __get__ to `get_discord_server_channels/<int:guild_id>/`
+-                                               -------->   __get__ to `get_discord_server_members/<int:guild_id>/`

@@ -1,6 +1,9 @@
 import json
 import requests
 import pprint
+import os
+from discord.ext import commands
+from discord import Intents
 
 
 def dowellconnection(cluster, database, collection, document, team_member_ID, function_ID, command, field,
@@ -66,9 +69,6 @@ def get_event_id():
         #print("r---->", r.text,json.loads(r.text))
         return json.loads(r.text)['error']
 
-
-# print(response['event_id'])
-
 def call_notification(url, request_type, data):  ## calling  notification api
     if request_type == 'post':
         notification = requests.post(url, data)
@@ -96,3 +96,58 @@ def update_string(string):
                 if char=="C":
                     new_str = string.replace("C", "O")
             return new_str
+
+### calling the discord api----------------------------
+
+# generate discord invite link
+def discord_invite(server_owner_ids,guild_id, token):
+    invite_link = []
+    client = commands.Bot(command_prefix="?", owner_ids=server_owner_ids, intents=Intents.default())
+    print("running bot...")
+
+    # Close the bot
+    @client.command()
+    @commands.is_owner()
+    async def shutdown(context):
+        print("bot is shut down")
+        await context.close()
+
+    @client.event
+    async def on_ready():#gets the invite link when the bot is ready
+        print("bot is ready...")
+        discord_link = await client.get_guild(guild_id).text_channels[0].create_invite()
+        #print(discord_link, "==============")
+        invite_link.append(discord_link)
+        await shutdown(client)
+
+    #with open(os.getcwd()+"/app/token", "r", encoding="utf-8") as t:
+    #    token = t.read()
+    # token file is the token for the bot created
+    client.run(token=token)
+    return invite_link
+
+# get the channels in the server
+def get_guild_channels(guildid,token):
+    """with open(os.getcwd()+"/app/token", "r", encoding="utf-8") as t:
+        token = t.read()"""
+    headers = {
+        'Content-Type': 'application/json',
+        'authorization': f'Bot {token}'
+    }
+    url = f"https://discord.com/api/v9/guilds/{guildid}/channels"  # /{userid}"
+    response = requests.request("GET", url, headers=headers)
+    res = json.loads(response.text)
+
+    return res
+def get_guild_members(guildid,token):
+    """with open(os.getcwd()+"/app/token", "r", encoding="utf-8") as t:
+        token = t.read()"""
+    headers = {
+        'Content-Type': 'application/json',
+        'authorization': f'Bot {token}'
+    }
+    url = f"https://discord.com/api/v9/guilds/{guildid}/members"  # /{userid}"
+    response = requests.request("GET", url, headers=headers)
+    res = json.loads(response.text)
+
+    return res

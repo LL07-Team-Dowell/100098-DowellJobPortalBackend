@@ -8,7 +8,8 @@ from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
-from .helper import get_event_id, dowellconnection, call_notification, update_number, update_string
+from .helper import get_event_id, dowellconnection, call_notification, update_number, update_string, discord_invite,\
+    get_guild_channels, get_guild_members
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
     SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
@@ -2119,3 +2120,61 @@ class SettingUserProjectView(APIView):
     
     
 # api for setting ends here____________________________
+
+# api for discord starts here____________________________
+@method_decorator(csrf_exempt, name="dispatch")
+class generate_discord_invite(APIView):
+    def post(self, request):
+        data = request.data
+        if data:
+            # generate invite link-------------------
+            invite = discord_invite(server_owner_ids=data.get("owners_ids"), guild_id=data.get("guild_id"), token=data.get("bot_token"))
+            #print(invite[0])
+            if invite:
+                return Response(
+                    {"message": "Invite link has been generated successfully",
+                     "response": {"invite_link":f"{invite[0]}",
+                               "server":f"{invite}"             
+                                }
+                     },
+                    status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message": "Invite link failed to be generated"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+@method_decorator(csrf_exempt, name="dispatch")
+class get_discord_server_channels(APIView):
+    def get(self, request, guild_id, token):
+        #print(token,"=====----------------", guild_id)
+        channels = get_guild_channels(guildid=guild_id, token=token)
+        print(channels)
+        if channels:
+            return Response(
+                {"message": "List of channels in server",
+                    "response": {"num of channels":len(channels),
+                                 "channels":channels,           
+                                }
+                    },
+                status=status.HTTP_200_OK)
+        else:
+            return Response({"message":f"There is no channels","response":json.loads(channels)}, status=status.HTTP_204_NO_CONTENT)
+        
+@method_decorator(csrf_exempt, name="dispatch")
+class get_discord_server_members(APIView):
+    def get(self, request, guild_id, token):
+         #print(token,"=====----------------", guild_id)
+        members = get_guild_members(guildid=guild_id, token=token)
+        #print(channels)
+        if members:
+            return Response(
+                {"message": "List of members in server",
+                    "response": {"num of members":len(members),
+                                 "members":members,           
+                                }
+                },
+                status=status.HTTP_200_OK)
+        else:
+            return Response({"message":f"There is no members","response":members}, status=status.HTTP_204_NO_CONTENT)
+
+# api for discord ends here____________________________
