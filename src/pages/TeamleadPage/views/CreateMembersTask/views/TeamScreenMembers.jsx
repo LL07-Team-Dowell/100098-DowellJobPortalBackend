@@ -32,7 +32,7 @@ const TeamScreenMembers = () => {
     if(loading) return <h1>Loading ..</h1>
   return (
     <div>
-      <Navbar title={team.team_name} removeButton={true}/>
+      {/* <Navbar title={team.team_name} removeButton={true}/> */}
       <TeamScreenLinks id={id}/>
       <TeamScreenMembersContainer members={members}/>
       {showPopup && <AddMemberPopup bigMember={bigMember} smallMember={members} setmembers={setmembers} team_name={team.team_name} close={()=>setShowPopup(false)}/>}

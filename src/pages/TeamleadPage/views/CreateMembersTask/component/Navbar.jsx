@@ -9,7 +9,7 @@ const Navbar = ({title , removeButton}) => {
         <div>
             <div>
                 <button className='back' onClick={()=>navigate(-1)}><MdOutlineArrowBackIosNew/></button>
-                <h1>{title}</h1>
+                {title !== undefined && <h1>{title}</h1>}
             </div>
             {!removeButton && <NavLink className='create-new-team-btn' to={"/create-task/create-new-team/"}>
               <BiPlus/> <span>Create New</span>

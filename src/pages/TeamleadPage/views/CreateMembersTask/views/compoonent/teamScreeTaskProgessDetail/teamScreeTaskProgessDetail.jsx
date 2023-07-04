@@ -21,7 +21,7 @@ const TeamScreeTaskProgessDetail = ({detail ,setdetail,ShowCreateTask, members})
                 <div className='team-screen-task-progress-detail-content-members-and-progress'>
                     <div className='team-screen-task-progress-detail-content-members'>
                         {
-                            members.map(e => <span>{e[0].toUpperCase()}</span>)
+                            members?.map(e => <span>{e[0].toUpperCase()}</span>)
                         }
                     </div>
                     <div className='team-screen-task-progress-data-circle' >

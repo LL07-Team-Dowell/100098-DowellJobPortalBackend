@@ -17,27 +17,27 @@ const TeamScreenTasks = () => {
     const [detail ,setdetail] = useState('in progress') ;
     const [showCreatTask,setShowCreateTask] = useState(false) 
     useEffect(()=>{
-      if(team.members === undefined){
+      if(team === null){
         setloading(true)
         getAllTeams(currentUser.portfolio_info[0].org_id)
           .then(resp =>{ 
           setteam(resp.data.response.data.find(team => team["_id"] === id))
-          setloading(false)
-      })
+          setloading(false)})
       .catch(err => console.log(err))
       }
     },[])
     console.log({team})
     if (loading) return <h1>Loading...</h1>
-  return (
-    <>
-    <Navbar title={team.team_name} removeButton={true}/>
-    <TeamScreenLinks id={id}/>
-    <TeamScreenTaskProgress />
-    <TeamScreeTaskProgessDetail members={team.members}  detail={detail} setdetail={setdetail} ShowCreateTask={()=>setShowCreateTask(true)}/>
-    {showCreatTask && <CreateTask id={id} members={team.members} team={team} unShowCreateTask={()=>setShowCreateTask(false)}/>}
-    </>
-    )
+      return (
+        <div>
+          {/* { team.team_name !== null ? <Navbar title={team?.team_name.toString()} removeButton={true}/> : null } */}
+          <TeamScreenLinks id={id}/>
+          <TeamScreenTaskProgress />
+          <TeamScreeTaskProgessDetail members={team?.members}  detail={detail} setdetail={setdetail} ShowCreateTask={()=>setShowCreateTask(true)}/>
+          {showCreatTask && <CreateTask id={id} members={team.members} team={team} unShowCreateTask={()=>setShowCreateTask(false)}/>} 
+        </div>
+        )
+ 
 }
 
 export default TeamScreenTasks

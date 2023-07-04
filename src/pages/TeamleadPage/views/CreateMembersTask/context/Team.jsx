@@ -1,7 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { getAllTeams } from "../../../../../services/createMembersTasks";
-import { useParams } from "react-router-dom";
-import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
+import { createContext, useContext, useState } from "react";
 
 const TeamContext = createContext({});
 
@@ -9,9 +6,8 @@ export const initialState = {}
 
 export const useTeam = () => useContext(TeamContext);
 export const TeamProvider = ({ children }) => {
-  const {id} = useParams();
 
-    const [ team, setteam ] = useState(initialState)
+    const [ team, setteam ] = useState(null)
    
     return (
         <TeamContext.Provider  value={{ team, setteam }}>
