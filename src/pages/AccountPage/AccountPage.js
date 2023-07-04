@@ -234,6 +234,75 @@ const AccountPage = () => {
     setCurrentCandidate(passedData);
   };
 
+  const handleRefreshForCandidateApplications = () => {
+    const requestData = {
+      company_id: currentUser?.portfolio_info[0].org_id,
+    };
+
+    setLoading(true);
+
+    getCandidateApplicationsForTeamLead(requestData)
+      .then((res) => {
+        const applicationForMatching = res.data.response.data.filter(
+          (application) =>
+            application.data_type === currentUser?.portfolio_info[0].data_type
+        );
+        const candidatesToHire = applicationForMatching.filter(
+          (application) =>
+            application.status === candidateStatuses.TEAMLEAD_HIRE
+        );
+        const candidatesToRehire = applicationForMatching.filter(
+          (application) =>
+            application.status === candidateStatuses.TO_REHIRE ||
+            application.status === candidateStatuses.TEAMLEAD_TOREHIRE
+        );
+        const candidatesOnboarding = applicationForMatching.filter(
+          (application) => application.status === candidateStatuses.ONBOARDING
+        );
+        const candidatesRejected = applicationForMatching.filter(
+          (application) => application.status === candidateStatuses.REJECTED
+        );
+
+        dispatchToCandidatesData({
+          type: candidateDataReducerActions.UPDATE_CANDIDATES_TO_HIRE,
+          payload: {
+            stateToChange: initialCandidatesDataStateNames.candidatesToHire,
+            value: candidatesToHire,
+          },
+        });
+
+        dispatchToCandidatesData({
+          type: candidateDataReducerActions.UPDATE_REHIRED_CANDIDATES,
+          payload: {
+            stateToChange: initialCandidatesDataStateNames.candidatesToRehire,
+            value: candidatesToRehire,
+          },
+        });
+
+        dispatchToCandidatesData({
+          type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES,
+          payload: {
+            stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
+            value: candidatesOnboarding,
+          },
+        });
+
+        dispatchToCandidatesData({
+          type: candidateDataReducerActions.UPDATE_REJECTED_CANDIDATES,
+          payload: {
+            stateToChange: initialCandidatesDataStateNames.rejectedCandidates,
+            value: candidatesRejected,
+          },
+        });
+
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }
+
   return (
     <>
       <StaffJobLandingLayout
@@ -331,6 +400,7 @@ const AccountPage = () => {
                           ? candidatesData.candidatesToRehire.length
                           : 0
                       }
+                      handleRefresh={handleRefreshForCandidateApplications}
                     />
 
                     <div className="jobs-container">

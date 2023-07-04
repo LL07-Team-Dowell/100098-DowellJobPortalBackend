@@ -36,9 +36,26 @@
   margin-bottom: 2.5%;
 }
 
+.candidates-container{
+  display: flex;
+  gap: 0.8rem;
+}
+
 .selected-candidates-count-container p,
-.sort-candidates-container p {
+.sort-candidates-container p,
+.refresh-candidates-container p {
   font-size: 0.8125rem;
+}
+
+.refresh-candidates-container {
+  margin: 0;
+}
+
+.refresh-candidates-container svg{
+  width: 1.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+  color: #000000;
 }
 
 .sort-candidates-container p {

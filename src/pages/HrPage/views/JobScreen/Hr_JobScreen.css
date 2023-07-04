@@ -5,6 +5,7 @@
   margin: 0 auto;
   
 }
+
 .hr__wrapper .selected-candidates-container{
   width: 100%;
   margin: 0 auto;
@@ -71,6 +72,19 @@
 
 .hr__wrapper .job__wrapper .job__Card__Container {
   margin-top: 4%;
+}
+
+.hr__Page__Container {
+  position: relative;
+}
+
+.refresh-container svg{
+  width: 1.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+  color: #000000;
+  position: absolute;
+  right: 7rem;
 }
 
 .hr__Page__Container .tasks-container.hr__Page .job__Card__Container {
