@@ -47,81 +47,147 @@
 }
 
 .create_your_team {
-  h2 {
+  box-sizing: border-box;
+  background-color: white;
+  border:#ccc 1px solid ;
+  border-radius: 5px;
+  padding:10px 20px;
+  position: absolute;
+  top:-5%;
+  left:50%;
+  z-index: 15;
+  transform:translate(-50%);
+  h2{
+    color: #000;
+    text-align: left;
+    font-size: 21px;
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 21.284px;
+    letter-spacing: 0.288px;
     margin-bottom: 10px;
+    
+  }
+  >label{
+    display: block;
+    margin-top: 10px;
+    color: #000;
+    font-size: 15px;
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 140%;
+  }
+  input,textarea{
+    width: 100%;
+    border:#efefef 1px solid ;
+    border-radius: 5px;
+    outline:none;
+    padding:5px 10px
   }
   .buttons{
     display: flex;
-    gap:20px ; 
-    align-items: center;
-    margin-left: auto;
     flex-direction: row-reverse;
+    align-items: center;
+    gap:15px;
     button{
-      width: 150px;
-      height: 45px;
-      border-radius: 10px;
-      color: white;
+      width: 90px;
+      padding:7px 4px ;
+      border-radius: 5px;
+      outline: none;
       border: none;
-      &:first-child{
-        background-color: darkgreen;
-      }
+      font-weight: 500;
+      background-color: #9A9A9A;
+      color: white;
+      cursor: pointer;
       &:last-child{
-        background-color:rgba(154, 154, 154, 1) ;
-
+      background-color: #005734;
       }
     }
   }
-  > input {
-    width: 450px;
-    padding: 8px 10px;
-    margin-top: 5px;
-    border: 1px solid gainsboro;
-    border-radius: 7px;
-    display: block;
-  }
-
-  > label {
-    font-weight: 600;
-    font-size: large;
-  }
-
-  #team_description {
-    width: 450px;
-    padding: 8px 10px;
-    margin-top: 5px;
-    border: 1px solid gainsboro;
-    border-radius: 7px;
-    display: block;
-  }
-
-  .add_member_input {
-    width: 450px;
-    padding: 8px 10px;
-    margin-top: 5px;
-    border: 1px solid gainsboro;
-    border-radius: 7px;
+  .checkboxes{
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
+    flex-wrap: wrap;
+    padding:5px;
+    background-color: #ccc;
+    border-radius: 5px;
+    div{
+      display: flex;
+    }
   }
+  .create_your_team-remove-btn{
+    background-color: transparent;
+    border: none;
+    font-size: 15px;
+  }
+  // .buttons{
+  //   button{
+  //     width: 150px;
+  //     height: 45px;
+  //     border-radius: 10px;
+  //     color: white;
+  //     border: none;
+  //     &:first-child{
+  //       background-color: darkgreen;
+  //     }
+  //     &:last-child{
+  //       background-color:rgba(154, 154, 154, 1) ;
 
-  .add_member_input p {
-    color: gray;
-    font-size: 13px;
-  }
+  //     }
+  //   }
+  // }
+  // > input {
+  //   width: 450px;
+  //   padding: 8px 10px;
+  //   margin-top: 5px;
+  //   border: 1px solid gainsboro;
+  //   border-radius: 7px;
+  //   display: block;
+  // }
 
-  .add_member_input > .icon {
-    color: rgb(0, 64, 0);
-    font-size: 18px;
-    font-weight: 900;
-  }
+  // > label {
+  //   font-weight: 600;
+  //   font-size: large;
+  // }
 
-  .checkboxes {
-    background-color: #f5f5f5;
-    padding: 15px;
-    border-radius: 10px;
-  }
+  // #team_description {
+  //   width: 450px;
+  //   padding: 8px 10px;
+  //   margin-top: 5px;
+  //   border: 1px solid gainsboro;
+  //   border-radius: 7px;
+  //   display: block;
+  // }
+
+  // .add_member_input {
+  //   width: 450px;
+  //   padding: 8px 10px;
+  //   margin-top: 5px;
+  //   border: 1px solid gainsboro;
+  //   border-radius: 7px;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: space-between;
+  //   cursor: pointer;
+  // }
+
+  // .add_member_input p {
+  //   color: gray;
+  //   font-size: 13px;
+  // }
+
+  // .add_member_input > .icon {
+  //   color: rgb(0, 64, 0);
+  //   font-size: 18px;
+  //   font-weight: 900;
+  // }
+
+  // .checkboxes {
+  //   background-color: #f5f5f5;
+  //   padding: 15px;
+  //   border-radius: 10px;
+  // }
 }
 
 .card-label {

@@ -37,14 +37,14 @@ const CreateTeam = ({toggleCheckboxes, settoggleCheckboxes,changeTeamName, handl
       {toggleCheckboxes ? (
         <div className='checkboxes'>
           {data.memebers.map((member, i) => (
-            <p key={i}>
+            <div key={i}>
               <input
                 type='checkbox'
                 value={member}
                 onChange={handleCheckboxChange}
               />
-              {member}
-            </p>
+              <span>{member}</span>
+            </div>
           ))}
         </div>
       ) : null}

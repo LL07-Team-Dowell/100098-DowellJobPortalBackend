@@ -8,6 +8,7 @@ import TeamScreeTaskProgessDetail from './compoonent/teamScreeTaskProgessDetail/
 import { getAllTeams } from '../../../../../services/createMembersTasks';
 import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContext';
 import CreateTask from './compoonent/createTask/createTask';
+import LoadingSpinner from '../../../../../components/LoadingSpinner/LoadingSpinner';
 
 const TeamScreenTasks = () => {
   const { currentUser } = useCurrentUserContext();
@@ -17,7 +18,7 @@ const TeamScreenTasks = () => {
     const [detail ,setdetail] = useState('in progress') ;
     const [showCreatTask,setShowCreateTask] = useState(false) 
     useEffect(()=>{
-      if(team === null){
+      if(team?.members === undefined){
         setloading(true)
         getAllTeams(currentUser.portfolio_info[0].org_id)
           .then(resp =>{ 
@@ -27,13 +28,13 @@ const TeamScreenTasks = () => {
       }
     },[])
     console.log({team})
-    if (loading) return <h1>Loading...</h1>
+    if (loading) return <LoadingSpinner/>
       return (
-        <div>
-          {/* { team.team_name !== null ? <Navbar title={team?.team_name.toString()} removeButton={true}/> : null } */}
+        <div style={{height:'130%'}}>
+          { team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true}/> : null }
           <TeamScreenLinks id={id}/>
           <TeamScreenTaskProgress />
-          <TeamScreeTaskProgessDetail members={team?.members}  detail={detail} setdetail={setdetail} ShowCreateTask={()=>setShowCreateTask(true)}/>
+          <TeamScreeTaskProgessDetail id={id} title={team?.team_name} members={team?.members}  detail={detail} setdetail={setdetail} ShowCreateTask={()=>setShowCreateTask(true)}/>
           {showCreatTask && <CreateTask id={id} members={team.members} team={team} unShowCreateTask={()=>setShowCreateTask(false)}/>} 
         </div>
         )

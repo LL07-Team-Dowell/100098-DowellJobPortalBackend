@@ -27,7 +27,7 @@ const Team = ({v,team_name ,setChoosedTeam}) => {
   
   return (
     <li className='team' onClick={()=>{navigate(`/team-screen-member/${v._id}/team-tasks`)}}>
-    {imageReturn(team_name) ?  <img src={imageReturn(team_name)} /> : <AiOutlineTeam style={{width:86,height:86,backgroundColor:'rgba(225, 251, 226, 1)',color:'rgba(0, 87, 52, 1)',borderRadius:'50%',fontSize:10,fontWeight:600,padding:10,boxSizing:'border-box'}}/>}
+    {imageReturn(team_name) ?  <img className='team_logo' style={{width:56,height:56}} src={imageReturn(team_name)} /> : <AiOutlineTeam style={{width:56,height:56,backgroundColor:'rgba(225, 251, 226, 1)',color:'rgba(0, 87, 52, 1)',borderRadius:'50%',fontSize:10,fontWeight:600,padding:10,boxSizing:'border-box',marginLeft:5}}/>}
       <h2>{team_name}</h2>
       <p className='paragraph-discription'>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aspernatur sapiente nostrum quibusdam eum odit animi dolorem iusto earum non? </p>
       <button>View More <HiArrowNarrowRight/></button>
