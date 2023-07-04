@@ -28,6 +28,7 @@ import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenA
 import HrTrainingQuestions from '../HrTrainingScreen/HrTrainingQuestion';
 import { trainingCards } from '../HrTrainingScreen/hrTrainingCards';
 import { getTrainingManagementQuestions } from '../../../../services/hrTrainingServices';
+import { IoMdRefresh } from "react-icons/io";
 import { set } from 'date-fns';
 
 function fuzzySearch(query, text) {
@@ -241,6 +242,48 @@ function HrJobScreen() {
     navigate(`/new-task-screen/?applicant=${data.applicant}&attendance=true`)
   }
 
+  const handleRefreshForCandidateApplications = () => {
+    setLoading(true);
+    getCandidateApplicationsForHr(
+      currentUser.portfolio_info[0].org_id,
+    ).then((res) => {
+      console.log("res", res);
+      const filteredData = res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
+      setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
+      setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
+      setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
+      setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
+
+      setLoading(false);
+    }).catch((err) => {
+      console.log(err);
+      setLoading(false);
+    });
+  };
+
+  const handleRefreshForCandidateTasks = () => {
+    setLoading(true);
+    getCandidateTask(
+      currentUser.portfolio_info[0].org_id,
+    ).then((res) => {
+      console.log("res", res);
+      const usersWithTasks = [
+        ...new Map(
+          res[3].data.response.data
+            .filter(
+              (j) => currentUser.portfolio_info[0].data_type === j.data_type
+            )
+            .map((task) => [task.applicant, task])
+        ).values(),
+      ];
+      setAllTasks(usersWithTasks.reverse());
+      setLoading(false);
+    }).catch((err) => {
+      console.log(err);
+      setLoading(false);
+    })
+  }
+
   return (
     <StaffJobLandingLayout 
       hrView={true} 
@@ -283,12 +326,15 @@ function HrJobScreen() {
         handleMenuItemClick={handleMenuItemClick} 
       /> 
     }
+    <div className="refresh-container" onClick={handleRefreshForCandidateApplications}>
+        <IoMdRefresh />
+    </div>
     {
       sub_section === undefined && section === "home" || section === undefined ? <>
-        <div className='hr__wrapper'>
+      <div className='hr__wrapper'>
 
           {
-            isLoading ? <LoadingSpinner /> :
+            isLoading ? (<LoadingSpinner />) : ( 
 
             <div className='job__wrapper'>
               {
@@ -320,7 +366,7 @@ function HrJobScreen() {
                   </>
                 }))
               }
-            </div>
+            </div> )
 
           }
           
@@ -405,6 +451,7 @@ function HrJobScreen() {
               title={"Attendance"}
               hrAttendancePageActive={true}
               handleSortOptionClick={(data) => setCurrentSortOption(data)}
+              handleRefresh={handleRefreshForCandidateTasks}
             />
 
             {
@@ -483,6 +530,7 @@ function HrJobScreen() {
                   tasksCount={currentSortOption ? sortResults.length : allTasks.length}
                   className={"hr__Page"}
                   handleSortOptionClick={(data) => setCurrentSortOption(data)}
+                  handleRefresh={handleRefreshForCandidateTasks}
                 />
 
                 {

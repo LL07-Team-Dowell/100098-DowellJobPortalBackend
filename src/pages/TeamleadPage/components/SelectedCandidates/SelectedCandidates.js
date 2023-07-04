@@ -1,6 +1,7 @@
 import Close from "@mui/icons-material/Close";
 import FilterIcon from "../FilterIcon/FilterIcon";
 import { IoCalendarClearOutline } from "react-icons/io5";
+import { IoMdRefresh } from "react-icons/io";
 
 import "./style.css";
 import { MdOutlineWorkOutline, MdHourglassDisabled } from "react-icons/md";
@@ -8,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import useClickOutside from "../../../../hooks/useClickOutside";
 
 
-const SelectedCandidates = ({ showTasks, candidatesCount, tasksCount, hrPageActive, title, className, sortActive, handleSortOptionClick, hrAttendancePageActive }) => {
+const SelectedCandidates = ({ showTasks, candidatesCount, tasksCount, hrPageActive, title, className, sortActive, handleSortOptionClick, hrAttendancePageActive, handleRefresh }) => {
     const [showSortOptions, setShowSortOptions] = useState(false);
     const sortOptionsRef = useRef(null);
 
@@ -60,11 +61,16 @@ const SelectedCandidates = ({ showTasks, candidatesCount, tasksCount, hrPageActi
                     <p>{ showTasks ? `Task given to ${tasksCount ? tasksCount : '0'} candidates`: `${candidatesCount ? candidatesCount : '0'} candidates are selected for the roles` }</p>    
                 </div>
             }
-
-            <div className="sort-candidates-container" onClick={() => {setShowSortOptions(true)}}>
-                <FilterIcon />
-                <p>Sort</p>
-            </div>
+ 
+            <div className="candidates-container">
+                <div className="sort-candidates-container" onClick={() => {setShowSortOptions(true)}}>
+                    <FilterIcon />
+                    <p>Sort</p>
+                </div>
+                <div className="refresh-candidates-container" onClick={handleRefresh}>
+                    <IoMdRefresh />
+                </div>
+            </div> 
 
             {
                 showSortOptions && <>
