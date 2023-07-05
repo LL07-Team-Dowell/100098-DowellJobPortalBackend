@@ -84,8 +84,9 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
     setTaskMembers([])
   },[singleTask])
   return (
+    <div className='overlay'>
     <div className='create-new-task'  tabIndex={0}  >
-          <h2 className=''>Create Your Team</h2>
+          <h2 className=''>Create New Task</h2>
           <label htmlFor='task_name'>Task Name</label>
           <input
             type='text'
@@ -176,6 +177,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
             <button onClick={createTeamSubmit}>submit</button>
             <button onClick={unShowCreateTask}>Cancel</button>
           </div>
+        </div>
         </div>
   )
 }

@@ -1,86 +1,95 @@
-.add-member-popup{
-    box-sizing: border-box;
-    background-color: white;
-    border:#ccc 1px solid ;
-    border-radius: 5px;
-    padding:10px 20px;
-    position: absolute;
-    top:7%;
-    left:50%;
-    z-index: 15;
-    transform:translate(-50%);
-    z-index: 100000;
-    // &::before{
-    //     content: '';
-    //     top:-100px;
-    //     left: -300px;
-    //     z-index: -900;
-    //     position: absolute;
-    //     width: 1000vw;
-    //     height: 100vh;
-    //     background-color: black;
-    //     opacity: 0.2;
-    // }
-    .close-btn{
+.overlay{
         position: fixed;
-        right:-40px;
-        top:0;
-        background-color: transparent;
-        width: 20px;
-        color: #000;
-        font-weight: 600;
-        transform: translateX(10px);
-        cursor: pointer;
-    }
-    >label{
-        display: block;
-        margin-top: 10px;
-        color: #000;
-        font-size: 15px;
-        font-family: Poppins;
-        font-style: normal;
-        font-weight: 500;
-        line-height: 140%;
-      }
-      input{
-
+        top: 0;
+        left: 0;
         width: 100%;
-        border:#efefef 1px solid ;
-        border-radius: 5px;
-        outline:none;
-        padding:5px 10px;
-        max-height: 75px;
-      }
-    .members{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        >div{
-            display: flex;
-        }
-    }
-    button{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #005734;
-            border: none;
-            outline: none;
-            color: white;
-            height: 30px;
-            width: 120px;
-            border-radius: 6px;
-            margin-left: auto;
-            margin-right: 10%;
-            cursor: pointer;
-            div{
-                margin: auto;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 5px;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); 
+        z-index: 9999; 
+        .add-member-popup{
+            box-sizing: border-box;
+            background-color: white;
+            border:#ccc 1px solid ;
+            border-radius: 5px;
+            padding:10px 20px;
+            position: absolute;
+            top:30%;
+            left:50%;
+            z-index: 15;
+            transform:translate(-50%);
+            z-index: 100000;
+            // &::before{
+            //     content: '';
+            //     top:-100px;
+            //     left: -300px;
+            //     z-index: -900;
+            //     position: absolute;
+            //     width: 1000vw;
+            //     height: 100vh;
+            //     background-color: black;
+            //     opacity: 0.2;
+            // }
+            .close-btn{
+                position: fixed;
+                right:-40px;
+                top:0;
+                background-color: transparent;
+                width: 20px;
+                color: #000;
                 font-weight: 600;
-                width: 155px;
+                transform: translateX(10px);
+                cursor: pointer;
             }
-    }
+            >label{
+                display: block;
+                margin-top: 10px;
+                color: #000;
+                font-size: 15px;
+                font-family: Poppins;
+                font-style: normal;
+                font-weight: 500;
+                line-height: 140%;
+              }
+              input{
+        
+                width: 100%;
+                border:#efefef 1px solid ;
+                border-radius: 5px;
+                outline:none;
+                padding:5px 10px;
+                max-height: 75px;
+              }
+            .members{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                >div{
+                    display: flex;
+                }
+            }
+            button{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: #005734;
+                    border: none;
+                    outline: none;
+                    color: white;
+                    height: 30px;
+                    width: 120px;
+                    border-radius: 6px;
+                    margin-left: auto;
+                    margin-right: 10%;
+                    cursor: pointer;
+                    div{
+                        margin: auto;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 5px;
+                        font-weight: 600;
+                        width: 155px;
+                    }
+            }
+        }
 }

@@ -22,7 +22,7 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
     
        
       const EditTeamFunction = () => {
-        console.log(currentUser.portfolio_info[0].org_id,[...members,...addedMembers])
+        if(name && addedMembers.length > 0)
         EditTeam(currentUser.portfolio_info[0].org_id,{team_name,members:[...members ,...addedMembers]})
           .then(resp => {
             console.log(resp);
@@ -33,9 +33,13 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
           .catch(err => {
             console.log(err)
           })
+        else{
+          toast.error("an input/s haven't displayed")
+        }
       }
       return (
-      <div className='add-member-popup' style={{zIndex:9999}}>
+      <div className='overlay'>
+      <div className='add-member-popup' style={{zIndex:100}}>
       <button className='close-btn' onClick={close}>X</button>
       <h2>Edit Team</h2>
       <label htmlFor='task_name'>Team Name</label>
@@ -62,6 +66,7 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
       ))}
       </div>
       <button onClick={()=>EditTeamFunction()}>Edit Team </button>
+    </div>
     </div>
   )
 }

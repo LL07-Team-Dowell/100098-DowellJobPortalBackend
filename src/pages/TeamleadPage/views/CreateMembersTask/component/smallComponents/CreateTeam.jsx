@@ -4,8 +4,9 @@ import { AiOutlinePlusCircle } from 'react-icons/ai';
 const CreateTeam = ({toggleCheckboxes, settoggleCheckboxes,changeTeamName, handleCheckboxChange ,data}) => {
   
   return (
+    <div className='overlay'>
     <div className='create_your_team'>
-      <h2 className=''>Create Your Team</h2>
+      <h2 className=''>Create asdasd Team</h2>
       <label htmlFor='team_name'>Team Name</label>
       <input
         type='text'
@@ -49,6 +50,7 @@ const CreateTeam = ({toggleCheckboxes, settoggleCheckboxes,changeTeamName, handl
         </div>
       ) : null}
       <br />
+    </div>
     </div>
   );
 };

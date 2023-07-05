@@ -71,6 +71,7 @@ const CreateTeam = () => {
       </div>
 
       {showCard ? (
+        <div className='overlay' >
         <div className='create_your_team  ' tabIndex={0}  >
           <button className='create_your_team-remove-btn' onClick={() => { setshowCard(false) }}><AiOutlineClose/></button>
           <h2 className=''>Create Your Team</h2>
@@ -122,6 +123,7 @@ const CreateTeam = () => {
             <button onClick={()=>setshowCard(false)}>Cancel</button>
             <button onClick={createTeamSubmit}>Next</button>
           </div>
+        </div>
         </div>
       ) : null}
     </div>
