@@ -15,7 +15,7 @@ import { IoMdRefresh } from 'react-icons/io';
 function Applied() {
   const [currentNavigationTab, setCurrentNavigationTab] = useState("Applied");
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
-  console.log(candidateJobs);
+  // console.log(candidateJobs);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
@@ -39,16 +39,24 @@ function Applied() {
           (application) =>
             application.username === currentUser.userinfo.username
         );
-        console.log(currentUserApplications);
+
         const currentUserAppliedJobs = userAppliedJobs.filter((currentJob) =>
           currentUserApplications.find(
             ({ job_number }) => currentJob.job_number === job_number
           )
         );
+
         console.log(currentUserAppliedJobs);
+
+        const sortedJobs = currentUserAppliedJobs.sort((a, b) => {
+          const dateA = new Date(a.date_applied);
+          const dateB = new Date(b.date_applied);
+          return dateB - dateA; // Sort in descending order (most recent first)
+        });
+
+        console.log(sortedJobs);
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
-        // setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.PENDING_SELECTION) } })
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.SELECTED) } })
         return setLoading(false);
 
@@ -90,9 +98,8 @@ function Applied() {
             ({ job_number }) => currentJob.job_number === job_number
           )
         );
-        console.log(currentUserAppliedJobs);
-        const sortJob = currentUserAppliedJobs.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": sortJob } });
+        // const sortJob = currentUserAppliedJobs.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.SELECTED) } })
         return setLoading(false);
