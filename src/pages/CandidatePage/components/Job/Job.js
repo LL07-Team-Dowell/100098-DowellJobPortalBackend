@@ -10,10 +10,12 @@ import JobCard from '../../../../components/JobCard/JobCard';
 import TitleNavigationBar from '../../../../components/TitleNavigationBar/TitleNavigationBar';
 import { changeToTitleCase } from '../../../../helpers/helpers';
 import { useCandidateJobsContext } from '../../../../contexts/CandidateJobsContext';
-import { getAppliedJobs, getJobs } from '../../../../services/candidateServices';
+import { getAppliedJobs, getCandidateApplication, getCandidateTask, getJobs } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { useJobContext } from '../../../../contexts/Jobs';
 import { SettingsAccessibility } from '@mui/icons-material';
+import { IoMdRefresh } from 'react-icons/io';
+import { getCandidateApplicationsForHr } from '../../../../services/hrServices';
 
 function JobScreen() {
     const { jobs, setJobs } = useJobContext();
@@ -224,7 +226,40 @@ function JobScreen() {
         navigate(`/apply/job/${currentJob._id}`, { state: { currentUser: currentUser } })
     }
 
+    const handleRefreshForCandidateApplications = () => {
+        const datass = currentUser.portfolio_info[0].org_id;
+        setJobsLoading(true);
+        Promise.all([
+            getJobs(datass),
+            getAppliedJobs(datass)
+        ]).then(([jobsResponse, appliedJobsResponse]) => {
+            const filterJob = jobsResponse.data.response.data.filter(job => job.data_type === currentUser?.portfolio_info[0].data_type);
+            setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
+
+            setJobsLoading(false);
+            setAllRequestsDone(true);
+
+            const userApplication = appliedJobsResponse.data.response.data?.filter(
+                (application) => application.data_type === currentUser?.portfolio_info[0].data_type
+            )
+            const currentUserAppliedJobs = userApplication?.filter(
+                (application) =>
+                    application.username === currentUser.userinfo.username
+            );
+
+            setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
+        }).catch(err => {
+            console.log(err);
+            setJobsLoading(false)
+            setAllRequestsDone(true);
+        });
+
+        if (!currentUser) return setLoading(false);
+        if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 0) return setLoading(false);
+    }
+
     return <div className='candidate__Jobs__Wrapper'>
+
         {
             isLoading ? <LoadingSpinner /> :
 
@@ -232,6 +267,9 @@ function JobScreen() {
                     <TitleNavigationBar title={`${changeToTitleCase(currentCategory)} Jobs`} showSearchBar={true} handleBackBtnClick={() => currentCategory ? navigate(-1) : navigate("/home")} />
 
                     <div className='candidate__Jobs__Container'>
+                        <div className="refresh-container" onClick={handleRefreshForCandidateApplications} id='refresh-container'>
+                            <IoMdRefresh />
+                        </div>
                         {
                             jobsLoading || !jobSelectionHasCategory ? <></> :
                                 <TogglerNavMenuBar className={`candidate__Job__Selections__Toggler ${currentCategory.toLocaleLowerCase() === "employee" ? "single__Item" : ""}`} menuItems={jobSelectionCategories} currentActiveItem={currentJobCategory} handleMenuItemClick={(item) => setCurrentJobCategory(item)} />
@@ -250,7 +288,7 @@ function JobScreen() {
                                                     React.Children.toArray(jobsToDisplay.map(job => {
 
                                                         if (!job.is_active) return <></>
-                                                        return <JobCard
+                                                        return <><JobCard
                                                             job={job}
                                                             candidateViewJob={true}
                                                             subtitle={currentCategory}
@@ -258,6 +296,7 @@ function JobScreen() {
                                                             buttonText={currentUser ? candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? "Apply" : "Applied" : "Apply"}
                                                             handleBtnClick={(job) => handleApplyButtonClick(job)}
                                                         />
+                                                        </>
                                                     }))
                                     }
                                 </> :
