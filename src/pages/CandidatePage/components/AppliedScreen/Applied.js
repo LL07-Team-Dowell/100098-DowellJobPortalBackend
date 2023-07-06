@@ -39,6 +39,7 @@ function Applied() {
           (application) =>
             application.username === currentUser.userinfo.username
         );
+        console.log(currentUserApplications);
         const currentUserAppliedJobs = userAppliedJobs.filter((currentJob) =>
           currentUserApplications.find(
             ({ job_number }) => currentJob.job_number === job_number
@@ -48,7 +49,7 @@ function Applied() {
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
         // setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.PENDING_SELECTION) } })
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.SHORTLISTED) } })
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.SELECTED) } })
         return setLoading(false);
 
       } catch (error) {
@@ -93,7 +94,7 @@ function Applied() {
         const sortJob = currentUserAppliedJobs.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": sortJob } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.PENDING_SELECTION) } })
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.SELECTED) } })
         return setLoading(false);
 
       } catch (error) {
