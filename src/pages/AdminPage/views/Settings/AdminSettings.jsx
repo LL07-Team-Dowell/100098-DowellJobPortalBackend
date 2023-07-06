@@ -6,7 +6,7 @@ import './index.scss'
 import Alert from "./component/Alert";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
-import { getSettingUserProfileInfo } from "../../../../services/settingServices";
+import { getSettingUserProfileInfo, configureSettingUserProfileInfo } from "../../../../services/settingServices";
 import { useJobContext } from "../../../../contexts/Jobs";
 import { getApplicationForAdmin } from "../../../../services/adminServices";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
@@ -106,7 +106,7 @@ const AdminSettings = () => {
     const teamManagementProduct = currentUser.portfolio_info.find(item => item.product === "Team Management");
     if (!teamManagementProduct) return
     setLoading(true);
-    axios.post('https://100098.pythonanywhere.com/setting/SettingUserProfileInfo/', {
+    axios.post('https://100098.pythonanywhere.com/settinguserprofileinfo/', {
       company_id: teamManagementProduct.org_id,
       org_name: teamManagementProduct.org_name,
       owner: currentUser.userinfo.username,
@@ -123,7 +123,7 @@ const AdminSettings = () => {
     const teamManagementProduct = currentUser.portfolio_info.find(item => item.product === "Team Management");
     if (!teamManagementProduct) return
     setLoading(true);
-    axios.post('https://100098.pythonanywhere.com/setting/SettingUserProfileInfo/', {
+    axios.post('https://100098.pythonanywhere.com/settinguserprofileinfo/', {
       company_id: teamManagementProduct.org_id,
       org_name: teamManagementProduct.org_name,
       owner: currentUser.userinfo.username,
