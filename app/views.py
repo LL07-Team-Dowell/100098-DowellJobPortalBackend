@@ -1032,68 +1032,75 @@ class hr_reject_candidate(APIView):
                 "rejected_on": data.get('rejected_on')
             }
             insert_to_hr_report = {
-                "company_id": data.get('company_id'),
-                "applicant": data.get('applicant'),
-                "username": data.get("username"),
-                "reject_remarks": data.get('reject_remarks'),
-                "status": "Rejected",
-                "data_type": data.get('data_type'),
-                "rejected_on": data.get('rejected_on'),
-                #"company_name": data.get('company_name'),
-                #"user_type": data.get('user_type'),
-                #"notified": create_notification['isSuccess'],
-                #"Rejected": "True",
-                #"notification_id": create_notification['inserted_id']
-            }
-            serializer = RejectSerializer(data=data)
-            if serializer.is_valid():
-                c_r=[]
-                h_r=[]
-                def call_dowellconnection(*args):
-                    d=dowellconnection(*args)
-                    arg=args
-                    print(d,*args,"=======================")
+            "company_id": data.get('company_id'),
+            "applicant": data.get('applicant'),
+            "username": data.get("username"),
+            "reject_remarks": data.get('reject_remarks'),
+            "status": "Rejected",
+            "data_type": data.get('data_type'),
+            "rejected_on": data.get('rejected_on'),
+            #"company_name": data.get('company_name'),
+            #"user_type": data.get('user_type'),
+            #"notified": create_notification['isSuccess'],
+            #"Rejected": "True",
+            #"notification_id": create_notification['inserted_id']
+        }
+
+        serializer = RejectSerializer(data=data)
+        if serializer.is_valid():
+            candidate_report_result = []
+            hr_report_result = []
+
+            def call_dowellconnection(*args):
+                try:
+                    result = dowellconnection(*args)
                     if "candidate_report" in args:
-                        c_r.append(d)
+                        candidate_report_result.append(result)
                     if "hr_report" in args:
-                        h_r.append(d)
+                        hr_report_result.append(result)
+                except Exception as e:
+                    # Handle the exception
+                    print(f"Error in call_dowellconnection: {e}")
 
-                candidate_thread = threading.Thread(target=call_dowellconnection,
-                                                    args=(*candidate_management_reports, "update", field, update_field))
-                candidate_thread.start()
+            candidate_thread = threading.Thread(target=call_dowellconnection, args=(*candidate_management_reports, "update", field, update_field))
+            candidate_thread.start()
 
-                hr_thread = threading.Thread(target=call_dowellconnection,
-                                             args=(*hr_management_reports, "insert", insert_to_hr_report, update_field))
-                hr_thread.start()
+            hr_thread = threading.Thread(target=call_dowellconnection, args=(*hr_management_reports, "insert", insert_to_hr_report, update_field))
+            hr_thread.start()
 
-                candidate_thread.join()
-                hr_thread.join()
+            candidate_thread.join()
+            hr_thread.join()
 
-                if not candidate_thread.is_alive() and not hr_thread.is_alive():
-                    """# call the mark as seen notification api-----
-                    n_id = insert_to_hr_report['notification_id']
-                    url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
-                    patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
-"""
-                    if json.loads(c_r[0])["isSuccess"] ==True:
-                        return Response({"message": f"Candidate has been {insert_to_hr_report['status']}",
-                                        #"notification": {"notified": insert_to_hr_report['notified'],
-                                        #                "rejected": patch_notification['isSuccess'],
-                                        #                    "notification_id": insert_to_hr_report['notification_id']},
-                                        "response":json.loads(c_r[0])},
-                            status=status.HTTP_201_CREATED,
-                        )
-                    else:
-                        return Response({"message": "Hr Operation has failed","response": json.loads(c_r[0])},
-                                    status=status.HTTP_204_NO_CONTENT)
+            if not candidate_thread.is_alive() and not hr_thread.is_alive():
+                """# call the mark as seen notification api-----
+                n_id = insert_to_hr_report['notification_id']
+                url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+                """
+                if json.loads(candidate_report_result[0])["isSuccess"]:
+                    return Response(
+                        {
+                            "message": f"Candidate has been {insert_to_hr_report['status']}",
+                            #"notification": {"notified": insert_to_hr_report['notified'],
+                            #                "rejected": patch_notification['isSuccess'],
+                            #                    "notification_id": insert_to_hr_report['notification_id']},
+                            "response": json.loads(candidate_report_result[0]),
+                        },
+                        status=status.HTTP_201_CREATED,
+                    )
                 else:
-                    return Response({"message": "Hr Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                    return Response(
+                        {"message": "Hr Operation has failed", "response": json.loads(candidate_report_result[0])},
+                        status=status.HTTP_204_NO_CONTENT,
+                    )
             else:
-                default_errors = serializer.errors
-                new_error = {}
-                for field_name, field_errors in default_errors.items():
-                    new_error[field_name] = field_errors[0]
-                return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Hr Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
 
 # api for hr management ends here________________________
