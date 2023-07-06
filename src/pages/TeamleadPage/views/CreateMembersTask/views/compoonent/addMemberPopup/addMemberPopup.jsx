@@ -52,6 +52,7 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
             onChange={(e)=> setname(e.target.value)}
           />
           <br />
+      <label htmlFor='task_name'>Team Name</label>
       <div className='members'>
         {bigMember.map((item) => (
         <div  key={item}>
@@ -65,7 +66,7 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
         </div>
       ))}
       </div>
-      <button onClick={()=>EditTeamFunction()}>Edit Team </button>
+      <button className='edit-team' onClick={()=>EditTeamFunction()}>Edit Team </button>
     </div>
     </div>
   )

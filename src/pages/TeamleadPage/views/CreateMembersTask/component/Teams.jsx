@@ -11,11 +11,10 @@ const Teams = ({back , setChoosedTeam}) => {
   const { currentUser } = useCurrentUserContext();
     console.log(currentUser.portfolio_info[0].org_id)
   const {data , setdata} = useValues() ;
-  
+  const reversedTeams = [...data.TeamsSelected].reverse();
   return (
     <div className='teams_data'>
-    <div>{data.TeamsSelected.map(v => <Team v={v} team_name={v.team_name} setChoosedTeam={setChoosedTeam}/>  )}</div>
-    <button onClick={back}>back</button>
+    <div>{reversedTeams.map(v => <Team v={v} team_name={v.team_name} setChoosedTeam={setChoosedTeam}/>  )}</div>
     </div>
   )
 }

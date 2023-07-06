@@ -6,6 +6,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity (0.8) */
     z-index: 9999; /* Adjust the z-index value to ensure the overlay appears on top */
+    font-family: Poppins;
     .create-new-task{
       box-sizing: border-box;
       background-color: white;
@@ -18,6 +19,7 @@
       z-index: 15;
       transform:translate(-50%);
       width: 500px;
+      font-family: Poppins;
       h2{
         color: #000;
         text-align: left;
@@ -30,7 +32,7 @@
         margin-bottom: 10px;
         
       }
-      >label{
+      label{
         display: block;
         margin-top: 10px;
         color: #000;
@@ -47,6 +49,7 @@
         outline:none;
         padding:5px 10px;
         max-height: 75px;
+        font-family: Poppins;
       }
       .buttons{
         margin-top: 20px;
@@ -54,6 +57,7 @@
         flex-direction: row-reverse;
         align-items: center;
         gap:15px;
+        font-family: Poppins;
         button{
           width: 90px;
           padding:7px 4px ;
@@ -61,11 +65,12 @@
           outline: none;
           border: none;
           font-weight: 500;
-          background-color: #9A9A9A;
+          background-color:#005734;
           color: white;
           cursor: pointer;
+          font-family: Poppins;
           &:last-child{
-          background-color: #005734;
+          background-color: #9A9A9A;
           }
         }
       }
@@ -74,10 +79,15 @@
         background-color: white;
         margin-bottom: 10px;
         gap:10px;
+        font-family: Poppins;
         >div{
           display: flex;
           gap:5px;
           align-items: center;
+          >p{
+            white-space: nowrap;
+
+          }
         }
       }
       .create-new-task-member-container{
@@ -85,6 +95,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
+        font-family: Poppins;
         div{
           display: flex;
         }
