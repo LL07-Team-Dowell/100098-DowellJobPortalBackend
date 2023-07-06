@@ -1,11 +1,23 @@
 // styles 
 import './teamScreeTaskProgessDetail.scss'
 // react
-import React from 'react'
+import React, { useEffect } from 'react'
 // icons
 import {HiPlus} from 'react-icons/hi'
-const TeamScreeTaskProgessDetail = ({detail ,setdetail,ShowCreateTask, members}) => {
+import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
+import axios from 'axios';
+const TeamScreeTaskProgessDetail = ({detail ,setdetail,ShowCreateTask, members, title, id}) => {
+  const { currentUser } = useCurrentUserContext();
 
+    useEffect(()=>{
+        axios(`https://100098.pythonanywhere.com/get_task/${currentUser.portfolio_info[0].org_id}/`)
+            .then(resp => {
+                console.log({teamFind:resp.data.response.data.find(m => m._id === id)});
+                console.log(resp.data.response.data);
+                console.log({teamsId:resp.data.response.data.map(m => m._id),id})
+            })
+            .catch(err => console.log(err))
+    },[])
   return (
     <div className='team-screen-task-progress-detail'>
         <div className="team-screen-task-progress-detail-header">
@@ -15,7 +27,7 @@ const TeamScreeTaskProgessDetail = ({detail ,setdetail,ShowCreateTask, members})
         <hr />
         <div className="team-screen-task-progress-detail-content">
             <div className='team-screen-task-progress-detail-content-data'>
-                <p className='team-screen-task-progress-detail-content-data-team-name'>Front-end Team</p>
+                <p className='team-screen-task-progress-detail-content-data-team-name'>{title}</p>
                 <h5 className='team-screen-task-progress-detail-content-data-team-task-name'>Develop main Screen</h5>
                 <p className='team-screen-task-progress-detail-content-data-team-start-date'>Started on . <span>Apr 2023</span></p>
                 <div className='team-screen-task-progress-detail-content-members-and-progress'>

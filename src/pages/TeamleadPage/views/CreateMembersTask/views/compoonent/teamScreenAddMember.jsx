@@ -4,7 +4,7 @@ import Checkbox from '../../component/Checkbox'
 const TeamScreenAddMember = ({membersTeam}) => {
     const [newMembers , setnewMembers] = useState([]) ; 
     const allMembers = ['boxboy','ayo','sagar','isaac','Hardic','akram','manish']
-  const userIsThere = (user) => allMembers.find(member => member === member)
+    const userIsThere = (user) => taskMembers.includes(user);
 
   return (
     <div className='team-screen-add-member-popup'>

@@ -6,7 +6,7 @@ const TeamScreenDisplayMembers = ({members}) => {
   return (
     <div className='team-screen-display-members'>
     {
-        members.map(member => <TeamScreenDisplaySingleMember member={member}/>)
+      members !== undefined ?  members.map(member => <TeamScreenDisplaySingleMember member={member}/>) : null
     }
     </div>
   )
