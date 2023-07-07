@@ -292,6 +292,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
 
   let navigate = useNavigate()
   const [uniqueItems, setUniqueItems] = useState([]);
+  console.log(uniqueItems);
   const uniqueTags = new Set();
   const [questionsLoading, setQuestionsLoading] = useState(true);
   const [submitInitialResponseLoading, setSubmitInitialResponseLoading] = useState(false);
@@ -314,7 +315,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
 
   }, [shorlistedJob]);
 
-
+  // console.log(uniqueItems);
   useEffect(() => {
     if (allquestions.length > 0) {
       const updatedUniqueItems = [];
@@ -343,7 +344,6 @@ function CandidateTranningScreen({ shorlistedJob }) {
   }, [])
 
   const createResp = (itemModule, itemQuestionLink) => {
-    console.log(`item module ${itemModule}`);
     const dataToPost = {
       company_id: currentUser.portfolio_info[0].org_id,
       data_type: currentUser.portfolio_info[0].data_type,
@@ -427,9 +427,12 @@ function CandidateTranningScreen({ shorlistedJob }) {
               <div className="traning-items">
 
                 {
-                  shorlistedJob.map((item => {
-                    console.log(item.module);
+
+                  uniqueItems.map((item => {
                     const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
+
+                    // console.log(shorlistedJob)
+
                     if (!matchModule) return <></>
 
                     return < div className="item-1" >
@@ -474,50 +477,6 @@ function CandidateTranningScreen({ shorlistedJob }) {
                   }), [])
                 }
 
-                {/* {
-                shorlistedJob.length % 3 === 1 ? <>
-                  <div className="item-2">
-                    <img src={assets.lock_screen} alt="" />
-                  </div>
-                </> : <></>
-              }
-              {
-                shorlistedJob.length % 3 === 2 ? <>
-                  <div className="item-2">
-                    <img src={assets.lock_screen} alt="" />
-                  </div>
-                </> : <></>
-              } */}
-
-                {/* <div className="item-1">
-                <img src={assets.frontend_icon} alt="frontend" />
-                <h2>Front-end</h2>
-                <p>Prepare for a career in Front-end Development. Receive professional-level training from uxliving lab</p>
-                <button>
-                  <Link to="#">
-                    Start Now <BiRightArrowAlt />
-                  </Link>
-                </button>
-
-                <div className="bottom-img">
-                  <img src={assets.bg_rectang} alt="rectbg" />
-                </div>
-              </div> */}
-                {/* <div className="item-2">
-                <img src={assets.lock_screen} alt="" />
-              </div>
-              <div className="item-2">
-                <img src={assets.lock_screen} alt="" />
-              </div>
-              <div className="item-2">
-                <img src={assets.lock_screen} alt="" />
-              </div>
-              <div className="item-2">
-                <img src={assets.lock_screen} alt="" />
-              </div>
-              <div className="item-2">
-                <img src={assets.lock_screen} alt="" />
-              </div> */}
               </div>
           }
         </Section_2>
