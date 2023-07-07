@@ -310,9 +310,10 @@ function CandidateTranningScreen({ shorlistedJob }) {
     fetchQuestions();
 
     // if (allquestions.length > 0) return setQuestionsLoading(false);
-    console.log(allquestions.length);
+    // console.log(allquestions.length);
 
   }, [shorlistedJob]);
+
 
   useEffect(() => {
     if (allquestions.length > 0) {
@@ -342,7 +343,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
   }, [])
 
   const createResp = (itemModule, itemQuestionLink) => {
-    console.log(itemModule);
+    console.log(`item module ${itemModule}`);
     const dataToPost = {
       company_id: currentUser.portfolio_info[0].org_id,
       data_type: currentUser.portfolio_info[0].data_type,
@@ -424,10 +425,11 @@ function CandidateTranningScreen({ shorlistedJob }) {
           {
             questionsLoading ? <LoadingSpinner /> :
               <div className="traning-items">
+
                 {
                   shorlistedJob.map((item => {
+                    console.log(item.module);
                     const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
-                    console.log(item);
                     if (!matchModule) return <></>
 
                     return < div className="item-1" >

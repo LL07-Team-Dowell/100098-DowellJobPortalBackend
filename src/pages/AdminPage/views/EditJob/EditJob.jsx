@@ -108,9 +108,8 @@ function EditJob({ subAdminView }) {
       .then(response => {
         setUpdateLoading(false);
 
-        console.log(response.status)
-        if (response.status === 204) {
-          console.log(formData);
+        console.log(response.statusText)
+        if (response.statusText === "OK") {
           setJobs(jobs.map((job) => {
             if (job._id === _id) {
               return { ...job, ...formData }
@@ -119,6 +118,7 @@ function EditJob({ subAdminView }) {
             }
           }))
           navigate(-1);
+          console.log("hello");
           toast.success("Job updated successfully");
         }
       })
