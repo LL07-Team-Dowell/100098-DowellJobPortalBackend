@@ -55,13 +55,13 @@ const CreateTeam = () => {
   const userIsThere = (user) => data.selected_members.find(newUser => newUser === user)
   return (
     <>
-    <Navbar title=" Create Team" removeButton={true}/> 
+    <Navbar title=" Create Team" color={'#005734'} removeButton={true}/> 
     <div className='container' style={{ position: 'relative' }}>
       
       <div style={{marginTop:30}} className=' Create_Team' onClick={() => { setshowCard(true) }}>
         <div>
           <div>
-            <AiOutlinePlusCircle className='icon' />
+            <AiOutlinePlusCircle className='icon' style={{fontSize:"2rem"}} />
           </div>
           <h4>Create a Team</h4>
           <p>
@@ -120,8 +120,8 @@ const CreateTeam = () => {
           ) : null}
           <br />
           <div className="buttons">
+            <button onClick={createTeamSubmit}>Create</button>
             <button onClick={()=>setshowCard(false)}>Cancel</button>
-            <button onClick={createTeamSubmit}>Next</button>
           </div>
         </div>
         </div>

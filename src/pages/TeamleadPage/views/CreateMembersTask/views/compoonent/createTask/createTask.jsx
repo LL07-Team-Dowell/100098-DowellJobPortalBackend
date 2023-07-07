@@ -85,7 +85,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
   },[singleTask])
   return (
     <div className='overlay'>
-    <div className='create-new-task'  tabIndex={0}  >
+    <div className='create-new-task' tabIndex={0}>
           <h2 className=''>Create New Task</h2>
           <label htmlFor='task_name'>Task Name</label>
           <input
@@ -112,10 +112,11 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
           {
             name && description ? 
             <div>
+              <label>Task Type</label>
             <div>
             <div className='task-type'>
             <div>
-            <p>single Task</p>
+            <p >single Task</p>
             <input
               id='single_task'
               type="radio"
@@ -137,6 +138,8 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
           {
             singleTask && choosed && name && description  ? 
             // single Task
+            <>
+            <label>Task Members</label>
             <div className='create-new-task-member-container'>
               {
                 members.map((member => <div>
@@ -151,11 +154,14 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
                 </div>))
               }
             </div>
+            </>
             :
             // team task
+            <>
+             { choosed && name && description && <>
+                <label>Task Members</label>
             <div  className='create-new-task-member-container'>
-           { choosed && name && description &&
-                members.map((member => <div>
+               { members.map((member => <div>
                  <div> <input
                 id='team_task'
                 type="checkbox"
@@ -166,7 +172,8 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
                 </div>
                 </div>))}
               
-            </div>
+            </div></>}
+            </>
           }
       </div>
             </div>
