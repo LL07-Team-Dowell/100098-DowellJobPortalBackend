@@ -148,5 +148,5 @@
 ### discord apis---------
 
 -                                               -------->   __post__ to `generate_discord_invite/`
--                                               -------->   __get__ to `get_discord_server_channels/<int:guild_id>/`
--                                               -------->   __get__ to `get_discord_server_members/<int:guild_id>/`
+-                                               -------->   __get__ to `get_discord_server_channels/<str:token>/<int:guild_id>/`
+-                                               -------->   __get__ to `get_discord_server_members/<str:token>/<int:guild_id>/`

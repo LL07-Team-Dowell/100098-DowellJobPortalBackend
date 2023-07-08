@@ -890,6 +890,7 @@ __Post__ to `create_team/`
 ```json
 {
   "team_name": "team name",
+  "team_description":"team description",
   "company_id": "company_id",
   "members": ["list of members"]
 }
@@ -963,6 +964,7 @@ __Patch__ to `edit_team/<str:document_id>/`
 ```json
 {
   "team_name": "team name",
+  "team_description":"team description",
   "members": ["list of members"]
 }
 
@@ -1653,6 +1655,83 @@ __put__ to `settinguserproject/<int:pk>`
     "message":"serializer.errors"
 }
 ```
+
+
+### discord api view------------------------------------------------
+
+__post__ to `generate_discord_invite/`
+
+- Request Body
+
+```json
+{
+  "guild_id": "<guild id>",
+  "owners_ids": "[owners_ids]",
+  "bot_token":"<generated bot token>"
+}
+```
+
+- Response 201
+
+```json
+{"message": "Invite link has been generated successfully",
+  "response": {"invite_link":"invite link",
+            "server":"invite",             
+            }
+}
+```
+- Response 304
+
+```json
+{
+  "message": "Invite link failed to be generated",
+}
+
+- Response 400
+
+```json
+{
+    "message": "Parameters are not valid",
+}
+```
+
+__get__ to `get_discord_server_channels/<str:token>/<int:guild_id>/`
+
+- Response 200
+
+```json
+{"message": "List of channels in server",
+  "response": {"num of channels":"No of channels",
+                "channels":"[list of channels]",           
+              }
+}
+```
+- Response 204
+
+```json
+{
+  "message":"There is no channels",
+  "response":"[channels]"
+}
+
+__get__ to `get_discord_server_members/<str:token>/<int:guild_id>/`
+
+- Response 200
+
+```json
+{"message": "List of members in server",
+  "response": {"num of members":"No of members",
+                "members":"[list of members]",           
+              }
+}
+```
+- Response 204
+
+```json
+{
+  "message":"There is no members",
+  "response":"[members]"
+}
 
 
 

@@ -69,6 +69,7 @@ def get_event_id():
         #print("r---->", r.text,json.loads(r.text))
         return json.loads(r.text)['error']
 
+### for notification api----------------------------
 def call_notification(url, request_type, data):  ## calling  notification api
     if request_type == 'post':
         notification = requests.post(url, data)
@@ -82,7 +83,7 @@ def call_notification(url, request_type, data):  ## calling  notification api
         notification = requests.patch(url, data)
         details = notification.json()
         return details
-
+### for settings api----------------------------
 def update_number(string):
             updated_string = ""
             for char in string:
@@ -135,7 +136,7 @@ def get_guild_channels(guildid,token):
         'authorization': f'Bot {token}'
     }
     url = f"https://discord.com/api/v9/guilds/{guildid}/channels"  # /{userid}"
-    response = requests.request("GET", url, headers=headers)
+    response = requests.request("GET", url=url, headers=headers)
     res = json.loads(response.text)
 
     return res
@@ -146,8 +147,8 @@ def get_guild_members(guildid,token):
         'Content-Type': 'application/json',
         'authorization': f'Bot {token}'
     }
-    url = f"https://discord.com/api/v9/guilds/{guildid}/members"  # /{userid}"
-    response = requests.request("GET", url, headers=headers)
+    url = f"https://discord.com/api/v9/guilds/{guildid}/members"
+    response = requests.request("GET", url=url, headers=headers)
     res = json.loads(response.text)
 
     return res

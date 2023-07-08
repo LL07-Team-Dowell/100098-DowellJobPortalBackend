@@ -1508,6 +1508,7 @@ class create_team(APIView):
             field = {
                 "eventId": get_event_id()['event_id'],
                 "team_name": data.get("team_name"),
+                "team_description": data.get("team_description"),
                 "company_id": data.get("company_id"),
                 "members": data.get("members")
             }
@@ -1582,6 +1583,7 @@ class edit_team(APIView):
             update_field = {
                 "members": data.get("members"),
                 "team_name": data.get("team_name"),
+                "team_description": data.get("team_description"),
             }
             response = dowellconnection(
                 *team_management_modules, "update", field, update_field)
@@ -2156,8 +2158,8 @@ class get_discord_server_channels(APIView):
     def get(self, request, guild_id, token):
         #print(token,"=====----------------", guild_id)
         channels = get_guild_channels(guildid=guild_id, token=token)
-        print(channels)
-        if channels:
+        #print(channels)
+        if len(channels) != 0:
             return Response(
                 {"message": "List of channels in server",
                     "response": {"num of channels":len(channels),
@@ -2166,15 +2168,15 @@ class get_discord_server_channels(APIView):
                     },
                 status=status.HTTP_200_OK)
         else:
-            return Response({"message":f"There is no channels","response":json.loads(channels)}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"message":"There is no channels","response":channels}, status=status.HTTP_204_NO_CONTENT)
         
 @method_decorator(csrf_exempt, name="dispatch")
 class get_discord_server_members(APIView):
     def get(self, request, guild_id, token):
          #print(token,"=====----------------", guild_id)
         members = get_guild_members(guildid=guild_id, token=token)
-        #print(channels)
-        if members:
+        #print(members)
+        if len(members) != 0:
             return Response(
                 {"message": "List of members in server",
                     "response": {"num of members":len(members),
@@ -2184,5 +2186,4 @@ class get_discord_server_members(APIView):
                 status=status.HTTP_200_OK)
         else:
             return Response({"message":f"There is no members","response":members}, status=status.HTTP_204_NO_CONTENT)
-
 # api for discord ends here____________________________
