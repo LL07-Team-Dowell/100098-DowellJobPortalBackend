@@ -7,38 +7,31 @@ import { useValues } from './context/Values';
 import axios from 'axios';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
-import { RiTeamFill } from 'react-icons/ri';
 import "./index.scss"
 import { getAllTeams } from '../../../../services/createMembersTasks';
 import Navbar from './component/Navbar';
 const Index = () => {
   const { currentUser } = useCurrentUserContext();
   const {data , setdata} = useValues() ;
-  const [impLoading , setImpLoading] = useState(false) ; 
+  const [searchValue, setSearchValue] = useState('');
   useEffect(()=>{
-    setImpLoading(true)
     getAllTeams(currentUser.portfolio_info[0].org_id)
     .then(resp =>{ 
       console.log(resp.data.response.data)
       setdata({...data , TeamsSelected:resp.data.response.data});
-      setImpLoading(false)
   })
   .catch(e =>{
     console.log(e)
   })
   },[])
-  const [choose, setchoose] = useState(0) ; 
-  const back = () => {
-    setchoose(0)
-  }
-  if(choose === 1) return <StaffJobLandingLayout teamleadView={true}> <div className="container"><Teams back={back}/></div> </StaffJobLandingLayout> 
-  if(choose === 2 ) return <StaffJobLandingLayout teamleadView={true}> <div className="container"><TasksCo bback={back}/></div> </StaffJobLandingLayout>
-  if(impLoading)return <StaffJobLandingLayout teamleadView={true}><LoadingSpinner/></StaffJobLandingLayout> 
+  console.log(searchValue)
+  console.log(data.TeamsSelected.length)
+  if(data.TeamsSelected.length === 0)return <StaffJobLandingLayout  teamleadView={true}><LoadingSpinner/></StaffJobLandingLayout> 
   return (
-    <StaffJobLandingLayout teamleadView={true}>
+    <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue}>
       <Navbar title={"All Teams"} color={'#005734'} />
       <div className='container'>
-      <Teams/>
+      <Teams searchValue={searchValue}/>
       </div>
     </StaffJobLandingLayout>
   )

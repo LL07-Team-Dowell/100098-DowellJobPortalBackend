@@ -2,7 +2,7 @@ import { BiSearchAlt } from "react-icons/bi";
 import "./style.css";
 
 const SearchBar = ({ searchValue, handleSearchChange, placeholder }) => {
-    console.log({searchValue})
+    console.log({searchValue,handleSearchChange })
     return <>
         <div className="search__Navigation__Bar">
             <BiSearchAlt className="search__Icon" />
