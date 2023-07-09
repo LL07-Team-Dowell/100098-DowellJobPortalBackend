@@ -5,6 +5,8 @@ import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContex
 import { createTeam, getAllTeams } from '../../../../../services/createMembersTasks';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../component/Navbar';
+import { teamManagementProductName } from '../../../../../utils/utils';
+import { toast } from 'react-toastify';
 const CreateTeam = () => {
   // USER
   const { currentUser } = useCurrentUserContext();
@@ -23,31 +25,29 @@ const CreateTeam = () => {
     const value = event.target.value;
     setdata({ ...data, selected_members: [...data.selected_members, value] });
 };
+console.log({data})
+
   const createTeamSubmit = () => {
-    if(data.team_name.length > 0  && data.selected_members.length > 0){
+    if(data.team_name.length > 0  && data.selected_members.length > 0 && data.teamDiscription){
 
       createTeam({
         team_name:data.team_name,
+        team_description:data.teamDiscription,
         company_id:currentUser.portfolio_info[0].org_id,
-        members:data.selected_members
+        members:data.selected_members,
       })
-      // RESPONSE
       .then(resp => {
-        console.log(resp)
-        // navigate(`/team-screen-member/${resp.data.response.inserted_id}`)
-        getAllTeams(currentUser.portfolio_info[0].org_id)
-          .then(resp => {
-            const id = resp.data.response.data.find(team => team.team_name === data.team_name)._id
-            console.log({id})
-            navigate(`/team-screen-member/${id}/team-tasks`)
-          })
-      })
-      // ERROR
+        navigate(`/team-screen-member/${resp.data.response.inserted_id}/team-tasks`)
+        setdata({...data, TeamsSelected:{...data.TeamsSelected,team_name:data.team_name,_id:resp.data.response.inserted_id }})
+        toast.success("team created successfully !")
+      }
+        
+        )
       .catch(err => {
-        console.log(err)
-      })
+        console.log(err)}
+      )
     }else{
-      console.log( data.team_name.length > 0  && data.selected_members.length > 0 )
+      toast.error('some data are missing fill all the inputs')
     }
     
   }
