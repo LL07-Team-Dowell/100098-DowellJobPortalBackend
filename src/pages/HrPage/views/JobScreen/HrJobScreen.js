@@ -284,6 +284,25 @@ function HrJobScreen() {
     })
   }
 
+  const handleRefreshForTrainingManagement = () => {
+    setLoading(true);
+    getTrainingManagementQuestions(
+      currentUser.portfolio_info[0].org_id,
+    ).then((res) => {
+      console.log("res", res);
+      setQuestions(
+        res.data.response.data.filter(
+          (question) =>
+            question.data_type === currentUser.portfolio_info[0].data_type
+        )
+      );
+      setLoading(false);
+    }).catch((err) => {
+      console.log(err);
+      setLoading(false);
+    })
+  }
+
   return (
     <StaffJobLandingLayout 
       hrView={true} 
@@ -305,7 +324,9 @@ function HrJobScreen() {
           section === "user" ? "Profile" 
           : 
           section === "tasks" ? "Tasks" 
-          : 
+          :
+          section === "hr-training" ? "HR Training"
+          :
           sub_section !== undefined && section === "hr-training" ? 
             sub_section ? sub_section : `${trainingCards.module}` 
           : section === "attendance" ? "Attendance" 
@@ -326,12 +347,15 @@ function HrJobScreen() {
         handleMenuItemClick={handleMenuItemClick} 
       /> 
     }
-    <div className="refresh-container" onClick={handleRefreshForCandidateApplications}>
-        <IoMdRefresh />
-    </div>
     {
       sub_section === undefined && section === "home" || section === undefined ? <>
       <div className='hr__wrapper'>
+        <button className="refresh-container" onClick={handleRefreshForCandidateApplications}>
+          <div className='refresh-btn'>
+            <IoMdRefresh />
+            <p>Refresh</p>
+          </div>
+        </button>
 
           {
             isLoading ? (<LoadingSpinner />) : ( 
@@ -377,14 +401,16 @@ function HrJobScreen() {
         
         { 
 
+          isLoading ? <LoadingSpinner /> :
+
           sub_section === undefined && section === "shortlisted" ? <>
-            <ShortlistedScreen shortlistedCandidates={candidateData} jobData={jobs} />
+            <ShortlistedScreen shortlistedCandidates={candidateData} jobData={jobs} handleRefreshForCandidateApplications={handleRefreshForCandidateApplications}/>
           </> :
 
           isLoading ? <LoadingSpinner /> :
 
           sub_section === undefined && section === "hr-training" ? <>
-            <HrTrainingScreen trainingCards={trainingCards} setShowOverlay={setTrackingProgress} setQuestions={setQuestions}/>
+            <HrTrainingScreen trainingCards={trainingCards} setShowOverlay={setTrackingProgress} setQuestions={setQuestions} handleRefreshForTrainingManagemnt={handleRefreshForTrainingManagement}/>
           </> :
 
           sub_section !== undefined && section === "hr-training" ? <>
@@ -398,6 +424,12 @@ function HrJobScreen() {
               isLoading ? <LoadingSpinner /> :
 
               <div className='hr__wrapper'>
+                <button className="refresh-container" onClick={handleRefreshForCandidateApplications}>
+                  <div className='refresh-btn'>
+                    <IoMdRefresh />
+                    <p>Refresh</p>
+                  </div>
+                </button>
 
                 <div className='job__wrapper'>
                   {

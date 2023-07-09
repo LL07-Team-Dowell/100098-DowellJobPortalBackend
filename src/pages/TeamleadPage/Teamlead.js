@@ -30,6 +30,7 @@ import {
 } from "../../services/teamleadServices";
 import { useCandidateTaskContext } from "../../contexts/CandidateTasksContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { IoMdRefresh } from "react-icons/io";
 
 const Teamlead = () => {
   const { currentUser } = useCurrentUserContext();
@@ -288,7 +289,7 @@ const Teamlead = () => {
     setCurrentCandidate(data);
   };
 
-  const handleRefreshForCandidateApplications = () => {
+  const handleRefreshForCandidateApplicationsForTeamlead = () => {
           setLoading(true);
           getCandidateApplicationsForTeamLead(
             currentUser?.portfolio_info[0].org_id
@@ -350,6 +351,9 @@ const Teamlead = () => {
           getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id)
             .then((res) => {
               console.log("res", res);
+
+              if (userTasks.length > 0) return;
+
               const tasksToDisplay = res.data.response.data
                 .filter(
                   (task) =>
@@ -469,6 +473,15 @@ const Teamlead = () => {
                   </div>
                 ) : (
                   <>
+                    <button
+                      className="refresh-container"
+                      onClick={handleRefreshForCandidateApplicationsForTeamlead}
+                    >
+                      <div className="refresh-btn">
+                        <IoMdRefresh />
+                        <p>Refresh</p>
+                      </div>
+                    </button>
                     <SelectedCandidates
                       candidatesCount={
                         selectedTabActive
@@ -479,7 +492,6 @@ const Teamlead = () => {
                           ? candidatesData.candidatesToRehire.length
                           : 0
                       }
-                      handleRefresh={handleRefreshForCandidateApplications}
                     />
 
                     <div className="jobs-container">
@@ -607,6 +619,15 @@ const Teamlead = () => {
                   />
                 ) : (
                   <>
+                    <button
+                      className="refresh-container"
+                      onClick={handleRefreshForCandidateTask}
+                    >
+                      <div className="refresh-btn">
+                        <IoMdRefresh />
+                        <p>Refresh</p>
+                      </div>
+                    </button>
                     <SelectedCandidates
                       showTasks={true}
                       tasksCount={
@@ -614,7 +635,6 @@ const Teamlead = () => {
                           ? filteredTasks.length
                           : userTasks.length
                       }
-                      handleRefresh={handleRefreshForCandidateTask}
                     />
 
                     <div className="tasks-container">
