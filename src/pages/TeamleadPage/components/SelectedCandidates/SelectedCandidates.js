@@ -62,15 +62,11 @@ const SelectedCandidates = ({ showTasks, candidatesCount, tasksCount, hrPageActi
                 </div>
             }
  
-            <div className="candidates-container">
                 <div className="sort-candidates-container" onClick={() => {setShowSortOptions(true)}}>
                     <FilterIcon />
                     <p>Sort</p>
                 </div>
-                <div className="refresh-candidates-container" onClick={handleRefresh}>
-                    <IoMdRefresh />
-                </div>
-            </div> 
+
 
             {
                 showSortOptions && <>

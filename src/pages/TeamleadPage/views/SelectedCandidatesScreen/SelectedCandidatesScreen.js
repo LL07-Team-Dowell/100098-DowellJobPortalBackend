@@ -403,6 +403,8 @@ const SelectedCandidatesScreen = ({
       case hrPageActions.MOVE_TO_SELECTED:
         if (!selectedCandidateData) return;
 
+        if(selectedCandidateData.status === candidateStatuses.SELECTED) 
+
         if (hrDiscordLink.length < 1) {
           disableOtherBtns && setDisabled(false);
           ref.current.classList.toggle("active");
@@ -438,6 +440,8 @@ const SelectedCandidatesScreen = ({
         };
         await addSelectedCandidate(selectData);
 
+        toast.success("Candidate Selected Successfully");
+
         updateCandidateData((prevCandidates) => {
           return prevCandidates.filter(
             (candidate) => candidate["_id"] !== selectedCandidateData["_id"]
@@ -448,10 +452,21 @@ const SelectedCandidatesScreen = ({
 
       case hrPageActions.MOVE_TO_REJECTED:
         if (!selectedCandidateData) return;
+        
 
         //Rejection Function For HR
         Promise.all([
-          rejectCandidateApplicationforHr(data),
+          rejectCandidateApplicationforHr({
+            document_id: selectedCandidateData._id,
+            reject_remarks: selectedCandidateData.hr_remarks, 
+            applicant: selectedCandidateData.applicant,
+            username: selectedCandidateData.username,
+            company_id: currentUser.portfolio_info[0].org_id,
+            data_type: currentUser.portfolio_info[0].data_type,
+            rejected_on: new Date(),
+            // company_name: currentUser.portfolio_info[0].org_name,
+            // user_type: currentUser.userinfo.User_type,
+          }),
           configureSettingUserProfileInfo({
             company_id: currentUser.portfolio_info[0].org_id,
             org_name: currentUser.portfolio_info[0].org_name,
