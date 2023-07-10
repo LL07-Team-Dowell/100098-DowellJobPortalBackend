@@ -37,9 +37,14 @@
         justify-content: space-between;
         align-items: flex-start;
         padding:20px;
-
+        
         .team-screen-task-progress-detail-content-data{
-
+            display: flex;
+            gap:15px;
+            align-items: center;    
+            img{
+                object-fit: cover;
+            }
             .team-screen-task-progress-detail-content-data-team-name{
             margin-top: 10px;
             color: #7E7E7E;
@@ -54,7 +59,7 @@
             .team-screen-task-progress-detail-content-data-team-task-name{
                 margin-top: 10px;
                 color: #1F1F1F;
-                font-size: 32px;
+                font-size: 22px;
                 font-family: Poppins;
                 font-style: normal;
                 font-weight: 600;

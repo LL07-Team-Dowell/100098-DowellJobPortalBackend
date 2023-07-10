@@ -416,7 +416,9 @@ function App() {
             <NavigationContextProvider>
               <CandidateContextProvider>
                 <CandidateTaskContextProvider>
+                <ValuesProvider>
                   <Teamlead />
+                </ValuesProvider>
                 </CandidateTaskContextProvider>
               </CandidateContextProvider>
             </NavigationContextProvider>
@@ -426,7 +428,9 @@ function App() {
             path=":section"
             element={
               <CandidateTaskContextProvider>
+                <ValuesProvider>
                 <Teamlead />
+                </ValuesProvider>
               </CandidateTaskContextProvider>
             }
           />
@@ -436,7 +440,9 @@ function App() {
           path="/new-task-screen"
           element={
             <CandidateTaskContextProvider>
+              <ValuesProvider>
               <CreateTaskScreen />
+              </ValuesProvider>
             </CandidateTaskContextProvider>
           }
         />
@@ -469,7 +475,9 @@ function App() {
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true}>
                 <TeamProvider>
-                  <TeamScreenMembers />
+              <ValuesProvider>
+                  <TeamScreenMembers/>
+              </ValuesProvider>
                 </TeamProvider>
               </StaffJobLandingLayout>
             </CandidateTaskContextProvider>
@@ -482,7 +490,9 @@ function App() {
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true}>
                 <TeamProvider>
-                  <TeamScreenTasks />
+              <ValuesProvider>
+                  <TeamScreenTasks/>
+              </ValuesProvider>
                 </TeamProvider>
               </StaffJobLandingLayout>
             </CandidateTaskContextProvider>

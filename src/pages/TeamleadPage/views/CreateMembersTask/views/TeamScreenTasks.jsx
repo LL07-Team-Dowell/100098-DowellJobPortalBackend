@@ -9,7 +9,6 @@ import { getAllTeams } from '../../../../../services/createMembersTasks';
 import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContext';
 import CreateTask from './compoonent/createTask/createTask';
 import LoadingSpinner from '../../../../../components/LoadingSpinner/LoadingSpinner';
-
 const TeamScreenTasks = () => {
   const { currentUser } = useCurrentUserContext();
     const {id} = useParams();
