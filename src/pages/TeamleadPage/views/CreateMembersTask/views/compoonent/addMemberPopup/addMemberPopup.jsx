@@ -12,52 +12,62 @@ const returnMissingMember = (bigMember,smallMember) => {
     return data
 }
 
-const AddMemberPopup = ({bigMember, smallMember,team_name, setmembers ,close}) => {
+const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTeamName,getElementToTeamState}) => {
   const { currentUser } = useCurrentUserContext();
-    const [displayMembers , setdisplayMembers] = useState(returnMissingMember(bigMember, smallMember));
-    const [addedMembers , setAddedMembers] = useState([]); 
-    const handleCheckboxChange = (event) => {
-        const { value, checked } = event.target;
+    const [addedMembers , setAddedMembers] = useState(members); 
+    const [name, setname] = useState(team_name) ;
+    const userIsThere = (user) => addedMembers.includes(user);
+    const addMembers = (member) => setAddedMembers(p => [...p,member]) ; 
+  const removeMember = (member) => setAddedMembers(p => p.filter(filteredMember => filteredMember !== member )) ; 
     
-        if (checked) {
-            setAddedMembers((prevSelectedItems) => [...prevSelectedItems, value]);
-        } else {
-            setAddedMembers((prevSelectedItems) =>
-            prevSelectedItems.filter((item) => item !== value)
-          );
-        }
-      };
+       
       const EditTeamFunction = () => {
-        console.log(currentUser.portfolio_info[0].org_id,[...smallMember,...addedMembers])
-        EditTeam(currentUser.portfolio_info[0].org_id,{team_name,members:[...smallMember ,...addedMembers]})
+        if(name && addedMembers.length > 0)
+        EditTeam(currentUser.portfolio_info[0].org_id,{team_name,members:[...members ,...addedMembers]})
           .then(resp => {
             console.log(resp);
-            setmembers([...smallMember ,...addedMembers]);
+            getElementToTeamState(name,addedMembers)
             toast.success("Edit Team Successfully");
             close()
           })
           .catch(err => {
             console.log(err)
           })
+        else{
+          toast.error("an input/s haven't displayed")
+        }
       }
       return (
-    <div className='add-member-popup'>
+      <div className='overlay'>
+      <div className='add-member-popup' style={{zIndex:100}}>
+      <button className='close-btn' onClick={close}>X</button>
+      <h2>Edit Team</h2>
+      <label htmlFor='task_name'>Team Name</label>
+          <input
+            type='text'
+            id='task_name'
+            className=''
+            placeholder='Choose a Team Name'
+            value={name}
+            onChange={(e)=> setname(e.target.value)}
+          />
+          <br />
+      <label htmlFor='task_name'>Team Name</label>
       <div className='members'>
-        {displayMembers.map((item) => (
-        <div key={item}>
-          <label>
+        {bigMember.map((item) => (
+        <div  key={item}>
             <input
               type="checkbox"
               value={item}
-              checked={addedMembers.includes(item)}
-              onChange={handleCheckboxChange}
+              checked={userIsThere(item)}
+              onChange={()=>{userIsThere(item) ? removeMember(item)  : addMembers(item)}}
             />
-            {item}
-          </label>
+            <p>{item}</p>
         </div>
       ))}
       </div>
-      <button onClick={()=>EditTeamFunction()}>Edit Team </button>
+      <button className='edit-team' onClick={()=>EditTeamFunction()}>Edit Team </button>
+    </div>
     </div>
   )
 }

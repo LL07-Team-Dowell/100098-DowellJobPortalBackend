@@ -551,7 +551,7 @@ function TraningProgress({ shorlistedJob }) {
                             </>
                                 :
 
-                                shorlistedJob.map((item => {
+                                uniqueItems.map((item => {
                                     const matchModule = uniqueItems.find((uniqueitem) => uniqueitem.module === item.module);
 
                                     if ((!matchModule) || (responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?.submitted_on)) return <></>

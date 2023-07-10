@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AiOutlineClose, AiOutlinePlusCircle } from 'react-icons/ai';
 import { useValues } from '../context/Values';
 import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContext';
-import { createTeam } from '../../../../../services/createMembersTasks';
+import { createTeam, getAllTeams } from '../../../../../services/createMembersTasks';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../component/Navbar';
 const CreateTeam = () => {
@@ -34,7 +34,13 @@ const CreateTeam = () => {
       // RESPONSE
       .then(resp => {
         console.log(resp)
-        navigate(`/team-screen-member/${resp.data.response.inserted_id}`)
+        // navigate(`/team-screen-member/${resp.data.response.inserted_id}`)
+        getAllTeams(currentUser.portfolio_info[0].org_id)
+          .then(resp => {
+            const id = resp.data.response.data.find(team => team.team_name === data.team_name)._id
+            console.log({id})
+            navigate(`/team-screen-member/${id}/team-tasks`)
+          })
       })
       // ERROR
       .catch(err => {
@@ -49,13 +55,13 @@ const CreateTeam = () => {
   const userIsThere = (user) => data.selected_members.find(newUser => newUser === user)
   return (
     <>
-    <Navbar title=" Create Team" removeButton={true}/> 
+    <Navbar title=" Create Team" color={'#005734'} removeButton={true}/> 
     <div className='container' style={{ position: 'relative' }}>
       
       <div style={{marginTop:30}} className=' Create_Team' onClick={() => { setshowCard(true) }}>
         <div>
           <div>
-            <AiOutlinePlusCircle className='icon' />
+            <AiOutlinePlusCircle className='icon' style={{fontSize:"2rem"}} />
           </div>
           <h4>Create a Team</h4>
           <p>
@@ -65,6 +71,7 @@ const CreateTeam = () => {
       </div>
 
       {showCard ? (
+        <div className='overlay' >
         <div className='create_your_team  ' tabIndex={0}  >
           <button className='create_your_team-remove-btn' onClick={() => { setshowCard(false) }}><AiOutlineClose/></button>
           <h2 className=''>Create Your Team</h2>
@@ -99,23 +106,24 @@ const CreateTeam = () => {
           {toggleCheckboxes ? (
             <div className='checkboxes'>
               {data.memebers.map((member, i) => (
-                <p key={i}>
+                <div key={i}>
                   <input
                     type='checkbox'
                     value={member}
                     onChange={handleCheckboxChange}
                     checked={userIsThere(member) !== undefined ? true : false}
                   />
-                  {member}
-                </p>
+                  <span>{member}</span>
+                </div>
               ))}
             </div>
           ) : null}
           <br />
           <div className="buttons">
-            <button onClick={createTeamSubmit}>Next</button>
+            <button onClick={createTeamSubmit}>Create</button>
             <button onClick={()=>setshowCard(false)}>Cancel</button>
           </div>
+        </div>
         </div>
       ) : null}
     </div>

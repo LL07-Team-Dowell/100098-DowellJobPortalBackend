@@ -36,7 +36,7 @@ const Index = () => {
   if(impLoading)return <StaffJobLandingLayout teamleadView={true}><LoadingSpinner/></StaffJobLandingLayout> 
   return (
     <StaffJobLandingLayout teamleadView={true}>
-      <Navbar title={"All Teams"} />
+      <Navbar title={"All Teams"} color={'#005734'} />
       <div className='container'>
       <Teams/>
       </div>
