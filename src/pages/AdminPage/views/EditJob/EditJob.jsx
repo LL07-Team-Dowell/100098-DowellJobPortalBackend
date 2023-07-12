@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import { AiFillPlusCircle } from 'react-icons/ai';
-import { BsFillBookmarkFill } from 'react-icons/bs';
-import { IoIosArrowBack } from "react-icons/io";
 import "./EditJob.css";
-import Loading from '../../../../components/LoadingSpinner/LoadingSpinner';
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout';
-import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
-import { MdArrowBackIos, MdOutlineAddCircle } from 'react-icons/md';
+import { useNavigate, useParams } from 'react-router-dom';
+import { MdArrowBackIos } from 'react-icons/md';
 import { useJobContext } from '../../../../contexts/Jobs';
 import { getJobs } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
@@ -17,7 +14,6 @@ import LittleLoading from '../../../CandidatePage/views/ResearchAssociatePage/li
 import { updateJob } from '../../../../services/adminServices';
 import { toast } from 'react-toastify';
 import { Tooltip } from "react-tooltip";
-import { set } from 'date-fns';
 
 
 function EditJob({ subAdminView }) {
@@ -66,16 +62,54 @@ function EditJob({ subAdminView }) {
   }, [singleJob]);
 
 
+  // console.log(formData?.general_terms);
+  // if (formData.general_terms[0] == "") {
+  //   alert("empty string not allow")
+  // }
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setUpdateLoading(true);
     // setLoading(false)
-    console.log(formData);
-    await updateJob(formData)
+    // console.log(formData);
+    const isEveryGeneralTermFilled = formData.general_terms.every(
+      (term) => term.length > 0
+    );
+    if (!isEveryGeneralTermFilled)
+      return toast.info("No general term can be left empty");
+
+    const isEveryTechnicalTermFilled = formData.technical_specification.every(
+      (term) => term.length > 0
+    );
+
+    if (!isEveryTechnicalTermFilled)
+      return toast.info("No technical term can be left empty");
+
+    const isEveryPaymentTermFilled = formData.payment_terms.every(
+      (term) => term.length > 0
+    );
+    if (!isEveryPaymentTermFilled)
+      return toast.info("No payment term can be left empty");
+
+    const isEveryWorkflowTermFilled = formData.workflow_terms.every(
+      (term) => term.length > 0
+    );
+    if (!isEveryWorkflowTermFilled)
+      return toast.info("No workflow term can be left empty");
+
+    const isEveryOtherInfoTermFilled = formData.other_info.every(
+      (term) => term.length > 0
+    );
+    if (!isEveryOtherInfoTermFilled)
+      return toast.info("No other info term can be left empty");
+
+    if (isEveryGeneralTermFilled)
+      setUpdateLoading(true);
+    return await updateJob(formData)
       .then(response => {
-        console.log(response)
-        if (response.status === 200) {
-          console.log(formData);
+        setUpdateLoading(false);
+
+        console.log(response.statusText)
+        if (response.statusText === "OK") {
           setJobs(jobs.map((job) => {
             if (job._id === _id) {
               return { ...job, ...formData }
@@ -84,12 +118,52 @@ function EditJob({ subAdminView }) {
             }
           }))
           navigate(-1);
-          toast.success("Job updation successfully");
+          console.log("hello");
+          toast.success("Job updated successfully");
         }
       })
       .catch(error => console.log(error));
 
-    setUpdateLoading(false);
+
+
+    // if (formData.general_terms.length > 0 && formData.general_terms[0] !== "") {
+    //   await updateJob(formData)
+    //     .then(response => {
+    //       console.log(response.status)
+    //       if (response.status === 204) {
+    //         console.log(formData);
+    //         setJobs(jobs.map((job) => {
+    //           if (job._id === _id) {
+    //             return { ...job, ...formData }
+    //           } else {
+    //             return job
+    //           }
+    //         }))
+    //         navigate(-1);
+    //         toast.success("Job updated successfully");
+    //       }
+    //     })
+    //     .catch(error => console.log(error));
+    // } else {
+    //   toast.warning("General Terms should not be empty");
+    // }
+
+    // switch (formData.general_terms.length > 0) {
+    //   case formData.general_terms.length < 0 && formData.general_terms[0] == "":
+    //     toast.success("General Terms Can't Be Empty")
+    //   case formData.payment_terms[0] == "":
+    //     toast.warning("Payment Terms Can't Be Empty")
+    //   case formData.technical_specification[0] == "":
+    //     toast.warning("Technical Specifications Can't Be Empty")
+    //   case formData.workflow_terms[0] == "":
+    //     toast.warning("Workflow Terms Can't Be Empty")
+    //   case formData.other_info[0] == "":
+    //     toast.warning("Others Info Can't Be Empty")
+    //   case formData.general_terms > 0 && formData.general_terms[0] !== "" && formData.payment_terms !== "":
+    //     break;
+    // }
+
+
   }
 
   const handleThirdOptionChange = (e) => {

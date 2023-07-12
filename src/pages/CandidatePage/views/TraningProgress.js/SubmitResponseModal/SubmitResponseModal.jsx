@@ -3,7 +3,7 @@ import { IoMdClose } from 'react-icons/io';
 
 
 const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnClick, handleInputChange, inputValues, inputValuesAreReadOnly }) => {
-    console.log(inputValues);
+    // console.log(inputValues);
     return <>
         <div className={styles.modal__Overlay}>
             <div className={styles.modal__Container}>
@@ -24,6 +24,17 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         name={"answer_link"}
                         value={inputValues.answer_link}
                         id="input_1"
+                        type='text'
+                        onChange={({ target }) => handleInputChange(target.name, target.value)}
+                        readOnly={inputValuesAreReadOnly}
+                    />
+                </label>
+                <label className={styles.label} htmlFor="input_4">
+                    <span>Link to Explaining Video <span className={styles.required}>*</span></span>
+                    <input
+                        name={"video_link"}
+                        value={inputValues.video_link}
+                        id="input_4"
                         type='text'
                         onChange={({ target }) => handleInputChange(target.name, target.value)}
                         readOnly={inputValuesAreReadOnly}
@@ -51,17 +62,6 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         readOnly={inputValuesAreReadOnly}
                     />
                 </label>
-                <label className={styles.label} htmlFor="input_3">
-                    <span>Link to Explaining Video</span>
-                    <input
-                        name={"video_link"}
-                        value={inputValues.explaination_video_link}
-                        id="input_3"
-                        type='text'
-                        onChange={({ target }) => handleInputChange(target.name, target.value)}
-                        readOnly={inputValuesAreReadOnly}
-                    />
-                </label>
                 {
                     !inputValuesAreReadOnly &&
                     <button
@@ -69,7 +69,11 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         disabled={submitBtnDisabled}
                         onClick={handleSubmitBtnClick}
                     >
-                        Submit
+                        {
+                            submitBtnDisabled ? 
+                                'Please wait...' : 
+                            'Submit'
+                        }
                     </button>
                 }
             </div>

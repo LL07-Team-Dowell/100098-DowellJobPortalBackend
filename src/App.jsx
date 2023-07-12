@@ -56,6 +56,7 @@ import CreateTeam from "./pages/TeamleadPage/views/CreateMembersTask/views/Creat
 import { TeamProvider } from "./pages/TeamleadPage/views/CreateMembersTask/context/Team";
 import TeamScreenTasks from "./pages/TeamleadPage/views/CreateMembersTask/views/TeamScreenTasks";
 import TeamScreenMembers from "./pages/TeamleadPage/views/CreateMembersTask/views/TeamScreenMembers";
+import ProvertionPeriod from "./pages/CandidatePage/views/ProvertionPeriod/ProvertionPeriod";
 
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -65,13 +66,13 @@ function App() {
   const [assignedProjects, setAssignedProjects] = useState([]);
   const [shorlistedJob, setshorlistedJob] = useState([]);
 
-  console.log(shorlistedJob);
+  // console.log(shorlistedJob); 
   useDowellLogin(setCurrentUser, setLoading);
   useTitle("Dowell Job Portal");
 
   if (loading) return <LoadingPage />;
 
-  // console.log("CURRENT USER", currentUser);
+  console.log("CURRENT USER", currentUser);
 
   // // NO LOGGED IN USER VIEW
   // if (!currentUser) {
@@ -124,7 +125,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.accountRole
+    testingRoles.accountRole
   ) {
     return (
       <Routes>
@@ -152,7 +153,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.subAdminRole
+    testingRoles.subAdminRole
   ) {
     return (
       <Routes>
@@ -330,7 +331,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.hrRole
+    testingRoles.hrRole
   ) {
     return (
       <Routes>
@@ -403,7 +404,7 @@ function App() {
   if (
     currentUser.settings_for_profile_info &&
     currentUser.settings_for_profile_info.profile_info[0].Role ===
-      testingRoles.teamLeadRole
+    testingRoles.teamLeadRole
   ) {
     return (
       <Routes>
@@ -461,7 +462,7 @@ function App() {
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true}>
                 <ValuesProvider>
-                  <CreateTeam/>
+                  <CreateTeam />
                 </ValuesProvider>
               </StaffJobLandingLayout>
             </CandidateTaskContextProvider>
@@ -501,6 +502,228 @@ function App() {
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     );
+  }
+
+  //Provertion Period Page
+  if (
+    currentUser.settings_for_profile_info &&
+    currentUser.settings_for_profile_info.profile_info[0].Role ===
+    testingRoles.provertionRole
+  ) {
+    return <Routes>
+      <Route
+        path="/"
+        element={
+          <NavigationContextProvider>
+            <CandidateJobsContextProvider>
+              <JobContextProvider>
+                <ProvertionPeriod>
+                  <CandidateHomeScreen
+                    setHired={setCandidateHired}
+                    setAssignedProjects={setAssignedProjects}
+                    setCandidateShortListed={setCandidateShortListed}
+                    setshorlistedJob={setshorlistedJob}
+                  />
+                </ProvertionPeriod>
+              </JobContextProvider>
+            </CandidateJobsContextProvider>
+          </NavigationContextProvider>
+        }
+      >
+        <Route
+          path=":section"
+          element={
+            <NavigationContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <ProvertionPeriod>
+                    <CandidateHomeScreen />
+                  </ProvertionPeriod>
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
+            </NavigationContextProvider>
+          }
+        />
+      </Route>
+
+      <Route path="/jobs">
+        <Route
+          index
+          element={
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <ProvertionPeriod>
+                  <JobScreen />
+                </ProvertionPeriod>
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path=":jobTitle"
+          element={
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <ProvertionPeriod>
+                  <SingleJobScreen />
+                </ProvertionPeriod>
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          exact
+          path="c/research-associate"
+          element={
+            <ProvertionPeriod>
+              <ResearchAssociatePage />
+            </ProvertionPeriod>
+          }
+        />
+        <Route
+          exact
+          path="c/employee"
+          element={
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <ProvertionPeriod>
+                  <EmployeeJobScreen />
+                </ProvertionPeriod>
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          exact
+          path="c/intern"
+          element={
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <ProvertionPeriod>
+                  <InternJobScreen />
+                </ProvertionPeriod>
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          exact
+          path="c/freelancer"
+          element={
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <ProvertionPeriod>
+                  <FreelancerJobScreen />
+                </ProvertionPeriod>
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          }
+        />
+      </Route>
+
+      <Route
+        path="/logout"
+        element={
+          <JobContextProvider>
+            <CandidateJobsContextProvider>
+              <ProvertionPeriod>
+                <Logout />
+              </ProvertionPeriod>
+            </CandidateJobsContextProvider>
+          </JobContextProvider>
+        }
+      />
+      <Route
+        path="/alerts"
+        element={
+          <JobContextProvider>
+            <CandidateJobsContextProvider>
+              <ProvertionPeriod>
+                <AlertScreen />
+              </ProvertionPeriod>
+            </CandidateJobsContextProvider>
+          </JobContextProvider>
+        }
+      />
+      <Route
+        path="/user"
+        element={
+          <JobContextProvider>
+            <CandidateJobsContextProvider>
+              <ProvertionPeriod>
+                <UserScreen candidateSelected={false} />
+              </ProvertionPeriod>
+            </CandidateJobsContextProvider>
+          </JobContextProvider>
+        }
+      />
+
+      <Route
+        path="/applied"
+        element={
+          <NavigationContextProvider>
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <ProvertionPeriod>
+                  <AppliedScreen />
+                </ProvertionPeriod>
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          </NavigationContextProvider>
+        }
+      >
+        <Route
+          path=":section"
+          element={
+            <NavigationContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <ProvertionPeriod>
+                    <AppliedScreen />
+                  </ProvertionPeriod>
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
+            </NavigationContextProvider>
+          }
+        />
+      </Route>
+
+      <Route
+        path="/apply/job/:id"
+        element={
+          <NewApplicationContextProvider>
+            <JobContextProvider>
+              <CandidateJobsContextProvider>
+                <ProvertionPeriod>
+                  <JobApplicationScreen />
+                </ProvertionPeriod>
+              </CandidateJobsContextProvider>
+            </JobContextProvider>
+          </NewApplicationContextProvider>
+        }
+      >
+        <Route
+          path=":section"
+          element={
+            <NewApplicationContextProvider>
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <ProvertionPeriod>
+                    <JobApplicationScreen />
+                  </ProvertionPeriod>
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
+            </NewApplicationContextProvider>
+          }
+        />
+      </Route>
+
+      <Route path="*" element={
+        <ProvertionPeriod>
+          <ErrorPage />
+        </ProvertionPeriod>
+      } />
+    </Routes>
   }
 
   // CANDIDATE PAGE

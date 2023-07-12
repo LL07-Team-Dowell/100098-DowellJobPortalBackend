@@ -103,11 +103,11 @@ export default function useDowellLogin(
 
     if (session_id && !portfolio_id) {
       // remove session_id from url
-      window.history.replaceState(
-        {},
-        document.title,
-        "/100098-DowellJobPortal/"
-      );
+      // window.history.replaceState(
+      //   {},
+      //   document.title,
+      //   "/100098-DowellJobPortal/"
+      // );
 
       if (currentLocalUserDetails) {
         updateCurrentUserState(JSON.parse(currentLocalUserDetails));
@@ -130,7 +130,7 @@ export default function useDowellLogin(
     }
 
     // remove session_id and id from url
-    window.history.replaceState({}, document.title, "/100098-DowellJobPortal/");
+    // window.history.replaceState({}, document.title, "/100098-DowellJobPortal/");
 
     sessionStorage.setItem("portfolio_id", portfolio_id);
 

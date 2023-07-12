@@ -5,8 +5,9 @@ import { AiOutlineArrowRight } from "react-icons/ai";
 import { getTrainingManagementQuestions } from "../../../../services/hrTrainingServices";
 import { useHrJobScreenAllTasksContext } from "../../../../contexts/HrJobScreenAllTasks";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { IoMdRefresh } from "react-icons/io";
 
-function HrTrainingScreen({ trainingCards, setShowOverlay, setQuestions }) {
+function HrTrainingScreen({ trainingCards, setShowOverlay, setQuestions, handleRefreshForTrainingManagemnt }) {
   const { questions } = useHrJobScreenAllTasksContext();
   // console.log(questions);
 
@@ -55,6 +56,15 @@ function HrTrainingScreen({ trainingCards, setShowOverlay, setQuestions }) {
 
   return (
     <div className="training__wrapper">
+      <button
+        className="refresh-container"
+        onClick={handleRefreshForTrainingManagemnt}
+      >
+        <div className="refresh-btn">
+          <IoMdRefresh />
+          <p>Refresh</p>
+        </div>
+      </button>
       <div className="training__header">
         <h1>Create Training Programs</h1>
       </div>
@@ -66,7 +76,13 @@ function HrTrainingScreen({ trainingCards, setShowOverlay, setQuestions }) {
               ?.question_link ? (
               <div className="edit">
                 <Link
-                  to={`/hr-training/${encodeURIComponent(card.module)}?questionId=${questions.find((question) => question.module === card.module)?._id}`}
+                  to={`/hr-training/${encodeURIComponent(
+                    card.module
+                  )}?questionId=${
+                    questions.find(
+                      (question) => question.module === card.module
+                    )?._id
+                  }`}
                   className="edit__btn"
                   onClick={
                     questions.find(
@@ -75,11 +91,15 @@ function HrTrainingScreen({ trainingCards, setShowOverlay, setQuestions }) {
                       ? (e) => fetchCreatedQuestions(e, card.module)
                       : () =>
                           navigate(
-                            `/hr-training/${
-                              encodeURIComponent(questions.find(
+                            `/hr-training/${encodeURIComponent(
+                              questions.find(
                                 (question) => question.module === card.module
-                              )?.module)
-                            }?questionId=${questions.find((question) => question.module === card.module)?._id}`
+                              )?.module
+                            )}?questionId=${
+                              questions.find(
+                                (question) => question.module === card.module
+                              )?._id
+                            }`
                           )
                   }
                 >

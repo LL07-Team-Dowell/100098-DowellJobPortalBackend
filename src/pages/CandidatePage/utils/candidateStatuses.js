@@ -1,7 +1,7 @@
 export const candidateStatuses = {
     SHORTLISTED: "shortlisted",
     SELECTED: "selected",
-    REJECTED: "rejected",
+    REJECTED: "Rejected",
     TO_REHIRE: "to_rehire",
     TEAMLEAD_HIRE: "teamlead_hire",
     TEAMLEAD_TOREHIRE: "teamlead_rehire",

@@ -4,8 +4,9 @@ import "./style.css";
 import { getUserLiveStatus, postUserLiveStatus } from "../../../../services/commonServices";
 import React from "react";
 import { teamManagementProductName } from "../../../../utils/utils"; 
+import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 
-const UserScreen = () => {
+const UserScreen = ({subAdminView}) => {
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext();
     const handleLogout = () => navigate("/logout");

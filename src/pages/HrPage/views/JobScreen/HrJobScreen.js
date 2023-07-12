@@ -28,6 +28,7 @@ import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenA
 import HrTrainingQuestions from '../HrTrainingScreen/HrTrainingQuestion';
 import { trainingCards } from '../HrTrainingScreen/hrTrainingCards';
 import { getTrainingManagementQuestions } from '../../../../services/hrTrainingServices';
+import { IoMdRefresh } from "react-icons/io";
 import { set } from 'date-fns';
 
 function fuzzySearch(query, text) {
@@ -109,7 +110,7 @@ function HrJobScreen() {
       const list = res[2].data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type);
       const newList = list.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id);
       // console.log(newList);
-      setCurrentProjects(newList.project_list);
+      setCurrentProjects(newList?.project_list);
 
       const usersWithTasks = [...new Map(res[3].data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [task.applicant, task])).values()];
       setAllTasks(usersWithTasks.reverse());
@@ -241,10 +242,74 @@ function HrJobScreen() {
     navigate(`/new-task-screen/?applicant=${data.applicant}&attendance=true`)
   }
 
+  const handleRefreshForCandidateApplications = () => {
+    setLoading(true);
+    getCandidateApplicationsForHr(
+      currentUser.portfolio_info[0].org_id,
+    ).then((res) => {
+      console.log("res", res);
+      const filteredData = res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
+      setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
+      setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
+      setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
+      setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
+
+      setLoading(false);
+    }).catch((err) => {
+      console.log(err);
+      setLoading(false);
+    });
+  };
+
+  const handleRefreshForCandidateTasks = () => {
+    setLoading(true);
+    getCandidateTask(
+      currentUser.portfolio_info[0].org_id,
+    ).then((res) => {
+      console.log("res", res);
+      const usersWithTasks = [
+        ...new Map(
+          res[3].data.response.data
+            .filter(
+              (j) => currentUser.portfolio_info[0].data_type === j.data_type
+            )
+            .map((task) => [task.applicant, task])
+        ).values(),
+      ];
+      setAllTasks(usersWithTasks.reverse());
+      setLoading(false);
+    }).catch((err) => {
+      console.log(err);
+      setLoading(false);
+    })
+  }
+
+  const handleRefreshForTrainingManagement = () => {
+    setLoading(true);
+    getTrainingManagementQuestions(
+      currentUser.portfolio_info[0].org_id,
+    ).then((res) => {
+      console.log("res", res);
+      setQuestions(
+        res.data.response.data.filter(
+          (question) =>
+            question.data_type === currentUser.portfolio_info[0].data_type
+        )
+      );
+      setLoading(false);
+    }).catch((err) => {
+      console.log(err);
+      setLoading(false);
+    })
+  }
+
   return (
     <StaffJobLandingLayout 
-      hrView={true} 
-      // runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} 
+      hrView={true}
+      // runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView}
+      hideSearchBar={
+        sub_section === undefined && section === "user" ? true : false
+      }
       hideSideBar={showAddTaskModal} 
       searchValue={jobSearchInput} 
       setSearchValue={setJobSearchInput}
@@ -262,7 +327,9 @@ function HrJobScreen() {
           section === "user" ? "Profile" 
           : 
           section === "tasks" ? "Tasks" 
-          : 
+          :
+          section === "hr-training" ? "HR Training"
+          :
           sub_section !== undefined && section === "hr-training" ? 
             sub_section ? sub_section : `${trainingCards.module}` 
           : section === "attendance" ? "Attendance" 
@@ -285,10 +352,16 @@ function HrJobScreen() {
     }
     {
       sub_section === undefined && section === "home" || section === undefined ? <>
-        <div className='hr__wrapper'>
+      <div className='hr__wrapper'>
+        <button className="refresh-container" onClick={handleRefreshForCandidateApplications}>
+          <div className='refresh-btn'>
+            <IoMdRefresh />
+            <p>Refresh</p>
+          </div>
+        </button>
 
           {
-            isLoading ? <LoadingSpinner /> :
+            isLoading ? (<LoadingSpinner />) : ( 
 
             <div className='job__wrapper'>
               {
@@ -320,7 +393,7 @@ function HrJobScreen() {
                   </>
                 }))
               }
-            </div>
+            </div> )
 
           }
           
@@ -331,14 +404,16 @@ function HrJobScreen() {
         
         { 
 
+          isLoading ? <LoadingSpinner /> :
+
           sub_section === undefined && section === "shortlisted" ? <>
-            <ShortlistedScreen shortlistedCandidates={candidateData} jobData={jobs} />
+            <ShortlistedScreen shortlistedCandidates={candidateData} jobData={jobs} handleRefreshForCandidateApplications={handleRefreshForCandidateApplications}/>
           </> :
 
           isLoading ? <LoadingSpinner /> :
 
           sub_section === undefined && section === "hr-training" ? <>
-            <HrTrainingScreen trainingCards={trainingCards} setShowOverlay={setTrackingProgress} setQuestions={setQuestions}/>
+            <HrTrainingScreen trainingCards={trainingCards} setShowOverlay={setTrackingProgress} setQuestions={setQuestions} handleRefreshForTrainingManagemnt={handleRefreshForTrainingManagement}/>
           </> :
 
           sub_section !== undefined && section === "hr-training" ? <>
@@ -352,6 +427,12 @@ function HrJobScreen() {
               isLoading ? <LoadingSpinner /> :
 
               <div className='hr__wrapper'>
+                <button className="refresh-container" onClick={handleRefreshForCandidateApplications}>
+                  <div className='refresh-btn'>
+                    <IoMdRefresh />
+                    <p>Refresh</p>
+                  </div>
+                </button>
 
                 <div className='job__wrapper'>
                   {
@@ -405,6 +486,7 @@ function HrJobScreen() {
               title={"Attendance"}
               hrAttendancePageActive={true}
               handleSortOptionClick={(data) => setCurrentSortOption(data)}
+              handleRefresh={handleRefreshForCandidateTasks}
             />
 
             {
@@ -483,6 +565,7 @@ function HrJobScreen() {
                   tasksCount={currentSortOption ? sortResults.length : allTasks.length}
                   className={"hr__Page"}
                   handleSortOptionClick={(data) => setCurrentSortOption(data)}
+                  handleRefresh={handleRefreshForCandidateTasks}
                 />
 
                 {
@@ -545,7 +628,7 @@ function HrJobScreen() {
           // id
           :
 
-          sub_section === undefined && section === "user" ? <UserScreen currentUser={currentUser} /> :
+          sub_section === undefined && section === "user" ? <UserScreen /> :
 
           sub_section === undefined &&
           <><ErrorPage disableNav={true} /></>

@@ -30,11 +30,17 @@ import {
 } from "../../services/teamleadServices";
 import { useCandidateTaskContext } from "../../contexts/CandidateTasksContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { IoMdRefresh } from "react-icons/io";
 
 const Teamlead = () => {
   const { currentUser } = useCurrentUserContext();
   const { section, searchParams } = useNavigationContext();
-  const { candidatesData, dispatchToCandidatesData, candidatesDataLoaded, setCandidatesDataLoaded } = useCandidateContext();
+  const {
+    candidatesData,
+    dispatchToCandidatesData,
+    candidatesDataLoaded,
+    setCandidatesDataLoaded,
+  } = useCandidateContext();
   const [showCandidate, setShowCandidate] = useState(false);
   const [showCandidateTask, setShowCandidateTask] = useState(false);
   const [rehireTabActive, setRehireTabActive] = useState(false);
@@ -283,6 +289,100 @@ const Teamlead = () => {
     setCurrentCandidate(data);
   };
 
+  const handleRefreshForCandidateApplicationsForTeamlead = () => {
+          setLoading(true);
+          getCandidateApplicationsForTeamLead(
+            currentUser?.portfolio_info[0].org_id
+          )
+            .then((res) => {
+              console.log("res", res);
+              const applicationForMatching = res.data.response.data.filter(
+                (application) =>
+                  application.data_type ===
+                  currentUser?.portfolio_info[0].data_type
+              );
+              const selectedCandidates = applicationForMatching.filter(
+                (application) =>
+                  application.status === candidateStatuses.SELECTED
+              );
+              const candidatesToRehire = applicationForMatching.filter(
+                (application) =>
+                  application.status === candidateStatuses.TO_REHIRE
+              );
+              const onboardingCandidates = applicationForMatching.filter(
+                (application) =>
+                  application.status === candidateStatuses.ONBOARDING
+              );
+              dispatchToCandidatesData({
+                type: candidateDataReducerActions.UPDATE_SELECTED_CANDIDATES,
+                payload: {
+                  stateToChange:
+                    initialCandidatesDataStateNames.selectedCandidates,
+                  value: selectedCandidates,
+                },
+              });
+              dispatchToCandidatesData({
+                type: candidateDataReducerActions.UPDATE_REHIRED_CANDIDATES,
+                payload: {
+                  stateToChange:
+                    initialCandidatesDataStateNames.candidatesToRehire,
+                  value: candidatesToRehire,
+                },
+              });
+              dispatchToCandidatesData({
+                type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES,
+                payload: {
+                  stateToChange:
+                    initialCandidatesDataStateNames.onboardingCandidates,
+                  value: onboardingCandidates,
+                },
+              });
+
+              setLoading(false);
+            })
+            .catch((err) => {
+              console.log(err);
+              setLoading(false);
+            });
+        };
+
+  const handleRefreshForCandidateTask = () => {
+          setLoading(true);
+          getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id)
+            .then((res) => {
+              console.log("res", res);
+
+              if (userTasks.length > 0) return;
+
+              const tasksToDisplay = res.data.response.data
+                .filter(
+                  (task) =>
+                    task.data_type === currentUser?.portfolio_info[0].data_type
+                )
+                .filter(
+                  (task) =>
+                    task.project ===
+                    currentUser?.settings_for_profile_info.profile_info[0]
+                      .project
+                );
+              console.log("tasksToDisplay", tasksToDisplay);
+
+              const usersWithTasks = [
+                ...new Map(
+                  tasksToDisplay.map((task) => [task.applicant, task])
+                ).values(),
+              ];
+              console.log(usersWithTasks);
+              // console.log(res.data.response.data);
+              setUserTasks(usersWithTasks.reverse());
+              setLoading(false);
+            })
+            .catch((err) => {
+              console.log(err);
+              setLoading(false);
+            });
+        };
+
   return (
     <>
       <StaffJobLandingLayout
@@ -298,6 +398,9 @@ const Teamlead = () => {
             : rehireTabActive
             ? "rehire"
             : "applicant"
+        }
+        hideSearchBar={
+          section === "user" ? true : false
         }
       >
         <TitleNavigationBar
@@ -323,11 +426,10 @@ const Teamlead = () => {
         )}
 
         <>
-          {
-            loading ? <LoadingSpinner /> :
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
             <>
-              
-
               {showAddTaskModal && (
                 <AddTaskScreen
                   closeTaskScreen={() => setShowAddTaskModal(false)}
@@ -356,10 +458,12 @@ const Teamlead = () => {
                       updateCandidateData={dispatchToCandidatesData}
                       jobTitle={
                         jobs.filter(
-                          (job) => job.job_number === currentCandidate.job_number
+                          (job) =>
+                            job.job_number === currentCandidate.job_number
                         ).length >= 1
                           ? jobs.filter(
-                              (job) => job.job_number === currentCandidate.job_number
+                              (job) =>
+                                job.job_number === currentCandidate.job_number
                             )[0].job_title
                           : ""
                       }
@@ -372,6 +476,15 @@ const Teamlead = () => {
                   </div>
                 ) : (
                   <>
+                    <button
+                      className="refresh-container"
+                      onClick={handleRefreshForCandidateApplicationsForTeamlead}
+                    >
+                      <div className="refresh-btn">
+                        <IoMdRefresh />
+                        <p>Refresh</p>
+                      </div>
+                    </button>
                     <SelectedCandidates
                       candidatesCount={
                         selectedTabActive
@@ -396,11 +509,13 @@ const Teamlead = () => {
                                   candidateData={dataitem}
                                   jobAppliedFor={
                                     jobs.find(
-                                      (job) => job.job_number === dataitem.job_number
+                                      (job) =>
+                                        job.job_number === dataitem.job_number
                                     )
                                       ? jobs.find(
                                           (job) =>
-                                            job.job_number === dataitem.job_number
+                                            job.job_number ===
+                                            dataitem.job_number
                                         ).job_title
                                       : ""
                                   }
@@ -411,26 +526,30 @@ const Teamlead = () => {
                           )
                         ) : (
                           React.Children.toArray(
-                            candidatesData.selectedCandidates.map((dataitem) => {
-                              return (
-                                <JobCard
-                                  buttonText={"View"}
-                                  candidateCardView={true}
-                                  candidateData={dataitem}
-                                  jobAppliedFor={
-                                    jobs.find(
-                                      (job) => job.job_number === dataitem.job_number
-                                    )
-                                      ? jobs.find(
-                                          (job) =>
-                                            job.job_number === dataitem.job_number
-                                        ).job_title
-                                      : ""
-                                  }
-                                  handleBtnClick={handleViewBtnClick}
-                                />
-                              );
-                            })
+                            candidatesData.selectedCandidates.map(
+                              (dataitem) => {
+                                return (
+                                  <JobCard
+                                    buttonText={"View"}
+                                    candidateCardView={true}
+                                    candidateData={dataitem}
+                                    jobAppliedFor={
+                                      jobs.find(
+                                        (job) =>
+                                          job.job_number === dataitem.job_number
+                                      )
+                                        ? jobs.find(
+                                            (job) =>
+                                              job.job_number ===
+                                              dataitem.job_number
+                                          ).job_title
+                                        : ""
+                                    }
+                                    handleBtnClick={handleViewBtnClick}
+                                  />
+                                );
+                              }
+                            )
                           )
                         )
                       ) : rehireTabActive ? (
@@ -444,11 +563,13 @@ const Teamlead = () => {
                                   candidateData={dataitem}
                                   jobAppliedFor={
                                     jobs.find(
-                                      (job) => job.job_number === dataitem.job_number
+                                      (job) =>
+                                        job.job_number === dataitem.job_number
                                     )
                                       ? jobs.find(
                                           (job) =>
-                                            job.job_number === dataitem.job_number
+                                            job.job_number ===
+                                            dataitem.job_number
                                         ).job_title
                                       : ""
                                   }
@@ -459,26 +580,30 @@ const Teamlead = () => {
                           )
                         ) : (
                           React.Children.toArray(
-                            candidatesData.candidatesToRehire.map((dataitem) => {
-                              return (
-                                <JobCard
-                                  buttonText={"View"}
-                                  candidateCardView={true}
-                                  candidateData={dataitem}
-                                  jobAppliedFor={
-                                    jobs.find(
-                                      (job) => job.job_number === dataitem.job_number
-                                    )
-                                      ? jobs.find(
-                                          (job) =>
-                                            job.job_number === dataitem.job_number
-                                        ).job_title
-                                      : ""
-                                  }
-                                  handleBtnClick={handleViewBtnClick}
-                                />
-                              );
-                            })
+                            candidatesData.candidatesToRehire.map(
+                              (dataitem) => {
+                                return (
+                                  <JobCard
+                                    buttonText={"View"}
+                                    candidateCardView={true}
+                                    candidateData={dataitem}
+                                    jobAppliedFor={
+                                      jobs.find(
+                                        (job) =>
+                                          job.job_number === dataitem.job_number
+                                      )
+                                        ? jobs.find(
+                                            (job) =>
+                                              job.job_number ===
+                                              dataitem.job_number
+                                          ).job_title
+                                        : ""
+                                    }
+                                    handleBtnClick={handleViewBtnClick}
+                                  />
+                                );
+                              }
+                            )
                           )
                         )
                       ) : (
@@ -497,6 +622,15 @@ const Teamlead = () => {
                   />
                 ) : (
                   <>
+                    <button
+                      className="refresh-container"
+                      onClick={handleRefreshForCandidateTask}
+                    >
+                      <div className="refresh-btn">
+                        <IoMdRefresh />
+                        <p>Refresh</p>
+                      </div>
+                    </button>
                     <SelectedCandidates
                       showTasks={true}
                       tasksCount={
@@ -518,11 +652,13 @@ const Teamlead = () => {
                                   candidateData={dataitem}
                                   jobAppliedFor={
                                     jobs.find(
-                                      (job) => job.job_number === dataitem.job_number
+                                      (job) =>
+                                        job.job_number === dataitem.job_number
                                     )
                                       ? jobs.find(
                                           (job) =>
-                                            job.job_number === dataitem.job_number
+                                            job.job_number ===
+                                            dataitem.job_number
                                         ).job_title
                                       : ""
                                   }
@@ -542,11 +678,13 @@ const Teamlead = () => {
                                   candidateData={dataitem}
                                   jobAppliedFor={
                                     jobs.find(
-                                      (job) => job.job_number === dataitem.job_number
+                                      (job) =>
+                                        job.job_number === dataitem.job_number
                                     )
                                       ? jobs.find(
                                           (job) =>
-                                            job.job_number === dataitem.job_number
+                                            job.job_number ===
+                                            dataitem.job_number
                                         ).job_title
                                       : ""
                                   }
@@ -577,9 +715,8 @@ const Teamlead = () => {
                 </>
               )}
             </>
-          }
+          )}
         </>
-
       </StaffJobLandingLayout>
     </>
   );

@@ -17,6 +17,7 @@ import { mutableNewApplicationStateNames } from "../../../../contexts/NewApplica
 import {
   changeToTitleCase,
   formatDateAndTime,
+  validateUrl,
 } from "../../../../helpers/helpers";
 import { toast } from "react-toastify";
 import { sendMail } from "../../../../services/mailServices";
@@ -266,6 +267,7 @@ const SelectedCandidatesScreen = ({
                 profile_title: selectedCandidateData.portfolio_name,
                 Role: "Viewer",
                 version: "1.0",
+                // project: selectedCandidateData.project,
               },
             ],
           }),
@@ -348,6 +350,7 @@ const SelectedCandidatesScreen = ({
                 profile_title: selectedCandidateData.portfolio_name,
                 Role: "Viewer",
                 version: "1.0",
+                // project: selectedCandidateData.project,
               },
             ],
           }),
@@ -381,6 +384,8 @@ const SelectedCandidatesScreen = ({
           company_id: currentUser.portfolio_info[0].org_id,
           data_type: currentUser.portfolio_info[0].data_type,
           document_id: selectedCandidateData["_id"],
+          // company_name: currentUser.portfolio_info[0].org_name,
+          // user_type: currentUser.userinfo.User_type,
         };
         await changeCandidateStatusToShortlisted(testData);
 
@@ -398,6 +403,8 @@ const SelectedCandidatesScreen = ({
       case hrPageActions.MOVE_TO_SELECTED:
         if (!selectedCandidateData) return;
 
+        if(selectedCandidateData.status === candidateStatuses.SELECTED) 
+
         if (hrDiscordLink.length < 1) {
           disableOtherBtns && setDisabled(false);
           ref.current.classList.toggle("active");
@@ -406,12 +413,13 @@ const SelectedCandidatesScreen = ({
         }
 
         if (hrDiscordLink.length >= 1) {
-          disableOtherBtns && setDisabled(false);
           const urlPattern =
             /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
-          const isValidUrl = urlPattern.test(hrDiscordLink);
-          ref.current.classList.toggle("active");
+          const isValidUrl = validateUrl(hrDiscordLink);
           if (!isValidUrl) {
+            disableOtherBtns && setDisabled(false);
+            ref.current.classList.toggle("active");
+          
             setHrDiscordLink("");
             return toast.info("Please add valid discord link for candidate");
           }
@@ -426,9 +434,13 @@ const SelectedCandidatesScreen = ({
           applicant: selectedCandidateData.applicant,
           company_id: currentUser.portfolio_info[0].org_id,
           data_type: currentUser.portfolio_info[0].data_type,
+          // company_name: currentUser.portfolio_info[0].org_name,
+          // user_type: currentUser.userinfo.User_type,
           selected_on: new Date(),
         };
         await addSelectedCandidate(selectData);
+
+        toast.success("Candidate Selected Successfully");
 
         updateCandidateData((prevCandidates) => {
           return prevCandidates.filter(
@@ -440,10 +452,21 @@ const SelectedCandidatesScreen = ({
 
       case hrPageActions.MOVE_TO_REJECTED:
         if (!selectedCandidateData) return;
+        
 
         //Rejection Function For HR
         Promise.all([
-          rejectCandidateApplicationforHr(data),
+          rejectCandidateApplicationforHr({
+            document_id: selectedCandidateData._id,
+            reject_remarks: selectedCandidateData.hr_remarks, 
+            applicant: selectedCandidateData.applicant,
+            username: selectedCandidateData.username,
+            company_id: currentUser.portfolio_info[0].org_id,
+            data_type: currentUser.portfolio_info[0].data_type,
+            rejected_on: new Date(),
+            // company_name: currentUser.portfolio_info[0].org_name,
+            // user_type: currentUser.userinfo.User_type,
+          }),
           configureSettingUserProfileInfo({
             company_id: currentUser.portfolio_info[0].org_id,
             org_name: currentUser.portfolio_info[0].org_name,
@@ -454,6 +477,7 @@ const SelectedCandidatesScreen = ({
                 profile_title: selectedCandidateData.portfolio_name,
                 Role: "Viewer",
                 version: "1.0",
+                // project: selectedCandidateData.project,
               },
             ],
           }),
