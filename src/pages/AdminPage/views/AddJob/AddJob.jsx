@@ -306,7 +306,7 @@ const AddJob = ({ subAdminView }) => {
     <StaffJobLandingLayout
       adminView={true}
       adminAlternativePageActive={true}
-      // hideTitleBar={true}
+      hideTitleBar={false}
       pageTitle={"Add New Job"}
       showAnotherBtn={true}
       btnIcon={<MdArrowBackIos size="1.5rem" />}

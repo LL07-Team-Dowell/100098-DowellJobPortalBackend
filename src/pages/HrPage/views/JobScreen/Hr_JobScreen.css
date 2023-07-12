@@ -83,7 +83,7 @@
   position: absolute;
   right: 4rem;
   top: 0.8rem;
-  padding: 0.4rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 0.3rem;
   background-color: #005734;
   color: #fff;
@@ -109,6 +109,11 @@
   cursor: pointer;
   color: #fff;
   right: 7rem;
+}
+
+.refresh-btn p{
+  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
 }
 
 .hr__Page__Container .tasks-container.hr__Page .job__Card__Container {
@@ -365,7 +370,7 @@
   position: absolute;
   right: 10rem;
   top: 0.8rem;
-  padding: 0.4rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 0.3rem;
   background-color: #005734;
   color: #fff;
@@ -394,7 +399,8 @@
 }
 
 .refresh-btn p{
-  font-weight: 600;
+  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
 }
 }
 

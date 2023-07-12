@@ -399,6 +399,9 @@ const Teamlead = () => {
             ? "rehire"
             : "applicant"
         }
+        hideSearchBar={
+          section === "user" ? true : false
+        }
       >
         <TitleNavigationBar
           title={

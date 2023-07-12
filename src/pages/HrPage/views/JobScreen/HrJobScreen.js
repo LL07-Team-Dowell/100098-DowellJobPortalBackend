@@ -305,8 +305,11 @@ function HrJobScreen() {
 
   return (
     <StaffJobLandingLayout 
-      hrView={true} 
-      // runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView} 
+      hrView={true}
+      // runExtraFunctionOnNavItemClick={hideTaskAndAttendaceView}
+      hideSearchBar={
+        sub_section === undefined && section === "user" ? true : false
+      }
       hideSideBar={showAddTaskModal} 
       searchValue={jobSearchInput} 
       setSearchValue={setJobSearchInput}
@@ -625,7 +628,7 @@ function HrJobScreen() {
           // id
           :
 
-          sub_section === undefined && section === "user" ? <UserScreen currentUser={currentUser} /> :
+          sub_section === undefined && section === "user" ? <UserScreen /> :
 
           sub_section === undefined &&
           <><ErrorPage disableNav={true} /></>

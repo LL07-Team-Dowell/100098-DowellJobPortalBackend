@@ -89,6 +89,7 @@ const AccountPage = () => {
     } else if (section === "rejected") {
       setFilteredJobs(
         candidatesData.rejectedCandidates.filter((job) =>
+          job.job_title.toLocaleLowerCase().includes(value.toLocaleLowerCase()) ||
           job.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
         )
       );
@@ -135,6 +136,7 @@ const AccountPage = () => {
         const candidatesRejected = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.REJECTED
         );
+        console.log("applicationForMatching", applicationForMatching);
 
         dispatchToCandidatesData({
           type: candidateDataReducerActions.UPDATE_CANDIDATES_TO_HIRE,
@@ -316,6 +318,7 @@ const AccountPage = () => {
             ? "rehire"
             : "hire"
         }
+        hideSearchBar={section === "user" ? true : false}
       >
         <TitleNavigationBar
           title={
@@ -346,16 +349,6 @@ const AccountPage = () => {
         )}
 
         <>
-          <button
-            className="refresh-container"
-            onClick={handleRefreshForCandidateApplicationsForTeamlead}
-          >
-            <div className="refresh-btn">
-              <IoMdRefresh />
-              <p>Refresh</p>
-            </div>
-          </button>
-
           {loading ? (
             <LoadingSpinner />
           ) : (
@@ -396,6 +389,16 @@ const AccountPage = () => {
                   />
                 ) : (
                   <>
+                    <button
+                      className="refresh-container"
+                      onClick={handleRefreshForCandidateApplicationsForTeamlead}
+                    >
+                      <div className="refresh-btn">
+                        <IoMdRefresh />
+                        <p>Refresh</p>
+                      </div>
+                    </button>
+
                     <SelectedCandidates
                       candidatesCount={
                         hireTabActive
@@ -579,6 +582,16 @@ const AccountPage = () => {
                 )
               ) : section === "rejected" ? (
                 <>
+                  <button
+                    className="refresh-container"
+                    onClick={handleRefreshForCandidateApplicationsForTeamlead}
+                  >
+                    <div className="refresh-btn">
+                      <IoMdRefresh />
+                      <p>Refresh</p>
+                    </div>
+                  </button>
+
                   <RejectedCandidates
                     candidatesCount={
                       searchValue.length >= 1
