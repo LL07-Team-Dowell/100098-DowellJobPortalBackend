@@ -473,7 +473,7 @@ function App() {
           path="/team-screen-member/:id/team-members"
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true}>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
                 <TeamProvider>
               <ValuesProvider>
                   <TeamScreenMembers/>
@@ -488,7 +488,7 @@ function App() {
           path="/team-screen-member/:id/team-tasks"
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true}>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
                 <TeamProvider>
               <ValuesProvider>
                   <TeamScreenTasks/>
