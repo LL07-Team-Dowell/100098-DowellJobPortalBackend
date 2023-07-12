@@ -1400,7 +1400,7 @@ class create_task(APIView):
                 return Response({"message": "Task failed to be Created",
                                  "response":json.loads(insert_response)}, status=status.HTTP_304_NOT_MODIFIED)
         else:
-            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_request)
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -1461,8 +1461,7 @@ class update_task(APIView):
                 "status": data.get('status'),
                 "task": data.get('task'),
                 "task_added_by": data.get('task_added_by'),
-                "task_updated_date": data.get('task_updated_date')
-
+                "task_updated_date": data.get('task_updated_date'),
             }
             response = dowellconnection(*task_management_reports, "update", field, update_field)
             print(response)
@@ -1472,6 +1471,61 @@ class update_task(APIView):
             else:
                 return Response({"message": "Task failed to be updated",
                                  "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class approve_task(APIView):
+    def approvable(self,updated_date):
+        task_updated_date=datetime.datetime.strptime(updated_date, "%d/%m/%Y %H:%M:%S")
+        max_updated_date= task_updated_date + relativedelta(hours=12)
+        current_date = datetime.datetime.today()
+        #print(task_updated_date, "==========", max_updated_date, "=========", current_date)
+        if current_date <= max_updated_date:
+            approved = True
+            return (approved,max_updated_date)
+        else:
+            approved = False
+            return (approved,max_updated_date)
+    def patch(self, request):
+        data = request.data
+        if data:
+            field = {
+                "_id": data.get('document_id')
+            }
+            update_field = {
+                "status": data.get('status'),
+                "task": data.get('task'),
+                "task_updated_date": data.get('task_updated_date'),
+                "approved":False,
+                "max_approval_date":""
+            }
+            # check if a task is approved
+            check_approvable = self.approvable(update_field["task_updated_date"])
+            #print(check_approvable[1])
+
+            if check_approvable[0]==True:
+                update_field["approved"]= check_approvable[0]
+                update_field["max_approval_date"]=str(check_approvable[1])
+                #print(update_field)
+                response = dowellconnection(*task_management_reports, "update", field, update_field)
+                #print(response)
+                if json.loads(response)["isSuccess"] ==True:
+                    return Response({"message": "Task approved successfully",
+                                    "response":json.loads(response),
+                                    }, status=status.HTTP_200_OK)
+                else:
+                    return Response({"message": "Task failed to be approved",
+                                    "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                update_field["approved"]= check_approvable[0]
+                update_field["max_approval_date"]=str(check_approvable[1])
+                return Response({"message": "Task failed to be approved",
+                                    "response":{
+                                        "approved":update_field["approved"],
+                                        "max_approval_date":update_field["max_approval_date"],
+                                    }}, status=status.HTTP_200_OK)
+            
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 

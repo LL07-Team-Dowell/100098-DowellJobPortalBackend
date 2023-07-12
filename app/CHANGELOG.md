@@ -72,6 +72,7 @@
 - _Get_ to 'task_management/get_candidate_task/<str:document_id>/'   -------->   __Get__ to 'get_candidate_task/<str:document_id>/'
 
 - _Patch_ to 'task_management/update_task/'   -------->   __Patch__ to 'update_task/'
+-                                             -------->   __Patch__ to 'approve_task/'
 
 - _delete_ to 'task_management/delete_task/'   -------->   __Delete__ to 'delete_task/<str:document_id>/'
 

@@ -862,6 +862,55 @@ __Patch__ to `update_task/`
   "message": "Parameters are not valid"
 }
 ```
+
+
+__Patch__ to `approve_task/`
+
+- Request Body
+
+```json
+{
+  "document_id": "<document id>",
+  "task": "<task>",
+  "status": "<status>",
+  "task_updated_date": "task updated date"
+}
+```
+
+- Response 200
+
+```json
+{
+  "message": "Task approved successfully"
+}
+```
+- Response 204
+
+```json
+{
+  "message": "Task failed to be approved"
+}
+```
+- Response 200
+
+```json
+{"message": "Task failed to be approved",
+  "response":{
+      "approved":"update_field['approved']",
+      "max_approval_date":"update_field['max_approval_date']",
+  }
+}
+```
+
+- Response 400
+
+```json
+{
+  "message": "Parameters are not valid"
+}
+```
+
+
 __Delete__ to `delete_task/<str:document_id>/`
 
 - Response 200
