@@ -1517,8 +1517,7 @@ class approve_task(APIView):
             }
             update_field = {
                 "status": data.get('status'),
-                "task": data.get('task'),
-                "approved":False,
+                "task": data.get('task')
             }
             # check if a task is approveable
             check_approvable = self.approvable()
