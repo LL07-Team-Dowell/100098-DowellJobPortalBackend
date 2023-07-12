@@ -1372,6 +1372,11 @@ class lead_reject_candidate(APIView):
 # api for task management starts here________________________
 @method_decorator(csrf_exempt, name='dispatch')
 class create_task(APIView):
+    def max_updated_date(self,updated_date):
+        task_updated_date=datetime.datetime.strptime(updated_date, "%d/%m/%Y %H:%M:%S")
+        _date= task_updated_date + relativedelta(hours=12)
+        return str(_date)
+        
     def post(self, request):
         data = request.data
         if data:
@@ -1385,15 +1390,17 @@ class create_task(APIView):
                 "data_type": data.get('data_type'),
                 "company_id": data.get('company_id'),
                 "task_created_date": data.get('task_created_date'),
-                "task_updated_date": ""
+                "task_updated_date": "",
+                "approval":False,
+                "max_updated_date":self.max_updated_date(data.get('task_created_date'))
             }
             update_field = {
                 "status": "Nothing to update"
             }
             insert_response = dowellconnection(*task_management_reports, "insert", field, update_field)
-            print(insert_response)
+            #print(insert_response)
             if json.loads(insert_response)["isSuccess"] ==True:
-                return Response({"message": f"Task has been created successfully",
+                return Response({"message": "Task has been created successfully",
                                  "response":json.loads(insert_response)},
                                 status=status.HTTP_201_CREATED)
             else:
@@ -1476,17 +1483,32 @@ class update_task(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class approve_task(APIView):
-    def approvable(self,updated_date):
-        task_updated_date=datetime.datetime.strptime(updated_date, "%d/%m/%Y %H:%M:%S")
-        max_updated_date= task_updated_date + relativedelta(hours=12)
-        current_date = datetime.datetime.today()
-        #print(task_updated_date, "==========", max_updated_date, "=========", current_date)
-        if current_date <= max_updated_date:
-            approved = True
-            return (approved,max_updated_date)
-        else:
-            approved = False
-            return (approved,max_updated_date)
+    def approvable(self):
+        data = self.request.data
+        field = {
+            "_id": data.get('document_id')
+        }
+        update_field = {
+        }
+        response = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        #print(response,"==================")
+        if response is not None:
+            current_date = datetime.datetime.today()
+            max_updated_dates = [datetime.datetime.strptime(item["max_updated_date"], "%Y-%m-%d %H:%M:%S") for item in
+                              json.loads(response)["data"]]
+            #print(max_updated_dates,"=============================")
+            if len(max_updated_dates) >= 1:
+                max_updated_date = max(max_updated_dates)
+                if current_date <= max_updated_date:
+                    return True
+                else:
+                    return False
+            else:
+                return True
+
+        return False
+        
+        
     def patch(self, request):
         data = request.data
         if data:
@@ -1496,21 +1518,17 @@ class approve_task(APIView):
             update_field = {
                 "status": data.get('status'),
                 "task": data.get('task'),
-                "task_updated_date": data.get('task_updated_date'),
                 "approved":False,
-                "max_approval_date":""
             }
-            # check if a task is approved
-            check_approvable = self.approvable(update_field["task_updated_date"])
-            #print(check_approvable[1])
+            # check if a task is approveable
+            check_approvable = self.approvable()
+            #print(check_approvable)
 
-            if check_approvable[0]==True:
-                update_field["approved"]= check_approvable[0]
-                update_field["max_approval_date"]=str(check_approvable[1])
-                #print(update_field)
+            if check_approvable is True:
+                update_field["approved"]= check_approvable
                 response = dowellconnection(*task_management_reports, "update", field, update_field)
                 #print(response)
-                if json.loads(response)["isSuccess"] ==True:
+                if json.loads(response)["isSuccess"] is True:
                     return Response({"message": "Task approved successfully",
                                     "response":json.loads(response),
                                     }, status=status.HTTP_200_OK)
@@ -1518,13 +1536,7 @@ class approve_task(APIView):
                     return Response({"message": "Task failed to be approved",
                                     "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
             else:
-                update_field["approved"]= check_approvable[0]
-                update_field["max_approval_date"]=str(check_approvable[1])
-                return Response({"message": "Task failed to be approved",
-                                    "response":{
-                                        "approved":update_field["approved"],
-                                        "max_approval_date":update_field["max_approval_date"],
-                                    }}, status=status.HTTP_200_OK)
+                return Response({"message": "Task failed to be approved. Approval date is over"}, status=status.HTTP_200_OK)
             
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
