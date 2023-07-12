@@ -91,7 +91,14 @@
     border:#efefef 1px solid ;
     border-radius: 5px;
     outline:none;
-    padding:5px 10px
+    padding:5px 10px ;
+    font-size: 13px;
+      font-family: Poppins;
+    &::placeholder{
+      color: gray;
+      font-size: 13px;
+      font-family: Poppins;
+    }
   }
   .buttons{
     display: flex;
