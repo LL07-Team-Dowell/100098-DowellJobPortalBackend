@@ -31,7 +31,7 @@ const Index = () => {
     <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue}>
       <Navbar title={"All Teams"} color={'#005734'} />
       <div className='container'>
-      <Teams searchValue={searchValue}/>
+      <Teams searchValue={searchValue} data={data}/>
       </div>
     </StaffJobLandingLayout>
   )

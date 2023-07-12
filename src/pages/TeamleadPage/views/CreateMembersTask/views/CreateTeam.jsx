@@ -89,7 +89,7 @@ console.log({data})
             type='text'
             id='team_description'
             className=''
-            placeholder='Choose a Team Name'
+            placeholder='Choose a Team Description'
             rows={10}
             onChange={e=>setdata({...data,teamDiscription:e.target.value})}
           />

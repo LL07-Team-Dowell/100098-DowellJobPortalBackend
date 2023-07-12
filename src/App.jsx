@@ -57,7 +57,11 @@ import { TeamProvider } from "./pages/TeamleadPage/views/CreateMembersTask/conte
 import TeamScreenTasks from "./pages/TeamleadPage/views/CreateMembersTask/views/TeamScreenTasks";
 import TeamScreenMembers from "./pages/TeamleadPage/views/CreateMembersTask/views/TeamScreenMembers";
 import ProvertionPeriod from "./pages/CandidatePage/views/ProvertionPeriod/ProvertionPeriod";
-
+import { CandidateValuesProvider } from "./contexts/CandidateTeamsContext"; 
+import { TeamCandidateProvider } from "./pages/CandidatePage/views/TeamsScreen/useTeams"; 
+import TeamScreenMembersCandidate from "./pages/CandidatePage/views/TeamScreenMember/TeamScreenMember";
+import TeamScreenTasksCandidate from "./pages/CandidatePage/views/TeamsScreenTasks/TeamsScreenTasks";
+import JobLandingLayout from "./layouts/CandidateJobLandingLayout/LandingLayout";
 function App() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
@@ -409,6 +413,7 @@ function App() {
     return (
       <Routes>
         <Route path="/logout" element={<Logout />} />
+        
 
         <Route
           path="/"
@@ -498,7 +503,21 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
-
+        <Route
+          path="/team-screen-member/:id/team-threads"
+          element={
+            <CandidateTaskContextProvider>
+            <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+              <TeamProvider>
+            <ValuesProvider>
+                  {/* create a component here */}
+              <h1>team threads</h1>
+            </ValuesProvider>
+              </TeamProvider>
+            </StaffJobLandingLayout>
+          </CandidateTaskContextProvider>
+          }
+        />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     );
@@ -729,6 +748,56 @@ function App() {
   // CANDIDATE PAGE
   return candidateHired ? (
     <Routes>
+       <Route
+          path="/team-screen-member/:id/team-tasks"
+          element={
+            <NavigationContextProvider>
+            <CandidateTaskContextProvider>
+              <TeamCandidateProvider>
+                <CandidateValuesProvider>
+                <JobLandingLayout user={currentUser} afterSelection={true}>
+                  <TeamScreenTasksCandidate/>
+                </JobLandingLayout>
+                </CandidateValuesProvider>
+              </TeamCandidateProvider>
+            </CandidateTaskContextProvider>
+            </NavigationContextProvider>
+          }
+        />
+           <Route
+          path="/team-screen-member/:id/team-members"
+          element={
+            <NavigationContextProvider>
+            <CandidateTaskContextProvider>
+              <TeamCandidateProvider>
+                <CandidateValuesProvider>
+                <JobLandingLayout user={currentUser} afterSelection={true}>
+                  <TeamScreenMembersCandidate/>
+                </JobLandingLayout>
+
+                </CandidateValuesProvider>
+              </TeamCandidateProvider>
+            </CandidateTaskContextProvider>
+            </NavigationContextProvider>
+          }
+        />
+         <Route
+          path="/team-screen-member/:id/team-threads"
+          element={
+            <NavigationContextProvider>
+            <CandidateTaskContextProvider>
+              <TeamCandidateProvider>
+                <CandidateValuesProvider>
+                <JobLandingLayout user={currentUser} afterSelection={true}>
+                  {/* create a component here */}
+                <h1>team threads</h1>
+                </JobLandingLayout>
+                </CandidateValuesProvider>
+              </TeamCandidateProvider>
+            </CandidateTaskContextProvider>
+            </NavigationContextProvider>
+          }
+        />
       <Route
         path="/"
         element={
@@ -736,7 +805,9 @@ function App() {
             <CandidateTaskContextProvider>
               <CandidateJobsContextProvider>
                 <JobContextProvider>
+                  <CandidateValuesProvider>
                   <AfterSelectionScreen assignedProjects={assignedProjects} />
+                  </CandidateValuesProvider>
                 </JobContextProvider>
               </CandidateJobsContextProvider>
             </CandidateTaskContextProvider>
@@ -745,9 +816,7 @@ function App() {
       >
         <Route path=":section" element={<AfterSelectionScreen />} />
       </Route>
-
       <Route path="/logout" element={<Logout />} />
-
       <Route path="*" element={<ErrorPage />} />
     </Routes>
   ) : candidateShortListed ? (
@@ -756,7 +825,9 @@ function App() {
         path="/"
         element={
           <ResponsesContextProvider>
+            <CandidateValuesProvider>
             <CandidateTranningScreen shorlistedJob={shorlistedJob} />
+            </CandidateValuesProvider>
           </ResponsesContextProvider>
         }
       ></Route>
@@ -764,7 +835,9 @@ function App() {
         path="/traning"
         element={
           <ResponsesContextProvider>
+            <candidateValuesProvider>
             <TraningProgress shorlistedJob={shorlistedJob} />
+            </candidateValuesProvider>
           </ResponsesContextProvider>
         }
       />

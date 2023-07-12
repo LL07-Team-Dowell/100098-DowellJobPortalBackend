@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './addMemberPopup.scss'
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 import { EditTeam } from '../../../../../../../services/createMembersTasks';
@@ -18,29 +18,25 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
   const { currentUser } = useCurrentUserContext();
     const [addedMembers , setAddedMembers] = useState(members); 
     const [name, setname] = useState(team_name) ;
-    const userIsThere = (user) => addedMembers.includes(user);
-    const addMembers = (member) => setAddedMembers(p => [...p,member]) ; 
-  // const removeMember = (member) => setAddedMembers(p => p.filter(filteredMember => filteredMember !== member )) ; 
-  const [displaidMembers, setDesplaidMembers] = useState(bigMember.map((member,index) => ({id:index ,member})))
+    const [displaidMembers, setDesplaidMembers] = useState(returnMissingMember(bigMember,members).map((member,index) => ({id:index ,member})))
   const [inputMembers, setInputMembers] = useState([]) ; 
   const [query,setquery] = useState('');
+
   const AddedMember = (id) => {
     setInputMembers([...inputMembers,displaidMembers.find(f => f.id === id)])
     setDesplaidMembers(displaidMembers.filter(f => f.id !== id))
   }
   const removeMember = (id) => {
-    console.log({newinputMembers:inputMembers.filter(f => f.id !== id), newDesplaidMembers:[...displaidMembers,displaidMembers.find(f => f.id === id)] })
     setInputMembers(inputMembers.filter(f => f.id !== id))
     setDesplaidMembers([...displaidMembers,inputMembers.find(f => f.id === id)])
   }
-  console.log({displaidMembers, inputMembers})
       const EditTeamFunction = () => {
         if(name && inputMembers.length > 0)
-        EditTeam(currentUser.portfolio_info[0].org_id,{team_name,members:[...inputMembers.map(m => m.member)]})
+        EditTeam(currentUser.portfolio_info[0].org_id,{team_name,members:[...members,...inputMembers.map(m => m.member)]})
           .then(resp => {
             console.log(resp);
-            getElementToTeamState(name,inputMembers.map(m => m.member))
-            setteam({...team, members:inputMembers.map(m => m.member)})
+            getElementToTeamState(name,[...inputMembers.map(m => m.member)])
+            setteam({...team, members:[...inputMembers.map(m => m.member)]})
             toast.success("Edit Team Successfully");
             close()
           })
@@ -51,6 +47,10 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
           toast.error("an input/s haven't displayed")
         }
       }
+      useEffect(()=>{
+        const newMembers = members.map((v,i)=> ({id:new Date().getTime()+i,member:v}))
+        setInputMembers([...newMembers])
+      },[])
       return (
       <div className='overlay'>
       <div className='add-member-popup' style={{zIndex:100}}>
@@ -66,7 +66,7 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
             onChange={(e)=> setname(e.target.value)}
           />
           <br />
-          <label htmlFor="">Added Members</label>
+          <label htmlFor="">Team Members</label>
           <div className='added-members-input'>
             {
               inputMembers.map(v => <div key={v.id} onClick={()=>removeMember(v.id)}><p>{v.member}</p><FaTimes fontSize={'small'}/></div>)
@@ -75,7 +75,7 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
           </div>
           <div></div>
           <br />
-      <label htmlFor='task_name'>Members</label>
+      <label htmlFor='task_name'>Select Members</label>
       <div className='members'>
         {displaidMembers
           .filter(f => f.member.includes(query)).length > 0 ?

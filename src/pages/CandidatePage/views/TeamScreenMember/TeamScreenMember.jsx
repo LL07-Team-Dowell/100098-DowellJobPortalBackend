@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import TeamScreenLinks   from './compoonent/teamScreenLinks/teamScreenLinks';
-import Navbar from '../component/Navbar';
-import { useTeam } from '../context/Team';
-import TeamScreenMembersContainer from './compoonent/teamScreenMembersContainer/teamScreenMembersContainer';
-import AddMemberPopup from './compoonent/addMemberPopup/addMemberPopup';
-import { HiOutlinePlusSm } from 'react-icons/hi';
-import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContext';
-import { getAllTeams } from '../../../../../services/createMembersTasks';
-import LoadingSpinner from '../../../../../components/LoadingSpinner/LoadingSpinner'; 
-const TeamScreenMembers = () => {
+import { useParams } from "react-router-dom";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { useTeam } from "../TeamsScreen/useTeams";
+import { useEffect, useState } from "react";
+import Navbar from "../../../TeamleadPage/views/CreateMembersTask/component/Navbar";
+import TeamScreenLinks from "../../../TeamleadPage/views/CreateMembersTask/views/compoonent/teamScreenLinks/teamScreenLinks";
+import TeamScreenMembersContainer from "../../../TeamleadPage/views/CreateMembersTask/views/compoonent/teamScreenMembersContainer/teamScreenMembersContainer";
+import AddMemberPopup from "../../../TeamleadPage/views/CreateMembersTask/views/compoonent/addMemberPopup/addMemberPopup";
+import { HiOutlinePlusSm } from "react-icons/hi";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import { getAllTeams } from "../../../../services/createMembersTasks";
+
+const TeamScreenMembersCandidate = () => {
   const { currentUser } = useCurrentUserContext();
     const {id} = useParams();
-    const {team , setteam } = useTeam() ; 
+    const {team , setteam } = useTeam() 
     const [loading , setloading] = useState(false);
     const [showPopup ,setShowPopup] = useState(false)
     const [members, setmembers] = useState([])
@@ -42,9 +43,8 @@ const TeamScreenMembers = () => {
       <TeamScreenLinks id={id}/>
       <TeamScreenMembersContainer members={team?.members} />
       {showPopup && <AddMemberPopup bigMember={bigMember} members={team?.members} setmembers={setmembers} setTeamName={setTeamName} team_name={team?.team_name} close={()=>setShowPopup(false)} getElementToTeamState={getElementToTeamState} team={team} setteam={setteam}/>}
-    <button className='add-member-btn' onClick={()=>setShowPopup(true)}><div><HiOutlinePlusSm fontWeight={700}/> <span>add member</span></div></button> 
     </div>
   )
 }
 
-export default TeamScreenMembers
+export default TeamScreenMembersCandidate

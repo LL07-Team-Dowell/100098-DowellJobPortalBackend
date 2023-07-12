@@ -7,11 +7,8 @@ import {HiArrowNarrowRight} from 'react-icons/hi'
 import { teams ,imageReturn} from '../assets/teamsName';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineTeam } from 'react-icons/ai';
-const Teams = ({back , setChoosedTeam, searchValue}) => {
-  const { currentUser } = useCurrentUserContext();
-    console.log(currentUser.portfolio_info[0].org_id)
-  const {data , setdata} = useValues() 
-  console.log({data})
+const Teams = ({back , setChoosedTeam, searchValue, data}) => {
+  
   const reversedTeams = [...data.TeamsSelected].reverse();
   return (
     <div className='teams_data'>

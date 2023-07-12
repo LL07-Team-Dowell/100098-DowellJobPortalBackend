@@ -33,7 +33,7 @@ const TeamScreenTasks = () => {
           { team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true}/> : null }
           <TeamScreenLinks id={id}/>
           <TeamScreenTaskProgress />
-          <TeamScreeTaskProgessDetail id={id} title={team?.team_name} members={team?.members}  detail={detail} setdetail={setdetail} ShowCreateTask={()=>setShowCreateTask(true)}/>
+          <TeamScreeTaskProgessDetail id={id} title={team?.team_name} members={team?.members}  detail={detail} setdetail={setdetail} ShowCreateTask={()=>setShowCreateTask(true)} showAddTaskButton={true}/>
           {showCreatTask && <CreateTask id={id} members={team.members} team={team} unShowCreateTask={()=>setShowCreateTask(false)}/>} 
         </div>
         )

@@ -7,7 +7,7 @@ import {HiPlus} from 'react-icons/hi'
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 import image from '../../../../../../../assets/images/4380.jpg'
 import axios from 'axios';
-const TeamScreeTaskProgessDetail = ({detail ,setdetail,ShowCreateTask, members, title, id}) => {
+const TeamScreeTaskProgessDetail = ({detail ,setdetail,ShowCreateTask, members, title, id, showAddTaskButton}) => {
   const { currentUser } = useCurrentUserContext();
 
     useEffect(()=>{
@@ -50,7 +50,10 @@ const TeamScreeTaskProgessDetail = ({detail ,setdetail,ShowCreateTask, members, 
             </button>
         </div>
         <hr />
-        <button className='add-task-btn' onClick={()=>ShowCreateTask()}><div><HiPlus fontWeight={700}/> <span>add Task</span></div></button>
+        {
+            showAddTaskButton && <button className='add-task-btn' onClick={()=>ShowCreateTask()}><div><HiPlus fontWeight={700}/> <span>add Task</span></div></button>
+        }
+        
     </div>
   )
 }
