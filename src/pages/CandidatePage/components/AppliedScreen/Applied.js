@@ -15,7 +15,7 @@ import { IoMdRefresh } from 'react-icons/io';
 function Applied() {
   const [currentNavigationTab, setCurrentNavigationTab] = useState("Applied");
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
-  // console.log(candidateJobs);
+  console.log(candidateJobs);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
@@ -55,9 +55,9 @@ function Applied() {
         });
 
         console.log(sortedJobs);
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs } });
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserApplications.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.SELECTED) } })
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
         return setLoading(false);
 
       } catch (error) {
@@ -99,9 +99,9 @@ function Applied() {
           )
         );
         // const sortJob = currentUserAppliedJobs.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserAppliedJobs.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserApplications.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.filter(application => application.status === candidateStatuses.SELECTED) } })
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
         return setLoading(false);
 
       } catch (error) {
@@ -120,9 +120,15 @@ function Applied() {
   return <>
 
     <TogglerNavMenuBar className={"applied__Nav__Toggler"} menuItems={["Applied", "Interview", "Declined"]} handleMenuItemClick={(item) => setCurrentNavigationTab(item)} currentActiveItem={currentNavigationTab} />
-    <div className="refresh-container" id='refresh-container' onClick={handleRefreshForCandidateApplications}>
-      <IoMdRefresh />
-    </div>
+    <button
+      className="refresh-container"
+      onClick={handleRefreshForCandidateApplications}
+    >
+      <div className="refresh-btn">
+        <IoMdRefresh />
+        <p>Refresh</p>
+      </div>
+    </button>
     <div className="candidate__View__Applications__Container">
 
       {
@@ -154,12 +160,13 @@ function Applied() {
               }))
             }
           </> :
+            // currentNavigationTab === "Interview" ? <>
 
             currentNavigationTab === "Interview" ? <>
               {
                 React.Children.toArray(candidateJobs.userInterviews.map(interview => {
                   return <JobCard
-                    job={candidateJobs.appliedJobs.find(job => job.job_number === interview.job_number)}
+                    job={candidateJobs.userInterviews.find(job => job.job_number === interview.job_number)}
                     interviewDetails={interview}
                     showCandidateInterview={true}
                     guestUser={false}

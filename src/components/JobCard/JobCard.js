@@ -9,7 +9,8 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 
 
 const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText, handleBtnClick, showCandidateAppliedJob, showCandidateDeclinedJob, showCandidateInterview, guestUser, interviewDetails, viewJobApplicationDetails, applicationsCount, candidateCardView, candidateData, jobAppliedFor, taskView }) => {
-   return <div className={"job__Card__Container"}>
+    console.log(job);
+    return <div className={"job__Card__Container"}>
         <div className="job__Card__Title__Info">
             <h2><b>{changeToTitleCase(job ? job.job_title : candidateData ? taskView ? candidateData.applicant : candidateData.applicant : "")}</b></h2>
             {subtitle && <span className="subtitle__Item"><span>{subtitle}</span><span>- UX Living Lab</span></span>}
@@ -61,7 +62,7 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 <div className="vertical__Seperator lg"></div>
                 <div className="detail__Item">
                     <AiFillCheckCircle className="status__Icon green__Color" />
-                    <span className="job__Highlight__Item">Application sent to teamlead</span>
+                    <span className="job__Highlight__Item">{job.status === "Pending" ? "Join discord for interview" : "Application sent to teamlead"}</span>
                     <br />
                     <span>{guestUser ? 'Interview to be scheduled' : `${formatDateAndTime(interviewDetails.application_submitted_on)}`}</span>
                 </div>
@@ -124,13 +125,18 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 </div>
             </div>
         }
-       
+
         {/* <button disabled={disableActionBtn} className={`cta__Button ${candidateCardView && candidateData ? "rel" : ''}`} onClick={() => handleBtnClick(job ? job : candidateData ? candidateData : null)}>
             <span>{buttonText ? buttonText : "Apply"}</span>
             <AiOutlineArrowRight />
         </button> */}
         <button disabled={disableActionBtn} className={`cta__Button ${candidateCardView && candidateData ? "rel" : ''}`} onClick={() => handleBtnClick(job ? job : candidateData ? candidateData : null)}>
-            <span>{buttonText ? buttonText : "Apply"}</span>
+            {
+                buttonText === "Discord" ?
+                    job.status === "Pending" ? "Discord" : "View"
+                    : <span>{buttonText ? buttonText : "Apply"}</span>
+
+            }
             <AiOutlineArrowRight />
         </button>
     </div>
