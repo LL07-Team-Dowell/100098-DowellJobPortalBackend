@@ -18,15 +18,17 @@
     /* flex-direction: column; */
 }
 
-.candidate__Homepage__Container > * {
+.candidate__Homepage__Container>* {
     display: inline-block;
 }
+
 .candidate__Homepage__Container .main__Content {
     position: relative;
     width: 100%;
 }
 
-.candidate__Homepage__Container h1, .candidate__Homepage__Container p {
+.candidate__Homepage__Container h1,
+.candidate__Homepage__Container p {
     font-weight: 700;
     color: #838383;
 }
@@ -64,6 +66,11 @@
     width: 100%;
 }
 
+.candidate__Homepage__Container .main__Content .content__Wrappper .content__Item img:hover {
+    transition: 0.3s ease-in-out;
+    filter: brightness(80%);
+}
+
 .candidate__Homepage__Container .main__Content .content__Wrappper .content__Item .job__Link__Item {
     width: 100%;
     background: rgba(87, 166, 57, 0.2);
@@ -79,11 +86,12 @@
     right: 0;
 }
 
-.candidate__Homepage__Container .side__Content img, .candidate__Homepage__Container .side__Content video {
+.candidate__Homepage__Container .side__Content img,
+.candidate__Homepage__Container .side__Content video {
     box-shadow: 4px 8px 8px rgba(0, 0, 0, 0.45);
 }
 
-.container-wrapper .home__Title__Text{
+.container-wrapper .home__Title__Text {
     width: 87%;
     margin: 4% auto 6%;
 }
@@ -114,13 +122,13 @@
     margin: 10% auto 3%;
 }
 
-.candidate__Homepage__Container .main__Content .content__Wrappper .bottom__Content{
+.candidate__Homepage__Container .main__Content .content__Wrappper .bottom__Content {
     display: flex;
     justify-content: space-between;
     margin-top: 4%;
 }
 
-.candidate__Homepage__Container .main__Content .content__Wrappper .bottom__Content .job__Link__Item{
+.candidate__Homepage__Container .main__Content .content__Wrappper .bottom__Content .job__Link__Item {
     padding-top: 6%;
     padding-bottom: 6%;
     margin-right: 4%;
@@ -142,31 +150,38 @@
     .candidate__Homepage__Container .content__Wrappper {
         display: block;
     }
-    .container-wrapper .home__Title__Text{
+
+    .container-wrapper .home__Title__Text {
         margin: 2% auto;
-    } 
+    }
+
     .candidate__Homepage__Container {
         padding-bottom: 2%;
         height: calc(100% - 3rem);
     }
+
     .candidate__Homepage__Container h1 {
         margin-right: 1%;
         text-align: end;
         margin-top: 0;
     }
+
     .candidate__Homepage__Nav__Container {
         height: 4rem;
     }
+
     .candidate__Homepage__Container .main__Content {
         padding: 1.5% 10%;
         padding-bottom: 0;
         width: 75%;
     }
+
     .candidate__Homepage__Container .main__Content .logo__Img__Container {
         top: -2.5rem;
         left: 10%;
         width: 10%;
     }
+
     .candidate__Homepage__Container .main__Content .content__Wrappper {
         width: 100%;
         height: 100%;
@@ -176,6 +191,7 @@
         flex-direction: row;
         padding-top: 2rem;
     }
+
     .candidate__Homepage__Container .main__Content .content__Wrappper .content__Item {
         margin-left: 1.4%;
         /* height: 28rem; */
@@ -186,36 +202,44 @@
         margin-bottom: 0;
         display: flex;
     }
+
     .candidate__Homepage__Container .main__Content .content__Wrappper .content__Item img {
         /* height: 28rem; */
         height: 100%;
         display: block;
         margin-bottom: auto;
     }
-    .candidate__Homepage__Container .main__Content .content__Wrappper .bottom__Content{
+
+    .candidate__Homepage__Container .main__Content .content__Wrappper .bottom__Content {
         display: flex;
         justify-content: space-between;
         margin-top: 2%;
     }
+
     .candidate__Homepage__Container .main__Content .content__Wrappper .content__Item .job__Link__Item {
         padding: 3% 2%;
         width: 48.5%;
     }
+
     .candidate__Homepage__Container aside {
         top: 5%;
     }
+
     .candidate__Homepage__Container aside .side__Content {
         width: 78%;
         margin: 0 auto;
     }
+
     .candidate__Homepage__Container img {
         display: block;
         margin-bottom: 10%;
     }
+
     .candidate__Homepage__Container .side__Content p {
         margin-top: 8%;
         width: 95%;
     }
+
     .candidate__Homepage__Nav__Container .login__Link {
         right: 3.5%;
     }

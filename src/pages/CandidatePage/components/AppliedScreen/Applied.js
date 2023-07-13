@@ -136,7 +136,7 @@ function Applied() {
 
           currentNavigationTab === "Applied" ? <>
             {
-              React.Children.toArray(candidateJobs.currentUserApplications.map(application => {
+              React.Children.toArray(candidateJobs?.currentUserApplications.map(application => {
                 return <JobCard
                   job={candidateJobs.appliedJobs.find(job => job.job_number === application.job_number)}
                   showCandidateAppliedJob={true}
@@ -164,15 +164,29 @@ function Applied() {
 
             currentNavigationTab === "Interview" ? <>
               {
-                React.Children.toArray(candidateJobs.userInterviews.map(interview => {
+                React.Children.toArray(candidateJobs?.userInterviews.map(interview => {
                   return <JobCard
                     job={candidateJobs.userInterviews.find(job => job.job_number === interview.job_number)}
                     interviewDetails={interview}
                     showCandidateInterview={true}
                     guestUser={false}
                     currentApplicationStatus={interview?.status}
+                    candidateData={interview}
                     handleBtnClick={
-                      () => window.open(interview.server_discord_link, "_blank")
+                      interview.status === "Pending" ?
+                        () => window.open(interview.server_discord_link, "_blank")
+                        : candidateJobs.userInterviews.find(job => job.job_number === interview.job_number) ?
+                          () => navigate(
+                            "/applied/view_job_application",
+                            {
+                              state: {
+                                jobToView: candidateJobs.userInterviews.find(job => job.job_number === interview.job_number),
+                                applicationDetails: interview
+                              }
+                            }
+                          )
+                          :
+                          () => { }
                     }
                     buttonText={"Discord"}
                   />
