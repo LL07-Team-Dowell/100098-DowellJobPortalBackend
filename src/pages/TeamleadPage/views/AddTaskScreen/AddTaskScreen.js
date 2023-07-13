@@ -29,6 +29,26 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
     const selctChange = (e) => {
         setoptionValue(e.target.value) ; 
     }
+
+    function convertDateFormat(date) {
+        const dateObj = new Date(date);
+        const formattedDate = dateObj.toLocaleString('en-GB', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+      
+        return formattedDate;
+      }
+      const formattedDate = convertDateFormat(time);
+
+      console.log(formattedDate);
+      
+
+    // console.log(time);
     useClickOutside(ref, () => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) });
 
     // useEffect (() => {
@@ -54,7 +74,7 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
             task_added_by: currentUser.userinfo.username ,
             data_type:currentUser.portfolio_info[0].data_type , 
             company_id: currentUser.portfolio_info[0].org_id,
-            task_created_date: time
+            task_created_date: formattedDate
         }
         createCandidateTask(dataToPost).then(resp => {
             console.log(resp);
