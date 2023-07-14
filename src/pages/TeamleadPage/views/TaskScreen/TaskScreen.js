@@ -155,13 +155,6 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
                     <ul>{taskdetail2.length > 0 ? taskdetail2.map((d, i) => <li style={{ color: "#000", fontWeight: 400 }} key={i}>{d.task}</li>) : "No Tasks Found For Today"}</ul>
                 </div>
             </div>
-            {
-                panding ? <div className="add-task-btn" onClick={handleAddTaskBtnClick}>
-                    <span>Add</span>
-                    <AddCircleOutlineIcon />
-                </div> : ""
-            }
-
         </div>
     </>
 

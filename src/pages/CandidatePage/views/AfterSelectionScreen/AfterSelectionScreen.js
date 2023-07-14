@@ -9,6 +9,7 @@ import AddTaskScreen from "../../../TeamleadPage/views/AddTaskScreen/AddTaskScre
 import TaskScreen from "../../../TeamleadPage/views/TaskScreen/TaskScreen";
 import TeamsScreen from "../TeamsScreen/TeamsScreen";
 import UserScreen from "../UserScreen/UserScreen";
+import NewAddTaskScreen from "./NewAddTaskScreen";
 
 import "./style.css";
 
@@ -23,14 +24,26 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
     
     return <>
         {
-            section === undefined || section === "tasks" ? <>
-                <JobLandingLayout user={currentUser} afterSelection={true} hideSideNavigation={showAddTaskModal}>
-                {
-                    showAddTaskModal && <AddTaskScreen teamMembers={[]} afterSelectionScreen={true} closeTaskScreen={() => setShowAddTaskModal(false)} updateTasks={setUserTasks} assignedProject={assignedProjects} />
-                }
+            section === undefined ? <>
+            <JobLandingLayout user={currentUser} afterSelection={true} hideSideNavigation={showAddTaskModal}>
+            {showAddTaskModal && (
+                <AddTaskScreen
+                    teamMembers={[]}
+                    afterSelectionScreen={true}
+                    closeTaskScreen={() => setShowAddTaskModal(false)}
+                    updateTasks={setUserTasks}
+                    assignedProject={assignedProjects}
+                />
+            )}
+                <NewAddTaskScreen handleAddTaskBtnClick={() => setShowAddTaskModal(true)} />
+            </JobLandingLayout> 
+            
+            </> :
 
+            section === "task" ? <>
+                <JobLandingLayout user={currentUser} afterSelection={true} hideSideNavigation={showAddTaskModal}>
                 <div className="candidate__After__Selection__Screen">
-                    <TaskScreen candidateAfterSelectionScreen={true} handleAddTaskBtnClick={() => setShowAddTaskModal(true)} assignedProject={assignedProjects}/>
+                    <TaskScreen candidateAfterSelectionScreen={true} assignedProject={assignedProjects}/>
                 </div>
                 </JobLandingLayout>
             </> : 
