@@ -352,8 +352,6 @@ const Teamlead = () => {
             .then((res) => {
               console.log("res", res);
 
-              if (userTasks.length > 0) return;
-
               const tasksToDisplay = res.data.response.data
                 .filter(
                   (task) =>

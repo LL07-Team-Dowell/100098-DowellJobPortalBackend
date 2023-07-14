@@ -5,9 +5,19 @@
 .new__task__container {
     width: 80%;
     margin: auto;
-    /* flex-flow: wrap;
-    gap: 20px;
-    display: flex; */
+}
+
+.Create_Task {
+    width: 19rem;
+    min-height: 19rem;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {

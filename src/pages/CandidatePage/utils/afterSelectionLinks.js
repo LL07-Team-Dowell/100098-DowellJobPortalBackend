@@ -8,7 +8,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 
 export const afterSelectionLinks = [
   {
-    text: "Add Task",
+    text: "Add",
     icon: <AiOutlinePlus />,
     linkAddress: "/",
   },
