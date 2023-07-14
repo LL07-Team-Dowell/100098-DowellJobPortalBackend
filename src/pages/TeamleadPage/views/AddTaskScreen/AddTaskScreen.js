@@ -10,43 +10,43 @@ import { createCandidateTask } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
 
 
-const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelectionScreen, editPage, setEditPage, taskToEdit, hrPageActive , assignedProject }) => {
+const AddTaskScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelectionScreen, editPage, setEditPage, taskToEdit, hrPageActive, assignedProject }) => {
 
     const ref = useRef(null);
-    const [ showTaskForm, setShowTaskForm ] = useState(false);
-    const [ newTaskDetails, setNewTaskDetails ] = useState({
+    const [showTaskForm, setShowTaskForm] = useState(false);
+    const [newTaskDetails, setNewTaskDetails] = useState({
         "username": "",
         "title": "",
         "description": "",
         "status": "Incomplete",
     });
-    const [ disabled, setDisabled ] = useState(true);
+    const [disabled, setDisabled] = useState(true);
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext();
-    const [time , settime] = useState(new Date().toString()) ; 
-    const TimeValue = `${time.split(" ")[0]} ${time.split(" ")[1]} ${time.split(" ")[2]} ${time.split(" ")[3]}` 
-    const [optionValue , setoptionValue] = useState("") ; 
+    const [time, settime] = useState(new Date().toString());
+    const TimeValue = `${time.split(" ")[0]} ${time.split(" ")[1]} ${time.split(" ")[2]} ${time.split(" ")[3]}`
+    const [optionValue, setoptionValue] = useState("");
     const selctChange = (e) => {
-        setoptionValue(e.target.value) ; 
+        setoptionValue(e.target.value);
     }
-
     function convertDateFormat(date) {
         const dateObj = new Date(date);
         const formattedDate = dateObj.toLocaleString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
         });
-      
-        return formattedDate;
-      }
-      const formattedDate = convertDateFormat(time);
 
-      console.log(formattedDate);
-      
+        const [formattedTime, formattedDateOnly] = formattedDate.split(',');
+
+        return `${formattedTime} ${formattedDateOnly}`;
+    }
+
+    const formattedDate = convertDateFormat(time);
+    console.log(formattedDate);
 
     // console.log(time);
     useClickOutside(ref, () => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) });
@@ -56,46 +56,46 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
     //     if (newTaskDetails.username.length < 1) return setShowTaskForm(false);
 
     //     if ((newTaskDetails.title.length < 1) || (newTaskDetails.description.length < 1)) return setDisabled(true)
-        
+
     //     setDisabled(false)
 
     // }, [newTaskDetails])
-    useEffect(()=>{
-        if(newTaskDetails.description.length < 1 || optionValue.length < 1    )return setDisabled(true)  ; 
+    useEffect(() => {
+        if (newTaskDetails.description.length < 1 || optionValue.length < 1) return setDisabled(true);
         setDisabled(false)
 
-    },[newTaskDetails.description , optionValue]) ;
+    }, [newTaskDetails.description, optionValue]);
     const CreateNewTaskFunction = () => {
         setDisabled(true)
         const dataToPost = {
-            project: optionValue , 
-            applicant: currentUser.userinfo.username ,
-            task: newTaskDetails.description , 
-            task_added_by: currentUser.userinfo.username ,
-            data_type:currentUser.portfolio_info[0].data_type , 
+            project: optionValue,
+            applicant: currentUser.userinfo.username,
+            task: newTaskDetails.description,
+            task_added_by: currentUser.userinfo.username,
+            data_type: currentUser.portfolio_info[0].data_type,
             company_id: currentUser.portfolio_info[0].org_id,
             task_created_date: formattedDate
         }
         createCandidateTask(dataToPost).then(resp => {
             console.log(resp);
             updateTasks((prevTasks) => {
-                return [ ...prevTasks, { ...dataToPost, status: newTaskDetails.status } ]
+                return [...prevTasks, { ...dataToPost, status: newTaskDetails.status }]
             })
-            setNewTaskDetails({...newTaskDetails ,"description": "" });
+            setNewTaskDetails({ ...newTaskDetails, "description": "" });
             setoptionValue("");
             toast.success("New task sucessfully added")
             setDisabled(false)
             closeTaskScreen();
         })
-        .catch(err => {
-            console.log(err); 
-            setDisabled(false)
-        })
+            .catch(err => {
+                console.log(err);
+                setDisabled(false)
+            })
     }
-    useEffect (() => {
+    useEffect(() => {
 
         if (afterSelectionScreen) {
-            setNewTaskDetails(prevValue => { return { ...prevValue, username: currentUser.userinfo.username }});
+            setNewTaskDetails(prevValue => { return { ...prevValue, username: currentUser.userinfo.username } });
             setShowTaskForm(true);
         }
 
@@ -103,7 +103,7 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
 
     useEffect(() => {
         if (editPage) {
-            
+
             setNewTaskDetails({
                 username: taskToEdit.user,
                 title: taskToEdit.title,
@@ -120,8 +120,8 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
     }
 
     const handleMemberItemClick = (member) => {
-        setNewTaskDetails(prevValue => { return { ...prevValue, "username": member }});
-        setShowTaskForm(true); 
+        setNewTaskDetails(prevValue => { return { ...prevValue, "username": member } });
+        setShowTaskForm(true);
     }
 
     const handleNewTaskBtnClick = async () => {
@@ -135,7 +135,7 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
         // try{
 
         //     const response = await addNewTask(dataToSend);
-            
+
         //     if (!afterSelectionScreen) updateTasks(prevTasks => { return [ ...prevTasks.filter(task => task.user !== dataToSend.user) ] });
         //     updateTasks(prevTasks => { return [ response.data, ...prevTasks ] } );
         //     closeTaskScreen();
@@ -159,12 +159,12 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
         // try{
 
         //     await updateSingleTask(taskToEdit.id + "/", dataToSend)
-            
+
         //     taskToEdit.title = dataToSend.title;
         //     taskToEdit.description = dataToSend.description;
 
         //     updateTasks(prevTasks => prevTasks.map(task => {
-                
+
         //         if (task.id === taskToEdit.id) {
         //             return { ...task, title: dataToSend.title, description: dataToSend.description }
         //         }
@@ -182,15 +182,15 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
         // }
 
     }
-    
+
     return <>
         <div className="add__New__Task__Overlay">
             <div className="add__New__Task__Container" ref={ref}>
                 <h1 className="title__Item">
                     {
                         showTaskForm ? <>
-                            { !afterSelectionScreen &&<IoIosArrowBack onClick={editPage ? () => { closeTaskScreen(); setEditPage(false); } : () => setShowTaskForm(false)} style={{ cursor: "pointer" }} /> }
-                            { editPage ? "Edit Task": "New Task Details" }
+                            {!afterSelectionScreen && <IoIosArrowBack onClick={editPage ? () => { closeTaskScreen(); setEditPage(false); } : () => setShowTaskForm(false)} style={{ cursor: "pointer" }} />}
+                            {editPage ? "Edit Task" : "New Task Details"}
                         </> : <>Add new task</>
                     }
 
@@ -202,28 +202,28 @@ const AddTaskScreen = ({ teamMembers , closeTaskScreen, updateTasks, afterSelect
                         <input type={"text"} placeholder={"today time"} value={TimeValue} readOnly={true} />
                         <span className="selectProject">Select Project</span>
                         <br />
-                        <select onChange={e => selctChange(e)} className="addTaskDropDown"><option value={""}>Select</option>{assignedProject.map((v , i) => <option key={i} value={v}>{v}</option>)}</select>
+                        <select onChange={e => selctChange(e)} className="addTaskDropDown"><option value={""}>Select</option>{assignedProject.map((v, i) => <option key={i} value={v}>{v}</option>)}</select>
                         <textarea placeholder="Enter Task" name="description" value={newTaskDetails.description} onChange={handleChange} rows={5}></textarea>
                         <button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateTaskBtnClick() : CreateNewTaskFunction()}>{editPage ? "Update Task" : "Add Task"}</button>
                     </> :
-                    
-                    <>
-                        {
-                            teamMembers.length < 1 ? <>
-                                <h4>Your team members will appear here</h4>
-                            </> :
-                            <>
-                                <h4>Your team members ({teamMembers.length})</h4>
-                                <div className="team__Members__Container">
-                                    {
-                                        React.Children.toArray(teamMembers.map(member => {
-                                            return  <p className="team__Member__Item" onClick={() => handleMemberItemClick(member.applicant)}>{member.applicant}</p>
-                                        }))
-                                    }
-                                </div>
-                            </>
-                        }
-                    </>
+
+                        <>
+                            {
+                                teamMembers.length < 1 ? <>
+                                    <h4>Your team members will appear here</h4>
+                                </> :
+                                    <>
+                                        <h4>Your team members ({teamMembers.length})</h4>
+                                        <div className="team__Members__Container">
+                                            {
+                                                React.Children.toArray(teamMembers.map(member => {
+                                                    return <p className="team__Member__Item" onClick={() => handleMemberItemClick(member.applicant)}>{member.applicant}</p>
+                                                }))
+                                            }
+                                        </div>
+                                    </>
+                            }
+                        </>
                 }
             </div>
         </div>
