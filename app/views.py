@@ -1533,7 +1533,7 @@ class approve_task(APIView):
                                     }, status=status.HTTP_200_OK)
                 else:
                     return Response({"message": "Task failed to be approved",
-                                    "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
+                                    "response":json.loads(response)}, status=status.HTTP_404_NOT_FOUND)
             else:
                 return Response({"message": "Task failed to be approved. Approval date is over"}, status=status.HTTP_200_OK)
             
@@ -1574,6 +1574,7 @@ class create_team(APIView):
                 "eventId": get_event_id()['event_id'],
                 "team_name": data.get("team_name"),
                 "team_description": data.get("team_description"),
+                "created_by": data.get("created_by"),
                 "company_id": data.get("company_id"),
                 "members": data.get("members")
             }
@@ -1641,6 +1642,7 @@ class get_all_teams(APIView):  # all teams
 class edit_team(APIView):
     def patch(self, request, team_id):
         data = request.data
+        
         if data:
             field = {
                 "_id": team_id,
@@ -1655,10 +1657,10 @@ class edit_team(APIView):
             print(response)
             if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": "Team Updated successfully",
-                                 "response": json.loads(response)},
+                                "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Team failed to be updated", "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
+                return Response({"message": "Team failed to be updated", "response":json.loads(response)}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1692,7 +1694,8 @@ class create_team_task(APIView):
                 'description': data.get("description"),
                 "assignee": data.get("assignee"),
                 "completed": data.get("completed"),
-                "team_name": data.get("team_name"),
+                "team_id": data.get("team_id"),
+                "due_date":data.get("due_date")
             }
             update_field = {
                 "status": "nothing to update"
@@ -1730,7 +1733,7 @@ class edit_team_task(APIView):
                                  "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
             else:
-                return Response({"message": "Team Task failed to be updated", "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
+                return Response({"message": "Team Task failed to be updated", "response":json.loads(response)}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
