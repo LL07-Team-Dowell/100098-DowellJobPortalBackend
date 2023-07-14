@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { AiOutlinePlusCircle } from 'react-icons/ai';
+import { useCurrentUserContext } from '../../../../../../contexts/CurrentUserContext';
 
 const CreateTeam = ({toggleCheckboxes, settoggleCheckboxes,changeTeamName, handleCheckboxChange ,data}) => {
-  
+  const { currentUser } = useCurrentUserContext();
+  console.log(currentUser)
   return (
     <div className='overlay'>
     <div className='create_your_team'>
@@ -37,7 +39,17 @@ const CreateTeam = ({toggleCheckboxes, settoggleCheckboxes,changeTeamName, handl
       <br />
       {toggleCheckboxes ? (
         <div className='checkboxes'>
-          {data.memebers.map((member, i) => (
+          {currentUser.selected_product.userportfolio.map((user, index) => user.username[0] !== 'owner' ?  (
+            <div key={index}>
+              <input
+                type='checkbox'
+                value={user}
+                onChange={handleCheckboxChange}
+              />
+              <span>{user}</span>
+            </div>
+          ): null)}
+          {/* {data.memebers.map((member, i) => (
             <div key={i}>
               <input
                 type='checkbox'
@@ -46,7 +58,7 @@ const CreateTeam = ({toggleCheckboxes, settoggleCheckboxes,changeTeamName, handl
               />
               <span>{member}</span>
             </div>
-          ))}
+          ))} */}
         </div>
       ) : null}
       <br />

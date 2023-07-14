@@ -2,13 +2,15 @@ import { AiOutlineTeam } from "react-icons/ai";
 import { HiArrowNarrowRight } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { imageReturn } from "../../../../TeamleadPage/views/CreateMembersTask/assets/teamsName";
+import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 
 const Teams = ({setChoosedTeam, data}) => {
-  
+    const { currentUser } = useCurrentUserContext();
     const reversedTeams = [...data.TeamsSelected].reverse();
+    if(reversedTeams.filter(e => e.members.some(v => v === currentUser.userinfo.username )).length === 0) return <h5 style={{marginTop:20}}>Currently, you have not been assigned to a team.</h5>
     return (
       <div className='teams_data'>
-      <div>{reversedTeams.map(v => <Team v={v} team_name={v.team_name} setChoosedTeam={setChoosedTeam}/>  )}</div>
+      <div>{reversedTeams.filter(e => e.members.some(v => v === currentUser.userinfo.username )).map(v => <Team v={v} team_name={v.team_name} setChoosedTeam={setChoosedTeam}/>  )}</div>
       </div>
     )
   }

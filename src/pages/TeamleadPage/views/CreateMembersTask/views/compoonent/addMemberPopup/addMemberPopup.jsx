@@ -31,8 +31,10 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
     setDesplaidMembers([...displaidMembers,inputMembers.find(f => f.id === id)])
   }
       const EditTeamFunction = () => {
+        console.log(team._id)
         if(name && inputMembers.length > 0)
-        EditTeam(currentUser.portfolio_info[0].org_id,{team_name,members:[...members,...inputMembers.map(m => m.member)]})
+        
+        EditTeam(team._id,{team_name,members:[...inputMembers.map(m => m.member)]})
           .then(resp => {
             console.log(resp);
             getElementToTeamState(name,[...inputMembers.map(m => m.member)])
@@ -41,10 +43,10 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
             close()
           })
           .catch(err => {
-            console.log(err)
+            console.log(name,[...inputMembers.map(m => m.member)])
           })
         else{
-          toast.error("an input/s haven't displayed")
+          toast.error("Complete all fields before submitting")
         }
       }
       useEffect(()=>{

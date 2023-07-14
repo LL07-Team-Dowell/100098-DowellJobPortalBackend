@@ -33,8 +33,7 @@ const TeamScreenMembers = () => {
           setTeamName(teamName);
           setmembers(members)
         }
-    const bigMember = ['boxboy','ayo','sagar','isaac','Hardic','akram','manish']
-    console.log({team, loading})
+    const bigMember = currentUser.selected_product.userportfolio.map(v => v.username.length !== 0 && v.username[0] !== 'owner' ? v.username[0] : null).filter(v => v !== null)
     if(loading) return <LoadingSpinner/>
   return (
     <div style={{height:'110%'}}>
