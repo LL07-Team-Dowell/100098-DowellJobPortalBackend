@@ -60,7 +60,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
         console.log(err)
       })
     }else{
-      toast.error("an input/s haven't displayed")
+      toast.error("Complete all fields before submitting")
     }
   }
   const handleSubmitData = () => {
@@ -71,7 +71,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
         createTeamSubmit()
       }
     }else{
-      toast.error("an input/s haven't displayed")
+      toast.error("Complete all fields before submitting")
     }
   }
   const userIsThere = (user) => taskMembers.includes(user);
