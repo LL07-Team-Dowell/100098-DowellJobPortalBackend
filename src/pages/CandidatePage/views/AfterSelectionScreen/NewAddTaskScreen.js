@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AiOutlinePlusCircle } from "react-icons/ai";
-import Navbar from "../../../TeamleadPage/views/CreateMembersTask/component/Navbar";
+
 
 const NewAddTaskScreen = ({ handleAddTaskBtnClick }) => {
   return (
@@ -18,8 +18,7 @@ const NewAddTaskScreen = ({ handleAddTaskBtnClick }) => {
               </div>
               <h4>Create Thread</h4>
               <p>
-                Bring everyone together and get to work. Work together in a team
-                to increase productivity.
+                Create, monitor and get quick feedback on issues ecountered in our products.
               </p>
             </div>
           </div>
@@ -32,7 +31,7 @@ const NewAddTaskScreen = ({ handleAddTaskBtnClick }) => {
                 />
               </div>
               <h4>Add Task</h4>
-              <p>Add Task Given daily Here.</p>
+              <p>Keep track of tasks given and milestones completed while working on a project.</p>
             </div>
           </div>
         </div>
