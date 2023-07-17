@@ -190,15 +190,15 @@ function JobScreen() {
             getJobs(publicUserDetails?.company_id).then(res => {
                 const filterJob = res.data.response.data.filter(job => job.data_type === publicUserDetails?.data_type);
                 setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
-    
+
             }).catch(err => {
                 console.log(err);
             })
-            
+
             setJobsLoading(false);
             setAllRequestsDone(true);
-            
-            return 
+
+            return
         }
 
         const datass = currentUser.portfolio_info[0].org_id;
@@ -284,9 +284,19 @@ function JobScreen() {
                     <TitleNavigationBar title={`${changeToTitleCase(currentCategory)} Jobs`} showSearchBar={true} handleBackBtnClick={() => currentCategory ? navigate(-1) : navigate("/home")} />
 
                     <div className='candidate__Jobs__Container'>
-                        <div className="refresh-container" onClick={handleRefreshForCandidateApplications} id='refresh-container'>
+                        {/* <div className="refresh-container" onClick={handleRefreshForCandidateApplications} id='refresh-container'>
                             <IoMdRefresh />
-                        </div>
+                        </div> */}
+                        <button
+                            className="refresh-container"
+                            id='refresh-container'
+                            onClick={handleRefreshForCandidateApplications}
+                        >
+                            <div className="refresh-btn">
+                                <IoMdRefresh />
+                                <p>Refresh</p>
+                            </div>
+                        </button>
                         {
                             jobsLoading || !jobSelectionHasCategory ? <></> :
                                 <TogglerNavMenuBar className={`candidate__Job__Selections__Toggler ${currentCategory.toLocaleLowerCase() === "employee" ? "single__Item" : ""}`} menuItems={jobSelectionCategories} currentActiveItem={currentJobCategory} handleMenuItemClick={(item) => setCurrentJobCategory(item)} />
