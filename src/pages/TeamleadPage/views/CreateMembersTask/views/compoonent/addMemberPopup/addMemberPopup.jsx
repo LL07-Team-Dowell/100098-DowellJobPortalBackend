@@ -5,6 +5,8 @@ import { EditTeam } from '../../../../../../../services/createMembersTasks';
 import { toast } from 'react-toastify';
 import {BsPlus} from 'react-icons/bs'
 import {FaTimes} from 'react-icons/fa'
+import LittleLoading from '../../../../../../CandidatePage/views/ResearchAssociatePage/littleLoading';
+import LoadingSpinner from '../../../../../../../components/LoadingSpinner/LoadingSpinner';
 const returnMissingMember = (bigMember,smallMember) => {
     let data = bigMember
     smallMember.forEach(element => {
@@ -15,9 +17,8 @@ const returnMissingMember = (bigMember,smallMember) => {
 
 
 const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTeamName,getElementToTeamState, setteam, team}) => {
-  const { currentUser } = useCurrentUserContext();
-    const [addedMembers , setAddedMembers] = useState(members); 
     const [name, setname] = useState(team_name) ;
+    const [loading, setloading] = useState(false)
     const [displaidMembers, setDesplaidMembers] = useState(returnMissingMember(bigMember,members).map((member,index) => ({id:index ,member})))
   const [inputMembers, setInputMembers] = useState([]) ; 
   const [query,setquery] = useState('');
@@ -31,22 +32,28 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
     setDesplaidMembers([...displaidMembers,inputMembers.find(f => f.id === id)])
   }
       const EditTeamFunction = () => {
-        console.log(team._id)
-        if(name && inputMembers.length > 0)
-        
-        EditTeam(team._id,{team_name,members:[...inputMembers.map(m => m.member)]})
-          .then(resp => {
-            console.log(resp);
-            getElementToTeamState(name,[...inputMembers.map(m => m.member)])
-            setteam({...team, members:[...inputMembers.map(m => m.member)]})
-            toast.success("Edit Team Successfully");
-            close()
-          })
-          .catch(err => {
-            console.log(name,[...inputMembers.map(m => m.member)])
-          })
-        else{
-          toast.error("Complete all fields before submitting")
+        if(!loading){
+          if(name && inputMembers.length > 0){
+            setloading(true);
+            EditTeam(team._id,{team_name,members:[...inputMembers.map(m => m.member)]})
+            .then(resp => {
+              console.log(resp);
+              getElementToTeamState(name,[...inputMembers.map(m => m.member)])
+              setteam({...team, members:[...inputMembers.map(m => m.member)]})
+              toast.success("Edit Team Successfully");
+              close();
+            setloading(false);
+            })
+            .catch(err => {
+              console.log(name,[...inputMembers.map(m => m.member)])
+              setloading(false);
+  
+            })
+          }
+          else{
+            toast.error("Complete all fields before submitting")
+            setloading(false);
+          }
         }
       }
       useEffect(()=>{
@@ -92,7 +99,7 @@ const AddMemberPopup = ({bigMember,  members,team_name, setmembers ,close, setTe
       <h3>No More Members</h3>
       }
       </div>
-      <button className='edit-team' onClick={()=>EditTeamFunction()}>Edit Team </button>
+      <button className='edit-team' onClick={()=>EditTeamFunction()}>{loading ? <LoadingSpinner color={'white'} width='20px' height='20px' /> : 'Edit Team'}</button>
     </div>
     </div>
   )

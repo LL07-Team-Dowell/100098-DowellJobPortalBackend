@@ -8,11 +8,24 @@ import { teams ,imageReturn} from '../assets/teamsName';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineTeam } from 'react-icons/ai';
 const Teams = ({back , setChoosedTeam, searchValue, data}) => {
-  
+  const { currentUser } = useCurrentUserContext();
   const reversedTeams = [...data.TeamsSelected].reverse();
+  console.log({reversedTeams})
   return (
     <div className='teams_data'>
-    <div>{reversedTeams.filter(e => e.team_name.includes(searchValue)).map(v => <Team v={v} team_name={v.team_name} setChoosedTeam={setChoosedTeam}/>  )}</div>
+      {
+        reversedTeams
+        .filter(team => team.created_by === currentUser.userinfo.username )
+        .filter(e => e.team_name.includes(searchValue)).length !== 0 ? 
+        <div>{reversedTeams
+          .filter(team => team.created_by === currentUser.userinfo.username )
+          .filter(e => e.team_name.includes(searchValue))
+          .map(v => <Team v={v} team_name={v.team_name} setChoosedTeam={setChoosedTeam}/>
+          )}</div>
+        :
+        <h4>There is no Team in this Profile.</h4>
+      }
+   
     </div>
   )
 }
