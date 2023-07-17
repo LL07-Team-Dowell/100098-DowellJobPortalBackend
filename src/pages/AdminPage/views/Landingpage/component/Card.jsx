@@ -132,7 +132,7 @@ const Card = ({
 
       if (extraFunctionToRun && typeof extraFunctionToRun === 'function') {
         setShowOverlay(false);
-        extraFunctionToRun();
+        extraFunctionToRun(jobToEdit._id);
         return 
       }
 
@@ -170,7 +170,7 @@ const Card = ({
             onClick={
               handleShareIconClick && typeof handleShareIconClick === 'function' ?
                 newly_created ?
-                () => fetchJobsAgain(null, () => handleShareIconClick(_id))
+                () => fetchJobsAgain(null, (passedId) => handleShareIconClick(passedId))
                 :
                 () => handleShareIconClick(_id) 
               :
