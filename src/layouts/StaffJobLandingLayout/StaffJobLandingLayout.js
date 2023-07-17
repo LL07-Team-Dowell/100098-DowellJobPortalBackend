@@ -19,6 +19,8 @@ import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import { useEffect, useState } from "react";
 import { teamManagementProductName } from "../../utils/utils";
 import { hr } from "date-fns/locale";
+import { IoShareSocial } from "react-icons/io5";
+import ShareJobModal from "../../components/ShareJobModal/ShareJobModal";
 
 const StaffJobLandingLayout = ({
   children,
@@ -42,6 +44,9 @@ const StaffJobLandingLayout = ({
   showLoadingOverlay,
   modelDurationInSec,
   hideSearchBar,
+  showShareModalForJob,
+  jobLinkToShare,
+  handleCloseShareJobModal,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const { currentUser } = useCurrentUserContext();
@@ -165,6 +170,20 @@ const StaffJobLandingLayout = ({
               <ProgressTracker durationInSec={modelDurationInSec} />
             </BlurBackground>
           )}
+          
+          {
+            adminView && showShareModalForJob && 
+            <ShareJobModal
+              linkToShare={jobLinkToShare}
+              handleCloseModal={
+                handleCloseShareJobModal && typeof handleCloseShareJobModal === 'function' ?
+                () => handleCloseShareJobModal()
+                :
+                () => {}
+              }
+            />
+          }
+
           <div
             className={`jobs__Layout__Content ${
               adminView ? "full__Width" : ""

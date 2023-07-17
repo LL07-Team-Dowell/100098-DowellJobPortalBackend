@@ -1,0 +1,120 @@
+.share__Overlay {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.share__Modal {
+    width: 40%;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1rem 2rem 2rem;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.share__Modal__CLose__Container {
+    width: 100%;
+}
+
+.share__Modal__CLose__Icon {
+    display: block;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+.share__Subtitle__Info {
+    color: #a3a1a1;
+    font-size: 0.9rem;
+}
+
+.share__Items__Container {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    width: 100%;
+}
+
+.share__Item {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #a3a1a1;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+}
+
+.share__Item:hover,
+.share__Item.active,
+.copy__Link__Btn {
+    background-color: #005734;
+    color: #fff;
+}
+
+.copy__Link__Btn {
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.02em;
+    outline: none;
+    border: none;
+    min-width: 5rem;
+    min-height: 2.5rem;
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.copy__Link__Btn:hover {
+    filter: brightness(0.85);
+}
+
+.link__Wrapper {
+    width: 100%;
+    background-color: #f5f5f5;
+    padding: 1.5%;
+    position: relative;
+}
+
+.link__Content {
+    max-width: 100%;
+    overflow-x: auto;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.8rem;
+}
+
+.copy__Link__Icon {
+    position: absolute;
+    z-index: 2;
+    right: 2%;
+    top: 40%;
+    transform: translateY(-50%);
+    border: 1px solid #a3a1a1;
+    border-radius: 5px;
+    padding: 0.2%;
+    background-color: #f5f5f5;
+}
+
+@media screen and (max-width: 767px) {
+    .share__Modal {
+        width: 95%;
+        gap: 1.5rem;
+    }
+    .link__Wrapper {
+        padding: 5%;
+    }
+}

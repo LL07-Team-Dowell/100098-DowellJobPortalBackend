@@ -32,7 +32,7 @@ function JobScreen() {
     const [jobSelectionCategories, setJobSelectionCategories] = useState(null);
     const [currentJobCategory, setCurrentJobCategory] = useState(null);
     const [jobsToDisplay, setJobsToDisplay] = useState([]);
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser, isPublicUser, publicUserDetails } = useCurrentUserContext();
     console.log(jobs);
     useEffect(() => {
         // console.log(jobs);
@@ -182,6 +182,23 @@ function JobScreen() {
             setAllRequestsDone(true);
             setJobsLoading(false);
             return;
+        }
+
+        if (!currentUser) {
+            if (!isPublicUser) return
+
+            getJobs(publicUserDetails?.company_id).then(res => {
+                const filterJob = res.data.response.data.filter(job => job.data_type === publicUserDetails?.data_type);
+                setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
+    
+            }).catch(err => {
+                console.log(err);
+            })
+            
+            setJobsLoading(false);
+            setAllRequestsDone(true);
+            
+            return 
         }
 
         const datass = currentUser.portfolio_info[0].org_id;

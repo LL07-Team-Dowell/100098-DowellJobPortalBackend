@@ -22,7 +22,7 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
 
   useEffect(() => {
 
-    if (!currentUser) return;
+    if (!currentUser) return setLoading(false);
     if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 0) return setLoading(false);
 
     getAppliedJobs(currentUser?.portfolio_info[0].org_id).then(res => {

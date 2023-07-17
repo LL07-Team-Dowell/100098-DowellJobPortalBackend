@@ -27,6 +27,7 @@ import { jobKeys } from "../../../AdminPage/utils/jobKeys";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { useJobContext } from "../../../../contexts/Jobs";
 import axios from "axios";
+import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 
 
 
@@ -50,13 +51,25 @@ const JobApplicationScreen = () => {
     const [removeFreelanceOptions, setRemoveFreelanceOptions] = useState(false);
     const { jobs, setJobs } = useJobContext();
     const [jobsLoading, setJobsLoading] = useState(true);
-    const { currentUser } = useCurrentUserContext();
+    const { 
+        currentUser, 
+        isPublicUser, 
+        publicUserDetails, 
+        setCurrentUser, 
+        userDetailsNotFound,
+        setUserDetailsNotFound, 
+        setIsPublicUser,
+        setPublicUserDetails,
+    } = useCurrentUserContext();
     const [jobSaved, setJobSaved] = useState(false);
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     const [formPage, setFormPage] = useState(1);
+
     const addToRefsArray = (elem, arrayToAddTo) => {
         if (elem && !arrayToAddTo.current.includes(elem)) arrayToAddTo.current.push(elem)
     }
+
+    const [ userDetailLoading, setUserDetailLoading] = useState(false);
     const [testResult, setTestResult] = useState(null);
     const [error, setError] = useState(null);
     console.log(testResult);
@@ -87,9 +100,59 @@ const JobApplicationScreen = () => {
 
     useEffect(() => {
 
+        if (window.location.href.includes('session_id')) {
+
+            const [ extractedSessionId, currentJobId ] = [ window.location.href.split('session_id=')[1], id ];
+
+            window.history.replaceState({}, document.title, `/100098-DowellJobPortal/#/apply/job/${currentJobId}`);
+
+            getUserInfoFromLoginAPI({ session_id: extractedSessionId })
+            .then(async (res) => {
+                const currentUserDetails = res.data;
+
+                if (currentUserDetails.message) {
+                    setUserDetailsNotFound(true);
+                    setIsPublicUser(false);
+                    setPublicUserDetails({});
+
+                    return navigate('/');
+                }
+
+                sessionStorage.clear();
+                sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+
+                setCurrentUser(currentUserDetails);
+                setUserDetailLoading(false);
+            })
+            .catch((err) => {
+                console.log(err);
+                setUserDetailLoading(false);
+            });
+
+        }
+
         if (jobs.length > 0) return setJobsLoading(false);
 
-        const datass = currentUser.portfolio_info[0].org_id;
+        setJobsLoading(true);
+
+        if (!currentUser) {
+            if (userDetailsNotFound) return navigate('/');
+            if (!isPublicUser) return setJobsLoading(false);
+
+            getJobs(publicUserDetails?.company_id).then(res => {
+                const filterJob = res.data.response.data.filter(job => job.data_type === publicUserDetails?.data_type);
+                setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
+    
+            }).catch(err => {
+                console.log(err);
+            })
+            
+            setJobsLoading(false);
+            
+            return 
+        }
+
+        const datass = currentUser?.portfolio_info[0]?.org_id;
         getJobs(datass).then(res => {
             const userAppliedJobs = res.data.response.data.filter(
                 (job) => job.data_type === currentUser?.portfolio_info[0].data_type
@@ -107,7 +170,7 @@ const JobApplicationScreen = () => {
     useEffect(() => {
 
         if (!id) return navigate("/home");
-        if (jobsLoading) return;
+        if (jobsLoading || jobs.length < 1) return;
 
         // if (typeof (Number(id)) !== "number") return navigate("/home");
         const foundJob = jobs.find(job => job._id === id);
@@ -198,15 +261,17 @@ const JobApplicationScreen = () => {
 
     }, [currentJob]);
 
-    console.log(newApplicationData.freelancePlatformUrl);
+    console.log(newApplicationData?.freelancePlatformUrl);
 
     const [seleteCategoryOption, setSelectCategoryOption] = useState("");
     const handleOptionChange = (e) => {
         setSelectCategoryOption(e.target.value);
     };
-    const isUrlValid = validateUrl(newApplicationData.freelancePlatformUrl);
+    const isUrlValid = validateUrl(newApplicationData?.freelancePlatformUrl);
 
     useEffect(() => {
+
+        if (!currentUser) return
 
         if (formPage === 1) {
 
@@ -285,13 +350,14 @@ const JobApplicationScreen = () => {
     }, [
         formPage,
         labelClicked,
-        newApplicationData.country,
-        newApplicationData.freelancePlatformUrl,
-        newApplicationData.feedBack,
-        newApplicationData.applicant,
-        newApplicationData.others,
+        newApplicationData?.country,
+        newApplicationData?.freelancePlatformUrl,
+        newApplicationData?.feedBack,
+        newApplicationData?.applicant,
+        newApplicationData?.others,
         section,
         removeFreelanceOptions,
+        currentUser,
     ]
     )
 
@@ -353,7 +419,7 @@ const JobApplicationScreen = () => {
         )
     }
 
-    if (jobsLoading) return <LoadingSpinner />
+    if (jobsLoading || userDetailLoading) return <LoadingSpinner />
 
     return <>
         <div className="candidate__Job__Application__Container">

@@ -16,6 +16,8 @@ import {
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { useJobContext } from "../../../../../contexts/Jobs";
 import { set } from "date-fns";
+import { IoShareSocial } from "react-icons/io5";
+
 const style = {
   fontSize: "1.2rem",
   color: "#7C7C7C",
@@ -32,6 +34,7 @@ const Card = ({
   setJobs,
   newly_created,
   setShowOverlay,
+  handleShareIconClick,
 }) => {
   const { list } = useJobContext();
   const navigate = useNavigate();
@@ -40,9 +43,11 @@ const Card = ({
   // console.log(currentUser.portfolio_info[0].org_id)
   // console.log({job_number})
   const [number, setnumber] = useState(0);
+  
   useEffect(() => {
     setnumber(list.filter((j) => j.job_number === job_number).length);
   }, [jobs]);
+
   const date = () => {
     const givenDate = new Date(created_on);
     const timeDiff = new Date().getTime() - givenDate.getTime();
@@ -63,9 +68,11 @@ const Card = ({
     }
     return timeAgo;
   };
+
   const [is_activee, setIsActive] = useState(is_active);
   const [loading, setLoading] = useState(false);
   const [deletingLoading, setDeletingLoading] = useState(false);
+
   const handleDeleteOfJob = async (id) => {
     // console.log("SADASDSADASDSD");
     setDeletingLoading(true);
@@ -132,6 +139,7 @@ const Card = ({
   };
 
   if (job_title === null) return <></>;
+
   return (
     <div className="card">
       <div className="card__header">
@@ -146,6 +154,19 @@ const Card = ({
               <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
             </Link>
           )}
+          <IoShareSocial
+            onClick={
+              handleShareIconClick && typeof handleShareIconClick === 'function' ?
+              () => handleShareIconClick(_id) 
+              :
+              () => {}
+            }
+            style={{ 
+              fontSize: "1.3rem", 
+              color: "#000",
+              cursor: "pointer",
+            }}
+          />
           {deletingLoading ? (
             <LittleLoading />
           ) : (

@@ -18,6 +18,9 @@ const LandingPage = ({ subAdminView }) => {
   const [stateTrackingProgress, setstateTrackingProgress] = useState(false);
 
   const { jobs, setJobs, setlist, jobs2, setjobs2, searchValue, setsearchValue, resp, setresponse } = useJobContext();
+  const [ showShareModal, setShowShareModal ] = useState(false);
+  const [ jobLinkToShare, setJobLinkToShare ] = useState('');
+
   const handleSearchChange = (value) => {
     console.log("kasaksldjalksdjalksdjlkjsakl")
     setsearchValue(value);
@@ -76,8 +79,14 @@ const LandingPage = ({ subAdminView }) => {
       });
   }, []);
 
+  const handleShareIconClick = (jobId) => {
+    // console.log(jobId);
+    setShowShareModal(true);
+    setJobLinkToShare(`${window.location.origin}/100098-DowellJobPortal/%23?view=public%26job_company_id=${currentUser?.portfolio_info[0].org_id}%26job_id=${jobId}%26company_data_type=${currentUser?.portfolio_info[0]?.data_type}`);
+  }
 
   console.log({ searchValue });
+  
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -87,6 +96,9 @@ const LandingPage = ({ subAdminView }) => {
       subAdminView={subAdminView}
       showLoadingOverlay={stateTrackingProgress}
       modelDurationInSec={5.81}
+      showShareModalForJob={showShareModal}
+      jobLinkToShare={jobLinkToShare}
+      handleCloseShareJobModal={() => setShowShareModal(false)}
     >
       <div className="landing-page">
         <div className="cards">
@@ -96,7 +108,14 @@ const LandingPage = ({ subAdminView }) => {
               jobs.length > 0 ? (
                 jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
                   .map((job, index) => (
-                    <Card {...job} key={index} jobs={jobs} setJobs={setJobs} setShowOverlay={setstateTrackingProgress} />
+                    <Card 
+                      {...job} 
+                      key={index} 
+                      jobs={jobs} 
+                      setJobs={setJobs} 
+                      setShowOverlay={setstateTrackingProgress} 
+                      handleShareIconClick={(passedJobId) => handleShareIconClick(passedJobId)}
+                    />
                   ))
               ) : (
                 <Loading />

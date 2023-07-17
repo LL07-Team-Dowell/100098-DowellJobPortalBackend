@@ -62,8 +62,17 @@ import { TeamCandidateProvider } from "./pages/CandidatePage/views/TeamsScreen/u
 import TeamScreenMembersCandidate from "./pages/CandidatePage/views/TeamScreenMember/TeamScreenMember";
 import TeamScreenTasksCandidate from "./pages/CandidatePage/views/TeamsScreenTasks/TeamsScreenTasks";
 import JobLandingLayout from "./layouts/CandidateJobLandingLayout/LandingLayout";
+
 function App() {
-  const { currentUser, setCurrentUser } = useCurrentUserContext();
+  const { 
+    currentUser, 
+    isPublicUser, 
+    setCurrentUser, 
+    setIsPublicUser, 
+    setPublicUserDetails,
+    userDetailsNotFound,
+    setUserDetailsNotFound,
+  } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
   const [candidateShortListed, setCandidateShortListed] = useState(false);
@@ -71,44 +80,95 @@ function App() {
   const [shorlistedJob, setshorlistedJob] = useState([]);
 
   // console.log(shorlistedJob); 
-  useDowellLogin(setCurrentUser, setLoading);
+  useDowellLogin(setCurrentUser, setLoading, setIsPublicUser, setPublicUserDetails, setUserDetailsNotFound);
   useTitle("Dowell Job Portal");
 
   if (loading) return <LoadingPage />;
 
   console.log("CURRENT USER", currentUser);
 
-  // // NO LOGGED IN USER VIEW
-  // if (!currentUser) {
-  //   return (
-  //     <Routes>
-  //       <Route
-  //         path="/apply/job/:id"
-  //         element={
-  //           <NewApplicationContextProvider>
-  //             <JobApplicationScreen />
-  //           </NewApplicationContextProvider>
-  //         }
-  //       />
+  // NO LOGGED IN USER VIEW
+  if (isPublicUser) {
+    return (
+      <Routes>
+        <Route
+          path="/apply/job/:id"
+          element={
+            <JobContextProvider>
+              <JobApplicationScreen />
+            </JobContextProvider>
+          }
+        />
 
-  //       <Route path="/" element={<CandidateHomeScreen />} />
+        <Route path="/" element={
+          <JobContextProvider>
+            <CandidateHomeScreen />
+          </JobContextProvider>
+          } 
+        />
 
-  //       <Route path="/jobs">
-  //         <Route index element={<JobScreen />} />
-  //         <Route path=":jobTitle" element={<SingleJobScreen />} />
-  //         <Route
-  //           exact
-  //           path="c/research-associate"
-  //           element={<ResearchAssociatePage />}
-  //         />
-  //         <Route exact path="c/employee" element={<EmployeeJobScreen />} />
-  //         <Route exact path="c/intern" element={<InternJobScreen />} />
-  //         <Route exact path="c/freelancer" element={<FreelancerJobScreen />} />
-  //       </Route>
-  //       <Route path="*" element={<CandidateHomeScreen />} />
-  //     </Routes>
-  //   );
-  // }
+        <Route path="/jobs">
+          <Route index element={
+            <JobContextProvider>
+              <JobScreen />
+            </JobContextProvider>
+            } 
+          />
+          <Route path=":jobTitle" element={
+            <JobContextProvider>
+              <SingleJobScreen />
+            </JobContextProvider>
+            } 
+          />
+          <Route
+            exact
+            path="c/research-associate"
+            element={
+              <JobContextProvider>
+                <ResearchAssociatePage />
+              </JobContextProvider>
+            }
+          />
+          <Route exact path="c/employee" 
+            element={
+              <JobContextProvider>
+                <EmployeeJobScreen />
+              </JobContextProvider>
+            } 
+          />
+          <Route exact path="c/intern" 
+            element={
+              <JobContextProvider>
+              <InternJobScreen />
+              </JobContextProvider>
+            } 
+          />
+          <Route exact path="c/freelancer" 
+            element={
+              <JobContextProvider>
+              <FreelancerJobScreen />
+              </JobContextProvider>
+            } 
+          />
+        </Route>
+        <Route path="*" 
+          element={
+          <JobContextProvider>
+            <CandidateHomeScreen />
+          </JobContextProvider>
+          } 
+        />
+      </Routes>
+    );
+  }
+
+  if (userDetailsNotFound) {
+    return (
+      <Routes>
+        <Route path="*" element={<>User details not found</>} />
+      </Routes>
+    );
+  }
 
   //CURRENT USER BUT NO PORTFOLIO INFO OR PORTFOLIO INFO IS EMPTY
   if (
