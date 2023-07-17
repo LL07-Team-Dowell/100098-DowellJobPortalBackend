@@ -34,9 +34,10 @@ export const testJobToWorkWith = {
     "created_by": "ayoola",  
 }
 
+const [ threadOneId, threadTwoId, threadThreeId ] = [ crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID() ]
 export const testThreadsToWorkWith = [
   {
-    _id: crypto.randomUUID(),
+    _id: threadOneId,
     image: 'https://images.unsplash.com/photo-1589652717521-10c0d092dea9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Zml4fGVufDB8fDB8fHww&auto=format&fit=crop&w=600&q=60',
     thread: 'Login button not working',
     created_by: 'ayoolaa_',
@@ -46,12 +47,13 @@ export const testThreadsToWorkWith = [
     comments: [
       {
         user: 'sagar-hr-hiring',
-        comment: "Thanks for noting! We're looking into it"
+        comment: "Thanks for noting! We're looking into it",
+        thread_id: threadOneId,
       },
     ]
   },
   {
-    _id: crypto.randomUUID(),
+    _id: threadTwoId,
     thread: 'App keeps crashing after i use for 10 minutes',
     created_by: 'sagar-hr-hiring',
     team_alerted_id: '32302934342948',
@@ -60,12 +62,13 @@ export const testThreadsToWorkWith = [
     comments: [
       {
         user: 'sagar-hr-hiring',
-        comment: "Hi please i have been struggling with this"
+        comment: "Hi please i have been struggling with this",
+        thread_id: threadTwoId,
       },
     ]
   },
   {
-    _id: crypto.randomUUID(),
+    _id: threadThreeId,
     image: 'https://images.unsplash.com/photo-1576613109753-27804de2cba8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGZpeHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60',
     thread: 'Styles not looking good on mobile',
     created_by: 'zeke-hr-hiring',
@@ -75,7 +78,8 @@ export const testThreadsToWorkWith = [
     comments: [
       {
         user: 'ayoolaa_',
-        comment: "Thanks for noting! We're looking into it"
+        comment: "Thanks for noting! We're looking into it",
+        thread_id: threadThreeId,
       },
     ]
   },
