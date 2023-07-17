@@ -37,7 +37,8 @@
     top: 100%;
     background: #F5F5F5;
     padding: 3% 10%;
-    width: max-content;
+    min-width: max-content;
+    width: 100%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;

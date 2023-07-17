@@ -608,6 +608,7 @@ const AddJob = ({ subAdminView }) => {
                 placeholder={"Enter your answer"}
                 required
                 ref={descriptionRef}
+                rows={5}
               />
 
               <div className="terms">
