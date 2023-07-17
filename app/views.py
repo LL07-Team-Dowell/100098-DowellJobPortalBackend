@@ -1373,7 +1373,7 @@ class lead_reject_candidate(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class create_task(APIView):
     def max_updated_date(self,updated_date):
-        task_updated_date=datetime.datetime.strptime(updated_date, "%d/%m/%Y %H:%M:%S")
+        task_updated_date=datetime.datetime.strptime(updated_date, "%m/%d/%Y %H:%M:%S")
         _date= task_updated_date + relativedelta(hours=12)
         return str(_date)
         
@@ -1470,14 +1470,21 @@ class update_task(APIView):
                 "task_added_by": data.get('task_added_by'),
                 "task_updated_date": data.get('task_updated_date'),
             }
-            response = dowellconnection(*task_management_reports, "update", field, update_field)
-            print(response)
-            if json.loads(response)["isSuccess"] ==True:
-                return Response({"message": "Task updated successfully",
-                                 "response":json.loads(response)}, status=status.HTTP_200_OK)
+            #check if task exists---
+            check = dowellconnection(*task_management_reports, "fetch", field, update_field)
+            #print(check,"=====================[[[[[[]]]]]]")
+            if len(json.loads(check)["data"])==0:
+                return Response({"message":"Cannot be Updated, there is no task with this document id","response":json.loads(check)},
+                                    status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response({"message": "Task failed to be updated",
-                                 "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
+                response = dowellconnection(*task_management_reports, "update", field, update_field)
+                #print(response, "=========================")
+                if json.loads(response)["isSuccess"] is True:
+                    return Response({"message": "Task updated successfully",
+                                    "response":json.loads(response)}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"message": "Task failed to be updated",
+                                    "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1652,15 +1659,22 @@ class edit_team(APIView):
                 "team_name": data.get("team_name"),
                 "team_description": data.get("team_description"),
             }
-            response = dowellconnection(
-                *team_management_modules, "update", field, update_field)
-            print(response)
-            if json.loads(response)["isSuccess"] ==True:
-                return Response({"message": "Team Updated successfully",
-                                "response": json.loads(response)},
-                                status=status.HTTP_200_OK)
+            #check if task exists---
+            check = dowellconnection(*team_management_modules, "fetch", field, update_field)
+            #print(check,"=====================[[[[[[]]]]]]")
+            if len(json.loads(check)["data"])==0:
+                return Response({"message":"Cannot be Edited, there is no team with this team id","response":json.loads(check)},
+                                    status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response({"message": "Team failed to be updated", "response":json.loads(response)}, status=status.HTTP_404_NOT_FOUND)
+                response = dowellconnection(
+                    *team_management_modules, "update", field, update_field)
+                print(response)
+                if json.loads(response)["isSuccess"] ==True:
+                    return Response({"message": "Team Updated successfully",
+                                    "response": json.loads(response)},
+                                    status=status.HTTP_200_OK)
+                else:
+                    return Response({"message": "Team failed to be updated", "response":json.loads(response)}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1725,15 +1739,22 @@ class edit_team_task(APIView):
                 "completed": data.get("completed"),
                 "team_name": data.get("team_name"),
             }
-            response = dowellconnection(
-                *task_management_reports, "update", field, update_field)
-            print(response)
-            if json.loads(response)["isSuccess"] ==True:
-                return Response({"message": "Team Task Updated successfully",
-                                 "response": json.loads(response)},
-                                status=status.HTTP_200_OK)
+            #check if task exists---
+            check = dowellconnection(*team_management_modules, "fetch", field, update_field)
+            #print(check,"=====================[[[[[[]]]]]]")
+            if len(json.loads(check)["data"])==0:
+                return Response({"message":"Cannot be Edited, there is no team task with this id","response":json.loads(check)},
+                                    status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response({"message": "Team Task failed to be updated", "response":json.loads(response)}, status=status.HTTP_404_NOT_FOUND)
+                response = dowellconnection(
+                    *task_management_reports, "update", field, update_field)
+                print(response)
+                if json.loads(response)["isSuccess"] ==True:
+                    return Response({"message": "Team Task Updated successfully",
+                                    "response": json.loads(response)},
+                                    status=status.HTTP_200_OK)
+                else:
+                    return Response({"message": "Team Task failed to be updated", "response":json.loads(response)}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
