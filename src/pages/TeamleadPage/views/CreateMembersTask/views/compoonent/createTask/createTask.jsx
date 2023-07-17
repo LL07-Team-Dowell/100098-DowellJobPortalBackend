@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { AiOutlinePlusCircle } from 'react-icons/ai';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import LittleLoading from '../../../../../../CandidatePage/views/ResearchAssociatePage/littleLoading';
+import LoadingSpinner from '../../../../../../../components/LoadingSpinner/LoadingSpinner';
 const CreateTask = ({id,members,team,unShowCreateTask}) => {
      // USER
   const { currentUser } = useCurrentUserContext();
@@ -18,62 +20,45 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
     const [singleTask, setSingleTask] = useState(false);
     const [choosed, setchoosed]= useState(false); 
     const [taskMembers, setTaskMembers] = useState([]); 
-
-  const createSingleMemberTask = () => {
-    axios
-      .post('https://100098.pythonanywhere.com/task_management/create_task/', {
-        project: [name],
-        applicant: taskMembers[0],
-        task: name,
-        task_added_by: currentUser.userinfo.username,
-        company_id: currentUser.portfolio_info[0].org_id,
-        data_type: currentUser.portfolio_info[0].data_type,
-        task_created_date: new Date().toString(),
-      })
-      .then((resp) => {
-        toast.success('Task created');
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  const createTeamSubmit = () => {
+    const [loading, setloading] = useState(false) 
+  const createTeamTask = () => {
+   if(!loading){
     if(name && description && taskMembers.length > 0){
-        axios.post('https://100098.pythonanywhere.com/create_task/',{
-            "project": [name],
-            "applicant": taskMembers,
-            "task": name,
-            "task_added_by": currentUser.userinfo.username,
-            "data_type": currentUser.portfolio_info[0].data_type,
-            "company_id": currentUser.portfolio_info[0].org_id,
-            "task_created_date": new Date().toString()
-      })
-      // RESPONSE
-      .then(resp => {
-        console.log(resp)
-        toast.success("task created successfully");
-        unShowCreateTask()
-      })
-      // ERROR
-      .catch(err => {
-        toast.error("task error");
-        console.log(err)
-      })
-    }else{
-      toast.error("Complete all fields before submitting")
-    }
+      setloading(true)
+      axios.post('https://100098.pythonanywhere.com/create_team_task/',{
+        "assignee": currentUser.userinfo.username,
+        "title": name,
+        "description": description,
+        "team_id": id,
+        "completed": false,
+        "due_date":new Date().toDateString()
+    })
+    // RESPONSE
+    .then(resp => {
+      console.log(resp)
+      toast.success("task created successfully");
+      unShowCreateTask()
+      setloading(false)
+    })
+    // ERROR
+    .catch(err => {
+      toast.error("task error");
+      console.log(err)
+      setloading(false)
+    })
+  }else{
+    toast.error("Complete all fields before submitting")
+    setloading(false)
   }
-  const handleSubmitData = () => {
-    if(name && description && taskMembers.length > 0){
-      if(singleTask){
-        createSingleMemberTask()
-      }else{
-        createTeamSubmit()
-      }
-    }else{
-      toast.error("Complete all fields before submitting")
-    }
+   }
   }
+  // const handleSubmitData = () => {
+  //   if(name && description && taskMembers.length > 0){
+  //       createTeamTask()
+  //   }else{
+  //     toast.error("Complete all fields before submitting")
+  //   }
+  // }
   const userIsThere = (user) => taskMembers.includes(user);
   const emptyTaskMembers = () => setTaskMembers(p => []) ;
   const addSingleMember = (member) => setTaskMembers([member]) ; 
@@ -181,7 +166,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
             null
           }
           <div className="buttons">
-            <button onClick={createTeamSubmit}>submit</button>
+            <button onClick={createTeamTask}>{loading ? <LoadingSpinner color={'white'} width='20px' height='20px' /> : 'submit'}</button>
             <button onClick={unShowCreateTask}>Cancel</button>
           </div>
         </div>

@@ -10,7 +10,7 @@ const TeamScreenTaskProgress = () => {
   return (
     <div className='team-screen-task-progress'>
       <div className='team-screen-task-progress-welcome'>
-        <h2>Hi,Welcome {currentUser.portfolio_info[0].username} !</h2>
+        <h2>Hi,Welcome {currentUser.userinfo.first_name} {currentUser.userinfo.last_name}  !</h2>
         <p>See your team progress</p>
       </div>
       <div className='team-screen-task-progress-data'>

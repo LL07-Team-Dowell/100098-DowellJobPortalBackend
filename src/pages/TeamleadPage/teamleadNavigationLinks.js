@@ -16,7 +16,7 @@ export const teamleadNavigationLinks = [
     {
         linkAddress: "/create-task",
         icon: <GiTeamIdea />, 
-        text: "Team tasks"
+        text: "Teams"
     },
     {
         linkAddress: "/user",
