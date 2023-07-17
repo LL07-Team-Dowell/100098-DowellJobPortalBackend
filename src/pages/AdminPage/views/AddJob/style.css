@@ -15,6 +15,11 @@
   margin: auto;
 }
 
+.job_container textarea {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.8rem;
+}
+
 .navLink {
   width: 0%;
 }
@@ -91,7 +96,8 @@ h3 {
   display: flex;
 }
 
-.job_details input {
+.job_details input,
+.job_details textarea {
   padding: 1.1rem 1.1rem 1.1rem 2rem;
   border-radius: 0.8rem;
   border: 0.1rem solid var(--primary-color);

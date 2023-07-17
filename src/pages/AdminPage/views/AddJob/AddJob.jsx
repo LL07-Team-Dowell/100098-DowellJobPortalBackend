@@ -601,8 +601,7 @@ const AddJob = ({ subAdminView }) => {
               </div>
 
               <label htmlFor="description">Description</label>
-              <input
-                type="text"
+              <textarea
                 name={"description"}
                 value={newJob.description}
                 onChange={(e) => handleChange(e.target.value, e.target.name)}

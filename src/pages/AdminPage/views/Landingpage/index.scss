@@ -187,6 +187,16 @@ $slider__gray: #d9d9d9;
           }
         }
       }
+      .new__Indicator {
+        width: 100%;
+
+        .new__Indicator__Icon {
+          margin-right: auto;
+          display: block;
+          color: $main__green;
+          font-size: 1.5rem;
+        }
+      }
     }
   }
 }

@@ -3,7 +3,7 @@ import arrowright from "../assets/arrowright.svg";
 import { AiOutlineClockCircle } from "react-icons/ai";
 import { CgDanger } from "react-icons/cg";
 import { RiEdit2Fill } from "react-icons/ri";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdOutlineFiberNew } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import "./index.scss";
 import axios from "axios";
@@ -108,8 +108,8 @@ const Card = ({
       });
   };
 
-  const fetchJobsAgain = async (e) => {
-    e.preventDefault();
+  const fetchJobsAgain = async (e, extraFunctionToRun) => {
+    e?.preventDefault();
 
     setShowOverlay(true);
 
@@ -130,6 +130,12 @@ const Card = ({
         (job) => job.job_number === job_number
       );
 
+      if (extraFunctionToRun && typeof extraFunctionToRun === 'function') {
+        setShowOverlay(false);
+        extraFunctionToRun();
+        return 
+      }
+
       navigate(`/edit-job/${jobToEdit._id}`);
     } catch (err) {
       console.log(err);
@@ -142,6 +148,12 @@ const Card = ({
 
   return (
     <div className="card">
+      { 
+        newly_created && 
+        <div className="new__Indicator">
+          <MdOutlineFiberNew className="new__Indicator__Icon" />
+        </div> 
+      }
       <div className="card__header">
         <h5>{job_title}</h5>
         <div className="interact__icons">
@@ -157,7 +169,10 @@ const Card = ({
           <IoShareSocial
             onClick={
               handleShareIconClick && typeof handleShareIconClick === 'function' ?
-              () => handleShareIconClick(_id) 
+                newly_created ?
+                () => fetchJobsAgain(null, () => handleShareIconClick(_id))
+                :
+                () => handleShareIconClick(_id) 
               :
               () => {}
             }
