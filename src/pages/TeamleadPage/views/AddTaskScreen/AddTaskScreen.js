@@ -197,12 +197,15 @@ const AddTaskScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelecti
                 </h1>
                 {
                     showTaskForm ? <>
-                        <input type={"text"} placeholder={"Task Assignee"} value={newTaskDetails.username} readOnly={true} />
-                        <input type={"text"} placeholder={"today time"} value={TimeValue} readOnly={true} />
+                        <span className="selectProject">Username</span>
+                        <input type={"text"} placeholder={"Task Assignee"} value={newTaskDetails.username} style={{ margin: 0, marginBottom: "0.8rem" }} readOnly={true} />
+                        <span className="selectProject">Date of Submission</span>
+                        <input type={"text"} placeholder={"today time"} value={TimeValue} style={{ margin: 0, marginBottom: "0.8rem" }} readOnly={true} />
                         <span className="selectProject">Select Project</span>
                         <br />
-                        <select onChange={e => selctChange(e)} className="addTaskDropDown"><option value={""}>Select</option>{assignedProject.map((v, i) => <option key={i} value={v}>{v}</option>)}</select>
-                        <textarea placeholder="Enter Task" name="description" value={newTaskDetails.description} onChange={handleChange} rows={5}></textarea>
+                        <select onChange={e => selctChange(e)} className="addTaskDropDown" style={{ margin: 0, marginBottom: "0.8rem"  }} ><option value={""}>Select</option>{assignedProject.map((v, i) => <option key={i} value={v}>{v}</option>)}</select>
+                        <span className="selectProject">Enter Task Details</span>
+                        <textarea placeholder="Enter Task" name="description" value={newTaskDetails.description} style={{ margin: 0 }} onChange={handleChange} rows={5}></textarea>
                         <button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateTaskBtnClick() : CreateNewTaskFunction()}>{editPage ? "Update Task" : "Add Task"}</button>
                     </> :
 
