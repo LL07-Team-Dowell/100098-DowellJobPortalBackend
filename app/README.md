@@ -117,7 +117,13 @@ __Post__ to `accounts_rehire_candidate/`
                     }
 }
 ```
+- Response 204
 
+```json
+{
+  "message": "Operation failed"
+}
+```
 - Response 304
 
 ```json
@@ -161,7 +167,13 @@ __Post__ to `accounts_reject_candidate/`
                     }
 }
 ```
+- Response 204
 
+```json
+{
+  "message": "Operation failed"
+}
+```
 - Response 304
 
 ```json
@@ -220,7 +232,7 @@ __Post__ to `admin_create_jobs/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
@@ -300,7 +312,7 @@ __Patch__ to `admin_update_jobs/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
@@ -325,20 +337,14 @@ __Delete__ to `admin_delete_job/<str:document_id>/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
   "message": "Job not successfully deleted"
 }
 ```
-- Response 400
 
-```json
-{
-  "message": "Parameters are not valid"
-}
-```
 
 ### candidate management view-------------------------------------------------
 __Post__ to `candidate_apply_job/`
@@ -471,7 +477,7 @@ __Delete__ to `delete_candidate_application/<str:document_id>/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
@@ -504,11 +510,18 @@ __Post__ to `hr_shortlisted_candidate/`
   "message": "Candidate has been shortlisted"
 }
 ```
+- Response 204
+
+```json
+{
+  "message": "Operation has failed"
+}
+```
 - Response 304
 
 ```json
 {
-  "message": "HR operation failed"
+  "message": "Operation has failed"
 }
 ```
 
@@ -547,12 +560,18 @@ __Post__ to `hr_selected_candidate/`
   "message": "Candidate has been selected"
 }
 ```
+- Response 204
 
+```json
+{
+  "message": "Operation has failed"
+}
+```
 - Response 304
 
 ```json
 {
-  "message": "HR operation failed"
+  "message": "Operation has failed"
 }
 ```
 - Response 400
@@ -591,7 +610,13 @@ __Post__ to `hr_reject_candidate/`
                     }
 }
 ```
+- Response 204
 
+```json
+{
+  "message": "Hr Operation failed"
+}
+```
 - Response 304
 
 ```json
@@ -627,7 +652,7 @@ __Post__ to `lead_hire_candidate/`
 }
 ```
 
-- Response 201
+- Response 200
 
 ```json
 {
@@ -638,7 +663,13 @@ __Post__ to `lead_hire_candidate/`
                     }
 }
 ```
+- Response 204
 
+```json
+{
+  "message": "Lead Operation failed"
+}
+```
 - Response 304
 
 ```json
@@ -671,7 +702,7 @@ __Post__ to `lead_rehire_candidate/`
 }
 ```
 
-- Response 201
+- Response 200
 
 ```json
 {
@@ -683,7 +714,7 @@ __Post__ to `lead_rehire_candidate/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
@@ -716,7 +747,7 @@ __Post__ to `lead_reject_candidate/`
 }
 ```
 
-- Response 200
+- Response 201
 
 ```json
 {
@@ -727,7 +758,13 @@ __Post__ to `lead_reject_candidate/`
                     }
 }
 ```
+- Response 204
 
+```json
+{
+  "message": "Lead Operation failed"
+}
+```
 - Response 304
 
 ```json
@@ -769,7 +806,7 @@ __Post__ to `create_task/`
   "message": "Task has been created successfully"
 }
 ```
-- Response 304
+- Response 204
 
 ```json
 {
@@ -847,19 +884,25 @@ __Patch__ to `update_task/`
   "message": "Task updated successfully"
 }
 ```
-- Response 304
+- Response 204
 
 ```json
 {
   "message": "Task failed to be updated"
 }
 ```
-
 - Response 400
 
 ```json
 {
   "message": "Parameters are not valid"
+}
+```
+- Response 404
+
+```json
+{
+  "message": "Task failed to be updated, there is no task with this document id"
 }
 ```
 
@@ -891,14 +934,10 @@ __Patch__ to `approve_task/`
   "message": "Task failed to be approved"
 }
 ```
-- Response 200
+- Response 304
 
 ```json
-{"message": "Task failed to be approved",
-  "response":{
-      "approved":"update_field['approved']",
-      "max_approval_date":"update_field['max_approval_date']",
-  }
+{"message": "Task failed to be approved. Approval date is over"
 }
 ```
 
@@ -921,7 +960,7 @@ __Delete__ to `delete_task/<str:document_id>/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
@@ -982,7 +1021,7 @@ __Get__ to `get_team/<str:document_id>/`
 
 ```json
 {
-  "message": "There is no team"
+  "message": "There is no team available with ths document id"
 }
 ```
 
@@ -1002,7 +1041,7 @@ __Get__ to `get_all_teams/<str:company_id>/`
 
 ```json
 {
-  "message": "There is no team"
+  "message": "There is no team available with ths document id"
 }
 ```
 
@@ -1164,7 +1203,7 @@ __Delete__ to `delete_team_task/<int:task_id>/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
@@ -1196,7 +1235,7 @@ __Post__ to `create_member_task/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
@@ -1227,7 +1266,7 @@ __Get__ to `get_member_task/<str:task_id>/`
 
 ```json
 {
-  "message": "There is no task"
+  "message": "There is no member tasks with this task id"
 }
 ```
 __Delete__ to `delete_team_task/<int:task_id>/`
@@ -1240,7 +1279,7 @@ __Delete__ to `delete_team_task/<int:task_id>/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
@@ -1325,7 +1364,7 @@ __get__ to `get_all_question/<str:company_id>/`
 
 ```json
 {
-    "message":"No question found"
+    "message":"There is no questions"
 }
 ```
 
@@ -1350,11 +1389,11 @@ __patch__ to `update_question/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
-    "message":"Question updating failed"
+    "message":"Question failed to update"
 }
 ```
 - Response 400
@@ -1430,6 +1469,13 @@ __patch__ to `update_response/`
   "message": "Candidate has been {Hired|Rejected}"
 }
 ```
+- Response 204
+
+```json
+{
+  "message": "Candidate has been {Hired|Rejected}"
+}
+```
 - Response 304
 
 ```json
@@ -1453,7 +1499,7 @@ __get__ to `get_response/<str:document_id>/`
 
 ```json
 {
-  "error": "data not found"
+  "message": "There is no responses"
 }
 ```
 
@@ -1481,11 +1527,11 @@ __patch__ to `submit_response/`
 }
 ```
 
-- Response 304
+- Response 204
 
 ```json
 {
-    "message":"operation failed"
+    "message":"Response failed to be submitted"
 }
 ```
 - Response 400
@@ -1510,7 +1556,7 @@ __get__ to `get_all_responses/<str:company_id>/`
 
 ```json
 {
-  "error": "data not found"
+  "message": "There is no responses"
 }
 ```
 
@@ -1569,15 +1615,6 @@ __get__ to `settinguserprofileinfo/`
   "status":"200"
 }
 ```
-
-- Response 400
-
-```json
-{
-    "message":"serializer.errors"
-}
-```
-
 
 __put__ to `settinguserprofileinfo/<int:pk>`
 
@@ -1663,14 +1700,6 @@ __get__ to `settinguserproject/`
   "company_id": "<company_id>",
   "data_type": "<data_type>",
   "project_list": [{ "project_name1": "peach", "project_name2": "group lead" }]
-},status=200
-```
-
-- Response 400
-
-```json
-{
-    "message":"serializer.errors"
 }
 ```
 
@@ -1781,6 +1810,7 @@ __get__ to `get_discord_server_members/<str:token>/<int:guild_id>/`
   "message":"There is no members",
   "response":"[members]"
 }
+```
 
 ### public api view --------------------------
 
@@ -1811,6 +1841,7 @@ __Post__ to `public_candidate_job_application/`
   "payment": "<payment>",
   "application_submitted_on": "<application_submitted_on>",
   "status": "Guest_Pending",
+  "module": "<Frontend|Backend|UI/UX|Virtual Assistant|Web|Mobile>",
   "is_public":"<True/False>"
 
 }
@@ -1845,9 +1876,9 @@ __post__ to `generate_public_job_application_link`
 
 ```json
 {
-      "qr_ids": "('qr_ids'),"
-      "job_company_id": "('job_company_id'),"
-      "job_id": "('job_id'),"
+      "qr_ids": "('qr_ids')",
+      "job_company_id": "('job_company_id')",
+      "job_id": "('job_id')",
       "company_data_type":"<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
 }
 ```
@@ -1932,7 +1963,16 @@ __post__ to `send_mail_to_public/`
  "success": "False",
 "message": "Something went wrong",
 "error": "serializer.errors"
-            }
+}
+```
+- Response 401
+
+```json
+{
+    "success": "False",
+    "message": "Something went wrong"
+}
+```
 
 __post__ to `update_user_status/`
 

@@ -489,7 +489,7 @@ class admin_get_job(APIView):
         if json.loads(response)["isSuccess"] ==True:
             if len(json.loads(response)["data"])==0:
                 return Response({"message":"Job details do not exist","response":json.loads(response)},
-                            status=status.HTTP_200_OK)
+                            status=status.HTTP_204_NO_CONTENT)
             else:
                 return Response({"message": "List of jobs.", 
                                  "response": json.loads(response)},
@@ -696,7 +696,7 @@ class candidate_apply_job(APIView):
                                  "response": json.loads(response),
                                  }, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Application failed to receive.","response": json.loads(response)}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Application failed to receive.","response": json.loads(response)}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             default_errors = serializer.errors
             new_error = {}
@@ -893,7 +893,7 @@ class hr_shortlisted_candidate(APIView):
                         return Response({"message": "Operation has failed","response": json.loads(c_r[0])},
                                     status=status.HTTP_204_NO_CONTENT)
                 else:
-                    return Response({"message": "Operation failed"}, status=status.HTTP_304_NOT_MODIFIED)
+                    return Response({"message": "Operation has failed"}, status=status.HTTP_304_NOT_MODIFIED)
             else:
                 default_errors = serializer.errors
                 new_error = {}
@@ -987,7 +987,7 @@ class hr_selected_candidate(APIView):
                                     #                 "seen": patch_notification['isSuccess'],
                                     #                    "notification_id": insert_to_hr_report['notification_id']},
                                     "response":json.loads(c_r[0])},
-                        status=status.HTTP_201_CREATED,
+                        status=status.HTTP_200_OK,
                     )
                 else:
                     return Response({"message": "Hr Operation has failed","response": json.loads(c_r[0])},
@@ -1090,7 +1090,7 @@ class hr_reject_candidate(APIView):
                     )
                 else:
                     return Response(
-                        {"message": "Hr Operation has failed", "response": json.loads(candidate_report_result[0])},
+                        {"message": "Hr Operation failed", "response": json.loads(candidate_report_result[0])},
                         status=status.HTTP_204_NO_CONTENT,
                     )
             else:
@@ -1188,7 +1188,7 @@ class lead_hire_candidate(APIView):
                                         #                "Hired": patch_notification['isSuccess'],
                                         #                    "notification_id": insert_to_lead_report['notification_id']},
                                         "response":json.loads(c_r[0])},
-                            status=status.HTTP_201_CREATED,
+                            status=status.HTTP_200_OK,
                         )
                     else:
                         return Response({"message": "Hr Operation has failed","response": json.loads(c_r[0])},
@@ -1232,7 +1232,7 @@ class lead_rehire_candidate(APIView):
             }
             update_field = {
                 "rehire_remarks": data.get('rehire_remarks'),
-                #"status": "Rehired",
+                "status": "Rehired",
                 #"applicant": data.get('applicant'),
                 #"company_id": data.get('company_id'),
                 #"company_name": data.get('company_name'),
@@ -1354,7 +1354,7 @@ class lead_reject_candidate(APIView):
                             status=status.HTTP_201_CREATED,
                         )
                     else:
-                        return Response({"message": "Hr Operation has failed","response": json.loads(c_r[0])},
+                        return Response({"message": "Lead Operation has failed","response": json.loads(c_r[0])},
                                     status=status.HTTP_204_NO_CONTENT)
                 else:
                     return Response({"message": "Lead Operation failed","response":json.loads(c_r[0])}, status=status.HTTP_304_NOT_MODIFIED)
@@ -1405,7 +1405,7 @@ class create_task(APIView):
                                 status=status.HTTP_201_CREATED)
             else:
                 return Response({"message": "Task failed to be Created",
-                                 "response":json.loads(insert_response)}, status=status.HTTP_304_NOT_MODIFIED)
+                                 "response":json.loads(insert_response)}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1472,19 +1472,23 @@ class update_task(APIView):
             }
             #check if task exists---
             check = dowellconnection(*task_management_reports, "fetch", field, update_field)
-            #print(check,"=====================[[[[[[]]]]]]")
-            if len(json.loads(check)["data"])==0:
-                return Response({"message":"Cannot be Updated, there is no task with this document id","response":json.loads(check)},
-                                    status=status.HTTP_204_NO_CONTENT)
-            else:
-                response = dowellconnection(*task_management_reports, "update", field, update_field)
-                #print(response, "=========================")
-                if json.loads(response)["isSuccess"] is True:
-                    return Response({"message": "Task updated successfully",
-                                    "response":json.loads(response)}, status=status.HTTP_200_OK)
+            print(check,"=====================[[[[[[]]]]]]")
+            if json.loads(check)["isSuccess"] is True:
+                if len(json.loads(check)["data"])==0:
+                    return Response({"message":"Task failed to be updated, there is no task with this document id","response":json.loads(check)},
+                                        status=status.HTTP_404_NOT_FOUND)
                 else:
-                    return Response({"message": "Task failed to be updated",
-                                    "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
+                    response = dowellconnection(*task_management_reports, "update", field, update_field)
+                    #print(response, "=========================")
+                    if json.loads(response)["isSuccess"] is True:
+                        return Response({"message": "Task updated successfully",
+                                        "response":json.loads(response)}, status=status.HTTP_200_OK)
+                    else:
+                        return Response({"message": "Task failed to be updated",
+                                        "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response({"message": "Task failed to be updated, there is no task with this document id",
+                                        "response":json.loads(check)}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1540,9 +1544,9 @@ class approve_task(APIView):
                                     }, status=status.HTTP_200_OK)
                 else:
                     return Response({"message": "Task failed to be approved",
-                                    "response":json.loads(response)}, status=status.HTTP_404_NOT_FOUND)
+                                    "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response({"message": "Task failed to be approved. Approval date is over"}, status=status.HTTP_200_OK)
+                return Response({"message": "Task failed to be approved. Approval date is over"}, status=status.HTTP_304_NOT_MODIFIED)
             
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
@@ -1612,13 +1616,13 @@ class get_team(APIView):
         print(response)
         if json.loads(response)["isSuccess"] ==True:
             if len(json.loads(response)["data"])==0:
-                return Response({"message":f"There is no team available with ths document id","response":json.loads(response)},
+                return Response({"message":"There is no team available with ths document id","response":json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response({"message": f"Teams available", "response": json.loads(response)},
+                return Response({"message": "List of Teams available", "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
         else:
-            return Response({"message": "There is no team", "response": json.loads(response)},
+            return Response({"message": "There is no team available with ths document id", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
 
 
@@ -1635,13 +1639,13 @@ class get_all_teams(APIView):  # all teams
         print(response)
         if json.loads(response)["isSuccess"] ==True:
             if len(json.loads(response)["data"])==0:
-                return Response({"message":f"There is no teams with this company id","response":json.loads(response)},
+                return Response({"message":"There is no teams with this company id","response":json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
             else:
                 return Response({"message": f"Teams with company id - {company_id} available", "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
         else:
-            return Response({"message": "There is no team", "response": json.loads(response)},
+            return Response({"message": "There is no team available with ths document id", "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
 
 
@@ -1662,19 +1666,23 @@ class edit_team(APIView):
             #check if task exists---
             check = dowellconnection(*team_management_modules, "fetch", field, update_field)
             #print(check,"=====================[[[[[[]]]]]]")
-            if len(json.loads(check)["data"])==0:
-                return Response({"message":"Cannot be Edited, there is no team with this team id","response":json.loads(check)},
-                                    status=status.HTTP_204_NO_CONTENT)
-            else:
-                response = dowellconnection(
-                    *team_management_modules, "update", field, update_field)
-                print(response)
-                if json.loads(response)["isSuccess"] ==True:
-                    return Response({"message": "Team Updated successfully",
-                                    "response": json.loads(response)},
-                                    status=status.HTTP_200_OK)
+            if json.loads(response)["isSuccess"] ==True:
+                if len(json.loads(check)["data"])==0:
+                    return Response({"message":"Cannot be Edited, there is no team with this team id","response":json.loads(check)},
+                                        status=status.HTTP_204_NO_CONTENT)
                 else:
-                    return Response({"message": "Team failed to be updated", "response":json.loads(response)}, status=status.HTTP_404_NOT_FOUND)
+                    response = dowellconnection(
+                        *team_management_modules, "update", field, update_field)
+                    print(response)
+                    if json.loads(response)["isSuccess"] ==True:
+                        return Response({"message": "Team Updated successfully",
+                                        "response": json.loads(response)},
+                                        status=status.HTTP_200_OK)
+                    else:
+                        return Response({"message": "Team failed to be updated", "response":json.loads(response)}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response({"message":"Cannot be Edited, there is no team with this team id","response":json.loads(check)},
+                                        status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1827,7 +1835,7 @@ class create_member_task(APIView):
             if json.loads(response)["isSuccess"] ==True:
                 return Response({"message": "Task for member created successfully", "response":json.loads(response)}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Task for member Creation Failed", "response":json.loads(response)}, status=status.HTTP_304_NOT_MODIFIED)
+                return Response({"message": "Task for member Creation Failed", "response":json.loads(response)}, status=status.HTTP_204_NO_CONTENT)
         else:
             return Response({"message": "Parameters are not valid"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -1851,7 +1859,7 @@ class get_member_task(APIView):
                 return Response({"message": f"Member Task with task id - {task_id} available", "response": json.loads(response)},
                             status=status.HTTP_200_OK)
         else:
-            return Response({"message": "There is no task",
+            return Response({"message": "There is no member tasks with this task id",
                              "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
 
@@ -1929,7 +1937,7 @@ class get_all_question(APIView):
             else:
                 return Response({"message": f"List of questions", "response": json.loads(question_response)},
                             status=status.HTTP_200_OK)
-        return Response({"error": "No question found", "response": json.loads(question_response)}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"error": "There is no questions", "response": json.loads(question_response)}, status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -1974,10 +1982,11 @@ class update_question(APIView):
             )
             print(question_response)
             if json.loads(question_response)["isSuccess"] ==True:
-                return Response({"message": f"Question updated successfully", "response": json.loads(question_response)},
+                return Response({"message": "Question updated successfully", "response": json.loads(question_response)},
                                 status=status.HTTP_200_OK)
             else:
-                return Response({"message": f"Question failed to update", "response": json.loads(question_response)}, status=status.HTTP_204_NO_CONTENT)
+                return Response({"message": "Question failed to update", "response": json.loads(question_response)}, 
+                                status=status.HTTP_204_NO_CONTENT)
                 
         else:
             default_errors = serializer.errors
@@ -2065,7 +2074,7 @@ class update_response(APIView):
             if json.loads(r_m[0])["isSuccess"] ==True:
                 return Response({"message": f"Candidate has been {data.get('status')}",
                                 "response":json.loads(r_m[0])},
-                    status=status.HTTP_201_CREATED,
+                    status=status.HTTP_200_OK,
                 )
             else:
                 return Response({"message": f"Candidate has been {data.get('status')}",
@@ -2094,7 +2103,7 @@ class get_response(APIView):
                             status=status.HTTP_200_OK)
             
         else:
-            return Response({"message": "Response failed to be updated","response":json.loads(response)},
+            return Response({"message": "There is no responses","response":json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
 
 
@@ -2120,7 +2129,7 @@ class submit_response(APIView):
             print(insert_to_response)
 
             if json.loads(insert_to_response)["isSuccess"] ==True:
-                return Response({"message": f"Response submitted", "response": json.loads(insert_to_response)},
+                return Response({"message": f"Response has been submitted", "response": json.loads(insert_to_response)},
                                 status=status.HTTP_200_OK)
             else:
                 return Response({"message": "Response failed to be submitted","response":json.loads(insert_to_response)},
@@ -2215,7 +2224,7 @@ class SettingUserProjectView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 # api for setting ends here____________________________
@@ -2310,7 +2319,7 @@ class Public_apply_job(APIView):
             "company_id": data.get('company_id'),
             "company_name": data.get('company_name'),
             "username": data.get('username'),
-            "portfolio_name": "",
+            "portfolio_name": data.get('portfolio_name'),
             "data_type": data.get('data_type'),
             "user_type": data.get('user_type'),
             "scheduled_interview_date": "",
@@ -2334,7 +2343,7 @@ class Public_apply_job(APIView):
                                  "response": json.loads(response),
                                  }, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Application failed to receive.","response": json.loads(response)}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Application failed to receive.","response": json.loads(response)}, status=status.HTTP_304_NOT_MODIFIED)
         else:
             default_errors = serializer.errors
             new_error = {}
