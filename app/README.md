@@ -1782,6 +1782,186 @@ __get__ to `get_discord_server_members/<str:token>/<int:guild_id>/`
   "response":"[members]"
 }
 
+### public api view --------------------------
 
+__Post__ to `public_candidate_job_application/`
+
+- Request Body
+
+```json
+{
+  "job_number": "<job _number of already created jobs",
+  "job_title": "<job title of already created jobs>",
+  "job_category": "<Freelancer | Internship | Employee>",
+  "applicant": "<applicant name>",
+  "applicant_email": "<applicant email>",
+  "feedBack": "<feedback>",
+  "freelancePlatform": "<freelancePlatform>",
+  "freelancePlatformUrl": "<freelancePlatformUrl>",
+  "academic_qualification_type": "<academic_qualification_type>",
+  "academic_qualification": "<academic_qualification>",
+  "country": "<location function>",
+  "internet_speed": "<internet_speed>",
+  "other_info": ["term1", "term2"],
+  "agree_to_all_terms": "<True | False>",
+  "company_id": "<company_id>",
+  "username": "<username>",
+  "portfolio_name": "",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "payment": "<payment>",
+  "application_submitted_on": "<application_submitted_on>",
+  "status": "Guest_Pending",
+  "is_public":"<True/False>"
+
+}
+```
+
+- Response 201
+
+```json
+{"message": "Application received.",
+  "Eligibility": "True/False"
+}
+```
+
+- Response 304
+
+```json
+{
+  "message": "Application not received"
+}
+```
+- Response 400
+
+```json
+{
+  "message": "Serializers.errors"
+}
+```
+
+__post__ to `generate_public_job_application_link`
+
+- Request Body
+
+```json
+{
+      "qr_ids": "('qr_ids'),"
+      "job_company_id": "('job_company_id'),"
+      "job_id": "('job_id'),"
+      "company_data_type":"<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+}
+```
+- Response 200
+
+```json
+{
+    "success": "True",
+    "message":"Master link for public job apllication generated successfully",
+    "master_link": "masterlink",
+    "qr_code": "qrcode_image_url",
+}
+```
+
+- Response 400
+
+```json
+{
+
+   "success": "False",
+   "message": "Failed to generate master link for public job apllication"
+}
+```
+__get__ to `generate_public_job_application_link/<str:company_id>/`
+
+- Response 200
+
+```json
+{
+    "success": "True",
+   "message": "Master link deatils.",
+    "master_link": "master_links"
+}
+```
+
+- Response 400
+
+```json
+{
+    "success": "False",
+     "message": "User details is not updated."
+}
+```
+
+__post__ to `send_mail_to_public/`
+
+- Request Body
+
+```json
+
+{
+            "qr_id": "qr_id",
+            "org_name": "org_name",
+            "org_id": "org_id",
+            "owner_name": "owner_name",
+            "portfolio_name": "portfolio_name",
+            "unique_id": "unique_id",
+            "product": "product",
+            "role": "role",
+            "member_type": "member_type",
+            "toemail": "toemail",
+            "toname": "toname",
+            "subject": "subject",
+            "job_role": "job_role",
+            "data_type": "data_type"
+        }
+
+```
+- Response 200
+
+```json
+{
+ "success": "True",
+"message": "Mail sent successfully to {toname}"
+                }
+```
+
+- Response 400
+
+```json
+{
+ "success": "False",
+"message": "Something went wrong",
+"error": "serializer.errors"
+            }
+
+__post__ to `update_user_status/`
+
+- Request Body
+
+```json
+
+{
+ "username": "username",
+"portfolio_name": "protfolio_name",
+  "status": "Pending"
+ }
+
+```
+- Response 200
+
+```json
+{
+ "success": "True",
+ "message": "User details is updated.",
+            }
+```
+
+- Response 400
+
+```json
+{
+"success": "False",
+"message": "User details is not updated."
+            }
 
 # Change Log Link :- https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend-v2/app/CHANGELOG.md

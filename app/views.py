@@ -2387,6 +2387,7 @@ class createPublicApplication(APIView):
                 "success": False,
                 "message": "Failed to generate master link for public job apllication"
             },status=status.HTTP_400_BAD_REQUEST)
+        
     def get(self,request,company_id):
         print(company_id)
         field = {
