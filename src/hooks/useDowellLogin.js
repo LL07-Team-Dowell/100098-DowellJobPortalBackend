@@ -29,6 +29,8 @@ export default function useDowellLogin(
     const jobToView = searchParams.get("job_id");
     const jobCompanyId = searchParams.get("job_company_id");
     const jobCompanyDataType = searchParams.get("company_data_type");
+    const publicUserQrId = searchParams.get("qr_id");
+    const masterLinkId = searchParams.get("link_id");
 
 
     // FOR PUBLIC USERS
@@ -48,6 +50,8 @@ export default function useDowellLogin(
         company_id: jobCompanyId,
         job: jobToView,
         data_type: jobCompanyDataType,
+        qr_id: publicUserQrId,
+        masterLinkId: masterLinkId,
       };
 
       updateDetailsForPublicUser(publicUserDetails)

@@ -11,6 +11,7 @@ import { useCurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useEffect } from 'react';
 import { useRef } from 'react';
 import { useJobContext } from '../../contexts/Jobs';
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner';
 
 const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
 
@@ -197,7 +198,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
                         >
                             {
                                 linkLoading ?
-                                'Please wait...' 
+                                <LoadingSpinner width={'1rem'} height={'1rem'} color={'#fff'} />
                                 : 
                                 'Generate link'
                             }
