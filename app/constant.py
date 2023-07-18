@@ -112,3 +112,15 @@ rejected_reports_modules = [
     "1000981014",
     "ABCDE",
 ]
+
+
+Publiclink_reports = [
+    "jobportal",
+    "jobportal",
+    "PublicLinkReport",
+    "PublicLinkReport",
+    "1000981015",
+    "ABCDE"
+]
+
+generate_public_link = "https://ll07-team-dowell.github.io/Jobportal/#?view=public&qr_id={}&job_company_id={}&job_id={}&company_data_type={}"

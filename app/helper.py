@@ -152,3 +152,19 @@ def get_guild_members(guildid,token):
     res = json.loads(response.text)
 
     return res
+
+
+
+
+def create_master_link(company_id,links):
+    url = "https://100099.pythonanywhere.com/api/v3/qr-code/"
+    
+    payload = {
+        "qrcode_type": "Link",
+        "quantity": 1,
+        "company_id": company_id,
+        "links": links,
+    }
+    response = requests.post(url, json=payload)
+
+    return response.text
