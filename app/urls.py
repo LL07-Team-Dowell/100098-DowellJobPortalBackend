@@ -81,6 +81,10 @@ urlpatterns = [
     # discord -------------------------------------------------------
     path('generate_discord_invite/', generate_discord_invite.as_view()),
     path('get_discord_server_channels/<str:token>/<int:guild_id>/', get_discord_server_channels.as_view()),
-    path('get_discord_server_members/<str:token>/<int:guild_id>/', get_discord_server_members.as_view())
+    path('get_discord_server_members/<str:token>/<int:guild_id>/', get_discord_server_members.as_view()),
+
+    # public job application link-------------------------------------
+    path('generate_public_job_application_link/', createPublicApplication.as_view()),
+    path('public_candidate_job_application/',Public_apply_job.as_view())
     
 ]

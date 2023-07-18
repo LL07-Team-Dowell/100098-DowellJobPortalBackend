@@ -249,3 +249,9 @@ class UpdateSettingUserProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProject
         fields = ["project_list"]
+
+class CreatePublicLinkSerializer(serializers.Serializer):
+    qr_ids = serializers.ListField(child=serializers.CharField(allow_null=False, allow_blank=False))
+    job_company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    job_id = serializers.CharField(allow_null=False, allow_blank=False)
+    company_data_type = serializers.CharField(allow_null=False, allow_blank=False)

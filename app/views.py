@@ -9,11 +9,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
 from .helper import get_event_id, dowellconnection, call_notification, update_number, update_string, discord_invite,\
-    get_guild_channels, get_guild_members
+    get_guild_channels, get_guild_members , create_master_link
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
     SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
-    SettingUserProjectSerializer, UpdateSettingUserProjectSerializer, SettingUserProfileInfo, UserProject
+    SettingUserProjectSerializer, UpdateSettingUserProjectSerializer, SettingUserProfileInfo, UserProject , CreatePublicLinkSerializer
 import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -2341,3 +2341,50 @@ class Public_apply_job(APIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST) 
+# Generating public link for job application
+
+@method_decorator(csrf_exempt, name="dispatch")
+class createPublicApplication(APIView):
+    """Create Job Public Job Application link using QRCode function"""
+
+    def post(self, request):
+        field = {
+            "qr_ids": request.data.get('qr_ids'),
+            "job_company_id": request.data.get('job_company_id'),
+            "job_id": request.data.get('job_id'),
+            "company_data_type": request.data.get('company_data_type')
+        }
+        serializer = CreatePublicLinkSerializer(data=field)
+        if serializer.is_valid():
+            qr_ids = field['qr_ids']
+            generated_links = [{"link": generate_public_link.format(qr_id, field['job_company_id'], field['job_id'], field['company_data_type'])} for qr_id in qr_ids]
+            response_qr_code = create_master_link(field['job_company_id'],generated_links)
+            response = json.loads(response_qr_code)
+            fields = {
+                "eventId": get_event_id()['event_id'],
+                "job_company_id": field['job_company_id'],
+                "company_data_type": field['company_data_type'],
+                "job_id": field['job_company_id'],
+                "qr_ids": field['qr_ids'],
+                "generated_links": generated_links,
+                "master_link": response["qrcodes"][0]["masterlink"],
+                "qr_code": response["qrcodes"][0]["qrcode_image_url"],
+                "qrcode_id" : response["qrcodes"][0]["qrcode_id"],
+                "api_key": response["qrcodes"][0]["links"][0]["response"]["api_key"]
+            }
+            update_field = {
+                "status": "Nothing to update"
+            }
+            dowellresponse = dowellconnection(*Publiclink_reports,"insert", fields, update_field)
+            return Response({
+                "success": True,
+                "message":"Master link for public job apllication generated successfully",
+                "master_link": response["qrcodes"][0]["masterlink"],
+                "qr_code": response["qrcodes"][0]["qrcode_image_url"]
+            },status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "success": False,
+                "message": "Failed to generate master link for public job apllication"
+            },status=status.HTTP_400_BAD_REQUEST)
+
