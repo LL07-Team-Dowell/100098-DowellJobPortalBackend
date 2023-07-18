@@ -2387,6 +2387,32 @@ class createPublicApplication(APIView):
                 "success": False,
                 "message": "Failed to generate master link for public job apllication"
             },status=status.HTTP_400_BAD_REQUEST)
+    def get(self,request,company_id):
+        print(company_id)
+        field = {
+            "job_company_id": company_id
+        }
+        update_field = {
+            "status":"Nothing to update"
+        }
+        responses = dowellconnection(*Publiclink_reports,"fetch", field, update_field)
+        response = json.loads(responses)
+
+        master_links = []
+        for i in response["data"]:
+            master_links.append(i["master_link"])
+
+        if response["isSuccess"] ==True:
+            return Response({
+                "success": True,
+                "message": "Master link deatils.",
+                "master_link": master_links
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "success": False,
+                "message": "User details is not updated."
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 @method_decorator(csrf_exempt, name="dispatch")
 class sendMailToPublicCandidate(APIView):
@@ -2405,6 +2431,7 @@ class sendMailToPublicCandidate(APIView):
         toname = request.data.get("toname")
         subject = request.data.get("subject")
         job_role = request.data.get("job_role")
+        data_type = request.data.get("data_type")
 
         data = {
             "qr_id": qr_id,
@@ -2419,7 +2446,8 @@ class sendMailToPublicCandidate(APIView):
             "toemail": toemail,
             "toname": toname,
             "subject": subject,
-            "job_role": job_role
+            "job_role": job_role,
+            "data_type": data_type
         }
 
         serializer = SendMailToPublicSerializer(data=data)
@@ -2436,7 +2464,8 @@ class sendMailToPublicCandidate(APIView):
                 "role": role,
                 "member_type": member_type,
                 "toemail": toemail,
-                "toname": toname
+                "toname": toname,
+                "data_type": data_type
             }, 
             "secret", algorithm="HS256"
             )

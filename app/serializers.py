@@ -270,4 +270,5 @@ class SendMailToPublicSerializer(serializers.Serializer):
     toname = serializers.CharField(allow_null=False, allow_blank=False)
     subject = serializers.CharField(allow_null=False, allow_blank=False)
     job_role = serializers.CharField(allow_null=False, allow_blank=False)
+    data_type = serializers.CharField(allow_null=False, allow_blank=False)
     
