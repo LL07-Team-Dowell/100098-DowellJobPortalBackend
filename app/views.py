@@ -2276,3 +2276,68 @@ class get_discord_server_members(APIView):
         else:
             return Response({"message":f"There is no members","response":members}, status=status.HTTP_204_NO_CONTENT)
 # api for discord ends here____________________________
+
+
+#public api for job creation__________________________
+
+class Public_apply_job(APIView):
+    def post(self, request):
+        data = request.data
+        field = {
+            "eventId": get_event_id()['event_id'],
+            "job_number": data.get('job_number'),
+            "job_title": data.get('job_title'),
+            "applicant": data.get('applicant'),
+            "applicant_email": data.get('applicant_email'),
+            "feedBack": data.get('feedBack'),
+            "freelancePlatform": data.get('freelancePlatform'),
+            "freelancePlatformUrl": data.get('freelancePlatformUrl'),
+            "academic_qualification_type": data.get('academic_qualification_type'),
+            "academic_qualification": data.get('academic_qualification'),
+            "country": data.get('country'),
+            "job_category": data.get('job_category'),
+            "agree_to_all_terms": data.get('agree_to_all_terms'),
+            "internet_speed": data.get('internet_speed'),
+            "other_info": data.get('other_info'),
+            "project": "",
+            "status": "Guest_Pending",
+            "hr_remarks": "",
+            "teamlead_remarks": "",
+            "rehire_remarks": "",
+            "server_discord_link": "https://discord.gg/Qfw7nraNPS",
+            "product_discord_link": "",
+            "payment": data.get('payment'),
+            "company_id": data.get('company_id'),
+            "company_name": data.get('company_name'),
+            "username": data.get('username'),
+            "portfolio_name": "",
+            "data_type": data.get('data_type'),
+            "user_type": data.get('user_type'),
+            "scheduled_interview_date": "",
+            "application_submitted_on": data.get('application_submitted_on'),
+            "shortlisted_on": "",
+            "selected_on": "",
+            "hired_on": "",
+            "onboarded_on": "",
+            "module": data.get("module"),
+            "is_public":True
+        }
+        update_field = {
+            "status": "nothing to update"
+        }
+
+        serializer = CandidateSerializer(data=field)
+        if serializer.is_valid():
+            response = dowellconnection(*candidate_management_reports, "insert", field, update_field)
+            if json.loads(response)["isSuccess"] ==True:
+                return Response({"message": "Application received.",
+                                 "response": json.loads(response),
+                                 }, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message": "Application failed to receive.","response": json.loads(response)}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST) 
