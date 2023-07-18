@@ -101,8 +101,8 @@ const LandingPage = ({ subAdminView }) => {
       handleCloseShareJobModal={() => setShowShareModal(false)}
     >
       <div className="isActive-container">
-        <p onClick={()=>setIsActive(true)} className={isActive && 'isActive'}>Active</p>
-        <p onClick={()=>setIsActive(false)} className={!isActive && 'isActive'}>InActive</p>
+        <p onClick={()=>setIsActive(true)} className={isActive && 'isActive'}>Active jobs</p>
+        <p onClick={()=>setIsActive(false)} className={!isActive && 'isActive'}>Inactive jobs</p>
       </div>
       <div className="landing-page">
         <div className="cards">
@@ -122,6 +122,7 @@ const LandingPage = ({ subAdminView }) => {
                       setJobs={setJobs} 
                       setShowOverlay={setstateTrackingProgress} 
                       handleShareIconClick={(passedJobId) => handleShareIconClick(passedJobId)}
+                      index={index}
                     />
                   ))
                 :
@@ -136,6 +137,7 @@ const LandingPage = ({ subAdminView }) => {
                       setJobs={setJobs} 
                       setShowOverlay={setstateTrackingProgress} 
                       handleShareIconClick={(passedJobId) => handleShareIconClick(passedJobId)}
+                      index={index}
                     />
                   ))
               ) : (
