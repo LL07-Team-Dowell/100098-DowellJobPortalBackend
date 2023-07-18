@@ -2279,7 +2279,7 @@ class get_discord_server_members(APIView):
 
 
 #public api for job creation__________________________
-
+@method_decorator(csrf_exempt, name="dispatch")
 class Public_apply_job(APIView):
     def post(self, request):
         data = request.data
@@ -2459,3 +2459,27 @@ class sendMailToPublicCandidate(APIView):
                 "message": "Something went wrong",
                 "error": serializer.errors
             }, status= status.HTTP_400_BAD_REQUEST)
+
+@method_decorator(csrf_exempt, name="dispatch")
+class updateTheUserDetails(APIView):
+    """Update the user details by login team"""
+    def post(self, request):
+        field = {
+            "username": request.data.get("qr_id")
+        }
+        update_field = {
+            "username": request.data.get("username"),
+            "portfolio_name": request.data.get("protfolio_name"),
+            "status": "Pending"
+        }
+        response = dowellconnection(*candidate_management_reports, "update", field, update_field)
+        if json.loads(response)["isSuccess"] ==True:
+            return Response({
+                "success": True,
+                "message": "User details is updated.",
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "success": False,
+                "message": "User details is not updated."
+            }, status=status.HTTP_400_BAD_REQUEST)

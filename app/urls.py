@@ -86,6 +86,7 @@ urlpatterns = [
     # public job application link-------------------------------------
     path('generate_public_job_application_link/', createPublicApplication.as_view()),
     path('public_candidate_job_application/',Public_apply_job.as_view()),
-    path('send_mail_to_public/',sendMailToPublicCandidate.as_view())
+    path('send_mail_to_public/',sendMailToPublicCandidate.as_view()),
+    path('update_user_status/',updateTheUserDetails.as_view()),
     
 ]
