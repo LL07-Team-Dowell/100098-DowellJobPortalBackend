@@ -17,6 +17,7 @@ import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContex
 import { useJobContext } from "../../../../../contexts/Jobs";
 import { set } from "date-fns";
 import { IoShareSocial } from "react-icons/io5";
+import { Tooltip } from "react-tooltip";
 
 const style = {
   fontSize: "1.2rem",
@@ -35,6 +36,7 @@ const Card = ({
   newly_created,
   setShowOverlay,
   handleShareIconClick,
+  index,
 }) => {
   const { list } = useJobContext();
   const navigate = useNavigate();
@@ -158,38 +160,65 @@ const Card = ({
         <h5>{job_title}</h5>
         <div className="interact__icons">
           {newly_created ? (
-            <Link to={`/edit-job/#`} onClick={fetchJobsAgain}>
+            <Link to={`/edit-job/#`} onClick={fetchJobsAgain} data-tooltip-id={job_number} data-tooltip-content={'Edit job'}>
               <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
+              <Tooltip
+                id={job_number}
+                style={{ fontSize: '0.7rem', fontWeight: 'normal' }}
+              />
             </Link>
           ) : (
-            <Link to={`/edit-job/${_id}`}>
+            <Link to={`/edit-job/${_id}`} data-tooltip-id={_id} data-tooltip-content={'Edit job'}>
               <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
+              <Tooltip
+                id={_id}
+                style={{ fontSize: '0.7rem', fontWeight: "normal" }}
+              />
             </Link>
           )}
-          <IoShareSocial
-            onClick={
-              handleShareIconClick && typeof handleShareIconClick === 'function' ?
-                newly_created ?
-                () => fetchJobsAgain(null, (passedId) => handleShareIconClick(passedId))
-                :
-                () => handleShareIconClick(_id) 
-              :
-              () => {}
-            }
-            style={{ 
-              fontSize: "1.3rem", 
-              color: "#000",
-              cursor: "pointer",
-            }}
-          />
+          { 
+            is_active && 
+            <>
+              <IoShareSocial
+                onClick={
+                  handleShareIconClick && typeof handleShareIconClick === 'function' ?
+                    newly_created ?
+                    () => fetchJobsAgain(null, (passedId) => handleShareIconClick(passedId))
+                    :
+                    () => handleShareIconClick(_id) 
+                  :
+                  () => {}
+                }
+                style={{ 
+                  fontSize: "1.3rem", 
+                  color: "#000",
+                  cursor: "pointer",
+                }}
+                data-tooltip-id={`${_id}4s3${index}`}
+                data-tooltip-content={'Share job'}
+              />
+              <Tooltip
+                id={`${_id}4s3${index}`}
+                style={{ fontSize: '0.7rem', fontWeight: "normal" }}
+              />
+            </>
+          }
           {deletingLoading ? (
             <LittleLoading />
           ) : (
-            <MdDelete
-              style={{ fontSize: "1.3rem", color: "#000" }}
-              onClick={() => handleDeleteOfJob(_id)}
-              className="delete__icon"
-            />
+            <>
+              <MdDelete
+                style={{ fontSize: "1.3rem", color: "#000" }}
+                onClick={() => handleDeleteOfJob(_id)}
+                className="delete__icon"
+                data-tooltip-id={`${_id}4d3${index}`}
+                data-tooltip-content={'Delete job'}
+              />
+              <Tooltip
+                id={`${_id}4d3${index}`}
+                style={{ fontSize: '0.7rem', fontWeight: "normal" }}
+              />
+            </>
           )}
         </div>
       </div>

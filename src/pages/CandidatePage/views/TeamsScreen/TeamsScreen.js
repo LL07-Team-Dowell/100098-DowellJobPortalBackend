@@ -26,7 +26,7 @@ const TeamsScreen = () => {
     
     return <>
         <JobLandingLayout user={currentUser} afterSelection={true}>
-        <Navbar removeButton={true} title='All Teams' color={'#005734'}/>
+        <Navbar removeButton={true} title='All Teams' color={'#005734'}  noButtonBack={true}/>
         <div className='container'>
             <Teams searchValue={""} data={data}/>
         </div>

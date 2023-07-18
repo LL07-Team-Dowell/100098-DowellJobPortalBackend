@@ -65,6 +65,8 @@
   left:50%;
   z-index: 15;
   transform:translate(-50%);
+  max-height: 90%;
+  overflow: auto;
   .members{
     gap: 10px;
     font-family: Poppins;
