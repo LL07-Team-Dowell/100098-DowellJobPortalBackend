@@ -45,7 +45,7 @@ const StaffJobLandingLayout = ({
   modelDurationInSec,
   hideSearchBar,
   showShareModalForJob,
-  jobLinkToShare,
+  jobLinkToShareObj,
   handleCloseShareJobModal,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
@@ -174,7 +174,7 @@ const StaffJobLandingLayout = ({
           {
             adminView && showShareModalForJob && 
             <ShareJobModal
-              linkToShare={jobLinkToShare}
+              linkToShareObj={jobLinkToShareObj}
               handleCloseModal={
                 handleCloseShareJobModal && typeof handleCloseShareJobModal === 'function' ?
                 () => handleCloseShareJobModal()

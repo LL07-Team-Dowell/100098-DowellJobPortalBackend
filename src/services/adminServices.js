@@ -27,3 +27,11 @@ export const getApplicationForAdmin = async (company_id) => {
 export const getJobsFromAdmin = async (company_id) => {
   return await currentBackendAxiosInstance.get(`admin_get_all_jobs/${company_id}/`)
 }
+
+export const generatePublicJobLink = async (data) => {
+  return await currentBackendAxiosInstance.post('generate_public_job_application_link/', data);
+}
+
+export const getMasterLinks = async (companyId) => {
+  return await currentBackendAxiosInstance.get(`generate_public_job_application_link/${companyId}/`);
+}

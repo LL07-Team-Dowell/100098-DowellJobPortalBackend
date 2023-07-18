@@ -201,6 +201,26 @@ $red__color: #FE0000;
       }
     }
   }
+
+  .job__Link__Container {
+    background-color: #fcfcfc;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    transition: 0.3s;
+    padding: 4% 2%;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    
+    &:hover {
+      box-shadow: rgba($main__green, 0.6) 0px 7px 29px 0px;
+    }
+
+    span {
+      flex: 80%;
+    }
+  }
 }
 
 @media (max-width: 767px) {

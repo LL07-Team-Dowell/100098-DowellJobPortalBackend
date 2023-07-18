@@ -11,15 +11,19 @@ import Loading from "../../../CandidatePage/views/ResearchAssociatePage/Loading"
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { getApplicationForAdmin, getJobsFromAdmin } from "../../../../services/adminServices";
+import { getApplicationForAdmin, getJobsFromAdmin, getMasterLinks } from "../../../../services/adminServices";
 import { useState } from "react";
+import { IoCopyOutline } from "react-icons/io5";
+import { toast } from "react-toastify";
+
+
 const LandingPage = ({ subAdminView }) => {
 
   const [stateTrackingProgress, setstateTrackingProgress] = useState(false);
-  const [isActive, setIsActive] = useState(true) ;
-  const { jobs, setJobs, setlist, jobs2, setjobs2, searchValue, setsearchValue, resp, setresponse } = useJobContext();
+  const [isActive, setIsActive] = useState('active') ;
+  const { jobs, setJobs, setlist, jobs2, setjobs2, searchValue, setsearchValue, resp, setresponse, jobLinks, setJobLinks } = useJobContext();
   const [ showShareModal, setShowShareModal ] = useState(false);
-  const [ jobLinkToShare, setJobLinkToShare ] = useState('');
+  const [ jobLinkToShareObj, setJobLinkToShareObj ] = useState({});
 
   const handleSearchChange = (value) => {
     console.log("kasaksldjalksdjalksdjlkjsakl")
@@ -38,20 +42,25 @@ const LandingPage = ({ subAdminView }) => {
 
   const navigate = useNavigate();
   const { currentUser, setCurrentUser } = useCurrentUserContext();
+  
   console.log("currentUser", currentUser)
   // console.log("jobs", jobs);
+
   useEffect(() => {
     if (jobs.length === 0) {
 
-      getJobsFromAdmin(currentUser.portfolio_info[0].org_id)
-        .then((response) => {
-          console.log('AAAAAAAA', response.data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
-          setJobs(response.data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
-          setjobs2(response.data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
-          setresponse(true);
+      Promise.all([
+        getJobsFromAdmin(currentUser.portfolio_info[0].org_id),
+        getMasterLinks(currentUser.portfolio_info[0].org_id),
+      ]).then((response) => {
+        console.log('AAAAAAAA', response[0].data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
+        setJobs(response[0].data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
+        setjobs2(response[0].data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
+        setresponse(true);
 
-        })
-        .catch((error) => console.log(error));
+        setJobLinks(response[1].data.master_link)
+      })
+      .catch((error) => console.log(error));
     }
     if (currentUser?.userportfolio?.length > 0) return;
 
@@ -82,8 +91,21 @@ const LandingPage = ({ subAdminView }) => {
   const handleShareIconClick = (jobId) => {
     // console.log(jobId);
     setShowShareModal(true);
-    setJobLinkToShare(`${window.location.origin}/100098-DowellJobPortal/%23?view=public%26job_company_id=${currentUser?.portfolio_info[0].org_id}%26job_id=${jobId}%26company_data_type=${currentUser?.portfolio_info[0]?.data_type}`);
+    setJobLinkToShareObj({
+      view: 'public',
+      job_company_id: currentUser?.portfolio_info[0].org_id,
+      job_id: jobId,
+      company_data_type: currentUser?.portfolio_info[0]?.data_type
+    });
   }
+
+  
+
+  const handleCopyLink = async (link) => {
+    await navigator.clipboard.writeText(decodeURIComponent(link));
+    toast.success('Link copied to clipboard!')
+  }
+
 
   console.log({ searchValue });
   
@@ -97,12 +119,13 @@ const LandingPage = ({ subAdminView }) => {
       showLoadingOverlay={stateTrackingProgress}
       modelDurationInSec={5.81}
       showShareModalForJob={showShareModal}
-      jobLinkToShare={jobLinkToShare}
+      jobLinkToShareObj={jobLinkToShareObj}
       handleCloseShareJobModal={() => setShowShareModal(false)}
     >
       <div className="isActive-container">
-        <p onClick={()=>setIsActive(true)} className={isActive && 'isActive'}>Active jobs</p>
-        <p onClick={()=>setIsActive(false)} className={!isActive && 'isActive'}>Inactive jobs</p>
+        <p onClick={()=>setIsActive('active')} className={isActive === 'active' && 'isActive'}>Active jobs</p>
+        <p onClick={()=>setIsActive('inactive')} className={isActive === 'inactive' && 'isActive'}>Inactive jobs</p>
+        <p onClick={() => setIsActive('links')} className={isActive === 'links' && 'isActive'}>Job Links</p>
       </div>
       <div className="landing-page">
         <div className="cards">
@@ -110,7 +133,7 @@ const LandingPage = ({ subAdminView }) => {
             jobs.length === 0 && searchValue || jobs.length === 0 && resp ? <h1>No Job Found</h1>
               :
               jobs.length > 0 ? (
-                isActive ? 
+                isActive === 'active' ? 
                  jobs
                  .filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
                  .filter(v => v.is_active === true)
@@ -126,6 +149,7 @@ const LandingPage = ({ subAdminView }) => {
                     />
                   ))
                 :
+                 isActive === 'inactive' ? 
                   jobs
                   .filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
                   .filter(v => v.is_active === false)
@@ -140,6 +164,17 @@ const LandingPage = ({ subAdminView }) => {
                       index={index}
                     />
                   ))
+                :
+                <>
+                  {
+                    React.Children.toArray(jobLinks.map(link => {
+                      return <div className="job__Link__Container" onClick={() => handleCopyLink(link)}>
+                        <span>{link}</span>
+                        <IoCopyOutline />
+                      </div>
+                    }))
+                  }
+                </>
               ) : (
                 <Loading />
               )}
