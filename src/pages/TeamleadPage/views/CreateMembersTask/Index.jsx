@@ -29,7 +29,7 @@ const Index = () => {
   if(data.TeamsSelected.length === 0)return <StaffJobLandingLayout  teamleadView={true}><LoadingSpinner/></StaffJobLandingLayout> 
   return (
     <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue}>
-      <Navbar title={"All Teams"} color={'#005734'} />
+      <Navbar title={"All Teams"} color={'#005734'} noButtonBack={true} />
       <div className='container'>
       <Teams searchValue={searchValue} data={data}/>
       </div>
