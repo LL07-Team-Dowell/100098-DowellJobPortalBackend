@@ -17,6 +17,7 @@ import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContex
 import { useJobContext } from "../../../../../contexts/Jobs";
 import { set } from "date-fns";
 import { IoShareSocial } from "react-icons/io5";
+import { Tooltip } from "react-tooltip";
 
 const style = {
   fontSize: "1.2rem",
@@ -158,12 +159,24 @@ const Card = ({
         <h5>{job_title}</h5>
         <div className="interact__icons">
           {newly_created ? (
-            <Link to={`/edit-job/#`} onClick={fetchJobsAgain}>
+            <Link to={`/edit-job/#`} onClick={fetchJobsAgain} id="addTermsBtn">
               <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
+              <Tooltip
+                      anchorId="addTermsBtn"
+                      place="top"
+                      content="Add Others"
+                      className="tooltip"
+                    />
             </Link>
           ) : (
             <Link to={`/edit-job/${_id}`}>
               <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
+              <Tooltip
+                      anchorId="addOthersBtn"
+                      place="top"
+                      content="Add Others"
+                      className="tooltip"
+                    />
             </Link>
           )}
           <IoShareSocial
