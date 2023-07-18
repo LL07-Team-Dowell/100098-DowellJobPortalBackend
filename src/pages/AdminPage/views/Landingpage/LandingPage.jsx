@@ -16,7 +16,7 @@ import { useState } from "react";
 const LandingPage = ({ subAdminView }) => {
 
   const [stateTrackingProgress, setstateTrackingProgress] = useState(false);
-
+  const [isActive, setIsActive] = useState(true) ;
   const { jobs, setJobs, setlist, jobs2, setjobs2, searchValue, setsearchValue, resp, setresponse } = useJobContext();
   const [ showShareModal, setShowShareModal ] = useState(false);
   const [ jobLinkToShare, setJobLinkToShare ] = useState('');
@@ -100,17 +100,38 @@ const LandingPage = ({ subAdminView }) => {
       jobLinkToShare={jobLinkToShare}
       handleCloseShareJobModal={() => setShowShareModal(false)}
     >
+      <div className="isActive-container">
+        <p onClick={()=>setIsActive(true)} className={isActive && 'isActive'}>Active</p>
+        <p onClick={()=>setIsActive(false)} className={!isActive && 'isActive'}>InActive</p>
+      </div>
       <div className="landing-page">
         <div className="cards">
           {
             jobs.length === 0 && searchValue || jobs.length === 0 && resp ? <h1>No Job Found</h1>
               :
               jobs.length > 0 ? (
-                jobs.filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
+                isActive ? 
+                 jobs
+                 .filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
+                 .filter(v => v.is_active === true)
                   .map((job, index) => (
                     <Card 
                       {...job} 
-                      key={index} 
+                      key={`job-Active-${index}`} 
+                      jobs={jobs} 
+                      setJobs={setJobs} 
+                      setShowOverlay={setstateTrackingProgress} 
+                      handleShareIconClick={(passedJobId) => handleShareIconClick(passedJobId)}
+                    />
+                  ))
+                :
+                  jobs
+                  .filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
+                  .filter(v => v.is_active === false)
+                  .map((job, index) => (
+                    <Card 
+                      {...job} 
+                      key={`job-InActive-${index}`} 
                       jobs={jobs} 
                       setJobs={setJobs} 
                       setShowOverlay={setstateTrackingProgress} 
