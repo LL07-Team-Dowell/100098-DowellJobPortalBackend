@@ -168,3 +168,15 @@ def create_master_link(company_id,links):
     response = requests.post(url, json=payload)
 
     return response.text
+
+def send_mail(toname,toemail,subject,job_role,link):
+    url = "https://100085.pythonanywhere.com/api/hr-invitation/"
+    payload = {
+        "toname": toname,
+        "toemail": toemail,
+        "subject": subject,
+        "job_role": job_role,
+        "link": link,
+    }
+    response = requests.post(url, json=payload)
+    return response.text

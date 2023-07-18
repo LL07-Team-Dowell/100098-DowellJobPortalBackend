@@ -9,14 +9,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
 from .helper import get_event_id, dowellconnection, call_notification, update_number, update_string, discord_invite,\
-    get_guild_channels, get_guild_members , create_master_link
+    get_guild_channels, get_guild_members , create_master_link , send_mail
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
     SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
-    SettingUserProjectSerializer, UpdateSettingUserProjectSerializer, SettingUserProfileInfo, UserProject , CreatePublicLinkSerializer
+    SettingUserProjectSerializer, UpdateSettingUserProjectSerializer, SettingUserProfileInfo, UserProject , CreatePublicLinkSerializer ,SendMailToPublicSerializer
 import datetime
 from dateutil.relativedelta import relativedelta
-
+import jwt
 
 # Create your views here.
 
@@ -2388,3 +2388,74 @@ class createPublicApplication(APIView):
                 "message": "Failed to generate master link for public job apllication"
             },status=status.HTTP_400_BAD_REQUEST)
 
+@method_decorator(csrf_exempt, name="dispatch")
+class sendMailToPublicCandidate(APIView):
+    """Sending Mail to public user"""
+    def post(self, request):
+        qr_id = request.data.get('qr_id')
+        org_name = request.data.get("org_name")
+        org_id = request.data.get("org_id")
+        owner_name = request.data.get("owner_name")
+        portfolio_name = request.data.get("portfolio_name")
+        unique_id = request.data.get("unique_id")
+        product = request.data.get("product")
+        role = request.data.get("role")
+        member_type = request.data.get("member_type")
+        toemail = request.data.get("toemail")
+        toname = request.data.get("toname")
+        subject = request.data.get("subject")
+        job_role = request.data.get("job_role")
+
+        data = {
+            "qr_id": qr_id,
+            "org_name": org_name,
+            "org_id": org_id,
+            "owner_name": owner_name,
+            "portfolio_name": portfolio_name,
+            "unique_id": unique_id,
+            "product": product,
+            "role": role,
+            "member_type": member_type,
+            "toemail": toemail,
+            "toname": toname,
+            "subject": subject,
+            "job_role": job_role
+        }
+
+        serializer = SendMailToPublicSerializer(data=data)
+        if serializer.is_valid():
+            encoded_jwt = jwt.encode(
+                {
+                "qr_id": qr_id,
+                "org_name": org_name,
+                "org_id": org_id,
+                "owner_name": owner_name,
+                "portfolio_name": portfolio_name,
+                "unique_id": unique_id,
+                "product": product,
+                "role": role,
+                "member_type": member_type,
+                "toemail": toemail,
+                "toname": toname
+            }, 
+            "secret", algorithm="HS256"
+            )
+            link = f"https://100014.pythonanywhere.com/?hr_invitation={encoded_jwt.decode('utf-8')}"
+            mail_response = send_mail(toname,toemail,subject,job_role,link)
+            response = json.loads(mail_response)
+            if response["success"]:
+                return Response({
+                    "success": True,
+                    "message": f"Mail sent successfully to {toname}"
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    "success": False,
+                    "message": "Something went wrong"
+                }, status= status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response({
+                "success": False,
+                "message": "Something went wrong",
+                "error": serializer.errors
+            }, status= status.HTTP_400_BAD_REQUEST)

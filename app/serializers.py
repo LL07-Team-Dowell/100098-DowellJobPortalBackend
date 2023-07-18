@@ -255,3 +255,19 @@ class CreatePublicLinkSerializer(serializers.Serializer):
     job_company_id = serializers.CharField(allow_null=False, allow_blank=False)
     job_id = serializers.CharField(allow_null=False, allow_blank=False)
     company_data_type = serializers.CharField(allow_null=False, allow_blank=False)
+
+class SendMailToPublicSerializer(serializers.Serializer):
+    qr_id = serializers.CharField(allow_null=False, allow_blank=False)
+    org_name = serializers.CharField(allow_null=False, allow_blank=False)
+    org_id = serializers.CharField(allow_null=False, allow_blank=False)
+    owner_name = serializers.CharField(allow_null=False, allow_blank=False)
+    portfolio_name = serializers.CharField(allow_null=False, allow_blank=False)
+    unique_id = serializers.CharField(allow_null=False, allow_blank=False)
+    product = serializers.CharField(allow_null=False, allow_blank=False)
+    role = serializers.CharField(allow_null=False, allow_blank=False)
+    member_type = serializers.CharField(allow_null=False, allow_blank=False)
+    toemail = serializers.CharField(allow_null=False, allow_blank=False)
+    toname = serializers.CharField(allow_null=False, allow_blank=False)
+    subject = serializers.CharField(allow_null=False, allow_blank=False)
+    job_role = serializers.CharField(allow_null=False, allow_blank=False)
+    
