@@ -31,6 +31,7 @@ import { getTrainingManagementQuestions } from '../../../../services/hrTrainingS
 import { IoMdRefresh } from "react-icons/io";
 import { set } from 'date-fns';
 import { toast } from 'react-toastify';
+import { getUserInfoFromLoginAPI } from '../../../../services/authServices';
 
 function fuzzySearch(query, text) {
   const searchRegex = new RegExp(query.split('').join('.*'), 'i');
@@ -38,7 +39,7 @@ function fuzzySearch(query, text) {
 }
 
 function HrJobScreen() {
-  const { currentUser } = useCurrentUserContext();
+  const { currentUser, userRolesLoaded, setUserRolesFromLogin, setRolesLoaded } = useCurrentUserContext();
   const { setQuestions } = useHrJobScreenAllTasksContext();
   const { section, sub_section, path } = useNavigationContext();
   const [jobs, setJobs] = useState([]);
@@ -95,6 +96,18 @@ function HrJobScreen() {
   }, [sub_section, path])
 
   useEffect(() => {
+
+    if (!userRolesLoaded) {
+      getUserInfoFromLoginAPI({ session_id: sessionStorage.getItem('session_id'), product: 'Team Management' }).then(res => {
+        // console.log(res.data.roles);
+        setUserRolesFromLogin(res.data.roles);
+        setRolesLoaded(true);
+
+      }).catch(err => {
+        console.log('Failed to fetch roles: ', err.response ? err.response.data : err.message);
+        setRolesLoaded(true);
+      })
+    }
 
     Promise.all([
       getCandidateApplicationsForHr(currentUser.portfolio_info[0].org_id),

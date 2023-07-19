@@ -1,8 +1,9 @@
 import { AiOutlineClose } from 'react-icons/ai';
 import styles from './styles.module.css';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { mutablePublicAccountStateNames } from '../../../HrPage/views/JobScreen/HrJobScreen';
-
+import  { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
+import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 
 const PublicAccountConfigurationModal = ({ 
     handleCloseModal, 
@@ -11,6 +12,21 @@ const PublicAccountConfigurationModal = ({
     details,
     handeDetailChange,
 }) => {
+
+    const { userRolesFromLogin, userRolesLoaded } = useCurrentUserContext();
+    const [ orgRoles, setOrgRoles ] = useState([]);
+
+    useEffect(() => {
+
+        const rolesToSet = userRolesFromLogin?.map(role => {
+            return {
+                option: role.role_name,
+                value: role.role_name,
+            }
+        });
+        setOrgRoles(rolesToSet);
+
+    }, [])
 
     const handleIdChange = (inputName, valueEntered) => {
         const filteredValue = valueEntered.replace(/\D/g, "");
@@ -88,17 +104,22 @@ const PublicAccountConfigurationModal = ({
 
                     <div className={styles.select__Wrapper}>
                         <span>Role to be assigned to user</span>
-                        <select
-                            value={details[`${mutablePublicAccountStateNames.role}`]}
-                            onChange={({ target }) => handeDetailChange(mutablePublicAccountStateNames.role, target.value)}
-                        >
-                            <option value={''} disabled selected>{'Select role'}</option>
-                            {
-                                React.Children.toArray(roleOptions.map(val => {
-                                    return <option value={val.value}>{val.option}</option>
-                                }))
-                            }
-                        </select>
+                        {
+                            !userRolesLoaded ?
+                            <LoadingSpinner width={'2rem'} height={'2rem'} /> :
+                            <select
+                                value={details[`${mutablePublicAccountStateNames.role}`]}
+                                onChange={({ target }) => handeDetailChange(mutablePublicAccountStateNames.role, target.value)}
+                            >
+                                <option value={''} disabled selected>{'Select role'}</option>
+                                {
+                                    React.Children.toArray(orgRoles?.map(val => {
+                                        return <option value={val?.value}>{val?.option}</option>
+                                    }))
+                                }
+                            </select>
+                        }
+                        
                     </div>
 
                     <button 

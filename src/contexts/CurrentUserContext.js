@@ -13,6 +13,8 @@ export const CurrentUserContextProvider = ({ children }) => {
   const [ isPublicUser, setIsPublicUser ] = useState(false);
   const [ publicUserDetails, setPublicUserDetails ] = useState({});
   const [ userDetailsNotFound, setUserDetailsNotFound ] = useState(false);
+  const [ userRolesFromLogin, setUserRolesFromLogin ] = useState([]);
+  const [ userRolesLoaded, setRolesLoaded ] = useState(false);
 
   return (
     <CurrentUserContext.Provider value={{ 
@@ -24,6 +26,10 @@ export const CurrentUserContextProvider = ({ children }) => {
       setPublicUserDetails,
       userDetailsNotFound, 
       setUserDetailsNotFound,
+      userRolesFromLogin,
+      setUserRolesFromLogin,
+      userRolesLoaded,
+      setRolesLoaded,
     }}>
       {children}
     </CurrentUserContext.Provider>

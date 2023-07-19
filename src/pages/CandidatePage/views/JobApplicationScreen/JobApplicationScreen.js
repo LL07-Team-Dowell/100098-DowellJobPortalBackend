@@ -30,7 +30,7 @@ import ReactDOMServer from 'react-dom/server';
 import ApplicationSubmissionContent from "../../../../templates/applicationSubmition";
 import { sendMailUsingDowell } from "../../../../services/mailServices";
 import SuccessPublicSubmissionModal from "../../components/SuccessPublicSubmissionModal/SuccessPublicSubmissionModal";
-
+import { uxlivingLabURL } from "../../../../utils/utils";
 
 
 const JobApplicationScreen = () => {
@@ -58,6 +58,7 @@ const JobApplicationScreen = () => {
         isPublicUser, 
         publicUserDetails, 
         userDetailsNotFound,
+        setPublicUserDetails,
     } = useCurrentUserContext();
     const [jobSaved, setJobSaved] = useState(false);
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
@@ -71,6 +72,7 @@ const JobApplicationScreen = () => {
     const [error, setError] = useState(null);
     const [ isEmailValid, setIsEmailValid ] = useState(true);
     const [ showPublicSuccessModal, setShowPublicSuccessModal ] = useState(false);
+    const [ publicSuccessModalBtnDisabled, setPublicSuccessModalBtnDisabled ] = useState(false);
 
     console.log(testResult);
     console.log(error);
@@ -362,6 +364,7 @@ const JobApplicationScreen = () => {
         if (isPublicUser) {
             if (newApplicationData.applicant_email.length < 1) return toast.info('Please enter your email')
             if (!isEmailValid) return toast.info('Please enter a valid email')
+            if (publicUserDetails.linkUsed) return toast.info('You have already submitted an application for this job')
         }
 
         setDisableNextBtn(true);
@@ -393,6 +396,12 @@ const JobApplicationScreen = () => {
                 toast.success("Successfully submitted job application!");
                 // setDisableNextBtn(false);
                 setShowPublicSuccessModal(true);
+
+                const updatedPublicUser = { ...publicUserDetails };
+                updatedPublicUser.linkUsed = true;
+
+                setPublicUserDetails(updatedPublicUser);
+                sessionStorage.setItem('public_user', JSON.stringify(updatedPublicUser));
 
             } catch (error) {
                 console.log(error)
@@ -813,7 +822,11 @@ const JobApplicationScreen = () => {
         {
             showPublicSuccessModal && 
             <SuccessPublicSubmissionModal 
-                handleBtnClick={() => navigate('/')} 
+                handleBtnClick={() => {
+                    setPublicSuccessModalBtnDisabled(true);
+                    window.location.replace(uxlivingLabURL);
+                }} 
+                btnDisabled={publicSuccessModalBtnDisabled}
             />
         }
     </>

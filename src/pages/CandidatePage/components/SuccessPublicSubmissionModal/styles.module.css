@@ -49,12 +49,20 @@
     filter: brightness(0.85);
 }
 
+
+.Btn:disabled,
+.Btn[disabled] {
+    filter: brightness(0.6);
+    cursor: not-allowed;
+}
+
 .public__Modal h2 {
     font-family: 'Poppins', sans-serif;
 }
 
 .public__Modal p {
     font-size: 0.9rem;
+    text-align: center;
 }
 
 .icon {

@@ -114,78 +114,9 @@ function App() {
           />
         </Route>
 
-        <Route path="/" element={
-          <JobContextProvider>
-            <NewApplicationContextProvider>
-              <CandidateHomeScreen />
-            </NewApplicationContextProvider>
-          </JobContextProvider>
-          } 
-        />
-
-        <Route path="/jobs">
-          <Route index element={
-            <JobContextProvider>
-              <NewApplicationContextProvider>
-                <JobScreen />
-              </NewApplicationContextProvider>
-            </JobContextProvider>
-            } 
-          />
-          <Route path=":jobTitle" element={
-            <JobContextProvider>
-              <NewApplicationContextProvider>
-                <SingleJobScreen />
-              </NewApplicationContextProvider>
-            </JobContextProvider>
-            } 
-          />
-          <Route
-            exact
-            path="c/research-associate"
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <ResearchAssociatePage />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            }
-          />
-          <Route exact path="c/employee" 
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <EmployeeJobScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            } 
-          />
-          <Route exact path="c/intern" 
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <InternJobScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            } 
-          />
-          <Route exact path="c/freelancer" 
-            element={
-              <JobContextProvider>
-                <NewApplicationContextProvider>
-                  <FreelancerJobScreen />
-                </NewApplicationContextProvider>
-              </JobContextProvider>
-            } 
-          />
-        </Route>
         <Route path="*" 
           element={
-          <JobContextProvider>
-            <NewApplicationContextProvider>
-              <CandidateHomeScreen />
-            </NewApplicationContextProvider>
-          </JobContextProvider>
+          <>Page Not found</>
           } 
         />
       </Routes>
