@@ -13,7 +13,7 @@ from .helper import get_event_id, dowellconnection, call_notification, update_nu
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
     SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
-    SettingUserProjectSerializer, UpdateSettingUserProjectSerializer, SettingUserProfileInfo, UserProject , CreatePublicLinkSerializer ,SendMailToPublicSerializer
+    SettingUserProjectSerializer, UpdateSettingUserProjectSerializer, SettingUserProfileInfo, UpdateuserSerializer, UserProject , CreatePublicLinkSerializer ,SendMailToPublicSerializer
 import datetime
 from dateutil.relativedelta import relativedelta
 import jwt
@@ -52,6 +52,43 @@ INVERVIEW_CALL = """
     </div>
 </body>
 </html>
+"""
+
+INVITATION_MAIL = """
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FULL SIGNUP MAIL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Poppins&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div style="width: 80%; margin: 0 auto;font-family: 'Poppins', sans-serif;">
+        <img src="http://67.217.61.253/hr/logo-2-min-min.png" alt="Dowell Logo" width="70px" height="70px" style="display: block; margin: 0 auto;">
+        <div style="width: 80%; margin: 0 auto; text-align: center;">
+            <p style="font-size: 2rem; font-weight: 700;">Hello {},</p>
+            <img src="https://img.freepik.com/free-vector/reading-letter-concept-illustration_114360-4591.jpg?size=626&ext=jpg&ga=GA1.1.225976907.1673277028&semt=sph" alt="mail-logo" width="250px" height="250px">
+        </div>
+        <div style="width: 80%; margin: 0 auto; text-align: center;">
+            <p style="font-weight: 400; margin: 0; margin-bottom: 1.5rem; margin-top: 1rem;">Congratulations! Your application for {} has been approved at DoWell UX Living Lab.</p>
+            <p style="font-weight: 400; margin: 0; margin-bottom: 1.5rem;">Kindly use the button below to create an account and track your application progress.</p> 
+            <a href="{}" style="text-decoration: none; cursor: pointer; background-color: #005734; padding: 1rem; border-radius: 0.5rem; display: block; margin: 5rem auto 0; width: max-content;">
+                <p style="display: inline-block; margin: 0; color: #fff; font-weight: 600;">
+                    Complete full signup
+                </p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
 """
 # api for job portal begins here---------------------------
 @method_decorator(csrf_exempt, name="dispatch")
@@ -2516,7 +2553,8 @@ class sendMailToPublicCandidate(APIView):
             "secret", algorithm="HS256"
             )
             link = f"https://100014.pythonanywhere.com/?hr_invitation={encoded_jwt.decode('utf-8')}"
-            mail_response = send_mail(toname,toemail,subject,job_role,link)
+            email_content = INVITATION_MAIL.format()
+            mail_response = interview_email(toname,toemail,subject,email_content)
             response = json.loads(mail_response)
             if response["success"]:
                 return Response({
@@ -2553,23 +2591,25 @@ class updateTheUserDetails(APIView):
             "portfolio_name": portfolio_name,
             "status": "Pending"
         }
-        response = dowellconnection(*candidate_management_reports, "update", field, update_field)
-        if json.loads(response)["isSuccess"] ==True:
-            email_content = INVERVIEW_CALL.format(username,job_role, date_time)
-            subject = "Interview call from DoWell UX Living Lab"
-            send_interview_email = interview_email(username,toemail,subject,email_content)
-            if json.loads(send_interview_email)["success"]:
-                return Response({
-                    "success": True,
-                    "message": "User details is updated."
-                }, status=status.HTTP_200_OK)
+        serializer = UpdateuserSerializer(data=request.data)
+        if serializer.is_valid():
+            response = dowellconnection(*candidate_management_reports, "update", field, update_field)
+            if json.loads(response)["isSuccess"] ==True:
+                email_content = INVERVIEW_CALL.format(username,job_role, date_time)
+                subject = "Interview call from DoWell UX Living Lab"
+                send_interview_email = interview_email(username,toemail,subject,email_content)
+                if json.loads(send_interview_email)["success"]:
+                    return Response({
+                        "success": True,
+                        "message": "User details is updated."
+                    }, status=status.HTTP_200_OK)
+                else:
+                    return Response({
+                        "success": False,
+                        "message": "Mail was not sent."
+                    }, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({
                     "success": False,
-                    "message": "Mail was not sent."
+                    "message": "User details is not updated."
                 }, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({
-                "success": False,
-                "message": "User details is not updated."
-            }, status=status.HTTP_400_BAD_REQUEST)

@@ -273,3 +273,11 @@ class SendMailToPublicSerializer(serializers.Serializer):
     data_type = serializers.CharField(allow_null=False, allow_blank=False)
     date_time = serializers.CharField(allow_null=False, allow_blank=False)
     
+
+class UpdateuserSerializer(serializers.Serializer):
+        qr_id = serializers.CharField(allow_null=False, allow_blank=False)
+        username = serializers.CharField(allow_null=False, allow_blank=False)
+        portfolio_name = serializers.CharField(allow_null=False, allow_blank=False)
+        job_role = serializers.CharField(allow_null=False, allow_blank=False)
+        date_time = serializers.CharField(allow_null=False, allow_blank=False)
+        toemail = serializers.CharField(allow_null=False, allow_blank=False)
