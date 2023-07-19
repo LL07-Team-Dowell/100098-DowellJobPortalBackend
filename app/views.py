@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
 from .helper import get_event_id, dowellconnection, call_notification, update_number, update_string, discord_invite,\
-    get_guild_channels, get_guild_members , create_master_link , send_mail
+    get_guild_channels, get_guild_members , create_master_link , send_mail , interview_email
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
     SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
@@ -20,7 +20,39 @@ import jwt
 
 # Create your views here.
 
-
+INVERVIEW_CALL = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600&display=swap" rel="stylesheet">
+    <title>Interview Invitation</title>
+</head>
+<body style="font-family: poppins;background-color: #f5f5f5;margin: 0;padding: 0;text-align: center;">
+    <div style="max-width: 600px;margin: 20px auto;background-color: #fff;padding: 20px;border-radius: 4px;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+        <div style= :text-align: center;margin-bottom: 20px;>
+            <img src="http://67.217.61.253/hr/logo-2-min-min.png" alt="Company Logo" style="width: 200px;">
+        </div>
+        <div >
+            <h3 style="text-align: center;font-size: 24px;margin: 0;margin-bottom: 10px;">Hello {},</h3>
+            <img src="https://img.freepik.com/free-vector/people-talking-via-electronic-mail_52683-38063.jpg?size=626&ext=jpg&ga=GA1.1.225976907.1673277028&semt=ais" alt="Interview Image" style="display: block;margin: 0 auto;width: 400px;max-width: 100%;border-radius: 4px;">
+        </div>
+        <div>
+            <p style="margin: 0;margin-bottom: 10px;line-height: 1.5;">Congratulations! You have been invited to interview for the {} job at DoWell UX Living Lab.</p>
+            <p style="margin: 0;margin-bottom: 10px;line-height: 1.5;">Here are the details of the interview:</p>
+            <p style="margin: 0;margin-bottom: 10px;line-height: 1.5;"><b>Venue:</b> Discord</p>
+            <p style="margin: 0;margin-bottom: 10px;line-height: 1.5;"><b>Time:</b> {}</p>
+            <br>
+            <p style="margin: 0;margin-bottom: 10px;line-height: 1.5;">Kindly click the button below to join the Discord server:</p>
+            <a href="https://discord.gg/Qfw7nraNPS" style="display: inline-block;background-color: #007bff;color: #fff;text-decoration: none;padding: 10px 20px;border-radius: 4px;transition: background-color 0.3s ease;text-align: center;" target="_blank">Join Discord Server</a>
+        </div>
+    </div>
+</body>
+</html>
+"""
 # api for job portal begins here---------------------------
 @method_decorator(csrf_exempt, name="dispatch")
 class serverStatus(APIView):
@@ -2442,6 +2474,7 @@ class sendMailToPublicCandidate(APIView):
         subject = request.data.get("subject")
         job_role = request.data.get("job_role")
         data_type = request.data.get("data_type")
+        date_time = request.data.get("date_time")
 
         data = {
             "qr_id": qr_id,
@@ -2457,7 +2490,8 @@ class sendMailToPublicCandidate(APIView):
             "toname": toname,
             "subject": subject,
             "job_role": job_role,
-            "data_type": data_type
+            "data_type": data_type,
+            "date_time": date_time,
         }
 
         serializer = SendMailToPublicSerializer(data=data)
@@ -2475,7 +2509,9 @@ class sendMailToPublicCandidate(APIView):
                 "member_type": member_type,
                 "toemail": toemail,
                 "toname": toname,
-                "data_type": data_type
+                "data_type": data_type,
+                "date_time": date_time,
+                "job_role": job_role
             }, 
             "secret", algorithm="HS256"
             )
@@ -2503,20 +2539,35 @@ class sendMailToPublicCandidate(APIView):
 class updateTheUserDetails(APIView):
     """Update the user details by login team"""
     def post(self, request):
+        qr_id = request.data.get('qr_id')
+        username = request.data.get('username')
+        portfolio_name = request.data.get('portfolio_name')
+        job_role = request.data.get('job_role')
+        date_time = request.data.get('date_time')
+        toemail = request.data.get('toemail')
         field = {
-            "username": request.data.get("qr_id")
+            "username": qr_id,
         }
         update_field = {
-            "username": request.data.get("username"),
-            "portfolio_name": request.data.get("protfolio_name"),
+            "username": username,
+            "portfolio_name": portfolio_name,
             "status": "Pending"
         }
         response = dowellconnection(*candidate_management_reports, "update", field, update_field)
         if json.loads(response)["isSuccess"] ==True:
-            return Response({
-                "success": True,
-                "message": "User details is updated.",
-            }, status=status.HTTP_200_OK)
+            email_content = INVERVIEW_CALL.format(username,job_role, date_time)
+            subject = "Interview call from DoWell UX Living Lab"
+            send_interview_email = interview_email(username,toemail,subject,email_content)
+            if json.loads(send_interview_email)["success"]:
+                return Response({
+                    "success": True,
+                    "message": "User details is updated."
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    "success": False,
+                    "message": "Mail was not sent."
+                }, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({
                 "success": False,
