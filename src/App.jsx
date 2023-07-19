@@ -96,14 +96,29 @@ function App() {
           path="/apply/job/:id"
           element={
             <JobContextProvider>
-              <JobApplicationScreen />
+              <NewApplicationContextProvider>
+                <JobApplicationScreen />
+              </NewApplicationContextProvider>
             </JobContextProvider>
           }
-        />
+        >
+          <Route
+            path=":section"
+            element={
+              <JobContextProvider>
+                <NewApplicationContextProvider>
+                  <JobApplicationScreen />
+                </NewApplicationContextProvider>
+              </JobContextProvider>
+            }
+          />
+        </Route>
 
         <Route path="/" element={
           <JobContextProvider>
-            <CandidateHomeScreen />
+            <NewApplicationContextProvider>
+              <CandidateHomeScreen />
+            </NewApplicationContextProvider>
           </JobContextProvider>
           } 
         />
@@ -111,13 +126,17 @@ function App() {
         <Route path="/jobs">
           <Route index element={
             <JobContextProvider>
-              <JobScreen />
+              <NewApplicationContextProvider>
+                <JobScreen />
+              </NewApplicationContextProvider>
             </JobContextProvider>
             } 
           />
           <Route path=":jobTitle" element={
             <JobContextProvider>
-              <SingleJobScreen />
+              <NewApplicationContextProvider>
+                <SingleJobScreen />
+              </NewApplicationContextProvider>
             </JobContextProvider>
             } 
           />
@@ -126,28 +145,36 @@ function App() {
             path="c/research-associate"
             element={
               <JobContextProvider>
-                <ResearchAssociatePage />
+                <NewApplicationContextProvider>
+                  <ResearchAssociatePage />
+                </NewApplicationContextProvider>
               </JobContextProvider>
             }
           />
           <Route exact path="c/employee" 
             element={
               <JobContextProvider>
-                <EmployeeJobScreen />
+                <NewApplicationContextProvider>
+                  <EmployeeJobScreen />
+                </NewApplicationContextProvider>
               </JobContextProvider>
             } 
           />
           <Route exact path="c/intern" 
             element={
               <JobContextProvider>
-              <InternJobScreen />
+                <NewApplicationContextProvider>
+                  <InternJobScreen />
+                </NewApplicationContextProvider>
               </JobContextProvider>
             } 
           />
           <Route exact path="c/freelancer" 
             element={
               <JobContextProvider>
-              <FreelancerJobScreen />
+                <NewApplicationContextProvider>
+                  <FreelancerJobScreen />
+                </NewApplicationContextProvider>
               </JobContextProvider>
             } 
           />
@@ -155,7 +182,9 @@ function App() {
         <Route path="*" 
           element={
           <JobContextProvider>
-            <CandidateHomeScreen />
+            <NewApplicationContextProvider>
+              <CandidateHomeScreen />
+            </NewApplicationContextProvider>
           </JobContextProvider>
           } 
         />

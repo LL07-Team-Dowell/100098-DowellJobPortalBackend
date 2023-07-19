@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 // import Footer from "../../components/Footer/Footer";
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import { AiOutlineDown } from "react-icons/ai";
-import { validateUrl } from "../../../../helpers/helpers";
+import { validateEmail, validateUrl } from "../../../../helpers/helpers";
 import { countriesData, dowellInfo, dowellLinks, freelancingPlatforms, qualificationsData } from "../../utils/jobFormApplicationData";
 import { mutableNewApplicationStateNames, useNewApplicationContext } from "../../../../contexts/NewApplicationContext";
 import { newJobApplicationDataReducer, newJobApplicationDataReducerActions } from "../../../../reducers/NewJobApplicationDataReducer";
@@ -19,15 +19,17 @@ import { IoMdShare, IoIosArrowRoundForward } from "react-icons/io";
 import { VscCalendar } from "react-icons/vsc";
 import { BsClock } from "react-icons/bs";
 import { useMediaQuery } from "@mui/material";
-import { getJobs } from '../../../../services/candidateServices';
+import { getJobs, submitPublicApplication } from '../../../../services/candidateServices';
 import { dowellLoginUrl } from "../../../../services/axios";
 import { submitNewApplication } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
 import { jobKeys } from "../../../AdminPage/utils/jobKeys";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { useJobContext } from "../../../../contexts/Jobs";
-import axios from "axios";
-import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
+import ReactDOMServer from 'react-dom/server';
+import ApplicationSubmissionContent from "../../../../templates/applicationSubmition";
+import { sendMailUsingDowell } from "../../../../services/mailServices";
+import SuccessPublicSubmissionModal from "../../components/SuccessPublicSubmissionModal/SuccessPublicSubmissionModal";
 
 
 
@@ -55,11 +57,7 @@ const JobApplicationScreen = () => {
         currentUser, 
         isPublicUser, 
         publicUserDetails, 
-        setCurrentUser, 
         userDetailsNotFound,
-        setUserDetailsNotFound, 
-        setIsPublicUser,
-        setPublicUserDetails,
     } = useCurrentUserContext();
     const [jobSaved, setJobSaved] = useState(false);
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
@@ -69,9 +67,11 @@ const JobApplicationScreen = () => {
         if (elem && !arrayToAddTo.current.includes(elem)) arrayToAddTo.current.push(elem)
     }
 
-    const [ userDetailLoading, setUserDetailLoading] = useState(false);
     const [testResult, setTestResult] = useState(null);
     const [error, setError] = useState(null);
+    const [ isEmailValid, setIsEmailValid ] = useState(true);
+    const [ showPublicSuccessModal, setShowPublicSuccessModal ] = useState(false);
+
     console.log(testResult);
     console.log(error);
 
@@ -99,37 +99,6 @@ const JobApplicationScreen = () => {
 
 
     useEffect(() => {
-
-        if (window.location.href.includes('session_id')) {
-
-            const [ extractedSessionId, currentJobId ] = [ window.location.href.split('session_id=')[1], id ];
-
-            window.history.replaceState({}, document.title, `/100098-DowellJobPortal/#/apply/job/${currentJobId}`);
-
-            getUserInfoFromLoginAPI({ session_id: extractedSessionId })
-            .then(async (res) => {
-                const currentUserDetails = res.data;
-
-                if (currentUserDetails.message) {
-                    setUserDetailsNotFound(true);
-                    setIsPublicUser(false);
-                    setPublicUserDetails({});
-
-                    return navigate('/');
-                }
-
-                sessionStorage.clear();
-                sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
-
-                setCurrentUser(currentUserDetails);
-                setUserDetailLoading(false);
-            })
-            .catch((err) => {
-                console.log(err);
-                setUserDetailLoading(false);
-            });
-
-        }
 
         if (jobs.length > 0) return setJobsLoading(false);
 
@@ -191,7 +160,7 @@ const JobApplicationScreen = () => {
     useEffect(() => {
 
         if (jobsLoading) return;
-        if (!currentUser) return;
+        if (!currentUser && !isPublicUser) return;
 
         setDisableApplyBtn(false);
         setDisableNextBtn(true);
@@ -208,15 +177,15 @@ const JobApplicationScreen = () => {
             delete currentState[mutableNewApplicationStateNames.freelancePlatform];
             delete currentState[mutableNewApplicationStateNames.freelancePlatformUrl];
 
-            if (currentUser.role !== process.env.REACT_APP_GUEST_ROLE) {
-                delete currentState.others[mutableNewApplicationStateNames.others_applicant_first_name];
-                delete currentState.others[mutableNewApplicationStateNames.others_applicant_email];
-            }
+            // if (currentUser.role !== process.env.REACT_APP_GUEST_ROLE) {
+            //     delete currentState.others[mutableNewApplicationStateNames.others_applicant_first_name];
+            //     delete currentState.others[mutableNewApplicationStateNames.others_applicant_email];
+            // }
 
             dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.REWRITE_EXISTING_STATE, payload: { newState: currentState } });
         }
 
-        if ((currentJob.job_category !== "Employee" || currentJob.job_category !== "Internship") && (currentUser.role !== process.env.REACT_APP_GUEST_ROLE)) {
+        if ((currentJob.job_category !== "Employee" || currentJob.job_category !== "Internship") && !isPublicUser) {
             //delete currentState.others[mutableNewApplicationStateNames.others_applicant_first_name];
             //delete currentState.others[mutableNewApplicationStateNames.others_applicant_email];
             //dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.REWRITE_EXISTING_STATE, payload: { newState: currentState } });
@@ -242,19 +211,20 @@ const JobApplicationScreen = () => {
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_PAYMENT, payload: { stateToChange: mutableNewApplicationStateNames.payment, value: currentJob.payment } });
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_MODULE, payload: { stateToChange: mutableNewApplicationStateNames.module, value: currentJob.module } });
 
-        console.log(currentJob);
+        // console.log(currentJob);
         // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_TIME_INTERVAL, payload: { stateToChange: mutableNewApplicationStateNames.time_interval, value: currentJob.time_interval } });
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_USERNAME, payload: { stateToChange: mutableNewApplicationStateNames.username, value: currentUser.userinfo.username } });
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_email, value: currentUser.userinfo.email } });
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_COMPANY_ID, payload: { stateToChange: mutableNewApplicationStateNames.company_id, value: currentUser.portfolio_info[0].org_id } })
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATA_TYPE, payload: { stateToChange: mutableNewApplicationStateNames.data_type, value: currentUser.portfolio_info[0].data_type } })
-        console.log(currentUser);
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_USERNAME, payload: { stateToChange: mutableNewApplicationStateNames.username, value: isPublicUser ? publicUserDetails?.qr_id : currentUser.userinfo.username } });
+        !isPublicUser && dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_email, value: currentUser.userinfo.email } });
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_COMPANY_ID, payload: { stateToChange: mutableNewApplicationStateNames.company_id, value: isPublicUser ? publicUserDetails?.company_id : currentUser.portfolio_info[0].org_id } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATA_TYPE, payload: { stateToChange: mutableNewApplicationStateNames.data_type, value: isPublicUser ? publicUserDetails?.data_type : currentUser.portfolio_info[0].data_type } })
+        // console.log(currentUser);
         // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT, payload: { stateToChange: mutableNewApplicationStateNames.applicant, value: currentUser.username } })
         // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.title, value: currentJob.title } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATE_APPLIED, payload: { stateToChange: mutableNewApplicationStateNames.application_submitted_on, value: new Date() } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_DESCRIPTION, payload: { stateToChange: mutableNewApplicationStateNames.jobDescription, value: currentJob.description } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_CATEGORY, payload: { stateToChange: mutableNewApplicationStateNames.job_category, value: currentJob.job_category } })
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_PORTFOLIO_NAME, payload: { stateToChange: mutableNewApplicationStateNames.portfolio_name, value: currentUser.portfolio_info[0].portfolio_name } })
+        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_PORTFOLIO_NAME, payload: { stateToChange: mutableNewApplicationStateNames.portfolio_name, value: isPublicUser ? "" : currentUser.portfolio_info[0].portfolio_name } })
+        
         if (currentJob.typeof === "Employee" || currentJob.typeof === "Internship") return setRemoveFreelanceOptions(true);
 
         setRemoveFreelanceOptions(false);
@@ -271,7 +241,7 @@ const JobApplicationScreen = () => {
 
     useEffect(() => {
 
-        if (!currentUser) return
+        if (!currentUser && !isPublicUser) return
 
         if (formPage === 1) {
 
@@ -358,13 +328,24 @@ const JobApplicationScreen = () => {
         section,
         removeFreelanceOptions,
         currentUser,
-    ]
+        isPublicUser,
+        ]
     )
+
+    useEffect(() => {
+
+        if (newApplicationData?.applicant_email?.length < 1) return setIsEmailValid(true);
+
+        if (!validateEmail(newApplicationData?.applicant_email)) return setIsEmailValid(false);
+
+        setIsEmailValid(true);
+
+    }, [newApplicationData?.applicant_email])
 
 
     const handleSubmitApplicationBtnClick = () => {
 
-        if (!currentUser) return window.location.href = dowellLoginUrl + `/apply/job/${id}/`;
+        if (!currentUser && !isPublicUser) return window.location.href = dowellLoginUrl + `/apply/job/${id}/`;
         // console.log(currentUser);
         setDisableApplyBtn(true);
         setDisableNextBtn(true);
@@ -377,7 +358,49 @@ const JobApplicationScreen = () => {
         e.preventDefault();
         console.log(newApplicationData)
         // return
+
+        if (isPublicUser) {
+            if (newApplicationData.applicant_email.length < 1) return toast.info('Please enter your email')
+            if (!isEmailValid) return toast.info('Please enter a valid email')
+        }
+
         setDisableNextBtn(true);
+
+
+        // PUBLIC USER APPLICATION SUBMISSION
+        if (isPublicUser) {
+            try {
+                const copyOfNewApplicationData = structuredClone(newApplicationData);
+                delete copyOfNewApplicationData.portfolio_name;
+
+                let formData = new FormData();
+
+                const htmlToSend = ReactDOMServer.renderToString(<ApplicationSubmissionContent name={newApplicationData.applicant} job={newApplicationData.job_title} />);                
+                const htmlFileBlob = new Blob([htmlToSend], { type: "text/html" });
+                const htmlFile = new File([htmlFileBlob], 'data.html', { type: htmlFileBlob.type });
+
+                formData.append('file', htmlFile);
+                formData.append('toemail', newApplicationData.applicant_email);
+                formData.append('toname', newApplicationData.applicant);
+                formData.append('subject', 'New Job Application Submission');
+
+                const response  = await Promise.all([
+                    submitPublicApplication(copyOfNewApplicationData),
+                    sendMailUsingDowell(formData)
+                ])
+                // console.log(response);
+
+                toast.success("Successfully submitted job application!");
+                // setDisableNextBtn(false);
+                setShowPublicSuccessModal(true);
+
+            } catch (error) {
+                console.log(error)
+                toast.info("Application submission failed. Please try again");
+                setDisableNextBtn(false);
+            }
+            return
+        }
 
         try {
             await submitNewApplication(newApplicationData);
@@ -419,7 +442,7 @@ const JobApplicationScreen = () => {
         )
     }
 
-    if (jobsLoading || userDetailLoading) return <LoadingSpinner />
+    if (jobsLoading) return <LoadingSpinner />
 
     return <>
         <div className="candidate__Job__Application__Container">
@@ -518,6 +541,23 @@ const JobApplicationScreen = () => {
                                             <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Enter Your Name'} value={newApplicationData.applicant} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT, payload: { stateToChange: mutableNewApplicationStateNames.applicant, value: e.target.value } })} />
                                         </label>
                                     </div>
+
+                                    {
+                                        isPublicUser &&
+                                        <div className="job__Application__Item">
+                                            <h2>Enter Your Email<span className="required-indicator">*</span></h2>
+                                            <label className="input__Text__Container">
+                                                <input aria-label="your email" type={'text'} placeholder={'Enter Your Email'} value={newApplicationData.applicant_email} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL, payload: { stateToChange: mutableNewApplicationStateNames.applicant_email, value: e.target.value } })} />
+                                            </label>
+
+                                            {
+                                                !isEmailValid && isPublicUser && (
+                                                <p style={{ color: "red" }}>
+                                                    Please enter a valid email
+                                                </p>
+                                            )}
+                                        </div>
+                                    }
 
                                     <div className="job__Application__Item">
                                         <h2>Enter Your Internet Speed<span className="required-indicator">*</span></h2>
@@ -769,6 +809,12 @@ const JobApplicationScreen = () => {
         {
 
             // newApplicationData.others[mutableNewApplicationStateNames.applicant] && newApplicationData.others[mutableNewApplicationStateNames.applicant] !== "" && <Footer currentCategory={currentJob.typeof} />
+        }
+        {
+            showPublicSuccessModal && 
+            <SuccessPublicSubmissionModal 
+                handleBtnClick={() => navigate('/')} 
+            />
         }
     </>
 }

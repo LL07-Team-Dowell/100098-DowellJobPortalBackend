@@ -28,7 +28,7 @@ export const newApplicationState = {
 }
 
 export const excludedApplicantInfo = [
-  "feedBack",
+//   "feedBack",
   "hr_remarks",
   "status",
   "job",
@@ -53,7 +53,8 @@ export const excludedApplicantInfo = [
   "shortlisted_on",
   "onboarded_on",
   "selected_on",
-  "payment,"
+  "payment",
+  "is_public",
 ];
 
 export const mutableNewApplicationStateNames = {
@@ -87,6 +88,7 @@ export const mutableNewApplicationStateNames = {
     // time_interval: "time_interval",
     data_type: "data_type",
     portfolio_name: "portfolio_name",
+    applicant_email: "applicant_email",
 }
 
 export const useNewApplicationContext = () => useContext(NewApplicationContext);

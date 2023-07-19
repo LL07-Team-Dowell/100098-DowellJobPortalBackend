@@ -75,9 +75,10 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
                     </div>
                 }
                 {
-                    !user && <button onClick={handleLogin} className="jobs__Landing__Layout__Login__Btn">
-                        Login
-                    </button>
+                    !user && <div></div> 
+                    // <button onClick={handleLogin} className="jobs__Landing__Layout__Login__Btn">
+                    //     Login
+                    // </button>
                 }
                 <hr />
             </div>

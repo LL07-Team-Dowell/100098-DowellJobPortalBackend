@@ -11,6 +11,7 @@ import { useMediaQuery } from '@mui/material';
 import { dowellLoginUrl } from '../../../../services/axios';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getAppliedJobs } from '../../../../services/candidateServices';
+import { Tooltip } from 'react-tooltip';
 
 function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorlistedJob }) {
 
@@ -71,7 +72,7 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
     <>
       <nav>
         <div className='candidate__Homepage__Nav__Container'>
-          {!currentUser && <Link className='login__Link' to={dowellLoginUrl} onClick={handleLoginLinkClick}>Login</Link>}
+          {/* {!currentUser && <Link className='login__Link' to={dowellLoginUrl} onClick={handleLoginLinkClick}>Login</Link>} */}
         </div>
       </nav>
       <main className='candidate__Homepage__Container'>
@@ -90,14 +91,16 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
               {
                 React.Children.toArray(availableJobCategories.slice(0, 1).map(category => {
                   return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
-                    <img src={assets.employee} alt='job category' />
+                    <img src={assets.employee} alt='job category' data-tooltip-id={'001'} data-tooltip-content={'Employee jobs'} />
+                    <Tooltip id='001' place='center' />
                   </Link>
                 }))
               }
               {
                 React.Children.toArray(availableJobCategories.slice(1, 2).map(category => {
                   return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
-                    <img src={assets.internship} alt='job category' />
+                    <img src={assets.internship} alt='job category' data-tooltip-id={'002'} data-tooltip-content={'Internship jobs'} />
+                    <Tooltip id='002' place='center' />
                   </Link>
                 }))
               }
@@ -123,14 +126,16 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
               {
                 React.Children.toArray(availableJobCategories.slice(2, 3).map(category => {
                   return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
-                    <img src={assets.researcher} alt='job category' />
+                    <img src={assets.researcher} alt='job category' data-tooltip-id={'003'} data-tooltip-content={'Research associate jobs'} />
+                    <Tooltip id='003' place='center' />
                   </Link>
                 }))
               }
               {
                 React.Children.toArray(availableJobCategories.slice(3, 4).map(category => {
                   return <Link to={`/jobs/c/${category.toLocaleLowerCase().replaceAll(' ', '-')}`}>
-                    <img src={assets.freelaner} alt='job category' />
+                    <img src={assets.freelaner} alt='job category' data-tooltip-id={'004'} data-tooltip-content={'Freelance jobs'} />
+                    <Tooltip id='004' place='center' />
                   </Link>
                 }))
               }

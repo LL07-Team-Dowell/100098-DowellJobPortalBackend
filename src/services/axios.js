@@ -9,6 +9,7 @@ const currentBaseURL = 'https://100098.pythonanywhere.com/';
 const loginStaticBaseURL = 'https://100014.pythonanywhere.com/';
 const dowellLoginUrl = "https://100014.pythonanywhere.com/?redirect_url=" + window.location.origin + "/100098-DowellJobPortal/%23";
 const dowellLogoutUrl = "https://100014.pythonanywhere.com/sign-out?redirect_url=" + window.location.origin + "/100098-DowellJobPortal/%23";
+const dowellMailApiBaseUrl = "https://100085.pythonanywhere.com/api/";
 
 
 const formerBackendAxiosInstance = axios.create({
@@ -50,6 +51,10 @@ const liveStatusBackendAxiosInstance = axios.create({
     baseURL: loginStaticBaseURL,
 })
 
+const dowellMailAxiosInstance = axios.create({
+    baseURL: dowellMailApiBaseUrl,
+})
+
 
 export { 
     authAxiosInstance, 
@@ -62,4 +67,5 @@ export {
     locationAxiosInstance,
     currentBackendAxiosInstance,
     liveStatusBackendAxiosInstance,
+    dowellMailAxiosInstance,
 };

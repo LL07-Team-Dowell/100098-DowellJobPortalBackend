@@ -30,3 +30,7 @@ export const getSettingUserProject = async () => {
 export const getJob = async (data,document_id) => {
   return await currentBackendAxiosInstance.post(`admin_get_job/${document_id}/`, data)
 }
+
+export const hrSendMailToPublicUser = async (data) => {
+  return await currentBackendAxiosInstance.post(`send_mail_to_public/`, data)
+}

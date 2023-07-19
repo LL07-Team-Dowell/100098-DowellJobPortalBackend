@@ -42,6 +42,7 @@ const ApplicantDetails = ({ hrPageActive, applicantData, candidateApplicationPag
                             if (key === mutableNewApplicationStateNames.country) return <span><span className="highlight__Item">Country:</span> {applicantData[key]}</span>
                             if (key === mutableNewApplicationStateNames.freelancePlatform) return <span><span className="highlight__Item">Freelance Platform:</span> {applicantData[key]}</span>
                             if (key === mutableNewApplicationStateNames.freelancePlatformUrl) return <span><span className="highlight__Item">Freelance Platform Url:</span> {applicantData[key]}</span>
+                            if (key === mutableNewApplicationStateNames.feedBack) return <span><span className="highlight__Item">Comments:</span> {applicantData[key]}</span>
                             if (key === "job_title") return <span><span className="highlight__Item">Job title:</span> {applicantData[key]}</span>
                             if (key === "applicant_email") return <span><span className="highlight__Item">Email of applicant:</span> {applicantData[key]}</span>
                             if (key === "academic_qualification_type") return <span><span className="highlight__Item"> Qualification type:</span> {applicantData[key]}</span>

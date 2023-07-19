@@ -59,6 +59,8 @@ const SelectedCandidatesScreen = ({
   availableProjects,
   updateAppliedData,
   guestApplication,
+  setShowPublicAccountConfigurationModal,
+  updateInterviewTimeSelected,
 }) => {
   const ref1 = useRef(null);
   const ref2 = useRef(null);
@@ -81,6 +83,10 @@ const SelectedCandidatesScreen = ({
       selectedCandidateData[mutableNewApplicationStateNames.freelancePlatform]
     );
   }, []);
+
+  useEffect(() => {
+    updateInterviewTimeSelected(interviewDate);
+  }, [interviewDate])
 
   const handleClick = async (ref, disableOtherBtns, action) => {
     if (!ref.current) return;
@@ -494,70 +500,14 @@ const SelectedCandidatesScreen = ({
         return navigate("/shortlisted");
 
       case hrPageActions.MOVE_TO_PENDING:
+        disableOtherBtns && setDisabled(false);
+        ref.current.classList.toggle("active");
+
         if (!selectedCandidateData) return;
 
-        // selectedCandidateData[mutableNewApplicationStateNames.hr_remarks] = remarks;
+        if (!setShowPublicAccountConfigurationModal || typeof setShowPublicAccountConfigurationModal !== 'function') return
 
-        let newFormData = new FormData();
-
-        newFormData.append(
-          "_subject",
-          "Finish your job application on Dowell!"
-        );
-        newFormData.append(
-          "email",
-          selectedCandidateData.others[
-            mutableNewApplicationStateNames.others_applicant_email
-          ]
-        );
-        newFormData.append(
-          "message",
-          `Please use this link ${new URL(
-            `${dowellLoginUrl}register`
-          )} to complete your application for the '${jobTitle}' job before ${formatDateAndTime(
-            interviewDate
-          )}.\nYour username is ${
-            selectedCandidateData[mutableNewApplicationStateNames.applicant]
-          }`
-        );
-
-        const mailResponseStatus = await (await sendMail(newFormData)).status;
-
-        if (mailResponseStatus !== 200)
-          return toast.error(
-            "An error occurred while trying to send the mail to the applicant"
-          );
-
-        // await updateCandidateApplication(selectedCandidateData.id, {
-        //   applicant: selectedCandidateData.applicant,
-        //   status: candidateStatuses.PENDING_SELECTION,
-        //   job: selectedCandidateData.job,
-        //   [mutableNewApplicationStateNames.hr_remarks]: remarks,
-        //   others: {
-        //     ...selectedCandidateData.others,
-        //     [mutableNewApplicationStateNames.others_scheduled_interview_date]:
-        //       interviewDate,
-        //   },
-        // });
-
-        toast.success(
-          `Successfully sent mail to ${
-            selectedCandidateData.others[
-              mutableNewApplicationStateNames.others_applicant_email
-            ]
-          }`
-        );
-
-        updateCandidateData((prevCandidates) => {
-          return [...prevCandidates, selectedCandidateData];
-        });
-        updateAppliedData((prevAppliedCandidates) => {
-          return prevAppliedCandidates.filter(
-            (application) => application.id !== selectedCandidateData.id
-          );
-        });
-
-        return navigate("/home");
+        return setShowPublicAccountConfigurationModal(true);
 
       default:
         console.log("no action");
@@ -714,6 +664,7 @@ const SelectedCandidatesScreen = ({
                 value={interviewDate}
                 onChange={(e) => setInterviewDate(e.target.value)}
                 type={"datetime-local"}
+                min={new Date().toISOString().slice(0, new Date().toISOString().lastIndexOf(":"))}
               ></input>
             </div>
           </>
@@ -808,7 +759,7 @@ const SelectedCandidatesScreen = ({
                     initialMeet
                       ? "Selected"
                       : guestApplication
-                      ? "Pending"
+                      ? "Send email"
                       : "Shortlisted"
                   }`}</div>
                 </button>

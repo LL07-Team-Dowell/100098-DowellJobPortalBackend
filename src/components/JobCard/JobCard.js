@@ -9,7 +9,7 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 
 
 const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText, handleBtnClick, showCandidateAppliedJob, showCandidateDeclinedJob, showCandidateInterview, guestUser, interviewDetails, viewJobApplicationDetails, applicationsCount, candidateCardView, candidateData, jobAppliedFor, taskView }) => {
-    console.log(job);
+    // console.log(job);
     return <div className={"job__Card__Container"}>
         <div className="job__Card__Title__Info">
             <h2><b>{changeToTitleCase(job ? job.job_title : candidateData ? taskView ? candidateData.applicant : candidateData.applicant : "")}</b></h2>
