@@ -455,7 +455,7 @@ const JobApplicationScreen = () => {
 
     return <>
         <div className="candidate__Job__Application__Container">
-            <TitleNavigationBar handleBackBtnClick={() => navigate(-1)} />
+            <TitleNavigationBar hideBackBtn={isPublicUser && section !== 'form'} handleBackBtnClick={() => navigate(-1)} />
             {
                 section === "form" ? <>
                     <div className="job__Title__Container">
