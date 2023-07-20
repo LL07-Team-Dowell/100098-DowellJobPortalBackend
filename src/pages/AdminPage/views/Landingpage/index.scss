@@ -349,18 +349,35 @@ $red__color: #FE0000;
 //   width: 30px;
 // }
 .isActive-container{
+  width: 52%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  transform: translateX(40px);
+  p{
+    border-radius: 10px;
+    background: #F3F8F4;
+    color: #B8B8B8;
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 20px;
     display: flex;
-    padding-top: 20px;
-    gap: 15px;
-    width: 80%;
-    margin: auto;
-    font-family: Poppins;
-    font-weight: 600;
-    p{
-      cursor: pointer;
-    }
-    .isActive{
-        color: #005734;
-        border-bottom: 2px solid #005734;
-    }
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    width: 10rem;
+    height: 3rem;
+    transition: 0.3s ease-in-out;
+    text-align: center;
+  }
+  .isActive{
+    background: #005734;
+    box-shadow: 0px 2.79922px 25px rgba(0, 87, 52, 0.67);
+    color: #fff;
+  }
 }

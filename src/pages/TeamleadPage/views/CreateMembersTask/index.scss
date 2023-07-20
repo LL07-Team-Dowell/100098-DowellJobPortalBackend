@@ -125,7 +125,6 @@ inset 0 0 5px #000;
 			border-radius: 12px;
 			font-family: Poppins;
 			list-style: none;
-			cursor: pointer;
 			overflow: hidden;
 			transition: .3s all;
 			&:hover{
@@ -162,6 +161,8 @@ inset 0 0 5px #000;
 				align-items: center;
 				gap: 12px;
 				font-family: Poppins;
+				cursor: pointer;
+
 			}
 		}
 	}

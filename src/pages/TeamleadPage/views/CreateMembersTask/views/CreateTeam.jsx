@@ -54,6 +54,7 @@ const removeMember = (id) => {
           company_id:currentUser.portfolio_info[0].org_id,
           members:inputMembers.map(v => v.member),
           created_by: currentUser.userinfo.username,
+          data_type: currentUser.portfolio_info[0].data_type
         })
         .then(resp => {
           navigate(`/team-screen-member/${resp.data.response.inserted_id}/team-tasks`)
