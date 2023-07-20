@@ -193,6 +193,7 @@ def interview_email(toname,toemail,subject,email_content):
     return response.text
 
 def set_finalize(linkid):
+    print(linkid)
     url = f"https://100099.pythonanywhere.com/api/v3/masterlink/?link_id={linkid}"
     payload = {
         "is_finalized": True,
