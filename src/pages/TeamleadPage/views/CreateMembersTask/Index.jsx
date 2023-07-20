@@ -13,12 +13,17 @@ import Navbar from './component/Navbar';
 const Index = () => {
   const { currentUser } = useCurrentUserContext();
   const {data , setdata} = useValues() ;
+  const [response , setresponse] = useState(false)
   const [searchValue, setSearchValue] = useState('');
+  const deleteTeamState = (id) => {
+    setdata({...data,TeamsSelected:data.TeamsSelected.filter(v => v._id !== id)})
+  }
   useEffect(()=>{
     getAllTeams(currentUser.portfolio_info[0].org_id)
     .then(resp =>{ 
       console.log(resp.data.response.data)
-      setdata({...data , TeamsSelected:resp.data.response.data});
+      setdata({...data , TeamsSelected:resp.data.response.data.filter(team => team.data_type === currentUser.portfolio_info[0].data_type)});
+      setresponse(true)
   })
   .catch(e =>{
     console.log(e)
@@ -26,12 +31,12 @@ const Index = () => {
   },[])
   console.log(searchValue)
   console.log(data.TeamsSelected.length)
-  if(data.TeamsSelected.length === 0)return <StaffJobLandingLayout  teamleadView={true}><LoadingSpinner/></StaffJobLandingLayout> 
+  if(data.TeamsSelected.length === 0 && !response )return <StaffJobLandingLayout  teamleadView={true}><LoadingSpinner/></StaffJobLandingLayout> 
   return (
     <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue}>
       <Navbar title={"All Teams"} color={'#005734'} noButtonBack={true} />
       <div className='container'>
-      <Teams searchValue={searchValue} data={data}/>
+      <Teams searchValue={searchValue} data={data} deleteTeamState={deleteTeamState}/>
       </div>
     </StaffJobLandingLayout>
   )
