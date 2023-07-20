@@ -2359,7 +2359,8 @@ class get_discord_server_members(APIView):
 #public api for job creation__________________________
 @method_decorator(csrf_exempt, name="dispatch")
 class Public_apply_job(APIView):
-    def post(self, request,link_id):
+    def post(self, request):
+        link_id=request.GET.get("link_id")
         data = request.data
         field = {
             "eventId": get_event_id()['event_id'],

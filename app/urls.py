@@ -84,7 +84,7 @@ urlpatterns = [
     path('get_discord_server_members/<str:token>/<int:guild_id>/', get_discord_server_members.as_view()),
 
     # public job application link-------------------------------------
-    path('public_candidate_job_application/<int:link_id>/',Public_apply_job.as_view()),
+    path('public_candidate_job_application/',Public_apply_job.as_view()),
     path('generate_public_job_application_link/', createPublicApplication.as_view()),
     path('generate_public_job_application_link/<str:company_id>/', createPublicApplication.as_view()),
     path('send_mail_to_public/',sendMailToPublicCandidate.as_view()),
