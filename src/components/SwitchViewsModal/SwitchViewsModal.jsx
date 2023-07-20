@@ -23,23 +23,23 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
             delete copyOfCurrentUser.settings_for_profile_info;
 
             setCurrentUser(copyOfCurrentUser);
+            sessionStorage.setItem('user', JSON.stringify(copyOfCurrentUser));
             return
         }
 
-        setCurrentUser((prevValue) => { 
-            return { 
-                ...prevValue, 
-                settings_for_profile_info: {
-                    profile_info: [
-                        {
-                            Role: item,
-                            profile_title: currentUser?.userinfo?.username,
-                        }
-                    ],
-                    fakeSuperUserInfo: true,
+        const updatedUserDetail = structuredClone(currentUser);
+        updatedUserDetail.settings_for_profile_info = {
+            profile_info: [
+                {
+                    Role: item,
+                    profile_title: currentUser?.userinfo?.username,
                 }
-            }
-        });
+            ],
+            fakeSuperUserInfo: true,
+        }
+
+        setCurrentUser(updatedUserDetail);
+        sessionStorage.setItem('user', JSON.stringify(updatedUserDetail));
     }
 
     return <>

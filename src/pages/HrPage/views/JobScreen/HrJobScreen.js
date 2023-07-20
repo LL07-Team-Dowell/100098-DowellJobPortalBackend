@@ -342,7 +342,10 @@ function HrJobScreen() {
     copyOfPublicDetail.qr_id = currentCandidateData.username;
     copyOfPublicDetail.org_name = currentUser?.portfolio_info[0]?.org_name;
     copyOfPublicDetail.org_id = currentCandidateData?.company_id;
-    copyOfPublicDetail.owner_name = currentUser?.portfolio_info[0]?.owner_name;
+    copyOfPublicDetail.owner_name = currentUser?.settings_for_profile_info?.fakeSuperUserInfo ? 
+     currentUser?.userinfo?.username
+    :
+     currentUser?.portfolio_info[0]?.owner_name;
     copyOfPublicDetail.product = teamManagementProductName;
     copyOfPublicDetail.toemail = currentCandidateData?.applicant_email;
     copyOfPublicDetail.toname = currentCandidateData?.applicant;
@@ -351,7 +354,7 @@ function HrJobScreen() {
 
     const copyOfPublicDetailKeys = Object.keys(copyOfPublicDetail);
     const keysFilledStatus = copyOfPublicDetailKeys.map(key => {
-      if (copyOfPublicDetail[key].length < 1) return 'missing';
+      if (!copyOfPublicDetail[key] || copyOfPublicDetail[key].length < 1) return 'missing';
       return 'filled'
     })
 
