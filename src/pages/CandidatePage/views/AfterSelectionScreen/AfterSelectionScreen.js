@@ -21,7 +21,8 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
     const [ showAddTaskModal, setShowAddTaskModal ] = useState(false);
     const { section } = useNavigationContext();
     const { setUserTasks } = useCandidateTaskContext();
-    
+
+
     return <>
         {
             section === undefined ? <>
@@ -40,7 +41,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
             
             </> :
 
-            section === `task` ? <>
+            section === "task" ? <>
                 <JobLandingLayout user={currentUser} afterSelection={true} hideSideNavigation={showAddTaskModal}>
                 <div className="candidate__After__Selection__Screen">
                     <TaskScreen candidateAfterSelectionScreen={true} assignedProject={assignedProjects}/>
