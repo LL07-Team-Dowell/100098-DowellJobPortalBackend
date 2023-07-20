@@ -8,7 +8,7 @@ from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
-from .helper import get_event_id, dowellconnection, call_notification, update_number, update_string, discord_invite,\
+from .helper import get_event_id, dowellconnection, call_notification, set_finalize, update_number, update_string, discord_invite,\
     get_guild_channels, get_guild_members , create_master_link , send_mail , interview_email
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
@@ -2359,7 +2359,7 @@ class get_discord_server_members(APIView):
 #public api for job creation__________________________
 @method_decorator(csrf_exempt, name="dispatch")
 class Public_apply_job(APIView):
-    def post(self, request):
+    def post(self, request,link_id):
         data = request.data
         field = {
             "eventId": get_event_id()['event_id'],
@@ -2408,6 +2408,7 @@ class Public_apply_job(APIView):
         if serializer.is_valid():
             response = dowellconnection(*candidate_management_reports, "insert", field, update_field)
             if json.loads(response)["isSuccess"] ==True:
+                set_finalize(linkid=link_id)
                 return Response({"message": "Application received.",
                                  "response": json.loads(response),
                                  }, status=status.HTTP_201_CREATED)
