@@ -32,6 +32,7 @@ import { IoMdRefresh } from "react-icons/io";
 import { set } from 'date-fns';
 import { toast } from 'react-toastify';
 import { getUserInfoFromLoginAPI } from '../../../../services/authServices';
+import { teamManagementProductName } from '../../../../utils/utils';
 
 function fuzzySearch(query, text) {
   const searchRegex = new RegExp(query.split('').join('.*'), 'i');
@@ -98,7 +99,7 @@ function HrJobScreen() {
   useEffect(() => {
 
     if (!userRolesLoaded) {
-      getUserInfoFromLoginAPI({ session_id: sessionStorage.getItem('session_id'), product: 'Team Management' }).then(res => {
+      getUserInfoFromLoginAPI({ session_id: sessionStorage.getItem('session_id'), product: teamManagementProductName }).then(res => {
         // console.log(res.data.roles);
         setUserRolesFromLogin(res.data.roles);
         setRolesLoaded(true);
@@ -342,7 +343,7 @@ function HrJobScreen() {
     copyOfPublicDetail.org_name = currentUser?.portfolio_info[0]?.org_name;
     copyOfPublicDetail.org_id = currentCandidateData?.company_id;
     copyOfPublicDetail.owner_name = currentUser?.portfolio_info[0]?.owner_name;
-    copyOfPublicDetail.product = "Team Management";
+    copyOfPublicDetail.product = teamManagementProductName;
     copyOfPublicDetail.toemail = currentCandidateData?.applicant_email;
     copyOfPublicDetail.toname = currentCandidateData?.applicant;
     copyOfPublicDetail.job_role = currentCandidateData.job_title;
@@ -814,7 +815,7 @@ const initialPublicAccountDetails = {
   "owner_name": "",
   "portfolio_name": "",
   "unique_id": "",
-  "product": "Team Management",
+  "product": teamManagementProductName,
   "role": "",
   "member_type": "",
   "toemail": "",

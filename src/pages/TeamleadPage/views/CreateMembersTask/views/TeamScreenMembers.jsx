@@ -33,17 +33,22 @@ const TeamScreenMembers = () => {
           setTeamName(teamName);
           setmembers(members)
         }
-    const bigMember = currentUser.selected_product.userportfolio.map(v => v.username.length !== 0 && v.username[0] !== 'owner' ? v.username[0] : null).filter(v => v !== null)
+    const bigMember = currentUser?.settings_for_profile_info?.fakeSuperUserInfo ?
+      currentUser?.userportfolio?.filter(user => user.member_type !== 'owner').map(v => v.username.length !== 0 ? v.username[0] : null).filter(v => v !== null)
+      :
+      currentUser?.selected_product?.userportfolio.map(v => v.username.length !== 0 && v.username[0] !== 'owner' ? v.username[0] : null).filter(v => v !== null)
+    
     if(loading) return <LoadingSpinner/>
-  return (
-    <div style={{height:'110%'}}>
-      <Navbar title={team?.team_name} removeButton={true}/>
-      <TeamScreenLinks id={id}/>
-      <TeamScreenMembersContainer members={team?.members} />
-      {showPopup && <AddMemberPopup bigMember={bigMember} members={team?.members} setmembers={setmembers} setTeamName={setTeamName} team_name={team?.team_name} close={()=>setShowPopup(false)} getElementToTeamState={getElementToTeamState} team={team} setteam={setteam}/>}
-    <button className='add-member-btn' onClick={()=>setShowPopup(true)}><div><HiOutlinePlusSm fontWeight={700}/> <span>add member</span></div></button> 
-    </div>
-  )
+  
+    return (
+      <div style={{height:'110%'}}>
+        <Navbar title={team?.team_name} removeButton={true}/>
+        <TeamScreenLinks id={id}/>
+        <TeamScreenMembersContainer members={team?.members} />
+        {showPopup && <AddMemberPopup bigMember={bigMember} members={team?.members} setmembers={setmembers} setTeamName={setTeamName} team_name={team?.team_name} close={()=>setShowPopup(false)} getElementToTeamState={getElementToTeamState} team={team} setteam={setteam}/>}
+      <button className='add-member-btn' onClick={()=>setShowPopup(true)}><div><HiOutlinePlusSm fontWeight={700}/> <span>add member</span></div></button> 
+      </div>
+    )
 }
 
 export default TeamScreenMembers
