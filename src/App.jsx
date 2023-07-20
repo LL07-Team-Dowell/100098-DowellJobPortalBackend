@@ -61,6 +61,7 @@ import { CandidateValuesProvider } from "./contexts/CandidateTeamsContext";
 import { TeamCandidateProvider } from "./pages/CandidatePage/views/TeamsScreen/useTeams";
 import TeamScreenMembersCandidate from "./pages/CandidatePage/views/TeamScreenMember/TeamScreenMember";
 import TeamScreenTasksCandidate from "./pages/CandidatePage/views/TeamsScreenTasks/TeamsScreenTasks";
+import TeamScreenThreadCandidate from "./pages/CandidatePage/views/TeamScreenThread/TeamScreenThread";
 import JobLandingLayout from "./layouts/CandidateJobLandingLayout/LandingLayout";
 import TeamThread from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 
@@ -795,7 +796,6 @@ function App() {
                   <JobLandingLayout user={currentUser} afterSelection={true}>
                     <TeamScreenMembersCandidate />
                   </JobLandingLayout>
-
                 </CandidateValuesProvider>
               </TeamCandidateProvider>
             </CandidateTaskContextProvider>
@@ -810,8 +810,7 @@ function App() {
               <TeamCandidateProvider>
                 <CandidateValuesProvider>
                   <JobLandingLayout user={currentUser} afterSelection={true}>
-                    {/* create a component here */}
-                    <h1>team threads</h1>
+                    <TeamScreenThreadCandidate />
                   </JobLandingLayout>
                 </CandidateValuesProvider>
               </TeamCandidateProvider>
