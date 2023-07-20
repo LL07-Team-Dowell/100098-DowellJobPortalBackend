@@ -39,7 +39,26 @@ const CreateTeam = ({toggleCheckboxes, settoggleCheckboxes,changeTeamName, handl
       <br />
       {toggleCheckboxes ? (
         <div className='checkboxes'>
-          {currentUser.selected_product.userportfolio.map((user, index) => user.username[0] !== 'owner' ?  (
+        {
+          currentUser?.settings_for_profile_info?.fakeSuperUserInfo ?
+
+          <>
+            {currentUser?.userportfolio?.filter(user => user.member_type !== 'owner').map((user, index) =>
+              <div key={index}>
+                <input
+                  type='checkbox'
+                  value={user}
+                  onChange={handleCheckboxChange}
+                />
+                <span>{user}</span>
+              </div>
+            )}
+          </>
+          :
+
+          <>
+          {
+          currentUser?.selected_product?.userportfolio.map((user, index) => user.username[0] !== 'owner' ?  (
             <div key={index}>
               <input
                 type='checkbox'
@@ -48,7 +67,11 @@ const CreateTeam = ({toggleCheckboxes, settoggleCheckboxes,changeTeamName, handl
               />
               <span>{user}</span>
             </div>
-          ): null)}
+          ): 
+            null)
+          }
+          </>
+        }
           {/* {data.memebers.map((member, i) => (
             <div key={i}>
               <input

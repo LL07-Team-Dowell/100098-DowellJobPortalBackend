@@ -11,13 +11,18 @@ import { BsPlus } from 'react-icons/bs';
 import { FaTimes } from 'react-icons/fa';
 import LittleLoading from '../../../../CandidatePage/views/ResearchAssociatePage/littleLoading';
 import LoadingSpinner from '../../../../../components/LoadingSpinner/LoadingSpinner';
+
+
 const CreateTeam = () => {
   
   // USER
   const { currentUser } = useCurrentUserContext();
   // DATA
   const { data, setdata } = useValues();
-  const MembersCurrentUser = currentUser.selected_product.userportfolio.map(v => v.username.length !== 0 && v.username[0] !== 'owner' ? v.username[0] : null).filter(v => v !== null).map((v,i)=>({member:v, id:i}))
+  const MembersCurrentUser = currentUser?.settings_for_profile_info?.fakeSuperUserInfo ?
+    currentUser?.userportfolio?.filter(user => user.member_type !== 'owner').map(v => v.username.length !== 0 ? v.username[0] : null).filter(v => v !== null).map((v,i)=>({member:v, id:i}))
+    :
+    currentUser?.selected_product?.userportfolio.map(v => v.username.length !== 0 && v.username[0] !== 'owner' ? v.username[0] : null).filter(v => v !== null).map((v,i)=>({member:v, id:i}))
   // States
   const [showCard, setshowCard] = useState(false);
   const [toggleCheckboxes, settoggleCheckboxes] = useState(false);
@@ -164,7 +169,7 @@ export default CreateTeam;
           <br />
           {toggleCheckboxes ? (
             <div className='checkboxes'>
-               {currentUser.selected_product.userportfolio.map((user, index) => user.username[0] !== 'owner' ?  (
+               {currentUser?.selected_product?.userportfolio.map((user, index) => user.username[0] !== 'owner' ?  (
             <div key={index}>
               <input
                 type='checkbox'
