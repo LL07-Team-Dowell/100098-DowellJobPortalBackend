@@ -153,12 +153,12 @@ const memberTypeOptions = [
 
 const roleOptions = [
     {
-        option: 'Role 1',
-        value: 'role1',
+        option: 'CandidateView',
+        value: 'CandidateView',
     },
     {
-        option: 'Role 2',
-        value: 'role2',
+        option: 'CandidateView',
+        value: 'CandidateView',
     },
 ]
 export default PublicAccountConfigurationModal;
