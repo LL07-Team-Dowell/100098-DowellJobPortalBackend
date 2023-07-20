@@ -2554,7 +2554,8 @@ class sendMailToPublicCandidate(APIView):
             "secret", algorithm="HS256"
             )
             link = f"https://100014.pythonanywhere.com/?hr_invitation={encoded_jwt.decode('utf-8')}"
-            email_content = INVITATION_MAIL.format()
+            print("------link------", link)
+            email_content = INVITATION_MAIL.format(toname,job_role,link)
             mail_response = interview_email(toname,toemail,subject,email_content)
             response = json.loads(mail_response)
             if response["success"]:
