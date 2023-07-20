@@ -1656,6 +1656,7 @@ class create_team(APIView):
                 "team_description": data.get("team_description"),
                 "created_by": data.get("created_by"),
                 "company_id": data.get("company_id"),
+                "data_type": data.get('data_type'),
                 "members": data.get("members")
             }
             update_field = {
@@ -1786,6 +1787,7 @@ class create_team_task(APIView):
                 "assignee": data.get("assignee"),
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
+                "data_type": data.get('data_type'),
                 "due_date":data.get("due_date")
             }
             update_field = {
@@ -1895,6 +1897,7 @@ class create_member_task(APIView):
                 "completed": data.get("completed"),
                 "team_name": data.get("team_name"),
                 "team_member": data.get("team_member"),
+                "data_type": data.get('data_type')
             }
             update_field = {
                 "status": "nothing to update"
