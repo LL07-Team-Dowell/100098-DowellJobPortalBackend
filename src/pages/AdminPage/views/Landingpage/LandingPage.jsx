@@ -21,7 +21,19 @@ const LandingPage = ({ subAdminView }) => {
 
   const [stateTrackingProgress, setstateTrackingProgress] = useState(false);
   const [isActive, setIsActive] = useState('active') ;
-  const { jobs, setJobs, setlist, jobs2, setjobs2, searchValue, setsearchValue, resp, setresponse, jobLinks, setJobLinks } = useJobContext();
+  const { 
+    jobs, 
+    setJobs, 
+    setlist, 
+    jobs2, 
+    setjobs2, 
+    searchValue, 
+    setsearchValue, 
+    resp, 
+    setresponse, 
+    jobLinks, 
+    setJobLinks, 
+  } = useJobContext();
   const [ showShareModal, setShowShareModal ] = useState(false);
   const [ jobLinkToShareObj, setJobLinkToShareObj ] = useState({});
 

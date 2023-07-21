@@ -12,14 +12,13 @@ export const createTeam = async (data) => {
 export const getAllTeams = async (id) => {
             return await currentBackendAxiosInstance.get(`get_all_teams/${id}/`) ; 
 }
-// axios.post("https://100098.pythonanywhere.com/team_task_management/create_team_task/",{assignee:currentUser.userinfo.username
-// ,title:data.taskName ,description:data.discription,team:data.teamId , completed:false})
 export const createTeamTask = async (data) => {
             return await currentBackendAxiosInstance.post("create_team_task/",data)
 }
-// axios.patch(`https://100098.pythonanywhere.com/team_task_management/edit_team/${choosedTeam.id}/`,{ "team_name":teamName ,
-// "members":data?.membersEditTeam})
 
 export const EditTeam = async (id , data) => { 
             return await currentBackendAxiosInstance.patch(`edit_team/${id}/`,data)
+}
+export const deleteTeam = async (id) => { 
+    return await currentBackendAxiosInstance.delete(`/delete_team/${id}/`)
 }

@@ -42,6 +42,6 @@ export const deleteCandidateApplication = async (document_id) => {
     return await currentBackendAxiosInstance.delete(`delete_candidate_application/${document_id}/`)
 }
 
-export const submitPublicApplication = async (data) => {
-    return await currentBackendAxiosInstance.post(`public_candidate_job_application/`, data)
+export const submitPublicApplication = async (data, linkId) => {
+    return await currentBackendAxiosInstance.post(`public_candidate_job_application/?link_id=${linkId}`, data)
 }
