@@ -137,17 +137,16 @@ const PublicAccountConfigurationModal = ({
 
 const memberTypeOptions = [
     {
-        option: 'Owner',
-        value: 'owner',
-    },
-    {
         option: 'Team Member',
-        value: 'team_member',
+        value: 'team_members',
     },
-    
     {
-        option: 'User',
-        value: 'user',
+        option: 'Guest Member',
+        value: 'guest_members',
+    },
+    {
+        option: 'Public Member',
+        value: 'public_members',
     },
 ]
 
