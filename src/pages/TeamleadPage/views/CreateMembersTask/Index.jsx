@@ -33,7 +33,7 @@ const Index = () => {
   console.log(data.TeamsSelected.length)
   if(data.TeamsSelected.length === 0 && !response )return <StaffJobLandingLayout  teamleadView={true}><LoadingSpinner/></StaffJobLandingLayout> 
   return (
-    <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue}>
+    <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue} searchTeam={true}>
       <Navbar title={"All Teams"} color={'#005734'} noButtonBack={true} />
       <div className='container'>
       <Teams searchValue={searchValue} data={data} deleteTeamState={deleteTeamState}/>

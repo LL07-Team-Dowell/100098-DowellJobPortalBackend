@@ -54,6 +54,7 @@ const StaffJobLandingLayout = ({
   publicAccountConfigurationBtnDisabled,
   publicAccountDetailState,
   handleChangeInPublicAccountState,
+  searchTeam
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const { currentUser } = useCurrentUserContext();
@@ -124,6 +125,9 @@ const StaffJobLandingLayout = ({
             <></> :
             <SearchBar
               placeholder={
+                searchTeam ?
+                'Search for Team'
+                :
                 adminView
                   ? "Search by skill, job"
                   : `Search for job/${searchPlaceHolder}`
