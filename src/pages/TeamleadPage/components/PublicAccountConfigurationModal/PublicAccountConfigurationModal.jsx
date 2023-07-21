@@ -137,28 +137,27 @@ const PublicAccountConfigurationModal = ({
 
 const memberTypeOptions = [
     {
-        option: 'Owner',
-        value: 'owner',
-    },
-    {
         option: 'Team Member',
-        value: 'team_member',
+        value: 'team_members',
     },
-    
     {
-        option: 'User',
-        value: 'user',
+        option: 'Guest Member',
+        value: 'guest_members',
+    },
+    {
+        option: 'Public Member',
+        value: 'public_members',
     },
 ]
 
 const roleOptions = [
     {
-        option: 'Role 1',
-        value: 'role1',
+        option: 'CandidateView',
+        value: 'CandidateView',
     },
     {
-        option: 'Role 2',
-        value: 'role2',
+        option: 'CandidateView',
+        value: 'CandidateView',
     },
 ]
 export default PublicAccountConfigurationModal;

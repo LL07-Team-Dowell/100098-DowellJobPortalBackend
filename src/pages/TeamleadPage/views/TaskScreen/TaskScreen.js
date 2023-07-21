@@ -99,25 +99,39 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
     }
 
     const Wrappen = styled.section`
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 2rem;
+      padding-top: 30px;
+      flex-direction: row;
+      width: 32%;
+      margin-right: auto;
+      margin-left: auto;
+      a {
+        border-radius: 10px;
+        background: #f3f8f4;
+        color: #b8b8b8;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-size: 1rem;
+        line-height: 20px;
         display: flex;
-        padding-top: 20px;
-        flex-direction: row;
-        width: 75%;
-        margin: auto;
-        a{
-            color:rgba(34, 34, 34, 0.66);
-            font-size: 18px;
-            font-family: Poppins;
-            font-style: normal;
-            font-weight: 600;
-            margin-left: 10px;
-            
-        }
-        .link-isActive{
-            color: #005734;
-            border-bottom: 2px solid #005734;
-        }
-`
+        align-items: center;
+        justify-content: center;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        width: 10rem;
+        height: 3rem;
+        transition: 0.3s ease-in-out;
+        text-align: center;
+      }
+      .link-isActive {
+        background: #005734;
+        box-shadow: 0px 2.79922px 25px rgba(0, 87, 52, 0.67);
+        color: #fff;
+      }
+    `;
 
     const [panding, setPanding] = useState(true);
     const clickToPandingApproval = () => {
@@ -131,8 +145,8 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
     return <>
 
         <Wrappen>
-            <NavLink className={`${panding ? 'link-isActive' : 'link-notactive'}`} to="" onClick={clickToPandingApproval}>Pending Approval</NavLink>
-            <NavLink className={`${panding ? 'link-notactive' : 'link-isActive'}`} to="" onClick={clickToApproved}>Approved</NavLink>
+            <NavLink className={`${panding ? 'link-isActive' : 'link-notactive'}`} to="/task?tab=pending" onClick={clickToPandingApproval}>Pending Approval</NavLink>
+            <NavLink className={`${panding ? 'link-notactive' : 'link-isActive'}`} to="/task?tab=approval" onClick={clickToApproved}>Approved</NavLink>
         </Wrappen>
 
         <div className={`candidate-task-screen-container ${className ? className : ''}`}>

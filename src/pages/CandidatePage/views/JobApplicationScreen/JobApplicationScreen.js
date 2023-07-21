@@ -388,7 +388,7 @@ const JobApplicationScreen = () => {
                 formData.append('subject', 'New Job Application Submission');
 
                 const response  = await Promise.all([
-                    submitPublicApplication(copyOfNewApplicationData),
+                    submitPublicApplication(copyOfNewApplicationData, publicUserDetails?.masterLinkId),
                     sendMailUsingDowell(formData)
                 ])
                 // console.log(response);
