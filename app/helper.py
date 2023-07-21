@@ -199,5 +199,6 @@ def set_finalize(linkid):
         "is_finalized": True,
     }
     response = requests.put(url, json=payload)
+    print(response)
     return response.text
 
