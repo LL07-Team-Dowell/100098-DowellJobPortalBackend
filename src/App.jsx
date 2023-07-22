@@ -125,7 +125,7 @@ function App() {
     );
   }
 
-  if (userDetailsNotFound) {
+  if (!currentUser || userDetailsNotFound) {
     return (
       <Routes>
         <Route path="*" element={<UserDetailNotFound />} />
