@@ -64,6 +64,7 @@ import TeamScreenTasksCandidate from "./pages/CandidatePage/views/TeamsScreenTas
 import TeamScreenThreadCandidate from "./pages/CandidatePage/views/TeamScreenThread/TeamScreenThread";
 import JobLandingLayout from "./layouts/CandidateJobLandingLayout/LandingLayout";
 import TeamThread from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
+import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
 
 function App() {
   const { 
@@ -127,7 +128,7 @@ function App() {
   if (userDetailsNotFound) {
     return (
       <Routes>
-        <Route path="*" element={<>User details not found</>} />
+        <Route path="*" element={<UserDetailNotFound />} />
       </Routes>
     );
   }
