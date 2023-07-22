@@ -21,7 +21,7 @@ import { teamManagementProductName } from "../../utils/utils";
 import { hr } from "date-fns/locale";
 import { IoShareSocial } from "react-icons/io5";
 import ShareJobModal from "../../components/ShareJobModal/ShareJobModal";
-import PublicAccountConfigurationModal from "../../pages/TeamleadPage/components/PublicAccountConfigurationModal/PublicAccountConfigurationModal";
+import PublicAccountConfigurationModal from "../../pages/HrPage/component/PublicAccountConfigurationModal/PublicAccountConfigurationModal";
 
 const StaffJobLandingLayout = ({
   children,
