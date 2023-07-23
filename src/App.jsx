@@ -65,7 +65,7 @@ import TeamScreenThreadCandidate from "./pages/CandidatePage/views/TeamScreenThr
 import JobLandingLayout from "./layouts/CandidateJobLandingLayout/LandingLayout";
 import TeamThread from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
-
+import Payment from "./pages/AccountPage/Payment";
 function App() {
   const { 
     currentUser, 
@@ -157,6 +157,7 @@ function App() {
     return (
       <Routes>
         <Route path="/logout" element={<Logout />} />
+        <Route path="/payments" element={<Payment />} />
 
         <Route
           path="/"

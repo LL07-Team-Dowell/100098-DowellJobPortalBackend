@@ -42,7 +42,7 @@
         font-weight: 500;
         line-height: 140%;
       }
-      input,textarea{
+      .input,textarea{
         width: 100%;
         border:#efefef 1px solid ;
         border-radius: 5px;
@@ -111,7 +111,45 @@
     
 }
 
+.added-members-input{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  border:#ccc 1px solid ;
+  border-radius: 5px;
+  padding:2px 2px;
+  min-height: 35px;
+  >div{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
+      cursor: pointer;
+      font-size: small;
+      border: #ccc 1px solid ;
+      border-radius: 5px;
+      height: 20px;
+      padding: 0 5px;
+      min-width: 50px;
+  }
+  >input{
+      width: 150px;
+      border: none; 
+      outline: none;
+  }
+}
+.members{
+  gap: 10px;
+  font-family: Poppins;
+  max-height: 100px;
+  overflow: auto;
+>div{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;}
 
+}
 
 // .modal__Overlay{
 //   width: 100%;

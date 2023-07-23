@@ -120,7 +120,17 @@ const LandingPage = ({ subAdminView }) => {
 
 
   console.log({ searchValue });
-  
+  const EditActiveCardStatus = (id) => {
+    console.log({id})
+    setJobs(jobs.map(job => {
+      if(job._id !== id) return job
+      return {...job,is_active:!job.is_active} 
+    }))
+    setjobs2(jobs.map(job => {
+      if(job._id !== id) return job
+      return {...job,is_active:!job.is_active} 
+    }))
+  }
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -158,6 +168,7 @@ const LandingPage = ({ subAdminView }) => {
                       setShowOverlay={setstateTrackingProgress} 
                       handleShareIconClick={(passedJobId) => handleShareIconClick(passedJobId)}
                       index={index}
+                      EditActiveCardStatus={EditActiveCardStatus}
                     />
                   ))
                 :
@@ -174,6 +185,7 @@ const LandingPage = ({ subAdminView }) => {
                       setShowOverlay={setstateTrackingProgress} 
                       handleShareIconClick={(passedJobId) => handleShareIconClick(passedJobId)}
                       index={index}
+                      EditActiveCardStatus={EditActiveCardStatus}
                     />
                   ))
                 :
