@@ -371,9 +371,9 @@ function HrJobScreen() {
 
       setNewPublicConfigurationLoading(false);
 
-      setCandidateData((prevCandidates) => {
-        return [...prevCandidates, currentCandidateData];
-      });
+      // setCandidateData((prevCandidates) => {
+      //   return [...prevCandidates, currentCandidateData];
+      // });
       
       setGuestApplications((prevApplications) => {
         return prevApplications.filter(

@@ -10,6 +10,7 @@ import { AiOutlineClose, AiOutlineTeam } from 'react-icons/ai';
 import { deleteTeam } from '../../../../../services/createMembersTasks';
 import { Tooltip } from 'react-tooltip';
 import { RiEdit2Fill } from 'react-icons/ri';
+import { MdDelete } from 'react-icons/md';
 const Teams = ({back , setChoosedTeam, searchValue, data , deleteTeamState}) => {
   const { currentUser } = useCurrentUserContext();
   const reversedTeams = [...data.TeamsSelected].reverse();
@@ -55,7 +56,7 @@ const Team = ({v,team_name ,setChoosedTeam,deleteTeamState}) => {
       data-tooltip-id={v._id}
       data-tooltip-content={'Delete'}
       > 
-              <AiOutlineClose style={{ fontSize: "1.3rem", color: "#000" }}  />
+              <MdDelete style={{ fontSize: "1.3rem", color: "#000" }}  />
               <Tooltip
                 id={v._id}
                 style={{ fontSize: '0.7rem', fontWeight: "normal" }}

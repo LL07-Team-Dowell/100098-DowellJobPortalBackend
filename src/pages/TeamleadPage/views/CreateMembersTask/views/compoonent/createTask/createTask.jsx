@@ -9,6 +9,8 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import LittleLoading from '../../../../../../CandidatePage/views/ResearchAssociatePage/littleLoading';
 import LoadingSpinner from '../../../../../../../components/LoadingSpinner/LoadingSpinner';
+import { BsPlus } from 'react-icons/bs';
+import { FaTimes } from 'react-icons/fa';
 const CreateTask = ({id,members,team,unShowCreateTask}) => {
      // USER
   const { currentUser } = useCurrentUserContext();
@@ -21,12 +23,24 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
     const [choosed, setchoosed]= useState(false); 
     const [taskMembers, setTaskMembers] = useState([]); 
     const [loading, setloading] = useState(false) 
+    const [inputMembers, setInputMembers] = useState([]) ; 
+    const [displaidMembers, setDesplaidMembers] = useState(members.map((member,index) => ({id:index ,member})))
+    const [query,setquery] = useState('');
+
+    const AddedMember = (id) => {
+      setInputMembers([...inputMembers,displaidMembers.find(f => f.id === id)])
+      setDesplaidMembers(displaidMembers.filter(f => f.id !== id))
+    }
+    const removeMember = (id) => {
+      setInputMembers(inputMembers.filter(f => f.id !== id))
+      setDesplaidMembers([...displaidMembers,inputMembers.find(f => f.id === id)])
+    }
   const createTeamTask = () => {
    if(!loading){
-    if(name && description && taskMembers.length > 0){
+    if(name && description && inputMembers.length > 0){
       setloading(true)
       axios.post('https://100098.pythonanywhere.com/create_team_task/',{
-        "assignee": currentUser.userinfo.username,
+        "assignee": inputMembers.map(v =>v.member),
         "title": name,
         "description": description,
         "team_id": id,
@@ -39,6 +53,14 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
       toast.success("task created successfully");
       unShowCreateTask()
       setloading(false)
+      console.log({
+        "assignee": inputMembers.map(v =>v.member),
+        "title": name,
+        "description": description,
+        "team_id": id,
+        "completed": false,
+        "due_date":new Date().toDateString()
+    })
     })
     // ERROR
     .catch(err => {
@@ -52,19 +74,8 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
   }
    }
   }
-  // const handleSubmitData = () => {
-  //   if(name && description && taskMembers.length > 0){
-  //       createTeamTask()
-  //   }else{
-  //     toast.error("Complete all fields before submitting")
-  //   }
-  // }
-  const userIsThere = (user) => taskMembers.includes(user);
-  const emptyTaskMembers = () => setTaskMembers(p => []) ;
-  const addSingleMember = (member) => setTaskMembers([member]) ; 
-  const addMembers = (member) => setTaskMembers(p => [...p,member]) ; 
-  const removeMember = (member) => setTaskMembers(p => p.filter(filteredMember => filteredMember !== member )) ; 
-  console.log({singleTask})
+
+ 
   useEffect(()=>{
     setTaskMembers([])
   },[singleTask])
@@ -74,9 +85,9 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
           <h2 className=''>Create New Task</h2>
           <label htmlFor='task_name'>Task Name</label>
           <input
+            className='input'
             type='text'
             id='task_name'
-            className=''
             placeholder='Choose a Team Name'
             value={name}
             onChange={(e)=> setname(e.target.value)}
@@ -103,6 +114,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
             <div>
             <p >single Task</p>
             <input
+              className='input'
               id='single_task'
               type="radio"
               checked={singleTask && choosed}
@@ -112,6 +124,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
             <div>
         <p>Team Task</p>
           <input
+            className='input'
             id='team_task'
             type="radio"
             checked={!singleTask && choosed}
@@ -119,46 +132,36 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
           />
           </div>
           </div>
-          {/* more condition  */}
           {
-            singleTask && choosed && name && description  ? 
-            // single Task
+            choosed && name && description  ?
             <>
             <label>Task Members</label>
-            <div className='create-new-task-member-container'>
-              {
-                members.map((member => <div>
-                 <div> <input
-                id='team_task'
-                type="radio"
-                checked={userIsThere(member)}
-                onChange={()=>{userIsThere(member) ?emptyTaskMembers()  :addSingleMember(member) }}
-          />
-                  <p>{member}</p>
-                </div>
-                </div>))
-              }
-            </div>
+            <div className='added-members-input'>
+            {
+              inputMembers.map(v => <div key={v.id} onClick={()=>removeMember(v.id)}><p>{v.member}</p><FaTimes fontSize={'small'}/></div>)
+            }
+            <input type="text"  placeholder='search member' value={query} onChange={e => setquery(e.target.value)}/>
+          </div>
+          <div></div>
+          <br />
+          <label htmlFor='task_name'>Select Members</label>
+          <div className='members'>
+        {displaidMembers
+          .filter(f => f.member.includes(query)).length > 0 ?
+          displaidMembers
+          .filter(f => f.member.includes(query))
+          .map((element) => (
+          <div className="single-member" onClick={()=>AddedMember(element.id)}>
+            <p>{element.member}</p>
+            <BsPlus/>
+          </div>
+      )):
+        <h3>No More Members</h3>
+      }
+      </div>
             </>
             :
-            // team task
-            <>
-             { choosed && name && description && <>
-                <label>Task Members</label>
-            <div  className='create-new-task-member-container'>
-               { members.map((member => <div>
-                 <div> <input
-                id='team_task'
-                type="checkbox"
-                checked={userIsThere(member)}
-                onChange={()=>{userIsThere(member) ? removeMember(member)  : addMembers(member)}}
-                  />
-                  <p>{member}</p>
-                </div>
-                </div>))}
-              
-            </div></>}
-            </>
+            null
           }
       </div>
             </div>

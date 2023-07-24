@@ -85,6 +85,12 @@ const SelectedCandidatesScreen = ({
   }, []);
 
   useEffect(() => {
+    if (
+      !guestApplication || 
+      !updateInterviewTimeSelected || 
+      typeof updateInterviewTimeSelected !== 'function'
+    ) return
+    
     updateInterviewTimeSelected(interviewDate);
   }, [interviewDate])
 
