@@ -36,7 +36,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
         const publicIdsToSet = currentUser?.userportfolio?.filter(portfolio => portfolio.member_type === 'public');
 
         setPublicIds(publicIdsToSet)
-        setMaximumNumberOfPublicIds(Math.max(publicIdsToSet.map(item => item.username.length)));
+        setMaximumNumberOfPublicIds(Math.max(...publicIdsToSet.map(item => item.username.length)));
 
     }, [])
 
