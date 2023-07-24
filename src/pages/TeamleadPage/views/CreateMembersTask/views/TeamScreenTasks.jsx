@@ -5,18 +5,23 @@ import Navbar from '../component/Navbar';
 import TeamScreenLinks from './compoonent/teamScreenLinks/teamScreenLinks';
 import TeamScreenTaskProgress from './compoonent/teamScreenTaskProgress/teamScreenTaskProgress';
 import TeamScreeTaskProgessDetail from './compoonent/teamScreeTaskProgessDetail/teamScreeTaskProgessDetail'; 
-import { getAllTeams } from '../../../../../services/createMembersTasks';
+import { getAllTeams, getTeamTask } from '../../../../../services/createMembersTasks';
 import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContext';
 import CreateTask from './compoonent/createTask/createTask';
 import LoadingSpinner from '../../../../../components/LoadingSpinner/LoadingSpinner';
+import axios from 'axios';
 const TeamScreenTasks = () => {
-  const { currentUser } = useCurrentUserContext();
-    const {id} = useParams();
-    const {team , setteam } = useTeam() ; 
-    const [loading , setloading] = useState(false);
-    const [detail ,setdetail] = useState('in progress') ;
+  // states
+    const { currentUser } = useCurrentUserContext()
+    const {id} = useParams()
+    const {team , setteam } = useTeam()
+    const [loading , setloading] = useState(false)
+    const [detail ,setdetail] = useState('in progress') 
     const [showCreatTask,setShowCreateTask] = useState(false) 
-    useEffect(()=>{
+    const [tasks, setTasks] = useState([])
+    const [addedNewTask, setAddedNewTask] = useState(true) 
+  // useEffect
+    useEffect(() => { 
       if(team?.members === undefined){
         setloading(true)
         getAllTeams(currentUser.portfolio_info[0].org_id)
@@ -26,11 +31,26 @@ const TeamScreenTasks = () => {
       .catch(err => console.log(err))
       }
     },[])
+
+    useEffect(() => {
+      if(addedNewTask){
+        getTeamTask(id)
+        .then(resp => {
+          // get all tasks and put it in tasks state
+          console.log('response',resp,id) 
+          setAddedNewTask(false)
+        })
+        .catch(err => {
+          console.log(err)
+          setAddedNewTask(false)
+        })
+      }
+    },[addedNewTask])
     console.log({team})
     if (loading) return <LoadingSpinner/>
       return (
         <div style={{height:'130%'}}>
-          { team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true}/> : null }
+          { team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true} addTeamTask={true} handleAddTeamTaskFunction={()=>setShowCreateTask(true)} addTeamTaskTitle='add task'/> : null }
           <TeamScreenLinks id={id}/>
           <TeamScreenTaskProgress />
           <TeamScreeTaskProgessDetail id={id} title={team?.team_name} members={team?.members}  detail={detail} setdetail={setdetail} ShowCreateTask={()=>setShowCreateTask(true)} showAddTaskButton={true}/>

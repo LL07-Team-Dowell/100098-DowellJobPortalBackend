@@ -31,7 +31,6 @@ const TeamScreeTaskProgessDetail = ({detail ,setdetail,ShowCreateTask, members, 
                 <img src={image} alt="" width={250} height={125}/>
                 <div>
                 <p className='team-screen-task-progress-detail-content-data-team-name'>{title}</p>
-                {/* <h5 className='team-screen-task-progress-detail-content-data-team-task-name'>Develop main Screen</h5> */}
                 <p className='team-screen-task-progress-detail-content-data-team-start-date'>Started on . <span>Apr 2023</span></p>
                 <div className='team-screen-task-progress-detail-content-members-and-progress'>
                     <div className='team-screen-task-progress-detail-content-members'>
@@ -50,9 +49,6 @@ const TeamScreeTaskProgessDetail = ({detail ,setdetail,ShowCreateTask, members, 
             </button>
         </div>
         <hr />
-        {
-            showAddTaskButton && <button className='add-task-btn' onClick={()=>ShowCreateTask()}><div><HiPlus fontWeight={700}/> <span>add Task</span></div></button>
-        }
         
     </div>
   )
