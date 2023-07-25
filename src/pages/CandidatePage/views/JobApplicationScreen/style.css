@@ -336,7 +336,13 @@
     border-radius: 10px;
     border: 1.5px solid var(--green-color);
 }
-
+@media screen and (max-width:600px){
+    .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form input[type=text], 
+    .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form .select__Dropdown__Container {
+        padding:2.5% 2%;
+        margin-top: 3%;
+    }
+}
 .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form input[type=text]:focus-within {
     background-color: var(--pale-grey-color);
 }
@@ -512,6 +518,16 @@
     transform: translate(-50%,-50%);
     font-family: "Poppins", sans-serif;
     text-align: center;
+}
+.inputFeedback{
+    transform: translateX(-35px);
+    
+}
+@media screen and (max-width:600px){
+    .inputFeedback  {
+    transform: translateX(-15px);
+
+    }
 }
 
 /* @media screen and (max-width:600px) {

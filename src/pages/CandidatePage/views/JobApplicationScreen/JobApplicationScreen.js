@@ -646,7 +646,7 @@ const JobApplicationScreen = () => {
                                     }
 
                                     <div className="job__Application__Item comments">
-                                        <label className="input__Text__Container">
+                                        <label className="input__Text__Container inputFeedback">
                                             <h2>Comments/Feedback<span className="required-indicator">*</span></h2>
                                             <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Write Your Feedback'} value={newApplicationData.feedBack} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FEEDBACK, payload: { stateToChange: mutableNewApplicationStateNames.feedBack, value: e.target.value } })} />
                                         </label>
