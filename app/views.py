@@ -1316,10 +1316,10 @@ class lead_rehire_candidate(APIView):
             print(update_response)
             if json.loads(update_response)["isSuccess"] ==True:
                 """# call the mark as seen notification api-----
-                n_id = update_field['notification_id']
-                url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
-                patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
-"""
+                    n_id = update_field['notification_id']
+                    url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
+                    patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
+                """
                 return Response({"message": f"Candidate has been {update_field['status']}",
                                  #"notification": {"notified": update_field['notified'],
                                   #                       "rehired": patch_notification['isSuccess'],
@@ -1849,15 +1849,13 @@ class get_team_task(APIView):
         }
         response = dowellconnection(
             *task_management_reports, "fetch", field, update_field)
-        
+        print(response)
         if json.loads(response)["isSuccess"] ==True:
             if len(json.loads(response)["data"])==0:
-                return Response({"message":f"There are no tasks with this team id",
-                                 "success":False,
-                                 "Data":[]},
+                return Response({"message":f"There is no tasks with this task id","response":json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response({"message": f"Tasks with team id - {team_id} available", "response": json.loads(response)},
+                return Response({"message": f"Tasks with task id - {task_id} available", "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
         else:
             return Response({"message": "There is no task with team id",
@@ -2404,7 +2402,8 @@ class Public_apply_job(APIView):
             "hired_on": "",
             "onboarded_on": "",
             "module": data.get("module"),
-            "is_public":True
+            "is_public":True,
+            "signup_mail_sent":False
         }
         update_field = {
             "status": "nothing to update"
@@ -2503,6 +2502,9 @@ class createPublicApplication(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class sendMailToPublicCandidate(APIView):
     """Sending Mail to public user"""
+    
+    
+
     def post(self, request):
         qr_id = request.data.get('qr_id')
         org_name = request.data.get("org_name")
@@ -2519,6 +2521,7 @@ class sendMailToPublicCandidate(APIView):
         job_role = request.data.get("job_role")
         data_type = request.data.get("data_type")
         date_time = request.data.get("date_time")
+        
 
         data = {
             "qr_id": qr_id,
@@ -2535,7 +2538,13 @@ class sendMailToPublicCandidate(APIView):
             "subject": subject,
             "job_role": job_role,
             "data_type": data_type,
-            "date_time": date_time,
+            "date_time": date_time
+        }
+        field = {
+                "username": qr_id,
+        }
+        update_field = {
+            "signup_mail_sent" : True
         }
 
         serializer = SendMailToPublicSerializer(data=data)
@@ -2560,10 +2569,17 @@ class sendMailToPublicCandidate(APIView):
             "secret", algorithm="HS256"
             )
             link = f"https://100014.pythonanywhere.com/?hr_invitation={encoded_jwt.decode('utf-8')}"
-            print("------link------", link)
+            #print("------link------", link)
             email_content = INVITATION_MAIL.format(toname,job_role,link)
             mail_response = interview_email(toname,toemail,subject,email_content)
+
+            #update signup_mail_sent parameter after email has been sent
+            update_response = dowellconnection(*candidate_management_reports, "update", field, update_field)
+            print(update_response,"--------------------------------------------")
+            
+
             response = json.loads(mail_response)
+            #print(response,"==========================================")
             if response["success"]:
                 return Response({
                     "success": True,
