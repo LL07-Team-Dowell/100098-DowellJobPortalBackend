@@ -35,11 +35,11 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
       setInputMembers(inputMembers.filter(f => f.id !== id))
       setDesplaidMembers([...displaidMembers,inputMembers.find(f => f.id === id)])
     }
-  const createTeamTask = () => {
+  const createTeamTaskFunction = () => {
    if(!loading){
     if(name && description && inputMembers.length > 0){
       setloading(true)
-      axios.post('https://100098.pythonanywhere.com/create_team_task/',{
+      createTeamTask({
         "assignee": inputMembers.map(v =>v.member),
         "title": name,
         "description": description,
@@ -88,7 +88,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
             className='input'
             type='text'
             id='task_name'
-            placeholder='Choose a Team Name'
+            placeholder='Choose a Task Name'
             value={name}
             onChange={(e)=> setname(e.target.value)}
           />
@@ -98,7 +98,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
             type='text'
             id='team_description'
             className=''
-            placeholder='Choose a Team Name'
+            placeholder='Choose a Task Description'
             rows={10}
             value={description}
             onChange={(e)=> setdiscription(e.target.value)}
@@ -112,7 +112,6 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
             <div>
             <div className='task-type'>
             <div>
-            <p >single Task</p>
             <input
               className='input'
               id='single_task'
@@ -120,9 +119,9 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
               checked={singleTask && choosed}
               onChange={()=>{setSingleTask(true);setchoosed(true);setTaskMembers([])}}
             />
+            <p >single Task</p>
             </div>
             <div>
-        <p>Team Task</p>
           <input
             className='input'
             id='team_task'
@@ -130,6 +129,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
             checked={!singleTask && choosed}
             onChange={()=>{setSingleTask(false);setchoosed(true);setTaskMembers([])}}
           />
+          <p>Team Task</p>
           </div>
           </div>
           {
@@ -169,7 +169,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
             null
           }
           <div className="buttons">
-            <button onClick={createTeamTask}>{loading ? <LoadingSpinner color={'white'} width='20px' height='20px' /> : 'submit'}</button>
+            <button onClick={createTeamTaskFunction}>{loading ? <LoadingSpinner color={'white'} width='20px' height='20px' /> : 'submit'}</button>
             <button onClick={unShowCreateTask}>Cancel</button>
           </div>
         </div>
