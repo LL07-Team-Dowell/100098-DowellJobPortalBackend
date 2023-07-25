@@ -15,7 +15,7 @@ const TeamThread = ({ title = "Team Treads", color }) => {
       </div>
     </div>
 
-    <div className="create-new-team-header">
+    <div className="create-new-team-heade">
       <ThreadItem />
     </div>
   </>
