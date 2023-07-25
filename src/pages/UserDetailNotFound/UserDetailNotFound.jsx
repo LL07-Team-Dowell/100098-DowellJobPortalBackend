@@ -8,7 +8,7 @@ const UserDetailNotFound = () => {
         <img src={image} alt='none' />
         <p>we cannot seem to find your details, it might be an error on our end</p>
         <p>you can try reloading the page using the button below</p>
-        <button onClick={handleReloadClick}>Reaload</button>
+        <button onClick={handleReloadClick}>Reload</button>
     </div>
 }
 
