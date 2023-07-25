@@ -89,5 +89,15 @@ urlpatterns = [
     path('generate_public_job_application_link/<str:company_id>/', createPublicApplication.as_view()),
     path('send_mail_to_public/',sendMailToPublicCandidate.as_view()),
     path('update_user_status/',updateTheUserDetails.as_view()),
-    
+
+    # Thread-------------------------------------
+    path('fetch_thread/',Thread_Apis.as_view()),
+    path('create_thread/',Thread_Apis.as_view()),
+    path('update_thread/', Thread_Apis.as_view()),
+
+    # Comment-------------------------------------
+    path('fetch_comment/',Comment_Apis.as_view()),
+    path('create_comment/',Comment_Apis.as_view()),
+    path('update_comment/', Comment_Apis.as_view()),
+       
 ]

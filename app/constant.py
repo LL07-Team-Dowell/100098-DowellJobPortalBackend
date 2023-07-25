@@ -83,7 +83,7 @@ questionnaire_modules = [
     "Questionnaire_report",
     "Questionnaire_report",
     "1000981012",
-    "ABCDE"
+    "ABCDE",
 ]
 
 response_modules = [
@@ -92,7 +92,7 @@ response_modules = [
     "Response_report",
     "Response_report",
     "1000981013",
-    "ABCDE"
+    "ABCDE",
 ]
 
 team_management_modules = [
@@ -120,7 +120,26 @@ Publiclink_reports = [
     "PublicLinkReport",
     "PublicLinkReport",
     "1000981015",
-    "ABCDE"
+    "ABCDE",
 ]
+
+thread_report_module = [
+    "jobportal",
+    "jobportal",
+    "ThreadReport",
+    "ThreadReport",
+    "1000981016",
+    "ABCDE",
+]
+
+comment_report_module = [
+    "jobportal",
+    "jobportal",
+    "ThreadCommentReport",
+    "ThreadCommentReport",
+    "1000981017",
+    "ABCDE",
+]
+
 
 generate_public_link = "https://ll07-team-dowell.github.io/Jobportal/#?view=public&qr_id={}&job_company_id={}&job_id={}&company_data_type={}"

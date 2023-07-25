@@ -156,7 +156,7 @@ def get_guild_members(guildid,token):
 
 
 
-def create_master_link(company_id,links):
+def create_master_link(company_id,links,job_name):
     url = "https://100099.pythonanywhere.com/api/v3/qr-code/"
     
     payload = {
@@ -164,6 +164,7 @@ def create_master_link(company_id,links):
         "quantity": 1,
         "company_id": company_id,
         "links": links,
+        "job_name":job_name
     }
     response = requests.post(url, json=payload)
 
@@ -200,5 +201,17 @@ def set_finalize(linkid):
     }
     response = requests.put(url, json=payload)
     print(response)
+    print(response.text)
     return response.text
 
+import base64
+
+def save_image(image):
+    url = "http://67.217.61.253/uploadfiles/upload-hr-image/"
+    payload = {
+        "image": image  # Read the binary data from the file object
+    }
+    print(payload)
+    response = requests.post(url, files=payload)  # Use 'files' instead of 'json'
+    print(response.text)
+    return response.text
