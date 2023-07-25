@@ -43,6 +43,8 @@ from .serializers import (
     UserProject,
     CreatePublicLinkSerializer,
     SendMailToPublicSerializer,
+    ThreadsSerializer,
+    CommentsSerializer
 )
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -3415,20 +3417,26 @@ class updateTheUserDetails(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class Thread_Apis(APIView):
     def post(self, request):
-        data = json.loads(request.data["form_data"])
+        print(request.data,"==================")
+        #data = json.loads(request.data["form_data"])
+        data= request.data
+
         image = request.FILES.get("image")
         image_response = save_image(image)
-        if data and image:
-            field = {
-                "event_id": get_event_id()["event_id"],
-                "thread": data.get("thread"),
-                "image": image_response,
-                "created_by": data.get("created_by"),
-                "team_alearted_id": data.get("team_alearted_id"),
-                "current_status": data.get("current_status"),
-                "previous_status": data.get("previous_status"),
-            }
-            update_field = {}
+        
+        field = {
+            "event_id": get_event_id()["event_id"],
+            "thread": data.get("thread"),
+            "image": image_response,
+            "created_by": data.get("created_by"),
+            "team_alerted_id": data.get("team_alerted_id"),
+            "current_status": data.get("current_status"),
+            "previous_status": [],
+        }
+        update_field = {}
+        serializer = ThreadsSerializer(data=request.data)
+        if serializer.is_valid():
+            
             insert_response = dowellconnection(
                 *thread_report_module, "insert", field, update_field
             )
@@ -3449,24 +3457,35 @@ class Thread_Apis(APIView):
                 )
         else:
             return Response(
-                {"message": "Parameters are not valid"},
+                {"message": "Parameters are not valid","error":serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
     def get(self, request):
-        data = request.data
+        data = request.data  
+        print(data) 
         if data:
             field = {
                 "_id": data.get("document_id"),
             }
             update_field = {}
-            insert_response = dowellconnection(
+        
+            get_response = dowellconnection(
                 *thread_report_module, "fetch", field, update_field
             )
-            print(insert_response)
-            if json.loads(insert_response)["isSuccess"] == True:
+            
+            get_comment = dowellconnection(
+                *comment_report_module, "fetch", {"thread_id":data.get("document_id")}, update_field
+            )
+            print(get_response)
+            print(get_comment)
+            response = json.loads(get_response)
+            response["comments"]= json.loads(get_comment)
+
+
+            if json.loads(get_response)["isSuccess"] == True:
                 return Response(
-                    {"data": json.loads(insert_response)}, status=status.HTTP_200_OK
+                    {"data": response}, status=status.HTTP_200_OK
                 )
             else:
                 return Response(
@@ -3474,26 +3493,44 @@ class Thread_Apis(APIView):
                 )
         else:
             return Response(
-                {"message": "Parameters are not valid"},
+                {"message": "Parameters are not valid",
+                 "errors":data},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
     def patch(self, request):
         data = request.data
         if data:
+            
             field = {
                 "_id": data.get("document_id"),
             }
+            
+            #check for previous status
+            previous_status=[]
+            if data.get("current_status") == "Created":
+                previous_status=[]
+            elif data.get("current_status") == "Progress":
+                previous_status=["Created"]
+            elif data.get("current_status") == "Completed":
+                previous_status=["Created","Progress"]
+            elif data.get("current_status") == "Resolved":
+                previous_status=["Created","Progress","Completed"]
+
             update_field = {
                 "current_status": data.get("current_status"),
+                "previous_status":previous_status
             }
-            insert_response = dowellconnection(
+            """serializer = ThreadsSerializer(data=request.data)
+            if serializer.is_valid():"""
+            update_response = dowellconnection(
                 *thread_report_module, "update", field, update_field
             )
-            print(insert_response)
-            if json.loads(insert_response)["isSuccess"] == True:
+            
+            print(update_response)
+            if json.loads(update_response)["isSuccess"] == True:
                 return Response(
-                    {"data": json.loads(insert_response)}, status=status.HTTP_200_OK
+                    {"data": json.loads(update_response)}, status=status.HTTP_200_OK
                 )
             else:
                 return Response(
@@ -3501,7 +3538,7 @@ class Thread_Apis(APIView):
                 )
         else:
             return Response(
-                {"message": "Parameters are not valid"},
+                {"message": "Parameters are not valid","errors":data},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -3509,14 +3546,15 @@ class Thread_Apis(APIView):
 class Comment_Apis(APIView):
     def post(self, request):
         data = request.data
-        if data:
-            field = {
-                "event_id": get_event_id()["event_id"],
-                "created_by": data.get("created_by"),
-                "comment": data.get("comment"),
-                "thread_id": data.get("thread_id"),
-            }
-            update_field = {}
+        field = {
+            "event_id": get_event_id()["event_id"],
+            "created_by": data.get("created_by"),
+            "comment": data.get("comment"),
+            "thread_id": data.get("thread_id"),
+        }
+        update_field = {}
+        serializer = CommentsSerializer(data=request.data)
+        if serializer.is_valid():
             insert_response = dowellconnection(
                 *comment_report_module, "insert", field, update_field
             )
@@ -3542,11 +3580,13 @@ class Comment_Apis(APIView):
 
     def get(self, request):
         data = request.data
+        
         if data:
             field = {
                 "_id": data.get("document_id"),
             }
             update_field = {}
+            
             insert_response = dowellconnection(
                 *comment_report_module, "fetch", field, update_field
             )
@@ -3567,27 +3607,73 @@ class Comment_Apis(APIView):
 
     def patch(self, request):
         data = request.data
-        if data:
-            field = {
-                "_id": data.get("document_id"),
-            }
-            update_field = {
-                "current_status": data.get("current_status"),
-            }
-            insert_response = dowellconnection(
+        field = {
+            "_id": data.get("document_id"),
+        }
+        update_field = {
+            "comment": data.get("comment"),
+        }
+        insert_response = dowellconnection(
                 *comment_report_module, "update", field, update_field
             )
-            print(insert_response)
-            if json.loads(insert_response)["isSuccess"] == True:
-                return Response(
-                    {"data": json.loads(insert_response)}, status=status.HTTP_200_OK
-                )
-            else:
-                return Response(
-                    {"message": "Failed to fetch"}, status=status.HTTP_400_BAD_REQUEST
-                )
+        print(insert_response)
+        if json.loads(insert_response)["isSuccess"] == True:
+            return Response(
+                {"data": json.loads(insert_response)}, status=status.HTTP_200_OK
+            )
         else:
             return Response(
-                {"message": "Parameters are not valid"},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"message": "Failed to fetch"}, status=status.HTTP_400_BAD_REQUEST
             )
+        
+
+# generate report api starts here__________________________
+@method_decorator(csrf_exempt, name="dispatch")
+class GenerateReport(APIView):
+    def post(self, request):
+        field = {   }
+        update_field = {    }
+        data = {  }
+        
+        applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        #print(applications)
+        data["applications"]=len(json.loads(applications)['data'])
+
+        hired = dowellconnection(*candidate_management_reports, "fetch", {"status": "hired"}, update_field)
+        #print(json.loads(hired)["data"])
+        data["hired_candidates"]=len(json.loads(hired)['data'])
+
+        rejected = dowellconnection(*candidate_management_reports, "fetch", {"status": "Rejected"}, update_field)
+        #print(rejected)
+        data["rejected_candidates"]=len(json.loads(rejected)['data'])
+
+        probationary = dowellconnection(*candidate_management_reports, "fetch", {"status": "probationary"}, update_field)
+        #print(probationary)
+        data["probationary_candidates"]=len(json.loads(probationary)['data'])
+
+        teams = dowellconnection(*team_management_modules, "fetch", field, update_field)
+        #print(teams)
+        data["teams"]=len(json.loads(teams)['data'])
+
+        tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        #print(tasks)
+        data["tasks"]=len(json.loads(tasks)['data'])
+
+        team_tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        #print(team_tasks)
+        data["team_tasks"]=len([t for t in json.loads(team_tasks)['data'] 
+                                    if "team_id" in t.keys()])
+
+        tasks_completed_on_time = dowellconnection(*task_management_reports, "fetch", {"status":"Completed"}, update_field)
+        #print(tasks_completed_on_time)
+        data["tasks_completed_on_time"]=len([t for t in json.loads(tasks_completed_on_time)['data'] 
+                                             if "due_date" in t.keys() and "task_updated_date" in t.keys() and 
+                                                datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > 
+                                                datetime.datetime.strptime(t["task_updated_date"], "%m/%d/%Y %H:%M:%S")
+                                            ])
+
+        data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks"])*100)+" %"
+
+        
+        
+        return Response({"message": f"Report Generated", "response":data}, status=status.HTTP_201_CREATED)

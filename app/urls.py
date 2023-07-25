@@ -99,5 +99,8 @@ urlpatterns = [
     path('fetch_comment/',Comment_Apis.as_view()),
     path('create_comment/',Comment_Apis.as_view()),
     path('update_comment/', Comment_Apis.as_view()),
+
+    # generate_report -------------------------------------
+    path('generate_report/',GenerateReport.as_view()),
        
 ]
