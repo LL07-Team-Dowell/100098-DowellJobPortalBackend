@@ -47,6 +47,25 @@ from .serializers import (
 import datetime
 from dateutil.relativedelta import relativedelta
 import jwt
+import json
+import requests
+import threading
+from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status, generics, permissions
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .constant import *
+from .helper import get_event_id, dowellconnection, call_notification, set_finalize, update_number, update_string, discord_invite,\
+    get_guild_channels, get_guild_members , create_master_link , send_mail , interview_email
+from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
+    UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
+    SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
+    SettingUserProjectSerializer, UpdateSettingUserProjectSerializer, SettingUserProfileInfo, UpdateuserSerializer, UserProject , CreatePublicLinkSerializer ,SendMailToPublicSerializer
+import datetime
+from dateutil.relativedelta import relativedelta
+import jwt
 
 # Create your views here.
 
@@ -1620,17 +1639,12 @@ class lead_rehire_candidate(APIView):
                 n_id = update_field['notification_id']
                 url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
                 patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
-                """
-                return Response(
-                    {
-                        "message": f"Candidate has been {update_field['status']}",
-                        # "notification": {"notified": update_field['notified'],
-                        #                       "rehired": patch_notification['isSuccess'],
-                        #                    "notification_id": update_field['notification_id']},
-                        "response": json.loads(update_response),
-                    },
-                    status=status.HTTP_200_OK,
-                )
+"""
+                return Response({"message": f"Candidate has been {update_field['status']}",
+                                 #"notification": {"notified": update_field['notified'],
+                                  #                       "rehired": patch_notification['isSuccess'],
+                                  #                    "notification_id": update_field['notification_id']},
+                                "response":json.loads(update_response)}, status=status.HTTP_200_OK)
             else:
                 return Response(
                     {
@@ -2375,37 +2389,27 @@ class edit_team_task(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_team_task(APIView):
-    def get(self, request, task_id):
+    def get(self, request, team_id):
         field = {
-            "_id": task_id,
+            "team_id": team_id,
         }
         update_field = {"status": "nothing to update"}
         response = dowellconnection(
-            *task_management_reports, "fetch", field, update_field
-        )
-        print(response)
-        if json.loads(response)["isSuccess"] == True:
-            if len(json.loads(response)["data"]) == 0:
-                return Response(
-                    {
-                        "message": f"There is no tasks with this task id",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
+            *task_management_reports, "fetch", field, update_field)
+        
+        if json.loads(response)["isSuccess"] ==True:
+            if len(json.loads(response)["data"])==0:
+                return Response({"message":f"There are no tasks with this team id - {team_id}",
+                                 "success":False,
+                                 "Data":[]},
+                            status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response(
-                    {
-                        "message": f"Tasks with task id - {task_id} available",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_200_OK,
-                )
+                return Response({"message": f"Tasks with team id - {team_id} available", "response": json.loads(response)},
+                                status=status.HTTP_200_OK)
         else:
-            return Response(
-                {"message": "There is no task", "response": json.loads(response)},
-                status=status.HTTP_204_NO_CONTENT,
-            )
+            return Response({"message": "There is no task with team id",
+                             "response": json.loads(response)},
+                            status=status.HTTP_204_NO_CONTENT)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -3138,8 +3142,10 @@ class Public_apply_job(APIView):
             "hired_on": "",
             "onboarded_on": "",
             "module": data.get("module"),
-            "is_public": True,
-            "signup_mail_sent": False,
+            "is_public":True
+        }
+        update_field = {
+            "status": "nothing to update"
         }
         update_field = {"status": "nothing to update"}
 
@@ -3272,7 +3278,6 @@ class createPublicApplication(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class sendMailToPublicCandidate(APIView):
     """Sending Mail to public user"""
-
     def post(self, request):
         qr_id = request.data.get("qr_id")
         org_name = request.data.get("org_name")
@@ -3307,9 +3312,6 @@ class sendMailToPublicCandidate(APIView):
             "data_type": data_type,
             "date_time": date_time,
         }
-        field = {
-            "username": qr_id,
-        }
         update_field = {"signup_mail_sent": True}
 
         serializer = SendMailToPublicSerializer(data=data)
@@ -3335,18 +3337,10 @@ class sendMailToPublicCandidate(APIView):
                 algorithm="HS256",
             )
             link = f"https://100014.pythonanywhere.com/?hr_invitation={encoded_jwt.decode('utf-8')}"
-            # print("------link------", link)
-            email_content = INVITATION_MAIL.format(toname, job_role, link)
-            mail_response = interview_email(toname, toemail, subject, email_content)
-
-            # update signup_mail_sent parameter after email has been sent
-            update_response = dowellconnection(
-                *candidate_management_reports, "update", field, update_field
-            )
-            print(update_response, "--------------------------------------------")
-
+            print("------link------", link)
+            email_content = INVITATION_MAIL.format(toname,job_role,link)
+            mail_response = interview_email(toname,toemail,subject,email_content)
             response = json.loads(mail_response)
-            # print(response,"==========================================")
             if response["success"]:
                 return Response(
                     {"success": True, "message": f"Mail sent successfully to {toname}"},
