@@ -1840,22 +1840,25 @@ class edit_team_task(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class get_team_task(APIView):
-    def get(self, request, task_id):
+    def get(self, request, team_id):
         field = {
-            "_id": task_id,
+            "team_id": team_id,
         }
         update_field = {
             "status": "nothing to update"
         }
         response = dowellconnection(
             *task_management_reports, "fetch", field, update_field)
-        print(response)
+        # print(response)
         if json.loads(response)["isSuccess"] ==True:
             if len(json.loads(response)["data"])==0:
-                return Response({"message":f"There is no tasks with this task id","response":json.loads(response)},
+                return Response({"message":f"There is no tasks with this team id -{team_id}",
+                                 "success":False,
+                                 "Data":[]
+                                 },
                             status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response({"message": f"Tasks with task id - {task_id} available", "response": json.loads(response)},
+                return Response({"message": f"Tasks with this team - {team_id} available", "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
         else:
             return Response({"message": "There is no task",

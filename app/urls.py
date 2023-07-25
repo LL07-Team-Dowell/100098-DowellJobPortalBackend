@@ -55,7 +55,7 @@ urlpatterns = [
     path('delete_team/<str:team_id>/', delete_team.as_view()),
     path('create_team_task/', create_team_task.as_view()),
     path('edit_team_task/<str:task_id>/', edit_team_task.as_view()),
-    path('get_team_task/<str:task_id>/', get_team_task.as_view()),
+    path('get_team_task/<str:team_id>/', get_team_task.as_view()),
     path('delete_team_task/<str:task_id>/', delete_team_task.as_view()),
     path('create_member_task/', create_member_task.as_view()),
     path('get_member_task/<str:task_id>/', get_member_task.as_view()),
