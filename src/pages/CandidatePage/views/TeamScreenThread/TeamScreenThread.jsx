@@ -81,8 +81,8 @@ const TeamScreenThreadCandidate = () => {
       ) : null}
       <TeamScreenLinks id={id} />
       <Wrappen>
-            <NavLink className={`${panding ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/team-threads`} onClick={clickToPandingApproval}>In progress</NavLink>
-            <NavLink className={`${panding ? 'link-notactive' : 'link-isActive'}`} to={`/team-screen-member/${id}/team-threads`} onClick={clickToApproved}>Completed</NavLink>
+            <NavLink className={`${panding ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/team-issues`} onClick={clickToPandingApproval}>In progress</NavLink>
+            <NavLink className={`${panding ? 'link-notactive' : 'link-isActive'}`} to={`/team-screen-member/${id}/team-issues`} onClick={clickToApproved}>Completed</NavLink>
         </Wrappen>
       <TeamScreenThreads />
     </div>
