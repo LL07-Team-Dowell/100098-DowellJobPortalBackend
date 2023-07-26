@@ -31,7 +31,8 @@ import ApplicationSubmissionContent from "../../../../templates/applicationSubmi
 import { sendMailUsingDowell } from "../../../../services/mailServices";
 import SuccessPublicSubmissionModal from "../../components/SuccessPublicSubmissionModal/SuccessPublicSubmissionModal";
 import { uxlivingLabURL } from "../../../../utils/utils";
-
+import userNotFoundImage from '../../../../assets/images/user-not-found.jpg'
+import { Translate } from "@mui/icons-material";
 
 const JobApplicationScreen = () => {
     const location = useLocation();
@@ -76,7 +77,7 @@ const JobApplicationScreen = () => {
 
     console.log(testResult);
     console.log(error);
-
+    console.log({currentJob})
     const netSpeed = (e) => {
         e.preventDefault()
         const apiKey = "SOM6476e34f85968"; // Your API Key here
@@ -464,7 +465,7 @@ const JobApplicationScreen = () => {
     }
 
     if (jobsLoading) return <LoadingSpinner />
-
+    if (currentJob?.is_active === false) return <CurrentJobNotFound />
     return <>
         <div className="candidate__Job__Application__Container">
             <TitleNavigationBar hideBackBtn={isPublicUser && section !== 'form'} handleBackBtnClick={() => navigate(-1)} />
@@ -657,7 +658,7 @@ const JobApplicationScreen = () => {
                                     }
 
                                     <div className="job__Application__Item comments">
-                                        <label className="input__Text__Container">
+                                        <label className="input__Text__Container inputFeedback">
                                             <h2>Comments/Feedback<span className="required-indicator">*</span></h2>
                                             <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Write Your Feedback'} value={newApplicationData.feedBack} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FEEDBACK, payload: { stateToChange: mutableNewApplicationStateNames.feedBack, value: e.target.value } })} />
                                         </label>
@@ -845,3 +846,11 @@ const JobApplicationScreen = () => {
 }
 
 export default JobApplicationScreen;
+
+const CurrentJobNotFound = () => {
+
+    return <div className="current_job_not_found_container" style={{position:'absolute',top:'50%',left:'50%'}}>
+        <img className="current_job_not_found_container_image" src={userNotFoundImage} alt="image" style={{width:600}}/>
+        <p className="current_job_not_found_container_paragraph">This job listing is no longer available</p>
+    </div>
+}

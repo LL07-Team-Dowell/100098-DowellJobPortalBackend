@@ -9,9 +9,9 @@ export const adminNavigationLinks = [
         text: "Home",
     },
     {
-        linkAddress: "/add-job",
+        linkAddress: "/add",
         icon: <AiOutlinePlus />,
-        text: "Add job",
+        text: "Add",
     },
     {
         linkAddress: "/report",

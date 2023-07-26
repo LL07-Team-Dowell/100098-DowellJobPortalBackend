@@ -50,7 +50,7 @@ const TeamScreenTasks = () => {
     if (loading) return <LoadingSpinner/>
       return (
         <div style={{height:'130%'}}>
-          { team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true} addTeamTask={true} handleAddTeamTaskFunction={()=>setShowCreateTask(true)} addTeamTaskTitle='add task'/> : null }
+          { team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true} addTeamTask={true} handleAddTeamTaskFunction={()=>setShowCreateTask(true)} addTeamTaskTitle='Add Task'/> : null }
           <TeamScreenLinks id={id}/>
           <TeamScreenTaskProgress />
           <TeamScreeTaskProgessDetail id={id} title={team?.team_name} members={team?.members}  detail={detail} setdetail={setdetail} ShowCreateTask={()=>setShowCreateTask(true)} showAddTaskButton={true}/>
