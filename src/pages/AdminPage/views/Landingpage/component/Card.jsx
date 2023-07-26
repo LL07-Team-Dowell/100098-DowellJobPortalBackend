@@ -184,9 +184,9 @@ const Card = ({
                 onClick={
                   handleShareIconClick && typeof handleShareIconClick === 'function' ?
                     newly_created ?
-                    () => fetchJobsAgain(null, (passedId) => handleShareIconClick(passedId))
+                    () => fetchJobsAgain(null, (passedId, passedName) => handleShareIconClick(passedId, passedName))
                     :
-                    () => handleShareIconClick(_id) 
+                    () => handleShareIconClick(_id, job_title) 
                   :
                   () => {}
                 }
