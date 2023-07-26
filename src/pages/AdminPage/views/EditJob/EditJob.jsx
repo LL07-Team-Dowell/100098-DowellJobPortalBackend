@@ -317,7 +317,17 @@ function EditJob({ subAdminView }) {
     })
   }
 
+  const [amount, currecy] = formData.payment.split(' ');
 
+  const handlePayment = (e) => {
+    const value = e.target.value;
+    const trimmedValue = value.toString().trim();
+    const trimmedCurrency = currency.trim();
+
+    const payment = trimmedValue + " " + trimmedCurrency;
+    setFormData({ ...formData, payment: payment })
+  }
+  // console.log(currecy);
 
   if (loading) return <LoadingSpinner />
 
@@ -586,7 +596,7 @@ function EditJob({ subAdminView }) {
                     <div className="payment_section">
                       <DropdownButton
                         className="currency"
-                        currentSelection={currency}
+                        currentSelection={currecy}
                         handleSelectionClick={(value) => {
                           handleCurrencyChange(value);
                         }}
@@ -594,11 +604,11 @@ function EditJob({ subAdminView }) {
                         removeDropDownIcon={false}
                       />
                       <input
-                        type="number"
+                        type="text"
                         className="payment_input"
                         name={"payment"}
-                        defaultValue={formData.payment}
-                        onChange={handleInputChange}
+                        defaultValue={amount}
+                        onChange={handlePayment}
                         placeholder={"Enter your amount"}
                         required
                       />
