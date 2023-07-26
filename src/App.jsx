@@ -814,7 +814,7 @@ function App() {
         }
       />
       <Route
-        path="/team-screen-member/:id/team-threads"
+        path="/team-screen-member/:id/team-issues"
         element={
           <NavigationContextProvider>
             <CandidateTaskContextProvider>
