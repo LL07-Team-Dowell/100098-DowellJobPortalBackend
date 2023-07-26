@@ -6,7 +6,8 @@ export const freelancingPlatforms = [
     "Fiverr",
     "Upwork",
     "Peopleperhour",
-    "FacebookJobs"
+    "FacebookJobs",
+    "Linkedin",
 ]
 
 export const qualificationsData = [
