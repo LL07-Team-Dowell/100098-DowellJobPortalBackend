@@ -121,7 +121,7 @@ const AddProjectPopup = ({projects, unshowProjectPopup}) => {
   return <div className="overlay">
     <div className='Project_Popup'>
       <FaTimes fontSize={'small'} style={{display:'block',margin:'0 0 0 auto',cursor:'pointer'}} onClick={unshowProjectPopup}/>
-       <h4 style={{marginBottom:15}}>Projects</h4>
+       <h4 style={{marginBottom:15, color:'#005734'}}>Select Projects</h4>
             <div className='added-members-input'>
             {
               inputProjects?.map(v => <div key={v.id} style={{cursor:'pointer'}} onClick={()=>removeProject(v.id)}><p>{v.project}</p><FaTimes fontSize={'small'}/></div>)
