@@ -3211,9 +3211,10 @@ class createPublicApplication(APIView):
                 for qr_id in qr_ids
             ]
             response_qr_code = create_master_link(
-                field["job_company_id"], field["job_name"], generated_links
+                field["job_company_id"], generated_links,field["job_name"]
             )
             response = json.loads(response_qr_code)
+            return Response(response)
             fields = {
                 "eventId": get_event_id()["event_id"],
                 "job_company_id": field["job_company_id"],

@@ -164,7 +164,7 @@ def create_master_link(company_id,links,job_name):
         "quantity": 1,
         "company_id": company_id,
         "links": links,
-        "job_name":job_name
+        "document_name":job_name
     }
     response = requests.post(url, json=payload)
 
