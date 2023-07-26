@@ -134,7 +134,7 @@ const LandingPage = ({ subAdminView }) => {
   return (
     <StaffJobLandingLayout
       adminView={true}
-      handleNavIconClick={() => navigate("/add-job")}
+      handleNavIconClick={() => navigate("/add")}
       searchValue={searchValue}
       setSearchValue={handleSearchChange}
       subAdminView={subAdminView}
