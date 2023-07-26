@@ -36,7 +36,6 @@ const NewAddTaskScreen = ({ handleAddTaskBtnClick }) => {
           </div>
         </div>
       </div>
-      ;
     </>
   );
 };
