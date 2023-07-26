@@ -15,7 +15,7 @@ import { getApplicationForAdmin, getJobsFromAdmin, getMasterLinks } from "../../
 import { useState } from "react";
 import { IoCopyOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
-
+ 
 
 const LandingPage = ({ subAdminView }) => {
 

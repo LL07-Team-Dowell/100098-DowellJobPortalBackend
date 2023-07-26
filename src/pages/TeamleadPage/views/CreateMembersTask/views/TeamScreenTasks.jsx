@@ -37,7 +37,8 @@ const TeamScreenTasks = () => {
         getTeamTask(id)
         .then(resp => {
           // get all tasks and put it in tasks state
-          console.log('response',resp,id) 
+          setTasks(resp.data.response.data)
+          console.log('response',resp.data.response.data) 
           setAddedNewTask(false)
         })
         .catch(err => {
@@ -53,8 +54,8 @@ const TeamScreenTasks = () => {
           { team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true} addTeamTask={true} handleAddTeamTaskFunction={()=>setShowCreateTask(true)} addTeamTaskTitle='Add Task'/> : null }
           <TeamScreenLinks id={id}/>
           <TeamScreenTaskProgress />
-          <TeamScreeTaskProgessDetail id={id} title={team?.team_name} members={team?.members}  detail={detail} setdetail={setdetail} ShowCreateTask={()=>setShowCreateTask(true)} showAddTaskButton={true}/>
-          {showCreatTask && <CreateTask id={id} members={team.members} team={team} unShowCreateTask={()=>setShowCreateTask(false)}/>} 
+          <TeamScreeTaskProgessDetail detail={detail} setdetail={setdetail}  tasks={tasks} setTasks={setTasks}/>
+          {showCreatTask && <CreateTask id={id} setTasks={setTasks} members={team.members} team={team} unShowCreateTask={()=>setShowCreateTask(false)}/>} 
         </div>
         )
  
