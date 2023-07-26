@@ -7,25 +7,42 @@
   justify-content: space-between;
 }
 
-.team-screen-threads-card {
+.team-screen-thread-container {
   width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  background-color: #fff;
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
+  margin-bottom: 10rem;
 }
 
-.team-screen-threads-details {
+.team-screen-threads-card {
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+  margin-bottom: 3rem;
+}
+
+.thread-card {
   width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2% 3%;
+  align-items: flex-start;
+  justify-content: space-around;
+  padding: 3% 4%;
+  gap: 5rem;
+}
+
+.comment-action{
+  padding: 0.5% 3% 3% 3%;
+}
+
+.comment-action .comment-input{
+  width: 100%;
+}
+
+.comment-action p{
+  font-size: 0.8rem;
 }
 
 .team-screen-threads-container {
@@ -49,6 +66,7 @@
 }
 
 .progress {
+  width: max-content;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -87,3 +105,49 @@
 .comments-section svg {
   font-size: 1.8rem;
 }
+
+/*{testThreadsToWorkWith.map((thread) => (
+          <div className="team-screen-threads-details" key={thread._id}>
+            <img src={thread.image} alt="thread-pic" />
+            <div className="team-screen-threads-container">
+              <p>{thread.thread}</p>
+              <div>
+                <p>Assigned to : Team Development A</p>
+                <p>Raised by : {thread.created_by}</p>
+              </div>
+              <div className="team-screen-threads-progress">
+                <div className="progress">
+                  <p>Created</p>
+                  <div className="threads-progress"></div>
+                </div>
+                <div className="progress">
+                  <p>In progress</p>
+                  <div className="threads-progress"></div>
+                </div>
+                <div className="progress">
+                  <p>Completed</p>
+                  <div className="threads-progress"></div>
+                </div>
+                <div className="progress">
+                  <p>Resolved</p>
+                  <div className="threads-progress"></div>
+                </div>
+              </div>
+              <div className="comments-section">
+                <p className="comments">
+                  <FaRegComments onClick={handleSubmit} />
+                  &bull;
+                  <span>10 Comments</span>
+                </p>
+                <p>{thread.comments[0].comment}</p>
+                <textarea
+                  rows="2"
+                  cols="50"
+                  value={text}
+                  onChange={handleChange}
+                  placeholder="Enter your comment..."
+                />
+              </div>
+            </div>
+          </div>
+        ))} */

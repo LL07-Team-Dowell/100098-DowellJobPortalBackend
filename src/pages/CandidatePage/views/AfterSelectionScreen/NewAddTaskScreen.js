@@ -16,7 +16,7 @@ const NewAddTaskScreen = ({ handleAddTaskBtnClick }) => {
                   style={{ fontSize: "2rem" }}
                 />
               </div>
-              <h4>Create Thread</h4>
+              <h4>Create Issues</h4>
               <p>
                 Create, monitor and get quick feedback on issues ecountered in our products.
               </p>
@@ -36,7 +36,6 @@ const NewAddTaskScreen = ({ handleAddTaskBtnClick }) => {
           </div>
         </div>
       </div>
-      ;
     </>
   );
 };

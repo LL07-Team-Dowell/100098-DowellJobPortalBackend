@@ -373,28 +373,38 @@ const JobApplicationScreen = () => {
 
         // PUBLIC USER APPLICATION SUBMISSION
         if (isPublicUser) {
-            try {
-                const copyOfNewApplicationData = structuredClone(newApplicationData);
-                delete copyOfNewApplicationData.portfolio_name;
+            const copyOfNewApplicationData = structuredClone(newApplicationData);
+            delete copyOfNewApplicationData.portfolio_name;
 
-                let formData = new FormData();
+            let formData = new FormData();
 
-                const htmlToSend = ReactDOMServer.renderToString(<ApplicationSubmissionContent name={newApplicationData.applicant} job={newApplicationData.job_title} />);                
-                const htmlFileBlob = new Blob([htmlToSend], { type: "text/html" });
-                const htmlFile = new File([htmlFileBlob], 'data.html', { type: htmlFileBlob.type });
+            const htmlToSend = ReactDOMServer.renderToString(<ApplicationSubmissionContent name={newApplicationData.applicant} job={newApplicationData.job_title} />);                
+            const htmlFileBlob = new Blob([htmlToSend], { type: "text/html" });
+            const htmlFile = new File([htmlFileBlob], 'data.html', { type: htmlFileBlob.type });
 
-                formData.append('file', htmlFile);
-                formData.append('toemail', newApplicationData.applicant_email);
-                formData.append('toname', newApplicationData.applicant);
-                formData.append('subject', 'New Job Application Submission');
+            formData.append('file', htmlFile);
+            formData.append('toemail', newApplicationData.applicant_email);
+            formData.append('toname', newApplicationData.applicant);
+            formData.append('subject', 'New Job Application Submission');
 
-                const response  = await Promise.all([
-                    submitPublicApplication(copyOfNewApplicationData, publicUserDetails?.masterLinkId),
-                    sendMailUsingDowell(formData)
-                ])
-                // console.log(response);
+            submitPublicApplication(copyOfNewApplicationData, publicUserDetails?.masterLinkId)
+            .then(async (res) => {
+                // console.log(res.data);
+                let mailError = false;
+                try {
+                    const mailResponse = (await sendMailUsingDowell(formData)).data;
+                    // console.log(mailResponse);    
+                } catch (error) {
+                    console.log(error)
+                    mailError = true;
+                }
 
-                toast.success("Successfully submitted job application!");
+                toast.success(
+                    mailError ? 
+                    "Your application was received but there was an issue trying to send a confirmation mail." 
+                    :
+                    "Successfully submitted job application! Please check your email for a confirmation."
+                );
                 // setDisableNextBtn(false);
                 setShowPublicSuccessModal(true);
 
@@ -404,11 +414,13 @@ const JobApplicationScreen = () => {
                 setPublicUserDetails(updatedPublicUser);
                 sessionStorage.setItem('public_user', JSON.stringify(updatedPublicUser));
 
-            } catch (error) {
-                console.log(error)
+            })
+            .catch(err => {
+                console.log(err)
                 toast.info("Application submission failed. Please try again");
                 setDisableNextBtn(false);
-            }
+            })
+
             return
         }
 
@@ -645,12 +657,17 @@ const JobApplicationScreen = () => {
                                         </div>
                                     }
 
-                                    <div className="job__Application__Item comments">
-                                        <label className="input__Text__Container inputFeedback">
-                                            <h2>Comments/Feedback<span className="required-indicator">*</span></h2>
-                                            <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Write Your Feedback'} value={newApplicationData.feedBack} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FEEDBACK, payload: { stateToChange: mutableNewApplicationStateNames.feedBack, value: e.target.value } })} />
+                                    <div className="job__Application__Item">
+                                        <h2>Comments/Feedback<span className="required-indicator">*</span></h2>
+                                        <label className="input__Text__Container">
+                                            <input aria-label="feedback" type={'text'} placeholder={'Write Your Feedback'} value={newApplicationData.feedBack} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FEEDBACK, payload: { stateToChange: mutableNewApplicationStateNames.feedBack, value: e.target.value } })} />
                                         </label>
                                     </div>
+                                    {/* <div className="job__Application__Item comments">
+                                        <label className="input__Text__Container">
+                                            <h2>Comments/Feedback<span className="required-indicator">*</span></h2>
+                                        </label>
+                                    </div> */}
 
                                     {/* {React.Children.toArray(Object.keys(currentJob.others || {}).map((key) => createInputData(key, currentJob.others[key])))} */}
 

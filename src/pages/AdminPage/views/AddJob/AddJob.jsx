@@ -52,6 +52,7 @@ const AddJob = ({ subAdminView }) => {
   const [thirdOption, setThirdOption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currency, setCurrency] = useState("Select Currency");
+  const [isValidCurrency, setIsValidCurrency] = useState(false);
   const currencyList = ["USD", "NGN", "GBP", "RS"];
 
   const jobTitleRef = useRef(null);
@@ -61,14 +62,10 @@ const AddJob = ({ subAdminView }) => {
   const paymentRef = useRef(null);
   const descriptionRef = useRef(null);
 
-  // const validateFields = (valueEntered, inputName, ref) => {
-  //   if (valueEntered === "") {
-  //     toast.info(`Please enter the ${inputName}`);
-  //     ref.current.scrollIntoView({ behavior: "smooth" });
-  //     return false;
-  //   }
-  //   return true;
-  // };
+  const handleCurrencyChange = (value) => {
+    setCurrency(value);
+    setIsValidCurrency(value !== "Select Currency");
+  };
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
@@ -224,6 +221,11 @@ const AddJob = ({ subAdminView }) => {
     if (newJob.payment === "") {
       toast.info("Please input payment");
       paymentRef.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    if (!isValidCurrency) {
+      toast.info("Please select a currency");
       return;
     }
 
@@ -572,7 +574,7 @@ const AddJob = ({ subAdminView }) => {
                     className="currency"
                     currentSelection={currency}
                     handleSelectionClick={(value) => {
-                      setCurrency(value);
+                      handleCurrencyChange(value);
                     }}
                     selections={currencyList}
                     removeDropDownIcon={false}

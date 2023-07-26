@@ -590,8 +590,8 @@ function EditJob({ subAdminView }) {
                       UI/UX
                     </option>
                     <option
-                      value="Virtual_Assistant"
-                      selected={thirdOption === "Virtual_Assistant"}
+                      value="Virtual Assistant"
+                      selected={thirdOption === "Virtual Assistant"}
                     >
                       Virtual Assistant
                     </option>

@@ -25,7 +25,7 @@ const Add = () => {
       adminView={true}
       adminAlternativePageActive={true}
       hideTitleBar={false}
-      pageTitle={"Add New Job"}
+      pageTitle={"Add Item"}
       showAnotherBtn={true}
       btnIcon={<MdArrowBackIos size="1.5rem" />}
       handleNavIcon={() => navigate(-1)}
