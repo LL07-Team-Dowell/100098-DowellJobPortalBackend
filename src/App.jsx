@@ -66,6 +66,7 @@ import JobLandingLayout from "./layouts/CandidateJobLandingLayout/LandingLayout"
 import TeamThread from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
 import Payment from "./pages/AccountPage/Payment";
+import Add from "./pages/AdminPage/views/Add/Add";
 function App() {
   const { 
     currentUser, 
@@ -316,6 +317,14 @@ function App() {
           element={
             <JobContextProvider>
               <AddJob />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/add"
+          element={
+            <JobContextProvider>
+              <Add />
             </JobContextProvider>
           }
         />

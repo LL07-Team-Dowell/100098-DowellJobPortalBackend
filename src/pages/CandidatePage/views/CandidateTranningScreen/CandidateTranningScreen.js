@@ -343,6 +343,8 @@ function CandidateTranningScreen({ shorlistedJob }) {
 
   }, [])
 
+  console.log(currentUser.userinfo);
+
   const createResp = (itemModule, itemQuestionLink) => {
     const dataToPost = {
       company_id: currentUser.portfolio_info[0].org_id,

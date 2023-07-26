@@ -11,7 +11,7 @@ import LittleLoading from '../../../../../../CandidatePage/views/ResearchAssocia
 import LoadingSpinner from '../../../../../../../components/LoadingSpinner/LoadingSpinner';
 import { BsPlus } from 'react-icons/bs';
 import { FaTimes } from 'react-icons/fa';
-const CreateTask = ({id,members,team,unShowCreateTask}) => {
+const CreateTask = ({id, members, unShowCreateTask, setTasks}) => {
      // USER
   const { currentUser } = useCurrentUserContext();
   // DATA
@@ -61,6 +61,7 @@ const CreateTask = ({id,members,team,unShowCreateTask}) => {
         "completed": false,
         "due_date":new Date().toDateString()
     })
+    setTasks(tasks => [...tasks,{title:name,description:description,completed:false,due_date:new Date().toDateString(), _id:new Date().getTime().toString(),assignee: inputMembers.map(v =>v.member), }])
     })
     // ERROR
     .catch(err => {

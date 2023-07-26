@@ -14,6 +14,7 @@ import LittleLoading from '../../../CandidatePage/views/ResearchAssociatePage/li
 import { updateJob } from '../../../../services/adminServices';
 import { toast } from 'react-toastify';
 import { Tooltip } from "react-tooltip";
+import DropdownButton from '../../../TeamleadPage/components/DropdownButton/Dropdown';
 
 
 function EditJob({ subAdminView }) {
@@ -21,6 +22,8 @@ function EditJob({ subAdminView }) {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [updateLoading, setUpdateLoading] = useState(false)
+  const [currency, setCurrency] = useState("Select Currency");
+  const [isValidCurrency, setIsValidCurrency] = useState(false);
   const [formData, setFormData] = useState({
     job_title: '',
     skills: '',
@@ -50,6 +53,7 @@ function EditJob({ subAdminView }) {
   const [typeofOption, setTypeofOption] = useState(type_of_job || "");
   const [secondOption, setSecondOption] = useState("");
   const [thirdOption, setThirdOption] = useState("");
+  const currencyList = ["USD", "NGN", "GBP", "RS"];
 
   // jobs.map(singleJob => {
   //   if (singleJob.id !== id) return singleJob
@@ -66,6 +70,10 @@ function EditJob({ subAdminView }) {
   // if (formData.general_terms[0] == "") {
   //   alert("empty string not allow")
   // }
+  const handleCurrencyChange = (value) => {
+    setCurrency(value);
+    setIsValidCurrency(value !== "Select Currency");
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -189,48 +197,6 @@ function EditJob({ subAdminView }) {
   }, [id])
 
 
-  // useEffect(() => {
-  //   const formDataUpdates = {};
-  //   switch (true) {
-  //     case job_title?.length > 0:
-  //       formDataUpdates.module = module;
-  //       formDataUpdates.job_title = job_title;
-  //       formDataUpdates.description = description;
-  //       formDataUpdates.skills = skills;
-  //       formDataUpdates.job_category = job_category;
-  //       formDataUpdates.time_interval = time_interval;
-  //       formDataUpdates.payment = payment;
-  //       formDataUpdates.type_of_job = typeofOption;
-  //       formDataUpdates.is_active = is_active;
-  //       formDataUpdates.document_id = _id;
-  //       break;
-  //     case general_terms?.length > 0:
-  //       formDataUpdates.general_terms = general_terms;
-  //       break;
-  //     case technical_specification?.length > 0:
-  //       formDataUpdates.technical_specification = technical_specification;
-  //       break;
-  //     case payment_terms?.length > 0:
-  //       formDataUpdates.payment_terms = payment_terms;
-  //       break;
-  //     case workflow_terms?.length > 0:
-  //       formDataUpdates.workflow_terms = workflow_terms;
-  //       break;
-  //     case other_info?.length > 0:
-  //       formDataUpdates.other_info = other_info;
-  //       break;
-  //     default:
-  //       break;
-  //   }
-
-  //   setFormData(prevState => ({
-  //     ...prevState,
-  //     ...formDataUpdates
-  //   }));
-
-  // }, []);
-
-
   useEffect(() => {
     if (singleJob) {
       const formDataUpdates = {};
@@ -351,7 +317,17 @@ function EditJob({ subAdminView }) {
     })
   }
 
+  const [amount, currecy] = formData.payment.split(' ');
 
+  const handlePayment = (e) => {
+    const value = e.target.value;
+    const trimmedValue = value.toString().trim();
+    const trimmedCurrency = currency.trim();
+
+    const payment = trimmedValue + " " + trimmedCurrency;
+    setFormData({ ...formData, payment: payment })
+  }
+  // console.log(currecy);
 
   if (loading) return <LoadingSpinner />
 
@@ -605,7 +581,7 @@ function EditJob({ subAdminView }) {
                 </div>
 
                 <div className='input__data'>
-                  <label htmlFor="payment">Payment</label>
+                  {/* <label htmlFor="payment">Payment</label>
                   <input
                     type="text"
                     id="payment"
@@ -613,7 +589,31 @@ function EditJob({ subAdminView }) {
                     // placeholder='30$'
                     defaultValue={payment}
                     onChange={handleInputChange}
-                  />
+                  /> */}
+
+                  <div>
+                    <label htmlFor="payment">Payment</label>
+                    <div className="payment_section">
+                      <DropdownButton
+                        className="currency"
+                        currentSelection={currecy}
+                        handleSelectionClick={(value) => {
+                          handleCurrencyChange(value);
+                        }}
+                        selections={currencyList}
+                        removeDropDownIcon={false}
+                      />
+                      <input
+                        type="text"
+                        className="payment_input"
+                        name={"payment"}
+                        defaultValue={amount}
+                        onChange={handlePayment}
+                        placeholder={"Enter your amount"}
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className='input__data'>
                   <label htmlFor="description">Description</label>

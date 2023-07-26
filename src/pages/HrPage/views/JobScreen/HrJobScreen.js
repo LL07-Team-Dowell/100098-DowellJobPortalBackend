@@ -120,7 +120,7 @@ function HrJobScreen() {
     .then((res) => {
       const filteredData = res[0].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
       setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
-      setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
+      setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION && !application.signup_mail_sent));
       setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
       setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
 

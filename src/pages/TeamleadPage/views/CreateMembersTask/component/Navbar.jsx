@@ -15,7 +15,8 @@ const Navbar = ({title , removeButton, color, noButtonBack, addTeamTask, addTeam
               <BiPlus/> <span>Create New</span>
             </NavLink>}
             {
-              addTeamTask && <button className='create-new-team-btn' onClick={handleAddTeamTaskFunction}><BiPlus/> <span>{addTeamTaskTitle}</span></button>
+              addTeamTask && <button className='create-new-team-btn' style={{fontWeight:600,textAlign:'center'}} onClick={handleAddTeamTaskFunction}>
+                <BiPlus style={{fontWeight:600,fontSize:'20px'}}/> <span>{addTeamTaskTitle}</span></button>
             }
         </div>
     </nav>

@@ -301,6 +301,7 @@
     height: 100%;
     font-family: "Poppins", sans-serif;
     cursor: pointer;
+    padding: 1.5% 0;
 }
 
 .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form select::-ms-expand {
@@ -315,7 +316,7 @@
     border-radius: 10px;
     border: 1.5px solid var(--green-color);
     margin-top: 1%;
-    padding: 1.5%;
+    padding: 0 1.5%;
     cursor: pointer;
 }
 
@@ -336,7 +337,25 @@
     border-radius: 10px;
     border: 1.5px solid var(--green-color);
 }
+@media screen and (max-width:600px){
+    .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form input[type=text], 
+    .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form .select__Dropdown__Container {
+        padding:2.5% 2%;
+        /* margin-top: 3%; */
+        font-size: 0.7rem;
+    }
 
+    .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Item {
+        margin-bottom: 6%;
+    }
+
+    .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form .form__Label__Accept__All {
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+}
 .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form input[type=text]:focus-within {
     background-color: var(--pale-grey-color);
 }
@@ -465,7 +484,7 @@
     }
 
     .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form .form__Title__Item {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
         padding-top: 3.2%;
         padding-bottom: 3.2%;
     }
@@ -482,6 +501,19 @@
     .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form .apply__Btn {
         padding-top: 3%;
         padding-bottom: 3%;
+    }
+
+    .candidate__Job__Application__Container {
+        width: 95%;
+    }
+
+    .candidate__Job__Application__Container .job__Application__Form__Wrapper {
+        width: 100%;
+        left: 0;
+    }
+
+    .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Item h2 {
+        font-size: 0.75rem;
     }
 }
 
@@ -505,6 +537,24 @@
     color: #d2c8c8;
 }
 
+.current_job_not_found_container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+}
+.inputFeedback{
+    transform: translateX(-35px);
+    
+}
+@media screen and (max-width:600px){
+    .inputFeedback  {
+    transform: translateX(-15px);
+
+    }
+}
 
 /* @media screen and (max-width:600px) {
     
