@@ -657,12 +657,17 @@ const JobApplicationScreen = () => {
                                         </div>
                                     }
 
-                                    <div className="job__Application__Item comments">
-                                        <label className="input__Text__Container inputFeedback">
-                                            <h2>Comments/Feedback<span className="required-indicator">*</span></h2>
-                                            <input aria-label="link to profile on freelance platform" type={'text'} placeholder={'Write Your Feedback'} value={newApplicationData.feedBack} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FEEDBACK, payload: { stateToChange: mutableNewApplicationStateNames.feedBack, value: e.target.value } })} />
+                                    <div className="job__Application__Item">
+                                        <h2>Comments/Feedback<span className="required-indicator">*</span></h2>
+                                        <label className="input__Text__Container">
+                                            <input aria-label="feedback" type={'text'} placeholder={'Write Your Feedback'} value={newApplicationData.feedBack} onChange={(e) => dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_FEEDBACK, payload: { stateToChange: mutableNewApplicationStateNames.feedBack, value: e.target.value } })} />
                                         </label>
                                     </div>
+                                    {/* <div className="job__Application__Item comments">
+                                        <label className="input__Text__Container">
+                                            <h2>Comments/Feedback<span className="required-indicator">*</span></h2>
+                                        </label>
+                                    </div> */}
 
                                     {/* {React.Children.toArray(Object.keys(currentJob.others || {}).map((key) => createInputData(key, currentJob.others[key])))} */}
 
