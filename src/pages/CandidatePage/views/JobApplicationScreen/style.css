@@ -348,6 +348,13 @@
     .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Item {
         margin-bottom: 6%;
     }
+
+    .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form .form__Label__Accept__All {
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 }
 .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form input[type=text]:focus-within {
     background-color: var(--pale-grey-color);
