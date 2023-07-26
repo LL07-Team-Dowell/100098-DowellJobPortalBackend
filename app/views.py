@@ -1003,7 +1003,7 @@ class get_candidate_application(APIView):
         response = dowellconnection(
             *candidate_management_reports, "fetch", field, update_field
         )
-        print(response)
+        #print(response)
 
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
@@ -3145,7 +3145,8 @@ class Public_apply_job(APIView):
             "hired_on": "",
             "onboarded_on": "",
             "module": data.get("module"),
-            "is_public":True
+            "is_public":True,
+            "signup_mail_sent":False
         }
         update_field = {
             "status": "nothing to update"
@@ -3315,7 +3316,6 @@ class sendMailToPublicCandidate(APIView):
             "data_type": data_type,
             "date_time": date_time,
         }
-        update_field = {"signup_mail_sent": True}
 
         serializer = SendMailToPublicSerializer(data=data)
         if serializer.is_valid():
@@ -3340,18 +3340,29 @@ class sendMailToPublicCandidate(APIView):
                 algorithm="HS256",
             )
             link = f"https://100014.pythonanywhere.com/?hr_invitation={encoded_jwt.decode('utf-8')}"
-            print("------link------", link)
+            #print("------link------", link)
             email_content = INVITATION_MAIL.format(toname,job_role,link)
             mail_response = interview_email(toname,toemail,subject,email_content)
+
+            # update the public api by username==================
+            field = {
+                "username":qr_id
+            }
+            update_field={
+                "signup_mail_sent": True
+                }
+            update_public_application = dowellconnection(*candidate_management_reports, "update", field, update_field)
+            
+
             response = json.loads(mail_response)
             if response["success"]:
                 return Response(
-                    {"success": True, "message": f"Mail sent successfully to {toname}"},
+                    {"success": True, "message": f"Mail sent successfully to {toname}","response":response},
                     status=status.HTTP_200_OK,
                 )
             else:
                 return Response(
-                    {"success": False, "message": "Something went wrong"},
+                    {"message": "Something went wrong","response":response},
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
         else:
