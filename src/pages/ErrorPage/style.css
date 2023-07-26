@@ -1,9 +1,19 @@
+.error__Page__Container {
+    padding: 1rem 0;
+}
+
 .error__Page__Container img{
     display: block;
     max-width: 100%;
     height: 50%;
     width: 50%;
-    margin: -2.5% auto 0;
+    margin: 2.5% auto 0;
+}
+
+.page__Not__Found {
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 1rem;
 }
 
 a{

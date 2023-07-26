@@ -19,9 +19,9 @@ const TeamScreeTaskProgessDetail = ({detail ,setdetail, members, title, tasks, s
         {
             detail === 'in progress' && (
             tasks
-            .filter(task => task.completed === false).length > 0 ?
+            ?.filter(task => task.completed === false).length > 0 ?
             tasks
-            .filter(task => task.completed === false)
+            ?.filter(task => task.completed === false)
             .map(task => <SingleTask 
                     key={task._id}  
                     title={task.title}
@@ -39,9 +39,9 @@ const TeamScreeTaskProgessDetail = ({detail ,setdetail, members, title, tasks, s
         {
             detail === 'completed' && (
             tasks
-            .filter(task => task.completed === true).length > 0 ?
+            ?.filter(task => task.completed === true).length > 0 ?
             tasks
-            .filter(task => task.completed === true)
+            ?.filter(task => task.completed === true)
             .map(task => <SingleTask 
                     key={task._id}  
                     title={task.title}

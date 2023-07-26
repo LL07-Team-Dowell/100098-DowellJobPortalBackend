@@ -19,7 +19,7 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
 
-  const { currentUser } = useCurrentUserContext();
+  const { currentUser, setCurrentUser } = useCurrentUserContext();
 
   useEffect(() => {
 
@@ -47,6 +47,13 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
       if (userSelectedJobs.length >= 1) {
         setAssignedProjects(userSelectedJobs.map((job) => job.project))
         setHired(true);
+        
+        const currentUserDetails = structuredClone(currentUser);
+        currentUserDetails.candidateIsHired = true;
+
+        setCurrentUser(currentUserDetails);
+        sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+        
         setLoading(false);
         return;
       }

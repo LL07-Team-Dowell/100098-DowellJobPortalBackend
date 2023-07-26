@@ -779,7 +779,7 @@ function App() {
   }
 
   // CANDIDATE PAGE
-  return candidateHired ? (
+  return (candidateHired || currentUser.candidateIsHired) ? (
     <Routes>
       <Route
         path="/team-screen-member/:id/team-tasks"
