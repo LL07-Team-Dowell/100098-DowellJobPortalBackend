@@ -3214,7 +3214,6 @@ class createPublicApplication(APIView):
                 field["job_company_id"], generated_links,field["job_name"]
             )
             response = json.loads(response_qr_code)
-            return Response(response)
             fields = {
                 "eventId": get_event_id()["event_id"],
                 "job_company_id": field["job_company_id"],
