@@ -1,8 +1,9 @@
 import styled from '@emotion/styled';
-import React from 'react';
-import TeamScreenThreads from '../teamScreenThreads/teamScreenThreads';
+import React, { useState } from 'react';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 import { FaRegComments } from 'react-icons/fa';
+import { testThreadsToWorkWith } from "../../../../../../../utils/testData";
+import Comment from '../../../../../../CandidatePage/views/TeamsScreen/components/addComment';
 
 const Wrapper = styled.div`
 display: flex;
@@ -126,58 +127,72 @@ align-items: left !important;
 
 const ThreadItem = () => {
     const { currentUser } = useCurrentUserContext();
+    const [text, setText] = useState("");
+    const [threads, setThreads] = useState([]);
+
+    const handleChange = (e) => {
+        setText(e.target.value);
+    };
+    const handleSubmit = () => { };
 
     return (
         <Wrapper>
-            <div className="outside-containre">
-                <div className="section">
-                    <div className="header-items">
-                        <h3>In progresds</h3>
-                        <h3>Completed</h3>
-                    </div>
-                </div>
-
-            </div>
-            <div>
-                <div className="team-screen-threads">
-                    <div className="team-screen-threads-card">
-                        <div className="team-screen-threads-details">
-                            <div>
-                                <img src="https://picsum.photos/id/237/500/300" alt="" />
+            <div className="team-screen-threads">
+                <div className="team-screen-thread-container">
+                    {testThreadsToWorkWith.map((thread) => (
+                        <div className="team-screen-threads-card" key={thread._id}>
+                            <div className="thread-card">
+                                {thread.image ? (
+                                    <div>
+                                        <img src={thread.image} alt="thread" />
+                                    </div>
+                                ) : (
+                                    <></>
+                                )}
+                                <div className="team-screen-threads-container">
+                                    <p>{thread.thread}</p>
+                                    <div>
+                                        <p>Assigned to : Team Development A</p>
+                                        <p>Raised by : {thread.created_by}</p>
+                                    </div>
+                                    <div className="team-screen-threads-progress">
+                                        <div className="progress">
+                                            <p>Created</p>
+                                            <div className="threads-progress"></div>
+                                        </div>
+                                        <div className="progress">
+                                            <p>In progress</p>
+                                            <div className="threads-progress"></div>
+                                        </div>
+                                        <div className="progress">
+                                            <p>Completed</p>
+                                            <div className="threads-progress"></div>
+                                        </div>
+                                        <div className="progress">
+                                            <p>Resolved</p>
+                                            <div className="threads-progress"></div>
+                                        </div>
+                                    </div>
+                                    <div className="comments-section">
+                                        <p className="comments">
+                                            <FaRegComments onClick={handleSubmit} />
+                                            &bull;
+                                            <span>10 Comments</span>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="team-screen-threads-container">
-                                <p>Fixed the Login button</p>
-                                <div>
-                                    <p>Assigned to :</p>
-                                    <p>Raised by : </p>
-                                </div>
-                                <div className="team-screen-threads-progress">
-                                    <div className="progress">
-                                        <p>Created</p>
-                                        <div className="threads-created"></div>
-                                    </div>
-                                    <div className="progress">
-                                        <p>In progress</p>
-                                        <div className="threads-progress"></div>
-                                    </div>
-                                    <div className="progress">
-                                        <p>Completed</p>
-                                        <div className="threads-progress"></div>
-                                    </div>
-                                    <div className="progress">
-                                        <p>Resolved</p>
-                                        <div className="threads-progress"></div>
-                                    </div>
-                                </div>
-                                <div className="comments-section">
-                                    <p className="comments">
-                                        <FaRegComments />
-                                        &bull; <span>10 Comments</span>
-                                    </p>
-                                </div>
+                            <div className="comment-action">
+                                <Comment
+                                    text={text}
+                                    handleChange={handleChange}
+                                    comments={thread.comments[0].comment}
+                                    user={thread.comments[0].user}
+                                    commentInput="comment-input"
+                                />
                             </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
         </Wrapper>
