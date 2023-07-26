@@ -275,17 +275,18 @@ class SendMailToPublicSerializer(serializers.Serializer):
     
 
 class UpdateuserSerializer(serializers.Serializer):
-        qr_id = serializers.CharField(allow_null=False, allow_blank=False)
-        username = serializers.CharField(allow_null=False, allow_blank=False)
-        portfolio_name = serializers.CharField(allow_null=False, allow_blank=False)
-        job_role = serializers.CharField(allow_null=False, allow_blank=False)
-        date_time = serializers.CharField(allow_null=False, allow_blank=False)
-        toemail = serializers.CharField(allow_null=False, allow_blank=False)
+    qr_id = serializers.CharField(allow_null=False, allow_blank=False)
+    username = serializers.CharField(allow_null=False, allow_blank=False)
+    portfolio_name = serializers.CharField(allow_null=False, allow_blank=False)
+    job_role = serializers.CharField(allow_null=False, allow_blank=False)
+    date_time = serializers.CharField(allow_null=False, allow_blank=False)
+    toemail = serializers.CharField(allow_null=False, allow_blank=False)
 
 class ThreadsSerializer(serializers.Serializer):
     thread = serializers.CharField(allow_null=False, allow_blank=False)
     image = serializers.DictField(allow_null=False)
     created_by = serializers.CharField(allow_null=False, allow_blank=False)
+    team_id = serializers.CharField(allow_null=False, allow_blank=False)
     team_alerted_id = serializers.CharField(allow_null=False, allow_blank=False)
     current_status = serializers.CharField(allow_null=False, allow_blank=False)
     PREVIOUS_STATUS_CHOICE = (("", ""),("Created", "Created"),("Progress", "Progress"), ("Completed", "Completed"), ("Resolved", "Resolved"))

@@ -1,6 +1,7 @@
 import json
 import requests
 import threading
+from collections import Counter
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -3420,6 +3421,8 @@ class Thread_Apis(APIView):
         print(request.data,"==================")
         #data = json.loads(request.data["form_data"])
         data= request.data
+        request.data["current_status"]= "Created"
+        request.data["previous_status"]= ""
 
         image = request.FILES.get("image")
         image_response = save_image(image)
@@ -3429,8 +3432,9 @@ class Thread_Apis(APIView):
             "thread": data.get("thread"),
             "image": image_response,
             "created_by": data.get("created_by"),
+            "team_id":data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
-            "current_status": data.get("current_status"),
+            "current_status": request.data["current_status"],
             "previous_status": [],
         }
         update_field = {}
@@ -3452,7 +3456,8 @@ class Thread_Apis(APIView):
                 )
             else:
                 return Response(
-                    {"message": "Thread failed to be Created"},
+                    {"message": "Thread failed to be Created",
+                     "info": json.loads(insert_response)},
                     status=status.HTTP_304_NOT_MODIFIED,
                 )
         else:
@@ -3485,11 +3490,11 @@ class Thread_Apis(APIView):
 
             if json.loads(get_response)["isSuccess"] == True:
                 return Response(
-                    {"data": response}, status=status.HTTP_200_OK
+                    {"message": f"Thread with id-{data.get('document_id')}","data": response}, status=status.HTTP_200_OK
                 )
             else:
                 return Response(
-                    {"message": "Failed to fetch"}, status=status.HTTP_400_BAD_REQUEST
+                    {"message": "Failed to fetch","data": response}, status=status.HTTP_400_BAD_REQUEST
                 )
         else:
             return Response(
@@ -3507,22 +3512,41 @@ class Thread_Apis(APIView):
             }
             
             #check for previous status
+            get_response = dowellconnection(*thread_report_module, "fetch", field, {})
+            prev = json.loads(get_response)["data"][0]["previous_status"]
+
             previous_status=[]
+
             if data.get("current_status") == "Created":
                 previous_status=[]
             elif data.get("current_status") == "Progress":
                 previous_status=["Created"]
+
             elif data.get("current_status") == "Completed":
+                if not "Created" in prev:
+                    return Response(
+                        {"message": "Failed to update Thread",
+                         "errors":" 'Created' is not in previous status. Firstly, current previous status to 'Progress' "},
+                        status=status.HTTP_400_BAD_REQUEST)
                 previous_status=["Created","Progress"]
             elif data.get("current_status") == "Resolved":
+                if not "Created" in prev:
+                    return Response(
+                        {"message": "Failed to update Thread",
+                         "errors":" 'Created' is not in previous status. Firstly, current previous status to 'Progress' "},
+                        status=status.HTTP_400_BAD_REQUEST)
+                if not "Progress" in prev:
+                    return Response(
+                        {"message": "Failed to update Thread",
+                         "errors":" 'Progress' is not in previous status. Firstly, current previous status to 'Completed' "},
+                        status=status.HTTP_400_BAD_REQUEST)
                 previous_status=["Created","Progress","Completed"]
 
             update_field = {
                 "current_status": data.get("current_status"),
                 "previous_status":previous_status
             }
-            """serializer = ThreadsSerializer(data=request.data)
-            if serializer.is_valid():"""
+            
             update_response = dowellconnection(
                 *thread_report_module, "update", field, update_field
             )
@@ -3530,16 +3554,46 @@ class Thread_Apis(APIView):
             print(update_response)
             if json.loads(update_response)["isSuccess"] == True:
                 return Response(
-                    {"data": json.loads(update_response)}, status=status.HTTP_200_OK
+                    {"message": f"Thread with id-{data.get('document_id')} has been successfully updated",
+                     "data": json.loads(update_response)}, status=status.HTTP_200_OK
                 )
             else:
                 return Response(
-                    {"message": "Failed to fetch"}, status=status.HTTP_400_BAD_REQUEST
+                    {"message": "Failed to update Thread","data": json.loads(update_response)}, status=status.HTTP_400_BAD_REQUEST
                 )
         else:
             return Response(
                 {"message": "Parameters are not valid","errors":data},
                 status=status.HTTP_400_BAD_REQUEST,
+            )
+
+class GetTeamThreads(APIView):
+    def get(self, request, team_id):
+        field = {
+            "team_id": team_id,
+        }
+        update_field = {}
+    
+        get_response = dowellconnection(
+            *thread_report_module, "fetch", field, update_field
+        )
+        #print(get_response)
+        threads = []
+        for thread in json.loads(get_response)["data"]:
+            if not len(json.loads(get_response)["data"]) <= 0:
+                get_comment = dowellconnection(
+                        *comment_report_module, "fetch", {"thread_id":thread["_id"]}, update_field
+                    )
+                thread["comments"]= json.loads(get_comment)
+                threads.append(thread)
+
+        if json.loads(get_response)["isSuccess"] == True:
+            return Response(
+                {"message": f"List of Threads with team id-{team_id}","data": threads}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"message": "Failed to fetch","data": threads}, status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -3562,19 +3616,20 @@ class Comment_Apis(APIView):
             if json.loads(insert_response)["isSuccess"] == True:
                 return Response(
                     {
-                        "message": "Thread created successfully",
+                        "message": "Comment created successfully",
                         "info": json.loads(insert_response),
                     },
                     status=status.HTTP_201_CREATED,
                 )
             else:
                 return Response(
-                    {"message": "Thread failed to be Created"},
+                    {"message": "Comment failed to be Created",
+                     "info": json.loads(insert_response)},
                     status=status.HTTP_304_NOT_MODIFIED,
                 )
         else:
             return Response(
-                {"message": "Parameters are not valid"},
+                {"message": "Parameters are not valid","error":serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -3593,15 +3648,17 @@ class Comment_Apis(APIView):
             print(insert_response)
             if json.loads(insert_response)["isSuccess"] == True:
                 return Response(
-                    {"data": json.loads(insert_response)}, status=status.HTTP_200_OK
+                    {"message": f"Comment with id-{data.get('document_id')}",
+                     "data": json.loads(insert_response)}, status=status.HTTP_200_OK
                 )
             else:
                 return Response(
-                    {"message": "Failed to fetch"}, status=status.HTTP_400_BAD_REQUEST
+                    {"message": "Failed to fetch",
+                     "info": json.loads(insert_response)}, status=status.HTTP_400_BAD_REQUEST
                 )
         else:
             return Response(
-                {"message": "Parameters are not valid"},
+                {"message": "Parameters are not valid","error":data},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -3619,11 +3676,12 @@ class Comment_Apis(APIView):
         print(insert_response)
         if json.loads(insert_response)["isSuccess"] == True:
             return Response(
-                {"data": json.loads(insert_response)}, status=status.HTTP_200_OK
+                {"message":f"Comment with id-{data.get('document_id')} has been updated successfully",
+                 "data": json.loads(insert_response)}, status=status.HTTP_200_OK
             )
         else:
             return Response(
-                {"message": "Failed to fetch"}, status=status.HTTP_400_BAD_REQUEST
+                {"message": "Failed to update Comment","data": json.loads(insert_response)}, status=status.HTTP_400_BAD_REQUEST
             )
         
 
@@ -3634,10 +3692,27 @@ class GenerateReport(APIView):
         field = {   }
         update_field = {    }
         data = {  }
+
+        job  = dowellconnection(*jobs, "fetch", field, update_field)
+        j_ds = [t["_id"] for t in json.loads(job)['data']]
+        data["no_of_jobs"] = len(j_ds)
+
+        data["active_jobs"] = [t["_id"] for t in json.loads(job)['data'] 
+                                    if "_id" in t.keys()]
+        
         
         applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
         #print(applications)
         data["applications"]=len(json.loads(applications)['data'])
+
+        ids = [t["_id"] for t in json.loads(applications)['data'] 
+                                    if "_id" in t.keys()]
+        counter = Counter(ids)
+        most_applied_job = counter.most_common(1)[0][0]
+        least_applied_job = counter.most_common()[-1][0]
+        #print(most_common,"========", least_common)
+        data["most_applied_job"]={"_id":most_applied_job}
+        data["least_applied_job"]={"_id":least_applied_job}
 
         hired = dowellconnection(*candidate_management_reports, "fetch", {"status": "hired"}, update_field)
         #print(json.loads(hired)["data"])
@@ -3673,6 +3748,11 @@ class GenerateReport(APIView):
                                             ])
 
         data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks"])*100)+" %"
+
+
+ 
+        
+
 
         
         

@@ -92,6 +92,7 @@ urlpatterns = [
 
     # Thread-------------------------------------
     path('fetch_thread/',Thread_Apis.as_view()),
+    path('fetch_team_thread/<str:team_id>/',GetTeamThreads.as_view()),
     path('create_thread/',Thread_Apis.as_view()),
     path('update_thread/', Thread_Apis.as_view()),
 
