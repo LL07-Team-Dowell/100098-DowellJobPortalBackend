@@ -163,22 +163,6 @@ class accounts_onboard_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
-            """# call the notification api-----
-            notify_data = {
-                "created_by": data.get('applicant'),
-                "org_id": data.get('company_id'),
-                "org_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "from_field": data.get('company_id'),
-                "to": data.get('applicant'),
-                "desc": "Notification for action",
-                "meant_for": data.get('applicant'),
-                "type_of_notification": "notify"
-            }
-            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-            create_notification = call_notification(url=url, request_type='post', data=notify_data)
-            """
             # continue with the onboard candidate api----------------
             field = {
                 "_id": data.get("document_id"),
@@ -194,11 +178,8 @@ class accounts_onboard_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
-                # "company_name": data.get('company_name'),
-                # "user_type": data.get('user_type'),
                 "onboarded_on": data.get("onboarded_on"),
-                # "notified": create_notification['isSuccess'],
-                # "notification_id": create_notification['inserted_id']
+               
             }
             serializer = AccountSerializer(data=data)
             if serializer.is_valid():
@@ -207,7 +188,6 @@ class accounts_onboard_candidate(APIView):
 
                 def call_dowellconnection(*args):
                     d = dowellconnection(*args)
-                    # print(d,*args,"=======================")
                     if "candidate_report" in args:
                         c_r.append(d)
                     if "account_report" in args:
@@ -230,7 +210,6 @@ class accounts_onboard_candidate(APIView):
                 )
 
                 insert_response_thread.start()
-                # print(update_response_thread,insert_response_thread)
                 update_response_thread.join()
                 insert_response_thread.join()
 
@@ -238,14 +217,11 @@ class accounts_onboard_candidate(APIView):
                     not update_response_thread.is_alive()
                     and not insert_response_thread.is_alive()
                 ):
-                    # print(json.loads(c_r[0])["isSuccess"],"====",a_r)
 
                     if json.loads(c_r[0])["isSuccess"] == True:
                         return Response(
                             {
                                 "message": f"Candidate has been {data.get('status')}",
-                                # "notification": {"notified": insert_to_hr_report['notified'],
-                                #                   "notification_id": insert_to_hr_report['notification_id']},
                                 "response": json.loads(c_r[0]),
                             },
                             status=status.HTTP_201_CREATED,
@@ -277,38 +253,12 @@ class accounts_update_project(APIView):
     def patch(self, request):
         data = request.data
         if data:
-            """# call the notification api-----
-            notify_data = {
-                "created_by": data.get('applicant'),
-                "org_id": data.get('company_id'),
-                "org_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "from_field": data.get('company_id'),
-                "to": data.get('applicant'),
-                "desc": "Notification for action",
-                "meant_for": data.get('applicant'),
-                "type_of_notification": "notify"
-            }
-            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-            create_notification = call_notification(url=url, request_type='post', data=notify_data)
-            print(create_notification, "================")"""
-
-            # continue update project api-----
             field = {
                 "_id": data.get("document_id"),
             }
             update_field = {
                 "payment": data.get("payment"),
                 "project": data.get("project"),
-                # "applicant": data.get("applicant"),
-                # "company_id": data.get("company_id"),
-                # "company_name": data.get('company_name'),
-                # "data_type": data.get('data_type'),
-                # "user_type": data.get('user_type'),
-                # "notified": create_notification['isSuccess'],
-                # "updated": "True",
-                # "notification_id": create_notification['inserted_id']
             }
 
             c_r = []
@@ -316,7 +266,6 @@ class accounts_update_project(APIView):
 
             def call_dowellconnection(*args):
                 d = dowellconnection(*args)
-                # print(d,*args,"=======================")
                 if "candidate_report" in args:
                     c_r.append(d)
                 if "account_report" in args:
@@ -334,7 +283,6 @@ class accounts_update_project(APIView):
             )
 
             insert_response_thread.start()
-            # print(update_response_thread,insert_response_thread)
             update_response_thread.join()
             insert_response_thread.join()
 
@@ -342,14 +290,10 @@ class accounts_update_project(APIView):
                 not update_response_thread.is_alive()
                 and not insert_response_thread.is_alive()
             ):
-                # print(c_r,'::::::')
                 if json.loads(c_r[0])["isSuccess"] == True:
                     return Response(
                         {
                             "message": f"Candidate project and payment has been updated",
-                            # "notification": {"notified": update_field['notified'],
-                            #                 "updated": update_field['updated'],
-                            #                 "notification_id": update_field['notification_id']},
                             "response": json.loads(c_r[0]),
                         },
                         status=status.HTTP_201_CREATED,
@@ -368,29 +312,11 @@ class accounts_update_project(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class accounts_rehire_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
-            """# call the notification api-----
-            notify_data = {
-                "created_by": data.get('applicant'),
-                "org_id": data.get('company_id'),
-                "org_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "from_field": data.get('company_id'),
-                "to": data.get('applicant'),
-                "desc": "Notification for action",
-                "meant_for": data.get('applicant'),
-                "type_of_notification": "notify"
-            }
-            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-            create_notification = call_notification(url=url, request_type='post', data=notify_data)
-            """
             # continue with the rehire candidate api----------------
 
             field = {
@@ -398,14 +324,6 @@ class accounts_rehire_candidate(APIView):
             }
             update_field = {
                 "status": data.get("status"),
-                # "applicant": data.get("applicant"),
-                # "company_id": data.get("company_id"),
-                # "company_name": data.get('company_name'),
-                # "data_type": data.get('data_type'),
-                # "user_type": data.get('user_type'),
-                # "notified": create_notification['isSuccess'],
-                # "rehired": "True",
-                # "notification_id": create_notification['inserted_id']
             }
 
             c_r = []
@@ -431,7 +349,6 @@ class accounts_rehire_candidate(APIView):
             )
 
             insert_response_thread.start()
-            # print(update_response_thread,insert_response_thread)
             update_response_thread.join()
             insert_response_thread.join()
 
@@ -443,9 +360,6 @@ class accounts_rehire_candidate(APIView):
                     return Response(
                         {
                             "message": f"Candidate has been rehired",
-                            # "notification": {"notified": update_field['notified'],
-                            #                 "rehired": update_field['rehired'],
-                            #                 "notification_id": update_field['notification_id']},
                             "response": json.loads(c_r[0]),
                         },
                         status=status.HTTP_200_OK,
@@ -472,22 +386,6 @@ class accounts_reject_candidate(APIView):
         data = request.data
         print(data)
         if data:
-            """# call the notification api-----
-            notify_data = {
-                "created_by": data.get('applicant'),
-                "org_id": data.get('company_id'),
-                "org_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "from_field": data.get('company_id'),
-                "to": data.get('applicant'),
-                "desc": "Notification for action",
-                "meant_for": data.get('applicant'),
-                "type_of_notification": "notify"
-            }
-            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-            create_notification = call_notification(url=url, request_type='post', data=notify_data)
-            """
             # continue with the reject candidate api----------------
 
             field = {
@@ -507,11 +405,7 @@ class accounts_reject_candidate(APIView):
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
                 "rejected_on": data.get("rejected_on"),
-                # "company_name": data.get('company_name'),
-                # "user_type": data.get('user_type'),
-                # "notified": create_notification['isSuccess'],
-                # "selected": "True",
-                # "notification_id": create_notification['inserted_id']
+
             }
             serializer = RejectSerializer(data=data)
             if serializer.is_valid():
@@ -569,9 +463,6 @@ class accounts_reject_candidate(APIView):
                         return Response(
                             {
                                 "message": f"Candidate has been Rejected",
-                                # "notification": {"notified": insert_to_account_report['notified'],
-                                #                "rejected": update_field['rejected'],
-                                #                "notification_id": insert_to_account_report['notification_id']},
                                 "response": json.loads(c_r[0]),
                             },
                             status=status.HTTP_200_OK,
@@ -605,23 +496,6 @@ class accounts_reject_candidate(APIView):
 class admin_create_jobs(APIView):
     def post(self, request):
         data = request.data
-        """# call the notification api-----
-        notify_data = {
-            "created_by": data.get('applicant'),
-            "org_id": data.get('company_id'),
-            "org_name": data.get('company_name'),
-            "data_type": data.get('data_type'),
-            "user_type": data.get('user_type'),
-            "from_field": data.get('company_id'),
-            "to": data.get('applicant'),
-            "desc": "Notification for action",
-            "meant_for": data.get('applicant'),
-            "type_of_notification": "notify"
-        }
-        url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-        create_notification = call_notification(url=url, request_type='post', data=notify_data)
-        #print(create_notification, "=============")"""
-
         # continue create job api-----
         field = {
             "eventId": get_event_id()["event_id"],
@@ -645,26 +519,15 @@ class admin_create_jobs(APIView):
             "data_type": data.get("data_type"),
             "created_by": data.get("created_by"),
             "created_on": data.get("created_on"),
-            # "applicant": data.get("applicant"),
-            # "company_name": data.get('company_name'),
-            # "user_type": data.get('user_type'),
-            # "notified": create_notification['isSuccess'],
-            # "created": "True",
-            # "notification_id": create_notification['inserted_id']
         }
         update_field = {"status": "nothing to update"}
         serializer = AdminSerializer(data=field)
-        # print(serializer,"=========================")
         if serializer.is_valid():
             response = dowellconnection(*jobs, "insert", field, update_field)
-            # print(response,"=========================")
             if json.loads(response)["isSuccess"] == True:
                 return Response(
                     {
                         "message": "Job creation was successful.",
-                        # "notification": {"notified": field['notified'],
-                        #                      "created": field['created'],
-                        #                      "notification_id": field['notification_id']},
                         "response": json.loads(response),
                     },
                     status=status.HTTP_201_CREATED,
@@ -691,7 +554,6 @@ class admin_get_job(APIView):
         field = {"_id": document_id}
         update_field = {"status": "nothing to update"}
         response = dowellconnection(*jobs, "fetch", field, update_field)
-        # print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
                 return Response(
@@ -724,7 +586,6 @@ class admin_get_all_jobs(APIView):
         }
         update_field = {"status": "nothing to update"}
         response = dowellconnection(*jobs, "fetch", field, update_field)
-        # print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
                 return Response(
@@ -822,8 +683,6 @@ class candidate_apply_job(APIView):
         applicant = dowellconnection(
             *hr_management_reports, "fetch", field, update_field
         )
-        # rejected_reports_modules = []
-        # rejected_reports_modules.append(applicant)
 
         # Check if applicant is present in rejected_reports_modules
         if applicant is not None:
@@ -831,15 +690,11 @@ class candidate_apply_job(APIView):
                 datetime.datetime.strptime(item["rejected_on"], "%m/%d/%Y")
                 for item in json.loads(applicant)["data"]
             ]
-            # print(rejected_dates,"=============================")
             if len(rejected_dates) >= 1:
                 rejected_on = max(rejected_dates)  # get last date
-                # print(rejected_on, "=======================")
                 if rejected_on:
                     three_months_after = rejected_on + relativedelta(months=3)
-                    # print(rejected_on, "=======================", three_months_after)
                     current_date = datetime.datetime.today()
-                    # print(rejected_on, "==========", three_months_after, "=========", current_date)
                     if (
                         current_date >= three_months_after
                         or current_date == datetime.datetime.today()
@@ -866,23 +721,7 @@ class candidate_apply_job(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        """# call the notification api-----
-        notify_data = {
-            "created_by": data.get('applicant'),
-            "org_id": data.get('company_id'),
-            "org_name": data.get('company_name'),
-            "data_type": data.get('data_type'),
-            "user_type": data.get('user_type'),
-            "from_field": data.get('company_id'),
-            "to": data.get('applicant'),
-            "desc": "Notification for action",
-            "meant_for": data.get('applicant'),
-            "type_of_notification": "notify"
-        }
-        url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-        details = call_notification(url=url, request_type='post', data=notify_data)
-        #print(details,"=========+++")"""
-
+      
         # continue apply api-----
         field = {
             "eventId": get_event_id()["event_id"],
@@ -921,8 +760,7 @@ class candidate_apply_job(APIView):
             "hired_on": "",
             "onboarded_on": "",
             "module": data.get("module")
-            # "notified": details['isSuccess'],
-            # "notification_id": details['inserted_id']
+
         }
         update_field = {"status": "nothing to update"}
 
@@ -936,8 +774,6 @@ class candidate_apply_job(APIView):
                     {
                         "message": "Application received.",
                         "Eligibility": self.is_eligible_to_apply(applicant_email),
-                        # "notification": {"notified": field['notified'],
-                        #                "notification_id": field['notification_id']},
                         "response": json.loads(response),
                     },
                     status=status.HTTP_201_CREATED,
@@ -1003,7 +839,6 @@ class get_candidate_application(APIView):
         response = dowellconnection(
             *candidate_management_reports, "fetch", field, update_field
         )
-        #print(response)
 
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
@@ -1038,7 +873,6 @@ class get_all_onboarded_candidate(APIView):
         data = company_id
         if data:
             field = {
-                # "company_id": company_id,
                 "status": "onboarded"
             }
             update_field = {"status": "onboarded"}
@@ -1047,7 +881,6 @@ class get_all_onboarded_candidate(APIView):
             )
 
             if json.loads(response)["isSuccess"] == True:
-                # print(response,"==========================++++")
                 if len(json.loads(response)["data"]) == 0:
                     return Response(
                         {
@@ -1087,10 +920,7 @@ class delete_candidate_application(APIView):
         response = dowellconnection(
             *candidate_management_reports, "update", field, update_field
         )
-        print(
-            response,
-            "================================",
-        )
+        
         if json.loads(response)["isSuccess"] == True:
             return Response(
                 {
@@ -1118,22 +948,6 @@ class hr_shortlisted_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
-            """# call the notification api-----
-            notify_data = {
-                "created_by": data.get('applicant'),
-                "org_id": data.get('company_id'),
-                "org_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "from_field": data.get('company_id'),
-                "to": data.get('applicant'),
-                "desc": "Notification for action",
-                "meant_for": data.get('applicant'),
-                "type_of_notification": "notify"
-            }
-            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-            details = call_notification(url=url, request_type='post', data=notify_data)
-            """
             # continue shortlisting api-----
             field = {
                 "_id": data.get("document_id"),
@@ -1149,12 +963,8 @@ class hr_shortlisted_candidate(APIView):
                 "hr_remarks": data.get("hr_remarks"),
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
-                # "company_name": data.get('company_name'),
                 "data_type": data.get("data_type"),
-                # "user_type": data.get('user_type'),
                 "shortlisted_on": data.get("shortlisted_on"),
-                # "notified": details['isSuccess'],
-                # "notification_id": details['inserted_id']
             }
 
             serializer = HRSerializer(data=data)
@@ -1199,8 +1009,6 @@ class hr_shortlisted_candidate(APIView):
                         return Response(
                             {
                                 "message": f"Candidate has been {data.get('status')}",
-                                # "notification": {"notified": insert_to_hr_report['notified'],
-                                #                    "notification_id": insert_to_hr_report['notification_id']},
                                 "response": json.loads(c_r[0]),
                             },
                             status=status.HTTP_201_CREATED,
@@ -1231,23 +1039,6 @@ class hr_selected_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
-            """# call the notification api-----
-            notify_data = {
-                "created_by": data.get('applicant'),
-                "org_id": data.get('company_id'),
-                "org_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "from_field": data.get('company_id'),
-                "to": data.get('applicant'),
-                "desc": "Notification for action",
-                "meant_for": data.get('applicant'),
-                "type_of_notification": "notify"
-            }
-            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-            create_notification = call_notification(url=url, request_type='post', data=notify_data)
-            print(create_notification, "================")"""
-
             # continue selection api-----
             field = {
                 "_id": data.get("document_id"),
@@ -1267,13 +1058,8 @@ class hr_selected_candidate(APIView):
                 "product_discord_link": data.get("product_discord_link"),
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
-                # "company_name": data.get('company_name'),
                 "data_type": data.get("data_type"),
-                # "user_type": data.get('user_type'),
                 "selected_on": data.get("selected_on"),
-                # "notified": create_notification['isSuccess'],
-                # "selected": "True",
-                # "notification_id": create_notification['inserted_id']
             }
 
             c_r = []
@@ -1305,7 +1091,6 @@ class hr_selected_candidate(APIView):
             )
 
             insert_response_thread.start()
-            # print(update_response_thread,insert_response_thread)
             update_response_thread.join()
             insert_response_thread.join()
 
@@ -1313,18 +1098,10 @@ class hr_selected_candidate(APIView):
                 not update_response_thread.is_alive()
                 and not insert_response_thread.is_alive()
             ):
-                """# call the mark as seen notification api-----
-                n_id = insert_to_hr_report['notification_id']
-                url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
-                patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
-                """
                 if json.loads(c_r[0])["isSuccess"] == True:
                     return Response(
                         {
                             "message": f"Candidate has been {data.get('status')}",
-                            # "notification": {"notified": insert_to_hr_report['notified'],
-                            #                 "seen": patch_notification['isSuccess'],
-                            #                    "notification_id": insert_to_hr_report['notification_id']},
                             "response": json.loads(c_r[0]),
                         },
                         status=status.HTTP_200_OK,
@@ -1355,23 +1132,6 @@ class hr_reject_candidate(APIView):
         data = request.data
         print(data)
         if data:
-            """# call the notification api-----
-            notify_data = {
-                "created_by": data.get('applicant'),
-                "org_id": data.get('company_id'),
-                "org_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "from_field": data.get('company_id'),
-                "to": data.get('applicant'),
-                "desc": "Notification for action",
-                "meant_for": data.get('applicant'),
-                "type_of_notification": "notify"
-            }
-            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-            create_notification = call_notification(url=url, request_type='post', data=notify_data)
-            print(create_notification, "================")"""
-
             # continue reject api-----
             field = {
                 "_id": data.get("document_id"),
@@ -1390,11 +1150,6 @@ class hr_reject_candidate(APIView):
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
                 "rejected_on": data.get("rejected_on"),
-                # "company_name": data.get('company_name'),
-                # "user_type": data.get('user_type'),
-                # "notified": create_notification['isSuccess'],
-                # "Rejected": "True",
-                # "notification_id": create_notification['inserted_id']
             }
 
         serializer = RejectSerializer(data=data)
@@ -1434,18 +1189,10 @@ class hr_reject_candidate(APIView):
             hr_thread.join()
 
             if not candidate_thread.is_alive() and not hr_thread.is_alive():
-                """# call the mark as seen notification api-----
-                n_id = insert_to_hr_report['notification_id']
-                url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
-                patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
-                """
                 if json.loads(candidate_report_result[0])["isSuccess"]:
                     return Response(
                         {
                             "message": f"Candidate has been {insert_to_hr_report['status']}",
-                            # "notification": {"notified": insert_to_hr_report['notified'],
-                            #                "rejected": patch_notification['isSuccess'],
-                            #                    "notification_id": insert_to_hr_report['notification_id']},
                             "response": json.loads(candidate_report_result[0]),
                         },
                         status=status.HTTP_201_CREATED,
@@ -1480,22 +1227,6 @@ class lead_hire_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
-            """# call the notification api-----
-            notify_data = {
-                "created_by": data.get('applicant'),
-                "org_id": data.get('company_id'),
-                "org_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "from_field": data.get('company_id'),
-                "to": data.get('applicant'),
-                "desc": "Notification for action",
-                "meant_for": data.get('applicant'),
-                "type_of_notification": "notify"
-            }
-            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-            create_notification = call_notification(url=url, request_type='post', data=notify_data)
-            print(create_notification, "================")"""
             # continue hire api-----
             field = {
                 "_id": data.get("document_id"),
@@ -1511,13 +1242,9 @@ class lead_hire_candidate(APIView):
                 "teamlead_remarks": data.get("teamlead_remarks"),
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
-                # "company_name": data.get('company_name'),
                 "data_type": data.get("data_type"),
-                # "user_type": data.get('user_type'),
                 "hired_on": data.get("hired_on"),
-                # "notified": create_notification['isSuccess'],
-                # "Hired": "True",
-                # "notification_id": create_notification['inserted_id']
+ 
             }
             serializer = LeadSerializer(data=data)
             if serializer.is_valid():
@@ -1549,7 +1276,6 @@ class lead_hire_candidate(APIView):
                 )
 
                 insert_response_thread.start()
-                # print(update_response_thread,insert_response_thread)
                 update_response_thread.join()
                 insert_response_thread.join()
 
@@ -1557,18 +1283,10 @@ class lead_hire_candidate(APIView):
                     not update_response_thread.is_alive()
                     and not insert_response_thread.is_alive()
                 ):
-                    """# call the mark as seen notification api-----
-                    n_id = insert_to_lead_report['notification_id']
-                    url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
-                    patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
-                    """
                     if json.loads(c_r[0])["isSuccess"] == True:
                         return Response(
                             {
                                 "message": f"Candidate has been {insert_to_lead_report['status']}",
-                                # "notification": {"notified": insert_to_lead_report['notified'],
-                                #                "Hired": patch_notification['isSuccess'],
-                                #                    "notification_id": insert_to_lead_report['notification_id']},
                                 "response": json.loads(c_r[0]),
                             },
                             status=status.HTTP_200_OK,
@@ -1600,22 +1318,6 @@ class lead_rehire_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
-            """# call the notification api-----
-            notify_data = {
-                "created_by": data.get('applicant'),
-                "org_id": data.get('company_id'),
-                "org_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "from_field": data.get('company_id'),
-                "to": data.get('applicant'),
-                "desc": "Notification for action",
-                "meant_for": data.get('applicant'),
-                "type_of_notification": "notify"
-            }
-            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-            create_notification = call_notification(url=url, request_type='post', data=notify_data)
-            print(create_notification, "================")"""
             # continue rehire api-----
             field = {
                 "_id": data.get("document_id"),
@@ -1623,30 +1325,13 @@ class lead_rehire_candidate(APIView):
             update_field = {
                 "rehire_remarks": data.get("rehire_remarks"),
                 "status": "Rehired",
-                # "applicant": data.get('applicant'),
-                # "company_id": data.get('company_id'),
-                # "company_name": data.get('company_name'),
-                # "data_type": data.get('data_type'),
-                # "user_type": data.get('user_type'),
-                # "rehired_on": data.get('rehired_on'),
-                # "notified": create_notification['isSuccess'],
-                # "Rehired": "True",
-                # "notification_id": create_notification['inserted_id']
             }
             update_response = dowellconnection(
                 *candidate_management_reports, "update", field, update_field
             )
             print(update_response)
             if json.loads(update_response)["isSuccess"] == True:
-                """# call the mark as seen notification api-----
-                n_id = update_field['notification_id']
-                url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
-                patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
-"""
                 return Response({"message": f"Candidate has been {update_field['status']}",
-                                 #"notification": {"notified": update_field['notified'],
-                                  #                       "rehired": patch_notification['isSuccess'],
-                                  #                    "notification_id": update_field['notification_id']},
                                 "response":json.loads(update_response)}, status=status.HTTP_200_OK)
             else:
                 return Response(
@@ -1669,22 +1354,6 @@ class lead_reject_candidate(APIView):
         data = request.data
         print(data)
         if data:
-            """# call the notification api-----
-            notify_data = {
-                "created_by": data.get('applicant'),
-                "org_id": data.get('company_id'),
-                "org_name": data.get('company_name'),
-                "data_type": data.get('data_type'),
-                "user_type": data.get('user_type'),
-                "from_field": data.get('company_id'),
-                "to": data.get('applicant'),
-                "desc": "Notification for action",
-                "meant_for": data.get('applicant'),
-                "type_of_notification": "notify"
-            }
-            url = 'https://100092.pythonanywhere.com/api/v1/notifications/'
-            create_notification = call_notification(url=url, request_type='post', data=notify_data)
-            print(create_notification, "================")"""
             # continue reject api-----
             field = {
                 "_id": data.get("document_id"),
@@ -1703,11 +1372,6 @@ class lead_reject_candidate(APIView):
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
                 "rejected_on": data.get("rejected_on"),
-                # "company_name": data.get('company_name'),
-                # "user_type": data.get('user_type'),
-                # "notified": create_notification['isSuccess'],
-                # "selected": "True",
-                # "notification_id": create_notification['inserted_id']
             }
 
             serializer = RejectSerializer(data=data)
@@ -1756,18 +1420,10 @@ class lead_reject_candidate(APIView):
                     and not candidate_thread.is_alive()
                     and not lead_thread.is_alive()
                 ):
-                    """# call the mark as seen notification api-----
-                    n_id = insert_to_lead_report['notification_id']
-                    url = f'https://100092.pythonanywhere.com/api/v1/notifications/{n_id}/'
-                    patch_notification = call_notification(url=url, request_type='patch', data=notify_data)
-                    """
                     if json.loads(c_r[0])["isSuccess"] == True:
                         return Response(
                             {
                                 "message": f"Candidate has been {insert_to_lead_report['status']}",
-                                # "notification": {"notified": insert_to_lead_report['notified'],
-                                #                "rejected": patch_notification['isSuccess'],
-                                #                    "notification_id": insert_to_lead_report['notification_id']},
                                 "response": json.loads(c_r[0]),
                             },
                             status=status.HTTP_201_CREATED,
@@ -1987,7 +1643,6 @@ class approve_task(APIView):
         response = dowellconnection(
             *task_management_reports, "fetch", field, update_field
         )
-        # print(response,"==================")
         if response is not None:
             current_date = datetime.datetime.today()
             max_updated_dates = [
@@ -1996,7 +1651,6 @@ class approve_task(APIView):
                 )
                 for item in json.loads(response)["data"]
             ]
-            # print(max_updated_dates,"=============================")
             if len(max_updated_dates) >= 1:
                 max_updated_date = max(max_updated_dates)
                 if current_date <= max_updated_date:
@@ -2013,16 +1667,13 @@ class approve_task(APIView):
         if data:
             field = {"_id": data.get("document_id")}
             update_field = {"status": data.get("status"), "task": data.get("task")}
-            # check if a task is approveable
             check_approvable = self.approvable()
-            # print(check_approvable)
 
             if check_approvable is True:
                 update_field["approved"] = check_approvable
                 response = dowellconnection(
                     *task_management_reports, "update", field, update_field
                 )
-                # print(response)
                 if json.loads(response)["isSuccess"] is True:
                     return Response(
                         {
@@ -2221,7 +1872,6 @@ class edit_team(APIView):
             check = dowellconnection(
                 *team_management_modules, "fetch", field, update_field
             )
-            # print(check,"=====================[[[[[[]]]]]]")
             if json.loads(response)["isSuccess"] == True:
                 if len(json.loads(check)["data"]) == 0:
                     return Response(
@@ -2353,7 +2003,6 @@ class edit_team_task(APIView):
             check = dowellconnection(
                 *team_management_modules, "fetch", field, update_field
             )
-            # print(check,"=====================[[[[[[]]]]]]")
             if len(json.loads(check)["data"]) == 0:
                 return Response(
                     {
@@ -2447,7 +2096,6 @@ class delete_team_task(APIView):
 class create_member_task(APIView):
     def post(self, request):
         data = request.data
-        # print(request.data)
         if data:
             field = {
                 "eventId": get_event_id()["event_id"],
@@ -2645,7 +2293,6 @@ class get_question(APIView):
         field = {
             "_id": document_id,
         }
-        # print(field)
         update_field = {"status": "nothing to update"}
         question_response = dowellconnection(
             *questionnaire_modules, "fetch", field, update_field
@@ -2805,7 +2452,6 @@ class update_response(APIView):
         )
 
         update_to_hr_thread.start()
-        # print(insert_to_response_thread,update_to_hr_thread)
         update_to_hr_thread.join()
         insert_to_response_thread.join()
 
@@ -3430,7 +3076,6 @@ class updateTheUserDetails(APIView):
 class Thread_Apis(APIView):
     def post(self, request):
         print(request.data,"==================")
-        #data = json.loads(request.data["form_data"])
         data= request.data
         request.data["current_status"]= "Created"
         request.data["previous_status"]= ""
@@ -3588,7 +3233,6 @@ class GetTeamThreads(APIView):
         get_response = dowellconnection(
             *thread_report_module, "fetch", field, update_field
         )
-        #print(get_response)
         threads = []
         for thread in json.loads(get_response)["data"]:
             if not len(json.loads(get_response)["data"]) <= 0:
@@ -3713,7 +3357,6 @@ class GenerateReport(APIView):
         
         
         applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
-        #print(applications)
         data["applications"]=len(json.loads(applications)['data'])
 
         ids = [t["_id"] for t in json.loads(applications)['data'] 
@@ -3721,37 +3364,29 @@ class GenerateReport(APIView):
         counter = Counter(ids)
         most_applied_job = counter.most_common(1)[0][0]
         least_applied_job = counter.most_common()[-1][0]
-        #print(most_common,"========", least_common)
         data["most_applied_job"]={"_id":most_applied_job}
         data["least_applied_job"]={"_id":least_applied_job}
 
         hired = dowellconnection(*candidate_management_reports, "fetch", {"status": "hired"}, update_field)
-        #print(json.loads(hired)["data"])
         data["hired_candidates"]=len(json.loads(hired)['data'])
 
         rejected = dowellconnection(*candidate_management_reports, "fetch", {"status": "Rejected"}, update_field)
-        #print(rejected)
         data["rejected_candidates"]=len(json.loads(rejected)['data'])
 
         probationary = dowellconnection(*candidate_management_reports, "fetch", {"status": "probationary"}, update_field)
-        #print(probationary)
         data["probationary_candidates"]=len(json.loads(probationary)['data'])
 
         teams = dowellconnection(*team_management_modules, "fetch", field, update_field)
-        #print(teams)
         data["teams"]=len(json.loads(teams)['data'])
 
         tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
-        #print(tasks)
         data["tasks"]=len(json.loads(tasks)['data'])
 
         team_tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
-        #print(team_tasks)
         data["team_tasks"]=len([t for t in json.loads(team_tasks)['data'] 
                                     if "team_id" in t.keys()])
 
         tasks_completed_on_time = dowellconnection(*task_management_reports, "fetch", {"status":"Completed"}, update_field)
-        #print(tasks_completed_on_time)
         data["tasks_completed_on_time"]=len([t for t in json.loads(tasks_completed_on_time)['data'] 
                                              if "due_date" in t.keys() and "task_updated_date" in t.keys() and 
                                                 datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > 
@@ -3759,12 +3394,5 @@ class GenerateReport(APIView):
                                             ])
 
         data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks"])*100)+" %"
-
-
  
-        
-
-
-        
-        
         return Response({"message": f"Report Generated", "response":data}, status=status.HTTP_201_CREATED)
