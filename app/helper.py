@@ -220,8 +220,6 @@ def save_image(image):
 
 def periodic_application(start_dt, end_dt, data_list):
     #convert to date format--------
-    import pytz
-
     start_date = datetime.datetime.strptime(
             start_dt, "%m/%d/%Y %H:%M:%S"
         )
