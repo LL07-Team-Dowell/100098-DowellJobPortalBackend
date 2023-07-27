@@ -18,7 +18,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%,-60%);
-        height: 280px;
+        max-height: 380px;
         button{
             margin: 0 0 0 auto;
             margin-top: 20px;
@@ -31,6 +31,39 @@
             border: none;
             outline: none;
             cursor: pointer;
+        }
+        .added-members-input {
+            input {
+                min-width: 300px;
+            }
+        }
+        .members {
+            scrollbar-width: thin;
+            p {
+                font-size: 0.8rem;
+                &:hover {
+                    filter: opacity(0.8);
+                    color: #005734;
+                }
+            }
+            .not__Found__Header {
+                margin: 0.4rem 0;
+            }
+            .add__Anyway__Item {
+                cursor: pointer;
+                span {
+                    font-size: 0.8rem;
+                }
+                &:hover {
+                    color: #005734;
+                    opacity: 0.8;
+                }
+            }
+        }
+        .add__Project__Btn {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            padding: 8px 15px;
         }
     }
 }
