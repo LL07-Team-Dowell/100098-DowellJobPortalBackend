@@ -29,28 +29,13 @@ const TeamScreenThreads = () => {
   const addComment = (text, id, parentId = null) => {
     console.log("addComment", text, id);
 
-  const updatedThreads = threads.map((thread) => {
-    if (thread._id === id) {
-      const newComment = {
-        user: currentUser.userinfo.username,
-        comment: text,
-        thread_id: id,
-        parentId: parentId,
-        replies: [],
-      };
-      if (parentId) {
-        const updatedComments = thread.comments.map((comment) => {
-          if (comment.thread_id === parentId) {
-            return {
-              ...comment,
-              replies: [...comment.replies, newComment],
-            };
-          }
-          return comment;
-        });
-        return {
-          ...thread,
-          comments: updatedComments,
+    const updatedThreads = threads.map((thread) => {
+      if (thread._id === id) {
+        const newComment = {
+          user: currentUser.userinfo.username,
+          comment: text,
+          thread_id: id,
+          _id: crypto.randomUUID(),
         };
       } else {
         return {
@@ -65,10 +50,23 @@ const TeamScreenThreads = () => {
   };
 
   const editComment = (text, commentId, threadId) => {
+    // const updatedThreads = threads.slice();
+
+    // const threadToUpdate = updatedThreads.find(thread => thread._id === threadId);
+    // if (!threadToUpdate) return
+
+    // const updatedComments = threadToUpdate.comments.slice();
+    // const commentToEdit = updatedComments.find(comment => comment._id === commentId);
+    // if (!commentToEdit) return
+
+    // commentToEdit.comment = text;
+
+    // threadToUpdate.comments = updatedComments;
+    
     const updatedThreads = threads.map((thread) => {
       if (thread._id === threadId) {
         const updatedComments = thread.comments.map((comment) =>
-          comment.thread_id === commentId
+          comment._id === commentId
             ? { ...comment, comment: text }
             : comment
         );
@@ -94,7 +92,7 @@ const TeamScreenThreads = () => {
     const updatedThreads = threads.map((thread) => {
       if (thread._id === threadId) {
         const filteredComments = thread.comments.filter(
-          (comment) => comment.thread_id !== commentId
+          (comment) => comment._id !== commentId
         );
         return {
           ...thread,
@@ -202,7 +200,7 @@ const TeamScreenThreads = () => {
                             height={35}
                           />
                         </div>
-                        {editingCommentId === comment.thread_id ? (
+                        {editingCommentId === comment._id ? (
                           <div>
                             <textarea
                               value={editingCommentText}
@@ -213,7 +211,7 @@ const TeamScreenThreads = () => {
                             />
                             <button
                               onClick={() =>
-                                saveEditedComment(comment.thread_id, thread._id)
+                                saveEditedComment(comment._id, thread._id)
                               }
                             >
                               Save
@@ -225,14 +223,14 @@ const TeamScreenThreads = () => {
                             <p>{comment.comment}</p>
                             <button
                               onClick={() =>
-                                handleEdit(text, comment.thread_id, thread._id)
+                                handleEdit(comment.comment, comment._id, thread._id)
                               }
                             >
                               Edit
                             </button>
                             <button
                               onClick={() =>
-                                deleteComment(comment.thread_id, thread._id)
+                                deleteComment(comment._id, thread._id)
                               }
                             >
                               Delete

@@ -34,7 +34,7 @@ export const testJobToWorkWith = {
     "created_by": "ayoola",  
 }
 
-const [ threadOneId, threadTwoId, threadThreeId ] = [ crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID() ]
+const [ threadOneId, threadTwoId, threadThreeId, threadFourId ] = [ crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID() ]
 export const testThreadsToWorkWith = [
   {
     _id: threadOneId,
@@ -50,6 +50,7 @@ export const testThreadsToWorkWith = [
         user: "sagar-hr-hiring",
         comment: "Thanks for noting! We're looking into it",
         thread_id: threadOneId,
+        _id: crypto.randomUUID(),
       },
     ],
   },
@@ -65,6 +66,7 @@ export const testThreadsToWorkWith = [
         user: "sagar-hr-hiring",
         comment: "Hi please i have been struggling with this",
         thread_id: threadTwoId,
+        _id: crypto.randomUUID(),
       },
     ],
   },
@@ -82,11 +84,12 @@ export const testThreadsToWorkWith = [
         user: "ayoolaa_",
         comment: "Thanks for noting! We're looking into it",
         thread_id: threadThreeId,
+        _id: crypto.randomUUID(),
       },
     ],
   },
   {
-    _id: threadTwoId,
+    _id: threadFourId,
     thread: "App keeps crashing after i use for 10 minutes",
     created_by: "sagar-hr-hiring",
     team_alerted_id: "32302934342948",
@@ -96,7 +99,8 @@ export const testThreadsToWorkWith = [
       {
         user: "sagar-hr-hiring",
         comment: "Hi please i have been struggling with this",
-        thread_id: threadTwoId,
+        thread_id: threadFourId,
+        _id: crypto.randomUUID(),
       },
     ],
   },

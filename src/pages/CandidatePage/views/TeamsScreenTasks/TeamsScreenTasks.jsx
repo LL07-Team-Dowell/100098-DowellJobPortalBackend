@@ -7,7 +7,7 @@ import TeamScreenLinks from "../../../TeamleadPage/views/CreateMembersTask/views
 import TeamScreenTaskProgress from "../../../TeamleadPage/views/CreateMembersTask/views/compoonent/teamScreenTaskProgress/teamScreenTaskProgress";
 import TeamScreeTaskProgessDetail from "../../../TeamleadPage/views/CreateMembersTask/views/compoonent/teamScreeTaskProgessDetail/teamScreeTaskProgessDetail";
 import CreateTask from "../../../TeamleadPage/views/CreateMembersTask/component/smallComponents/CreateTask";
-import { getAllTeams } from "../../../../services/createMembersTasks";
+import { getAllTeams, getTeamTask } from "../../../../services/createMembersTasks";
 import Navbar from "../../../TeamleadPage/views/CreateMembersTask/component/Navbar";
 
 const TeamScreenTasksCandidate = () => {
@@ -16,15 +16,27 @@ const TeamScreenTasksCandidate = () => {
     const {team , setteam } = useTeam() ; 
     const [loading , setloading] = useState(false);
     const [detail ,setdetail] = useState('in progress') ;
-    const [showCreatTask,setShowCreateTask] = useState(false) 
+    const [showCreatTask,setShowCreateTask] = useState(false);
+    const [tasks, setTasks] = useState([])
+
     useEffect(()=>{
       if(team?.members === undefined){
         setloading(true)
-        getAllTeams(currentUser.portfolio_info[0].org_id)
-          .then(resp =>{ 
-          setteam(resp.data.response.data.find(team => team["_id"] === id))
-          setloading(false)})
-      .catch(err => console.log(err))
+
+        Promise.all([
+          getAllTeams(currentUser.portfolio_info[0].org_id),
+          getTeamTask(id)
+        ])
+        .then(resp =>{ 
+          console.log(resp);
+          setteam(resp[0].data.response.data.find(team => team["_id"] === id))
+          setTasks(Array.isArray(resp[1].data.response.data) ? resp[1].data.response.data : [])
+          setloading(false)
+        })
+        .catch(err => {
+          console.log(err)
+          setloading(false)
+        })
       }
     },[])
     console.log({team})
@@ -34,7 +46,17 @@ const TeamScreenTasksCandidate = () => {
           { team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true}/> : null }
           <TeamScreenLinks id={id}/>
           <TeamScreenTaskProgress />
-          <TeamScreeTaskProgessDetail id={id} title={team?.team_name} members={team?.members}  detail={detail} setdetail={setdetail} ShowCreateTask={()=>setShowCreateTask(true)} showAddTaskButton={false}/>
+          <TeamScreeTaskProgessDetail 
+            id={id} 
+            title={team?.team_name} 
+            members={team?.members}  
+            detail={detail} 
+            setdetail={setdetail} 
+            ShowCreateTask={()=>setShowCreateTask(true)} 
+            showAddTaskButton={false}
+            tasks={tasks}
+            setTasks={setTasks}
+          />
         </div>
         )
  

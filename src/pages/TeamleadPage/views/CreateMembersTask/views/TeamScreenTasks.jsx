@@ -10,6 +10,7 @@ import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContex
 import CreateTask from './compoonent/createTask/createTask';
 import LoadingSpinner from '../../../../../components/LoadingSpinner/LoadingSpinner';
 import axios from 'axios';
+
 const TeamScreenTasks = () => {
   // states
     const { currentUser } = useCurrentUserContext()
