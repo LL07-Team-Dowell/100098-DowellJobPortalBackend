@@ -106,19 +106,3 @@
   font-size: 1.8rem;
 }
 
-
-/* user: currentUser.userinfo.username,
-          comment: text,
-          thread_id: id,
-          _id: crypto.randomUUID(), */
-
-/* <button
-  onClick={() => {
-    const replyText = prompt("Enter your reply:");
-    if (replyText) {
-      onSubmit(replyText, thread._id, comment.thread_id);
-    }
-  }}
->
-  Reply
-</button>; */
