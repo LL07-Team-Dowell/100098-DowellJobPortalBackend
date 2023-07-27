@@ -43,8 +43,8 @@ const TeamScreenThreads = () => {
           comments: [...thread.comments, newComment],
         };
       }
-      return thread;
-    });
+    return thread;
+  });
     setThreads(updatedThreads);
   };
 
