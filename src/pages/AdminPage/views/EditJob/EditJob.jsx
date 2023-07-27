@@ -53,27 +53,12 @@ function EditJob({ subAdminView }) {
   const [typeofOption, setTypeofOption] = useState(type_of_job || "");
   const [secondOption, setSecondOption] = useState("");
   const [thirdOption, setThirdOption] = useState("");
-  const currencyList = ["USD", "NGN", "GBP", "RS"];
-
-  // jobs.map(singleJob => {
-  //   if (singleJob.id !== id) return singleJob
-  //   return {…singleJob,//things u edit}
 
   useEffect(() => {
     setSelectedOption(job_category);
     setActive(is_active);
     setTypeofOption(type_of_job);
   }, [singleJob]);
-
-
-  // console.log(formData?.general_terms);
-  // if (formData.general_terms[0] == "") {
-  //   alert("empty string not allow")
-  // }
-  const handleCurrencyChange = (value) => {
-    setCurrency(value);
-    setIsValidCurrency(value !== "Select Currency");
-  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -131,47 +116,6 @@ function EditJob({ subAdminView }) {
         }
       })
       .catch(error => console.log(error));
-
-
-
-    // if (formData.general_terms.length > 0 && formData.general_terms[0] !== "") {
-    //   await updateJob(formData)
-    //     .then(response => {
-    //       console.log(response.status)
-    //       if (response.status === 204) {
-    //         console.log(formData);
-    //         setJobs(jobs.map((job) => {
-    //           if (job._id === _id) {
-    //             return { ...job, ...formData }
-    //           } else {
-    //             return job
-    //           }
-    //         }))
-    //         navigate(-1);
-    //         toast.success("Job updated successfully");
-    //       }
-    //     })
-    //     .catch(error => console.log(error));
-    // } else {
-    //   toast.warning("General Terms should not be empty");
-    // }
-
-    // switch (formData.general_terms.length > 0) {
-    //   case formData.general_terms.length < 0 && formData.general_terms[0] == "":
-    //     toast.success("General Terms Can't Be Empty")
-    //   case formData.payment_terms[0] == "":
-    //     toast.warning("Payment Terms Can't Be Empty")
-    //   case formData.technical_specification[0] == "":
-    //     toast.warning("Technical Specifications Can't Be Empty")
-    //   case formData.workflow_terms[0] == "":
-    //     toast.warning("Workflow Terms Can't Be Empty")
-    //   case formData.other_info[0] == "":
-    //     toast.warning("Others Info Can't Be Empty")
-    //   case formData.general_terms > 0 && formData.general_terms[0] !== "" && formData.payment_terms !== "":
-    //     break;
-    // }
-
-
   }
 
   const handleThirdOptionChange = (e) => {
@@ -317,17 +261,31 @@ function EditJob({ subAdminView }) {
     })
   }
 
+  //Handle Payment
   const [amount, currecy] = formData.payment.split(' ');
+
+  const currencyList = ["USD", "NGN", "GBP", "RS"];
+
+  const handleCurrencyChange = (value) => {
+    console.log(value);
+    setCurrency(value);
+    setIsValidCurrency(value !== "Select Currency");
+
+    const trimmedAmount = amount.toString().trim();
+    const newPayment = trimmedAmount + " " + value.trim();
+    console.log(newPayment);
+    setFormData({ ...formData, payment: newPayment });
+  };
+
 
   const handlePayment = (e) => {
     const value = e.target.value;
     const trimmedValue = value.toString().trim();
-    const trimmedCurrency = currency.trim();
-
+    const trimmedCurrency = currency == 'Select Currency' ? currecy.trim() : currency.trim();
     const payment = trimmedValue + " " + trimmedCurrency;
+    console.log(payment);
     setFormData({ ...formData, payment: payment })
   }
-  // console.log(currecy);
 
   if (loading) return <LoadingSpinner />
 
@@ -581,16 +539,6 @@ function EditJob({ subAdminView }) {
                 </div>
 
                 <div className='input__data'>
-                  {/* <label htmlFor="payment">Payment</label>
-                  <input
-                    type="text"
-                    id="payment"
-                    name="payment"
-                    // placeholder='30$'
-                    defaultValue={payment}
-                    onChange={handleInputChange}
-                  /> */}
-
                   <div>
                     <label htmlFor="payment">Payment</label>
                     <div className="payment_section">
@@ -600,11 +548,12 @@ function EditJob({ subAdminView }) {
                         handleSelectionClick={(value) => {
                           handleCurrencyChange(value);
                         }}
+                        onChange={handlePayment}
                         selections={currencyList}
                         removeDropDownIcon={false}
                       />
                       <input
-                        type="text"
+                        type="number"
                         className="payment_input"
                         name={"payment"}
                         defaultValue={amount}
