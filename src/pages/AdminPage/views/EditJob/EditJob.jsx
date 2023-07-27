@@ -278,9 +278,10 @@ function EditJob({ subAdminView }) {
   };
 
 
-  const handlePayment = (e) => {
-    const value = e.target.value;
-    const trimmedValue = value.toString().trim();
+  const handlePayment = (value) => {
+    const filteredValue = value.replace(/\D/g, "");
+
+    const trimmedValue = filteredValue.toString().trim();
     const trimmedCurrency = currency == 'Select Currency' ? currecy.trim() : currency.trim();
     const payment = trimmedValue + " " + trimmedCurrency;
     console.log(payment);
@@ -553,14 +554,15 @@ function EditJob({ subAdminView }) {
                         removeDropDownIcon={false}
                       />
                       <input
-                        type="number"
+                        type="text"
                         className="payment_input"
-                        name={"payment"}
-                        defaultValue={amount}
-                        onChange={handlePayment}
-                        placeholder={"Enter your amount"}
+                        name="payment"
+                        value={amount}
+                        onChange={(e) => { handlePayment(e.target.value) }}
+                        placeholder="Enter your amount"
                         required
                       />
+
                     </div>
                   </div>
                 </div>

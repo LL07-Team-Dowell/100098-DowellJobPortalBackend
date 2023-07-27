@@ -151,7 +151,7 @@ align-items: left !important;
 
 .view-btn {
   padding: 8px 16px;
-  background-color: #333;
+  background-color: #005734;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -188,7 +188,7 @@ align-items: left !important;
   top: 0;
   right: 0;
   padding: 8px;
-  background-color: #333;
+  background-color: #005734;
   color: #fff;
   border: none;
   border-radius: 4px;
