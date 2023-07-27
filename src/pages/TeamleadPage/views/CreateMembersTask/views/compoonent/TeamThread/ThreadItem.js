@@ -4,6 +4,8 @@ import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUser
 import { FaRegComments } from 'react-icons/fa';
 import { testThreadsToWorkWith } from "../../../../../../../utils/testData";
 import Comment from '../../../../../../CandidatePage/views/TeamsScreen/components/addComment';
+import ThreadComment from './ThreadComment';
+import Modal from './Modal';
 
 const Wrapper = styled.div`
 display: flex;
@@ -122,81 +124,176 @@ align-items: left !important;
   .comments-section svg {
     font-size: 1.8rem;
   }
+
+  /* Styling for the image hover effect */
+.image-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+}
+
+.view-btn-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.image-container:hover .view-btn-container {
+  opacity: 1;
+}
+
+.view-btn {
+  padding: 8px 16px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Styling for the modal */
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  position: relative;
+  max-width: 80%;
+  max-height: 80%;
+}
+
+.modal-content img {
+  width: 100%;
+  height: auto;
+}
+
+.close-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 8px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
   
 `
 
 const ThreadItem = () => {
-    const { currentUser } = useCurrentUserContext();
-    const [text, setText] = useState("");
-    const [threads, setThreads] = useState([]);
+  const { currentUser } = useCurrentUserContext();
+  const [text, setText] = useState("");
+  const [threads, setThreads] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
-    const handleChange = (e) => {
-        setText(e.target.value);
-    };
-    const handleSubmit = () => { };
+  const handleImageClick = () => {
+    setShowModal(true);
+  };
 
-    return (
-        <Wrapper>
-            <div className="team-screen-threads">
-                <div className="team-screen-thread-container">
-                    {testThreadsToWorkWith.map((thread) => (
-                        <div className="team-screen-threads-card" key={thread._id}>
-                            <div className="thread-card">
-                                {thread.image ? (
-                                    <div>
-                                        <img src={thread.image} alt="thread" />
-                                    </div>
-                                ) : (
-                                    <></>
-                                )}
-                                <div className="team-screen-threads-container">
-                                    <p>{thread.thread}</p>
-                                    <div>
-                                        <p>Assigned to : Team Development A</p>
-                                        <p>Raised by : {thread.created_by}</p>
-                                    </div>
-                                    <div className="team-screen-threads-progress">
-                                        <div className="progress">
-                                            <p>Created</p>
-                                            <div className="threads-progress"></div>
-                                        </div>
-                                        <div className="progress">
-                                            <p>In progress</p>
-                                            <div className="threads-progress"></div>
-                                        </div>
-                                        <div className="progress">
-                                            <p>Completed</p>
-                                            <div className="threads-progress"></div>
-                                        </div>
-                                        <div className="progress">
-                                            <p>Resolved</p>
-                                            <div className="threads-progress"></div>
-                                        </div>
-                                    </div>
-                                    <div className="comments-section">
-                                        <p className="comments">
-                                            <FaRegComments onClick={handleSubmit} />
-                                            &bull;
-                                            <span>10 Comments</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="comment-action">
-                                <Comment
-                                    text={text}
-                                    handleChange={handleChange}
-                                    comments={thread.comments[0].comment}
-                                    user={thread.comments[0].user}
-                                    commentInput="comment-input"
-                                />
-                            </div>
-                        </div>
-                    ))}
+
+  const handleChange = (e) => {
+    setText(e.target.value);
+  };
+  const handleSubmit = () => { };
+
+  return (
+    <Wrapper>
+      <div className="team-screen-threads">
+        <div className="team-screen-thread-container">
+          {testThreadsToWorkWith.map((thread) => (
+            <div className="team-screen-threads-card" key={thread._id}>
+              <div className="thread-card">
+                {showModal && (
+                  <Modal imageUrl={thread.image} handleClose={() => setShowModal(false)} />
+                )}
+                {/* {thread.image ? (
+                  <div>
+                    <img src={thread.image} alt="thread" />
+                  </div>
+                ) : (
+                  <></>
+                )} */}
+                <div className="image-container">
+                  {thread.image && (
+                    <img src={thread.image} alt="thread" onClick={handleImageClick} />
+                  )}
+                  {thread.image && (
+                    <div className="view-btn-container">
+                      <button className="view-btn" onClick={handleImageClick}>
+                        View
+                      </button>
+                    </div>
+                  )}
                 </div>
+                <div className="team-screen-threads-container">
+                  <p>{thread.thread}</p>
+                  <div>
+                    <p>Assigned to : Team Development A</p>
+                    <p>Raised by : {thread.created_by}</p>
+                  </div>
+                  <div className="team-screen-threads-progress">
+                    <div className="progress">
+                      <p>Created</p>
+                      <div className="threads-progress"></div>
+                    </div>
+                    <div className="progress">
+                      <p>In progress</p>
+                      <div className="threads-progress"></div>
+                    </div>
+                    <div className="progress">
+                      <p>Completed</p>
+                      <div className="threads-progress"></div>
+                    </div>
+                    <div className="progress">
+                      <p>Resolved</p>
+                      <div className="threads-progress"></div>
+                    </div>
+                  </div>
+                  <div className="comments-section">
+                    <p className="comments">
+                      <FaRegComments onClick={handleSubmit} />
+                      &bull;
+                      <span>10 Comments</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="comment-action">
+                <ThreadComment
+                  text={text}
+                  handleChange={handleChange}
+                  comments={thread.comments[0].comment}
+                  user={thread.comments[0].user}
+                  commentInput="comment-input"
+                />
+              </div>
             </div>
-        </Wrapper>
-    )
+
+          ))}
+        </div>
+      </div>
+    </Wrapper>
+
+
+  )
 }
 
 export default ThreadItem;

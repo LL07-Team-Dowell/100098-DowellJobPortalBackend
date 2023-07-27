@@ -68,11 +68,11 @@ import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
 import Payment from "./pages/AccountPage/Payment";
 import Add from "./pages/AdminPage/views/Add/Add";
 function App() {
-  const { 
-    currentUser, 
-    isPublicUser, 
-    setCurrentUser, 
-    setIsPublicUser, 
+  const {
+    currentUser,
+    isPublicUser,
+    setCurrentUser,
+    setIsPublicUser,
     setPublicUserDetails,
     userDetailsNotFound,
     setUserDetailsNotFound,
@@ -117,10 +117,10 @@ function App() {
           />
         </Route>
 
-        <Route path="*" 
+        <Route path="*"
           element={
-          <>Page Not found</>
-          } 
+            <>Page Not found</>
+          }
         />
       </Routes>
     );
@@ -537,7 +537,7 @@ function App() {
           }
         />
         <Route
-          path="/team-screen-member/:id/team-threads"
+          path="/team-screen-member/:id/team-issues"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
