@@ -23,6 +23,7 @@ from .helper import (
     create_master_link,
     send_mail,
     interview_email,
+    periodic_application
 )
 from .serializers import (
     AccountSerializer,
@@ -61,7 +62,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
 from .helper import get_event_id, dowellconnection, call_notification, set_finalize, update_number, update_string, discord_invite,\
-    get_guild_channels, get_guild_members , create_master_link , send_mail , interview_email
+    get_guild_channels, get_guild_members , create_master_link , send_mail , interview_email,periodic_application
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
     SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
@@ -3344,6 +3345,7 @@ class Comment_Apis(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class GenerateReport(APIView):
     def post(self, request):
+        payload = request.data
         field = {   }
         update_field = {    }
         data = {  }
@@ -3352,47 +3354,81 @@ class GenerateReport(APIView):
         j_ds = [t["_id"] for t in json.loads(job)['data']]
         data["no_of_jobs"] = len(j_ds)
 
-        data["active_jobs"] = [t["_id"] for t in json.loads(job)['data'] 
-                                    if "_id" in t.keys()]
-        
-        
-        applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
-        data["applications"]=len(json.loads(applications)['data'])
+        active_jobs=[]
+        inactive_jobs=[]
+        for t in json.loads(job)['data']:
+            if "is_active" in t.keys():
+                if t["is_active"] =="True" or t["is_active"] =="true" or t["is_active"] ==True:
+                    active_jobs.append([t["_id"],t["is_active"]])
+                if t["is_active"] =="False" or t["is_active"] =="false" or t["is_active"] ==False:
+                    inactive_jobs.append([t["_id"],t["is_active"]])
+            
 
-        ids = [t["_id"] for t in json.loads(applications)['data'] 
-                                    if "_id" in t.keys()]
+        data["number_active_jobs"] = len(active_jobs)
+        data["number_inactive_jobs"] = len(inactive_jobs)
+        active_percent  =str((data["number_active_jobs"]/data["no_of_jobs"])*100)
+        inactive_percent  =str((data["number_inactive_jobs"]/data["no_of_jobs"])*100)
+        data["percentage_active_to_inactive_jobs"]= f"{active_percent} % : {inactive_percent} %"
+        
+        job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        #print(job_applications)
+        data["job_applications"]=len(json.loads(job_applications)['data'])
+
+        p_application = periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
+        #print(p_application)
+        data[f"nojob_applications_from_|{payload['start_date']}|_to_|{payload['end_date']}|"]=p_application[1]
+
+        ids = [t["_id"] for t in json.loads(job_applications)['data']]
         counter = Counter(ids)
         most_applied_job = counter.most_common(1)[0][0]
         least_applied_job = counter.most_common()[-1][0]
+        #print(most_common,"========", least_common)
         data["most_applied_job"]={"_id":most_applied_job}
         data["least_applied_job"]={"_id":least_applied_job}
 
+
         hired = dowellconnection(*candidate_management_reports, "fetch", {"status": "hired"}, update_field)
+        #print(json.loads(hired)["data"])
         data["hired_candidates"]=len(json.loads(hired)['data'])
 
         rejected = dowellconnection(*candidate_management_reports, "fetch", {"status": "Rejected"}, update_field)
+        #print(rejected)
         data["rejected_candidates"]=len(json.loads(rejected)['data'])
 
         probationary = dowellconnection(*candidate_management_reports, "fetch", {"status": "probationary"}, update_field)
+        #print(probationary)
         data["probationary_candidates"]=len(json.loads(probationary)['data'])
 
+        data["hiring_rate"] = str((data["hired_candidates"]/data["job_applications"])*100)+" %"
+
         teams = dowellconnection(*team_management_modules, "fetch", field, update_field)
+        #print(teams)
         data["teams"]=len(json.loads(teams)['data'])
 
         tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        #print(tasks)
         data["tasks"]=len(json.loads(tasks)['data'])
 
         team_tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        #print(team_tasks)
         data["team_tasks"]=len([t for t in json.loads(team_tasks)['data'] 
-                                    if "team_id" in t.keys()])
-
-        tasks_completed_on_time = dowellconnection(*task_management_reports, "fetch", {"status":"Completed"}, update_field)
-        data["tasks_completed_on_time"]=len([t for t in json.loads(tasks_completed_on_time)['data'] 
+                                    if "team_id" in t.keys() or "team_name" in t.keys()])
+        tasks_completed = dowellconnection(*task_management_reports, "fetch", {"status":"Completed"}, update_field)
+        #print(tasks_completed)
+        data["tasks_completed_on_time"]=len([t for t in json.loads(tasks_completed)['data'] 
                                              if "due_date" in t.keys() and "task_updated_date" in t.keys() and 
                                                 datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > 
                                                 datetime.datetime.strptime(t["task_updated_date"], "%m/%d/%Y %H:%M:%S")
                                             ])
 
         data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks"])*100)+" %"
- 
+
+        team_tasks_completed = dowellconnection(*task_management_reports, "fetch", {"completed":True}, update_field)
+        #print(team_tasks_completed)
+        data["team_tasks_completed"]=len([t for t in json.loads(team_tasks_completed)['data'] 
+                                             if "team_id" in t.keys() or "team_name" in t.keys()])
+        data["percentage_team_tasks_completed"]=str((data["team_tasks_completed"]/data["team_tasks"])*100)+" %"
+
+        
         return Response({"message": f"Report Generated", "response":data}, status=status.HTTP_201_CREATED)
+    

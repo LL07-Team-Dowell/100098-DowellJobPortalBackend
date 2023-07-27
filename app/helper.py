@@ -2,6 +2,7 @@ import json
 import requests
 import pprint
 import os
+import datetime
 from discord.ext import commands
 from discord import Intents
 
@@ -215,3 +216,37 @@ def save_image(image):
     response = requests.post(url, files=payload)  # Use 'files' instead of 'json'
     print(response.text)
     return response.text
+
+
+def periodic_application(start_dt, end_dt, data_list):
+    #convert to date format--------
+    import pytz
+
+    start_date = datetime.datetime.strptime(
+            start_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    end_date = datetime.datetime.strptime(
+            end_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    
+    items=[]
+    for l in data_list:
+        try:
+            application_submitted_on=datetime.datetime.strptime(l["application_submitted_on"],"%Y-%m-%dT%H:%M:%S.%fZ")
+            if application_submitted_on >= start_date and application_submitted_on <= end_date:
+                items.append(l)
+        except ValueError:
+            try:
+                application_submitted_on=datetime.datetime.strptime(l["application_submitted_on"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
+                if application_submitted_on >= start_date and application_submitted_on <= end_date:
+                    items.append(l)
+            except ValueError:
+                try:
+                    application_submitted_on=datetime.datetime.strptime(l["application_submitted_on"], "%m/%d/%Y %H:%M:%S")
+                    if application_submitted_on >= start_date and application_submitted_on <= end_date:
+                        items.append(l)
+                except ValueError:
+                    pass
+
+    return (items, len(items))
+
