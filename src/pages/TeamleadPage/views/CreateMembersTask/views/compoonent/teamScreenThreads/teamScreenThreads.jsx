@@ -26,23 +26,41 @@ const TeamScreenThreads = () => {
     setText(e.target.value);
   };
 
-  const addComment = (text, id) => {
+  const addComment = (text, id, parentId = null) => {
     console.log("addComment", text, id);
 
-    const updatedThreads = threads.map((thread) => {
-      if (thread._id === id) {
-        const newComment = {
-          user: currentUser.userinfo.username,
-          comment: text,
-          thread_id: id,
+  const updatedThreads = threads.map((thread) => {
+    if (thread._id === id) {
+      const newComment = {
+        user: currentUser.userinfo.username,
+        comment: text,
+        thread_id: id,
+        parentId: parentId,
+        replies: [],
+      };
+      if (parentId) {
+        const updatedComments = thread.comments.map((comment) => {
+          if (comment.thread_id === parentId) {
+            return {
+              ...comment,
+              replies: [...comment.replies, newComment],
+            };
+          }
+          return comment;
+        });
+        return {
+          ...thread,
+          comments: updatedComments,
         };
+      } else {
         return {
           ...thread,
           comments: [...thread.comments, newComment],
         };
       }
-      return thread;
-    });
+    }
+    return thread;
+  });
     setThreads(updatedThreads);
   };
 
@@ -97,9 +115,9 @@ const TeamScreenThreads = () => {
   //   deleteComment(commentId, threadId);
   // };
 
-  const onSubmit = (e, id) => {
+  const onSubmit = (e, id, parentId = null) => {
     e.preventDefault();
-    addComment(text, id);
+    addComment(text, id, parentId);
     setText("");
   };
 
@@ -173,6 +191,7 @@ const TeamScreenThreads = () => {
                           display: "flex",
                           gap: "1rem",
                           marginBottom: "0.7rem",
+                          marginLeft: comment.parentId ? "2rem" : "0",
                         }}
                       >
                         <div>
@@ -217,6 +236,20 @@ const TeamScreenThreads = () => {
                               }
                             >
                               Delete
+                            </button>
+                            <button
+                              onClick={() => {
+                                const replyText = prompt("Enter your reply:");
+                                if (replyText) {
+                                  onSubmit(
+                                    replyText,
+                                    thread._id,
+                                    comment.thread_id
+                                  );
+                                }
+                              }}
+                            >
+                              Reply
                             </button>
                           </div>
                         )}
