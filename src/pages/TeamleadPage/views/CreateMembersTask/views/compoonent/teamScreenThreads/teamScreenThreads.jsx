@@ -16,6 +16,7 @@ const TeamScreenThreads = () => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentText, setEditingCommentText] = useState("");
   const [deletingCommentId, setDeletingCommentId] = useState(null);
+  const [replyingCommentId, setReplyingCommentId] = useState(null);
 
   useEffect(() => {
     setThreads(testThreadsToWorkWith);
@@ -26,7 +27,7 @@ const TeamScreenThreads = () => {
     setText(e.target.value);
   };
 
-  const addComment = (text, id, parentId = null) => {
+  const addComment = (text, id) => {
     console.log("addComment", text, id);
 
     const updatedThreads = threads.map((thread) => {
@@ -36,29 +37,11 @@ const TeamScreenThreads = () => {
           comment: text,
           thread_id: id,
           _id: crypto.randomUUID(),
-          parentId: parentId,
-          replies: [],
         };
-        if (parentId) {
-          const updatedComments = thread.comments.map((comment) => {
-            if (comment._id === parentId) {
-              return {
-                ...comment,
-                replies: [...comment.replies, newComment],
-              };
-            }
-            return comment;
-          });
-          return {
-            ...thread,
-            comments: updatedComments,
-          };
-        } else {
-          return {
-            ...thread,
-            comments: [...thread.comments, newComment],
-          };
-        }
+        return {
+          ...thread,
+          comments: [...thread.comments, newComment],
+        };
       }
       return thread;
     });
@@ -102,6 +85,27 @@ const TeamScreenThreads = () => {
     setEditingCommentText("");
   };
 
+  const replyToComment = (text, commentId, threadId) => {
+    const updatedThreads = threads.map((thread) => {
+      if (thread._id === threadId) {
+        const newComment = {
+          user: currentUser.userinfo.username,
+          comment: text,
+          thread_id: threadId,
+          _id: crypto.randomUUID(),
+          parentId: commentId,
+        };
+        return {
+          ...thread,
+          comments: [...thread.comments, newComment],
+        };
+      }
+      return thread;
+    });
+    setThreads(updatedThreads);
+    setReplyingCommentId(null);
+  };
+
   const deleteComment = (commentId, threadId) => {
     const updatedThreads = threads.map((thread) => {
       if (thread._id === threadId) {
@@ -121,6 +125,10 @@ const TeamScreenThreads = () => {
 
   const handleEdit = (text, commentId, threadId) => {
     editComment(text, commentId, threadId);
+  };
+
+  const handleReply = (text, commentId, threadId) => {
+    replyToComment(text, commentId, threadId);
   };
 
   // const handleDelete = (commentId, threadId) => {
@@ -253,16 +261,30 @@ const TeamScreenThreads = () => {
                             >
                               Delete
                             </button>
-                            <button
-                              onClick={() => {
-                                const replyText = prompt("Enter your reply:");
-                                if (replyText) {
-                                  onSubmit(replyText, thread._id, comment._id);
+                            {replyingCommentId === comment._id ? (
+                              <div>
+                                <textarea
+                                  value={text}
+                                  onChange={handleChange}
+                                  className="comment-input"
+                                />
+                                <button
+                                  onClick={() =>
+                                    handleReply(text, comment._id, thread._id)
+                                  }
+                                >
+                                  Reply
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() =>
+                                  setReplyingCommentId(comment._id)
                                 }
-                              }}
-                            >
-                              Reply
-                            </button>
+                              >
+                                Reply
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
