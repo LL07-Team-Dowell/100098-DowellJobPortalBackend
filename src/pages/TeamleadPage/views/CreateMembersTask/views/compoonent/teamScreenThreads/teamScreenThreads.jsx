@@ -37,13 +37,11 @@ const TeamScreenThreads = () => {
           thread_id: id,
           _id: crypto.randomUUID(),
         };
-      } else {
         return {
           ...thread,
           comments: [...thread.comments, newComment],
         };
       }
-    }
     return thread;
   });
     setThreads(updatedThreads);
