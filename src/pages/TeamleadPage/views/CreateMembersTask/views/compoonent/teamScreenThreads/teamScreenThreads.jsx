@@ -36,16 +36,32 @@ const TeamScreenThreads = () => {
           comment: text,
           thread_id: id,
           _id: crypto.randomUUID(),
+          parentId: parentId,
+          replies: [],
         };
-      } else {
-        return {
-          ...thread,
-          comments: [...thread.comments, newComment],
-        };
+        if (parentId) {
+          const updatedComments = thread.comments.map((comment) => {
+            if (comment._id === parentId) {
+              return {
+                ...comment,
+                replies: [...comment.replies, newComment],
+              };
+            }
+            return comment;
+          });
+          return {
+            ...thread,
+            comments: updatedComments,
+          };
+        } else {
+          return {
+            ...thread,
+            comments: [...thread.comments, newComment],
+          };
+        }
       }
-    }
-    return thread;
-  });
+      return thread;
+    });
     setThreads(updatedThreads);
   };
 
@@ -62,13 +78,11 @@ const TeamScreenThreads = () => {
     // commentToEdit.comment = text;
 
     // threadToUpdate.comments = updatedComments;
-    
+
     const updatedThreads = threads.map((thread) => {
       if (thread._id === threadId) {
         const updatedComments = thread.comments.map((comment) =>
-          comment._id === commentId
-            ? { ...comment, comment: text }
-            : comment
+          comment._id === commentId ? { ...comment, comment: text } : comment
         );
         return {
           ...thread,
@@ -223,7 +237,11 @@ const TeamScreenThreads = () => {
                             <p>{comment.comment}</p>
                             <button
                               onClick={() =>
-                                handleEdit(comment.comment, comment._id, thread._id)
+                                handleEdit(
+                                  comment.comment,
+                                  comment._id,
+                                  thread._id
+                                )
                               }
                             >
                               Edit
@@ -239,11 +257,7 @@ const TeamScreenThreads = () => {
                               onClick={() => {
                                 const replyText = prompt("Enter your reply:");
                                 if (replyText) {
-                                  onSubmit(
-                                    replyText,
-                                    thread._id,
-                                    comment.thread_id
-                                  );
+                                  onSubmit(replyText, thread._id, comment._id);
                                 }
                               }}
                             >

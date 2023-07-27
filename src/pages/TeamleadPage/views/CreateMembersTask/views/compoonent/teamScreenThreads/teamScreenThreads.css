@@ -107,6 +107,10 @@
 }
 
 
+/* user: currentUser.userinfo.username,
+          comment: text,
+          thread_id: id,
+          _id: crypto.randomUUID(), */
 
 /* <button
   onClick={() => {
