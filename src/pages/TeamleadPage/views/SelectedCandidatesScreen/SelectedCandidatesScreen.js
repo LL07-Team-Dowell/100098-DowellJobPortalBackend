@@ -84,7 +84,7 @@ const SelectedCandidatesScreen = ({
     );
     
     availableProjects && setAssignedProject(
-      availableProjects.length > 1 ?
+      availableProjects.length > 0 ?
       availableProjects[0] 
       : 
       ''
