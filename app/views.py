@@ -204,7 +204,7 @@ class accounts_onboard_candidate(APIView):
                     target=call_dowellconnection,
                     args=(
                         *account_management_reports,
-                        "update",
+                        "insert",
                         insert_to_hr_report,
                         update_field,
                     ),
@@ -991,7 +991,7 @@ class hr_shortlisted_candidate(APIView):
                     target=call_dowellconnection,
                     args=(
                         *hr_management_reports,
-                        "update",
+                        "insert",
                         insert_to_hr_report,
                         update_field,
                     ),
@@ -1085,7 +1085,7 @@ class hr_selected_candidate(APIView):
                 target=call_dowellconnection,
                 args=(
                     *hr_management_reports,
-                    "update",
+                    "insert",
                     insert_to_hr_report,
                     update_field,
                 ),
@@ -1270,7 +1270,7 @@ class lead_hire_candidate(APIView):
                     target=call_dowellconnection,
                     args=(
                         *lead_management_reports,
-                        "update",
+                        "insert",
                         insert_to_lead_report,
                         update_field,
                     ),
