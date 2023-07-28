@@ -74,7 +74,7 @@ const SelectedCandidatesScreen = ({
   const [remarks, setRemarks] = useState("");
   const [hrDiscordLink, setHrDiscordLink] = useState("");
   const [candidatePlatform, setCandidatePlatform] = useState("");
-  const [assignedProject, setAssignedProject] = useState("Hr Hiring");
+  const [assignedProject, setAssignedProject] = useState("");
   const [interviewDate, setInterviewDate] = useState("");
   const { currentUser } = useCurrentUserContext();
 
@@ -82,6 +82,13 @@ const SelectedCandidatesScreen = ({
     setCandidatePlatform(
       selectedCandidateData[mutableNewApplicationStateNames.freelancePlatform]
     );
+    
+    availableProjects && setAssignedProject(
+      availableProjects.length > 0 ?
+      availableProjects[0] 
+      : 
+      ''
+    )
   }, []);
 
   useEffect(() => {

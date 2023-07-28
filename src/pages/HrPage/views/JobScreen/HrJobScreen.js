@@ -126,10 +126,22 @@ function HrJobScreen() {
 
       setJobs(res[1].data.response.data.reverse().filter(application => application.data_type === currentUser.portfolio_info[0].data_type));
       
-      const list = res[2].data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type);
-      const newList = list.reverse().find(p => p.company_id === currentUser.portfolio_info[0].org_id);
-      // console.log(newList);
-      setCurrentProjects(newList?.project_list);
+      const list = res[2].data
+      ?.filter(
+        (project) =>
+          project?.data_type === currentUser.portfolio_info[0].data_type &&
+          project?.company_id === currentUser.portfolio_info[0].org_id &&
+          project.project_list &&
+          project.project_list.every(
+            (listing) => typeof listing === "string"
+          )
+      ).reverse();
+      // console.log(list);
+      setCurrentProjects(
+        list.length < 1  ? []
+        :
+        list[0]?.project_list
+      );
 
       const usersWithTasks = [...new Map(res[3].data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [task.applicant, task])).values()];
       setAllTasks(usersWithTasks.reverse());

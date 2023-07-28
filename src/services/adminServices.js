@@ -35,3 +35,11 @@ export const generatePublicJobLink = async (data) => {
 export const getMasterLinks = async (companyId) => {
   return await currentBackendAxiosInstance.get(`generate_public_job_application_link/${companyId}/`);
 }
+
+export const adminAddSettingUserProject = async (data) => {
+  return await currentBackendAxiosInstance.post(`settinguserproject/`, data)
+}
+
+export const adminEditSettingUserProject = async (id, data) => {
+  return await currentBackendAxiosInstance.put(`settinguserproject/${id}`, data)
+}

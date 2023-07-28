@@ -15,6 +15,7 @@ import { getApplicationForAdmin, getJobsFromAdmin, getMasterLinks } from "../../
 import { useState } from "react";
 import { IoCopyOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
+import { getSettingUserProject } from "../../../../services/hrServices";
  
 
 const LandingPage = ({ subAdminView }) => {
@@ -33,6 +34,9 @@ const LandingPage = ({ subAdminView }) => {
     setresponse, 
     jobLinks, 
     setJobLinks, 
+    setProjectsAdded,
+    setProjectsLoaded,
+    setProjectsLoading,
   } = useJobContext();
   const [ showShareModal, setShowShareModal ] = useState(false);
   const [ jobLinkToShareObj, setJobLinkToShareObj ] = useState({});
@@ -59,18 +63,38 @@ const LandingPage = ({ subAdminView }) => {
   // console.log("jobs", jobs);
 
   useEffect(() => {
-    if (jobs.length === 0) {
+    if (jobs.length === 0 && !resp) {
 
       Promise.all([
         getJobsFromAdmin(currentUser.portfolio_info[0].org_id),
         getMasterLinks(currentUser.portfolio_info[0].org_id),
+        getSettingUserProject(),
       ]).then((response) => {
         console.log('AAAAAAAA', response[0].data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
         setJobs(response[0].data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
         setjobs2(response[0].data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
         setresponse(true);
 
-        setJobLinks(response[1].data.master_link)
+        setJobLinks(response[1].data?.master_link)
+
+        const projectsGotten = response[2].data
+        ?.filter(
+          (project) =>
+            project?.data_type === currentUser.portfolio_info[0].data_type &&
+            project?.company_id === currentUser.portfolio_info[0].org_id &&
+            project.project_list &&
+            project.project_list.every(
+              (listing) => typeof listing === "string"
+            )
+        )
+        ?.reverse()
+
+        setProjectsLoaded(true);
+        setProjectsLoading(false);
+
+        if (projectsGotten.length < 1) return
+
+        setProjectsAdded(projectsGotten);
       })
       .catch((error) => console.log(error));
     }

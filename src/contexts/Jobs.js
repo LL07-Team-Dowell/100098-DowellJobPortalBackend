@@ -13,6 +13,9 @@ export const JobContextProvider = ( { children }) => {
     const [resp , setresponse ] = useState(false) ; 
     const [searchValue , setsearchValue] = useState("") ;
     const [ jobLinks, setJobLinks ] = useState([]);
+    const [ projectsAdded, setProjectsAdded ] = useState([]);
+    const [ projectsLoaded, setProjectsLoaded ] = useState(false);
+    const [ projectsLoading, setProjectsLoading ] = useState(true);
 
     return (
         <JobContext.Provider value={{ 
@@ -28,6 +31,12 @@ export const JobContextProvider = ( { children }) => {
             setresponse,
             jobLinks,
             setJobLinks,
+            projectsAdded,
+            setProjectsAdded,
+            projectsLoaded, 
+            setProjectsLoaded,
+            projectsLoading,
+            setProjectsLoading,
         }}>
             {children}
         </JobContext.Provider>

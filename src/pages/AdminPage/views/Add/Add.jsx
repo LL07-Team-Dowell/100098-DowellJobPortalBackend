@@ -1,15 +1,19 @@
 import React, {useState,useEffect}from 'react'
-import axios from 'axios'
-
 import './Add.scss'
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout'
 import { MdArrowBackIos } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
-import { AiOutlinePlusCircle } from 'react-icons/ai'
+import { AiOutlineClose, AiOutlinePlusCircle } from 'react-icons/ai'
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext'
 import { FaTimes } from 'react-icons/fa'
 import { BsPlus } from 'react-icons/bs'
 import { toast } from 'react-toastify'
+import { dowellProjects } from '../../../../utils/utils'
+import { useJobContext } from '../../../../contexts/Jobs'
+import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner'
+import { adminAddSettingUserProject, adminEditSettingUserProject } from '../../../../services/adminServices'
+import { getSettingUserProject } from '../../../../services/hrServices'
+
 const Add = () => {
   
   const navigate = useNavigate() 
@@ -20,6 +24,46 @@ const Add = () => {
   const unshowProjectPopup = () => {
     setShowProjectsPop(false)
   }
+  const {
+    projectsLoading,
+    projectsLoaded, 
+    setProjectsLoaded,
+    setProjectsLoading,
+    setProjectsAdded,
+  } = useJobContext();
+  const { currentUser } = useCurrentUserContext();
+
+  useEffect(() => {
+    
+    if (!projectsLoaded) {
+      getSettingUserProject().then(res => {
+        setProjectsLoading(false);
+        setProjectsLoaded(true);
+
+        const projectsGotten = res.data
+        ?.filter(
+          (project) =>
+            project?.data_type === currentUser.portfolio_info[0].data_type &&
+            project?.company_id === currentUser.portfolio_info[0].org_id &&
+            project.project_list &&
+            project.project_list.every(
+              (listing) => typeof listing === "string"
+            )
+        )
+        ?.reverse()
+
+        if (projectsGotten.length < 1) return
+
+        setProjectsAdded(projectsGotten);
+
+      }).catch(err => {
+        console.log(err);
+        setProjectsLoading(false);
+      })
+    }
+
+  }, [])
+
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -29,6 +73,7 @@ const Add = () => {
       showAnotherBtn={true}
       btnIcon={<MdArrowBackIos size="1.5rem" />}
       handleNavIcon={() => navigate(-1)}
+      hideSideBar={showProjectsPop}
     >
        <div className="new__task__container">
         <h1 style={{ color: "#005734", fontSize: "1.6rem" }}>Add New Item</h1>
@@ -43,11 +88,11 @@ const Add = () => {
               </div>
               <h4>Add Job</h4>
               <p>
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ex sunt eius in, consectetur laudantium a, obcaecati repudiandae 
+                Lorem, ipsum dolor sit amet adipisicing elit. Ex sunt eius in, consectetur laudantium a, obcaecati repudiandae 
               </p>
             </div>
           </div>
-          <div style={{ marginTop: 30 }} className="Create_Team" onClick={showProjectPopup}  >
+          <div style={{ marginTop: 30 }} className="Create_Team" onClick={projectsLoading ? () => {} : () => showProjectPopup()}  >
             <div>
               <div>
                 <AiOutlinePlusCircle
@@ -56,12 +101,19 @@ const Add = () => {
                 />
               </div>
               <h4>Add Project</h4>
-              <p>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ex sunt eius in, consectetur laudantium a, obcaecati repudiandae 
-              </p>
+              {
+                projectsLoading ? 
+                  <div style={{ margin: '1rem auto', width: 'max-content', backgroundColor: '#fff' }}>
+                    <LoadingSpinner />
+                  </div>
+                :
+                  <p>
+                    Lorem, ipsum dolor sit amet adipisicing elit. Ex sunt eius in, consectetur laudantium a, obcaecati repudiandae 
+                  </p>  
+              }
             </div>
           </div>
-          <div style={{ marginTop: 30 }} className="Create_Team" onClick={showProjectPopup}  >
+          <div style={{ marginTop: 30 }} className="Create_Team" onClick={() => toast.info('Still in development')}  >
             <div>
               <div>
                 <AiOutlinePlusCircle
@@ -71,7 +123,7 @@ const Add = () => {
               </div>
               <h4>Add team</h4>
               <p>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ex sunt eius in, consectetur laudantium a, obcaecati repudiandae 
+              Bring everyone together and get to work. Work together in a team to increase productivity.
               </p>
             </div>
           </div>
@@ -89,62 +141,158 @@ export default Add
 const AddProjectPopup = ({projects, unshowProjectPopup}) => {
   const { currentUser } = useCurrentUserContext();
   const [query, setquery] = useState('')
-  const [inputProjects,setInputProjects] = useState([ ])
-  const [displaidProjects, setDesplaidProjects] = useState(['alaProject1','ayoProject2','manishProject3',].map((project,index) => ({id:index ,project})))
+  const [inputProjects,setInputProjects] = useState([])
+  const [displayedProjects, setDisplayedProjects] = useState([]);
+  const { 
+    projectsAdded, 
+    setProjectsAdded, 
+  } = useJobContext();
+  const [ btnDisabled, setBtnDisabled ] = useState(false);
+  
+  useEffect(() => {
+
+    const projectsToDisplay = dowellProjects.filter(project => !projectsAdded[0]?.project_list.includes(project.project_name));
+    setDisplayedProjects(projectsToDisplay);
+    setInputProjects(Array.isArray(projectsAdded[0]?.project_list) ? projectsAdded[0]?.project_list : []);
+  
+  }, [])
+
   // functions
-  const removeProject = (id) => {
-    setInputProjects(inputProjects.filter(f => f.id !== id))
-    setDesplaidProjects([...displaidProjects,inputProjects?.find(f => f.id === id)])
+  const removeProject = (projectName) => {
+    setInputProjects(inputProjects.filter(f => f !== projectName))
+
+    const projectExistsInBank = dowellProjects.find(p => p.project_name === projectName);
+    if (!projectExistsInBank) return
+
+    const currentDisplayedProjects = displayedProjects.slice();
+    const projectAmongDisplayedProjects = currentDisplayedProjects.find(project => project.project_name === projectName);
+    if (projectAmongDisplayedProjects) return
+
+    setDisplayedProjects([{ _id: crypto.randomUUID(), project_name: projectName }, ...displayedProjects])
   }
-  const AddedProject = (id) => {
-    setInputProjects([...inputProjects,displaidProjects.find(f => f.id === id)])
-    setDesplaidProjects(displaidProjects?.filter(f => f.id !== id))
+
+  const AddedProject = (projectName) => {
+    setInputProjects([...inputProjects, projectName])
+    setDisplayedProjects(displayedProjects?.filter(f => f.project_name !== projectName))
+
+    setquery('');
   }
-  const postSettinguserproject = () => {
+
+  const postSettinguserproject = async () => {
     if(inputProjects.length > 0){
+      setBtnDisabled(true);
+
       const data = {
         company_id: currentUser?.portfolio_info[0].org_id,
         data_type: currentUser.portfolio_info[0].data_type,
         project_list: inputProjects
       }
-      axios.post('https://100098.pythonanywhere.com/settinguserproject/',data)
+
+      if (projectsAdded[0]?.project_list) {
+        try {
+          const response = (await adminEditSettingUserProject(projectsAdded[0]?.id, data)).data;
+          // console.log(response);
+          unshowProjectPopup()
+          setProjectsAdded([{...data, id: response?.id}])
+          toast.success('Projects successfully updated')
+        } catch (error) {
+          console.log(error)
+          setBtnDisabled(false);
+          toast.error("Something went wrong while trying to update projects")
+        }
+        return
+      }
+
+
+      adminAddSettingUserProject(data)
         .then(resp => {
           console.log(resp)
           unshowProjectPopup()
-          toast.success('Project Created Successfully ')
+          setProjectsAdded([{...data, id: resp.data.id}])
+          toast.success('Projects successfully added')
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+          console.log(err)
+          setBtnDisabled(false);
+          toast.error("Something went wrong while trying to add projects")
+        })
     }else{
-      toast.error('No Projects To Add')
+      toast.info('Please add a project')
+      setBtnDisabled(false);
     }
   }
-  return <div className="overlay">
-    <div className='Project_Popup'>
-      <FaTimes fontSize={'small'} style={{display:'block',margin:'0 0 0 auto',cursor:'pointer'}} onClick={unshowProjectPopup}/>
-       <h4 style={{marginBottom:15, color:'#005734'}}>Select Projects </h4>
-            <div className='added-members-input'>
-            { 
-              inputProjects?.map(v => <div key={v.id} style={{cursor:'pointer'}} onClick={()=>removeProject(v.id)}><p>{v.project}</p><FaTimes fontSize={'small'}/></div>)
-            }
-            <input type="text"  placeholder='search member' value={query} onChange={e => setquery(e.target.value)}/>
-          </div>
-          <br />
-          <label htmlFor='task_name'>Select Projects</label>
-          <div className='members'>
-        {displaidProjects
-          ?.filter(f => f.project.includes(query)).length > 0 ?
-          displaidProjects
-          ?.filter(f => f.project.includes(query))
-          ?.map((element) => (
-          <div className="single-member" style={{cursor:'pointer'}} onClick={()=>AddedProject(element.id)} >
-            <p>{element.project}</p>
-            <BsPlus/>
-          </div>
-      )):
-        <h3>No More Projects</h3>
-      }
+
+  return (
+    <div className="overlay">
+      <div className="Project_Popup">
+        <AiOutlineClose
+          fontSize={"small"}
+          style={{ display: "block", margin: "0 0 0 auto", cursor: "pointer", fontSize: "1rem" }}
+          onClick={unshowProjectPopup}
+        />
+        <h2 style={{ marginBottom: 15, color: "#005734", letterSpacing: '0.03em' }}>Select Projects </h2>
+        <div className="added-members-input">
+          {
+            React.Children.toArray(inputProjects?.map((v) => (
+              <div
+                // key={v.id}
+                style={{ cursor: "pointer" }}
+                onClick={() => removeProject(v)}
+              >
+                <p>{v}</p>
+                <FaTimes fontSize={"small"} />
+              </div>
+            )))
+          }
+          <input
+            type="text"
+            placeholder="Search project"
+            value={query}
+            onChange={(e) => setquery(e.target.value)}
+          />
+        </div>
+        <br />
+        <label htmlFor="task_name">Add Projects</label>
+        <div className="members">
+          {
+            displayedProjects?.filter((f) => f?.project_name?.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase().replaceAll(' ', ''))).length > 0 ? (
+              displayedProjects
+                ?.filter((f) => f?.project_name?.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase().replaceAll(' ', '')))
+                ?.map((element) => (
+                  <div
+                    className="single-member"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => AddedProject(element?.project_name)}
+                  >
+                    <p>{element?.project_name}</p>
+                    <BsPlus />
+                  </div>
+                ))
+            ) : (
+              <>
+                <h5 className='not__Found__Header'>No project found matching {query}</h5>
+                <div className='add__Anyway__Item' onClick={() => AddedProject(query)}>
+                  <span>Add {query} anyway?</span>
+                </div>
+              </>
+            )
+          }
+        </div>
+        <button 
+          disabled={btnDisabled} 
+          className="add__Project__Btn" 
+          onClick={postSettinguserproject}
+        >
+          {
+            btnDisabled ? 
+            <LoadingSpinner color={'#fff'} width={'1.1rem'} height={'1.1rem'} />
+            :
+            projectsAdded[0] ?
+            "Update" :
+             "Add Project"
+          }
+        </button>
       </div>
-      <button onClick={postSettinguserproject}>Add Project</button>
-  </div>
-  </div>
+    </div>
+  );
 }
