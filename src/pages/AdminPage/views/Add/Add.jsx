@@ -248,16 +248,16 @@ const AddProjectPopup = ({projects, unshowProjectPopup}) => {
             type="text"
             placeholder="Search project"
             value={query}
-            onChange={(e) => setquery(e.target.value.replaceAll(' ', ''))}
+            onChange={(e) => setquery(e.target.value)}
           />
         </div>
         <br />
         <label htmlFor="task_name">Add Projects</label>
         <div className="members">
           {
-            displayedProjects?.filter((f) => f?.project_name?.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase())).length > 0 ? (
+            displayedProjects?.filter((f) => f?.project_name?.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase().replaceAll(' ', ''))).length > 0 ? (
               displayedProjects
-                ?.filter((f) => f?.project_name?.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase()))
+                ?.filter((f) => f?.project_name?.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase().replaceAll(' ', '')))
                 ?.map((element) => (
                   <div
                     className="single-member"
