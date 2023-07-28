@@ -49,21 +49,22 @@ function EditJob({ subAdminView }) {
   const { payment_terms, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, module } = singleJob || {};
   const [selectedOption, setSelectedOption] = useState(job_category || "");
   const [active, setActive] = useState(is_active);
-  console.log(singleJob);
+  // console.log(singleJob);
   const [typeofOption, setTypeofOption] = useState(type_of_job || "");
   const [secondOption, setSecondOption] = useState("");
   const [thirdOption, setThirdOption] = useState("");
-
+  console.log(thirdOption);
   useEffect(() => {
     setSelectedOption(job_category);
     setActive(is_active);
     setTypeofOption(type_of_job);
+    setThirdOption(module)
   }, [singleJob]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     // setLoading(false)
-    // console.log(formData);
+    console.log(formData);
     const isEveryGeneralTermFilled = formData.general_terms.every(
       (term) => term.length > 0
     );
@@ -118,14 +119,15 @@ function EditJob({ subAdminView }) {
       .catch(error => console.log(error));
   }
 
+
   const handleThirdOptionChange = (e) => {
-    setThirdOption(e.target.value);
-    setFormData((prevValue) => {
-      const copyOfPrevValue = { ...prevValue };
-      copyOfPrevValue["module"] = e.target.value;
-      return copyOfPrevValue;
-    });
+    // console.log("Hello");
+    const selectedOption = e.target.value;
+    console.log("Selected option:", selectedOption);
+    setThirdOption(selectedOption);
+    setFormData({ ...formData, module: selectedOption })
   };
+  // console.log(formData);
 
   useEffect(() => {
     if (jobs.length > 0) return setLoading(false);
@@ -513,6 +515,7 @@ function EditJob({ subAdminView }) {
                     className="select"
                     name={"module"}
                     id="module"
+                    value={thirdOption}
                     onChange={handleThirdOptionChange}
                   >
                     <option value="Frontend" selected={thirdOption === "Frontend"}>
