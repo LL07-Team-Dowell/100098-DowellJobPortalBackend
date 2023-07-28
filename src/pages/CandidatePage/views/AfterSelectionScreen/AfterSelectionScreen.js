@@ -10,6 +10,7 @@ import TaskScreen from "../../../TeamleadPage/views/TaskScreen/TaskScreen";
 import TeamsScreen from "../TeamsScreen/TeamsScreen";
 import UserScreen from "../UserScreen/UserScreen";
 import NewAddTaskScreen from "./NewAddTaskScreen";
+import AddIssueScreen from "../../../TeamleadPage/views/AddIssueScreen/AddIssueScreen";
 
 import "./style.css";
 
@@ -19,6 +20,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
     console.log(currentUser);
    
     const [ showAddTaskModal, setShowAddTaskModal ] = useState(false);
+    const [ showAddIssueModal, setShowAddIssueModal ] = useState(false);
     const { section } = useNavigationContext();
     const { setUserTasks } = useCandidateTaskContext();
 
@@ -36,7 +38,16 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
                     assignedProject={assignedProjects}
                 />
             )}
-                <NewAddTaskScreen handleAddTaskBtnClick={() => setShowAddTaskModal(true)} />
+            {showAddIssueModal && (
+                <AddIssueScreen
+                    teamMembers={[]}
+                    afterSelectionScreen={true}
+                    closeTaskScreen={() => setShowAddIssueModal(false)}
+                    updateTasks={setUserTasks}
+                    assignedProject={assignedProjects}
+                />
+            )}
+                <NewAddTaskScreen handleAddTaskBtnClick={() => setShowAddTaskModal(true)} handleAddIssueBtnClick={() => setShowAddIssueModal(true)}/>
             </JobLandingLayout> 
             
             </> :

@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { AiOutlinePlusCircle } from "react-icons/ai";
 
 
-const NewAddTaskScreen = ({ handleAddTaskBtnClick }) => {
+const NewAddTaskScreen = ({ handleAddTaskBtnClick, handleAddIssueBtnClick }) => {
   return (
     <>
       <div className="new__task__container">
         <h1 style={{ color: "#005734", fontSize: "1.6rem" }}>Add New Item</h1>
         <div style={{ position: "relative", display: "flex", gap: "3rem" }}>
-          <div style={{ marginTop: 30 }} className="Create_Team">
+          <div style={{ marginTop: 30 }} className="Create_Team" onClick={handleAddIssueBtnClick}>
             <div>
               <div>
                 <AiOutlinePlusCircle
