@@ -25,7 +25,7 @@ const TeamScreenThreads = () => {
 
   useEffect(() => {
     setThreads(testThreadsToWorkWith);
-    console.log({ threads });
+    console.log("testThreadsToWorkWith", testThreadsToWorkWith)
   }, []);
 
   const handleChange = (e) => {
@@ -162,18 +162,19 @@ const TeamScreenThreads = () => {
     setText("");
   };
 
-  const getThreadColor = (thread) => {
-    const { current_status, previous_statuses } = thread;
-    const isInProgress =
-      current_status === "In progress" ||
-      previous_statuses.includes("In progress");
-    const isCompletedOrResolved =
-      current_status === "Completed" ||
-      current_status === "Resolved" ||
-      previous_statuses.includes("Completed") ||
-      previous_statuses.includes("Resolved");
-    return isInProgress ? "green" : isCompletedOrResolved ? "red" : "default";
+  const getStatusColor = (status) => {
+    if (
+      status === "Created" ||
+      status === "In progress" ||
+      status === "Completed" ||
+      status === "Resolved"
+    ) {
+      return "green";
+    } else {
+      return "red";
+    }
   };
+
 
   const isTextareaDisabled = text.length === 0;
 
@@ -200,22 +201,20 @@ const TeamScreenThreads = () => {
                     <p>Raised by : {thread.created_by}</p>
                   </div>
                   <div className="team-screen-threads-progress">
-                    <div className={`progress ${getThreadColor}`}>
-                      <p>Created</p>
-                      <div className="threads-progress"></div>
-                    </div>
-                    <div className="progress">
-                      <p>In progress</p>
-                      <div className="threads-progress"></div>
-                    </div>
-                    <div className="progress">
-                      <p>Completed</p>
-                      <div className="threads-progress"></div>
-                    </div>
-                    <div className="progress">
-                      <p>Resolved</p>
-                      <div className="threads-progress"></div>
-                    </div>
+                    {thread.previous_statuses
+                      .concat(thread.current_status)
+                      .map((status, index) => (
+                        <div key={index} className="progress">
+                          <p style={{ color: getStatusColor(status) }}>
+                            {status}
+                          </p>
+                          <div
+                            className={`threads-progress ${getStatusColor(
+                              status
+                            )}`}
+                          ></div>
+                        </div>
+                      ))}
                   </div>
                   <div className="comments-section">
                     <p className="comments">
