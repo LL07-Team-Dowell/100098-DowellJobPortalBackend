@@ -9,7 +9,10 @@ const SingleTask = ({title, image, members, date, detail, setTasks, taskComplete
             }))
         }
     }
-  return (
+
+    if (!members || !Array.isArray(members)) return <></>
+
+    return (
     <>
     <div className="team-screen-task-progress-detail-content" style={{padding:50}}>
             <div className='team-screen-task-progress-detail-content-data'>
@@ -29,6 +32,9 @@ const SingleTask = ({title, image, members, date, detail, setTasks, taskComplete
                 </div>
                 </div>
             </div>
+            <button className="team-screen-task-progress-detail-btn" onClick={() => {}}>
+                {'View details'}
+            </button>
             <button className="team-screen-task-progress-detail-btn" onClick={completeTaskFunction}>
                 {taskCompleted ?  'completed'  : 'mark as done'}
             </button>
