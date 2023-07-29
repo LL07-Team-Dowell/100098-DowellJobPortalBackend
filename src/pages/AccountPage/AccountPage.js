@@ -113,7 +113,8 @@ const AccountPage = () => {
     ])
       .then((res) => {
         const jobsMatchingCurrentCompany = res[0].data.response.data.filter(
-          (job) => job.data_type === currentUser?.portfolio_info[0].data_type
+          (job) => job.data_type === currentUser?.portfolio_info[0].data_type &&
+          job.is_active
         );
         setJobs(jobsMatchingCurrentCompany);
 

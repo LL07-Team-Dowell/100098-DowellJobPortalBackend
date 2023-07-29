@@ -150,7 +150,8 @@ const Teamlead = () => {
       .then((res) => {
         console.log("res", res);
         const jobsMatchingCurrentCompany = res[0].data.response.data.filter(
-          (job) => job.data_type === currentUser?.portfolio_info[0].data_type
+          (job) => job.data_type === currentUser?.portfolio_info[0].data_type &&
+          job.is_active
         );
         console.log(jobsMatchingCurrentCompany);
         setJobs(jobsMatchingCurrentCompany);

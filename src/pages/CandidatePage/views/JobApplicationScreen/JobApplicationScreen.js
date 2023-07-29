@@ -464,8 +464,9 @@ const JobApplicationScreen = () => {
         )
     }
 
-    if (jobsLoading) return <LoadingSpinner />
+    if (jobsLoading || !currentJob) return <LoadingSpinner />
     if (currentJob?.is_active === false) return <CurrentJobNotFound />
+
     return <>
         <div className="candidate__Job__Application__Container">
             <TitleNavigationBar hideBackBtn={isPublicUser && section !== 'form'} handleBackBtnClick={() => navigate(-1)} />
@@ -517,7 +518,7 @@ const JobApplicationScreen = () => {
                                         </div>
                                         <p className="form__Tick__Item">Tick each box to approve</p>
                                         <p className="form__Salutations__Item">Thank you for accepting terms and conditions. Read following technical specifications and accept</p>
-                                        {React.Children.toArray(Object.keys(currentJob.Technical_Specifications || {}).map((key) => createCheckBoxData(currentJob.Technical_Specifications[key], technicalTermsSelectionsRef)))}
+                                        {React.Children.toArray(Object.keys(currentJob.technical_specification || {}).map((key) => createCheckBoxData(currentJob.technical_specification[key], technicalTermsSelectionsRef)))}
                                     </div>
                                 </>
                             }
@@ -531,7 +532,7 @@ const JobApplicationScreen = () => {
                                         </div>
                                         <p className="form__Tick__Item">Tick each box to continue</p>
                                         <p className="form__Salutations__Item">Thank you for accepting technical specifications. Read following payment terms and accept</p>
-                                        {React.Children.toArray(Object.keys(currentJob.Payment_terms || {}).map((key) => createCheckBoxData(currentJob.Payment_terms[key], paymentTermsSelectionsRef)))}
+                                        {React.Children.toArray(Object.keys(currentJob.payment_terms || {}).map((key) => createCheckBoxData(currentJob.payment_terms[key], paymentTermsSelectionsRef)))}
                                     </div>
                                 </>
                             }
@@ -546,7 +547,7 @@ const JobApplicationScreen = () => {
                                         </div>
                                         <p className="form__Tick__Item">Tick each box to continue</p>
                                         <p className="form__Salutations__Item">Thank you for accepting payment terms. Read following work flow to proceed</p>
-                                        {React.Children.toArray(Object.keys(currentJob.workflow || {}).map((key) => createCheckBoxData(currentJob.workflow[key], workflowTermsSelectionsRef)))}
+                                        {React.Children.toArray(Object.keys(currentJob.workflow_terms || {}).map((key) => createCheckBoxData(currentJob.workflow_terms[key], workflowTermsSelectionsRef)))}
                                     </div>
                                 </>
                             }

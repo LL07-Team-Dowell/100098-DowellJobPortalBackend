@@ -53,7 +53,7 @@ const AddJob = ({ subAdminView }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [currency, setCurrency] = useState("Select Currency");
   const [isValidCurrency, setIsValidCurrency] = useState(false);
-  const currencyList = ["USD", "NGN", "GBP", "RS"];
+  const currencyList = ["USD", "NGN", "GBP", "INR"];
 
   const jobTitleRef = useRef(null);
   const skillsRef = useRef(null);

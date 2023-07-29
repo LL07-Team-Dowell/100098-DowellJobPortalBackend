@@ -266,7 +266,7 @@ function EditJob({ subAdminView }) {
   //Handle Payment
   const [amount, currecy] = formData.payment.split(' ');
 
-  const currencyList = ["USD", "NGN", "GBP", "RS"];
+  const currencyList = ["USD", "NGN", "GBP", "INR"];
 
   const handleCurrencyChange = (value) => {
     console.log(value);
