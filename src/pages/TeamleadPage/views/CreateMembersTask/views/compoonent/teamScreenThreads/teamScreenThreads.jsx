@@ -25,7 +25,7 @@ const TeamScreenThreads = () => {
 
   useEffect(() => {
     setThreads(testThreadsToWorkWith);
-    console.log("testThreadsToWorkWith", testThreadsToWorkWith)
+    console.log("testThreadsToWorkWith", testThreadsToWorkWith);
   }, []);
 
   const handleChange = (e) => {
@@ -163,18 +163,19 @@ const TeamScreenThreads = () => {
   };
 
   const getStatusColor = (status) => {
+    console.log("status", status);
     if (
       status === "Created" ||
       status === "In progress" ||
       status === "Completed" ||
       status === "Resolved"
-    ) {
-      return "green";
-    } else {
-      return "red";
-    }
+      ) 
+      {
+        return "#005734";
+      } else {
+        return "red";
+      }
   };
-
 
   const isTextareaDisabled = text.length === 0;
 
@@ -205,13 +206,18 @@ const TeamScreenThreads = () => {
                       .concat(thread.current_status)
                       .map((status, index) => (
                         <div key={index} className="progress">
-                          <p style={{ color: getStatusColor(status) }}>
-                            {status}
+                        <p style={{ color: getStatusColor(status) }}>
+                        {status}
+                        
                           </p>
                           <div
-                            className={`threads-progress ${getStatusColor(
-                              status
-                            )}`}
+                            style={{
+                              backgroundColor: getStatusColor(status),
+                              padding: "1.5rem",
+                              borderRadius: "50%",
+                              width: "50%",
+                              height: "50%",
+                            }}
                           ></div>
                         </div>
                       ))}

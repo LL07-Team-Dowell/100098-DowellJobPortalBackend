@@ -8,12 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { createCandidateTask } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
+import { createThread } from "../../../../services/threadServices";
 
 
 const AddIssueScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelectionScreen, editPage, setEditPage, taskToEdit, hrPageActive, assignedProject }) => {
 
     const ref = useRef(null);
-    const [showTaskForm, setShowTaskForm] = useState(false);
+    const [showIssueForm, setShowIssueForm] = useState(false);
     const [newTaskDetails, setNewTaskDetails] = useState({
         "username": "",
         "title": "",
@@ -29,23 +30,7 @@ const AddIssueScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelect
     const selctChange = (e) => {
         setoptionValue(e.target.value);
     }
-    function convertDateFormat(date) {
-        const dateObj = new Date(date);
-        const month = dateObj.getMonth() + 1; // Months are zero-based
-        const day = dateObj.getDate();
-        const year = dateObj.getFullYear();
-        const hours = dateObj.getHours();
-        const minutes = dateObj.getMinutes();
-        const seconds = dateObj.getSeconds();
-
-        const formattedDate = `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
-        console.log(formattedDate);
-        return formattedDate;
-    }
-
-
-    const formattedDate = convertDateFormat(time);
-    console.log(formattedDate);
+    
 
     // console.log(time);
     useClickOutside(ref, () => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) });
@@ -67,35 +52,36 @@ const AddIssueScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelect
     const CreateNewTaskFunction = () => {
         setDisabled(true)
         const dataToPost = {
-            project: optionValue,
-            applicant: currentUser.userinfo.username,
-            task: newTaskDetails.description,
-            task_added_by: currentUser.userinfo.username,
-            data_type: currentUser.portfolio_info[0].data_type,
-            company_id: currentUser.portfolio_info[0].org_id,
-            task_created_date: formattedDate
+            thread: "",
+            image: "",
+            created_by: currentUser.userinfo.username,
+            team_alearted_id: optionValue,
         }
-        createCandidateTask(dataToPost).then(resp => {
+        createThread(dataToPost)
+          .then((resp) => {
             console.log(resp);
             updateTasks((prevTasks) => {
-                return [...prevTasks, { ...dataToPost, status: newTaskDetails.status }]
-            })
-            setNewTaskDetails({ ...newTaskDetails, "description": "" });
+              return [
+                ...prevTasks,
+                { ...dataToPost, status: newTaskDetails.status },
+              ];
+            });
+            setNewTaskDetails({ ...newTaskDetails, description: "" });
             setoptionValue("");
-            toast.success("New task sucessfully added")
-            setDisabled(false)
+            toast.success("New task sucessfully added");
+            setDisabled(false);
             closeTaskScreen();
-        })
-            .catch(err => {
-                console.log(err);
-                setDisabled(false)
-            })
+          })
+          .catch((err) => {
+            console.log(err);
+            setDisabled(false);
+          });
     }
     useEffect(() => {
 
         if (afterSelectionScreen) {
             setNewTaskDetails(prevValue => { return { ...prevValue, username: currentUser.userinfo.username } });
-            setShowTaskForm(true);
+            setShowIssueForm(true);
         }
 
     }, [afterSelectionScreen])
@@ -108,7 +94,7 @@ const AddIssueScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelect
                 title: taskToEdit.title,
                 description: taskToEdit.description,
             });
-            setShowTaskForm(true);
+            setShowIssueForm(true);
 
         }
     }, [editPage])
@@ -120,7 +106,7 @@ const AddIssueScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelect
 
     const handleMemberItemClick = (member) => {
         setNewTaskDetails(prevValue => { return { ...prevValue, "username": member } });
-        setShowTaskForm(true);
+        setShowIssueForm(true);
     }
 
     const handleNewTaskBtnClick = async () => {
@@ -187,8 +173,8 @@ const AddIssueScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelect
             <div className="add__New__Task__Container" ref={ref}>
                 <h1 className="title__Item">
                     {
-                        showTaskForm ? <>
-                            {!afterSelectionScreen && <IoIosArrowBack onClick={editPage ? () => { closeTaskScreen(); setEditPage(false); } : () => setShowTaskForm(false)} style={{ cursor: "pointer" }} />}
+                        showIssueForm ? <>
+                            {!afterSelectionScreen && <IoIosArrowBack onClick={editPage ? () => { closeTaskScreen(); setEditPage(false); } : () => setShowIssueForm(false)} style={{ cursor: "pointer" }} />}
                             {editPage ? "Edit Issue" : "New Issue Details"}
                         </> : <>Add new Issue</>
                     }
@@ -196,16 +182,14 @@ const AddIssueScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelect
                     <AiOutlineClose onClick={() => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) }} style={{ cursor: "pointer" }} fontSize={'1.2rem'} />
                 </h1>
                 {
-                    showTaskForm ? <>
-                        <span className="selectProject">Username</span>
+                    showIssueForm ? <>
+                        <span className="selectProject">Enter Issue Details</span>
+                        <textarea placeholder="Enter Issue" name="description" value={newTaskDetails.description} style={{ margin: 0 }} onChange={handleChange} rows={5}></textarea>
+                        <span className="selectProject">Add an Image to help explain your issue better (OPTIONAL)</span>
                         <input type={"text"} placeholder={"Task Assignee"} value={newTaskDetails.username} style={{ margin: 0, marginBottom: "0.8rem" }} readOnly={true} />
-                        <span className="selectProject">Date of Submission</span>
-                        <input type={"text"} placeholder={"today time"} value={TimeValue} style={{ margin: 0, marginBottom: "0.8rem" }} readOnly={true} />
                         <span className="selectProject">Select Project</span>
                         <br />
                         <select onChange={e => selctChange(e)} className="addTaskDropDown" style={{ margin: 0, marginBottom: "0.8rem"  }} ><option value={""}>Select</option>{assignedProject.map((v, i) => <option key={i} value={v}>{v}</option>)}</select>
-                        <span className="selectProject">Enter Issue Details</span>
-                        <textarea placeholder="Enter Issue" name="description" value={newTaskDetails.description} style={{ margin: 0 }} onChange={handleChange} rows={5}></textarea>
                         <button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateTaskBtnClick() : CreateNewTaskFunction()}>{editPage ? "Update Issue" : "Add Issue"}</button>
                     </> :
 

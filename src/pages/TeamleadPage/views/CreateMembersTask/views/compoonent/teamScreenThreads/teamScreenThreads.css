@@ -78,13 +78,13 @@
   font-weight: 600;
 }
 
-.threads-progress {
+/* .threads-progress {
   width: 50%;
   height: 50%;
   background-color: #005734;
   padding: 1.5rem;
   border-radius: 50%;
-}
+} */
 
 .comments-section {
   cursor: pointer;
