@@ -3432,3 +3432,35 @@ class GenerateReport(APIView):
         
         return Response({"message": f"Report Generated", "response":data}, status=status.HTTP_201_CREATED)
     
+
+@method_decorator(csrf_exempt, name="dispatch")
+class Generate_hr_Report(APIView):
+    def post(self, request):
+        payload = request.data
+        field = {}
+        update_field = {}
+        data = {}
+        job_applications = dowellconnection(*hr_management_reports, "fetch", field, update_field)
+
+        data["job_applications"]=len(json.loads(job_applications)['data'])
+
+        shortlisted = dowellconnection(*hr_management_reports, "fetch", {"status": "shortlisted"}, update_field)
+        
+        data["shortlisted_candidates"]=len(json.loads(shortlisted)['data'])
+
+        rejected = dowellconnection(*hr_management_reports, "fetch", {"status": "Rejected"}, update_field)
+        
+        data["rejected_candidates"]=len(json.loads(rejected)['data'])
+
+        Selected = dowellconnection(*candidate_management_reports, "fetch", {"status": "selected"}, update_field)
+        
+        data["selected_candidates"]=len(json.loads(Selected)['data'])
+        print(len(Selected))
+        print(len(job_applications))
+
+        hiring_perecentage=str(data["selected_candidates"]/ data["job_applications"]*100)+ "%"
+        data["Hiring percentage of the organization"]=hiring_perecentage
+
+        return Response({
+            "isSuccess":True,
+            "message": f"Hr reported Generated", "response":data}, status=status.HTTP_201_CREATED)
