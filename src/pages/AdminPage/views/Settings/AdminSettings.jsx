@@ -45,7 +45,7 @@ const AdminSettings = () => {
   useEffect(() => {
 
     // User portfolio has already being loaded
-    if (currentUser.userportfolio.length > 0) return setLoading2(false)
+    if (currentUser?.userportfolio?.length > 0) return setLoading2(false)
 
     const currentSessionId = sessionStorage.getItem("session_id");
 
