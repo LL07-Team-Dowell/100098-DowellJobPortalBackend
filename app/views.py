@@ -3475,19 +3475,32 @@ class Generate_public_Report(APIView):
         company_id = request.data.get("company_id")
         field = {"company_id": company_id}
         update_field = {}
-        data = {}
+        data = []
         job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
         job_applications_json = json.loads(job_applications)['data']
         filtered_job_applications = []
         if status_filter:
             for application in job_applications_json:
                 if application.get("status") == status_filter:
-                    filtered_job_applications.append(application)
+                    filtered_job_applications.append({
+                        "applicant":application.get("applicant"),
+                        "username":application.get("username"),
+                        "status":application.get("status"),
+                        "portfolio_name":application.get("portfolio_name"),                    
+                        "signup_mail_sent":application.get("signup_mail_sent")  
+                    })
         else:
-            filtered_job_applications = job_applications_json
-        data["job_applications"] = filtered_job_applications
+            for application in job_applications_json:
+                filtered_job_applications.append({
+                            "applicant":application.get("applicant"),
+                            "username":application.get("username"),
+                            "status":application.get("status"),
+                            "portfolio_name":application.get("portfolio_name"),                    
+                            "signup_mail_sent":application.get("signup_mail_sent")  
+                        })
+        data = filtered_job_applications
         return Response({
             "isSuccess": True,
             "message": f"public applied job report Generated",
-            "response": data
+            "Data": data
         }, status=status.HTTP_201_CREATED)
