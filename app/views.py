@@ -692,7 +692,7 @@ class candidate_apply_job(APIView):
                 for item in json.loads(applicant)["data"]
             ]
             if len(rejected_dates) >= 1:
-                rejected_on = max(rejected_dates)  # get last date
+                rejected_on = max(rejected_dates)  
                 if rejected_on:
                     three_months_after = rejected_on + relativedelta(months=3)
                     current_date = datetime.datetime.today()
@@ -939,7 +939,6 @@ class delete_candidate_application(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 # api for candidate management ends here______________________
 
 
@@ -949,7 +948,7 @@ class hr_shortlisted_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
-            # continue shortlisting api-----
+           
             field = {
                 "_id": data.get("document_id"),
             }
@@ -998,7 +997,6 @@ class hr_shortlisted_candidate(APIView):
                 )
 
                 insert_response_thread.start()
-                # print(update_response_thread,insert_response_thread)
                 update_response_thread.join()
                 insert_response_thread.join()
 
@@ -1040,7 +1038,6 @@ class hr_selected_candidate(APIView):
     def post(self, request):
         data = request.data
         if data:
-            # continue selection api-----
             field = {
                 "_id": data.get("document_id"),
             }
@@ -2834,6 +2831,7 @@ class Public_apply_job(APIView):
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 # Generating public link for job application
 
 
@@ -3375,50 +3373,50 @@ class GenerateReport(APIView):
         data["percentage_active_to_inactive_jobs"]= f"{active_percent} % : {inactive_percent} %"
         
         job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
-        #print(job_applications)
+       
         data["job_applications"]=len(json.loads(job_applications)['data'])
 
         p_application = periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
-        #print(p_application)
+        
         data[f"nojob_applications_from_|{payload['start_date']}|_to_|{payload['end_date']}|"]=p_application[1]
 
         ids = [t["_id"] for t in json.loads(job_applications)['data']]
         counter = Counter(ids)
         most_applied_job = counter.most_common(1)[0][0]
         least_applied_job = counter.most_common()[-1][0]
-        #print(most_common,"========", least_common)
+        
         data["most_applied_job"]={"_id":most_applied_job}
         data["least_applied_job"]={"_id":least_applied_job}
 
 
         hired = dowellconnection(*candidate_management_reports, "fetch", {"status": "hired"}, update_field)
-        #print(json.loads(hired)["data"])
+        
         data["hired_candidates"]=len(json.loads(hired)['data'])
 
         rejected = dowellconnection(*candidate_management_reports, "fetch", {"status": "Rejected"}, update_field)
-        #print(rejected)
+        
         data["rejected_candidates"]=len(json.loads(rejected)['data'])
 
         probationary = dowellconnection(*candidate_management_reports, "fetch", {"status": "probationary"}, update_field)
-        #print(probationary)
+        
         data["probationary_candidates"]=len(json.loads(probationary)['data'])
 
         data["hiring_rate"] = str((data["hired_candidates"]/data["job_applications"])*100)+" %"
 
         teams = dowellconnection(*team_management_modules, "fetch", field, update_field)
-        #print(teams)
+        
         data["teams"]=len(json.loads(teams)['data'])
 
         tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
-        #print(tasks)
+        
         data["tasks"]=len(json.loads(tasks)['data'])
 
         team_tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
-        #print(team_tasks)
+        
         data["team_tasks"]=len([t for t in json.loads(team_tasks)['data'] 
                                     if "team_id" in t.keys() or "team_name" in t.keys()])
         tasks_completed = dowellconnection(*task_management_reports, "fetch", {"status":"Completed"}, update_field)
-        #print(tasks_completed)
+        
         data["tasks_completed_on_time"]=len([t for t in json.loads(tasks_completed)['data'] 
                                              if "due_date" in t.keys() and "task_updated_date" in t.keys() and 
                                                 datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > 
@@ -3435,18 +3433,19 @@ class GenerateReport(APIView):
 
         
         return Response({"message": f"Report Generated", "response":data}, status=status.HTTP_201_CREATED)
-    
+  
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_hr_Report(APIView):
     def post(self, request):
-        payload = request.data
+        
         field = {}
+            
         update_field = {}
         data = {}
-        job_applications = dowellconnection(*hr_management_reports, "fetch", field, update_field)
+        job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
 
-        data["job_applications"]=len(json.loads(job_applications)['data'])
+        data["job_applications"]=(json.loads(job_applications)['data'])
 
         shortlisted = dowellconnection(*hr_management_reports, "fetch", {"status": "shortlisted"}, update_field)
         
@@ -3462,9 +3461,33 @@ class Generate_hr_Report(APIView):
         print(len(Selected))
         print(len(job_applications))
 
-        hiring_perecentage=str(data["selected_candidates"]/ data["job_applications"]*100)+ "%"
-        data["Hiring percentage of the organization"]=hiring_perecentage
+        # hiring_perecentage=str(data["selected_candidates"]/ data["job_applications"]*100)+ "%"
+        # data["Hiring percentage of the organization"]=hiring_perecentage
 
         return Response({
             "isSuccess":True,
             "message": f"Hr reported Generated", "response":data}, status=status.HTTP_201_CREATED)
+    
+@method_decorator(csrf_exempt, name="dispatch")
+class Generate_public_Report(APIView):
+    def get(self, request):
+        status_filter = request.data.get("status")
+        company_id = request.data.get("company_id")
+        field = {"company_id": company_id}
+        update_field = {}
+        data = {}
+        job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        job_applications_json = json.loads(job_applications)['data']
+        filtered_job_applications = []
+        if status_filter:
+            for application in job_applications_json:
+                if application.get("status") == status_filter:
+                    filtered_job_applications.append(application)
+        else:
+            filtered_job_applications = job_applications_json
+        data["job_applications"] = filtered_job_applications
+        return Response({
+            "isSuccess": True,
+            "message": f"public applied job report Generated",
+            "response": data
+        }, status=status.HTTP_201_CREATED)
