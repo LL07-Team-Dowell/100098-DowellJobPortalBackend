@@ -52,7 +52,7 @@ const AdminTeam = () => {
       setSearchValue={setSearchValue}
       searchTeam={true}
     >
-      <Navbar title={"All Teams"} color={"#005734"} noButtonBack={true} />
+      <Navbar title={"All Teams"} color={"#005734"} noButtonBack={true} adminTeams={true}/>
       <div className="container">
         <Teams
           searchValue={searchValue}
