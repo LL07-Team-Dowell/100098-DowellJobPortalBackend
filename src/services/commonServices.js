@@ -13,7 +13,7 @@ export const getAllQuestions = async (company_id)=>{
 // }
 
 export const getAllTrainingResponses = async (company_id) => {
-    return await currentBackendAxiosInstance.get(`get_all_question/${company_id}`)
+    return await currentBackendAxiosInstance.get(`get_all_responses/${company_id}`)
 }
 
 export const getUserLiveStatus = async () => {

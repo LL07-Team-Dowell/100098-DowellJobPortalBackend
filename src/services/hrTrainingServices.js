@@ -30,3 +30,9 @@ export const createTrainingManagementResponse = async (data) => {
     "create_response/" , data
   )
 }
+
+export const getTrainingManagementResponses = async (company_id) => {
+  return await currentBackendAxiosInstance.get(
+    `get_all_responses/${company_id}/`
+  );
+};

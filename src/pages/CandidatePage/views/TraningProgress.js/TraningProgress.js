@@ -400,9 +400,10 @@ function TraningProgress({ shorlistedJob }) {
         setSubmitBtnDisabled(true);
 
         try {
+            const dateSubmitted = new Date();
 
-            const res = (await candidateSubmitResponse(submitDataToSend)).data;
-            const updatedResponse = { ...currentResponses[foundResponseIndex], ...submitDataToSend, submitted_on: new Date() };
+            const res = (await candidateSubmitResponse({document_id: currentResponses[foundResponseIndex]?._id, submitted_on: dateSubmitted, ...submitDataToSend})).data;
+            const updatedResponse = { ...currentResponses[foundResponseIndex], ...submitDataToSend, submitted_on: dateSubmitted };
             currentResponses[foundResponseIndex] = updatedResponse;
             // console.log(currentResponse, updatedResponse);
             setresponses(currentResponses);
@@ -411,6 +412,7 @@ function TraningProgress({ shorlistedJob }) {
             setComplete(true);
         } catch (error) {
             console.log(error);
+            toast.info("An error occured while trying to submit your response. Please try again")
         }
 
         setSubmitBtnDisabled(false);
