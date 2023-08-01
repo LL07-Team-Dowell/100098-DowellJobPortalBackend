@@ -1750,10 +1750,10 @@ class create_team(APIView):
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
                 "members": data.get("members"),
-                "threadable_team":False
+                "admin_team":False
             }
-            if data.get("authentic_team"):
-                field["threadable_team"] = True
+            if data.get("admin_team"):
+                field["admin_team"] = True
 
             update_field = {"status": "nothing to update"}
             response = dowellconnection(
