@@ -67,6 +67,7 @@ import TeamThread from "./pages/TeamleadPage/views/CreateMembersTask/views/compo
 import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
 import Payment from "./pages/AccountPage/Payment";
 import Add from "./pages/AdminPage/views/Add/Add";
+import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThreadScreen";
 function App() {
   const {
     currentUser,
@@ -544,7 +545,7 @@ function App() {
                 <TeamProvider>
                   <ValuesProvider>
                     {/* create a component here */}
-                    <TeamThread />
+                    <TeamThreadScreen />
                   </ValuesProvider>
                 </TeamProvider>
               </StaffJobLandingLayout>

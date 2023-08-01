@@ -60,7 +60,7 @@ const TeamThread = ({ title = "Team Issues", color }) => {
     <div className='create-new-team-header'>
       <div>
         <div>
-          <button className='back' onClick={() => navigate(-1)}><MdOutlineArrowBackIosNew /></button>
+          <button className='back' onClick={() => navigate(`/team-screen-member/${id}/team-issues`)}><MdOutlineArrowBackIosNew /></button>
           {title !== undefined && <h1 style={{ color: color ? color : '#000' }}>{title}</h1>}
         </div>
       </div>
