@@ -39,6 +39,7 @@ import { JobContextProvider } from "./contexts/Jobs";
 import AdminUserScreen from "./pages/AdminPage/views/AdminUserScreen/AdminUserScreen";
 import AdminReports from "./pages/AdminPage/views/Reports/Reports";
 import AdminSettings from "./pages/AdminPage/views/Settings/AdminSettings";
+import AdminTeam from "./pages/AdminPage/views/Teams/AdminTeam";
 import RedirectPage from "./pages/Redirectpage/redirect";
 import { testingRoles } from "./utils/testingRoles";
 import LoadingPage from "./pages/LoadingPage/LoadingPage";
@@ -342,6 +343,72 @@ function App() {
             <JobContextProvider>
               <AdminReports />
             </JobContextProvider>
+          }
+        />
+        <Route
+          path="/create-task"
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <AdminTeam />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path="/create-task/create-new-team/"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout adminView={true}>
+                <ValuesProvider>
+                  <CreateTeam />
+                </ValuesProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path="/team-screen-member/:id/team-members"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout adminView={true} hideSearchBar={true}>
+                <TeamProvider>
+                  <ValuesProvider>
+                    <TeamScreenMembers />
+                  </ValuesProvider>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+
+        <Route
+          path="/team-screen-member/:id/team-tasks"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout adminView={true} hideSearchBar={true}>
+                <TeamProvider>
+                  <ValuesProvider>
+                    <TeamScreenTasks />
+                  </ValuesProvider>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path="/team-screen-member/:id/team-issues"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout adminView={true} hideSearchBar={true}>
+                <TeamProvider>
+                  <ValuesProvider>
+                    {/* create a component here */}
+                    <TeamThread />
+                  </ValuesProvider>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
           }
         />
         <Route
