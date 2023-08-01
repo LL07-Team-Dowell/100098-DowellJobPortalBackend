@@ -185,6 +185,7 @@ function App() {
       currentUser.settings_for_profile_info.profile_info[0].Role ===
       testingRoles.subAdminRole
     ) || (
+      currentUser.settings_for_profile_info &&
       currentUser.settings_for_profile_info.fakeSuperUserInfo &&
       currentUser.fakeSubAdminRoleSet
     )
