@@ -551,6 +551,36 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
+        <Route
+          path="/team-screen-member/:id/issue-inprogress"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+                <TeamProvider>
+                  <ValuesProvider>
+                    {/* create a component here */}
+                    <TeamThread />
+                  </ValuesProvider>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path="/team-screen-member/:id/issue-completed"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+                <TeamProvider>
+                  <ValuesProvider>
+                    {/* create a component here */}
+                    <TeamThread />
+                  </ValuesProvider>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
         <Route path="*" element={<ErrorPage />} />
       </Routes>
     );
