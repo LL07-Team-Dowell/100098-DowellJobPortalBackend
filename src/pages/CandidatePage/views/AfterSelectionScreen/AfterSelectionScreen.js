@@ -40,11 +40,8 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
             )}
             {showAddIssueModal && (
                 <AddIssueScreen
-                    teamMembers={[]}
                     afterSelectionScreen={true}
-                    closeTaskScreen={() => setShowAddIssueModal(false)}
-                    updateTasks={setUserTasks}
-                    assignedProject={assignedProjects}
+                    closeIssuesScreen={() => setShowAddIssueModal(false)}
                 />
             )}
                 <NewAddTaskScreen handleAddTaskBtnClick={() => setShowAddTaskModal(true)} handleAddIssueBtnClick={() => setShowAddIssueModal(true)}/>

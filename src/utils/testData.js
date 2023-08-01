@@ -43,7 +43,7 @@ export const testThreadsToWorkWith = [
     thread: "Login button not working",
     created_by: "ayoolaa_",
     team_alerted_id: "32302942948",
-    current_status: "In progress",
+    current_status: "Resolved",
     previous_statuses: ["Created"],
     comments: [
       {

@@ -78,13 +78,13 @@
   font-weight: 600;
 }
 
-.threads-progress {
+/* .threads-progress {
   width: 50%;
   height: 50%;
   background-color: #005734;
   padding: 1.5rem;
   border-radius: 50%;
-}
+} */
 
 .comments-section {
   cursor: pointer;
@@ -106,3 +106,12 @@
   font-size: 1.8rem;
 }
 
+
+/* <span className="selectProject">Enter Issue Details</span>
+<textarea placeholder="Enter Issue" name="description" value="" style={{ margin: 0 }} onChange="" rows={5}></textarea>
+<span className="selectProject">Add an Image to help explain your issue better (OPTIONAL)</span>
+<input type={"text"} placeholder={"Task Assignee"} value="" style={{ margin: 0, marginBottom: "0.8rem" }} readOnly={true} />
+<span className="selectProject">Select Project</span>
+<br />
+<select className="addTaskDropDown" style={{ margin: 0, marginBottom: "0.8rem"  }} ><option value={""}>Select</option>Team A</select>
+<button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateIssueBtnClick() : <></>}>{editPage ? "Update Issue" : "Add Issue"}</button> */
