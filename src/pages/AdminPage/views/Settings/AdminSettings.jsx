@@ -10,8 +10,9 @@ import { getSettingUserProfileInfo, configureSettingUserProfileInfo } from "../.
 import { useJobContext } from "../../../../contexts/Jobs";
 import { getApplicationForAdmin } from "../../../../services/adminServices";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
+import { testingRoles } from "../../../../utils/testingRoles";
 
-const rolesDict = { 'Dept_Lead': 'Account', "Proj_Lead": 'Teamlead', "Hr": "Hr", "sub_admin": "Sub Admin", "group_lead": "Group Lead" };
+const rolesDict = { 'Dept_Lead': 'Account', "Proj_Lead": 'Teamlead', "Hr": "Hr", "sub_admin": "Sub Admin", "group_lead": "Group Lead", "super_admin": "Super Admin" };
 
 const AdminSettings = () => {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -42,10 +43,21 @@ const AdminSettings = () => {
     }
   }, [firstSelection])
   console.log({ loading, loading2 })
+
   useEffect(() => {
 
+    if (
+      (
+        currentUser.settings_for_profile_info && 
+        currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+      ) || 
+      (
+        currentUser.isSuperAdmin
+      )
+    ) return setLoading2(false);
+
     // User portfolio has already being loaded
-    if (currentUser.userportfolio.length > 0) return setLoading2(false)
+    if (currentUser?.userportfolio?.length > 0) return setLoading2(false)
 
     const currentSessionId = sessionStorage.getItem("session_id");
 
@@ -171,7 +183,7 @@ const AdminSettings = () => {
               </tr>
             </thead>
             <tbody>
-              {options1.map((option, index) =>
+              {options1?.map((option, index) =>
                 <tr key={index}> <td>{index + 1}</td>
                   <td>{option.portfolio_name}</td>
                   <td>{settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === option.portfolio_name)
@@ -193,7 +205,7 @@ const AdminSettings = () => {
               <p>Select User Portfolio <span>* </span> :</p>
               <select value={firstSelection} onChange={handleFirstSelectionChange} >
                 <option disabled value="">Select an option</option>
-                {options1.map(option => <option key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option>)}
+                {options1?.map(option => <option key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option>)}
               </select>
             </label>
             {(userstatus?.length > 0 && firstSelection.length > 0) && <p style={{ marginTop: "4%" }}>Current application status:{userstatus}</p>}

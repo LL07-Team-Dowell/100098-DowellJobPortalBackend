@@ -181,9 +181,15 @@ function App() {
 
   // SUB-ADMIN PAGE
   if (
-    currentUser.settings_for_profile_info &&
-    currentUser.settings_for_profile_info.profile_info[0].Role ===
-    testingRoles.subAdminRole
+    (
+      currentUser.settings_for_profile_info &&
+      currentUser.settings_for_profile_info.profile_info[0].Role ===
+      testingRoles.subAdminRole
+    ) || (
+      currentUser.settings_for_profile_info &&
+      currentUser.settings_for_profile_info.fakeSuperUserInfo &&
+      currentUser.fakeSubAdminRoleSet
+    )
   ) {
     return (
       <Routes>
@@ -267,15 +273,22 @@ function App() {
 
   // ADMIN PAGE
   if (
-    currentUser.portfolio_info &&
-    currentUser.portfolio_info.length > 0 &&
-    currentUser.portfolio_info.find(
-      (item) => item.product === "Team Management"
-    ) &&
-    currentUser.portfolio_info.find(
-      (item) => item.product === "Team Management"
-    ).member_type === "owner" &&
-    !currentUser.settings_for_profile_info?.fakeSuperUserInfo
+    (
+      currentUser.portfolio_info &&
+      currentUser.portfolio_info.length > 0 &&
+      currentUser.portfolio_info.find(
+        (item) => item.product === "Team Management"
+      ) &&
+      currentUser.portfolio_info.find(
+        (item) => item.product === "Team Management"
+      ).member_type === "owner" &&
+      !currentUser.settings_for_profile_info?.fakeSuperUserInfo
+    ) 
+    ||
+    (
+      currentUser.settings_for_profile_info && 
+      currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+    )
   ) {
     return (
       <Routes>

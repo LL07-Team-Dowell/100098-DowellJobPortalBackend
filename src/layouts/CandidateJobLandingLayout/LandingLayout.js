@@ -14,6 +14,7 @@ import { dowellLoginUrl } from "../../services/axios";
 import { useMediaQuery } from "@mui/material";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import { teamManagementProductName } from "../../utils/utils";
+import { testingRoles } from "../../utils/testingRoles";
 
 const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, hideSearch }) => {
     const [ searchValue, setSearchValue ] = useState("");
@@ -34,6 +35,17 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
 
     useEffect(() => {
         const teamManagementProduct = currentUser?.portfolio_info?.find(portfolio => portfolio.product === teamManagementProductName);
+        
+        if (
+            (
+                currentUser.settings_for_profile_info && 
+                currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+            ) ||
+            (
+                currentUser.isSuperAdmin
+            )
+        ) return setIsSuperUser(true); 
+
         if (!teamManagementProduct || teamManagementProduct.member_type !== 'owner') return setIsSuperUser(false);
 
         setIsSuperUser(true);

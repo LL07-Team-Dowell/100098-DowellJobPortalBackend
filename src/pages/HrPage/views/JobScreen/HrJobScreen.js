@@ -27,7 +27,7 @@ import { getCandidateApplicationsForHr, getCandidateTask, getSettingUserProject,
 import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenAllTasks';
 import HrTrainingQuestions from '../HrTrainingScreen/HrTrainingQuestion';
 import { trainingCards } from '../HrTrainingScreen/hrTrainingCards';
-import { getTrainingManagementQuestions } from '../../../../services/hrTrainingServices';
+import { getTrainingManagementQuestions, getTrainingManagementResponses } from '../../../../services/hrTrainingServices';
 import { IoMdRefresh } from "react-icons/io";
 import { set } from 'date-fns';
 import { toast } from 'react-toastify';
@@ -41,7 +41,7 @@ function fuzzySearch(query, text) {
 
 function HrJobScreen() {
   const { currentUser, userRolesLoaded, setUserRolesFromLogin, setRolesLoaded } = useCurrentUserContext();
-  const { setQuestions } = useHrJobScreenAllTasksContext();
+  const { setQuestions, candidateResponses, setCandidateResponses } = useHrJobScreenAllTasksContext();
   const { section, sub_section, path } = useNavigationContext();
   const [jobs, setJobs] = useState([]);
   const [ appliedJobs, setAppliedJobs ] = useState([]);
@@ -71,6 +71,7 @@ function HrJobScreen() {
   const [ newPublicConfigurationLoading, setNewPublicConfigurationLoading ] = useState(false);
   const [ newPublicAccountDetails, setNewPublicAccountDetails ] = useState(initialPublicAccountDetails);
   const [ currentCandidateData, setCurrentCandidateData ] = useState(null);
+  const [ hideSideBar, setHideBar ] = useState(false);
   
   const handleEditTaskBtnClick = (currentData) => {
     setEditTaskActive(true);
@@ -116,17 +117,18 @@ function HrJobScreen() {
       getSettingUserProject(),
       getCandidateTask(currentUser.portfolio_info[0].org_id),
       getTrainingManagementQuestions(currentUser.portfolio_info[0].org_id),
+      getTrainingManagementResponses(currentUser.portfolio_info[0].org_id),
     ])
     .then((res) => {
-      const filteredData = res[0].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
+      const filteredData = res[0]?.data?.response?.data?.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
       setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
       setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION && !application.signup_mail_sent));
       setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
       setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
 
-      setJobs(res[1].data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type && job.is_active));
+      setJobs(res[1]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type && job.is_active));
       
-      const list = res[2].data
+      const list = res[2]?.data
       ?.filter(
         (project) =>
           project?.data_type === currentUser.portfolio_info[0].data_type &&
@@ -143,10 +145,24 @@ function HrJobScreen() {
         list[0]?.project_list
       );
 
-      const usersWithTasks = [...new Map(res[3].data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [task.applicant, task])).values()];
+      const usersWithTasks = [...new Map(res[3]?.data?.response?.data?.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [task.applicant, task])).values()];
       setAllTasks(usersWithTasks.reverse());
 
-      setQuestions(res[4].data.response.data.filter(question => question.data_type === currentUser.portfolio_info[0].data_type));
+      setQuestions(
+        res[4]?.data?.response?.data?.filter(
+          (question) =>
+            question.data_type === currentUser.portfolio_info[0].data_type
+        )
+      );
+      
+      setCandidateResponses(
+        res[5]?.data?.response?.data
+        ?.filter(response => 
+          response.data_type === currentUser.portfolio_info[0].data_type && 
+          response.submitted_on
+        )
+        ?.reverse()
+      );
       setLoading(false);
       
     })
@@ -277,15 +293,24 @@ function HrJobScreen() {
 
   const handleRefreshForCandidateApplications = () => {
     setLoading(true);
-    getCandidateApplicationsForHr(
-      currentUser.portfolio_info[0].org_id,
-    ).then((res) => {
+    Promise.all([
+      getCandidateApplicationsForHr(
+        currentUser.portfolio_info[0].org_id,
+      ),
+      getTrainingManagementResponses(currentUser.portfolio_info[0].org_id),
+    ]).then((res) => {
       console.log("res", res);
-      const filteredData = res.data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
+      const filteredData = res[0].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
       setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
       setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
       setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
       setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
+
+      setCandidateResponses(
+        res[1].data.response.data
+        .filter(response => response.data_type === currentUser.portfolio_info[0].data_type && response.submitted_on)
+        .reverse()
+      );
 
       setLoading(false);
     }).catch((err) => {
@@ -414,7 +439,7 @@ function HrJobScreen() {
       hideSearchBar={
         sub_section === undefined && section === "user" ? true : false
       }
-      hideSideBar={showAddTaskModal} 
+      hideSideBar={showAddTaskModal || hideSideBar} 
       searchValue={jobSearchInput} 
       setSearchValue={setJobSearchInput}
       showLoadingOverlay={trackingProgress}
@@ -521,7 +546,13 @@ function HrJobScreen() {
           isLoading ? <LoadingSpinner /> :
 
           sub_section === undefined && section === "shortlisted" ? <>
-            <ShortlistedScreen shortlistedCandidates={candidateData} jobData={jobs} handleRefreshForCandidateApplications={handleRefreshForCandidateApplications}/>
+            <ShortlistedScreen 
+              shortlistedCandidates={candidateData} 
+              jobData={jobs} 
+              handleRefreshForCandidateApplications={handleRefreshForCandidateApplications}
+              candidateTrainingResponses={candidateResponses}
+              hideSideNavBar={setHideBar}
+            />
           </> :
 
           isLoading ? <LoadingSpinner /> :

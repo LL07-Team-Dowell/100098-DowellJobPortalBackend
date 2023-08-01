@@ -50,6 +50,7 @@
 .label {
     margin: 10px 0 20px;
     width: 100%;
+    position: relative;
 }
 
 .label input {
@@ -89,6 +90,29 @@
 
 .required {
     color: red;
+}
+
+.view__Text {
+    position: absolute;
+    top: 70%;
+    transform: translateY(-50%);
+    right: 3%;
+    font-size: 0.875rem;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 10px;
+    display: none;
+    padding: 0 0.6%;
+}
+
+.hrViewInput {
+    cursor: pointer;
+}
+
+.hrViewInput:hover {
+    background-color: #e1fbe2;
+}
+
+.label .hrViewInput:hover ~ .view__Text {
+    display: block;
 }
 
 @keyframes fadeIn {

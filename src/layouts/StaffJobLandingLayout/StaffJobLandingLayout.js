@@ -22,6 +22,7 @@ import { hr } from "date-fns/locale";
 import { IoShareSocial } from "react-icons/io5";
 import ShareJobModal from "../../components/ShareJobModal/ShareJobModal";
 import PublicAccountConfigurationModal from "../../pages/HrPage/component/PublicAccountConfigurationModal/PublicAccountConfigurationModal";
+import { testingRoles } from "../../utils/testingRoles";
 
 const StaffJobLandingLayout = ({
   children,
@@ -64,6 +65,17 @@ const StaffJobLandingLayout = ({
     const teamManagementProduct = currentUser?.portfolio_info?.find(
       (portfolio) => portfolio.product === teamManagementProductName
     );
+
+    if (
+      (
+        currentUser.settings_for_profile_info && 
+        currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+      ) ||
+      (
+        currentUser.isSuperAdmin
+      )
+    ) return setIsSuperUser(true); 
+
     if (!teamManagementProduct || teamManagementProduct.member_type !== "owner")
       return setIsSuperUser(false);
 
