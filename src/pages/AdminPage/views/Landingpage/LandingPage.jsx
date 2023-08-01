@@ -16,6 +16,7 @@ import { useState } from "react";
 import { IoCopyOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import { getSettingUserProject } from "../../../../services/hrServices";
+import { testingRoles } from "../../../../utils/testingRoles";
  
 
 const LandingPage = ({ subAdminView }) => {
@@ -107,6 +108,16 @@ const LandingPage = ({ subAdminView }) => {
       (item) => item.product === "Team Management"
     );
     if (!teamManagementProduct) return;
+
+    if (
+      (
+        currentUser.settings_for_profile_info && 
+        currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+      ) || 
+      (
+        currentUser.isSuperAdmin
+      )
+    ) return
 
     const dataToPost = {
       session_id: currentSessionId,

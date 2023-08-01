@@ -5,7 +5,8 @@ export const testingRoles = {
   candidateRole: "Candidate",
   subAdminRole: "sub_admin",
   groupLeadRole: "group_lead",
-  provertionRole:"proverion_period"
+  provertionRole:"proverion_period",
+  superAdminRole: "super_admin",
 };
 
 export const testingRolesDict = {
@@ -15,4 +16,5 @@ export const testingRolesDict = {
   candidateRole: "Candidate",
   subAdminRole: "Sub Admin",
   groupLeadRole: "Group Lead",
+  superAdminRole: "Super Admin",
 };

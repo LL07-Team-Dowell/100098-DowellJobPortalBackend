@@ -21,6 +21,22 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
         if (item === 'default') {
             const copyOfCurrentUser = structuredClone(currentUser);
             delete copyOfCurrentUser.settings_for_profile_info;
+            delete copyOfCurrentUser.fakeSubAdminRoleSet
+
+            if (
+                currentUser.settings_for_profile_info && 
+                currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+            ) {
+                copyOfCurrentUser.settings_for_profile_info = {
+                    profile_info: [
+                        {
+                            Role: testingRoles.superAdminRole,
+                            profile_title: currentUser?.portfolio_info[0]?.portfolio_name,
+                        }
+                    ],
+                }
+                copyOfCurrentUser.isSuperAdmin = true;
+            }
 
             setCurrentUser(copyOfCurrentUser);
             sessionStorage.setItem('user', JSON.stringify(copyOfCurrentUser));
@@ -28,6 +44,7 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
         }
 
         const updatedUserDetail = structuredClone(currentUser);
+        delete updatedUserDetail.fakeSubAdminRoleSet;
         updatedUserDetail.settings_for_profile_info = {
             profile_info: [
                 {
@@ -36,6 +53,15 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
                 }
             ],
             fakeSuperUserInfo: true,
+        }
+
+        if (item === 'sub_admin') updatedUserDetail.fakeSubAdminRoleSet = true;
+
+        if (
+            currentUser.settings_for_profile_info && 
+            currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+        ) {
+            updatedUserDetail.isSuperAdmin = true;
         }
 
         setCurrentUser(updatedUserDetail);
