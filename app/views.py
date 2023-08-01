@@ -3503,4 +3503,4 @@ class Generate_public_Report(APIView):
             "isSuccess": True,
             "message": f"public applied job report Generated",
             "Data": data
-        }, status=status.HTTP_201_CREATED)
+        }, status=status.HTTP_200_OK)
