@@ -1,11 +1,12 @@
 import styled from '@emotion/styled';
-import React, { useState } from 'react';
-import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
+import React, { useEffect, useState } from 'react';
 import { FaRegComments } from 'react-icons/fa';
 import { testThreadsToWorkWith } from "../../../../../../../utils/testData";
 import Comment from '../../../../../../CandidatePage/views/TeamsScreen/components/addComment';
 import ThreadComment from './ThreadComment';
 import Modal from './Modal';
+import { featchAllComment } from '../../../../../../../services/teamleadServices';
+import { useParams } from 'react-router-dom';
 
 const Wrapper = styled.div`
 display: flex;
@@ -158,7 +159,7 @@ align-items: left !important;
   cursor: pointer;
 }
 
-/* Styling for the modal */
+// /* Styling for the modal */
 .modal-container {
   position: fixed;
   top: 0;
@@ -199,19 +200,53 @@ align-items: left !important;
 `
 
 const ThreadItem = () => {
-  const { currentUser } = useCurrentUserContext();
-  const [text, setText] = useState("");
+  const { id } = useParams();
+  console.log(id);
   const [threads, setThreads] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showComment, setShowComment] = useState(false);
+  const [showModalStates, setShowModalStates] = useState({});
 
-  const handleImageClick = () => {
-    setShowModal(true);
+  // Function to handle opening the modal for a specific thread
+  const handleImageClick = (threadId) => {
+    setShowModalStates((prevShowModalStates) => ({
+      ...prevShowModalStates,
+      [threadId]: true,
+    }));
   };
 
-
-  const handleChange = (e) => {
-    setText(e.target.value);
+  // Function to handle opening the modal for a specific thread
+  const handlCommentClick = (threadId) => {
+    setShowComment((prevShowModalStates) => ({
+      ...prevShowModalStates,
+      [threadId]: !prevShowModalStates[threadId], // Toggle the value for the specific threadId
+    }));
   };
+
+  // Function to handle closing the modal for a specific thread
+  const handleClose = (threadId) => {
+    setShowModalStates((prevShowModalStates) => ({
+      ...prevShowModalStates,
+      [threadId]: false,
+    }));
+  };
+
+  //Fetch all comments
+  const fetchComment = async (id) => {
+    try {
+      const response = await featchAllComment(id);
+      console.log(response);
+      console.log('Comment created successfully:', response.data);
+      // Do something with the responseData if needed.
+    } catch (error) {
+      console.error('Failed to create comment:', error.message);
+      // Handle the error or display an error message to the user.
+    }
+  }
+
+  useEffect(() => {
+    fetchComment();
+  }, [id])
+
   const handleSubmit = () => { };
 
   return (
@@ -221,28 +256,23 @@ const ThreadItem = () => {
           {testThreadsToWorkWith.map((thread) => (
             <div className="team-screen-threads-card" key={thread._id}>
               <div className="thread-card">
-                {showModal && (
-                  <Modal imageUrl={thread.image} handleClose={() => setShowModal(false)} />
+                {console.log(thread)}
+                {showModalStates[thread._id] && (
+                  <Modal imageUrl={thread.image} handleClose={() => handleClose(thread._id)} />
                 )}
-                {/* {thread.image ? (
-                  <div>
-                    <img src={thread.image} alt="thread" />
-                  </div>
-                ) : (
-                  <></>
-                )} */}
                 <div className="image-container">
                   {thread.image && (
-                    <img src={thread.image} alt="thread" onClick={handleImageClick} />
+                    <img src={thread.image} alt="thread" onClick={() => handleImageClick(thread._id)} />
                   )}
                   {thread.image && (
                     <div className="view-btn-container">
-                      <button className="view-btn" onClick={handleImageClick}>
+                      <button className="view-btn" onClick={() => handleImageClick(thread._id)}>
                         View
                       </button>
                     </div>
                   )}
                 </div>
+
                 <div className="team-screen-threads-container">
                   <p>{thread.thread}</p>
                   <div>
@@ -271,19 +301,31 @@ const ThreadItem = () => {
                     <p className="comments">
                       <FaRegComments onClick={handleSubmit} />
                       &bull;
-                      <span>10 Comments</span>
+                      <span onClick={() => handlCommentClick(thread._id)}>10 Comments</span>
                     </p>
                   </div>
                 </div>
               </div>
               <div className="comment-action">
-                <ThreadComment
+                {
+                  showComment[thread._id] && (
+                    <ThreadComment
+                      comments={thread.comments[0].comment}
+                      user={thread.comments[0].user}
+                      threadId={thread._id}
+                      document_id={id}
+                      commentInput="comment-input"
+                    />
+                  )
+                }
+
+                {/* <ThreadComment
                   text={text}
                   handleChange={handleChange}
                   comments={thread.comments[0].comment}
                   user={thread.comments[0].user}
                   commentInput="comment-input"
-                />
+                /> */}
               </div>
             </div>
 

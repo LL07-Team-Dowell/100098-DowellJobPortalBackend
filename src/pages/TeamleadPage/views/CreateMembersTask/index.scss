@@ -215,7 +215,8 @@ inset 0 0 5px #000;
 	background-color: #005734;
 	color: white;
 	font-weight: 600;
-	width: 150px;
+	width: 140px !important;
+	font-size: 0.9rem;
 	height: 40px;
 	text-align: center;
 	padding: 10px;
@@ -230,8 +231,7 @@ inset 0 0 5px #000;
 	width: 120px;
 	font-family: Poppins;
 }
-.create-new-team-header{
-}
+
 .paragraph-discription{
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
