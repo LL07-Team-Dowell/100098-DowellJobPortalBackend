@@ -803,7 +803,7 @@ class candidate_get_job_application(APIView):
         response = dowellconnection(
             *candidate_management_reports, "fetch", field, update_field
         )
-        print(response)
+        #print(response)
 
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
@@ -1750,7 +1750,11 @@ class create_team(APIView):
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
                 "members": data.get("members"),
+                "admin_team":False
             }
+            if data.get("admin_team"):
+                field["admin_team"] = True
+
             update_field = {"status": "nothing to update"}
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field
