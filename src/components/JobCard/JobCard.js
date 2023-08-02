@@ -21,7 +21,7 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 <div className="detail__Item">
                     <span className="dot"></span>
                     <span className="job__Highlight__Item">Duration: </span>
-                    <span>{job.time_interval}</span>
+                    <span>{job.time_interval.length>20 ? job.time_interval.slice(0,20)+"...":job.time_interval}</span>
                 </div>
                 <div className="vertical__Seperator"></div>
                 <div className="detail__Item">
