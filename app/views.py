@@ -1325,7 +1325,7 @@ class lead_rehire_candidate(APIView):
             }
             update_field = {
                 "rehire_remarks": data.get("rehire_remarks"),
-                "status": "Rehired",
+                "status": "rehired",
             }
             update_response = dowellconnection(
                 *candidate_management_reports, "update", field, update_field
@@ -3344,7 +3344,6 @@ class Comment_Apis(APIView):
                 {"message": "Failed to update Comment","data": json.loads(insert_response)}, status=status.HTTP_400_BAD_REQUEST
             )
         
-
 # generate report api starts here__________________________
 @method_decorator(csrf_exempt, name="dispatch")
 class GenerateReport(APIView):
@@ -3360,19 +3359,16 @@ class GenerateReport(APIView):
 
         active_jobs=[]
         inactive_jobs=[]
+        unkown_jobs = []
         for t in json.loads(job)['data']:
             if "is_active" in t.keys():
                 if t["is_active"] =="True" or t["is_active"] =="true" or t["is_active"] ==True:
                     active_jobs.append([t["_id"],t["is_active"]])
                 if t["is_active"] =="False" or t["is_active"] =="false" or t["is_active"] ==False:
                     inactive_jobs.append([t["_id"],t["is_active"]])
-            
-
+                
         data["number_active_jobs"] = len(active_jobs)
         data["number_inactive_jobs"] = len(inactive_jobs)
-        active_percent  =str((data["number_active_jobs"]/data["no_of_jobs"])*100)
-        inactive_percent  =str((data["number_inactive_jobs"]/data["no_of_jobs"])*100)
-        data["percentage_active_to_inactive_jobs"]= f"{active_percent} % : {inactive_percent} %"
         
         job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
         #print(job_applications)
@@ -3380,7 +3376,7 @@ class GenerateReport(APIView):
 
         p_application = periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
         #print(p_application)
-        data[f"nojob_applications_from_|{payload['start_date']}|_to_|{payload['end_date']}|"]=p_application[1]
+        data[f"nojob_applications_from_start_date_to_end_date"]=p_application[1]
 
         ids = [t["_id"] for t in json.loads(job_applications)['data']]
         counter = Counter(ids)
@@ -3390,17 +3386,36 @@ class GenerateReport(APIView):
         data["most_applied_job"]={"_id":most_applied_job}
         data["least_applied_job"]={"_id":least_applied_job}
 
+        new_candidates = dowellconnection(*candidate_management_reports, "fetch", {"status": "Pending"}, update_field)
+        #print(json.loads(new_candidates)["data"])
+        data["new_candidates"]=len(json.loads(new_candidates)['data'])
+
+        guest_candidates = dowellconnection(*candidate_management_reports, "fetch", {'status': 'Guest_Pending'}, update_field)
+        #print(json.loads(guest_candidates)["data"])
+        data["guest_candidates"]=len(json.loads(guest_candidates)['data'])
+        
+        selected = dowellconnection(*candidate_management_reports, "fetch", {"status": "selected"}, update_field)
+        #print(json.loads(selected)["data"])
+        data["selected_candidates"]=len(json.loads(selected)['data'])
+
+        shortlisted = dowellconnection(*candidate_management_reports, "fetch", {"status": "shortlisted"}, update_field)
+        #print(json.loads(shortlisted)["data"])
+        data["shortlisted_candidates"]=len(json.loads(shortlisted)['data'])
 
         hired = dowellconnection(*candidate_management_reports, "fetch", {"status": "hired"}, update_field)
         #print(json.loads(hired)["data"])
         data["hired_candidates"]=len(json.loads(hired)['data'])
 
+        rehire = dowellconnection(*candidate_management_reports, "fetch", {"status": "rehired"}, update_field)
+        #print(json.loads(rehire)["data"])
+        data["rehired_candidates"]=len(json.loads(rehire)['data'])
+
         rejected = dowellconnection(*candidate_management_reports, "fetch", {"status": "Rejected"}, update_field)
-        #print(rejected)
+        #print(json.loads(rejected)["data"])
         data["rejected_candidates"]=len(json.loads(rejected)['data'])
 
         probationary = dowellconnection(*candidate_management_reports, "fetch", {"status": "probationary"}, update_field)
-        #print(probationary)
+        #print(json.loads(probationary)["data"])
         data["probationary_candidates"]=len(json.loads(probationary)['data'])
 
         data["hiring_rate"] = str((data["hired_candidates"]/data["job_applications"])*100)+" %"
@@ -3437,11 +3452,9 @@ class GenerateReport(APIView):
         return Response({"message": f"Report Generated", "response":data}, status=status.HTTP_201_CREATED)
     
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class GetQRCode(APIView):
-    def get(self, request):
-        job_company_id = request.query_params.get('job_company_id')
+    def get(self, request, job_company_id):
         field = {
                 "job_company_id": job_company_id,
             }
@@ -3449,14 +3462,23 @@ class GetQRCode(APIView):
         response = dowellconnection(
                 *Publiclink_reports, "fetch",field, update_field
             )
+        data ={}
+        count=0
+        for item in json.loads(response)["data"]:
+            for i in item["qr_ids"]:
+                data[str(count)]=i
+                count+=1
+
         if json.loads(response)["isSuccess"] == True:
             return Response(
                     {"message": f"qrcode with company_id-{job_company_id}",
-                     "data": json.loads(response)}, status=status.HTTP_200_OK
+                     "number of qr_ids": f"{len(data)}",
+                     "data": data}, status=status.HTTP_200_OK
                 )
         else:
             return Response(
                     {"message": "Failed to fetch",
-                     "info": json.loads(response)}, status=status.HTTP_400_BAD_REQUEST
+                     "number of qr_ids": f"{len(data)}",
+                     "data": data}, status=status.HTTP_400_BAD_REQUEST
                 )
        
