@@ -1,14 +1,29 @@
 import React from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-
+import { generateReport } from "../../../../services/adminServices";
+import { useEffect } from "react";
+import { useState } from "react";
 const AdminReports = ({ subAdminView }) => {
   // states
-  const [selectOptions, setSelectOptions] = React.useState("");
-
+  const [selectOptions, setSelectOptions] = useState("");
+  const [data, setdata] = useState({});
   // handle functions
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
   };
+
+  //   useEffect
+  useEffect(() => {
+    const data = {
+      start_date: "5/26/2023 0:00:00",
+      end_date: "7/26/2023 0:00:00",
+    };
+    generateReport(data)
+      .then((resp) => {
+        console.log(resp.data.response);
+      })
+      .catch((err) => console.log(err));
+  }, []);
   return (
     <StaffJobLandingLayout
       adminView={true}
