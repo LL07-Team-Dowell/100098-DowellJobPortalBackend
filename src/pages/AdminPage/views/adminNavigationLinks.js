@@ -20,7 +20,7 @@ export const adminNavigationLinks = [
     text: "Report",
   },
   {
-    linkAddress: "/create-task",
+    linkAddress: "/teams",
     icon: <GiTeamIdea />,
     text: "Teams",
   },

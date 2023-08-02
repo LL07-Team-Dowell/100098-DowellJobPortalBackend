@@ -359,7 +359,7 @@ function App() {
           }
         />
         <Route
-          path="/create-task"
+          path="/teams"
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
@@ -369,7 +369,7 @@ function App() {
           }
         />
         <Route
-          path="/create-task/create-new-team/"
+          path="/teams/create-new-team/"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout adminView={true}>
