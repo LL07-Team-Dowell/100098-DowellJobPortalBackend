@@ -82,8 +82,8 @@ const PublicAccountConfigurationModal = ({
                         <input 
                             name={mutablePublicAccountStateNames.unique_id}
                             value={details[`${mutablePublicAccountStateNames.unique_id}`]}
-                            onChange={({ target }) => handleIdChange(target.name, target.value)}
-                            placeholder='123'
+                            onChange={({ target }) => handeDetailChange(target.name, target.value)}
+                            placeholder='123abc'
                         />
                     </label>
 
