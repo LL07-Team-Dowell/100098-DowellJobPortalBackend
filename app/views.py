@@ -3436,3 +3436,27 @@ class GenerateReport(APIView):
         
         return Response({"message": f"Report Generated", "response":data}, status=status.HTTP_201_CREATED)
     
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class GetQRCode(APIView):
+    def get(self, request):
+        job_company_id = request.query_params.get('job_company_id')
+        field = {
+                "job_company_id": job_company_id,
+            }
+        update_field = {}
+        response = dowellconnection(
+                *Publiclink_reports, "fetch",field, update_field
+            )
+        if json.loads(response)["isSuccess"] == True:
+            return Response(
+                    {"message": f"qrcode with company_id-{job_company_id}",
+                     "data": json.loads(response)}, status=status.HTTP_200_OK
+                )
+        else:
+            return Response(
+                    {"message": "Failed to fetch",
+                     "info": json.loads(response)}, status=status.HTTP_400_BAD_REQUEST
+                )
+       
