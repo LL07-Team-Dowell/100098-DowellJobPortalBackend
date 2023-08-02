@@ -3364,7 +3364,11 @@ class GenerateReport(APIView):
                     active_jobs.append([t["_id"],t["is_active"]])
                 if t["is_active"] =="False" or t["is_active"] =="false" or t["is_active"] ==False:
                     inactive_jobs.append([t["_id"],t["is_active"]])
+            
+            
+
                 
+
         data["number_active_jobs"] = len(active_jobs)
         data["number_inactive_jobs"] = len(inactive_jobs)
         
@@ -3412,11 +3416,10 @@ class GenerateReport(APIView):
 
         rejected = dowellconnection(*candidate_management_reports, "fetch", {"status": "Rejected"}, update_field)
         
-        #print(json.loads(rejected)["data"])
         data["rejected_candidates"]=len(json.loads(rejected)['data'])
 
         probationary = dowellconnection(*candidate_management_reports, "fetch", {"status": "probationary"}, update_field)
-        #print(json.loads(probationary)["data"])
+        
         data["probationary_candidates"]=len(json.loads(probationary)['data'])
 
         data["hiring_rate"] = str((data["hired_candidates"]/data["job_applications"])*100)+" %"
@@ -3482,6 +3485,40 @@ class GetQRCode(APIView):
                      "number of qr_ids": f"{len(data)}",
                      "data": data}, status=status.HTTP_400_BAD_REQUEST
                 )
-       
-
-    
+         
+@method_decorator(csrf_exempt, name="dispatch")
+class Generate_public_Report(APIView):
+    def get(self, request):
+        status_filter = request.data.get("status")
+        company_id = request.data.get("company_id")
+        field = {"company_id": company_id}
+        update_field = {}
+        data = []
+        job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        job_applications_json = json.loads(job_applications)['data']
+        filtered_job_applications = []
+        if status_filter:
+            for application in job_applications_json:
+                if application.get("status") == status_filter:
+                    filtered_job_applications.append({
+                        "applicant":application.get("applicant"),
+                        "username":application.get("username"),
+                        "status":application.get("status"),
+                        "portfolio_name":application.get("portfolio_name"),                    
+                        "signup_mail_sent":application.get("signup_mail_sent")  
+                    })
+        else:
+            for application in job_applications_json:
+                filtered_job_applications.append({
+                            "applicant":application.get("applicant"),
+                            "username":application.get("username"),
+                            "status":application.get("status"),
+                            "portfolio_name":application.get("portfolio_name"),                    
+                            "signup_mail_sent":application.get("signup_mail_sent")  
+                        })
+        data = filtered_job_applications
+        return Response({
+            "isSuccess": True,
+            "message": f"public job report Generated",
+            "Data": data
+        }, status=status.HTTP_200_OK)
