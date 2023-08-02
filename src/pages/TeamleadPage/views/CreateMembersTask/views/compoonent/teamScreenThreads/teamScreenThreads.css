@@ -78,6 +78,34 @@
   font-weight: 600;
 }
 
+ .threads-created{
+    width: 50%;
+    height: 50%;
+    padding: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .threads-btn {
+    width: 40%;
+    height: 40%;
+    padding: 1rem;
+    border-radius: 50%;
+    cursor:pointer;
+    background-color: red;
+    cursor: pointer;
+  }
+
+  .active-thread-btn{
+    width: 40%;
+    height: 40%;
+    padding: 1rem;
+    border-radius: 50%;
+    cursor:pointer;
+    background-color: #005734;
+    cursor: pointer;
+  }
+
 /* .threads-progress {
   width: 50%;
   height: 50%;
