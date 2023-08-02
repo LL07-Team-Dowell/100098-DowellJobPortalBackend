@@ -14,7 +14,17 @@ const AdminReports = ({ subAdminView }) => {
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
   };
-
+  //   variable
+  const newData = {
+    labels: ["job active", "job unactive"],
+    datasetes: [
+      {
+        data: [data?.number_active_jobs, data?.number_inactive_jobs],
+        backgroundColor: ["#FF6384", "#36A2EB"],
+        hoverBackgroundColor: ["#FF6384", "#36A2EB"],
+      },
+    ],
+  };
   //   useEffect
   useEffect(() => {
     const data = {
@@ -44,18 +54,7 @@ const AdminReports = ({ subAdminView }) => {
           <option value="custom_time">cutom time</option>
         </select>
       </div>
-      <Doughnut
-        data={{
-          labels: ["job active", "job unactive"],
-          datasetes: [
-            {
-              data: [data?.number_active_jobs, data?.number_inactive_jobs],
-              backgroundColor: ["#FF6384", "#36A2EB"],
-              hoverBackgroundColor: ["#FF6384", "#36A2EB"],
-            },
-          ],
-        }}
-      />
+      <Doughnut data={newData} />
     </StaffJobLandingLayout>
   );
 };
