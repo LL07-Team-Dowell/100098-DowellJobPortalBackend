@@ -3,6 +3,9 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 import { generateReport } from "../../../../services/adminServices";
 import { useEffect } from "react";
 import { useState } from "react";
+// chart.js
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "react-chartjs-2";
 const AdminReports = ({ subAdminView }) => {
   // states
   const [selectOptions, setSelectOptions] = useState("");
@@ -21,6 +24,7 @@ const AdminReports = ({ subAdminView }) => {
     generateReport(data)
       .then((resp) => {
         console.log(resp.data.response);
+        setdata(resp.data.response);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -40,6 +44,18 @@ const AdminReports = ({ subAdminView }) => {
           <option value="custom_time">cutom time</option>
         </select>
       </div>
+      <Doughnut
+        data={{
+          labels: ["job active", "job unactive"],
+          datasetes: [
+            {
+              data: [data?.number_active_jobs, data?.number_inactive_jobs],
+              backgroundColor: ["#FF6384", "#36A2EB"],
+              hoverBackgroundColor: ["#FF6384", "#36A2EB"],
+            },
+          ],
+        }}
+      />
     </StaffJobLandingLayout>
   );
 };
