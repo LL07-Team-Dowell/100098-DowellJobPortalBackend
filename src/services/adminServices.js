@@ -43,3 +43,7 @@ export const adminAddSettingUserProject = async (data) => {
 export const adminEditSettingUserProject = async (id, data) => {
   return await currentBackendAxiosInstance.put(`settinguserproject/${id}`, data)
 }
+
+export const newfunction = async (data) => {
+  return await currentBackendAxiosInstance.post(``,data)
+}  
