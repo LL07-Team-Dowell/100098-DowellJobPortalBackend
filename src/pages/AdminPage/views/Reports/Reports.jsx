@@ -8,6 +8,7 @@ import './style.scss'
 import { Chart as ChartJs , ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale  } from "chart.js"
 // don
 import { Doughnut, Bar } from "react-chartjs-2";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 // register chart.js
 ChartJs.register(
   ArcElement, Tooltip, Legend 
@@ -46,7 +47,7 @@ const AdminReports = ({ subAdminView }) => {
   adminAlternativePageActive={true}
   pageTitle={"Reports"}
   subAdminView={subAdminView}
-><h1>Loading..</h1>
+><LoadingSpinner/>
 </StaffJobLandingLayout>
   return (
     <StaffJobLandingLayout
@@ -112,6 +113,7 @@ const AdminReports = ({ subAdminView }) => {
         <Doughnut data={{
           labels:['hired candidates','rejected candidates', 'probationary candidates', 'rehire andidates', 'selected candidates'],
           datasets:[{
+            label:'Poll',
             data:[data.hired_candidates,data.rejected_candidates,data.probationary_candidates,data.rehire_candidates,data.selected_candidates],
             backgroundColor:['black', 'red','green','yellow','pink','blue'],
             borderColor:['black', 'red','green','yellow','pink','blue']
