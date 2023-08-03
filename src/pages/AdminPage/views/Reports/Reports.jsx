@@ -4,12 +4,18 @@ import { generateReport } from "../../../../services/adminServices";
 import { useEffect } from "react";
 import { useState } from "react";
 // chart.js
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJs , ArcElement, Tooltip, Legend,  } from "chart.js"
+// don
 import { Doughnut } from "react-chartjs-2";
+// register chart.js
+ChartJs.register(
+  ArcElement, Tooltip, Legend 
+)
 const AdminReports = ({ subAdminView }) => {
   // states
   const [selectOptions, setSelectOptions] = useState("");
   const [data, setdata] = useState({});
+  const [loading, setLoading] = useState(false)
   // handle functions
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
@@ -17,17 +23,26 @@ const AdminReports = ({ subAdminView }) => {
 
   //   useEffect
   useEffect(() => {
+    setLoading(true)
     const data = {
       start_date: "5/26/2023 0:00:00",
       end_date: "7/26/2023 0:00:00",
     };
     generateReport(data)
       .then((resp) => {
+        setLoading(false)
         console.log(resp.data.response);
         setdata(resp.data.response);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {console.log(err); setLoading(false)});
   }, []);
+  if(loading)return <StaffJobLandingLayout
+  adminView={true}
+  adminAlternativePageActive={true}
+  pageTitle={"Reports"}
+  subAdminView={subAdminView}
+><h1>Loading..</h1>
+</StaffJobLandingLayout>
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -44,18 +59,39 @@ const AdminReports = ({ subAdminView }) => {
           <option value="custom_time">cutom time</option>
         </select>
       </div>
-      <Doughnut
-        data={{
-          labels: ["job active", "job unactive"],
-          datasetes: [
-            {
-              data: [data?.number_active_jobs, data?.number_inactive_jobs],
-              backgroundColor: ["#FF6384", "#36A2EB"],
-              hoverBackgroundColor: ["#FF6384", "#36A2EB"],
-            },
-          ],
-        }}
-      />
+      <div style={{marginBottom:20}}>
+        <h6>jobs</h6>
+        <div style={{width:400,height:300}}>
+        <Doughnut data={{
+          labels:['active jobs','inactive jobs'],
+          datasets:[{
+            label:'Poll',
+            data:[data.number_active_jobs,data.number_inactive_jobs],
+            backgroundColor:['black', 'red'],
+            borderColor:['black', 'red']
+          }]
+          }}>
+
+        </Doughnut>
+        </div>
+      </div>
+      <div >
+        <h6>applications</h6>
+        <div style={{width:400,height:300}}>
+        <Doughnut data={{
+          labels:['active jobs','inactive jobs'],
+          datasets:[{
+            label:'Poll',
+            data:[data.job_applications ,data.nojob_applications_from_start_date_to_end_date],
+            backgroundColor:['black', 'red'],
+            borderColor:['black', 'red']
+          }]
+          }}>
+
+        </Doughnut>
+        </div>
+        <div>hiring rate:{data.hiring_rate}</div>
+      </div>
     </StaffJobLandingLayout>
   );
 };
