@@ -105,18 +105,18 @@ def update_string(string):
 def discord_invite(server_owner_ids,guild_id, token):
     invite_link = []
     client = commands.Bot(command_prefix="?", owner_ids=server_owner_ids, intents=Intents.default())
-    print("running bot...")
+    #print("running bot...")
 
     # Close the bot
     @client.command()
     @commands.is_owner()
     async def shutdown(context):
-        print("bot is shut down")
+        #print("bot is shut down")
         await context.close()
 
     @client.event
     async def on_ready():#gets the invite link when the bot is ready
-        print("bot is ready...")
+        #print("bot is ready...")
         discord_link = await client.get_guild(guild_id).text_channels[0].create_invite()
         #print(discord_link, "==============")
         invite_link.append(discord_link)
@@ -195,14 +195,14 @@ def interview_email(toname,toemail,subject,email_content):
     return response.text
 
 def set_finalize(linkid):
-    print(linkid)
+    #print(linkid)
     url = f"https://100099.pythonanywhere.com/api/v3/masterlink/?link_id={linkid}"
     payload = {
         "is_finalized": True,
     }
     response = requests.put(url, json=payload)
-    print(response)
-    print(response.text)
+    #print(response)
+    #print(response.text)
     return response.text
 
 import base64
@@ -212,9 +212,9 @@ def save_image(image):
     payload = {
         "image": image  # Read the binary data from the file object
     }
-    print(payload)
+    #print(payload)
     response = requests.post(url, files=payload)  # Use 'files' instead of 'json'
-    print(response.text)
+    #print(response.text)
     return response.text
 
 

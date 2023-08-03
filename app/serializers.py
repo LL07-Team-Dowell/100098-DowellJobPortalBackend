@@ -284,9 +284,9 @@ class UpdateuserSerializer(serializers.Serializer):
 
 class ThreadsSerializer(serializers.Serializer):
     thread = serializers.CharField(allow_null=False, allow_blank=False)
-    image = serializers.DictField(allow_null=False)
+    image = serializers.URLField(allow_null=False, allow_blank=False)
     created_by = serializers.CharField(allow_null=False, allow_blank=False)
-    team_id = serializers.CharField(allow_null=False, allow_blank=False)
+    team_id = serializers.CharField(allow_null=True, allow_blank=True)
     team_alerted_id = serializers.CharField(allow_null=False, allow_blank=False)
     current_status = serializers.CharField(allow_null=False, allow_blank=False)
     PREVIOUS_STATUS_CHOICE = (("", ""),("Created", "Created"),("Progress", "Progress"), ("Completed", "Completed"), ("Resolved", "Resolved"))

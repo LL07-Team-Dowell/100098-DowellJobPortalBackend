@@ -10,7 +10,7 @@ urlpatterns = [
     path('accounts_update_project/', accounts_update_project.as_view()),
     path('accounts_rehire_candidate/', accounts_rehire_candidate.as_view()),
     path('accounts_reject_candidate/', accounts_reject_candidate.as_view()),
-    path('onboard_candidate/<document_id>', accounts_onboard_candidate.as_view()),
+    path('onboard_candidate/<str:document_id>', accounts_onboard_candidate.as_view()),
     path('update_project/', accounts_update_project.as_view()),
     path('rehire_candidate/', accounts_rehire_candidate.as_view()),
     path('reject_candidate/', accounts_reject_candidate.as_view()),
@@ -102,8 +102,9 @@ urlpatterns = [
     path('update_comment/', Comment_Apis.as_view()),
 
     # generate_report -------------------------------------
-    path('generate_report/',GenerateReport.as_view()),
+    path('generate_admin_report/',Generate_admin_Report.as_view()),
     path('get_all_qrcode/<str:job_company_id>/',GetQRCode.as_view()),
     path('generate_public_report/',Generate_public_Report.as_view()),      
+    path('generate_hr_report/',Generate_hr_Report.as_view()),      
 
 ]

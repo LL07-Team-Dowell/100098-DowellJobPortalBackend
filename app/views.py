@@ -332,7 +332,7 @@ class accounts_rehire_candidate(APIView):
 
             def call_dowellconnection(*args):
                 d = dowellconnection(*args)
-                print(d, *args, "=======================")
+                #print(d, *args, "=======================")
                 if "candidate_report" in args:
                     c_r.append(d)
                 if "account_report" in args:
@@ -385,7 +385,7 @@ class accounts_rehire_candidate(APIView):
 class accounts_reject_candidate(APIView):
     def post(self, request):
         data = request.data
-        print(data)
+        #print(data)
         if data:
             # continue with the reject candidate api----------------
 
@@ -415,7 +415,7 @@ class accounts_reject_candidate(APIView):
 
                 def call_dowellconnection(*args):
                     d = dowellconnection(*args)
-                    print(d, *args, "=======================")
+                    #print(d, *args, "=======================")
                     if "candidate_report" in args:
                         c_r.append(d)
                     if "account_report" in args:
@@ -617,7 +617,7 @@ class admin_update_jobs(APIView):
             field = {"_id": data.get("document_id")}
             update_field = data
             response = dowellconnection(*jobs, "update", field, update_field)
-            print(response)
+            #print(response)
             if json.loads(response)["isSuccess"] == True:
                 return Response(
                     {
@@ -650,7 +650,7 @@ class admin_delete_job(APIView):
         field = {"_id": document_id}
         update_field = {"data_type": "archive_data"}
         response = dowellconnection(*jobs, "update", field, update_field)
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             return Response(
                 {"message": "Job successfully deleted"}, status=status.HTTP_200_OK
@@ -974,7 +974,7 @@ class hr_shortlisted_candidate(APIView):
 
                 def call_dowellconnection(*args):
                     d = dowellconnection(*args)
-                    print(d, *args, "=======================")
+                    #print(d, *args, "=======================")
                     if "candidate_report" in args:
                         c_r.append(d)
                     if "hr_report" in args:
@@ -1066,7 +1066,7 @@ class hr_selected_candidate(APIView):
             def call_dowellconnection(*args):
                 d = dowellconnection(*args)
                 arg = args
-                print(d, *args, "=======================")
+                #print(d, *args, "=======================")
                 if "candidate_report" in args:
                     c_r.append(d)
                 if "hr_report" in args:
@@ -1128,7 +1128,7 @@ class hr_selected_candidate(APIView):
 class hr_reject_candidate(APIView):
     def post(self, request):
         data = request.data
-        print(data)
+        #print(data)
         if data:
             # continue reject api-----
             field = {
@@ -1251,7 +1251,7 @@ class lead_hire_candidate(APIView):
 
                 def call_dowellconnection(*args):
                     d = dowellconnection(*args)
-                    print(d, *args, "=======================")
+                    #print(d, *args, "=======================")
                     if "candidate_report" in args:
                         c_r.append(d)
                     if "hr_report" in args:
@@ -1327,7 +1327,7 @@ class lead_rehire_candidate(APIView):
             update_response = dowellconnection(
                 *candidate_management_reports, "update", field, update_field
             )
-            print(update_response)
+            #print(update_response)
             if json.loads(update_response)["isSuccess"] == True:
                 return Response({"message": f"Candidate has been {update_field['status']}",
                                 "response":json.loads(update_response)}, status=status.HTTP_200_OK)
@@ -1350,7 +1350,7 @@ class lead_rehire_candidate(APIView):
 class lead_reject_candidate(APIView):
     def post(self, request):
         data = request.data
-        print(data)
+        #print(data)
         if data:
             # continue reject api-----
             field = {
@@ -1380,7 +1380,7 @@ class lead_reject_candidate(APIView):
                 def call_dowellconnection(*args):
                     d = dowellconnection(*args)
                     arg = args
-                    print(d, *args, "=======================")
+                    #print(d, *args, "=======================")
                     if "candidate_report" in args:
                         c_r.append(d)
                     if "hr_report" in args:
@@ -1518,7 +1518,7 @@ class get_task(APIView):
         response = dowellconnection(
             *task_management_reports, "fetch", field, update_field
         )
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
                 return Response(
@@ -1548,7 +1548,7 @@ class get_candidate_task(APIView):
         response = dowellconnection(
             *task_management_reports, "fetch", field, update_field
         )
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
                 return Response(
@@ -1586,7 +1586,7 @@ class update_task(APIView):
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
             )
-            print(check, "=====================[[[[[[]]]]]]")
+            #print(check, "=====================[[[[[[]]]]]]")
             if json.loads(check)["isSuccess"] is True:
                 if len(json.loads(check)["data"]) == 0:
                     return Response(
@@ -1709,7 +1709,7 @@ class delete_task(APIView):
         response = dowellconnection(
             *task_management_reports, "update", field, update_field
         )
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             return Response(
                 {
@@ -1756,7 +1756,7 @@ class create_team(APIView):
             response = dowellconnection(
                 *team_management_modules, "insert", field, update_field
             )
-            print(response)
+            #print(response)
             if json.loads(response)["isSuccess"] == True:
                 return Response(
                     {
@@ -1790,7 +1790,7 @@ class get_team(APIView):
         response = dowellconnection(
             *team_management_modules, "fetch", field, update_field
         )
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
                 return Response(
@@ -1828,7 +1828,7 @@ class get_all_teams(APIView):  # all teams
         response = dowellconnection(
             *team_management_modules, "fetch", field, update_field
         )
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
                 return Response(
@@ -1887,7 +1887,7 @@ class edit_team(APIView):
                     response = dowellconnection(
                         *team_management_modules, "update", field, update_field
                     )
-                    print(response)
+                    #print(response)
                     if json.loads(response)["isSuccess"] == True:
                         return Response(
                             {
@@ -1927,7 +1927,7 @@ class delete_team(APIView):
         response = dowellconnection(
             *team_management_modules, "update", field, update_field
         )
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             return Response(
                 {"message": f"Team has been deleted", "response": json.loads(response)},
@@ -1962,7 +1962,7 @@ class create_team_task(APIView):
             response = dowellconnection(
                 *task_management_reports, "insert", field, update_field
             )
-            print(response)
+            #print(response)
             if json.loads(response)["isSuccess"] == True:
                 return Response(
                     {
@@ -2017,7 +2017,7 @@ class edit_team_task(APIView):
                 response = dowellconnection(
                     *task_management_reports, "update", field, update_field
                 )
-                print(response)
+                #print(response)
                 if json.loads(response)["isSuccess"] == True:
                     return Response(
                         {
@@ -2074,7 +2074,7 @@ class delete_team_task(APIView):
         response = dowellconnection(
             *task_management_reports, "update", field, update_field
         )
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             return Response(
                 {
@@ -2113,7 +2113,7 @@ class create_member_task(APIView):
             response = dowellconnection(
                 *task_management_reports, "insert", field, update_field
             )
-            print(response)
+            #print(response)
             if json.loads(response)["isSuccess"] == True:
                 return Response(
                     {
@@ -2147,7 +2147,7 @@ class get_member_task(APIView):
         response = dowellconnection(
             *task_management_reports, "fetch", field, update_field
         )
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
                 return Response(
@@ -2183,7 +2183,7 @@ class delete_member_task(APIView):
         response = dowellconnection(
             *task_management_reports, "update", field, update_field
         )
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             return Response(
                 {
@@ -2200,8 +2200,6 @@ class delete_member_task(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
 # api for team_task management ends here____________________________
 
 
@@ -2226,7 +2224,7 @@ class create_question(APIView):
             question_response = dowellconnection(
                 *questionnaire_modules, "insert", field, update_field
             )
-            print(question_response)
+            #print(question_response)
             if json.loads(question_response)["isSuccess"] == True:
                 return Response(
                     {
@@ -2261,8 +2259,8 @@ class get_all_question(APIView):
         question_response = dowellconnection(
             *questionnaire_modules, "fetch", field, update_field
         )
-        print("----response from dowelconnection---", question_response)
-        print(question_response)
+        #print("----response from dowelconnection---", question_response)
+        #print(question_response)
         if json.loads(question_response)["isSuccess"] == True:
             if len(json.loads(question_response)["data"]) == 0:
                 return Response(
@@ -2299,7 +2297,7 @@ class get_question(APIView):
         question_response = dowellconnection(
             *questionnaire_modules, "fetch", field, update_field
         )
-        print(question_response)
+        #print(question_response)
         if json.loads(question_response)["isSuccess"] == True:
             if len(json.loads(question_response)["data"]) == 0:
                 return Response(
@@ -2334,7 +2332,7 @@ class update_question(APIView):
         field = {
             "_id": data.get("document_id"),
         }
-        print(field)
+        #print(field)
         update_field = {
             "is_active": data.get("is_active"),
             "question_link": data.get("question_link"),
@@ -2344,7 +2342,7 @@ class update_question(APIView):
             question_response = dowellconnection(
                 *questionnaire_modules, "update", field, update_field
             )
-            print(question_response)
+            #print(question_response)
             if json.loads(question_response)["isSuccess"] == True:
                 return Response(
                     {
@@ -2393,7 +2391,7 @@ class response(APIView):
             insert_response = dowellconnection(
                 *response_modules, "insert", field, update_field
             )
-            print(insert_response)
+            #print(insert_response)
             if json.loads(insert_response)["isSuccess"] == True:
                 return Response(
                     {
@@ -2436,7 +2434,7 @@ class update_response(APIView):
         def call_dowellconnection(*args):
             d = dowellconnection(*args)
             arg = args
-            print(d, *args, "=======================")
+            #print(d, *args, "=======================")
             if "Response_report" in args:
                 r_m.append(d)
             if "hr_report" in args:
@@ -2492,7 +2490,7 @@ class get_response(APIView):
         }
         update_field = {"status": "nothing to update"}
         response = dowellconnection(*response_modules, "fetch", field, update_field)
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
                 return Response(
@@ -2507,7 +2505,6 @@ class get_response(APIView):
                     {"message": f"List of responses", "response": json.loads(response)},
                     status=status.HTTP_200_OK,
                 )
-
         else:
             return Response(
                 {"message": "There is no responses", "response": json.loads(response)},
@@ -2535,7 +2532,7 @@ class submit_response(APIView):
             insert_to_response = dowellconnection(
                 *response_modules, "update", field, update_field
             )
-            print(insert_to_response)
+            #print(insert_to_response)
 
             if json.loads(insert_to_response)["isSuccess"] == True:
                 return Response(
@@ -2568,10 +2565,10 @@ class get_all_responses(APIView):
         field = {
             "company_id": company_id,
         }
-        print(field)
+        #print(field)
         update_field = {"status": "nothing to update"}
         response = dowellconnection(*response_modules, "fetch", field, update_field)
-        print(response)
+        #print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
                 return Response(
@@ -2658,7 +2655,6 @@ class SettingUserProjectView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 # api for setting ends here____________________________
 
@@ -2902,7 +2898,7 @@ class createPublicApplication(APIView):
             )
 
     def get(self, request, company_id):
-        print(company_id)
+        #print(company_id)
         field = {"job_company_id": company_id}
         update_field = {"status": "Nothing to update"}
         responses = dowellconnection(*Publiclink_reports, "fetch", field, update_field)
@@ -2989,7 +2985,7 @@ class sendMailToPublicCandidate(APIView):
                 algorithm="HS256",
             )
             link = f"https://100014.pythonanywhere.com/?hr_invitation={encoded_jwt.decode('utf-8')}"
-            #print("------link------", link)
+            print("------link new------", link)
             email_content = INVITATION_MAIL.format(toname,job_role,link)
             mail_response = interview_email(toname,toemail,subject,email_content)
 
@@ -3078,38 +3074,43 @@ class updateTheUserDetails(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class Thread_Apis(APIView):
     def post(self, request):
-        print(request.data,"==================")
+        #print(request.data,"==================")
         data= request.data
-        request.data["current_status"]= "Created"
-        request.data["previous_status"]= ""
-
-        image = request.FILES.get("image")
-        image_response = save_image(image)
+        
+        serializer_data = {
+            "thread": data.get("thread"),
+            "image": request.data["image"],
+            "created_by": data.get("created_by"),
+            "team_id":data.get("team_id"),
+            "team_alerted_id": data.get("team_alerted_id"),
+            "current_status": "Created",
+            "previous_status": [],
+        }
         
         field = {
             "event_id": get_event_id()["event_id"],
             "thread": data.get("thread"),
-            "image": image_response,
+            "image": request.data["image"],
             "created_by": data.get("created_by"),
             "team_id":data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
-            "current_status": request.data["current_status"],
+            "current_status": serializer_data["current_status"],
             "previous_status": [],
         }
         update_field = {}
-        serializer = ThreadsSerializer(data=request.data)
+        serializer = ThreadsSerializer(data=serializer_data)
         if serializer.is_valid():
             
             insert_response = dowellconnection(
                 *thread_report_module, "insert", field, update_field
             )
-            print(insert_response)
+            #print(insert_response)
             if json.loads(insert_response)["isSuccess"] == True:
                 return Response(
                     {
                         "message": "Thread created successfully",
                         "info": json.loads(insert_response),
-                        "image_response": json.loads(image_response),
+                        "image_response": serializer_data["image"],
                     },
                     status=status.HTTP_201_CREATED,
                 )
@@ -3127,7 +3128,7 @@ class Thread_Apis(APIView):
 
     def get(self, request):
         data = request.data  
-        print(data) 
+        #print(data) 
         if data:
             field = {
                 "_id": data.get("document_id"),
@@ -3141,8 +3142,8 @@ class Thread_Apis(APIView):
             get_comment = dowellconnection(
                 *comment_report_module, "fetch", {"thread_id":data.get("document_id")}, update_field
             )
-            print(get_response)
-            print(get_comment)
+            #print(get_response)
+            #print(get_comment)
             response = json.loads(get_response)
             response["comments"]= json.loads(get_comment)
 
@@ -3210,7 +3211,7 @@ class Thread_Apis(APIView):
                 *thread_report_module, "update", field, update_field
             )
             
-            print(update_response)
+            #print(update_response)
             if json.loads(update_response)["isSuccess"] == True:
                 return Response(
                     {"message": f"Thread with id-{data.get('document_id')} has been successfully updated",
@@ -3270,7 +3271,7 @@ class Comment_Apis(APIView):
             insert_response = dowellconnection(
                 *comment_report_module, "insert", field, update_field
             )
-            print(insert_response)
+            #print(insert_response)
             if json.loads(insert_response)["isSuccess"] == True:
                 return Response(
                     {
@@ -3303,7 +3304,7 @@ class Comment_Apis(APIView):
             insert_response = dowellconnection(
                 *comment_report_module, "fetch", field, update_field
             )
-            print(insert_response)
+            #print(insert_response)
             if json.loads(insert_response)["isSuccess"] == True:
                 return Response(
                     {"message": f"Comment with id-{data.get('document_id')}",
@@ -3331,7 +3332,7 @@ class Comment_Apis(APIView):
         insert_response = dowellconnection(
                 *comment_report_module, "update", field, update_field
             )
-        print(insert_response)
+        #print(insert_response)
         if json.loads(insert_response)["isSuccess"] == True:
             return Response(
                 {"message":f"Comment with id-{data.get('document_id')} has been updated successfully",
@@ -3344,7 +3345,7 @@ class Comment_Apis(APIView):
         
 # generate report api starts here__________________________
 @method_decorator(csrf_exempt, name="dispatch")
-class GenerateReport(APIView):
+class Generate_admin_Report(APIView):
     def post(self, request):
         payload = request.data
         field = {   }
@@ -3364,10 +3365,6 @@ class GenerateReport(APIView):
                     active_jobs.append([t["_id"],t["is_active"]])
                 if t["is_active"] =="False" or t["is_active"] =="false" or t["is_active"] ==False:
                     inactive_jobs.append([t["_id"],t["is_active"]])
-            
-            
-
-                
 
         data["number_active_jobs"] = len(active_jobs)
         data["number_inactive_jobs"] = len(inactive_jobs)
@@ -3377,8 +3374,6 @@ class GenerateReport(APIView):
         data["job_applications"]=len(json.loads(job_applications)['data'])
 
         p_application = periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
-        
-        data[f"nojob_applications_from_|{payload['start_date']}|_to_|{payload['end_date']}|"]=p_application[1]
         #print(p_application)
         data[f"nojob_applications_from_start_date_to_end_date"]=p_application[1]
 
@@ -3391,53 +3386,42 @@ class GenerateReport(APIView):
         data["least_applied_job"]={"_id":least_applied_job}
 
         new_candidates = dowellconnection(*candidate_management_reports, "fetch", {"status": "Pending"}, update_field)
-        #print(json.loads(new_candidates)["data"])
         data["new_candidates"]=len(json.loads(new_candidates)['data'])
 
         guest_candidates = dowellconnection(*candidate_management_reports, "fetch", {'status': 'Guest_Pending'}, update_field)
-        #print(json.loads(guest_candidates)["data"])
         data["guest_candidates"]=len(json.loads(guest_candidates)['data'])
         
         selected = dowellconnection(*candidate_management_reports, "fetch", {"status": "selected"}, update_field)
-        #print(json.loads(selected)["data"])
         data["selected_candidates"]=len(json.loads(selected)['data'])
 
         shortlisted = dowellconnection(*candidate_management_reports, "fetch", {"status": "shortlisted"}, update_field)
-        #print(json.loads(shortlisted)["data"])
         data["shortlisted_candidates"]=len(json.loads(shortlisted)['data'])
-
-        hired = dowellconnection(*candidate_management_reports, "fetch", {"status": "hired"}, update_field)
         
+        hired = dowellconnection(*candidate_management_reports, "fetch", {"status": "hired"}, update_field)
         data["hired_candidates"]=len(json.loads(hired)['data'])
 
         rehire = dowellconnection(*candidate_management_reports, "fetch", {"status": "rehired"}, update_field)
-        #print(json.loads(rehire)["data"])
         data["rehired_candidates"]=len(json.loads(rehire)['data'])
 
         rejected = dowellconnection(*candidate_management_reports, "fetch", {"status": "Rejected"}, update_field)
-        
         data["rejected_candidates"]=len(json.loads(rejected)['data'])
 
         probationary = dowellconnection(*candidate_management_reports, "fetch", {"status": "probationary"}, update_field)
-        
         data["probationary_candidates"]=len(json.loads(probationary)['data'])
 
         data["hiring_rate"] = str((data["hired_candidates"]/data["job_applications"])*100)+" %"
 
         teams = dowellconnection(*team_management_modules, "fetch", field, update_field)
-        
         data["teams"]=len(json.loads(teams)['data'])
 
         tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
-        
         data["tasks"]=len(json.loads(tasks)['data'])
 
         team_tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
-        
         data["team_tasks"]=len([t for t in json.loads(team_tasks)['data'] 
                                     if "team_id" in t.keys() or "team_name" in t.keys()])
-        tasks_completed = dowellconnection(*task_management_reports, "fetch", {"status":"Completed"}, update_field)
         
+        tasks_completed = dowellconnection(*task_management_reports, "fetch", {"status":"Completed"}, update_field)
         data["tasks_completed_on_time"]=len([t for t in json.loads(tasks_completed)['data'] 
                                              if "due_date" in t.keys() and "task_updated_date" in t.keys() and 
                                                 datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > 
@@ -3447,13 +3431,12 @@ class GenerateReport(APIView):
         data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks"])*100)+" %"
 
         team_tasks_completed = dowellconnection(*task_management_reports, "fetch", {"completed":True}, update_field)
-        #print(team_tasks_completed)
         data["team_tasks_completed"]=len([t for t in json.loads(team_tasks_completed)['data'] 
                                              if "team_id" in t.keys() or "team_name" in t.keys()])
+        
         data["percentage_team_tasks_completed"]=str((data["team_tasks_completed"]/data["team_tasks"])*100)+" %"
 
         
-        return Response({"message": f"Report Generated", "response":data}, status=status.HTTP_201_CREATED)
         return Response({"message": f"Report Generated", "response":data}, status=status.HTTP_201_CREATED)
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -3522,3 +3505,29 @@ class Generate_public_Report(APIView):
             "message": f"public job report Generated",
             "Data": data
         }, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class Generate_hr_Report(APIView):
+    def post(self, request):
+        field = {}
+        update_field = {}
+        data = {}
+        job_applications = dowellconnection(candidate_management_reports, "fetch", field, update_field)
+        data["job_applications"]=len(json.loads(job_applications)['data'])
+
+        shortlisted = dowellconnection(hr_management_reports, "fetch", {"status": "shortlisted"}, update_field)
+        data["shortlisted_candidates"]=len(json.loads(shortlisted)['data'])
+
+        rejected = dowellconnection(hr_management_reports, "fetch", {"status": "Rejected"}, update_field)
+        data["rejected_candidates"]=len(json.loads(rejected)['data'])
+
+        Selected = dowellconnection(candidate_management_reports, "fetch", {"status": "selected"}, update_field)
+        data["selected_candidates"]=len(json.loads(Selected)['data'])
+        #print(len(Selected))
+        #print(len(job_applications))
+
+        # hiring_perecentage=str(data["selected_candidates"]/ data["job_applications"]*100)+ "%"
+        # data["Hiring percentage of the organization"]=hiring_perecentage
+
+        return Response({"isSuccess":True,"message": f"Hr reported Generated", "response":data}, status=status.HTTP_201_CREATED)
