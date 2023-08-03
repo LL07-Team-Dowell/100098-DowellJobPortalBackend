@@ -5,8 +5,9 @@ import { testThreadsToWorkWith } from "../../../../../../../utils/testData";
 import Comment from '../../../../../../CandidatePage/views/TeamsScreen/components/addComment';
 import ThreadComment from './ThreadComment';
 import Modal from './Modal';
-import { featchAllComment } from '../../../../../../../services/teamleadServices';
+import { featchAllComment, fetchThread } from '../../../../../../../services/teamleadServices';
 import { useParams } from 'react-router-dom';
+import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 
 const Wrapper = styled.div`
 display: flex;
@@ -209,17 +210,18 @@ align-items: left !important;
 `
 
 const ThreadItem = ({ status }) => {
-  console.log(status);
+  const { currentUser, setCurrentUser } = useCurrentUserContext();
+  const document_id = currentUser.portfolio_info[0].org_id;
   const { id } = useParams();
-  // console.log(id);
+
   const [threads, setThreads] = useState([]);
   const [showComment, setShowComment] = useState(false);
   const [showModalStates, setShowModalStates] = useState({});
 
-  //
-  const completedThreads = testThreadsToWorkWith.filter((thread) => thread.current_status === status);
+  //Filter Based on status
+  const completedThreads = testThreadsToWorkWith.filter((thread) => thread.current_status === status || thread.current_status === "Resolved");
   const inProgressThreads = testThreadsToWorkWith.filter(
-    (thread) => thread.current_status === "In progress" || thread.current_status === "Resolved" || thread.current_status === "Created"
+    (thread) => thread.current_status === "In progress" || thread.current_status === "Created"
   );
 
   // Function to handle opening the modal for a specific thread
@@ -246,24 +248,29 @@ const ThreadItem = ({ status }) => {
     }));
   };
 
-  //Fetch all comments
-  const fetchComment = async (id) => {
+  //Fetch Comment 
+  const fetchComment = async (document_id) => {
+    const data = { document_id };
     try {
-      const response = await featchAllComment(id);
+      const response = await featchAllComment(data);
       console.log(response);
-      console.log('Comment created successfully:', response.data);
+      console.log('Comment fetched successfully:', response.data);
       // Do something with the responseData if needed.
     } catch (error) {
-      console.error('Failed to create comment:', error.message);
+      console.log(error);
+      console.error('Failed to fetch comment:', error.message);
       // Handle the error or display an error message to the user.
     }
-  }
+  };
 
   useEffect(() => {
-    fetchComment();
-  }, [id])
+    const documentId = document_id;
+    fetchComment(documentId);
+  }, []);
+
 
   const handleSubmit = () => { };
+
 
   return (
     <Wrapper>
