@@ -68,6 +68,7 @@ const AdminReports = ({ subAdminView }) => {
         </div>
        
       </div>
+      <div className="graphs">
       <div style={{marginBottom:20}}>
         <h6>jobs</h6>
         <div style={{width:400,height:300}}>
@@ -84,8 +85,9 @@ const AdminReports = ({ subAdminView }) => {
         </Doughnut>
         </div>
       </div>
-      <div className="application">
+      <div >
         <h6>applications</h6>
+        <div className="application">
         <div style={{width:400,height:300}}>
         <Doughnut data={{
           labels:['active jobs','inactive jobs'],
@@ -100,15 +102,16 @@ const AdminReports = ({ subAdminView }) => {
         </Doughnut>
         </div>
         <div>hiring rate:{data.hiring_rate}</div>
+        </div>
       </div>
       
       <div style={{marginBottom:20}}>
         <h6>candidates</h6>
+        <div className="candidates_graph">
         <div style={{width:400,height:300}}>
         <Doughnut data={{
           labels:['hired candidates','rejected candidates', 'probationary candidates', 'rehire andidates', 'selected candidates'],
           datasets:[{
-            label:'Poll',
             data:[data.hired_candidates,data.rejected_candidates,data.probationary_candidates,data.rehire_candidates,data.selected_candidates],
             backgroundColor:['black', 'red','green','yellow','pink','blue'],
             borderColor:['black', 'red','green','yellow','pink','blue']
@@ -117,7 +120,7 @@ const AdminReports = ({ subAdminView }) => {
 
         </Doughnut>
         </div>
-      </div>
+      
         <div style={{width:400,height:300}}>
         <Bar data={{
           labels:['hired candidates','rejected candidates', 'probationary candidates', 'rehire andidates', 'selected candidates'],
@@ -130,6 +133,8 @@ const AdminReports = ({ subAdminView }) => {
           }}>
 
         </Bar>
+        </div>
+        </div>
         </div>
      
       <div style={{marginBottom:20}}>
@@ -148,8 +153,10 @@ const AdminReports = ({ subAdminView }) => {
         </Bar>
         </div>
       </div>
+      <div className="job_applications">
+      <h6>applications</h6>
+      <div>
       <div >
-        <h6>applications</h6>
         <div style={{width:400,height:300}}>
         <Doughnut data={{
           labels:['tasks completed on time','inactive jobs'],
@@ -165,7 +172,6 @@ const AdminReports = ({ subAdminView }) => {
         </div>
         </div>
         <div >
-        <h6>applications</h6>
         <div style={{width:400,height:300}}>
         <Doughnut data={{
           labels:['tasks completed ','inactive jobs'],
@@ -178,6 +184,11 @@ const AdminReports = ({ subAdminView }) => {
           }}>
 
         </Doughnut>
+        </div>
+        </div>
+      </div>
+     
+     
         </div>
         </div>
         </div>
