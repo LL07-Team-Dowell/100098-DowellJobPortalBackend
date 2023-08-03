@@ -105,6 +105,7 @@ urlpatterns = [
     path('generate_admin_report/',Generate_admin_Report.as_view()),
     path('get_all_qrcode/<str:job_company_id>/',GetQRCode.as_view()),
     path('generate_public_report/',Generate_public_Report.as_view()),      
-    path('generate_hr_report/',Generate_hr_Report.as_view()),      
+    path('generate_hr_report/',Generate_hr_Report.as_view()),
+    path('generate_account_Report/',Generate_account_Report.as_view()),         
 
 ]

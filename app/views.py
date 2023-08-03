@@ -3471,7 +3471,7 @@ class GetQRCode(APIView):
          
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_public_Report(APIView):
-    def get(self, request):
+    def post(self, request):
         status_filter = request.data.get("status")
         company_id = request.data.get("company_id")
         field = {"company_id": company_id}
@@ -3504,7 +3504,7 @@ class Generate_public_Report(APIView):
             "isSuccess": True,
             "message": f"public job report Generated",
             "Data": data
-        }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_201_CREATED)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -3531,3 +3531,23 @@ class Generate_hr_Report(APIView):
         # data["Hiring percentage of the organization"]=hiring_perecentage
 
         return Response({"isSuccess":True,"message": f"Hr reported Generated", "response":data}, status=status.HTTP_201_CREATED)
+    
+
+@method_decorator(csrf_exempt, name="dispatch")
+class Generate_account_Report(APIView):
+    def get(self, request):
+        field = {}
+        update_field = {}
+        data = {}
+        job_applications = dowellconnection(*account_management_reports, "fetch", field, update_field)
+        data["job_applications"]=len(json.loads(job_applications)['data'])
+
+        Rehired = dowellconnection(*account_management_reports, "fetch", {"status": "Rehired"}, update_field)
+        print(Rehired)
+        data["rehired_candidates"]=len(json.loads(Rehired)['data'])
+
+        Rejected = dowellconnection(*account_management_reports, "fetch", {"status": "Rejected"}, update_field)
+        data["rejected_candidates"]=len(json.loads(Rejected)['data'])
+
+        return Response({"isSuccess":True,"message": f"Account reported Generated", "response":data}, status=status.HTTP_200_OK)
+    
