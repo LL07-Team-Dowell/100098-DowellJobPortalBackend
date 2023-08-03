@@ -31,8 +31,8 @@ const AdminReports = ({ subAdminView }) => {
   useEffect(() => {
     setLoading(true)
     const data = {
-      start_date: "5/26/2023 0:00:00",
-      end_date: "7/26/2023 0:00:00",
+      start_date: formatDateFromMilliseconds(new Date().getTime()),
+      end_date: formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
     };
     generateReport(data)
       .then((resp) => {
@@ -199,3 +199,15 @@ const AdminReports = ({ subAdminView }) => {
 };
 
 export default AdminReports;
+function formatDateFromMilliseconds(milliseconds) {
+  const dateObj = new Date(milliseconds);
+
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const year = dateObj.getFullYear();
+  const hours = String(dateObj.getHours()).padStart(2, '0');
+  const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+  const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+
+  return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
+}
