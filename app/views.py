@@ -3513,6 +3513,7 @@ class Generate_hr_Report(APIView):
         field = {}
         update_field = {}
         data = {}
+<<<<<<< HEAD
         job_applications = dowellconnection(candidate_management_reports, "fetch", field, update_field)
         data["job_applications"]=len(json.loads(job_applications)['data'])
 
@@ -3523,6 +3524,18 @@ class Generate_hr_Report(APIView):
         data["rejected_candidates"]=len(json.loads(rejected)['data'])
 
         Selected = dowellconnection(candidate_management_reports, "fetch", {"status": "selected"}, update_field)
+=======
+        job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        data["job_applications"]=len(json.loads(job_applications)['data'])
+
+        shortlisted = dowellconnection(*hr_management_reports, "fetch", {"status": "shortlisted"}, update_field)
+        data["shortlisted_candidates"]=len(json.loads(shortlisted)['data'])
+
+        rejected = dowellconnection(*hr_management_reports, "fetch", {"status": "Rejected"}, update_field)
+        data["rejected_candidates"]=len(json.loads(rejected)['data'])
+
+        Selected = dowellconnection(*candidate_management_reports, "fetch", {"status": "selected"}, update_field)
+>>>>>>> bb48b2f9c42f36531be4d6a064abcf759fcce6f4
         data["selected_candidates"]=len(json.loads(Selected)['data'])
         #print(len(Selected))
         #print(len(job_applications))
