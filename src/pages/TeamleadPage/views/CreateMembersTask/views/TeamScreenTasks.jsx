@@ -5,7 +5,7 @@ import Navbar from '../component/Navbar';
 import TeamScreenLinks from './compoonent/teamScreenLinks/teamScreenLinks';
 import TeamScreenTaskProgress from './compoonent/teamScreenTaskProgress/teamScreenTaskProgress';
 import TeamScreeTaskProgessDetail from './compoonent/teamScreeTaskProgessDetail/teamScreeTaskProgessDetail'; 
-import { getAllTeams, getTeamTask } from '../../../../../services/createMembersTasks';
+import { getAllTeams, getSingleTeam, getTeamTask } from '../../../../../services/createMembersTasks';
 import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContext';
 import CreateTask from './compoonent/createTask/createTask';
 import LoadingSpinner from '../../../../../components/LoadingSpinner/LoadingSpinner';
@@ -25,10 +25,19 @@ const TeamScreenTasks = () => {
     useEffect(() => { 
       if(team?.members === undefined){
         setloading(true)
-        getAllTeams(currentUser.portfolio_info[0].org_id)
-          .then(resp =>{ 
-          setteam(resp.data.response.data.find(team => team["_id"] === id))
-          setloading(false)})
+        
+      //   getAllTeams(currentUser.portfolio_info[0].org_id)
+      //     .then(resp =>{ 
+      //     setteam(resp.data.response.data.find(team => team["_id"] === id))
+      //     setloading(false)})
+      // .catch(err => console.log(err))
+
+      // GET A SINGLE TEAM INSTEAD
+      getSingleTeam(id)
+      .then(resp =>{ 
+        setteam(resp.data.response.data[0])
+        setloading(false)
+      })
       .catch(err => console.log(err))
       }
     },[])

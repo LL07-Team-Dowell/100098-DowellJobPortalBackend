@@ -7,7 +7,7 @@ import TeamScreenLinks from "../../../TeamleadPage/views/CreateMembersTask/views
 import TeamScreenTaskProgress from "../../../TeamleadPage/views/CreateMembersTask/views/compoonent/teamScreenTaskProgress/teamScreenTaskProgress";
 import TeamScreeTaskProgessDetail from "../../../TeamleadPage/views/CreateMembersTask/views/compoonent/teamScreeTaskProgessDetail/teamScreeTaskProgessDetail";
 import CreateTask from "../../../TeamleadPage/views/CreateMembersTask/component/smallComponents/CreateTask";
-import { getAllTeams, getTeamTask } from "../../../../services/createMembersTasks";
+import { getAllTeams, getSingleTeam, getTeamTask } from "../../../../services/createMembersTasks";
 import Navbar from "../../../TeamleadPage/views/CreateMembersTask/component/Navbar";
 
 const TeamScreenTasksCandidate = () => {
@@ -24,13 +24,14 @@ const TeamScreenTasksCandidate = () => {
         setloading(true)
 
         Promise.all([
-          getAllTeams(currentUser.portfolio_info[0].org_id),
+          // getAllTeams(currentUser.portfolio_info[0].org_id),
+          getSingleTeam(id),
           getTeamTask(id)
         ])
         .then(resp =>{ 
           console.log(resp);
-          setteam(resp[0].data.response.data.find(team => team["_id"] === id))
-          setTasks(Array.isArray(resp[1].data.response.data) ? resp[1].data.response.data : [])
+          setteam(resp[0].data.response.data[0])
+          setTasks(Array.isArray(resp[1]?.data?.response?.data) ? resp[1].data.response.data : [])
           setloading(false)
         })
         .catch(err => {

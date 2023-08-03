@@ -15,6 +15,8 @@ export const CurrentUserContextProvider = ({ children }) => {
   const [ userDetailsNotFound, setUserDetailsNotFound ] = useState(false);
   const [ userRolesFromLogin, setUserRolesFromLogin ] = useState([]);
   const [ userRolesLoaded, setRolesLoaded ] = useState(false);
+  const [ portfolioLoaded, setPortfolioLoaded ] = useState(false);
+  const [ isNotOwnerUser, setIsNotOwnerUser ] = useState(true);
 
   return (
     <CurrentUserContext.Provider value={{ 
@@ -30,6 +32,10 @@ export const CurrentUserContextProvider = ({ children }) => {
       setUserRolesFromLogin,
       userRolesLoaded,
       setRolesLoaded,
+      portfolioLoaded,
+      setPortfolioLoaded,
+      isNotOwnerUser,
+      setIsNotOwnerUser,
     }}>
       {children}
     </CurrentUserContext.Provider>
