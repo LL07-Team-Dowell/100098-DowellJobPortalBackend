@@ -3076,24 +3076,29 @@ class Thread_Apis(APIView):
     def post(self, request):
         #print(request.data,"==================")
         data= request.data
-        request.data["current_status"]= "Created"
-        request.data["previous_status"]= ""
-
-        image = request.FILES.get("image")
-        image_response = save_image(image)
+        
+        serializer_data = {
+            "thread": data.get("thread"),
+            "image": request.data["image"],
+            "created_by": data.get("created_by"),
+            "team_id":data.get("team_id"),
+            "team_alerted_id": data.get("team_alerted_id"),
+            "current_status": "Created",
+            "previous_status": [],
+        }
         
         field = {
             "event_id": get_event_id()["event_id"],
             "thread": data.get("thread"),
-            "image": image_response,
+            "image": request.data["image"],
             "created_by": data.get("created_by"),
             "team_id":data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
-            "current_status": request.data["current_status"],
+            "current_status": serializer_data["current_status"],
             "previous_status": [],
         }
         update_field = {}
-        serializer = ThreadsSerializer(data=request.data)
+        serializer = ThreadsSerializer(data=serializer_data)
         if serializer.is_valid():
             
             insert_response = dowellconnection(
@@ -3105,7 +3110,7 @@ class Thread_Apis(APIView):
                     {
                         "message": "Thread created successfully",
                         "info": json.loads(insert_response),
-                        "image_response": json.loads(image_response),
+                        "image_response": serializer_data["image"],
                     },
                     status=status.HTTP_201_CREATED,
                 )
