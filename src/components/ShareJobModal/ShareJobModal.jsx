@@ -6,7 +6,7 @@ import React from 'react';
 import { Tooltip } from 'react-tooltip';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { generatePublicJobLink } from '../../services/adminServices';
+import { generatePublicJobLink, getUsedQrCodes } from '../../services/adminServices';
 import { useCurrentUserContext } from '../../contexts/CurrentUserContext';
 import { useEffect } from 'react';
 import { useRef } from 'react';
@@ -28,6 +28,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
     const [ qrCodeImage, setQrCodeImage ] = useState('');
     const selectItemRef = useRef();
     const { jobLinks, setJobLinks } = useJobContext();
+    const [ usedIdsLoaded, setUsedIdsLoaded ] = useState(false);
 
     useEffect(() => {
 
@@ -35,9 +36,31 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
 
         const publicIdsToSet = currentUser?.userportfolio?.filter(portfolio => portfolio.member_type === 'public');
 
-        setPublicIds(publicIdsToSet)
-        setMaximumNumberOfPublicIds(Math.max(...publicIdsToSet.map(item => item.username.length)));
+        getUsedQrCodes(currentUser.portfolio_info[0].org_id).then(res => {
+            const dataGotten = res.data?.data;
+            const usedQrCodes = typeof dataGotten === 'object' ? 
+                Object.keys(dataGotten).map(key => dataGotten[key]) 
+                : 
+            [];
 
+            const publicIdsToDisplay = publicIdsToSet.map(item => {
+                return {
+                    ...item,
+                    username: item?.username?.filter(name => !usedQrCodes.includes(name))
+                }
+            });
+
+            setPublicIds(publicIdsToDisplay)
+            setMaximumNumberOfPublicIds(Math.max(...publicIdsToDisplay.map(item => item.username.length)));    
+            setUsedIdsLoaded(true);
+        }).catch(err => {
+            console.log(err);
+            toast.info('Used qr codes failed to load')
+            setPublicIds([])
+            setMaximumNumberOfPublicIds(1);    
+            setUsedIdsLoaded(true);
+        })
+        
     }, [])
 
     const handleShareItem = async (optionPassed) => {
@@ -157,40 +180,43 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
                                 <span>Select number of public links</span>
                                 <span className={styles.indicator}>Count: {publicIdsSelected.length}</span>
                             </p>
-                            <select
-                                className={styles.select__Item}
-                                ref={selectItemRef}
-                                size={
-                                    maximumNumberOfPublicIds > 10 ? 
-                                    10 
-                                    : 
-                                    maximumNumberOfPublicIds <= 1 ? 
-                                    2 
-                                    :
-                                    maximumNumberOfPublicIds
-                                }
-                                style={{
-                                    pointerEvents: linkLoading ? 'none' : 'all'
-                                }}
-                            >
-                                {
-                                    React.Children.toArray(publicIds.map(idItem => {
-                                        return <>
-                                            <option value="" hidden></option>
-                                            {
-                                                React.Children.toArray(idItem.username.map(item => {
-                                                    return <option 
-                                                        onClick={() => handleItemClick(item)}
-                                                        className={publicIdsSelected.find(id => id === item) ? styles.active__Item : ''}
-                                                    >
-                                                        {item}
-                                                    </option>
-                                                }))
-                                            }
-                                        </>
-                                    }))
-                                }
-                            </select>
+                            {
+                                usedIdsLoaded ? <select
+                                    className={styles.select__Item}
+                                    ref={selectItemRef}
+                                    size={
+                                        maximumNumberOfPublicIds > 10 ? 
+                                        10 
+                                        : 
+                                        maximumNumberOfPublicIds <= 1 ? 
+                                        2 
+                                        :
+                                        maximumNumberOfPublicIds
+                                    }
+                                    style={{
+                                        pointerEvents: linkLoading ? 'none' : 'all'
+                                    }}
+                                >
+                                    {
+                                        React.Children.toArray(publicIds.map(idItem => {
+                                            return <>
+                                                <option value="" hidden></option>
+                                                {
+                                                    React.Children.toArray(idItem.username.map(item => {
+                                                        return <option 
+                                                            onClick={() => handleItemClick(item)}
+                                                            className={publicIdsSelected.find(id => id === item) ? styles.active__Item : ''}
+                                                        >
+                                                            {item} - {idItem?.portfolio_name}
+                                                        </option>
+                                                    }))
+                                                }
+                                            </>
+                                        }))
+                                    }
+                                </select> :
+                                <LoadingSpinner />
+                            }
                         </div>
                         <button 
                             className={`${styles.copy__Link__Btn} ${styles.generate__Link__Btn}`}

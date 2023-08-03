@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Avatar from "react-avatar";
 import styled from "styled-components";
-import { candidateCreateComment } from "../../../../../../../services/teamleadServices";
+import { postComment } from "../../../../../../../services/teamleadServices";
 
 
 const Wrapper = styled.div`
@@ -90,7 +90,7 @@ const ThreadComment = ({ comments, commentInput, user, threadId }) => {
         comment: text,
         thread_id: threadId
       };
-      const response = await candidateCreateComment(commentData);
+      const response = await postComment(commentData);
 
       console.log('Comment created successfully:', response.data);
       setText('')

@@ -417,7 +417,6 @@ function App() {
               <StaffJobLandingLayout adminView={true} hideSearchBar={true}>
                 <TeamProvider>
                   <ValuesProvider>
-                    {/* create a component here */}
                     <TeamThread />
                   </ValuesProvider>
                 </TeamProvider>

@@ -81,6 +81,8 @@
 
 .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar {
     height: calc(100% - 6.5rem);
+    overflow: auto;
+    scrollbar-width: thin;
 }
 
 .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar.full__Height {

@@ -8,7 +8,7 @@ import TeamScreenMembersContainer from "../../../TeamleadPage/views/CreateMember
 import AddMemberPopup from "../../../TeamleadPage/views/CreateMembersTask/views/compoonent/addMemberPopup/addMemberPopup";
 import { HiOutlinePlusSm } from "react-icons/hi";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
-import { getAllTeams } from "../../../../services/createMembersTasks";
+import { getAllTeams, getSingleTeam } from "../../../../services/createMembersTasks";
 
 const TeamScreenMembersCandidate = () => {
   const { currentUser } = useCurrentUserContext();
@@ -21,12 +21,21 @@ const TeamScreenMembersCandidate = () => {
     useEffect(()=>{
       if(team?.members === undefined){
         setloading(true)
-        getAllTeams(currentUser.portfolio_info[0].org_id)
-          .then(resp =>{ 
-          setteam(resp.data.response.data.find(team => team["_id"] === id))
-          console.log(resp.data.response.data.find(team => team["_id"] === id))
-          setloading(false)})
-      .catch(err => console.log(err))
+
+        // getAllTeams(currentUser.portfolio_info[0].org_id)
+        // .then(resp =>{ 
+        //   setteam(resp.data.response.data.find(team => team["_id"] === id))
+        //   console.log(resp.data.response.data.find(team => team["_id"] === id))
+        //   setloading(false)
+        // })
+
+        // GET A SINGLE TEAM INSTEAD
+        getSingleTeam(id)
+        .then(resp =>{ 
+          setteam(resp.data.response.data[0])
+          setloading(false)
+        })
+        .catch(err => console.log(err))
       }
     },[])
         const getElementToTeamState = (teamName, members )=>{
