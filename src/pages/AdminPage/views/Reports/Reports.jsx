@@ -4,9 +4,9 @@ import { generateReport } from "../../../../services/adminServices";
 import { useEffect } from "react";
 import { useState } from "react";
 // chart.js
-import { Chart as ChartJs , ArcElement, Tooltip, Legend,  } from "chart.js"
+import { Chart as ChartJs , ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale  } from "chart.js"
 // don
-import { Doughnut } from "react-chartjs-2";
+import { Doughnut, Bar } from "react-chartjs-2";
 // register chart.js
 ChartJs.register(
   ArcElement, Tooltip, Legend 
@@ -91,6 +91,22 @@ const AdminReports = ({ subAdminView }) => {
         </Doughnut>
         </div>
         <div>hiring rate:{data.hiring_rate}</div>
+      </div>
+      <div style={{marginBottom:20}}>
+        <h6>candidates</h6>
+        <div style={{width:400,height:300}}>
+        <Doughnut data={{
+          labels:['hired candidates','rejected candidates', 'probationary candidates', 'rehire andidates', 'selected candidates'],
+          datasets:[{
+            label:'Poll',
+            data:[data.hired_candidates,data.rejected_candidates,data.probationary_candidates,data.rehire_candidates,data.selected_candidates],
+            backgroundColor:['black', 'red'],
+            borderColor:['black', 'red']
+          }]
+          }}>
+
+        </Doughnut>
+        </div>
       </div>
     </StaffJobLandingLayout>
   );
