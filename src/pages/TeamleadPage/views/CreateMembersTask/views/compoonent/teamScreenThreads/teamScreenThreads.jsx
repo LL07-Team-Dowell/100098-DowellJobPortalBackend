@@ -220,7 +220,13 @@ const TeamScreenThreads = ({ status }) => {
                         <></>
                       )}
                       <div className="team-screen-threads-container">
-                        <h3 style={{ color: "#005734", fontSize: "1.3rem" }}>
+                        <h3
+                          style={{
+                            color: "#005734",
+                            fontSize: "1.3rem",
+                            marginBottom: "0",
+                          }}
+                        >
                           {thread.thread}
                         </h3>
                         <div>
@@ -308,10 +314,15 @@ const TeamScreenThreads = ({ status }) => {
                           <textarea
                             value={text}
                             onChange={handleChange}
-                            placeholder="Enter your comment..."
+                            placeholder="Enter a comment..."
                             className="comment-input"
                           />
-                          <button disabled={isTextareaDisabled}>Send</button>
+                          <button
+                            disabled={isTextareaDisabled}
+                            className="action-btn"
+                          >
+                            Comment
+                          </button>
                         </form>
                       )}
                       {commentsVisibility[thread._id] && (
@@ -360,6 +371,7 @@ const TeamScreenThreads = ({ status }) => {
                                           thread._id
                                         )
                                       }
+                                      className="action-btn"
                                     >
                                       Save
                                     </button>
@@ -378,16 +390,10 @@ const TeamScreenThreads = ({ status }) => {
                                           thread._id
                                         )
                                       }
+                                      className="action-btn"
                                     >
                                       Edit
                                     </button>
-                                    {/*<button
-                                onClick={() =>
-                                  deleteComment(comment._id, thread._id)
-                                }
-                              >
-                                Delete
-                              </button> */}
                                     <button
                                       onClick={() =>
                                         setReplyingComment({
@@ -396,6 +402,7 @@ const TeamScreenThreads = ({ status }) => {
                                           text: "",
                                         })
                                       }
+                                      className="action-btn"
                                     >
                                       Reply
                                     </button>
@@ -411,7 +418,10 @@ const TeamScreenThreads = ({ status }) => {
                                             className="comment-input"
                                             placeholder="Enter your reply..."
                                           />
-                                          <button onClick={onSubmitReply}>
+                                          <button
+                                            onClick={onSubmitReply}
+                                            className="action-btn"
+                                          >
                                             Reply
                                           </button>
                                         </div>
@@ -462,7 +472,13 @@ const TeamScreenThreads = ({ status }) => {
                         <></>
                       )}
                       <div className="team-screen-threads-container">
-                        <h3 style={{ color: "#005734", fontSize: "1.3rem" }}>
+                        <h3
+                          style={{
+                            color: "#005734",
+                            fontSize: "1.3rem",
+                            marginBottom: "0",
+                          }}
+                        >
                           {thread.thread}
                         </h3>
                         <div>
@@ -550,10 +566,15 @@ const TeamScreenThreads = ({ status }) => {
                           <textarea
                             value={text}
                             onChange={handleChange}
-                            placeholder="Enter your comment..."
+                            placeholder="Enter a comment..."
                             className="comment-input"
                           />
-                          <button disabled={isTextareaDisabled}>Send</button>
+                          <button
+                            disabled={isTextareaDisabled}
+                            className="action-btn"
+                          >
+                            Send
+                          </button>
                         </form>
                       )}
                       {commentsVisibility[thread._id] && (
@@ -602,6 +623,7 @@ const TeamScreenThreads = ({ status }) => {
                                           thread._id
                                         )
                                       }
+                                      className="action-btn"
                                     >
                                       Save
                                     </button>
@@ -620,16 +642,10 @@ const TeamScreenThreads = ({ status }) => {
                                           thread._id
                                         )
                                       }
+                                      className="action-btn"
                                     >
                                       Edit
                                     </button>
-                                    {/*<button
-                                onClick={() =>
-                                  deleteComment(comment._id, thread._id)
-                                }
-                              >
-                                Delete
-                              </button> */}
                                     <button
                                       onClick={() =>
                                         setReplyingComment({
@@ -638,6 +654,7 @@ const TeamScreenThreads = ({ status }) => {
                                           text: "",
                                         })
                                       }
+                                      className="action-btn"
                                     >
                                       Reply
                                     </button>
@@ -653,7 +670,10 @@ const TeamScreenThreads = ({ status }) => {
                                             className="comment-input"
                                             placeholder="Enter your reply..."
                                           />
-                                          <button onClick={onSubmitReply}>
+                                          <button
+                                            onClick={onSubmitReply}
+                                            className="action-btn"
+                                          >
                                             Reply
                                           </button>
                                         </div>

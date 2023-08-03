@@ -11,10 +11,11 @@
   width: 100%;
   padding: 20px;
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   align-items: flex-start;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   margin-bottom: 10rem;
+  gap: 2rem;
 }
 
 .team-screen-threads-card {
@@ -29,21 +30,11 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-around;
+  flex-direction: column;
   padding: 3% 4%;
-  gap: 5rem;
+  /* gap: 5rem; */
 }
 
-.comment-action{
-  padding: 0.5% 3% 3% 3%;
-}
-
-.comment-action .comment-input{
-  width: 100%;
-}
-
-.comment-action p{
-  font-size: 0.8rem;
-}
 
 .team-screen-threads-container {
   display: flex;
@@ -78,9 +69,9 @@
   font-weight: 600;
 }
 
- .threads-created{
-    width: 50%;
-    height: 50%;
+.threads-created{
+  width: 50%;
+  height: 50%;
     padding: 1rem;
     border-radius: 50%;
     cursor: pointer;
@@ -95,7 +86,7 @@
     background-color: red;
     cursor: pointer;
   }
-
+  
   .active-thread-btn{
     width: 40%;
     height: 40%;
@@ -105,23 +96,33 @@
     background-color: #005734;
     cursor: pointer;
   }
-
-/* .threads-progress {
-  width: 50%;
-  height: 50%;
-  background-color: #005734;
-  padding: 1.5rem;
-  border-radius: 50%;
-} */
-
-.comments-section {
-  cursor: pointer;
-}
-
-.comments {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  
+  .comments-section {
+    cursor: pointer;
+  }
+  
+  .comment-action{
+    padding: 0.5% 3% 3% 3%;
+  }
+  
+  .comment-action .comment-input{
+    width: 100%;
+  }
+  
+  .comment-action p{
+    font-size: 0.8rem;
+  }
+  .comments {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .comment-input {
+    padding: 0.5rem 0 0.5rem 0.5rem;
+  border: 1px solid #838383;
+  border-radius: 4px;
+  font-size: 0.8rem;
 }
 
 .comments span {
@@ -200,4 +201,14 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.action-btn {
+  margin: 0.3rem;
+  padding: 0.1rem 0.3rem;
+  border: none;
+  background-color: #005734;
+  color: #fff;
+  border-radius: 0.2rem;
+  font-size: 0.8rem;
 }
