@@ -4,11 +4,14 @@ import useClickOutside from "../../../../hooks/useClickOutside";
 import { IoIosArrowBack } from "react-icons/io";
 
 import "../AddTaskScreen/style.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { createCandidateTask } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
 import { createThread } from "../../../../services/threadServices";
+import { useValues } from "../CreateMembersTask/context/Values";
+import { getAllTeams } from "../../../../services/createMembersTasks";
+import { useTeam } from "../../../CandidatePage/views/TeamsScreen/useTeams";
 
 const AddIssueScreen = ({
   teamMembers,
@@ -22,12 +25,17 @@ const AddIssueScreen = ({
   assignedProject,
 }) => {
   const ref = useRef(null);
+  const { id } = useParams();
+  const { team, setteam } = useTeam();
   const [showIssueForm, setShowIssueForm] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
   const [optionValue, setoptionValue] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const { data, setdata } = useValues();
+  const [response, setresponse] = useState(false);
+  const [teamName , setTeamName] = useState('') ;
 
   const [createIssue, setCreateIssue] = useState({
     thread: "",
@@ -40,6 +48,17 @@ const AddIssueScreen = ({
     closeIssuesScreen();
     !afterSelectionScreen && setEditPage(false);
   });
+
+  useEffect(() => {
+    getAllTeams(currentUser.portfolio_info[0].org_id)
+      .then((resp) => {
+        console.log(resp.data.response.data);
+        setdata(resp.data.response.data.find((team) => team["_id"] === id));
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
 
   const handleChange = (valueEntered, inputName) => {
     setCreateIssue((prev) => {
@@ -82,13 +101,13 @@ const AddIssueScreen = ({
     // console.log(createIssue);
 
     try {
-        const response = await createThread(createIssue);
-        console.log(response.data);
-        if (response.status === 201) {
-            toast.success("Issue Created Successfully");
-        }
+      const response = await createThread(createIssue);
+      console.log(response.data);
+      if (response.status === 201) {
+        toast.success("Issue Created Successfully");
+      }
     } catch (error) {
-        toast.error("Something went wrong");
+      toast.error("Something went wrong");
     }
   };
 

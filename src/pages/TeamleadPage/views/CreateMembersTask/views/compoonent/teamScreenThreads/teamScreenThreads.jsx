@@ -4,6 +4,8 @@ import "./teamScreenThreads.css";
 import { FaRegComments } from "react-icons/fa";
 import { testThreadsToWorkWith } from "../../../../../../../utils/testData";
 import userIcon from "./assets/user_icon.png";
+import Modal from "../TeamThread/Modal";
+import Avatar from "react-avatar";
 
 const TeamScreenThreads = ({ status }) => {
   const { currentUser } = useCurrentUserContext();
@@ -22,6 +24,7 @@ const TeamScreenThreads = ({ status }) => {
   });
   const [formVisibility, setFormVisibility] = useState({});
   const [commentsVisibility, setCommentsVisibility] = useState({});
+  const [showModalStates, setShowModalStates] = useState({});
 
   useEffect(() => {
     setThreads(testThreadsToWorkWith);
@@ -156,6 +159,20 @@ const TeamScreenThreads = ({ status }) => {
     });
   };
 
+  const handleClose = (threadId) => {
+    setShowModalStates((prevShowModalStates) => ({
+      ...prevShowModalStates,
+      [threadId]: false,
+    }));
+  };
+
+  const handleImageClick = (threadId) => {
+    setShowModalStates((prevShowModalStates) => ({
+      ...prevShowModalStates,
+      [threadId]: true,
+    }));
+  };
+
   const onSubmit = (e, id) => {
     e.preventDefault();
     addComment(text, id);
@@ -181,9 +198,23 @@ const TeamScreenThreads = ({ status }) => {
                 .map((thread) => (
                   <div className="team-screen-threads-card">
                     <div className="thread-card">
+                      {showModalStates[thread._id] && (
+                        <Modal
+                          imageUrl={thread.image}
+                          handleClose={() => handleClose(thread._id)}
+                        />
+                      )}
                       {thread.image ? (
-                        <div>
+                        <div className="image-container">
                           <img src={thread.image} alt="thread" />
+                          <div className="view-btn-container">
+                            <button
+                              className="view-btn"
+                              onClick={() => handleImageClick(thread._id)}
+                            >
+                              View
+                            </button>
+                          </div>
                         </div>
                       ) : (
                         <></>
@@ -409,9 +440,23 @@ const TeamScreenThreads = ({ status }) => {
                 .map((thread) => (
                   <div className="team-screen-threads-card">
                     <div className="thread-card">
+                      {showModalStates[thread._id] && (
+                        <Modal
+                          imageUrl={thread.image}
+                          handleClose={() => handleClose(thread._id)}
+                        />
+                      )}
                       {thread.image ? (
-                        <div>
+                        <div className="image-container">
                           <img src={thread.image} alt="thread" />
+                          <div className="view-btn-container">
+                            <button
+                              className="view-btn"
+                              onClick={() => handleImageClick(thread._id)}
+                            >
+                              View
+                            </button>
+                          </div>
                         </div>
                       ) : (
                         <></>
