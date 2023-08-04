@@ -10,7 +10,7 @@ import axios from "axios";
 import Loading from "../../../CandidatePage/views/ResearchAssociatePage/Loading";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
-import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { s, useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getApplicationForAdmin, getJobsFromAdmin, getMasterLinks } from "../../../../services/adminServices";
 import { useState } from "react";
 import { IoCopyOutline } from "react-icons/io5";

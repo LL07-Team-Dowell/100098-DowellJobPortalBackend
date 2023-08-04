@@ -1,0 +1,49 @@
+.select {
+    padding: 1.1rem 1.1rem 1.1rem 2rem;
+    border-radius: 0.8rem;
+    border: 0.1rem solid var(--primary-color);
+    background-color: #f4f4f4;
+    color: #7e7e7e;
+    font-weight: 400;
+    margin-bottom: 2rem;
+  }
+  .reports__container{
+    padding:20px;
+    padding-bottom: 40px;
+    h6{
+        font-size: 30px;
+
+    }
+    .reports__container_header{
+        h3{
+            font-size: 35px;
+        }
+        p{
+            font-size: 25px;
+        }
+        >div{
+            display: flex;
+            justify-content: space-around;
+        }
+        
+    }
+    .application{
+        display: flex;
+        align-items: center;
+    }
+  }
+  .graphs{
+    padding-bottom: 80px;
+  }
+  .job_applications{
+    >div{
+        display: flex;
+        gap:30px    
+    }
+  }
+  .candidates_graph{
+    display: flex;
+    gap:30px ;
+    align-items: center;
+  }
+  
