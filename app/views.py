@@ -3255,6 +3255,33 @@ class GetTeamThreads(APIView):
                 {"message": "Failed to fetch","data": threads}, status=status.HTTP_400_BAD_REQUEST
             )
 
+class GetAllThreads(APIView):
+    def get(self, request):
+        field = {}
+        update_field = {}
+    
+        get_response = dowellconnection(
+            *thread_report_module, "fetch", field, update_field
+        )
+        threads = []
+        for thread in json.loads(get_response)["data"]:
+            if not len(json.loads(get_response)["data"]) <= 0:
+                get_comment = dowellconnection(
+                        *comment_report_module, "fetch", {"thread_id":thread["_id"]}, update_field
+                    )
+                thread["comments"]= json.loads(get_comment)
+                threads.append(thread)
+
+        if json.loads(get_response)["isSuccess"] == True:
+            return Response(
+                {"message": f"List of All Threads","no of threads": f"{len(threads)}","data": threads}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"message": "Failed to fetch","data": threads}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+
 
 class Comment_Apis(APIView):
     def post(self, request):
@@ -3531,7 +3558,6 @@ class Generate_hr_Report(APIView):
         # data["Hiring percentage of the organization"]=hiring_perecentage
 
         return Response({"isSuccess":True,"message": f"Hr reported Generated", "response":data}, status=status.HTTP_201_CREATED)
-    
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_account_Report(APIView):
@@ -3543,11 +3569,10 @@ class Generate_account_Report(APIView):
         data["job_applications"]=len(json.loads(job_applications)['data'])
 
         Rehired = dowellconnection(*account_management_reports, "fetch", {"status": "Rehired"}, update_field)
-        print(Rehired)
+        #print(Rehired)
         data["rehired_candidates"]=len(json.loads(Rehired)['data'])
 
         Rejected = dowellconnection(*account_management_reports, "fetch", {"status": "Rejected"}, update_field)
         data["rejected_candidates"]=len(json.loads(Rejected)['data'])
 
         return Response({"isSuccess":True,"message": f"Account reported Generated", "response":data}, status=status.HTTP_200_OK)
-    
