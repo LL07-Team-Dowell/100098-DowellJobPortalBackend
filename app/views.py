@@ -62,7 +62,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
 from .helper import get_event_id, dowellconnection, call_notification, set_finalize, update_number, update_string, discord_invite,\
-    get_guild_channels, get_guild_members , create_master_link , send_mail , interview_email,periodic_application
+    get_guild_channels, get_guild_members , create_master_link , send_mail , interview_email,periodic_application,periodic_application_account
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
     SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
@@ -3259,29 +3259,35 @@ class GetAllThreads(APIView):
     def get(self, request):
         field = {}
         update_field = {}
-    
-        get_response = dowellconnection(
-            *thread_report_module, "fetch", field, update_field
-        )
-        threads = []
-        for thread in json.loads(get_response)["data"]:
-            if not len(json.loads(get_response)["data"]) <= 0:
-                get_comment = dowellconnection(
-                        *comment_report_module, "fetch", {"thread_id":thread["_id"]}, update_field
-                    )
-                thread["comments"]= json.loads(get_comment)
-                threads.append(thread)
 
-        if json.loads(get_response)["isSuccess"] == True:
-            return Response(
-                {"message": f"List of All Threads","no of threads": f"{len(threads)}","data": threads}, status=status.HTTP_200_OK
-            )
-        else:
-            return Response(
-                {"message": "Failed to fetch","data": threads}, status=status.HTTP_400_BAD_REQUEST
-            )
-
-
+        try:
+            get_response = dowellconnection(*thread_report_module, "fetch", field, update_field)
+            threads_response = json.loads(get_response)
+            threads = []
+            if threads_response["isSuccess"]:
+                threads_data = threads_response["data"]
+                if threads_data:
+                    for thread in threads_data:
+                        get_comment = dowellconnection(*comment_report_module, "fetch", {"thread_id": thread["_id"]}, update_field)
+                        thread["comments"] = json.loads(get_comment)
+                        threads.append(thread)
+                return Response(
+                    {
+                    "isSuccess":True,
+                    "message": "List of Threads",
+                    "data": threads},
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {"message": "Failed to fetch", "data": threads},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except:
+            return Response({
+                  "isSuccess":False,
+                  "message": f"An error occurred:",
+                  "data": []})
 
 class Comment_Apis(APIView):
     def post(self, request):
@@ -3561,12 +3567,16 @@ class Generate_hr_Report(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_account_Report(APIView):
-    def get(self, request):
+    def post(self, request):
+        payload = request.data
         field = {}
         update_field = {}
         data = {}
         job_applications = dowellconnection(*account_management_reports, "fetch", field, update_field)
         data["job_applications"]=len(json.loads(job_applications)['data'])
+        
+        # p_application = periodic_application_account(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
+        # data[f"nojob_applications_from_start_date_to_end_date"]=p_application[1]
 
         Rehired = dowellconnection(*account_management_reports, "fetch", {"status": "Rehired"}, update_field)
         #print(Rehired)
@@ -3576,3 +3586,30 @@ class Generate_account_Report(APIView):
         data["rejected_candidates"]=len(json.loads(Rejected)['data'])
 
         return Response({"isSuccess":True,"message": f"Account reported Generated", "response":data}, status=status.HTTP_200_OK)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class Generate_candidate_Report(APIView):
+    def post(self, request):
+        field = {}
+        update_field = {}
+        data = {}
+        job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        data["job_applications"]=len(json.loads(job_applications)['data'])
+
+        Pending = dowellconnection(*candidate_management_reports, "fetch", {"status":"Pending"}, update_field)
+        data["Pending_applications"]=len(json.loads(Pending)['data'])
+
+        Guest_Pending = dowellconnection(*candidate_management_reports, "fetch", {"status":"Guest_Pending"}, update_field)
+        data["Guest_Pending"]=len(json.loads(Guest_Pending)['data'])
+
+        Hired = dowellconnection(*candidate_management_reports, "fetch", {"status":"hired"}, update_field)
+        data["hired_candidates"]=len(json.loads(Hired)['data'])
+
+        Rehired = dowellconnection(*candidate_management_reports, "fetch", {"status":"Rehired"}, update_field)
+        data["Rehired_candidates"]=len(json.loads(Rehired)['data'])
+
+        Rejected = dowellconnection(*candidate_management_reports, "fetch", {"status": "Rejected"}, update_field)
+        data["rejected_candidates"]=len(json.loads(Rejected)['data'])
+
+        return Response({"isSuccess":True,"message": f"Candidate report Generated", "data":data}, status=status.HTTP_201_CREATED)
