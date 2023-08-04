@@ -236,7 +236,6 @@ const ThreadItem = ({ status }) => {
   const inProgressThreads = testThreadsToWorkWith.filter(
     (thread) => thread.current_status === "In progress" || thread.current_status === "Created" || thread.current_status == undefined
   );
-  console.log(inProgressThreads);
 
   // Function to handle opening the modal for a specific thread
   const handleImageClick = (threadId) => {
@@ -286,7 +285,6 @@ const ThreadItem = ({ status }) => {
   const fetchData = async () => {
     try {
       const documentId = id;
-      console.log(documentId);
       const response = await fetchThread(documentId);
       console.log('Comment fetched successfully:', response.data.data);
       setThreads(response.data.data)
