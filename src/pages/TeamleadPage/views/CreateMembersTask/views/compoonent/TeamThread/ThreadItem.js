@@ -220,10 +220,10 @@ align-items: left !important;
 `
 
 const ThreadItem = ({ status }) => {
-  console.log(status);
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const document_id = currentUser.portfolio_info[0].org_id;
   const { id } = useParams();
+  console.log(status);
 
   const [threads, setThreads] = useState([]);
   const [showComment, setShowComment] = useState(false);
@@ -234,8 +234,9 @@ const ThreadItem = ({ status }) => {
   const resolvedThreads = testThreadsToWorkWith.filter((thread) => thread.current_status == "Resolved");
 
   const inProgressThreads = testThreadsToWorkWith.filter(
-    (thread) => thread.current_status === "In progress" || thread.current_status === "Created"
+    (thread) => thread.current_status === "In progress" || thread.current_status === "Created" || thread.current_status == undefined
   );
+  console.log(inProgressThreads);
 
   // Function to handle opening the modal for a specific thread
   const handleImageClick = (threadId) => {
@@ -284,9 +285,11 @@ const ThreadItem = ({ status }) => {
   //Fetch Thread 
   const fetchData = async () => {
     try {
-      const documentId = document_id; // Replace with the actual document ID you want to fetch.
-      const response = await fetchThread({ document_id: documentId });
-      console.log('Comment fetched successfully:', response.data);
+      const documentId = id;
+      console.log(documentId);
+      const response = await fetchThread(documentId);
+      console.log('Comment fetched successfully:', response.data.data);
+      setThreads(response.data.data)
       // Do something with the responseData if needed.
     } catch (error) {
       console.error('Failed to fetch comment:', error.message);
@@ -381,7 +384,7 @@ const ThreadItem = ({ status }) => {
             </>
           }
           {
-            status == "In progress" && <>
+            status == "In progress" || status == undefined && <>
               {inProgressThreads.map((thread) => (
                 <div className="team-screen-threads-card" key={thread._id}>
                   <div className="thread-card">

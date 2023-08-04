@@ -24,6 +24,7 @@ const TeamThreadScreen = () => {
                     <AddIssueScreen
                         afterSelectionScreen={true}
                         closeIssuesScreen={() => setIssue(false)}
+                        teamId ={id}
                     />)
             }
             <div className="new__task__container">
