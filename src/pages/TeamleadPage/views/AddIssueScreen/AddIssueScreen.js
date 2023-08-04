@@ -16,6 +16,7 @@ const AddIssueScreen = ({
   closeIssuesScreen,
   afterSelectionScreen,
   editPage,
+  teamId,
   setEditPage,
 }) => {
   const ref = useRef(null);
@@ -27,16 +28,14 @@ const AddIssueScreen = ({
   const [selectedTeam, setSelectedTeam] = useState('');
 
   const [selectedFile, setSelectedFile] = useState(null);
-
   const [createIssue, setCreateIssue] = useState({
     thread: "",
     image: "",
     team_alerted_id: "",
     created_by: currentUser.userinfo.username,
-    team_id: '',
+    team_id: teamId,
     previous_status: '',
   });
-
 
   useClickOutside(ref, () => {
     closeIssuesScreen();

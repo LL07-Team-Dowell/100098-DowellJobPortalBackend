@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 const TeamThread = ({ title = "Team Issues", color }) => {
   const { id } = useParams();
-
+  console.log(id);
   const Wrappen = styled.section`
   display: flex;
   align-items: center;
@@ -42,8 +42,8 @@ const TeamThread = ({ title = "Team Issues", color }) => {
   }
 `;
   const [panding, setPanding] = useState(true);
-  const [resolve, setResolve] = useState(true);
-  const [progress, setProgress] = useState(true);
+  const [resolve, setResolve] = useState(false);
+  const [progress, setProgress] = useState(false);
   const [status, setStatus] = useState();
 
   const clickToPandingApproval = () => {
@@ -85,7 +85,7 @@ const TeamThread = ({ title = "Team Issues", color }) => {
         <NavLink className={`${progress ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/issue-completed`} onClick={clickToApproved}>Completed</NavLink>
         <NavLink className={`${resolve ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/issue-resolved`} onClick={clickToResolve}>Resolved</NavLink>
       </Wrappen>
-      <ThreadItem status={status}/>
+      <ThreadItem status={status} />
     </div>
   </>
   )

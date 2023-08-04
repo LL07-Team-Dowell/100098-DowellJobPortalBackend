@@ -13,12 +13,16 @@ import NewAddTaskScreen from "./NewAddTaskScreen";
 import AddIssueScreen from "../../../TeamleadPage/views/AddIssueScreen/AddIssueScreen";
 
 import "./style.css";
+import { useParams } from "react-router-dom";
 
 
 const AfterSelectionScreen = ({ assignedProjects }) => {
     const { currentUser } = useCurrentUserContext();
     console.log(currentUser);
    
+    const { id } = useParams();
+
+
     const [ showAddTaskModal, setShowAddTaskModal ] = useState(false);
     const [ showAddIssueModal, setShowAddIssueModal ] = useState(false);
     const { section } = useNavigationContext();
@@ -42,6 +46,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
                 <AddIssueScreen
                     afterSelectionScreen={true}
                     closeIssuesScreen={() => setShowAddIssueModal(false)}
+                    teamId={id}
                 />
             )}
                 <NewAddTaskScreen handleAddTaskBtnClick={() => setShowAddTaskModal(true)} handleAddIssueBtnClick={() => setShowAddIssueModal(true)}/>
