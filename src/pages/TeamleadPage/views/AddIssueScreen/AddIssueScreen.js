@@ -18,15 +18,11 @@ import {
 } from "../../../../services/createMembersTasks";
 
 const AddIssueScreen = ({
-  teamMembers,
   closeIssuesScreen,
-  updateIssues,
   afterSelectionScreen,
   editPage,
+  teamId,
   setEditPage,
-  taskToEdit,
-  hrPageActive,
-  assignedProject,
 }) => {
   const ref = useRef(null);
   const { id } = useParams();
@@ -36,6 +32,8 @@ const AddIssueScreen = ({
   const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
   const [optionValue, setoptionValue] = useState("");
+  const [selectedTeam, setSelectedTeam] = useState('');
+
   const [selectedFile, setSelectedFile] = useState(null);
   const { data, setdata } = useValues();
   const [response, setresponse] = useState(false);
@@ -44,10 +42,10 @@ const AddIssueScreen = ({
   const [createIssue, setCreateIssue] = useState({
     thread: "",
     image: "",
-    team_alearted_id: "",
+    team_alerted_id: "",
     created_by: currentUser.userinfo.username,
-    team_id: "",
-    previous_status: "",
+    team_id: teamId,
+    previous_status: '',
   });
 
   useClickOutside(ref, () => {
@@ -75,16 +73,24 @@ const AddIssueScreen = ({
   };
 
   const handleOptionChange = (e) => {
-    setoptionValue(e.target.value);
-    setCreateIssue((prev) => {
-      const newCreateIssue = { ...prev };
-      newCreateIssue["team_alearted_id"] = e.target.value;
-      return newCreateIssue;
-    });
+    const selectedTeamName = e.target.value;
+    setSelectedTeam(selectedTeamName);
+    const selectedTeamObj = teamNamesArray.find((team) => team[0].name === selectedTeamName);
+    console.log(selectedTeamObj);
+    const selectedTeamId = selectedTeamObj ? selectedTeamObj[1].id : null;
+    setCreateIssue((prevIssue) => ({
+      ...prevIssue,
+      team_alerted_id: selectedTeamId,
+    }));
+
   };
 
-  const [teamdata, setTeamData] = useState([]);
-  const filteredData = teamdata.filter((item) => item.admin_team === true);
+  const [teamdata, setTeamData] = useState([])
+  const filteredData = teamdata.filter(item => item.admin_team === true);
+  const teamNamesArray = filteredData.map((data) => {
+    return [{ name: data.team_name }, { id: data._id }];
+  });
+
   //get all teams
   const getTeams = async () => {
     try {
@@ -106,7 +112,7 @@ const AddIssueScreen = ({
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
-
+    setSelectedFile(selectedFile)
     // Create a FormData object to send the file
     const formData = new FormData();
     formData.append("image", selectedFile);
@@ -217,34 +223,16 @@ const AddIssueScreen = ({
             className="addTaskDropDown"
             style={{ margin: 0, marginBottom: "0.8rem" }}
             onChange={handleOptionChange}
-            id="team"
+            value={selectedTeam}
             name={"team"}
           >
             <option value="">Select Team</option>
-            <option
-              value="Team Development A"
-              selected={optionValue === "Team Development A"}
-            >
-              Team Development A
-            </option>
-            <option
-              value="Team Development B"
-              selected={optionValue === "Team Development B"}
-            >
-              Team Development B
-            </option>
-            <option
-              value="Team Development C"
-              selected={optionValue === "Team Development C"}
-            >
-              Team Development C
-            </option>
-            <option
-              value="Team Development D"
-              selected={optionValue === "Team Development D"}
-            >
-              Team Development D
-            </option>
+            {/* Dynamically populate the options */}
+            {teamNamesArray.map((team) => (
+              <option key={team[0].name} value={team[0].name}>
+                {team[0].name}
+              </option>
+            ))}
           </select>
           <button
             type={"button"}

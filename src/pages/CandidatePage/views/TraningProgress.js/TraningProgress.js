@@ -268,10 +268,15 @@ function TraningProgress({ shorlistedJob }) {
         }
 
         .traning_section {
+            padding: 20px 0;
             display: flex;
+            flex-wrap: wrap;
             position: relative;
+            width: 100%;
+
             .right-content{
                 padding: 10px 30px;
+                width: 60%;
                 .traninning-program{
                     font-size: 18px;
                     color: #7E7E7E;
@@ -302,15 +307,26 @@ function TraningProgress({ shorlistedJob }) {
                 }
 
                 .right-bottom-content{
+                    display: flex; 
+                    justify-content: space-between;
+                    width: 100%;
+                    flex-wrap: wrap;
+                }
+
+                .right-bottom-content a{
                     color: #038953;
                     border: 1px solid #038953;
                     width: 190px;
                     padding: 8px 20px;
                     cursor: pointer;
+                    margin: 10px;
                 }
             }
 
             .left-content{
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 img {
                     height: 200px;
                 }
@@ -328,6 +344,13 @@ function TraningProgress({ shorlistedJob }) {
                 font-size: 18px;
             }
         }
+
+        @media screen and (max-width: 850px) {
+            .traning_section .right-content {
+                 padding: 0px;
+                 width: auto; 
+            }
+          }
     `
 
 
@@ -575,11 +598,8 @@ function TraningProgress({ shorlistedJob }) {
                                                 <Link to={matchModule.question_link} target='_blank'>
                                                     {"View Question"}
                                                 </Link>
-                                            </div>
-                                        </div>
 
-                                        <div className="bottom-content">
-                                            {
+                                                {
                                                 responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
                                                     <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?._id)}>
                                                         {"Submit Now"}
@@ -603,7 +623,12 @@ function TraningProgress({ shorlistedJob }) {
                                                         }
                                                     </Link>
                                             }
+                                            </div>
                                         </div>
+
+                                        {/* <div className="bottom-content">
+                                          
+                                        </div> */}
                                     </div>
                                 }))
                     }

@@ -43,9 +43,9 @@ export const candidateUpdateTaskForTeamLead = async (data) => {
 
 // Apis For Threads 
 export const fetchThread = async(data)=>{
+  console.log(data);
   return await currentBackendAxiosInstance.get(
-    "fetch_thread/",
-    data
+    `fetch_team_thread/${data}/`
   )
 }
 

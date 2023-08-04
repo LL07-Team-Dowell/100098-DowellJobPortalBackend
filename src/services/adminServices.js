@@ -47,3 +47,4 @@ export const adminEditSettingUserProject = async (id, data) => {
 export const getUsedQrCodes = async (companyId) => {
   return await currentBackendAxiosInstance.get(`get_all_qrcode/${companyId}/`)
 }
+export const generateReport = async (data) => { return await currentBackendAxiosInstance.post(`generate_admin_report/`, data); };
