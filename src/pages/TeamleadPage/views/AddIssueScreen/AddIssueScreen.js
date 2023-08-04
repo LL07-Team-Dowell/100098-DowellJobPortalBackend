@@ -11,8 +11,11 @@ import { toast } from "react-toastify";
 import { createThread } from "../../../../services/threadServices";
 import { useValues } from "../CreateMembersTask/context/Values";
 import { useTeam } from "../../../CandidatePage/views/TeamsScreen/useTeams";
-import { createTeam, createTeamTask, getAllTeams } from '../../../../services/createMembersTasks'
-
+import {
+  createTeam,
+  createTeamTask,
+  getAllTeams,
+} from "../../../../services/createMembersTasks";
 
 const AddIssueScreen = ({
   teamMembers,
@@ -36,17 +39,16 @@ const AddIssueScreen = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const { data, setdata } = useValues();
   const [response, setresponse] = useState(false);
-  const [teamName , setTeamName] = useState('') ;
+  const [teamName, setTeamName] = useState("");
 
   const [createIssue, setCreateIssue] = useState({
     thread: "",
     image: "",
     team_alearted_id: "",
     created_by: currentUser.userinfo.username,
-    team_id: '',
-    previous_status: '',
+    team_id: "",
+    previous_status: "",
   });
-
 
   useClickOutside(ref, () => {
     closeIssuesScreen();
@@ -81,8 +83,8 @@ const AddIssueScreen = ({
     });
   };
 
-  const [teamdata, setTeamData] = useState([])
-  const filteredData = teamdata.filter(item => item.admin_team === true);
+  const [teamdata, setTeamData] = useState([]);
+  const filteredData = teamdata.filter((item) => item.admin_team === true);
   //get all teams
   const getTeams = async () => {
     try {
@@ -93,9 +95,9 @@ const AddIssueScreen = ({
 
       // Assuming the response contains the teams data in the data field
       const teamsData = response.data.response.data;
-      setTeamData(teamsData)
+      setTeamData(teamsData);
     } catch (error) {
-      console.error('Error in your function:', error);
+      console.error("Error in your function:", error);
     }
   };
 
@@ -111,10 +113,13 @@ const AddIssueScreen = ({
 
     try {
       // Send a POST request to the upload URL
-      const response = await fetch("http://67.217.61.253/uploadfiles/upload-hr-image/", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "http://67.217.61.253/uploadfiles/upload-hr-image/",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (response.ok) {
         // If the request is successful, parse the JSON response
@@ -139,7 +144,6 @@ const AddIssueScreen = ({
     }
   };
 
-
   useEffect(() => {
     if (createIssue.thread.length < 1) return setShowIssueForm(false);
     setShowIssueForm(true);
@@ -159,13 +163,12 @@ const AddIssueScreen = ({
       console.log(response.data);
       if (response.status === 201) {
         toast.success("Issue Created Successfully");
+        closeIssuesScreen();
       }
     } catch (error) {
       toast.error("Something went wrong");
     }
   };
-
-
 
   return (
     <>
