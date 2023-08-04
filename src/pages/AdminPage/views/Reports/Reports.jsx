@@ -26,7 +26,20 @@ const AdminReports = ({ subAdminView }) => {
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
   };
-
+  const handleSubmitDate = (start_date, end_date) => {
+    setLoading(true)
+    const data = {
+      start_date,
+      end_date,
+    };
+    generateReport(data)
+      .then((resp) => {
+        setLoading(false)
+        console.log(resp.data.response);
+        setdata(resp.data.response);
+      })
+      .catch((err) => {console.log(err); setLoading(false)});
+  }
   //   useEffect
   useEffect(() => {
     setLoading(true)
@@ -58,7 +71,6 @@ const AdminReports = ({ subAdminView }) => {
     >
       <div className="reports__container">
       <div className="reports__container_header">
-        <h3>Reports</h3>
         <div>
         <p>Get insights into your organizations</p>
         <select onChange={handleSelectOptionsFunction}>
