@@ -42,16 +42,29 @@ const TeamThread = ({ title = "Team Issues", color }) => {
   }
 `;
   const [panding, setPanding] = useState(true);
+  const [resolve, setResolve] = useState(true);
+  const [progress, setProgress] = useState(true);
   const [status, setStatus] = useState();
 
   const clickToPandingApproval = () => {
     setPanding(true);
+    setProgress(false);
+    setResolve(false);
     setStatus('In progress')
   };
 
   const clickToApproved = () => {
     setPanding(false);
+    setProgress(true);
+    setResolve(false);
     setStatus('Completed')
+  };
+
+  const clickToResolve = () => {
+    setPanding(false);
+    setProgress(false);
+    setResolve(true);
+    setStatus('Resolved')
   };
 
   const navigate = useNavigate()
@@ -69,7 +82,8 @@ const TeamThread = ({ title = "Team Issues", color }) => {
     <div className="create-new-team-heade">
       <Wrappen>
         <NavLink className={`${panding ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/issue-inprogress`} onClick={clickToPandingApproval}>In progress</NavLink>
-        <NavLink className={`${panding ? 'link-notactive' : 'link-isActive'}`} to={`/team-screen-member/${id}/issue-completed`} onClick={clickToApproved}>Completed</NavLink>
+        <NavLink className={`${progress ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/issue-completed`} onClick={clickToApproved}>Completed</NavLink>
+        <NavLink className={`${resolve ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/issue-resolved`} onClick={clickToResolve}>Resolved</NavLink>
       </Wrappen>
       <ThreadItem status={status}/>
     </div>

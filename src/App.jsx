@@ -284,10 +284,10 @@ function App() {
         (item) => item.product === "Team Management"
       ).member_type === "owner" &&
       !currentUser.settings_for_profile_info?.fakeSuperUserInfo
-    ) 
+    )
     ||
     (
-      currentUser.settings_for_profile_info && 
+      currentUser.settings_for_profile_info &&
       currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
     )
   ) {
@@ -648,6 +648,21 @@ function App() {
         />
         <Route
           path="/team-screen-member/:id/issue-completed"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+                <TeamProvider>
+                  <ValuesProvider>
+                    {/* create a component here */}
+                    <TeamThread />
+                  </ValuesProvider>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path="/team-screen-member/:id/issue-resolved"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
