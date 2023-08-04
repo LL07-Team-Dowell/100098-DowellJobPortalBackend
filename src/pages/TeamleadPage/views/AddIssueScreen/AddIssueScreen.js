@@ -32,6 +32,10 @@ const AddIssueScreen = ({
   const [selectedTeam, setSelectedTeam] = useState('');
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const { data, setdata } = useValues();
+  const [response, setresponse] = useState(false);
+  const [teamName , setTeamName] = useState('') ;
+
   const [createIssue, setCreateIssue] = useState({
     thread: "",
     image: "",
