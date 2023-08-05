@@ -1874,44 +1874,36 @@ class edit_team(APIView):
             check = dowellconnection(
                 *team_management_modules, "fetch", field, update_field
             )
-            if json.loads(response)["isSuccess"] == True:
-                if len(json.loads(check)["data"]) == 0:
-                    return Response(
-                        {
-                            "message": "Cannot be Edited, there is no team with this team id",
-                            "response": json.loads(check),
-                        },
-                        status=status.HTTP_204_NO_CONTENT,
-                    )
-                else:
-                    response = dowellconnection(
-                        *team_management_modules, "update", field, update_field
-                    )
-                    #print(response)
-                    if json.loads(response)["isSuccess"] == True:
-                        return Response(
-                            {
-                                "message": "Team Updated successfully",
-                                "response": json.loads(response),
-                            },
-                            status=status.HTTP_200_OK,
-                        )
-                    else:
-                        return Response(
-                            {
-                                "message": "Team failed to be updated",
-                                "response": json.loads(response),
-                            },
-                            status=status.HTTP_404_NOT_FOUND,
-                        )
-            else:
+            if len(json.loads(check)["data"]) == 0:
                 return Response(
                     {
-                        "message": "Cannot be Edited, there is no team with this team id",
+                        "message": "Cannot be Edited, there is no teamwith this id",
                         "response": json.loads(check),
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
+            else:
+                response = dowellconnection(
+                    *team_management_modules, "update", field, update_field
+                )
+                #print(response)
+                if json.loads(response)["isSuccess"] == True:
+                    return Response(
+                        {
+                            "message": "Team Updated successfully",
+                            "response": json.loads(response),
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+                else:
+                    return Response(
+                        {
+                            "message": "Team failed to be updated",
+                            "response": json.loads(response),
+                        },
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
+
         else:
             return Response(
                 {"message": "Parameters are not valid"},
@@ -2058,7 +2050,7 @@ class get_team_task(APIView):
                                  "Data":[]},
                             status=status.HTTP_204_NO_CONTENT)
             else:
-                return Response({"message": f"Tasks with team id - {team_id} available", "response": json.loads(response)},
+                return Response({"message": f"Tasks with team id - {team_id} available - {len(json.loads(response)['data'])}", "response": json.loads(response)},
                                 status=status.HTTP_200_OK)
         else:
             return Response({"message": "There is no task with team id",
@@ -3402,15 +3394,18 @@ class Generate_admin_Report(APIView):
 
         p_application = periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
         #print(p_application)
-        data[f"nojob_applications_from_start_date_to_end_date"]=p_application[1]
-
-        ids = [t["_id"] for t in json.loads(job_applications)['data']]
-        counter = Counter(ids)
-        most_applied_job = counter.most_common(1)[0][0]
-        least_applied_job = counter.most_common()[-1][0]
-        
-        data["most_applied_job"]={"_id":most_applied_job}
-        data["least_applied_job"]={"_id":least_applied_job}
+        data[f"no_job_applications_from_start_date_to_end_date"]=p_application[1]
+        try:
+            ids = [t["_id"] for t in json.loads(job_applications)['data']]
+            counter = Counter(ids)
+            most_applied_job = counter.most_common(1)[0][0]
+            least_applied_job = counter.most_common()[-1][0]
+            
+            data["most_applied_job"]={"_id":most_applied_job}
+            data["least_applied_job"]={"_id":least_applied_job}
+        except Exception:
+            data["most_applied_job"]={"_id":"none"}
+            data["least_applied_job"]={"_id":"none"}
 
         new_candidates = dowellconnection(*candidate_management_reports, "fetch", {"status": "Pending"}, update_field)
         data["new_candidates"]=len(json.loads(new_candidates)['data'])
@@ -3435,8 +3430,10 @@ class Generate_admin_Report(APIView):
 
         probationary = dowellconnection(*candidate_management_reports, "fetch", {"status": "probationary"}, update_field)
         data["probationary_candidates"]=len(json.loads(probationary)['data'])
-
-        data["hiring_rate"] = str((data["hired_candidates"]/data["job_applications"])*100)+" %"
+        try:
+            data["hiring_rate"] = str((data["hired_candidates"]/data["job_applications"])*100)+" %"
+        except Exception:
+            data["hiring_rate"] ="0 %"
 
         teams = dowellconnection(*team_management_modules, "fetch", field, update_field)
         data["teams"]=len(json.loads(teams)['data'])
@@ -3449,20 +3446,26 @@ class Generate_admin_Report(APIView):
                                     if "team_id" in t.keys() or "team_name" in t.keys()])
         
         tasks_completed = dowellconnection(*task_management_reports, "fetch", {"status":"Completed"}, update_field)
-        data["tasks_completed_on_time"]=len([t for t in json.loads(tasks_completed)['data'] 
+        try:
+            data["tasks_completed_on_time"]=len([t for t in json.loads(tasks_completed)['data'] 
                                              if "due_date" in t.keys() and "task_updated_date" in t.keys() and 
                                                 datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > 
                                                 datetime.datetime.strptime(t["task_updated_date"], "%m/%d/%Y %H:%M:%S")
                                             ])
-
-        data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks"])*100)+" %"
+        except Exception:
+            data["tasks_completed_on_time"]="0"
+        try:
+            data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks"])*100)+" %"
+        except Exception:
+            data["percentage_tasks_completed_on_time"]="0 %"
 
         team_tasks_completed = dowellconnection(*task_management_reports, "fetch", {"completed":True}, update_field)
         data["team_tasks_completed"]=len([t for t in json.loads(team_tasks_completed)['data'] 
                                              if "team_id" in t.keys() or "team_name" in t.keys()])
-        
-        data["percentage_team_tasks_completed"]=str((data["team_tasks_completed"]/data["team_tasks"])*100)+" %"
-
+        try:
+            data["percentage_team_tasks_completed"]=str((data["team_tasks_completed"]/data["team_tasks"])*100)+" %"
+        except Exception:
+            data["percentage_team_tasks_completed"]="0 %"
         
         return Response({"message": f"Report Generated", "response":data}, status=status.HTTP_201_CREATED)
 
@@ -3551,17 +3554,12 @@ class Generate_hr_Report(APIView):
 
         Selected = dowellconnection(*candidate_management_reports, "fetch", {"status": "selected"}, update_field)
         data["selected_candidates"]=len(json.loads(Selected)['data'])
-        #print(len(Selected))
-        #print(len(job_applications))
-
-        # hiring_perecentage=str(data["selected_candidates"]/ data["job_applications"]*100)+ "%"
-        # data["Hiring percentage of the organization"]=hiring_perecentage
 
         return Response({"isSuccess":True,"message": f"Hr reported Generated", "response":data}, status=status.HTTP_201_CREATED)
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_account_Report(APIView):
-    def get(self, request):
+    def post(self, request):
         field = {}
         update_field = {}
         data = {}
@@ -3576,3 +3574,73 @@ class Generate_account_Report(APIView):
         data["rejected_candidates"]=len(json.loads(Rejected)['data'])
 
         return Response({"isSuccess":True,"message": f"Account reported Generated", "response":data}, status=status.HTTP_200_OK)
+
+@method_decorator(csrf_exempt, name="dispatch")
+class Generate_Lead_Report(APIView):
+    def post(self, request):
+        payload = request.data
+        field = {
+            "_id":payload.get("team_id"),
+        }
+        update_field = {}
+        data = {}
+        teams = dowellconnection(*team_management_modules, "fetch", field, update_field)
+        data["teams"]=len(json.loads(teams)['data'])
+
+        team_tasks = dowellconnection(*task_management_reports, "fetch", {"team_id":payload.get("team_id")}, update_field)
+        data["team_tasks"]=len(json.loads(team_tasks)['data'])
+
+        team_tasks_completed = dowellconnection(*task_management_reports, "fetch", {"team_id":payload.get("team_id"),"completed": "True"}, update_field)
+        data["team_tasks_completed"]=len([t for t in json.loads(team_tasks_completed)['data'] if "team_id" in t.keys()])
+        
+        team_tasks_not_completed = dowellconnection(*task_management_reports, "fetch", {"team_id":payload.get("team_id"),"completed": "False"}, update_field)
+        data["team_tasks_not_completed"]=len([t for t in json.loads(team_tasks_not_completed)['data'] if "team_id" in t.keys()])
+
+        try:
+            data["percentage_team_tasks_completed"]=str((data["team_tasks_completed"]/data["team_tasks"])*100)+" %"
+        except Exception:
+            data["percentage_team_tasks_completed"]="0 %"
+        
+        on_time=[]
+        for t in json.loads(team_tasks_completed)['data']:
+            if "due_date" in t.keys() and "task_updated_date" in t.keys():
+                try:
+                    if (datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > datetime.datetime.strptime(t["task_updated_date"], "%m/%d/%Y %H:%M:%S")):
+                        on_time.append(t)
+                except Exception:
+                    pass
+        data["team_tasks_completed_on_time"]=len(on_time)
+
+        try:
+            data["percentage_tasks_completed_on_time"]=str((data["team_tasks_completed_on_time"]/data["team_tasks"])*100)+" %"
+        except Exception:
+            data["percentage_tasks_completed_on_time"]="0 %"
+
+        ## list of tasks-----------
+        team_tasks_list=[]
+        team_members=json.loads(teams)['data'][0]["members"]
+        for task in json.loads(team_tasks)['data']:
+            team_tasks_list.append({
+                "_id":task["_id"],
+                "assignees":[ a+"(member)" if a in team_members else a+"(non member)" for a in task['assignee']]
+                })
+
+        data["team_tasks_list"]={
+                                    "number":data["team_tasks"],
+                                    "details":team_tasks_list
+                                }
+
+        data["team_members"]={
+                        "number":len(team_members),
+                        "details":[
+                                {
+                                    "name":m,
+                                    "tasks_assigned":[
+                                        {"_id":task["_id"],"completed":task["completed"]} for task in json.loads(team_tasks)['data'] if m in task['assignee']
+                                    ]
+                                } for m in team_members
+                            ]
+                        }
+        return Response({"isSuccess":True,
+                         "message": f"Lead reported Generated for team with id-{payload.get('team_id')}", 
+                         "response":data}, status=status.HTTP_201_CREATED)
