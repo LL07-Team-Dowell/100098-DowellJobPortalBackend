@@ -40,6 +40,12 @@
     font-size: 1.6rem;
     letter-spacing: 0.05em;
     margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.header span.submitted__Date__Span {
+    font-size: 0.7rem;
 }
 
 .label,
@@ -111,9 +117,9 @@
     background-color: #e1fbe2;
 }
 
-.label .hrViewInput:hover ~ .view__Text {
+/* .label .hrViewInput:hover ~ .view__Text {
     display: block;
-}
+} */
 
 @keyframes fadeIn {
     from {

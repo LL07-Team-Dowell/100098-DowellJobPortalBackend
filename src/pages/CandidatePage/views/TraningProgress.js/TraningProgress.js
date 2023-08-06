@@ -12,6 +12,7 @@ import { createTrainingManagementResponse } from '../../../../services/hrTrainin
 import SubmitResponseModal from './SubmitResponseModal/SubmitResponseModal';
 import { toast } from 'react-toastify';
 import { candidateSubmitResponse } from '../../../../services/candidateServices';
+import { validateUrl } from '../../../../helpers/helpers';
 
 
 function TraningProgress({ shorlistedJob }) {
@@ -403,7 +404,8 @@ function TraningProgress({ shorlistedJob }) {
                     "answer_link": foundResponse?.answer_link,
                     "code_base_link": foundResponse?.code_base_link,
                     "documentation_link": foundResponse?.documentation_link,
-                    "video_link": foundResponse?.video_link
+                    "video_link": foundResponse?.video_link,
+                    "submitted_on": foundResponse?.submitted_on,
                 }
             })
             return;
@@ -414,6 +416,13 @@ function TraningProgress({ shorlistedJob }) {
 
     const handleSubmitResponse = async () => {
         if (submitDataToSend.answer_link.length < 1) return toast.info("Please enter the link to your answer");
+        if (submitDataToSend.video_link.length < 1) return toast.info("Please enter a link to a video that breifly explains how you came up with your answer");
+
+        // LINKS VALIDATION
+        if (submitDataToSend.answer_link.length > 0 && !validateUrl(submitDataToSend.answer_link)) return toast.info("Please enter a valid url for an answer link")
+        if (submitDataToSend.video_link.length > 0 && !validateUrl(submitDataToSend.video_link)) return toast.info("Please enter a valid url for a video link")
+        if (submitDataToSend.documentation_link.length > 0 && !validateUrl(submitDataToSend.documentation_link)) return toast.info("Please enter a valid url for a documentation link")
+        if (submitDataToSend.code_base_link.length > 0 && !validateUrl(submitDataToSend.code_base_link)) return toast.info("Please enter a valid url for a codebase link")
 
         if (!currentResponse) return
         const currentResponses = responses.slice();
