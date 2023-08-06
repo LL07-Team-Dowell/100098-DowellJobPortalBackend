@@ -8,6 +8,7 @@ import Modal from './Modal';
 import { featchAllComment, fetchThread } from '../../../../../../../services/teamleadServices';
 import { useParams } from 'react-router-dom';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
+import { getAllTeams } from '../../../../../../../services/createMembersTasks';
 
 const Wrapper = styled.div`
 display: flex;
@@ -65,6 +66,8 @@ align-items: left !important;
   
   .team-screen-thread-container{
     flex-direction: row;
+    flex-wrap: wrap;
+
   }
 
   .team-screen-threads-container {
@@ -221,19 +224,17 @@ align-items: left !important;
 
 const ThreadItem = ({ status }) => {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
-  const document_id = currentUser.portfolio_info[0].org_id;
   const { id } = useParams();
-  console.log(status);
 
   const [threads, setThreads] = useState([]);
   const [showComment, setShowComment] = useState(false);
   const [showModalStates, setShowModalStates] = useState({});
 
   //Filter Based on status
-  const completedThreads = testThreadsToWorkWith.filter((thread) => thread.current_status === status);
-  const resolvedThreads = testThreadsToWorkWith.filter((thread) => thread.current_status == "Resolved");
+  const completedThreads = threads.filter((thread) => thread.current_status === status);
+  const resolvedThreads = threads.filter((thread) => thread.current_status == "Resolved");
 
-  const inProgressThreads = testThreadsToWorkWith.filter(
+  const inProgressThreads = threads.filter(
     (thread) => thread.current_status === "In progress" || thread.current_status === "Created" || thread.current_status == undefined
   );
 
@@ -261,6 +262,33 @@ const ThreadItem = ({ status }) => {
     }));
   };
 
+  //Get All Teams
+  const [teamdata, setTeamData] = useState([])
+  const filteredData = teamdata.filter(item => item.admin_team === true);
+
+
+
+
+  //get all teams
+  const getTeams = async () => {
+    try {
+      const id = currentUser.portfolio_info[0].org_id;
+
+      // Call the getAllTeams function with the id
+      const response = await getAllTeams(id);
+
+      // Assuming the response contains the teams data in the data field
+      const teamsData = response.data.response.data;
+      setTeamData(teamsData)
+    } catch (error) {
+      console.error('Error in your function:', error);
+    }
+  };
+
+  // Call your function to use the data received from getAllTeams
+  getTeams();
+
+
   //Fetch Comment 
   // const fetchComment = async (document_id) => {
   //   const data = { document_id };
@@ -286,7 +314,6 @@ const ThreadItem = ({ status }) => {
     try {
       const documentId = id;
       const response = await fetchThread(documentId);
-      console.log('Comment fetched successfully:', response.data.data);
       setThreads(response.data.data)
       // Do something with the responseData if needed.
     } catch (error) {
@@ -314,7 +341,6 @@ const ThreadItem = ({ status }) => {
               {completedThreads.map((thread) => (
                 <div className="team-screen-threads-card" key={thread._id}>
                   <div className="thread-card">
-                    {console.log(thread)}
                     {showModalStates[thread._id] && (
                       <Modal imageUrl={thread.image} handleClose={() => handleClose(thread._id)} />
                     )}
@@ -334,7 +360,7 @@ const ThreadItem = ({ status }) => {
                     <div className="team-screen-threads-container">
                       <p>{thread.thread}</p>
                       <div>
-                        <p>Assigned to : Team Development A</p>
+                        <p>Assigned to :</p>
                         <p>Raised by : {thread.created_by}</p>
                       </div>
                       <div className="team-screen-threads-progress">
@@ -368,10 +394,9 @@ const ThreadItem = ({ status }) => {
                     {
                       showComment[thread._id] && (
                         <ThreadComment
-                          comments={thread.comments[0].comment}
-                          user={thread.comments[0].user}
+                          comments={thread.comments.data}
+                          user={thread.created_by}
                           threadId={thread._id}
-                          document_id={id}
                           commentInput="comment-input"
                         />
                       )
@@ -383,10 +408,12 @@ const ThreadItem = ({ status }) => {
           }
           {
             status == "In progress" || status == undefined && <>
-              {inProgressThreads.map((thread) => (
-                <div className="team-screen-threads-card" key={thread._id}>
+              {inProgressThreads.map((thread) => {
+                const assignedTeam = filteredData.find((item) => item._id === thread.team_alerted_id);
+                const assignedTeamName = assignedTeam ? assignedTeam.team_name : 'N/A';
+
+                return (<div className="team-screen-threads-card" key={thread._id}>
                   <div className="thread-card">
-                    {console.log(thread)}
                     {showModalStates[thread._id] && (
                       <Modal imageUrl={thread.image} handleClose={() => handleClose(thread._id)} />
                     )}
@@ -406,7 +433,7 @@ const ThreadItem = ({ status }) => {
                     <div className="team-screen-threads-container">
                       <p>{thread.thread}</p>
                       <div>
-                        <p>Assigned to : Team Development A</p>
+                        <p>Assigned to: {assignedTeamName}</p>
                         <p>Raised by : {thread.created_by}</p>
                       </div>
                       <div className="team-screen-threads-progress">
@@ -440,27 +467,29 @@ const ThreadItem = ({ status }) => {
                     {
                       showComment[thread._id] && (
                         <ThreadComment
-                          comments={thread.comments[0].comment}
-                          user={thread.comments[0].user}
+                          comments={thread.comments.data}
+                          user={thread.created_by}
                           threadId={thread._id}
-                          document_id={id}
                           commentInput="comment-input"
                         />
                       )
                     }
                   </div>
-                </div>
+                </div>)
 
-              ))}
+              })}
             </>
           }
 
           {
             status == "Resolved" && <>
-              {resolvedThreads.map((thread) => (
+              {resolvedThreads.map((thread) => {
+                const assignedTeam = filteredData.find((item) => item._id === thread.team_alerted_id);
+                const assignedTeamName = assignedTeam ? assignedTeam.team_name : 'N/A';
+
                 <div className="team-screen-threads-card" key={thread._id}>
+
                   <div className="thread-card">
-                    {console.log(thread)}
                     {showModalStates[thread._id] && (
                       <Modal imageUrl={thread.image} handleClose={() => handleClose(thread._id)} />
                     )}
@@ -480,7 +509,7 @@ const ThreadItem = ({ status }) => {
                     <div className="team-screen-threads-container">
                       <p>{thread.thread}</p>
                       <div>
-                        <p>Assigned to : Team Development A</p>
+                        <p>Assigned to: {assignedTeamName}</p>
                         <p>Raised by : {thread.created_by}</p>
                       </div>
                       <div className="team-screen-threads-progress">
@@ -524,7 +553,7 @@ const ThreadItem = ({ status }) => {
                     }
                   </div>
                 </div>
-              ))}
+              })}
             </>
           }
 

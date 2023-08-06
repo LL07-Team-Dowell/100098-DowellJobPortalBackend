@@ -12,7 +12,7 @@ import { createThread } from "../../../../services/threadServices";
 import { createTeam, createTeamTask, getAllTeams } from '../../../../services/createMembersTasks'
 
 
-const AddIssueScreen = ({
+const AddIssueScreenB = ({
   closeIssuesScreen,
   afterSelectionScreen,
   editPage,
@@ -228,4 +228,4 @@ const AddIssueScreen = ({
   );
 };
 
-export default AddIssueScreen;
+export default AddIssueScreenB;
