@@ -381,6 +381,7 @@ const ThreadItem = ({ status }) => {
               ))}
             </>
           }
+          
           {
             status == "In progress" || status == undefined && <>
               {inProgressThreads.map((thread) => (
