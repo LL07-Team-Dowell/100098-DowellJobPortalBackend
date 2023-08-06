@@ -9,6 +9,7 @@ import { Chart as ChartJs , ArcElement, Tooltip, Legend, BarElement, CategorySca
 // don
 import { Doughnut, Bar } from "react-chartjs-2";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import { toast } from "react-toastify";
 // register chart.js
 ChartJs.register(
   ArcElement, Tooltip, Legend 
@@ -26,7 +27,20 @@ const AdminReports = ({ subAdminView }) => {
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
   };
-
+  const handleSubmitDate = (start_date, end_date) => {
+    setLoading(true)
+    const data = {
+      start_date,
+      end_date,
+    };
+    generateReport(data)
+      .then((resp) => {
+        setLoading(false)
+        console.log(resp.data.response);
+        setdata(resp.data.response);
+      })
+      .catch((err) => {console.log(err); setLoading(false)});
+  }
   //   useEffect
   useEffect(() => {
     setLoading(true)
@@ -58,7 +72,6 @@ const AdminReports = ({ subAdminView }) => {
     >
       <div className="reports__container">
       <div className="reports__container_header">
-        <h3>Reports</h3>
         <div>
         <p>Get insights into your organizations</p>
         <select onChange={handleSelectOptionsFunction}>
@@ -194,6 +207,7 @@ const AdminReports = ({ subAdminView }) => {
         </div>
         </div>
         </div>
+        <FormDatePopup/>
     </StaffJobLandingLayout>
   );
 };
@@ -210,4 +224,44 @@ function formatDateFromMilliseconds(milliseconds) {
   const seconds = String(dateObj.getSeconds()).padStart(2, '0');
 
   return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
+}
+function isValidDate(inputDate) {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[1-2][0-9]|3[0-1])\/(19\d\d|20\d\d|2023)$/;
+  if (!dateRegex.test(inputDate)) {
+    return false;
+  }
+  const [month, day, year] = inputDate.split('/').map(Number);
+  if (month < 1 || month > 12) {
+    return false;
+  }
+  const daysInMonth = new Date(year, month, 0).getDate();
+  if (day < 1 || day > daysInMonth) {
+    return false;
+  }
+  if (year !== currentYear && year !== currentYear - 1) {
+    return false;
+  }
+  return true;
+}
+const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate) => {
+  const handleFormSubmit = () => {
+    if(firstDate && lastDate){
+      if(isValidDate(firstDate) && isValidDate(lastDate)){
+        handleSubmitDate(firstDate,lastDate)
+      }else{
+        toast.error('the first or last date are not valid')
+      }
+    }else{
+      toast.error('there is no first date or last date in ')
+    }
+  }
+  return <div className="form_date_popup_container">
+    <label htmlFor="first_date">Start Date</label>
+    <input type="text" id="first_date" onChange={e => setFirstDate(e.target.value)} />
+    <label htmlFor="first_date">End Date</label>
+    <input type="text" id="first_date" onChange={e => setLastDate(e.target.value)} />
+    <button onClick={handleFormSubmit}>Get</button>
+  </div>
 }
