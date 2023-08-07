@@ -159,7 +159,7 @@ const Teamlead = () => {
         const applicationForMatching = res[1].data.response.data.filter(
           (application) =>
             application.data_type === currentUser?.portfolio_info[0].data_type
-        );
+        ).reverse();
         const selectedCandidates = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.SELECTED
         );
@@ -301,7 +301,7 @@ const Teamlead = () => {
                 (application) =>
                   application.data_type ===
                   currentUser?.portfolio_info[0].data_type
-              );
+              ).reverse();
               const selectedCandidates = applicationForMatching.filter(
                 (application) =>
                   application.status === candidateStatuses.SELECTED

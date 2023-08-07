@@ -37,6 +37,11 @@ function ShortlistedScreen({ shortlistedCandidates, jobData, handleRefreshForCan
     setShowCandidateTrainingResponse(true);
   }
 
+  const handleCloseModal = () => {
+    setShowModal(false)
+    hideSideNavBar(false)
+  }
+
 
   return (
     <div className="Applied__wrapper">
@@ -87,7 +92,7 @@ function ShortlistedScreen({ shortlistedCandidates, jobData, handleRefreshForCan
                 <div className={'modal__Container'}>
                   <div
                     className={'close__Container'}
-                    onClick={() => setShowModal(false)}
+                    onClick={handleCloseModal}
                   >
                     <IoMdClose />
                   </div>
