@@ -120,7 +120,7 @@ function HrJobScreen() {
       getTrainingManagementResponses(currentUser.portfolio_info[0].org_id),
     ])
     .then((res) => {
-      const filteredData = res[0]?.data?.response?.data?.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
+      const filteredData = res[0]?.data?.response?.data?.filter(application => application.data_type === currentUser.portfolio_info[0].data_type)?.reverse();
       setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
       setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION && !application.signup_mail_sent));
       setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
@@ -300,7 +300,7 @@ function HrJobScreen() {
       getTrainingManagementResponses(currentUser.portfolio_info[0].org_id),
     ]).then((res) => {
       console.log("res", res);
-      const filteredData = res[0].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type);
+      const filteredData = res[0].data.response.data.filter(application => application.data_type === currentUser.portfolio_info[0].data_type).reverse();
       setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
       setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION));
       setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
@@ -552,6 +552,7 @@ function HrJobScreen() {
               handleRefreshForCandidateApplications={handleRefreshForCandidateApplications}
               candidateTrainingResponses={candidateResponses}
               hideSideNavBar={setHideBar}
+              updateCandidateResponses={setCandidateResponses}
             />
           </> :
 

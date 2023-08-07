@@ -282,6 +282,11 @@ const Hero = styled.div`
 
     .left-content {
       padding: 1rem;
+
+      a{
+        display: flex;
+        justify-content: center;
+      }
     }
   }
 `
@@ -422,7 +427,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
         </Section_1>
 
         <Section_2>
-          <h1>Your Training Programs</h1>
+          <h1>Our Training Programs</h1>
           <br />
           {
             questionsLoading ? <LoadingSpinner /> :

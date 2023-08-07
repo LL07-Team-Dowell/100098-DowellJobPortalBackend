@@ -61,7 +61,7 @@ export const getDaysDifferenceFromPresentDate = (date) => {
 
 }
 
-export const formatDateAndTime = (date) => {
+export const formatDateAndTime = (date, includeYear=false) => {
     if ( new Date(date) == "Invalid Date" ) return "1st January";
 
     const daysEndingWithSt = [1, 21, 31];
@@ -71,14 +71,15 @@ export const formatDateAndTime = (date) => {
     const day = new Date(date).toLocaleDateString("en-us", {day: "numeric"})
     const dayAsNumber = Number(day);
     const month = new Date(date).toLocaleDateString("en-us", {month: "long"})
+    const year = new Date(date).getFullYear();
 
-    if ( daysEndingWithSt.includes(dayAsNumber) ) return `${day}st ${month}`;
+    if ( daysEndingWithSt.includes(dayAsNumber) ) return `${day}st ${month} ${includeYear ? year : ''}`;
     
-    if ( daysEndingWithNd.includes(dayAsNumber) ) return `${day}nd ${month}`;
+    if ( daysEndingWithNd.includes(dayAsNumber) ) return `${day}nd ${month} ${includeYear ? year : ''}`;
 
-    if ( daysEndingWithRd.includes(dayAsNumber) ) return `${day}rd ${month}`;
+    if ( daysEndingWithRd.includes(dayAsNumber) ) return `${day}rd ${month} ${includeYear ? year : ''}`;
 
-    return `${day}th ${month}`;
+    return `${day}th ${month} ${includeYear ? year : ''}`;
 
 }
 

@@ -1,10 +1,10 @@
-import { validateUrl } from '../../../../../helpers/helpers';
+import { Rating } from '@mui/material';
+import { formatDateAndTime, validateUrl } from '../../../../../helpers/helpers';
 import styles from './style.module.css';
 import { IoMdClose } from 'react-icons/io';
 
 
 const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnClick, handleInputChange, inputValues, inputValuesAreReadOnly, isHrView }) => {
-    // console.log(inputValues);
     const handleInputClick = (itemLink) => {
         if (!itemLink || !validateUrl(itemLink)) return
         window.open(itemLink, '_blank');
@@ -17,17 +17,33 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                     <IoMdClose />
                 </div>
                 <h3 className={styles.header}>
+                    <span>
+                        {
+                            inputValuesAreReadOnly ?
+                                isHrView ?
+                                    "Candidate response"
+                                    :
+                                    "Your response"
+                                :
+                                "Submit training"
+                        }
+                    </span>
                     {
-                        inputValuesAreReadOnly ?
-                            isHrView ? 
-                            "Candidate response"
-                            :
-                            "Your response"
-                            :
-                            "Submit training"
+                        inputValuesAreReadOnly &&
+                        inputValues?.submitted_on &&
+                        <>
+                            <span className={styles.submitted__Date__Span}>Submitted . {formatDateAndTime(inputValues?.submitted_on, true)}</span>
+                            {
+                                inputValues?.rating && <Rating
+                                    name="read-only"
+                                    value={inputValues?.rating}
+                                    readOnly
+                                />
+                            }
+                        </>
                     }
                 </h3>
-                <label className={styles.label} htmlFor="input_1" onClick={isHrView ? () => handleInputClick(inputValues?.answer_link) : () => {}}>
+                <label className={styles.label} htmlFor="input_1" onClick={inputValuesAreReadOnly ? () => handleInputClick(inputValues?.answer_link) : () => { }}>
                     <span>Link to Answer {isHrView ? <></> : <span className={styles.required}>*</span>}</span>
                     <input
                         name={"answer_link"}
@@ -36,11 +52,11 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         type='text'
                         onChange={({ target }) => handleInputChange(target.name, target.value)}
                         readOnly={inputValuesAreReadOnly}
-                        className={isHrView && inputValues?.answer_link ? styles.hrViewInput: ''}
+                        className={inputValuesAreReadOnly && inputValues?.answer_link ? styles.hrViewInput : ''}
                     />
-                    { isHrView && inputValues?.answer_link && <span className={styles.view__Text}>View</span> }
+                    {inputValuesAreReadOnly && inputValues?.answer_link && <span className={styles.view__Text}>View</span>}
                 </label>
-                <label className={styles.label} htmlFor="input_4" onClick={isHrView ? () => handleInputClick(inputValues?.video_link) : () => {}}>
+                <label className={styles.label} htmlFor="input_4" onClick={inputValuesAreReadOnly ? () => handleInputClick(inputValues?.video_link) : () => { }}>
                     <span>Link to Explaining Video {isHrView ? <></> : <span className={styles.required}>*</span>}</span>
                     <input
                         name={"video_link"}
@@ -49,11 +65,11 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         type='text'
                         onChange={({ target }) => handleInputChange(target.name, target.value)}
                         readOnly={inputValuesAreReadOnly}
-                        className={isHrView && inputValues?.video_link ? styles.hrViewInput: ''}
+                        className={inputValuesAreReadOnly && inputValues?.video_link ? styles.hrViewInput : ''}
                     />
-                    { isHrView && inputValues?.video_link && <span className={styles.view__Text}>View</span> }
+                    {inputValuesAreReadOnly && inputValues?.video_link && <span className={styles.view__Text}>View</span>}
                 </label>
-                <label className={styles.label} htmlFor="input_2" onClick={isHrView ? () => handleInputClick(inputValues?.code_base_link) : () => {}}>
+                <label className={styles.label} htmlFor="input_2" onClick={inputValuesAreReadOnly ? () => handleInputClick(inputValues?.code_base_link) : () => { }}>
                     <span>Link to Codebase</span>
                     <input
                         name={"code_base_link"}
@@ -62,11 +78,11 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         type='text'
                         onChange={({ target }) => handleInputChange(target.name, target.value)}
                         readOnly={inputValuesAreReadOnly}
-                        className={isHrView && inputValues?.code_base_link ? styles.hrViewInput: ''}
+                        className={inputValuesAreReadOnly && inputValues?.code_base_link ? styles.hrViewInput : ''}
                     />
-                    { isHrView && inputValues?.code_base_link && <span className={styles.view__Text}>View</span> }
+                    {inputValuesAreReadOnly && inputValues?.code_base_link && <span className={styles.view__Text}>View</span>}
                 </label>
-                <label className={styles.label} htmlFor="input_3" onClick={isHrView ? () => handleInputClick(inputValues?.documentation_link) : () => {}}>
+                <label className={styles.label} htmlFor="input_3" onClick={inputValuesAreReadOnly ? () => handleInputClick(inputValues?.documentation_link) : () => { }}>
                     <span>Link to Documentation</span>
                     <input
                         name={"documentation_link"}
@@ -75,9 +91,9 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         type='text'
                         onChange={({ target }) => handleInputChange(target.name, target.value)}
                         readOnly={inputValuesAreReadOnly}
-                        className={isHrView && inputValues?.documentation_link ? styles.hrViewInput: ''}
+                        className={inputValuesAreReadOnly && inputValues?.documentation_link ? styles.hrViewInput : ''}
                     />
-                    { isHrView && inputValues?.documentation_link && <span className={styles.view__Text}>View</span> }
+                    {inputValuesAreReadOnly && inputValues?.documentation_link && <span className={styles.view__Text}>View</span>}
                 </label>
                 {
                     !inputValuesAreReadOnly &&
@@ -87,9 +103,23 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         onClick={handleSubmitBtnClick}
                     >
                         {
-                            submitBtnDisabled ? 
-                                'Please wait...' : 
-                            'Submit'
+                            submitBtnDisabled ?
+                                'Please wait...' :
+                                'Submit'
+                        }
+                    </button>
+                }
+                {
+                    isHrView && !inputValues.rating &&
+                    <button
+                        className={styles.btn}
+                        disabled={submitBtnDisabled}
+                        onClick={handleSubmitBtnClick}
+                    >
+                        {
+                            submitBtnDisabled ?
+                                'Please wait...' :
+                                'Rate user'
                         }
                     </button>
                 }
