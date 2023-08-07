@@ -282,6 +282,11 @@ const Hero = styled.div`
 
     .left-content {
       padding: 1rem;
+
+      a{
+        display: flex;
+        justify-content: center;
+      }
     }
   }
 `
