@@ -1,3 +1,4 @@
+import { Rating } from '@mui/material';
 import { formatDateAndTime, validateUrl } from '../../../../../helpers/helpers';
 import styles from './style.module.css';
 import { IoMdClose } from 'react-icons/io';
@@ -30,7 +31,16 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                     {
                         inputValuesAreReadOnly &&
                         inputValues?.submitted_on &&
-                        <span className={styles.submitted__Date__Span}>Submitted . {formatDateAndTime(inputValues?.submitted_on, true)}</span>
+                        <>
+                            <span className={styles.submitted__Date__Span}>Submitted . {formatDateAndTime(inputValues?.submitted_on, true)}</span>
+                            {
+                                inputValues?.rating && <Rating
+                                    name="read-only"
+                                    value={inputValues?.rating}
+                                    readOnly
+                                />
+                            }
+                        </>
                     }
                 </h3>
                 <label className={styles.label} htmlFor="input_1" onClick={inputValuesAreReadOnly ? () => handleInputClick(inputValues?.answer_link) : () => { }}>
@@ -96,6 +106,20 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                             submitBtnDisabled ?
                                 'Please wait...' :
                                 'Submit'
+                        }
+                    </button>
+                }
+                {
+                    isHrView && !inputValues.rating &&
+                    <button
+                        className={styles.btn}
+                        disabled={submitBtnDisabled}
+                        onClick={handleSubmitBtnClick}
+                    >
+                        {
+                            submitBtnDisabled ?
+                                'Please wait...' :
+                                'Rate user'
                         }
                     </button>
                 }

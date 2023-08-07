@@ -7,13 +7,21 @@ import JobCard from '../../../../components/JobCard/JobCard';
 import { IoMdClose, IoMdRefresh } from "react-icons/io";
 import { BsEye } from 'react-icons/bs';
 import SubmitResponseModal from '../../../CandidatePage/views/TraningProgress.js/SubmitResponseModal/SubmitResponseModal';
+import { MdOutlineStarRate } from 'react-icons/md';
+import { Rating } from '@mui/material';
+import { toast } from 'react-toastify';
+import { updateRatingForTrainingResponse } from "../../../../services/hrTrainingServices";
 
-function ShortlistedScreen({ shortlistedCandidates, jobData, handleRefreshForCandidateApplications, candidateTrainingResponses, hideSideNavBar }) {
+function ShortlistedScreen({ shortlistedCandidates, jobData, handleRefreshForCandidateApplications, candidateTrainingResponses, hideSideNavBar, updateCandidateResponses }) {
   const navigate = useNavigate();
   const [ currentData, setCurrentData ] = useState(null);
   const [ showModal, setShowModal ] = useState(false);
   const [ showCandidateTrainingResponse, setShowCandidateTrainingResponse ] = useState(false);
   const [ candidateResponse, setCandidateResponse ] = useState(null);
+  const [ showCandidateRatingModal, setShowCandidateRatingModal ] = useState(false);
+  const [ rating, setRating ] = useState(1);
+  const [ ratingSet, setRatingSet ] = useState(false);
+  const [ submitRatingLoading, setSubmitRatingLoading ] = useState(false);
 
   const handleClick = (data) => {
     setCurrentData(data);
@@ -37,9 +45,42 @@ function ShortlistedScreen({ shortlistedCandidates, jobData, handleRefreshForCan
     setShowCandidateTrainingResponse(true);
   }
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (modalForRating=false) => {
+    if (modalForRating) {
+      setShowCandidateRatingModal(false)
+      setShowCandidateTrainingResponse(true)
+    }
+
     setShowModal(false)
     hideSideNavBar(false)
+  }
+
+  const handleShowRatingModal = () => {
+    setShowCandidateRatingModal(true)
+    setShowCandidateTrainingResponse(false)
+  }
+
+  const handleRateCandidate = async () => {
+    setSubmitRatingLoading(true);
+
+    try {
+      const response = (await updateRatingForTrainingResponse({ document_id: candidateResponse._id, rating: rating })).data;
+      // console.log(response);
+      const copyOfResponses = [...candidateTrainingResponses];
+      const foundCandidateResponseIndex = candidateTrainingResponses?.findIndex(response => response.username === candidateResponse.username && response._id === candidateResponse._id);
+      copyOfResponses[foundCandidateResponseIndex].rating = rating;
+     
+      updateCandidateResponses(copyOfResponses);
+      toast.success("Successfully rated candidate!");
+
+      setShowCandidateRatingModal(false);
+      handleCloseModal();
+
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occured while trying to update the rating for the candidate")
+      setSubmitRatingLoading(false);
+    }
   }
 
 
@@ -92,7 +133,7 @@ function ShortlistedScreen({ shortlistedCandidates, jobData, handleRefreshForCan
                 <div className={'modal__Container'}>
                   <div
                     className={'close__Container'}
-                    onClick={handleCloseModal}
+                    onClick={() => handleCloseModal()}
                   >
                     <IoMdClose />
                   </div>
@@ -129,6 +170,45 @@ function ShortlistedScreen({ shortlistedCandidates, jobData, handleRefreshForCan
               </div>
             </>
           )}
+
+          {
+            showCandidateRatingModal && <>
+            <div className={'modal__Overlay'}>
+              <div className={'modal__Container single__Item'}>
+                <div
+                  className={'close__Container'}
+                  onClick={() => handleCloseModal(true)}
+                >
+                  <IoMdClose />
+                </div>
+                <div className='view__Shortlisted__Options single__Item'>
+                  <div className='option__Item'>
+                    <div className='iconn'>
+                      <MdOutlineStarRate />
+                    </div>
+                    <h3>Rate candidate response</h3>
+                    <p className='subtitle'>
+                      Rate candidate's answers to the questions you set
+                    </p>
+                    <Rating
+                      name="simple-controlled"
+                      value={rating}
+                      onChange={(event, newValue) => {
+                        setRating(newValue);
+                        setRatingSet(true);
+                      }}
+                    />
+                    {
+                      ratingSet && <button className='view__Short__Btn' disabled={submitRatingLoading} onClick={handleRateCandidate}>
+                        Rate
+                      </button>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+            </>
+          }
       </div>
       
       {
@@ -138,6 +218,7 @@ function ShortlistedScreen({ shortlistedCandidates, jobData, handleRefreshForCan
             inputValuesAreReadOnly={true}
             inputValues={candidateResponse}
             isHrView={true}
+            handleSubmitBtnClick={handleShowRatingModal}
           />
         </>
       }

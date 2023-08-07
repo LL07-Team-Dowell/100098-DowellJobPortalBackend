@@ -406,6 +406,7 @@ function TraningProgress({ shorlistedJob }) {
                     "documentation_link": foundResponse?.documentation_link,
                     "video_link": foundResponse?.video_link,
                     "submitted_on": foundResponse?.submitted_on,
+                    "rating": foundResponse?.rating,
                 }
             })
             return;
