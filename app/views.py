@@ -3583,7 +3583,7 @@ class Generate_account_Report(APIView):
         Rejected = dowellconnection(*account_management_reports, "fetch", {"status": "Rejected"}, update_field)
         data["rejected_candidates"]=len(json.loads(Rejected)['data'])
 
-        return Response({"isSuccess":True,"message": f"Account reported Generated", "response":data}, status=status.HTTP_200_OK)
+        return Response({"isSuccess":True,"message": f"Account reported Generated", "response":data}, status=status.HTTP_201_CREATED)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
