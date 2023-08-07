@@ -73,7 +73,8 @@ const TeamScreenThreadCandidate = () => {
    `;
 
    const [panding, setPanding] = useState(true);
-   const [status, setStatus] = useState();
+   const [status, setStatus] = useState("active");
+   const [isActive, setIsActive] = useState('active') ;
    const clickToPandingApproval = () => {
      setPanding(true);
      setStatus("In progress");
@@ -92,8 +93,9 @@ const TeamScreenThreadCandidate = () => {
       ) : null}
       <TeamScreenLinks id={id} />
       <Wrappen>
-            <NavLink className={`${panding ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/team-issues`} onClick={clickToPandingApproval}>In progress</NavLink>
-            <NavLink className={`${panding ? 'link-notactive' : 'link-isActive'}`} to={`/team-screen-member/${id}/team-issues`} onClick={clickToApproved}>Completed</NavLink>
+            <NavLink className={status === 'in progress' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={()=>setStatus('in progress')}>In progress</NavLink>
+            <NavLink className={status === 'completed' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={setStatus('completed')}>Completed</NavLink>
+            <NavLink className={status === 'resolved' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={setStatus('resolved')}>Resolved</NavLink>
         </Wrappen>
       <TeamScreenThreads status={status}/>
     </div>
