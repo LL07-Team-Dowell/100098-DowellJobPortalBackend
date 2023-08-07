@@ -68,5 +68,29 @@
     left: 50%;
     transform: translate(-50%);
     background-color: #fff;
+    width: 500px;
+    padding: 20px;
+    label{
+      display: block;
+    }
+    .closebutton{
+      display: block;
+      width: fit-content;
+      cursor: pointer;
+      margin-left: 100;
+      margin-right: 00%;
+    }
+    input{
+      width: 80%;
+
+    }
+    button{
+      display: block;
+      margin:10px auto ; 
+      width: 70px;
+      color:#005734 ; 
+      color:white; 
+      
+    }
   }
 }

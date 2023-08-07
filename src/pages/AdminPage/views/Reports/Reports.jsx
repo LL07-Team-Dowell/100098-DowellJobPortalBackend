@@ -233,10 +233,11 @@ const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmit
   }
   return <div className="overlay">
    <div className="form_date_popup_container">
-    <label htmlFor="first_date">Start Date</label>
-    <input type="text" id="first_date" onChange={e => setFirstDate(e.target.value)} />
+    <div className="closebutton">X</div>
+    <label htmlFor="first_date" >Start Date</label>
+    <input type="text" id="first_date" placeholder="mm/dd/yy" onChange={e => setFirstDate(e.target.value)} />
     <label htmlFor="first_date">End Date</label>
-    <input type="text" id="first_date" onChange={e => setLastDate(e.target.value)} />
+    <input type="text" id="first_date" placeholder="mm/dd/yy" onChange={e => setLastDate(e.target.value)} />
     <button onClick={handleFormSubmit}>Get</button>
   </div>
   </div>
