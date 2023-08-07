@@ -25,10 +25,19 @@ const AdminReports = ({ subAdminView }) => {
   const [loading, setLoading] = useState(false)
   const [firstDate, setFirstDate]= useState('') ; 
   const [lastDate,setLastDate] = useState('')
+  const [showCustomTimeModal,setShowCustomTimeModal] = useState(false)
   // handle functions
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
+    if(e.target.value === 'custom_time'){
+      setShowCustomTimeModal(true)
+    }else{
+      setShowCustomTimeModal(false)
+    }
   };
+  const closeModal = () => {
+    setShowCustomTimeModal(false)
+  }
   const handleSubmitDate = (start_date, end_date) => {
     setLoading(true)
     const data = {
@@ -208,22 +217,27 @@ const AdminReports = ({ subAdminView }) => {
      
         </div>
         </div>
-        </div>  
-        <FormDatePopup
-        firstDate={firstDate}
-        lastDate={lastDate}
-        setFirstDate={setFirstDate}
-        setLastDate={setLastDate}
-        handleSubmitDate={handleSubmitDate}
-        />
+        </div>
+        {
+          showCustomTimeModal &&  <FormDatePopup
+          firstDate={firstDate}
+          lastDate={lastDate}
+          setFirstDate={setFirstDate}
+          setLastDate={setLastDate}
+          handleSubmitDate={handleSubmitDate}
+          closeModal={closeModal}
+          />
+        }  
+       
     </StaffJobLandingLayout>
   );
 };
-const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate) => {
+const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate, closeModal) => {
   const handleFormSubmit = () => {
     if(firstDate && lastDate){
       if(isValidDate(firstDate) && isValidDate(lastDate)){
         handleSubmitDate(firstDate,lastDate)
+        closeModal()
       }else{
         toast.error('the first or last date are not valid')
       }
@@ -233,7 +247,7 @@ const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmit
   }
   return <div className="overlay">
    <div className="form_date_popup_container">
-    <div className="closebutton">X</div>
+    <div className="closebutton" onClick={()=>closeModal()}>X</div>
     <label htmlFor="first_date" >Start Date</label>
     <input type="text" id="first_date" placeholder="mm/dd/yy" onChange={e => setFirstDate(e.target.value)} />
     <label htmlFor="first_date">End Date</label>
