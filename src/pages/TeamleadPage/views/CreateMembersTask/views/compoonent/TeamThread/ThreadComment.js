@@ -117,18 +117,22 @@ const ThreadComment = ({ comments, commentInput, user, threadId }) => {
         )}
       </div>
 
-
-      <div className="comment-container">
-        <div className="avatar-container">
-          <Avatar name={initials} size={40} round />
-        </div>
-        <div className="comment-content">
-          <div className="comment-details">
-            <p className="user-name">{user}</p>
-            <p className="comment-text">{comments}</p>
+      {
+        comments.map((comment) => {
+          return <div className="comment-container">
+            <div className="avatar-container">
+              <Avatar name={initials} size={40} round />
+            </div>
+            <div className="comment-content">
+              <div className="comment-details">
+                <p className="user-name">{comment.created_by}</p>
+                <p className="comment-text">{comment.comment}</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        })
+      }
+
     </Wrapper>
 
   );
