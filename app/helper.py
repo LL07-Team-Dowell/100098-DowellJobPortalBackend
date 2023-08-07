@@ -248,3 +248,34 @@ def periodic_application(start_dt, end_dt, data_list):
 
     return (items, len(items))
 
+
+def periodic_application_account(start_dt, end_dt, data_list):
+    #convert to date format--------
+    start_date = datetime.datetime.strptime(
+            start_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    end_date = datetime.datetime.strptime(
+            end_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    
+    items=[]
+    print(data_list)
+    for l in data_list:
+        try:
+            application_submitted_on=datetime.datetime.strptime(l["onboarded_on"],"%Y-%m-%dT%H:%M:%S.%fZ")
+            if application_submitted_on >= start_date and application_submitted_on <= end_date:
+                items.append(l)
+        except ValueError:
+            try:
+                application_submitted_on=datetime.datetime.strptime(l["onboarded_on"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
+                if application_submitted_on >= start_date and application_submitted_on <= end_date:
+                    items.append(l)
+            except ValueError:
+                try:
+                    application_submitted_on=datetime.datetime.strptime(l["onboarded_on"], "%m/%d/%Y %H:%M:%S")
+                    if application_submitted_on >= start_date and application_submitted_on <= end_date:
+                        items.append(l)
+                except ValueError:
+                    pass
+
+    return (items, len(items))
