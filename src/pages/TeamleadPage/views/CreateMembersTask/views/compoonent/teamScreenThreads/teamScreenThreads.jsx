@@ -190,7 +190,6 @@ const TeamScreenThreads = ({ status }) => {
               threads
                 .filter(
                   (thread) =>
-                    thread.current_status === "Resolved" ||
                     thread.current_status === "Completed"
                 )
                 .map((thread) => (
