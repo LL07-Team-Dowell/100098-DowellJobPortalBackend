@@ -231,12 +231,14 @@ const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmit
       toast.error('there is no first date or last date in ')
     }
   }
-  return <div className="form_date_popup_container">
+  return <div className="overlay">
+   <div className="form_date_popup_container">
     <label htmlFor="first_date">Start Date</label>
     <input type="text" id="first_date" onChange={e => setFirstDate(e.target.value)} />
     <label htmlFor="first_date">End Date</label>
     <input type="text" id="first_date" onChange={e => setLastDate(e.target.value)} />
     <button onClick={handleFormSubmit}>Get</button>
+  </div>
   </div>
 }
 export default AdminReports;
