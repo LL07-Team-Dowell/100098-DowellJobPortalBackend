@@ -23,6 +23,8 @@ const AdminReports = ({ subAdminView }) => {
   const [selectOptions, setSelectOptions] = useState("");
   const [data, setdata] = useState({});
   const [loading, setLoading] = useState(false)
+  const [firstDate, setFirstDate]= useState('') ; 
+  const [lastDate,setLastDate] = useState('')
   // handle functions
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
@@ -207,11 +209,36 @@ const AdminReports = ({ subAdminView }) => {
         </div>
         </div>
         </div>  
-        <FormDatePopup/>
+        <FormDatePopup
+        firstDate={firstDate}
+        lastDate={lastDate}
+        setFirstDate={setFirstDate}
+        setLastDate={setLastDate}
+        handleSubmitDate={handleSubmitDate}
+        />
     </StaffJobLandingLayout>
   );
 };
-
+const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate) => {
+  const handleFormSubmit = () => {
+    if(firstDate && lastDate){
+      if(isValidDate(firstDate) && isValidDate(lastDate)){
+        handleSubmitDate(firstDate,lastDate)
+      }else{
+        toast.error('the first or last date are not valid')
+      }
+    }else{
+      toast.error('there is no first date or last date in ')
+    }
+  }
+  return <div className="form_date_popup_container">
+    <label htmlFor="first_date">Start Date</label>
+    <input type="text" id="first_date" onChange={e => setFirstDate(e.target.value)} />
+    <label htmlFor="first_date">End Date</label>
+    <input type="text" id="first_date" onChange={e => setLastDate(e.target.value)} />
+    <button onClick={handleFormSubmit}>Get</button>
+  </div>
+}
 export default AdminReports;
 function formatDateFromMilliseconds(milliseconds) {
   const dateObj = new Date(milliseconds);
@@ -244,24 +271,4 @@ function isValidDate(inputDate) {
     return false;
   }
   return true;
-}
-const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate) => {
-  const handleFormSubmit = () => {
-    if(firstDate && lastDate){
-      if(isValidDate(firstDate) && isValidDate(lastDate)){
-        handleSubmitDate(firstDate,lastDate)
-      }else{
-        toast.error('the first or last date are not valid')
-      }
-    }else{
-      toast.error('there is no first date or last date in ')
-    }
-  }
-  return <div className="form_date_popup_container">
-    <label htmlFor="first_date">Start Date</label>
-    <input type="text" id="first_date" onChange={e => setFirstDate(e.target.value)} />
-    <label htmlFor="first_date">End Date</label>
-    <input type="text" id="first_date" onChange={e => setLastDate(e.target.value)} />
-    <button onClick={handleFormSubmit}>Get</button>
-  </div>
 }
