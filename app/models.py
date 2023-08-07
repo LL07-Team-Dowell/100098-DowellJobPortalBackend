@@ -10,9 +10,14 @@ class SettingUserProfileInfo(models.Model):
     data_type = models.CharField(max_length=400)
     profile_info = jsonfield.JSONField()
 
+    def __str__(self):
+        return f"{self.company_id}"
+
 
 class UserProject(models.Model):
     company_id = models.CharField(max_length=400)
     data_type = models.CharField(max_length=100)
     project_list = jsonfield.JSONField()
 
+    def __str__(self):
+        return f"{self.company_id}"

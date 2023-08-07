@@ -109,8 +109,8 @@ urlpatterns = [
     path('generate_hr_report/',Generate_hr_Report.as_view()),
     path('generate_account_Report/',Generate_account_Report.as_view()),
     path('generate_candidate_Report/',Generate_candidate_Report.as_view()),
-    path('generate_all_thread/',GetAllThreads.as_view()),
+    path('generate_lead_Report/',Generate_Lead_Report.as_view())
 
-           
-        
+                   
 ]
+
