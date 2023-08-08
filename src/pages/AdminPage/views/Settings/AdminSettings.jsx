@@ -11,6 +11,7 @@ import { useJobContext } from "../../../../contexts/Jobs";
 import { getApplicationForAdmin } from "../../../../services/adminServices";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 import { testingRoles } from "../../../../utils/testingRoles";
+import { MdArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
 
 const rolesDict = { 'Dept_Lead': 'Account', "Proj_Lead": 'Teamlead', "Hr": "Hr", "sub_admin": "Sub Admin", "group_lead": "Group Lead", "super_admin": "Super Admin" };
 
@@ -30,6 +31,12 @@ const AdminSettings = () => {
   const [userstatus, setuserstatus] = useState('');
   const [Proj_Lead, setProj_Lead] = useState('');
   const { list, setlist } = useJobContext();
+  const [ usersToDisplay, setUsersToDisplay ] = useState([]);
+  const [ indexes, setIndexes ] = useState({
+    start: 0,
+    end: 20,
+  });
+  const [ currentRoleFilter, setCurrentRoleFilter ] = useState('yes');
 
 
   useEffect(() => {
@@ -91,6 +98,21 @@ const AdminSettings = () => {
       }, 2500)
     }
   }, [alert])
+
+  useEffect(() => {
+
+    setUsersToDisplay(
+      currentRoleFilter === 'yes' ?
+        options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name))
+      :
+      currentRoleFilter === 'no' ?
+        options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name))
+      :
+      options1.slice(indexes.start, indexes.end)
+    );
+
+  }, [options1, indexes, currentRoleFilter])
+
   const handleFirstSelectionChange = (event) => {
     const selection = event.target.value;
     setData(options1.find(option => option.portfolio_name === selection))
@@ -167,12 +189,74 @@ const AdminSettings = () => {
     "Sale Agent",
     "Sales Coordinator"
   ]
+
+  const handleNavSelectionClick = (selection) => {
+
+    const currentIndexes = {...indexes};
+    if (selection === 'forward') {
+      if (currentIndexes.end >= options1?.length) return
+
+      setIndexes({
+        start: currentIndexes.start + 20,
+        end: currentIndexes.end + 20,
+      })
+    }
+
+    
+    if (selection === 'backward') {
+      if (currentIndexes.start < 1) return
+
+      setIndexes({
+        start: currentIndexes.start - 20,
+        end: currentIndexes.end - 20,
+      })
+    }
+  }
+
   return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Settings"}>
     {(loading || loading2) ? <LoadingSpinner /> :
       <>
         {alert && <Alert />}
         <div className="table_team_roles">
-          <h2>Portfolio/Team roles</h2>
+          <div className="team__Settings__Header">
+            <h2>Portfolio/Team roles</h2>
+            <div className="team__Settings__NAv">
+              <span>
+                Showing {indexes.start + 1} to {indexes.end} out of {
+                  currentRoleFilter === 'yes' ?
+                    options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length
+                  :
+                  currentRoleFilter === 'no' ?
+                    options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length
+                  :
+                  options1?.length
+                }
+              </span>
+              <div className="team__Nav__Btns__Wrapper">
+                {
+                  indexes.start > 0 && <button
+                    onClick={() => handleNavSelectionClick('backward')}
+                  >
+                    <MdArrowBackIos />
+                  </button>
+                }
+                {
+                  indexes.end < options1?.length &&
+                  <button
+                    onClick={() => handleNavSelectionClick('forward')}
+                  >
+                    <MdOutlineArrowForwardIos />
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+          
+          <select className="role__Filter" value={currentRoleFilter} onChange={({ target }) => setCurrentRoleFilter(target.value)}>
+            <option value={'all'}>All</option>
+            <option value={'yes'}>Role assigned</option>
+            <option value={'no'}>No role assigned</option>
+          </select>
 
           <table>
             <thead>
@@ -183,7 +267,7 @@ const AdminSettings = () => {
               </tr>
             </thead>
             <tbody>
-              {options1?.map((option, index) =>
+              {usersToDisplay?.map((option, index) =>
                 <tr key={index}> <td>{index + 1}</td>
                   <td>{option.portfolio_name}</td>
                   <td>{settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === option.portfolio_name)
