@@ -23,10 +23,21 @@ const AdminReports = ({ subAdminView }) => {
   const [selectOptions, setSelectOptions] = useState("");
   const [data, setdata] = useState({});
   const [loading, setLoading] = useState(false)
+  const [firstDate, setFirstDate]= useState('') ; 
+  const [lastDate,setLastDate] = useState('')
+  const [showCustomTimeModal,setShowCustomTimeModal] = useState(false)
   // handle functions
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
+    if(e.target.value === 'custom_time'){
+      setShowCustomTimeModal(true)
+    }else{
+      setShowCustomTimeModal(false)
+    }
   };
+  const closeModal = () => {
+    setShowCustomTimeModal(false)
+  }
   const handleSubmitDate = (start_date, end_date) => {
     setLoading(true)
     const data = {
@@ -91,8 +102,8 @@ const AdminReports = ({ subAdminView }) => {
           datasets:[{
             label:'Poll',
             data:[data.number_active_jobs,data.number_inactive_jobs],
-            backgroundColor:['black', 'red'],
-            borderColor:['black', 'red']
+            backgroundColor:['black', '#005734'],
+            borderColor:['black', '#005734']
           }]
           }}>
 
@@ -108,8 +119,8 @@ const AdminReports = ({ subAdminView }) => {
           datasets:[{
             label:'Poll',
             data:[data.job_applications ,data.nojob_applications_from_start_date_to_end_date],
-            backgroundColor:['black', 'red'],
-            borderColor:['black', 'red',]
+            backgroundColor:['black', '#005734'],
+            borderColor:['black', '#005734',]
           }]
           }}>
 
@@ -193,8 +204,8 @@ const AdminReports = ({ subAdminView }) => {
           datasets:[{
             label:'Poll',
             data:[data.team_tasks_completed ,data.tasks],
-            backgroundColor:['black', 'red'],
-            borderColor:['black', 'red',]
+            backgroundColor:['black', '#005734'],
+            borderColor:['black', '#005734',]
           }]
           }}>
 
@@ -207,11 +218,44 @@ const AdminReports = ({ subAdminView }) => {
         </div>
         </div>
         </div>
-        <FormDatePopup/>
+        {
+          showCustomTimeModal &&  <FormDatePopup
+          firstDate={firstDate}
+          lastDate={lastDate}
+          setFirstDate={setFirstDate}
+          setLastDate={setLastDate}
+          handleSubmitDate={handleSubmitDate}
+          closeModal={closeModal}
+          />
+        }  
+       
     </StaffJobLandingLayout>
   );
 };
-
+const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate, closeModal) => {
+  const handleFormSubmit = () => {
+    if(firstDate && lastDate){
+      if(isValidDate(firstDate) && isValidDate(lastDate)){
+        handleSubmitDate(firstDate,lastDate)
+        closeModal()
+      }else{
+        toast.error('the first or last date are not valid')
+      }
+    }else{
+      toast.error('there is no first date or last date in ')
+    }
+  }
+  return <div className="overlay">
+   <div className="form_date_popup_container">
+    <div className="closebutton" onClick={()=>closeModal()}>X</div>
+    <label htmlFor="first_date" >Start Date</label>
+    <input type="text" id="first_date" placeholder="mm/dd/yy" onChange={e => setFirstDate(e.target.value)} />
+    <label htmlFor="first_date">End Date</label>
+    <input type="text" id="first_date" placeholder="mm/dd/yy" onChange={e => setLastDate(e.target.value)} />
+    <button onClick={handleFormSubmit}>Get</button>
+  </div>
+  </div>
+}
 export default AdminReports;
 function formatDateFromMilliseconds(milliseconds) {
   const dateObj = new Date(milliseconds);
@@ -244,24 +288,4 @@ function isValidDate(inputDate) {
     return false;
   }
   return true;
-}
-const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate) => {
-  const handleFormSubmit = () => {
-    if(firstDate && lastDate){
-      if(isValidDate(firstDate) && isValidDate(lastDate)){
-        handleSubmitDate(firstDate,lastDate)
-      }else{
-        toast.error('the first or last date are not valid')
-      }
-    }else{
-      toast.error('there is no first date or last date in ')
-    }
-  }
-  return <div className="form_date_popup_container">
-    <label htmlFor="first_date">Start Date</label>
-    <input type="text" id="first_date" onChange={e => setFirstDate(e.target.value)} />
-    <label htmlFor="first_date">End Date</label>
-    <input type="text" id="first_date" onChange={e => setLastDate(e.target.value)} />
-    <button onClick={handleFormSubmit}>Get</button>
-  </div>
 }
