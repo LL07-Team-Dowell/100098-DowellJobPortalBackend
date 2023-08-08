@@ -2473,6 +2473,51 @@ class update_response(APIView):
                 status=status.HTTP_304_NOT_MODIFIED,
             )
 
+@method_decorator(csrf_exempt, name="dispatch")
+class update_rating(APIView):
+    def is_numeric(self, value):
+        try:
+            float(value)
+            return True
+           
+        except (ValueError, TypeError):
+            return False
+    def patch(self, request):
+        data = request.data
+        rating=data.get('rating')
+        validated_rating = self.is_numeric(rating)
+
+        if validated_rating is False:
+            return Response({
+                "success":False,
+                "message": "Rating must be numeric value"},
+                status=status.HTTP_400_BAD_REQUEST)
+        
+        if float(rating) > 5:
+            return Response({"error": "Rating must be less than or equal to 5."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        field = {
+            "_id": data.get("document_id"),
+        }
+        update_field = {
+            "rating": data.get("rating"),
+            }
+
+        update_rating = dowellconnection(*response_modules, "update", field, update_field)
+        res=json.loads(update_rating)
+        # print(res)
+        if res.get('isSuccess')==True:
+            return Response({
+                "succes":True,
+                "message":f"rating has been changed to {data.get('rating')}"
+            })
+        
+        else:
+            return Response({
+                "succes":False,
+                "message":f"dowell connection is not responding while updateing the rating"
+            })
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_response(APIView):

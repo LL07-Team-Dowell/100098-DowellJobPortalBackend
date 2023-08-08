@@ -71,6 +71,7 @@ urlpatterns = [
     path('get_response/<str:document_id>/', get_response.as_view()),
     path("submit_response/", submit_response.as_view()),
     path("get_all_responses/<str:company_id>/", get_all_responses.as_view()),
+    path("update_rating/", update_rating.as_view()),
 
     # settings -------------------------------------------------------
     path('settinguserprofileinfo/', SettingUserProfileInfoView.as_view()),
