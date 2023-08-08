@@ -232,7 +232,7 @@ const AdminReports = ({ subAdminView }) => {
     </StaffJobLandingLayout>
   );
 };
-const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate, closeModal) => {
+const FormDatePopup = ({setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate, closeModal}) => {
   const handleFormSubmit = () => {
     if(firstDate && lastDate){
       if(isValidDate(firstDate) && isValidDate(lastDate)){
