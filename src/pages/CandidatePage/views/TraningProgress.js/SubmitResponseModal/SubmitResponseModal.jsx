@@ -110,7 +110,7 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                     </button>
                 }
                 {
-                    isHrView && !inputValues.rating &&
+                    isHrView &&
                     <button
                         className={styles.btn}
                         disabled={submitBtnDisabled}
@@ -119,6 +119,8 @@ const SubmitResponseModal = ({ closeModal, submitBtnDisabled, handleSubmitBtnCli
                         {
                             submitBtnDisabled ?
                                 'Please wait...' :
+                            inputValues.rating ?
+                                'Edit rating' :
                                 'Rate user'
                         }
                     </button>

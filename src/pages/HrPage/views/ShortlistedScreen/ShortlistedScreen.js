@@ -27,10 +27,17 @@ function ShortlistedScreen({ shortlistedCandidates, jobData, handleRefreshForCan
     setCurrentData(data);
     setShowModal(true);
     hideSideNavBar(true);
+    setRatingSet(false);
+    setRating(1);
 
     const foundCandidateResponse = candidateTrainingResponses?.find(response => response.username === data.username);
     if (!foundCandidateResponse) return
     setCandidateResponse(foundCandidateResponse);
+    
+    if (foundCandidateResponse.rating) {
+      setRating(foundCandidateResponse.rating);
+      setRatingSet(true);
+    }
   }
   
   const handleViewApplication = () => {
@@ -74,6 +81,7 @@ function ShortlistedScreen({ shortlistedCandidates, jobData, handleRefreshForCan
       toast.success("Successfully rated candidate!");
 
       setShowCandidateRatingModal(false);
+      setSubmitRatingLoading(false);
       handleCloseModal();
 
     } catch (error) {

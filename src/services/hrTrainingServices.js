@@ -38,5 +38,5 @@ export const getTrainingManagementResponses = async (company_id) => {
 };
 
 export const updateRatingForTrainingResponse = async (data) => {
-  return await currentBackendAxiosInstance.patch("submit_response/", data)
+  return await currentBackendAxiosInstance.patch("update_rating/", data)
 }
