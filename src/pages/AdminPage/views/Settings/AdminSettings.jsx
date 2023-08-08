@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout"
 import axios from 'axios';
@@ -12,6 +12,7 @@ import { getApplicationForAdmin } from "../../../../services/adminServices";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 import { testingRoles } from "../../../../utils/testingRoles";
 import { MdArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
+import { IoFilterOutline } from "react-icons/io5";
 
 const rolesDict = { 'Dept_Lead': 'Account', "Proj_Lead": 'Teamlead', "Hr": "Hr", "sub_admin": "Sub Admin", "group_lead": "Group Lead", "super_admin": "Super Admin" };
 
@@ -36,7 +37,8 @@ const AdminSettings = () => {
     start: 0,
     end: 20,
   });
-  const [ currentRoleFilter, setCurrentRoleFilter ] = useState('yes');
+  const [ currentRoleFilter, setCurrentRoleFilter ] = useState('all');
+  const roleFilterRef = useRef();
 
 
   useEffect(() => {
@@ -103,10 +105,10 @@ const AdminSettings = () => {
 
     setUsersToDisplay(
       currentRoleFilter === 'yes' ?
-        options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name))
+        options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).slice(indexes.start, indexes.end)
       :
       currentRoleFilter === 'no' ?
-        options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name))
+        options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).slice(indexes.start, indexes.end)
       :
       options1.slice(indexes.start, indexes.end)
     );
@@ -194,6 +196,9 @@ const AdminSettings = () => {
 
     const currentIndexes = {...indexes};
     if (selection === 'forward') {
+      if ((currentRoleFilter === 'yes') && (currentIndexes.end >= options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length)) return  
+      if ((currentRoleFilter === 'no') && (currentIndexes.end >= options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length)) return  
+
       if (currentIndexes.end >= options1?.length) return
 
       setIndexes({
@@ -252,11 +257,14 @@ const AdminSettings = () => {
             </div>
           </div>
           
-          <select className="role__Filter" value={currentRoleFilter} onChange={({ target }) => setCurrentRoleFilter(target.value)}>
-            <option value={'all'}>All</option>
-            <option value={'yes'}>Role assigned</option>
-            <option value={'no'}>No role assigned</option>
-          </select>
+          <div className="role__Filter__Wrapper" onClick={() => roleFilterRef.current.click()}>
+            <IoFilterOutline />
+            <select ref={roleFilterRef} className="role__Filter" value={currentRoleFilter} onChange={({ target }) => setCurrentRoleFilter(target.value)}>
+              <option value={'all'}>All</option>
+              <option value={'yes'}>Role assigned</option>
+              <option value={'no'}>No role assigned</option>
+            </select>
+          </div>
 
           <table>
             <thead>

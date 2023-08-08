@@ -26,16 +26,26 @@ $slider__gray:#D9D9D9 ;
     }
   }
 
-  .role__Filter {
+  .role__Filter__Wrapper {
     width: max-content;
     margin: 1rem 0 1rem auto;
     background-color: white;
     border: 1px solid #005734;
     border-radius: 8px;
-    padding: 0.4rem 1rem;
+    padding: 0.6rem 0.8rem;
     cursor: pointer;
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .role__Filter {
+      background: none;
+      outline: none;  
+      border: none;
+      width: 100%;
+    }
   }
+  
 
   .team__Settings__Header {
     display: flex;
