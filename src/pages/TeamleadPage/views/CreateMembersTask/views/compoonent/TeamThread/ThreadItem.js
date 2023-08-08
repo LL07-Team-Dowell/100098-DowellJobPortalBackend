@@ -9,6 +9,7 @@ import { featchAllComment, fetchThread } from '../../../../../../../services/tea
 import { useParams } from 'react-router-dom';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 import { getAllTeams } from '../../../../../../../services/createMembersTasks';
+import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 
 const Wrapper = styled.div`
 display: flex;
@@ -39,6 +40,7 @@ align-items: left !important;
   
   .team-screen-threads-card {
     height: 100%;
+    width: 400px;
     border-radius: 10px;
     background-color: #fff;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
@@ -67,11 +69,12 @@ align-items: left !important;
   .team-screen-thread-container{
     flex-direction: row;
     flex-wrap: wrap;
-
+    justify-content:center;
   }
 
   .team-screen-threads-container {
     display: flex;
+    justify-content: center;
     flex-direction: column;
     gap: 2rem;
     line-height: 2rem;
@@ -154,17 +157,21 @@ align-items: left !important;
 .image-container {
   position: relative;
   cursor: pointer;
+  width: 450px;
+  
 }
 
 .image-container img {
-  width: 100%;
-  height: auto;
+  width: 330px !important;
+  height: 230px;
+  object-fit: cover;
+  margin: auto;
 }
 
 .view-btn-container {
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 36%;
   transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
@@ -173,6 +180,11 @@ align-items: left !important;
 .image-container:hover .view-btn-container {
   opacity: 1;
 }
+
+.image-container:hover  img {
+  opacity: 0.2;
+}
+
 
 .view-btn {
   padding: 8px 16px;
@@ -225,6 +237,7 @@ align-items: left !important;
 const ThreadItem = ({ status }) => {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const { id } = useParams();
+  const [loading, setLoading] = useState(true);
 
   const [threads, setThreads] = useState([]);
   const [showComment, setShowComment] = useState(false);
@@ -265,29 +278,43 @@ const ThreadItem = ({ status }) => {
   //Get All Teams
   const [teamdata, setTeamData] = useState([])
   const filteredData = teamdata.filter(item => item.admin_team === true);
+  const [teamNamesArray, setTeamNamesArray] = useState([]);
 
 
 
+  useEffect(() => {
+    getAllTeams(currentUser.portfolio_info[0].org_id)
+      .then((resp) => {
+        // console.log(resp.data.response.data);
+        setTeamNamesArray(
+          resp.data.response.data
+            .filter((item) => item.admin_team === true)
+            .map((data) => {
+              return [{ name: data.team_name }, { id: data._id }];
+            })
+        );
+        console.log(
+          resp.data.response.data
+            .filter((item) => item.admin_team === true)
+            .map((data) => {
+              return [{ name: data.team_name }, { id: data._id }];
+            })
+        );
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
 
-  //get all teams
-  const getTeams = async () => {
-    try {
-      const id = currentUser.portfolio_info[0].org_id;
-
-      // Call the getAllTeams function with the id
-      const response = await getAllTeams(id);
-
-      // Assuming the response contains the teams data in the data field
-      const teamsData = response.data.response.data;
-      setTeamData(teamsData)
-    } catch (error) {
-      console.error('Error in your function:', error);
-    }
-  };
-
-  // Call your function to use the data received from getAllTeams
-  getTeams();
-
+  useEffect(() => {
+    const documentId = id;
+    setLoading(true);
+    fetchThread(documentId)
+      .then((resp) => {
+        setThreads(resp.data.data)
+        setLoading(false)
+      })
+  }, [])
 
   //Fetch Comment 
   // const fetchComment = async (document_id) => {
@@ -310,27 +337,27 @@ const ThreadItem = ({ status }) => {
   // }, []);
 
   //Fetch Thread 
-  const fetchData = async () => {
-    try {
-      const documentId = id;
-      const response = await fetchThread(documentId);
-      setThreads(response.data.data)
-      // Do something with the responseData if needed.
-    } catch (error) {
-      console.error('Failed to fetch comment:', error.message);
-      // Handle the error or display an error message to the user.
-    }
-  };
+  // const fetchData = async () => {
+  //   try {
+  //     const documentId = id;
+  //     const response = await fetchThread(documentId);
+  //     setThreads(response.data.data)
+  //     // Do something with the responseData if needed.
+  //   } catch (error) {
+  //     console.error('Failed to fetch comment:', error.message);
+  //     // Handle the error or display an error message to the user.
+  //   }
+  // };
 
-  // Call the function
-  fetchData();
+  // // Call the function
+  // fetchData();
 
 
 
 
 
   const handleSubmit = () => { };
-
+  if (loading) return <LoadingSpinner />
 
   return (
     <Wrapper>
@@ -366,7 +393,7 @@ const ThreadItem = ({ status }) => {
                       <div className="team-screen-threads-progress">
                         <div className="progress">
                           <p>Created</p>
-                          <div className={thread.current_status == "Created" ? "active-thread-btn" : "threads-btn"}></div>
+                          <div className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"}></div>
                         </div>
                         <div className="progress">
                           <p>In progress</p>
@@ -385,7 +412,7 @@ const ThreadItem = ({ status }) => {
                         <p className="comments">
                           <FaRegComments onClick={handleSubmit} />
                           &bull;
-                          <span onClick={() => handlCommentClick(thread._id)}>10 Comments</span>
+                          <span onClick={() => handlCommentClick(thread._id)}>{thread?.comments.data.length} Comments</span>
                         </p>
                       </div>
                     </div>
@@ -406,7 +433,7 @@ const ThreadItem = ({ status }) => {
               ))}
             </>
           }
-          
+
           {
             status == "In progress" || status == undefined && <>
               {inProgressThreads.map((thread) => {
@@ -440,7 +467,7 @@ const ThreadItem = ({ status }) => {
                       <div className="team-screen-threads-progress">
                         <div className="progress">
                           <p>Created</p>
-                          <div className={thread.current_status == "Created" ? "active-thread-btn" : "threads-btn"}></div>
+                          <div className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"}></div>
                         </div>
                         <div className="progress">
                           <p>In progress</p>
@@ -459,7 +486,7 @@ const ThreadItem = ({ status }) => {
                         <p className="comments">
                           <FaRegComments onClick={handleSubmit} />
                           &bull;
-                          <span onClick={() => handlCommentClick(thread._id)}>10 Comments</span>
+                          <span onClick={() => handlCommentClick(thread._id)}>{thread?.comments.data.length} Comments</span>
                         </p>
                       </div>
                     </div>
@@ -516,7 +543,7 @@ const ThreadItem = ({ status }) => {
                       <div className="team-screen-threads-progress">
                         <div className="progress">
                           <p>Created</p>
-                          <div className={thread.current_status == "Created" ? "active-thread-btn" : "threads-btn"}></div>
+                          <div className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"}></div>
                         </div>
                         <div className="progress">
                           <p>In progress</p>
@@ -535,7 +562,7 @@ const ThreadItem = ({ status }) => {
                         <p className="comments">
                           <FaRegComments onClick={handleSubmit} />
                           &bull;
-                          <span onClick={() => handlCommentClick(thread._id)}>10 Comments</span>
+                          <span onClick={() => handlCommentClick(thread._id)}>{thread?.comments.data.length} Comments</span>
                         </p>
                       </div>
                     </div>
@@ -560,7 +587,7 @@ const ThreadItem = ({ status }) => {
 
         </div>
       </div>
-    </Wrapper>
+    </Wrapper >
 
 
   )
