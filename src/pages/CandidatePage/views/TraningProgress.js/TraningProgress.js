@@ -204,6 +204,26 @@ function TraningProgress({ shorlistedJob }) {
         border-bottom: 1px solid #dfdddd;
         position: relative;
 
+        @media screen and (max-width: 600px) {
+            padding: 20px 15px;
+            .none{
+                display: none;
+            }
+
+            h2{
+                font-size: 20px;
+            }
+
+            h3{
+                font-size: 20px;
+            }
+
+            .bar-bottom{
+                left: 20px !important;
+            }
+
+        }
+
         .left-content{
                 display: flex;
                 align-items: center;            
@@ -254,7 +274,23 @@ function TraningProgress({ shorlistedJob }) {
 
     const Section_3 = styled.div`
         padding: 50px 76px;
-        
+        @media screen and (max-width: 600px) {
+            padding: 10px 25px;
+
+            img{
+                width: 100%;
+                object-fit: cover;
+            }
+
+            .traning_section .left-content{
+                justify-content: left !important;
+            }
+
+            .content .traninng-tag{
+                font-size: 15px !important;
+                padding-left: 5px;
+            }
+          }
         .view-question {
             color: #038953;
             border: 1px solid #038953;
@@ -346,7 +382,7 @@ function TraningProgress({ shorlistedJob }) {
             }
         }
 
-        @media screen and (max-width: 850px) {
+        @media screen and (max-width: 700px) {
             .traning_section .right-content {
                  padding: 0px;
                  width: auto; 
@@ -377,7 +413,7 @@ function TraningProgress({ shorlistedJob }) {
         createTrainingManagementResponse(dataToPost)
             .then(resp => {
                 console.log(resp)
-                setresponses([...responses, {...dataToPost, _id: resp.data.info.inserted_id}]);
+                setresponses([...responses, { ...dataToPost, _id: resp.data.info.inserted_id }]);
                 setSubmitInitialResponseLoading(false);
                 window.open(itemQuestionLink, '_blank');
             })
@@ -434,7 +470,7 @@ function TraningProgress({ shorlistedJob }) {
         try {
             const dateSubmitted = new Date();
 
-            const res = (await candidateSubmitResponse({document_id: currentResponses[foundResponseIndex]?._id, submitted_on: dateSubmitted, ...submitDataToSend})).data;
+            const res = (await candidateSubmitResponse({ document_id: currentResponses[foundResponseIndex]?._id, submitted_on: dateSubmitted, ...submitDataToSend })).data;
             const updatedResponse = { ...currentResponses[foundResponseIndex], ...submitDataToSend, submitted_on: dateSubmitted };
             currentResponses[foundResponseIndex] = updatedResponse;
             // console.log(currentResponse, updatedResponse);
@@ -475,7 +511,9 @@ function TraningProgress({ shorlistedJob }) {
                 <Section_2>
                     <div className="left-content">
                         {/* <img src={assets.dev_img} alt="dev" /> */}
-                        <FaRegUserCircle />
+                        <div className="none">
+                            <FaRegUserCircle />
+                        </div>
                         <div className="title">
                             <h2>Welcome back, {username}!</h2>
                             <h3>Candidate</h3>
@@ -609,29 +647,29 @@ function TraningProgress({ shorlistedJob }) {
                                                 </Link>
 
                                                 {
-                                                responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
-                                                    <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?._id)}>
-                                                        {"Submit Now"}
-                                                    </Link>
-                                                    :
-                                                    <Link
-                                                        to={'#'}
-                                                        onClick={
-                                                            (e) => createResp(e, item.module, matchModule?.question_link)
-                                                        }
-                                                    >
-                                                        {
-                                                            submitInitialResponseLoading ? <>Please wait...</> :
-                                                                responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
-                                                                    <>
-                                                                        Submit Now
-                                                                    </> :
-                                                                    <>
-                                                                        Start Now
-                                                                    </>
-                                                        }
-                                                    </Link>
-                                            }
+                                                    responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
+                                                        <Link to={'#'} onClick={(e) => handleSubmitNowClick(e, responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username)?._id)}>
+                                                            {"Submit Now"}
+                                                        </Link>
+                                                        :
+                                                        <Link
+                                                            to={'#'}
+                                                            onClick={
+                                                                (e) => createResp(e, item.module, matchModule?.question_link)
+                                                            }
+                                                        >
+                                                            {
+                                                                submitInitialResponseLoading ? <>Please wait...</> :
+                                                                    responses.find(response => response.module === item.module && response.username === currentUser.userinfo.username) ?
+                                                                        <>
+                                                                            Submit Now
+                                                                        </> :
+                                                                        <>
+                                                                            Start Now
+                                                                        </>
+                                                            }
+                                                        </Link>
+                                                }
                                             </div>
                                         </div>
 

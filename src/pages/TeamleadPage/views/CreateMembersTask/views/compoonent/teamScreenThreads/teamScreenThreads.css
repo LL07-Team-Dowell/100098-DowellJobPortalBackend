@@ -69,57 +69,59 @@
   font-weight: 600;
 }
 
-.threads-created{
+.threads-created {
   width: 50%;
   height: 50%;
-    padding: 1rem;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-  
-  .threads-btn {
-    width: 40%;
-    height: 40%;
-    padding: 1rem;
-    border-radius: 50%;
-    cursor:pointer;
-    background-color: red;
-    cursor: pointer;
-  }
-  
-  .active-thread-btn{
-    width: 40%;
-    height: 40%;
-    padding: 1rem;
-    border-radius: 50%;
-    cursor:pointer;
-    background-color: #005734;
-    cursor: pointer;
-  }
-  
-  .comments-section {
-    cursor: pointer;
-  }
-  
-  .comment-action{
-    padding: 0.5% 3% 3% 3%;
-  }
-  
-  .comment-action .comment-input{
-    width: 100%;
-  }
-  
-  .comment-action p{
-    font-size: 0.8rem;
-  }
-  .comments {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .comment-input {
-    padding: 0.5rem 0 0.5rem 0.5rem;
+  padding: 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.threads-btn {
+  width: 40%;
+  height: 40%;
+  padding: 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: red;
+  cursor: pointer;
+}
+
+.active-thread-btn {
+  width: 40%;
+  height: 40%;
+  padding: 1rem;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: #005734;
+  cursor: pointer;
+}
+
+.comments-section {
+  cursor: pointer;
+}
+
+.comment-action {
+  padding: 0.5% 3% 3% 3%;
+  width: 100%;
+}
+
+.comment-action .comment-input {
+  width: 100%;
+}
+
+.comment-action p {
+  font-size: 0.8rem;
+}
+
+.comments {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.comment-input {
+  padding: 0.5rem 0 0.5rem 0.5rem;
   border: 1px solid #838383;
   border-radius: 4px;
   font-size: 0.8rem;
@@ -135,7 +137,7 @@
   font-size: 1.8rem;
 }
 
- /* Styling for the image hover effect */
+/* Styling for the image hover effect */
 .image-container {
   position: relative;
   cursor: pointer;

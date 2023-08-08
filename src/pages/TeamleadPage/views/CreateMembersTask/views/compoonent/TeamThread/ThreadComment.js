@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import Avatar from "react-avatar";
 import styled from "styled-components";
-import { postComment } from "../../../../../../../services/teamleadServices";
+import { fetchThread, postComment } from "../../../../../../../services/teamleadServices";
+import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
+import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
+import LittleLoading from "../../../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 
 
 const Wrapper = styled.div`
@@ -13,6 +16,8 @@ const Wrapper = styled.div`
   border-radius: 8px;
   justify-content: center;
     align-items: center;
+    width: 100%;
+  margin-bottom: 10px;
 }
 
 .text-area{
@@ -61,6 +66,10 @@ textarea {
 
 .comment-details {
   margin-top: 8px;
+
+  input{
+    border: none;
+  }
 }
 
 .user-name {
@@ -69,6 +78,7 @@ textarea {
 
 .comment-text {
   margin-top: 4px;
+  width: 100%;
 }
 
 `
@@ -77,13 +87,16 @@ const ThreadComment = ({ comments, commentInput, user, threadId }) => {
   const userName = user.trim();
   const initials = userName.charAt(0).toUpperCase();
   const [text, setText] = useState("");
+  const { currentUser } = useCurrentUserContext();
+  const [loadingcmnt, setLoadingcmnt] = useState(false);
 
+  console.log(currentUser.portfolio_info[0].username);
   const handleChange = (e) => {
     setText(e.target.value);
   };
-
   //Handle Comment
   const handleComment = async () => {
+    setLoadingcmnt(true)
     try {
       const commentData = {
         created_by: user,
@@ -91,13 +104,11 @@ const ThreadComment = ({ comments, commentInput, user, threadId }) => {
         thread_id: threadId
       };
       const response = await postComment(commentData);
-
       console.log('Comment created successfully:', response.data);
       setText('')
-      // Do something with the responseData if needed.
+      setLoadingcmnt(false)
     } catch (error) {
       console.error('Failed to create comment:', error.message);
-      // Handle the error or display an error message to the user.
     }
 
   };
@@ -113,25 +124,31 @@ const ThreadComment = ({ comments, commentInput, user, threadId }) => {
           className={commentInput}
         />
         {text.length > 0 && (
-          <button onClick={handleComment}>Post</button>
+          loadingcmnt ? <LittleLoading /> :
+            <button onClick={handleComment}>Post</button>
         )}
       </div>
 
-      {
-        comments.map((comment) => {
-          return <div className="comment-container">
-            <div className="avatar-container">
-              <Avatar name={initials} size={40} round />
-            </div>
-            <div className="comment-content">
-              <div className="comment-details">
-                <p className="user-name">{comment.created_by}</p>
-                <p className="comment-text">{comment.comment}</p>
+      <div style={{ display: "flex", flexWrap: "wrap", widows: "100%" }}>
+        {
+          comments.map((comment) => {
+            return <div className="comment-container">
+              <div className="avatar-container">
+                <Avatar name={initials} size={40} round />
+              </div>
+              <div className="comment-content">
+                <div className="comment-details">
+                  <p className="user-name">{comment.created_by}</p>
+                  <input className="comment-text" value={comment.comment} />
+                </div>
+                <div className="button">
+                  {currentUser.portfolio_info[0].username == comment.created_by && <button style={{ padding: "2px 10px", cursor: "pointer" }}>Edit</button>}
+                </div>
               </div>
             </div>
-          </div>
-        })
-      }
+          })
+        }
+      </div>
 
     </Wrapper>
 
