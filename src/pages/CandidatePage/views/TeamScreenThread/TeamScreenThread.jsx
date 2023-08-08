@@ -94,8 +94,8 @@ const TeamScreenThreadCandidate = () => {
       <TeamScreenLinks id={id} />
       <Wrappen>
             <NavLink className={status === 'in progress' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={()=>setStatus('in progress')}>In progress</NavLink>
-            <NavLink className={status === 'completed' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={setStatus('completed')}>Completed</NavLink>
-            <NavLink className={status === 'resolved' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={setStatus('resolved')}>Resolved</NavLink>
+            <NavLink className={status === 'completed' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={()=>setStatus('completed')}>Completed</NavLink>
+            <NavLink className={status === 'resolved' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={()=>setStatus('resolved')}>Resolved</NavLink>
         </Wrappen>
       <TeamScreenThreads status={status}/>
     </div>
