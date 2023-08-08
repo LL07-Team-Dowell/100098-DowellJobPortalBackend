@@ -13,6 +13,7 @@ def rehire_candidates():
     update_field = {
         "status": "rehired"
     }
+    rehired_count = 0 
     applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
     job_applications_data = json.loads(applications)['data']
     for application in job_applications_data:
@@ -26,10 +27,13 @@ def rehire_candidates():
                     application_id = application.get("_id") 
                     update_status = dowellconnection(*candidate_management_reports, "update", {"_id": application_id}, update_field)
                     print(f"Application ID {application_id} has been rehired.")
+                    rehired_count += 1
             except ValueError:
                 print(f"Invalid 'onboarded_on' date format for application ID {application.get('_id')}. Skipping rehire process.")
         else:
             print(f"'onboarded_on' date is missing for application ID {application.get('_id')}. Skipping rehire process.")
+            
+    print(f"Total {rehired_count} candidates have been rehired.")        
 
 if __name__ == "__main__":
     rehire_candidates()
