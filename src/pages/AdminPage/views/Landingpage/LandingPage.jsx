@@ -74,13 +74,13 @@ const LandingPage = ({ subAdminView }) => {
         console.log('AAAAAAAA', response[0]?.data?.response?.data?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
         setJobs(
           response[0]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type) ?
-          response[0]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
+          response[0]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type).reverse()
           :
           []
         );
         setjobs2(
           response[0]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type) ?
-          response[0]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
+          response[0]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type).reverse()
           : 
           []
         );
