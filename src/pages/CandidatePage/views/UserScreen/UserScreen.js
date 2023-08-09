@@ -62,6 +62,14 @@ function UserScreen({ candidateSelected }) {
             <h2>Role</h2>
             <span>Candidate</span>
           </div>
+          <div className="user__Intro__Item">
+            <h2>Job hired for</h2>
+            <span>
+              {
+                currentUser?.candidateAssignmentDetails?.jobsAppliedFor?.join(", ") 
+              }
+            </span>
+          </div>
           <button className="logout__Btn" onClick={handleLogout}>
             Logout
           </button>

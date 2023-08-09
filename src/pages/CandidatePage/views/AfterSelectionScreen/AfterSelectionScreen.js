@@ -27,8 +27,20 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
   const { section } = useNavigationContext();
   const { setUserTasks } = useCandidateTaskContext();
   const [candidateTeams, setCandidateTeams] = useState([]);
+  const [ candidateAssignedProjects, setCandidateAssignedProjects ] = useState([]);
 
   useEffect(() => {
+    if (assignedProjects.length < 1) {
+      setCandidateAssignedProjects(
+        currentUser?.candidateAssignmentDetails?.assignedProjects ? 
+          currentUser?.candidateAssignmentDetails?.assignedProjects
+        :
+        []
+      )
+    } else {
+      setCandidateAssignedProjects(assignedProjects)
+    }
+
     getAllTeams(currentUser.portfolio_info[0].org_id)
       .then((resp) => {
         console.log(resp.data.response.data);
@@ -44,7 +56,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
         );
       })
       .catch((err) => {
-        console.log(err);
+        console.log('error occurred fetching teams');
       });
   }, []);
 
@@ -63,7 +75,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
                 afterSelectionScreen={true}
                 closeTaskScreen={() => setShowAddTaskModal(false)}
                 updateTasks={setUserTasks}
-                assignedProject={assignedProjects}
+                assignedProject={candidateAssignedProjects}
               />
             )}
             {showAddIssueModal && (
@@ -91,7 +103,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
             <div className="candidate__After__Selection__Screen">
               <TaskScreen
                 candidateAfterSelectionScreen={true}
-                assignedProject={assignedProjects}
+                assignedProject={candidateAssignedProjects}
               />
             </div>
           </JobLandingLayout>
