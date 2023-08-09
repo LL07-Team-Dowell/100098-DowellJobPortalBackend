@@ -115,7 +115,7 @@ const AdminReports = ({ subAdminView }) => {
         <div className="application">
         <div style={{width:400,height:300}}>
         <Doughnut data={{
-          labels:['active jobs','inactive jobs'],
+          labels:['job applications','no job applications from start date to end date'],
           datasets:[{
             label:'Poll',
             data:[data.job_applications ,data.nojob_applications_from_start_date_to_end_date],
@@ -185,7 +185,7 @@ const AdminReports = ({ subAdminView }) => {
       <div >
         <div style={{width:400,height:300}}>
         <Doughnut data={{
-          labels:['tasks completed on time','inactive jobs'],
+          labels:['tasks completed on time','tasks'],
           datasets:[{
             label:'Poll',
             data:[data.tasks_completed_on_time ,data.tasks],
@@ -200,7 +200,7 @@ const AdminReports = ({ subAdminView }) => {
         <div >
         <div style={{width:400,height:300}}>
         <Doughnut data={{
-          labels:['tasks completed ','inactive jobs'],
+          labels:['team tasks completed','tasks'],
           datasets:[{
             label:'Poll',
             data:[data.team_tasks_completed ,data.tasks],
