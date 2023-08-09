@@ -102,8 +102,8 @@ const AdminReports = ({ subAdminView }) => {
           datasets:[{
             label:'Poll',
             data:[data.number_active_jobs,data.number_inactive_jobs],
-            backgroundColor:['black', '#005734'],
-            borderColor:['black', '#005734']
+            backgroundColor:['#D3D3D3', '#005734'],
+            borderColor:['#D3D3D3', '#005734']
           }]
           }}>
 
@@ -119,8 +119,8 @@ const AdminReports = ({ subAdminView }) => {
           datasets:[{
             label:'Poll',
             data:[data.job_applications ,data.nojob_applications_from_start_date_to_end_date],
-            backgroundColor:['black', '#005734'],
-            borderColor:['black', 'red']
+            backgroundColor:['#D3D3D3', '#005734'],
+            borderColor:['#D3D3D3', '#005734']
           }]
           }}>
 
@@ -171,8 +171,8 @@ const AdminReports = ({ subAdminView }) => {
           datasets:[{
             label:['Teams','team tasks', 'individual tasks', ],
             data:[data.teams,data.team_tasks,data.tasks],
-            backgroundColor:['black', 'red','green'],
-            borderColor:['black', 'red','green']
+            backgroundColor:['#D3D3D3', '#005734','black'],
+            borderColor:['#D3D3D3', '#005734','black']
           }]
           }}>
 
@@ -189,8 +189,8 @@ const AdminReports = ({ subAdminView }) => {
           datasets:[{
             label:'Poll',
             data:[data.tasks_completed_on_time ,data.tasks],
-            backgroundColor:['black', 'red'],
-            borderColor:['black', 'red',]
+            backgroundColor:['#D3D3D3', '#005734'],
+            borderColor:['#D3D3D3', '#005734']
           }]
           }}>
 
@@ -204,8 +204,8 @@ const AdminReports = ({ subAdminView }) => {
           datasets:[{
             label:'Poll',
             data:[data.team_tasks_completed ,data.tasks],
-            backgroundColor:['black', '#005734'],
-            borderColor:['black', '#005734',]
+            backgroundColor:['#D3D3D3', '#005734'],
+            borderColor:['#D3D3D3', '#005734']
           }]
           }}>
 
