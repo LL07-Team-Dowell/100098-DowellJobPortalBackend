@@ -2555,6 +2555,7 @@ class submit_response(APIView):
         data = request.data
         field = {
             "_id": data.get("document_id"),
+            "portfolio_name": data.get("portfolio_name")
         }
         update_field = {
             "code_base_link": data.get("code_base_link"),
