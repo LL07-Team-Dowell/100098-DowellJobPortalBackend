@@ -289,7 +289,7 @@ class ThreadsSerializer(serializers.Serializer):
     team_id = serializers.CharField(allow_null=False, allow_blank=False)
     team_alerted_id = serializers.CharField(allow_null=False, allow_blank=False)
     current_status = serializers.CharField(allow_null=False, allow_blank=False)
-    PREVIOUS_STATUS_CHOICE = (("", ""),("Created", "Created"),("Progress", "Progress"), ("Completed", "Completed"), ("Resolved", "Resolved"))
+    PREVIOUS_STATUS_CHOICE = (("", ""),("Created", "Created"),("In progress", "In progress"), ("Completed", "Completed"), ("Resolved", "Resolved"))
 
     previous_status =serializers.ListField(child=serializers.ChoiceField(
         choices=PREVIOUS_STATUS_CHOICE, allow_null=False, allow_blank=False, ))

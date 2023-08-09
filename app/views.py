@@ -3215,30 +3215,40 @@ class Thread_Apis(APIView):
 
             previous_status=[]
 
-            if data.get("current_status") == "Created":
+            if data.get("current_status") == "":
+                return Response(
+                        {"message": "Failed to update Thread",
+                         "errors": "'current_status' cannot be empty. Set the value for 'current_status'"},
+                        status=status.HTTP_400_BAD_REQUEST)
+            elif data.get("current_status") == "Created":
                 previous_status=[]
-            elif data.get("current_status") == "Progress":
+            elif data.get("current_status") == "In progress":
                 previous_status=["Created"]
 
             elif data.get("current_status") == "Completed":
                 if not "Created" in prev:
                     return Response(
                         {"message": "Failed to update Thread",
-                         "errors":" 'Created' is not in previous status. Firstly, current previous status to 'Progress' "},
+                         "errors":" 'Created' is not in previous_status. Firstly, updated current_status to 'In progress'"},
                         status=status.HTTP_400_BAD_REQUEST)
-                previous_status=["Created","Progress"]
+                previous_status=["Created","In progress"]
             elif data.get("current_status") == "Resolved":
                 if not "Created" in prev:
                     return Response(
                         {"message": "Failed to update Thread",
-                         "errors":" 'Created' is not in previous status. Firstly, current previous status to 'Progress' "},
+                         "errors":" 'Created' is not in previous_status. Firstly, updated current_status to 'In progress'"},
                         status=status.HTTP_400_BAD_REQUEST)
-                if not "Progress" in prev:
+                if not "In progress" in prev:
                     return Response(
                         {"message": "Failed to update Thread",
-                         "errors":" 'Progress' is not in previous status. Firstly, current previous status to 'Completed' "},
+                         "errors":" 'In progress' is not in previous_status. Firstly, updated current_status to 'Completed'"},
                         status=status.HTTP_400_BAD_REQUEST)
-                previous_status=["Created","Progress","Completed"]
+                previous_status=["Created","In progress","Completed"]
+            else:
+                return Response(
+                        {"message": "Failed to update Thread",
+                         "errors":" 'current_status' must be Created, In progress, Completed or Resolved"},
+                        status=status.HTTP_400_BAD_REQUEST)
 
             update_field = {
                 "current_status": data.get("current_status"),
