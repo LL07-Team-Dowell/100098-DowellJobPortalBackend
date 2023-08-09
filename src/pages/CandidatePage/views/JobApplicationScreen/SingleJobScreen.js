@@ -132,7 +132,7 @@ const SingleJobScreen = () => {
                             }
                             <span className="job__Skill__Wrapper">
                                 <BsClock className="info__Icon" />
-                                <span>Duration:&nbsp;<span className="highlight__Job__Info">{ currentJob.time_period}</span></span>
+                                <span>Duration:&nbsp;<span className="highlight__Job__Info">{currentJob.time_period}</span></span>
                             </span>
                             {
                                 currentJob.others && currentJob.others[jobKeys.paymentForJob] &&
