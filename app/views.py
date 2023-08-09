@@ -3211,7 +3211,12 @@ class Thread_Apis(APIView):
             
             #check for previous status
             get_response = dowellconnection(*thread_report_module, "fetch", field, {})
-            prev = json.loads(get_response)["data"][0]["previous_status"]
+            if json.loads(get_response)["isSuccess"] == True:
+                prev = json.loads(get_response)["data"][0]["previous_status"]
+            else:
+                return Response(
+                    {"message": "Failed to update Thread","data": json.loads(get_response)}, status=status.HTTP_400_BAD_REQUEST
+                )
 
             previous_status=[]
 
