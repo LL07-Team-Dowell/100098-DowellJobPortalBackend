@@ -120,7 +120,7 @@ const AdminReports = ({ subAdminView }) => {
             label:'Poll',
             data:[data.job_applications ,data.nojob_applications_from_start_date_to_end_date],
             backgroundColor:['black', '#005734'],
-            borderColor:['black', '#005734',]
+            borderColor:['black', 'red']
           }]
           }}>
 
@@ -232,7 +232,7 @@ const AdminReports = ({ subAdminView }) => {
     </StaffJobLandingLayout>
   );
 };
-const FormDatePopup = (setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate, closeModal) => {
+const FormDatePopup = ({setFirstDate,setLastDate,firstDate,lastDate, handleSubmitDate, closeModal}) => {
   const handleFormSubmit = () => {
     if(firstDate && lastDate){
       if(isValidDate(firstDate) && isValidDate(lastDate)){
