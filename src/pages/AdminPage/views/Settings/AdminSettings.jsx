@@ -39,6 +39,7 @@ const AdminSettings = () => {
   });
   const [ currentRoleFilter, setCurrentRoleFilter ] = useState('all');
   const roleFilterRef = useRef();
+  const [ hiredCandidates, setHiredCandidates ] = useState([]);
 
 
   useEffect(() => {
@@ -115,9 +116,17 @@ const AdminSettings = () => {
 
   }, [options1, indexes, currentRoleFilter])
 
+  useEffect(() => {
+
+    if (!Array.isArray(list)) return
+
+    setHiredCandidates([...new Set(list.filter(item => item.status === candidateStatuses.ONBOARDING && item.portfolio_name).map(user => user.portfolio_name))])
+  }, [list])
+
   const handleFirstSelectionChange = (event) => {
     const selection = event.target.value;
-    setData(options1.find(option => option.portfolio_name === selection))
+    // setData(options1.find(option => option.portfolio_name === selection))
+    setData(selection)
     setFirstSelection(selection);
     setShowSecondSelection(true);
   };
@@ -297,7 +306,7 @@ const AdminSettings = () => {
               <p>Select User Portfolio <span>* </span> :</p>
               <select value={firstSelection} onChange={handleFirstSelectionChange} >
                 <option disabled value="">Select an option</option>
-                {options1?.map(option => <option key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option>)}
+                {options1?.filter(option => hiredCandidates.includes(option.portfolio_name)).map(option => <option key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option>)}
               </select>
             </label>
             {(userstatus?.length > 0 && firstSelection.length > 0) && <p style={{ marginTop: "4%" }}>Current application status:{userstatus}</p>}

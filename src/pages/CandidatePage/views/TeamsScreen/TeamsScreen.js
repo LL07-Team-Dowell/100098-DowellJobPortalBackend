@@ -14,15 +14,19 @@ import Navbar from "../../../TeamleadPage/views/CreateMembersTask/component/Navb
 const TeamsScreen = () => {
     const { currentUser } = useCurrentUserContext();
     const {data, setdata} = useCandidateValuesProvider()
+    const [ dataLoaded, setDataLoaded ] = useState(false);
+
     useEffect(()=>{
         getAllTeams(currentUser.portfolio_info[0].org_id)
         .then(resp =>{ 
             setdata({...data , TeamsSelected:resp.data.response.data})
+            setDataLoaded(true)
       })
       .catch(e =>{
+        setDataLoaded(true)
       })
     },[])
-  if(data.TeamsSelected.length === 0)return <JobLandingLayout user={currentUser} afterSelection={true}><LoadingSpinner/></JobLandingLayout> 
+  if(data.TeamsSelected.length === 0 && !dataLoaded)return <JobLandingLayout user={currentUser} afterSelection={true}><LoadingSpinner/></JobLandingLayout> 
     
     return <>
         <JobLandingLayout user={currentUser} afterSelection={true}>
