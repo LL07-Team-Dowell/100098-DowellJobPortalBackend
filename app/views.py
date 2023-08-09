@@ -2378,6 +2378,7 @@ class response(APIView):
                 "started_on": data.get("started_on"),
                 "submitted_on": data.get("submitted_on"),
                 "rating": data.get("rating"),
+                "portfolio_name": data.get("portfolio_name")
             }
             update_field = {}
             insert_response = dowellconnection(
@@ -2554,8 +2555,7 @@ class submit_response(APIView):
     def patch(self, request):
         data = request.data
         field = {
-            "_id": data.get("document_id"),
-            "portfolio_name": data.get("portfolio_name")
+            "_id": data.get("document_id")
         }
         update_field = {
             "code_base_link": data.get("code_base_link"),
