@@ -1,5 +1,5 @@
 
-.select {
+.report_select {
   position: absolute;
   top:50%;
   left:50%;
@@ -28,7 +28,7 @@
         p{
             font-size: 25px;
         }
-        >div{
+        .report_header{
             display: flex;
             justify-content: space-around;
         }

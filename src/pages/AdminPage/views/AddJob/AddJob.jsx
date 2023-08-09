@@ -538,7 +538,7 @@ const AddJob = ({ subAdminView }) => {
 
               <label htmlFor="module">Module</label>
               <select
-                className="select"
+                className="module"
                 name={"module"}
                 id="module"
                 onChange={handleThirdOptionChange}
