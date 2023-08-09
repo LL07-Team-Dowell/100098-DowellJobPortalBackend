@@ -26,6 +26,7 @@ const Index = () => {
       setresponse(true)
   })
   .catch(e =>{
+    setresponse(true)
     console.log(e)
   })
   },[])

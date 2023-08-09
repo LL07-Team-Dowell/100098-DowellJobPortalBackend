@@ -35,6 +35,7 @@ const AdminTeam = () => {
       })
       .catch((e) => {
         console.log(e);
+        setresponse(true);
       });
   }, []);
   console.log(searchValue);
