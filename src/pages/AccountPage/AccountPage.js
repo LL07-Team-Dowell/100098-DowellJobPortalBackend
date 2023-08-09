@@ -129,7 +129,8 @@ const AccountPage = () => {
         const candidatesToRehire = applicationForMatching.filter(
           (application) =>
             application.status === candidateStatuses.TO_REHIRE ||
-            application.status === candidateStatuses.TEAMLEAD_TOREHIRE
+            application.status === candidateStatuses.TEAMLEAD_TOREHIRE ||
+            application.status === candidateStatuses.REHIRE
         );
         const candidatesOnboarding = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.ONBOARDING
@@ -253,7 +254,8 @@ const AccountPage = () => {
         const candidatesToRehire = applicationForMatching.filter(
           (application) =>
             application.status === candidateStatuses.TO_REHIRE ||
-            application.status === candidateStatuses.TEAMLEAD_TOREHIRE
+            application.status === candidateStatuses.TEAMLEAD_TOREHIRE ||
+            application.status === candidateStatuses.REHIRE
         );
         const candidatesOnboarding = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.ONBOARDING

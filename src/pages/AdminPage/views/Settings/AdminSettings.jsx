@@ -117,7 +117,10 @@ const AdminSettings = () => {
 
   const handleFirstSelectionChange = (event) => {
     const selection = event.target.value;
-    setData(options1.find(option => option.portfolio_name === selection))
+    console.log(selection);
+
+    // setData(options1.find(option => option.portfolio_name === selection))
+    setData(selection)
     setFirstSelection(selection);
     setShowSecondSelection(true);
   };
@@ -297,7 +300,7 @@ const AdminSettings = () => {
               <p>Select User Portfolio <span>* </span> :</p>
               <select value={firstSelection} onChange={handleFirstSelectionChange} >
                 <option disabled value="">Select an option</option>
-                {options1?.map(option => <option key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option>)}
+                {options1?.filter(option => list.reverse().find(userApplication => userApplication.portfolio_name === option.portfolio_name)?.status === candidateStatuses.ONBOARDING).map(option => <option key={option.org_id} value={option.portfolio_name}>{option.portfolio_name}</option>)}
               </select>
             </label>
             {(userstatus?.length > 0 && firstSelection.length > 0) && <p style={{ marginTop: "4%" }}>Current application status:{userstatus}</p>}

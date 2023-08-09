@@ -114,5 +114,25 @@ export const dowellProjects = [
     {
         "_id": crypto.randomUUID(),
         "project_name": "Sales Coordinator",
-    }
+    },
+    {
+        "_id": crypto.randomUUID(),
+        "project_name": "MM - Data Analyst/ Base Function",
+    },
+    {
+        "_id": crypto.randomUUID(),
+        "project_name": "Website Design",
+    },
+    {
+        "_id": crypto.randomUUID(),
+        "project_name": "UI DESIGN /Flutter Flow",
+    },
+    {
+        "_id": crypto.randomUUID(),
+        "project_name": "UI DESIGN /Translation",
+    },
+    {
+        "_id": crypto.randomUUID(),
+        "project_name": "Payment API",
+    },
 ]
