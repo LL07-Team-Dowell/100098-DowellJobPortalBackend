@@ -1,89 +1,86 @@
-// colors 
-$main__green : #005734 ; 
-$background__gray: #F5F5F5 ; 
-$placeholder__gray:#A3A1A1 ; 
-$text__gray:#B8B8B8 ; 
-$span__gray:#B8B8B8 ; 
-$slider__gray:#D9D9D9 ; 
+// colors
+$main__green: #005734;
+$background__gray: #f5f5f5;
+$placeholder__gray: #a3a1a1;
+$text__gray: #b8b8b8;
+$span__gray: #b8b8b8;
+$slider__gray: #d9d9d9;
 
-
-
-
-.table_team_roles{
+.table_team_roles {
   width: 50%;
   margin: auto;
-  margin-top:40px;
+  margin-top: 40px;
   transform: translateX(-70px);
-  table{
+  table {
     text-align: left;
     width: 100%;
-    background-color: #005734;
+    background-color: #fff;
     max-height: 100px;
     overflow: auto;
-    th , td {
+    border-radius: 5px;
+    th,
+    td {
       background-color: white;
-      padding:10px
+      padding: 10px;
+      border-bottom: 2.5px solid #fafafa;
     }
   }
 }
 
+.Slections {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 40px;
+  transform: translateX(-18px);
+  h2 {
+    text-align: left;
+    width: 60%;
+  }
+  > div {
+    margin-top: 20px;
+    width: 60%;
+    p {
+      color: #005734;
+      font-weight: 500;
+      margin-bottom: 7px;
+      span {
+        color: red;
+      }
+    }
+    select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 2px solid $main__green;
+      background-color: #fff;
+      color: #333;
+      width: 60%;
+    }
 
-.Slections{
-            display: flex;
-            width: 100%;
-            height: 100%;
-            align-items: center;
-            flex-direction: column;
-            margin-top:40px;
-            transform: translateX(-18px);
-            h2{
-              text-align: left;
-              width: 60%;
-            }
-            >div{
-            margin-top: 20px;
-            width: 60%;
-            p{
-            color: #005734;
-            font-weight: 500;
-            margin-bottom: 7px;
-            span{
-            color:red ;
-            }
-            }
-            select {
-                        padding: 10px;
-                        font-size: 16px;
-                        border-radius: 4px;
-                        border: 2px solid $main__green;
-                        background-color: #fff;
-                        color: #333;
-                        width:60%;
-                      }
-                      
-                      option {
-                        font-size: 16px;
-                        background-color: #fff;
-                        color: #333;
-                      }
-            }
-            button{
-                        background-color: #005734;
-                        border: none;
-                        outline: transparent;
-                        padding:7px 10px; 
-                        font-weight:400;
-                        border-radius: 5px;
-                        color: white;
-                        cursor: pointer;
-                        transform: translate(30px,20px);
-                        &:hover {
-                        background-color: #005734;
-
-                        }
-            }
+    option {
+      font-size: 16px;
+      background-color: #fff;
+      color: #333;
+    }
+  }
+  button {
+    background-color: #005734;
+    border: none;
+    outline: transparent;
+    padding: 7px 10px;
+    font-weight: 400;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transform: translate(30px, 20px);
+    &:hover {
+      background-color: #005734;
+    }
+  }
 }
-
 
 $success-color: #2ec946;
 
@@ -91,7 +88,7 @@ main {
   padding: 0 40px;
 }
 
-@media only screen and (max-width: 900px){
+@media only screen and (max-width: 900px) {
   main {
     padding: 0 0px;
   }
@@ -112,7 +109,7 @@ section {
 
 @mixin alert-1($color) {
   background-color: rgba($color, 0.05);
-  
+
   .alert-title {
     color: $color;
   }
@@ -121,7 +118,7 @@ section {
 @mixin alert-2($color) {
   border-left: 4px solid $color;
   background-color: rgba($color, 0.05);
-  
+
   .alert-title {
     color: $color;
   }
@@ -131,33 +128,26 @@ section {
   border: 1px solid lighten($color, 25%);
   border-radius: 8px;
   background-color: rgba($color, 0.05);
-  
+
   .alert-title {
     color: $color;
   }
 }
 
-
-
 .alert-2-success {
   @include alert-2($success-color);
 }
-
-
-
-
-
 
 .alert-title {
   margin-top: 0;
   margin-bottom: 8px;
   font-size: 18px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .alert-content {
   margin: 0;
   font-size: 14px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
   color: #555555;
 }

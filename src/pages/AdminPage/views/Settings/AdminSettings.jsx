@@ -246,7 +246,7 @@ const AdminSettings = () => {
       {loading || loading2 ? (
         <LoadingSpinner />
       ) : (
-        <>
+        <div style={{ backgroundColor: "#fafafa" }}>
           {alert && <Alert />}
           <div className="table_team_roles">
             <h2>Portfolio/Team roles</h2>
@@ -277,7 +277,7 @@ const AdminSettings = () => {
               </tbody>
             </table>
           </div>
-        </>
+        </div>
       )}
     </StaffJobLandingLayout>
   );
