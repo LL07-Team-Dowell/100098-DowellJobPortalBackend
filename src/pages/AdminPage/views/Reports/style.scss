@@ -29,6 +29,12 @@
       display: flex;
       justify-content: space-around;
     }
+    > div {
+      width: 70%;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+    }
   }
   .application {
     display: flex;
@@ -92,4 +98,17 @@
       color: white;
     }
   }
+}
+
+.select_time_tage {
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #005734;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  gap: 1rem;
+  padding: 0.6rem 0.8rem;
+  width: -webkit-max-content;
+  width: max-content;
 }

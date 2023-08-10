@@ -57,5 +57,5 @@ export const adminEditSettingUserProject = async (id, data) => {
 };
 
 export const generateReport = async (data) => {
-  return await currentBackendAxiosInstance.post(`generate_report/`, data);
+  return await currentBackendAxiosInstance.post(`generate_admin_report/`, data);
 };

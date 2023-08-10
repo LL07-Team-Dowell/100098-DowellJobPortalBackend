@@ -101,7 +101,10 @@ const AdminReports = ({ subAdminView }) => {
         <div className="reports__container_header">
           <div>
             <p>Get insights into your organizations</p>
-            <select onChange={handleSelectOptionsFunction}>
+            <select
+              className="select_time_tage"
+              onChange={handleSelectOptionsFunction}
+            >
               <option value="select_time">select time</option>
               <option value="last_7_days">last 7 days</option>
               <option value="custom_time">cutom time</option>
