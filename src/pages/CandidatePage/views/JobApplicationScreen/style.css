@@ -261,7 +261,8 @@
 }
 
 .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form .job__Application__Items label {
-    display: block;
+    display: flex;
+    align-content: center;
     margin-bottom: 3%;
     font-size: 0.85rem;
     cursor: pointer;

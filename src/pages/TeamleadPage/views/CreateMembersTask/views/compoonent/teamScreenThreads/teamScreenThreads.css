@@ -161,6 +161,10 @@
   opacity: 1;
 }
 
+.image-container:hover  img {
+  opacity: 0.2;
+}
+
 .view-btn {
   padding: 8px 16px;
   background-color: #005734;

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
 import "./teamScreenThreads.css";
 import { FaRegComments } from "react-icons/fa";
-import { testThreadsToWorkWith } from "../../../../../../../utils/testData";
+// import { testThreadsToWorkWith } from "../../../../../../../utils/testData";
 import userIcon from "./assets/user_icon.png";
 import Modal from "../TeamThread/Modal";
+import { fetchThread, postComment } from "../../../../../../../services/threadServices";
+import { getAllTeams } from "../../../../../../../services/createMembersTasks";
 import Avatar from "react-avatar";
+import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 
-const TeamScreenThreads = ({ status }) => {
+const TeamScreenThreads = ({ status, id }) => {
   const { currentUser } = useCurrentUserContext();
   console.log({ currentUser });
 
@@ -25,11 +29,7 @@ const TeamScreenThreads = ({ status }) => {
   const [formVisibility, setFormVisibility] = useState({});
   const [commentsVisibility, setCommentsVisibility] = useState({});
   const [showModalStates, setShowModalStates] = useState({});
-
-  useEffect(() => {
-    setThreads(testThreadsToWorkWith);
-    console.log("testThreadsToWorkWith", testThreadsToWorkWith);
-  }, []);
+   const [loading, setLoading] = useState(true);
 
   const handleChange = (e) => {
     setText(e.target.value);
@@ -44,25 +44,63 @@ const TeamScreenThreads = ({ status }) => {
     }));
   };
 
-  const addComment = (text, id) => {
+  useEffect(() => {
+    console.log("status", status);
+  },[])
+
+  useEffect(() => {
+    console.log("Hiiiiiiiiiiiiiiiiii");
+    console.log(
+      threads.filter(
+        (thread) =>
+          thread.current_status === "In progress" ||
+          thread.current_status === "Created"
+      )
+    );
+  },[status])
+
+   useEffect(() => {
+     const documentId = id;
+     console.log(documentId)
+     setLoading(true);
+     fetchThread(documentId).then((resp) => {
+       console.log(resp.data.data);
+       setThreads(resp.data.data);
+       setLoading(false);
+     });
+   }, []);
+
+  const addComment = async (text, id) => {
     console.log("addComment", text, id);
 
-    const updatedThreads = threads.map((thread) => {
-      if (thread._id === id) {
-        const newComment = {
-          user: currentUser.userinfo.username,
-          comment: text,
-          thread_id: id,
-          _id: crypto.randomUUID(),
-        };
-        return {
-          ...thread,
-          comments: [...thread.comments, newComment],
-        };
-      }
-      return thread;
-    });
-    setThreads(updatedThreads);
+    try{
+      const newComment = {
+        created_by: currentUser.userinfo.username,
+            comment: text,
+            thread_id: id,
+            _id: crypto.randomUUID(),
+      };
+
+      const updatedThreads = await postComment(newComment)
+      console.log("Comment created successfully", updatedThreads.data);
+
+    } catch (error) {
+      console.error('Failed to create comment:', error.message);
+    }
+
+    // if (thread._id === id) {
+    //   const newComment = {
+    //     created_by: currentUser.userinfo.username,
+    //     comment: text,
+    //     thread_id: id,
+    //     _id: crypto.randomUUID(),
+    //   };
+    //   return {
+    //     ...thread,
+    //     comments: [...thread.comments, newComment],
+    //   };
+    // }
+    // return thread;
   };
 
   const editComment = (text, commentId, threadId) => {
@@ -179,19 +217,46 @@ const TeamScreenThreads = ({ status }) => {
     setText("");
   };
 
+  const [teamdata, setTeamData] = useState([]);
+  const filteredData = teamdata.filter((item) => item.admin_team === true);
+  const [teamNamesArray, setTeamNamesArray] = useState([]);
+
+  
+  useEffect(() => {
+    getAllTeams(currentUser.portfolio_info[0].org_id)
+      .then((resp) => {
+        setTeamNamesArray(
+          resp.data.response.data
+            .filter((item) => item.admin_team === true)
+            .map((data) => {
+              return [{ name: data.team_name }, { id: data._id }];
+            })
+        );
+        console.log(
+          resp.data.response.data
+            .filter((item) => item.admin_team === true)
+            .map((data) => {
+              return [{ name: data.team_name }, { id: data._id }];
+            })
+        );
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
+
   const isTextareaDisabled = text.length === 0;
+
+  if(loading) return <LoadingSpinner />
 
   return (
     <div className="team-screen-threads">
       <div className="team-screen-thread-container">
-        {status === "completed" && (
+        {status === "Completed" && (
           <>
             {React.Children.toArray(
               threads
-                .filter(
-                  (thread) =>
-                    thread.current_status === "Completed"
-                )
+                .filter((thread) => thread.current_status === status)
                 .map((thread) => (
                   <div className="team-screen-threads-card">
                     <div className="thread-card">
@@ -227,7 +292,7 @@ const TeamScreenThreads = ({ status }) => {
                           {thread.thread}
                         </h3>
                         <div>
-                          <p>Assigned to : Team Development A</p>
+                          <p>Assigned to : {thread.team_name}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
                         <div className="team-screen-threads-progress">
@@ -235,7 +300,8 @@ const TeamScreenThreads = ({ status }) => {
                             <p>Created</p>
                             <div
                               className={
-                                thread.current_status === "Created"
+                                thread.current_status === "Created" ||
+                                "In progress"
                                   ? "active-thread-btn"
                                   : "threads-btn"
                               }
@@ -391,38 +457,6 @@ const TeamScreenThreads = ({ status }) => {
                                     >
                                       Edit
                                     </button>
-                                    <button
-                                      onClick={() =>
-                                        setReplyingComment({
-                                          commentId: comment._id,
-                                          threadId: thread._id,
-                                          text: "",
-                                        })
-                                      }
-                                      className="action-btn"
-                                    >
-                                      Reply
-                                    </button>
-                                    {replyingComment.commentId ===
-                                      comment._id &&
-                                      replyingComment.threadId ===
-                                        thread._id && (
-                                        <div>
-                                          <textarea
-                                            name="text"
-                                            value={replyingComment.text}
-                                            onChange={handleReplyChange}
-                                            className="comment-input"
-                                            placeholder="Enter your reply..."
-                                          />
-                                          <button
-                                            onClick={onSubmitReply}
-                                            className="action-btn"
-                                          >
-                                            Reply
-                                          </button>
-                                        </div>
-                                      )}
                                   </div>
                                 )}
                               </div>
@@ -437,17 +471,17 @@ const TeamScreenThreads = ({ status }) => {
           </>
         )}
 
-        {status === "in progress" ||
-          (status === "created" && (
-            <>
-              {React.Children.toArray(
-                threads
-                  .filter(
-                    (thread) =>
-                      thread.current_status === "Resolved" ||
-                      thread.current_status === "Completed"
-                  )
-                  .map((thread) => (
+        {(status === "In progress" || status === "Created") && (
+          <>
+            {React.Children.toArray(
+              threads
+                .filter(
+                  (thread) =>
+                    thread.current_status === "In progress" ||
+                    thread.current_status === "Created"
+                )
+                .map((thread) => {
+                  return (
                     <div className="team-screen-threads-card">
                       <div className="thread-card">
                         {showModalStates[thread._id] && (
@@ -482,7 +516,7 @@ const TeamScreenThreads = ({ status }) => {
                             {thread.thread}
                           </h3>
                           <div>
-                            <p>Assigned to : Team Development A</p>
+                            <p>Assigned to : {thread.team_name}</p>
                             <p>Raised by : {thread.created_by}</p>
                           </div>
                           <div className="team-screen-threads-progress">
@@ -545,8 +579,8 @@ const TeamScreenThreads = ({ status }) => {
                                     [thread._id]: !prevVisibility[thread._id],
                                   }))
                                 }
-                              >{`${thread.comments.length} Comment${
-                                thread.comments.length !== 1 ? "s" : ""
+                              >{`${thread.comments.data.length} Comment${
+                                thread.comments.data.length !== 1 ? "s" : ""
                               }`}</span>
                             </p>
                           </div>
@@ -590,109 +624,116 @@ const TeamScreenThreads = ({ status }) => {
                               Comments
                             </h3>
                             {React.Children.toArray(
-                              thread.comments.map((comment) => (
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    gap: "1rem",
-                                    marginBottom: "0.7rem",
-                                    marginLeft: comment.parentId ? "2rem" : "0",
-                                  }}
-                                >
-                                  <div>
-                                    <img
-                                      src={userIcon}
-                                      alt="userIcon"
-                                      width={35}
-                                      height={35}
-                                    />
-                                  </div>
-                                  {editingCommentId === comment._id ? (
+                              thread.comments.data.map((comment) => {
+                                return (
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      gap: "1rem",
+                                      marginBottom: "0.7rem",
+                                      marginLeft: comment.parentId
+                                        ? "2rem"
+                                        : "0",
+                                    }}
+                                  >
                                     <div>
-                                      <textarea
-                                        value={editingCommentText}
-                                        onChange={(e) =>
-                                          setEditingCommentText(e.target.value)
-                                        }
-                                        className="comment-input"
+                                      <img
+                                        src={userIcon}
+                                        alt="userIcon"
+                                        width={35}
+                                        height={35}
                                       />
-                                      <button
-                                        onClick={() =>
-                                          saveEditedComment(
-                                            comment._id,
-                                            thread._id
-                                          )
-                                        }
-                                        className="action-btn"
-                                      >
-                                        Save
-                                      </button>
                                     </div>
-                                  ) : (
-                                    <div>
-                                      <p style={{ fontWeight: "600" }}>
-                                        {comment.user}
-                                      </p>
-                                      <p>{comment.comment}</p>
-                                      <button
-                                        onClick={() =>
-                                          handleEdit(
-                                            comment.comment,
-                                            comment._id,
-                                            thread._id
-                                          )
-                                        }
-                                        className="action-btn"
-                                      >
-                                        Edit
-                                      </button>
-                                      <button
-                                        onClick={() =>
-                                          setReplyingComment({
-                                            commentId: comment._id,
-                                            threadId: thread._id,
-                                            text: "",
-                                          })
-                                        }
-                                        className="action-btn"
-                                      >
-                                        Reply
-                                      </button>
-                                      {replyingComment.commentId ===
-                                        comment._id &&
-                                        replyingComment.threadId ===
-                                          thread._id && (
-                                          <div>
-                                            <textarea
-                                              name="text"
-                                              value={replyingComment.text}
-                                              onChange={handleReplyChange}
-                                              className="comment-input"
-                                              placeholder="Enter your reply..."
-                                            />
-                                            <button
-                                              onClick={onSubmitReply}
-                                              className="action-btn"
-                                            >
-                                              Reply
-                                            </button>
-                                          </div>
-                                        )}
-                                    </div>
-                                  )}
-                                </div>
-                              ))
+                                    {editingCommentId === comment._id ? (
+                                      <div>
+                                        <textarea
+                                          value={editingCommentText}
+                                          onChange={(e) =>
+                                            setEditingCommentText(
+                                              e.target.value
+                                            )
+                                          }
+                                          className="comment-input"
+                                        />
+                                        <button
+                                          onClick={() =>
+                                            saveEditedComment(
+                                              comment._id,
+                                              thread._id
+                                            )
+                                          }
+                                          className="action-btn"
+                                        >
+                                          Save
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        <p style={{ fontWeight: "600" }}>
+                                          {comment.user}
+                                        </p>
+                                        <p>{comment.comment}</p>
+                                        <button
+                                          onClick={() =>
+                                            handleEdit(
+                                              comment.comment,
+                                              comment._id,
+                                              thread._id
+                                            )
+                                          }
+                                          className="action-btn"
+                                        >
+                                          Edit
+                                        </button>
+                                        <button
+                                          onClick={() =>
+                                            setReplyingComment({
+                                              commentId: comment._id,
+                                              threadId: thread._id,
+                                              text: "",
+                                            })
+                                          }
+                                          className="action-btn"
+                                        >
+                                          Reply
+                                        </button>
+                                        {replyingComment.commentId ===
+                                          comment._id &&
+                                          replyingComment.threadId ===
+                                            thread._id && (
+                                            <div>
+                                              <textarea
+                                                name="text"
+                                                value={replyingComment.text}
+                                                onChange={handleReplyChange}
+                                                className="comment-input"
+                                                placeholder="Enter your reply..."
+                                              />
+                                              <button
+                                                onClick={onSubmitReply}
+                                                className="action-btn"
+                                              >
+                                                Reply
+                                              </button>
+                                            </div>
+                                          )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })
                             )}
                           </div>
                         )}
                       </div>
                     </div>
-                  ))
-              )}
-            </>
-          ))}
+                  );
+                })
+            )}
+          </>
+        )}
 
-        {status === "resolved" && (
+        {status === "Resolved" && (
           <>
             {React.Children.toArray(
               threads
@@ -732,7 +773,7 @@ const TeamScreenThreads = ({ status }) => {
                           {thread.thread}
                         </h3>
                         <div>
-                          <p>Assigned to : Team Development A</p>
+                          <p>Assigned to : {thread.team_name}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
                         <div className="team-screen-threads-progress">
