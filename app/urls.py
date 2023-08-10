@@ -92,7 +92,6 @@ urlpatterns = [
     path('update_user_status/',updateTheUserDetails.as_view()),
 
     # Thread-------------------------------------
-    path('fetch_thread/',Thread_Apis.as_view()),
     path('fetch_thread/<str:document_id>/',Thread_Apis.as_view()),
     path('fetch_team_thread/<str:team_id>/',GetTeamThreads.as_view()),
     path('fetch_all_threads/',GetAllThreads.as_view()),
@@ -100,7 +99,6 @@ urlpatterns = [
     path('update_thread/', Thread_Apis.as_view()),
 
     # Comment-------------------------------------
-    path('fetch_comment/',Comment_Apis.as_view()),
     path('fetch_comment/<str:document_id>/',Comment_Apis.as_view()),
     path('create_comment/',Comment_Apis.as_view()),
     path('update_comment/', Comment_Apis.as_view()),

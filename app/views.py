@@ -3634,8 +3634,8 @@ class Generate_account_Report(APIView):
         job_applications = dowellconnection(*account_management_reports, "fetch", field, update_field)
         data["job_applications"]=len(json.loads(job_applications)['data'])
         
-        # p_application = periodic_application_account(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
-        # data[f"nojob_applications_from_start_date_to_end_date"]=p_application[1]
+        p_application = periodic_application_account(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
+        data[f"nojob_applications_from_start_date_to_end_date"]=p_application[1]
 
         Rehired = dowellconnection(*account_management_reports, "fetch", {"status": "Rehired"}, update_field)
         #print(Rehired)
