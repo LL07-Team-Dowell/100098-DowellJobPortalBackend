@@ -50,6 +50,10 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
         
         const currentUserDetails = structuredClone(currentUser);
         currentUserDetails.candidateIsHired = true;
+        currentUserDetails.candidateAssignmentDetails = {
+          jobsAppliedFor: userSelectedJobs.map(job => job.job_title),
+          assignedProjects: userSelectedJobs.map((job) => job.project)
+        };
 
         setCurrentUser(currentUserDetails);
         sessionStorage.setItem('user', JSON.stringify(currentUserDetails));

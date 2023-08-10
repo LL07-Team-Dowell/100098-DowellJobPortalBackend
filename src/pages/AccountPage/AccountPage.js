@@ -121,7 +121,7 @@ const AccountPage = () => {
         const applicationForMatching = res[1].data.response.data.filter(
           (application) =>
             application.data_type === currentUser?.portfolio_info[0].data_type
-        );
+        ).reverse();
         const candidatesToHire = applicationForMatching.filter(
           (application) =>
             application.status === candidateStatuses.TEAMLEAD_HIRE
@@ -129,7 +129,8 @@ const AccountPage = () => {
         const candidatesToRehire = applicationForMatching.filter(
           (application) =>
             application.status === candidateStatuses.TO_REHIRE ||
-            application.status === candidateStatuses.TEAMLEAD_TOREHIRE
+            application.status === candidateStatuses.TEAMLEAD_TOREHIRE ||
+            application.status === candidateStatuses.REHIRE
         );
         const candidatesOnboarding = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.ONBOARDING
@@ -245,7 +246,7 @@ const AccountPage = () => {
         const applicationForMatching = res.data.response.data.filter(
           (application) =>
             application.data_type === currentUser?.portfolio_info[0].data_type
-        );
+        ).reverse();
         const candidatesToHire = applicationForMatching.filter(
           (application) =>
             application.status === candidateStatuses.TEAMLEAD_HIRE
@@ -253,7 +254,8 @@ const AccountPage = () => {
         const candidatesToRehire = applicationForMatching.filter(
           (application) =>
             application.status === candidateStatuses.TO_REHIRE ||
-            application.status === candidateStatuses.TEAMLEAD_TOREHIRE
+            application.status === candidateStatuses.TEAMLEAD_TOREHIRE ||
+            application.status === candidateStatuses.REHIRE
         );
         const candidatesOnboarding = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.ONBOARDING

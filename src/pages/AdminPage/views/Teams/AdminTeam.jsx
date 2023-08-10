@@ -35,6 +35,7 @@ const AdminTeam = () => {
       })
       .catch((e) => {
         console.log(e);
+        setresponse(true);
       });
   }, []);
   console.log(searchValue);
@@ -51,8 +52,10 @@ const AdminTeam = () => {
       searchValue={searchValue}
       setSearchValue={setSearchValue}
       searchTeam={true}
+      pageTitle={"All Teams"}
+      adminAlternativePageActive={true}
     >
-      <Navbar title={"All Teams"} color={"#005734"} noButtonBack={true} adminTeams={true}/>
+      <Navbar color={"#005734"} noButtonBack={true} adminTeams={true} />
       <div className="container">
         <Teams
           searchValue={searchValue}

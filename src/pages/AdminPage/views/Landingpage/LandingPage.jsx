@@ -10,7 +10,7 @@ import axios from "axios";
 import Loading from "../../../CandidatePage/views/ResearchAssociatePage/Loading";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
-import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { s, useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getApplicationForAdmin, getJobsFromAdmin, getMasterLinks } from "../../../../services/adminServices";
 import { useState } from "react";
 import { IoCopyOutline } from "react-icons/io5";
@@ -52,7 +52,7 @@ const LandingPage = ({ subAdminView }) => {
   useEffect(() => {
     getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
       .then(resp => {
-        setlist(resp.data.response.data.filter(j => currentUser.portfolio_info[0].data_type === j.data_type));
+        setlist(resp?.data?.response?.data?.filter(j => currentUser.portfolio_info[0].data_type === j.data_type));
       })
       .catch(err => console.log(err))
   }, [])
@@ -64,16 +64,26 @@ const LandingPage = ({ subAdminView }) => {
   // console.log("jobs", jobs);
 
   useEffect(() => {
-    if (jobs.length === 0 && !resp) {
+    if (jobs?.length === 0 && !resp) {
 
       Promise.all([
         getJobsFromAdmin(currentUser.portfolio_info[0].org_id),
         getMasterLinks(currentUser.portfolio_info[0].org_id),
         getSettingUserProject(),
       ]).then((response) => {
-        console.log('AAAAAAAA', response[0].data.response.data.filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
-        setJobs(response[0].data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
-        setjobs2(response[0].data.response.data.reverse().filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
+        console.log('AAAAAAAA', response[0]?.data?.response?.data?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
+        setJobs(
+          response[0]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type) ?
+          response[0]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type).reverse()
+          :
+          []
+        );
+        setjobs2(
+          response[0]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type) ?
+          response[0]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type).reverse()
+          : 
+          []
+        );
         setresponse(true);
 
         setJobLinks(response[1].data?.master_link)
@@ -188,9 +198,9 @@ const LandingPage = ({ subAdminView }) => {
       <div className="landing-page">
         <div className="cards">
           {
-            jobs.length === 0 && searchValue || jobs.length === 0 && resp ? <h1>No Job Found</h1>
+            jobs?.length === 0 && searchValue || jobs?.length === 0 && resp ? <h3 style={{ textAlign: 'center' }}>You have not created any jobs yet</h3>
               :
-              jobs.length > 0 ? (
+              jobs?.length > 0 ? (
                 isActive === 'active' ? 
                  jobs
                  .filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
@@ -210,9 +220,9 @@ const LandingPage = ({ subAdminView }) => {
                 :
                  isActive === 'inactive' ? 
                   jobs
-                  .filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
-                  .filter(v => v.is_active === false)
-                  .map((job, index) => (
+                  ?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type)
+                  ?.filter(v => v.is_active === false)
+                  ?.map((job, index) => (
                     <Card 
                       {...job} 
                       key={`job-InActive-${index}`} 

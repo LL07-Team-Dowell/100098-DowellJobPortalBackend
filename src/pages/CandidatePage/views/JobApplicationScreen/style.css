@@ -438,7 +438,9 @@
 
     .candidate__Job__Application__Container .job__Title__Container .job__Title__Items p,
     .candidate__Job__Application__Container .job__Info__Container .job__Skills__Info span.job__Skill__Wrapper,
-    .candidate__Job__Application__Container .job__About__Info span {
+    .candidate__Job__Application__Container .job__About__Info span,
+    .candidate__Job__Application__Container .job__Skills__Info span
+    {
         font-size: 0.8rem;
     }
 

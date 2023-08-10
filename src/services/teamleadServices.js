@@ -41,21 +41,24 @@ export const candidateUpdateTaskForTeamLead = async (data) => {
   );
 };
 
+// Apis For Threads 
+export const fetchThread = async(data)=>{
+  return await currentBackendAxiosInstance.get(
+    `fetch_team_thread/${data}/`
+  )
+}
 
-//For comment & thread
-export const candidateCreateComment = async(data)=>{
+//Apis For comment 
+export const postComment = async(data)=>{
   return await currentBackendAxiosInstance.post(
     "create_comment/",
     data
   )
 }
 
-export const featchAllComment = async(data)=>{
-  return await currentBackendAxiosInstance.get(
-    "fetch_comment/",
-    data
-  )
-}
+export const featchAllComment = async (data) => {
+  return await currentBackendAxiosInstance.get("fetch_comment/", data );
+};
 
 export const updateComment = async(data)=>{
   return await currentBackendAxiosInstance.patch(

@@ -69,6 +69,7 @@ import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
 import Payment from "./pages/AccountPage/Payment";
 import Add from "./pages/AdminPage/views/Add/Add";
 import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThreadScreen";
+
 function App() {
   const {
     currentUser,
@@ -284,10 +285,10 @@ function App() {
         (item) => item.product === "Team Management"
       ).member_type === "owner" &&
       !currentUser.settings_for_profile_info?.fakeSuperUserInfo
-    ) 
+    )
     ||
     (
-      currentUser.settings_for_profile_info && 
+      currentUser.settings_for_profile_info &&
       currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
     )
   ) {
@@ -417,7 +418,6 @@ function App() {
               <StaffJobLandingLayout adminView={true} hideSearchBar={true}>
                 <TeamProvider>
                   <ValuesProvider>
-                    {/* create a component here */}
                     <TeamThread />
                   </ValuesProvider>
                 </TeamProvider>
@@ -649,6 +649,21 @@ function App() {
         />
         <Route
           path="/team-screen-member/:id/issue-completed"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+                <TeamProvider>
+                  <ValuesProvider>
+                    {/* create a component here */}
+                    <TeamThread />
+                  </ValuesProvider>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path="/team-screen-member/:id/issue-resolved"
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>

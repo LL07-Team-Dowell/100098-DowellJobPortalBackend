@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useTeam } from "../TeamsScreen/useTeams";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import TeamScreenLinks from "../../../TeamleadPage/views/CreateMembersTask/views/compoonent/teamScreenLinks/teamScreenLinks";
-import { getAllTeams } from "../../../../services/createMembersTasks";
+import { getAllTeams, getSingleTeam } from "../../../../services/createMembersTasks";
 import Navbar from "../../../TeamleadPage/views/CreateMembersTask/component/Navbar";
 import { NavLink, useNavigate } from "react-router-dom";
 import TeamScreenThreads from "../../../TeamleadPage/views/CreateMembersTask/views/compoonent/teamScreenThreads/teamScreenThreads";
@@ -19,12 +19,20 @@ const TeamScreenThreadCandidate = () => {
   useEffect(() => {
     if (team?.members === undefined) {
       setloading(true);
-      getAllTeams(currentUser.portfolio_info[0].org_id)
-        .then((resp) => {
-          setteam(resp.data.response.data.find((team) => team["_id"] === id));
-          setloading(false);
-        })
-        .catch((err) => console.log(err));
+      // getAllTeams(currentUser.portfolio_info[0].org_id)
+      // .then(resp =>{ 
+      //   setteam(resp.data.response.data.find(team => team["_id"] === id))
+      //   console.log(resp.data.response.data.find(team => team["_id"] === id))
+      //   setloading(false)
+      // })
+
+      // GET A SINGLE TEAM INSTEAD
+      getSingleTeam(id)
+      .then(resp =>{ 
+        setteam(resp.data.response.data[0])
+        setloading(false)
+      })
+      .catch(err => console.log(err))
     }
   }, []);
   console.log({ team });
@@ -65,12 +73,16 @@ const TeamScreenThreadCandidate = () => {
    `;
 
    const [panding, setPanding] = useState(true);
+   const [status, setStatus] = useState("active");
+   const [isActive, setIsActive] = useState('active') ;
    const clickToPandingApproval = () => {
      setPanding(true);
+     setStatus("In progress");
    };
 
    const clickToApproved = () => {
      setPanding(false);
+      setStatus("Completed");
    };
 
   if (loading) return <LoadingSpinner />;
@@ -81,10 +93,11 @@ const TeamScreenThreadCandidate = () => {
       ) : null}
       <TeamScreenLinks id={id} />
       <Wrappen>
-            <NavLink className={`${panding ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/team-issues`} onClick={clickToPandingApproval}>In progress</NavLink>
-            <NavLink className={`${panding ? 'link-notactive' : 'link-isActive'}`} to={`/team-screen-member/${id}/team-issues`} onClick={clickToApproved}>Completed</NavLink>
+            <NavLink className={status === 'in progress' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={()=>setStatus('in progress')}>In progress</NavLink>
+            <NavLink className={status === 'completed' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={()=>setStatus('completed')}>Completed</NavLink>
+            <NavLink className={status === 'resolved' && 'isActive'} to={`/team-screen-member/${id}/team-issues`} onClick={()=>setStatus('resolved')}>Resolved</NavLink>
         </Wrappen>
-      <TeamScreenThreads />
+      <TeamScreenThreads status={status}/>
     </div>
   );
 };

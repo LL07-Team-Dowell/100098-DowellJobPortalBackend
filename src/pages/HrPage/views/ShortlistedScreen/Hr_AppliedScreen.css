@@ -63,7 +63,7 @@
 
 .Applied__container .view__Shortlisted__Options .option__Item {
     box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 10px;
-    padding: 1rem;
+    padding: 3rem 1rem;
     max-width: 350px;
     justify-content: center;
     flex-direction: column;
@@ -115,6 +115,13 @@
     filter: brightness(0.7);
 }
 
+.Applied__container .modal__Container.single__Item {
+    width: 40%;
+}
+
+.Applied__container .view__Shortlisted__Options.single__Item {
+    justify-content: center;
+}
 
 @media (min-width: 768px) and (max-width: 991.98px) {
     .Applied__container{

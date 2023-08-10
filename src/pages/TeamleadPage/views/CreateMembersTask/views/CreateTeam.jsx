@@ -15,10 +15,11 @@ import { FaTimes } from "react-icons/fa";
 import LittleLoading from "../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
 import { getUserInfoFromLoginAPI } from "../../../../../services/authServices";
+import { testingRoles } from "../../../../../utils/testingRoles";
 
 const CreateTeam = () => {
   // USER
-  const { currentUser, setCurrentUser } = useCurrentUserContext();
+  const { currentUser, setCurrentUser, portfolioLoaded, setPortfolioLoaded, isNotOwnerUser, setIsNotOwnerUser } = useCurrentUserContext();
   // DATA
   const { data, setdata } = useValues();
   const MembersCurrentUser = currentUser?.settings_for_profile_info
@@ -43,7 +44,7 @@ const CreateTeam = () => {
   const [inputMembers, setInputMembers] = useState([]);
   const [query, setquery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [portfolioLoaded, setPortfolioLoaded] = useState(false);
+  
   // Navigate
   const navigate = useNavigate();
   // FUNCTIONS
@@ -70,17 +71,47 @@ const CreateTeam = () => {
   };
 
   useEffect(() => {
-    console.log(currentUser);
-    if (currentUser?.userportfolio?.length > 0) return setPortfolioLoaded(true);
+    if (portfolioLoaded) {
+      setDesplaidMembers(
+        isNotOwnerUser ?
+        currentUser?.selected_product?.userportfolio
+          .map((v) =>
+            v.username.length !== 0 && v.username[0] !== "owner"
+              ? v.username[0]
+              : null
+          )
+          .filter((v) => v !== null)
+          .map((v, i) => ({ member: v, id: i }))
+        :
+        currentUser?.userportfolio
+          ?.filter((user) => user.member_type !== "owner")
+          .map((v) => (v.username.length !== 0 ? v.username[0] : null))
+          .filter((v) => v !== null)
+          .map((v, i) => ({ member: v, id: i }))
+      );
+      return
+    };
 
     const currentSessionId = sessionStorage.getItem("session_id");
+    if (!currentSessionId) return;
 
-    if (!currentSessionId) return setPortfolioLoaded(true);
     const teamManagementProduct = currentUser?.portfolio_info.find(
       (item) =>
         item.product === "Team Management" && item.member_type === "owner"
     );
-    if (!teamManagementProduct) {
+
+    if (
+      !(
+        (
+          currentUser.settings_for_profile_info && 
+          currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+        ) ||
+        (
+          currentUser.isSuperAdmin
+        )
+      ) &&
+        !teamManagementProduct
+      ) {
       console.log("No team management product found for current user");
       setDesplaidMembers(
         currentUser?.selected_product?.userportfolio
@@ -92,6 +123,7 @@ const CreateTeam = () => {
           .filter((v) => v !== null)
           .map((v, i) => ({ member: v, id: i }))
       );
+      setIsNotOwnerUser(true);
       return setPortfolioLoaded(true);
     }
 
@@ -99,6 +131,7 @@ const CreateTeam = () => {
       session_id: currentSessionId,
       product: teamManagementProduct.product,
     };
+    
     getUserInfoFromLoginAPI(dataToPost)
       .then((res) => {
         setCurrentUser(res.data);
@@ -110,12 +143,14 @@ const CreateTeam = () => {
             .map((v, i) => ({ member: v, id: i }))
         );
         setPortfolioLoaded(true);
+        setIsNotOwnerUser(false);
       })
       .catch((err) => {
         console.log("Failed to get user details from login API");
         console.log(err.response ? err.response.data : err.message);
         setPortfolioLoaded(true);
       });
+
   }, []);
 
   const createTeamSubmit = () => {
@@ -133,6 +168,7 @@ const CreateTeam = () => {
           members: inputMembers.map((v) => v.member),
           created_by: currentUser.userinfo.username,
           data_type: currentUser.portfolio_info[0].data_type,
+          admin_team: true,
         })
           .then((resp) => {
             navigate(
@@ -158,11 +194,13 @@ const CreateTeam = () => {
       console.log(data.team_name, inputMembers, data.teamDiscription);
     }
   };
-  console.log(displaidMembers);
+
+  // console.log(displaidMembers);
   const userIsThere = (user) =>
     data.selected_members.find((newUser) => newUser === user);
 
   if (!portfolioLoaded) return <LoadingSpinner />;
+
   return (
     <>
       <Navbar title=" Create Team" color={"#005734"} removeButton={true} />

@@ -36,3 +36,7 @@ export const getTrainingManagementResponses = async (company_id) => {
     `get_all_responses/${company_id}/`
   );
 };
+
+export const updateRatingForTrainingResponse = async (data) => {
+  return await currentBackendAxiosInstance.patch("update_rating/", data)
+}

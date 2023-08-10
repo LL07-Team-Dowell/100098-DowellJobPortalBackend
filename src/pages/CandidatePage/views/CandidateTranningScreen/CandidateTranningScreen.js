@@ -35,9 +35,22 @@ const Section_1 = styled.div`
         color: #FFFFFF;
         font-family:'poppins';
     }
+
+    @media (max-width: 800px) {
+      .none{
+        display: none !important;
+      }
+     }
+
+    
 `
 
 const Section_2 = styled.div`
+@media (max-width: 800px) {
+  h1{
+   font-size: 26px;
+  }
+ }
     display:flex;
     justify-content:center;
     align-items:center;
@@ -123,6 +136,8 @@ const Section_2 = styled.div`
                 margin: 10px 0;
             }
         }
+
+       
     }
 `
 
@@ -140,7 +155,6 @@ const Navbar = styled.nav`
 
   /* Responsive Styles */
   @media (max-width: 840px) {
-    flex-direction: column;
     height: auto;
 
     div.item {
@@ -282,6 +296,19 @@ const Hero = styled.div`
 
     .left-content {
       padding: 1rem;
+
+      a{
+        display: flex;
+        justify-content: center;
+      }
+
+      h1{
+        font-size: 36px;
+      }
+
+      p{
+        font-size: 14px;
+      }
     }
   }
 `
@@ -377,11 +404,11 @@ function CandidateTranningScreen({ shorlistedJob }) {
             <NavbarItem>
               <div className="item right-item">
                 <img src={assets.langing_logo} alt="logo" />
-                <h1>Training</h1>
+                <h1 className='none'>Training</h1>
               </div>
             </NavbarItem>
             <NavbarItem>
-              <div className="item middle-item" id='item'>
+              <div className="item middle-item none" id='item'>
                 <AiOutlineSearch className='svg' />
                 <input type="text" placeholder='Search for training program' />
               </div>
@@ -422,7 +449,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
         </Section_1>
 
         <Section_2>
-          <h1>Your Training Programs</h1>
+          <h1>Our Training Programs</h1>
           <br />
           {
             questionsLoading ? <LoadingSpinner /> :

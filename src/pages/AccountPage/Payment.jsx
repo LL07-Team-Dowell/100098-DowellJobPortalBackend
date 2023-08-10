@@ -1,8 +1,15 @@
 import React from 'react'
+import StaffJobLandingLayout from '../../layouts/StaffJobLandingLayout/StaffJobLandingLayout'
+import { PageUnderConstruction } from '../UnderConstructionPage/ConstructionPage'
 
 const Payment = () => {
   return (
-    <div>Payment</div>
+    <StaffJobLandingLayout
+      accountView={true}
+      hideSearchBar={true}
+    >
+      <PageUnderConstruction />
+    </StaffJobLandingLayout>
   )
 }
 

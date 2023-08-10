@@ -28,3 +28,7 @@ export const createTeamTask = async (data) => {
 export const getTeamTask = async (id) => {
     return await currentBackendAxiosInstance.get(`/get_team_task/${id}/`)
 }
+
+export const getSingleTeam = async (teamId) => {
+    return await currentBackendAxiosInstance.get(`get_team/${teamId}/`) ; 
+}

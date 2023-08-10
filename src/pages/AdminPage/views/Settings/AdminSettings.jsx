@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import axios from "axios";
@@ -45,6 +45,14 @@ const AdminSettings = () => {
   const [userstatus, setuserstatus] = useState("");
   const [Proj_Lead, setProj_Lead] = useState("");
   const { list, setlist } = useJobContext();
+  const [usersToDisplay, setUsersToDisplay] = useState([]);
+  const [indexes, setIndexes] = useState({
+    start: 0,
+    end: 20,
+  });
+  const [currentRoleFilter, setCurrentRoleFilter] = useState("all");
+  const roleFilterRef = useRef();
+  const [hiredCandidates, setHiredCandidates] = useState([]);
 
   useEffect(() => {
     if (firstSelection.length > 0) {

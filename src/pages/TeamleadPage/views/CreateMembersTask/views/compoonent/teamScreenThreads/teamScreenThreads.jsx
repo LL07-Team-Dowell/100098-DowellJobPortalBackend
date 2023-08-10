@@ -4,8 +4,10 @@ import "./teamScreenThreads.css";
 import { FaRegComments } from "react-icons/fa";
 import { testThreadsToWorkWith } from "../../../../../../../utils/testData";
 import userIcon from "./assets/user_icon.png";
+import Modal from "../TeamThread/Modal";
+import Avatar from "react-avatar";
 
-const TeamScreenThreads = () => {
+const TeamScreenThreads = ({ status }) => {
   const { currentUser } = useCurrentUserContext();
   console.log({ currentUser });
 
@@ -22,6 +24,7 @@ const TeamScreenThreads = () => {
   });
   const [formVisibility, setFormVisibility] = useState({});
   const [commentsVisibility, setCommentsVisibility] = useState({});
+  const [showModalStates, setShowModalStates] = useState({});
 
   useEffect(() => {
     setThreads(testThreadsToWorkWith);
@@ -156,25 +159,24 @@ const TeamScreenThreads = () => {
     });
   };
 
+  const handleClose = (threadId) => {
+    setShowModalStates((prevShowModalStates) => ({
+      ...prevShowModalStates,
+      [threadId]: false,
+    }));
+  };
+
+  const handleImageClick = (threadId) => {
+    setShowModalStates((prevShowModalStates) => ({
+      ...prevShowModalStates,
+      [threadId]: true,
+    }));
+  };
+
   const onSubmit = (e, id) => {
     e.preventDefault();
     addComment(text, id);
     setText("");
-  };
-
-  const getStatusColor = (status) => {
-    console.log("status", status);
-    if (
-      status === "Created" ||
-      status === "In progress" ||
-      status === "Completed" ||
-      status === "Resolved"
-      ) 
-      {
-        return "#005734";
-      } else {
-        return "red";
-      }
   };
 
   const isTextareaDisabled = text.length === 0;
@@ -182,193 +184,762 @@ const TeamScreenThreads = () => {
   return (
     <div className="team-screen-threads">
       <div className="team-screen-thread-container">
-        {React.Children.toArray(
-          threads.map((thread) => (
-            <div className="team-screen-threads-card">
-              <div className="thread-card">
-                {thread.image ? (
-                  <div>
-                    <img src={thread.image} alt="thread" />
-                  </div>
-                ) : (
-                  <></>
-                )}
-                <div className="team-screen-threads-container">
-                  <h3 style={{ color: "#005734", fontSize: "1.3rem" }}>
-                    {thread.thread}
-                  </h3>
-                  <div>
-                    <p>Assigned to : Team Development A</p>
-                    <p>Raised by : {thread.created_by}</p>
-                  </div>
-                  <div className="team-screen-threads-progress">
-                    {thread.previous_statuses
-                      .concat(thread.current_status)
-                      .map((status, index) => (
-                        <div key={index} className="progress">
-                        <p style={{ color: getStatusColor(status) }}>
-                        {status}
-                        
-                          </p>
-                          <div
-                            style={{
-                              backgroundColor: getStatusColor(status),
-                              padding: "1.5rem",
-                              borderRadius: "50%",
-                              width: "50%",
-                              height: "50%",
-                            }}
-                          ></div>
+        {status === "completed" && (
+          <>
+            {React.Children.toArray(
+              threads
+                .filter(
+                  (thread) =>
+                    thread.current_status === "Completed"
+                )
+                .map((thread) => (
+                  <div className="team-screen-threads-card">
+                    <div className="thread-card">
+                      {showModalStates[thread._id] && (
+                        <Modal
+                          imageUrl={thread.image}
+                          handleClose={() => handleClose(thread._id)}
+                        />
+                      )}
+                      {thread.image ? (
+                        <div className="image-container">
+                          <img src={thread.image} alt="thread" />
+                          <div className="view-btn-container">
+                            <button
+                              className="view-btn"
+                              onClick={() => handleImageClick(thread._id)}
+                            >
+                              View
+                            </button>
+                          </div>
                         </div>
-                      ))}
-                  </div>
-                  <div className="comments-section">
-                    <p className="comments">
-                      <FaRegComments
-                        onClick={() =>
-                          setFormVisibility((prevVisibility) => ({
-                            ...prevVisibility,
-                            [thread._id]: !prevVisibility[thread._id],
-                          }))
-                        }
-                      />
-                      &bull;
-                      <span
-                        onClick={() =>
-                          setCommentsVisibility((prevVisibility) => ({
-                            ...prevVisibility,
-                            [thread._id]: !prevVisibility[thread._id],
-                          }))
-                        }
-                      >{`${thread.comments.length} Comment${
-                        thread.comments.length !== 1 ? "s" : ""
-                      }`}</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="comment-action">
-                {formVisibility[thread._id] && (
-                  <form onSubmit={(e) => onSubmit(e, thread._id)}>
-                    <h3 style={{ fontSize: "0.8rem", marginBottom: "0.6rem" }}>
-                      Add Comment
-                    </h3>
-                    <textarea
-                      value={text}
-                      onChange={handleChange}
-                      placeholder="Enter your comment..."
-                      className="comment-input"
-                    />
-                    <button disabled={isTextareaDisabled}>Send</button>
-                  </form>
-                )}
-                {commentsVisibility[thread._id] && (
-                  <div>
-                    <h3
-                      style={{
-                        fontSize: "0.8rem",
-                        marginBottom: "0.6rem",
-                        marginTop: "0.6rem",
-                        color: "#005734",
-                      }}
-                    >
-                      Comments
-                    </h3>
-                    {React.Children.toArray(
-                      thread.comments.map((comment) => (
-                        <div
+                      ) : (
+                        <></>
+                      )}
+                      <div className="team-screen-threads-container">
+                        <h3
                           style={{
-                            display: "flex",
-                            gap: "1rem",
-                            marginBottom: "0.7rem",
-                            marginLeft: comment.parentId ? "2rem" : "0",
+                            color: "#005734",
+                            fontSize: "1.3rem",
+                            marginBottom: "0",
                           }}
                         >
-                          <div>
-                            <img
-                              src={userIcon}
-                              alt="userIcon"
-                              width={35}
-                              height={35}
-                            />
+                          {thread.thread}
+                        </h3>
+                        <div>
+                          <p>Assigned to : Team Development A</p>
+                          <p>Raised by : {thread.created_by}</p>
+                        </div>
+                        <div className="team-screen-threads-progress">
+                          <div className="progress">
+                            <p>Created</p>
+                            <div
+                              className={
+                                thread.current_status === "Created"
+                                  ? "active-thread-btn"
+                                  : "threads-btn"
+                              }
+                            ></div>
                           </div>
-                          {editingCommentId === comment._id ? (
-                            <div>
-                              <textarea
-                                value={editingCommentText}
-                                onChange={(e) =>
-                                  setEditingCommentText(e.target.value)
-                                }
-                                className="comment-input"
-                              />
-                              <button
-                                onClick={() =>
-                                  saveEditedComment(comment._id, thread._id)
-                                }
+                          <div className="progress">
+                            <p>In progress</p>
+                            <div
+                              className={
+                                thread.current_status === "In progress"
+                                  ? "active-thread-btn"
+                                  : "threads-btn"
+                              }
+                            ></div>
+                          </div>
+                          <div className="progress">
+                            <p>Completed</p>
+                            <div
+                              className={
+                                thread.current_status === "Completed"
+                                  ? "active-thread-btn"
+                                  : "threads-btn"
+                              }
+                            ></div>
+                          </div>
+                          <div className="progress">
+                            <p>Resolved</p>
+                            <div
+                              className={
+                                thread.current_status === "Resolved"
+                                  ? "active-thread-btn"
+                                  : "threads-btn"
+                              }
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="comments-section">
+                          <p className="comments">
+                            <FaRegComments
+                              onClick={() =>
+                                setFormVisibility((prevVisibility) => ({
+                                  ...prevVisibility,
+                                  [thread._id]: !prevVisibility[thread._id],
+                                }))
+                              }
+                            />
+                            &bull;
+                            <span
+                              onClick={() =>
+                                setCommentsVisibility((prevVisibility) => ({
+                                  ...prevVisibility,
+                                  [thread._id]: !prevVisibility[thread._id],
+                                }))
+                              }
+                            >{`${thread.comments.length} Comment${
+                              thread.comments.length !== 1 ? "s" : ""
+                            }`}</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="comment-action">
+                      {formVisibility[thread._id] && (
+                        <form onSubmit={(e) => onSubmit(e, thread._id)}>
+                          <h3
+                            style={{
+                              fontSize: "0.8rem",
+                              marginBottom: "0.6rem",
+                            }}
+                          >
+                            Add Comment
+                          </h3>
+                          <textarea
+                            value={text}
+                            onChange={handleChange}
+                            placeholder="Enter a comment..."
+                            className="comment-input"
+                          />
+                          <button
+                            disabled={isTextareaDisabled}
+                            className="action-btn"
+                          >
+                            Comment
+                          </button>
+                        </form>
+                      )}
+                      {commentsVisibility[thread._id] && (
+                        <div>
+                          <h3
+                            style={{
+                              fontSize: "0.8rem",
+                              marginBottom: "0.6rem",
+                              marginTop: "0.6rem",
+                              color: "#005734",
+                            }}
+                          >
+                            Comments
+                          </h3>
+                          {React.Children.toArray(
+                            thread.comments.map((comment) => (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  gap: "1rem",
+                                  marginBottom: "0.7rem",
+                                  marginLeft: comment.parentId ? "2rem" : "0",
+                                }}
                               >
-                                Save
-                              </button>
-                            </div>
-                          ) : (
-                            <div>
-                              <p style={{ fontWeight: "600" }}>
-                                {comment.user}
-                              </p>
-                              <p>{comment.comment}</p>
-                              <button
-                                onClick={() =>
-                                  handleEdit(
-                                    comment.comment,
-                                    comment._id,
-                                    thread._id
-                                  )
-                                }
-                              >
-                                Edit
-                              </button>
-                              {/*<button
-                                onClick={() =>
-                                  deleteComment(comment._id, thread._id)
-                                }
-                              >
-                                Delete
-                              </button> */}
-                              <button
-                                onClick={() =>
-                                  setReplyingComment({
-                                    commentId: comment._id,
-                                    threadId: thread._id,
-                                    text: "",
-                                  })
-                                }
-                              >
-                                Reply
-                              </button>
-                              {replyingComment.commentId === comment._id &&
-                                replyingComment.threadId === thread._id && (
+                                <div>
+                                  <img
+                                    src={userIcon}
+                                    alt="userIcon"
+                                    width={35}
+                                    height={35}
+                                  />
+                                </div>
+                                {editingCommentId === comment._id ? (
                                   <div>
                                     <textarea
-                                      name="text"
-                                      value={replyingComment.text}
-                                      onChange={handleReplyChange}
+                                      value={editingCommentText}
+                                      onChange={(e) =>
+                                        setEditingCommentText(e.target.value)
+                                      }
                                       className="comment-input"
-                                      placeholder="Enter your reply..."
                                     />
-                                    <button onClick={onSubmitReply}>
-                                      Reply
+                                    <button
+                                      onClick={() =>
+                                        saveEditedComment(
+                                          comment._id,
+                                          thread._id
+                                        )
+                                      }
+                                      className="action-btn"
+                                    >
+                                      Save
                                     </button>
                                   </div>
+                                ) : (
+                                  <div>
+                                    <p style={{ fontWeight: "600" }}>
+                                      {comment.user}
+                                    </p>
+                                    <p>{comment.comment}</p>
+                                    <button
+                                      onClick={() =>
+                                        handleEdit(
+                                          comment.comment,
+                                          comment._id,
+                                          thread._id
+                                        )
+                                      }
+                                      className="action-btn"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        setReplyingComment({
+                                          commentId: comment._id,
+                                          threadId: thread._id,
+                                          text: "",
+                                        })
+                                      }
+                                      className="action-btn"
+                                    >
+                                      Reply
+                                    </button>
+                                    {replyingComment.commentId ===
+                                      comment._id &&
+                                      replyingComment.threadId ===
+                                        thread._id && (
+                                        <div>
+                                          <textarea
+                                            name="text"
+                                            value={replyingComment.text}
+                                            onChange={handleReplyChange}
+                                            className="comment-input"
+                                            placeholder="Enter your reply..."
+                                          />
+                                          <button
+                                            onClick={onSubmitReply}
+                                            className="action-btn"
+                                          >
+                                            Reply
+                                          </button>
+                                        </div>
+                                      )}
+                                  </div>
                                 )}
-                            </div>
+                              </div>
+                            ))
                           )}
                         </div>
-                      ))
-                    )}
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
-            </div>
-          ))
+                ))
+            )}
+          </>
+        )}
+
+        {status === "in progress" ||
+          (status === "created" && (
+            <>
+              {React.Children.toArray(
+                threads
+                  .filter(
+                    (thread) =>
+                      thread.current_status === "Resolved" ||
+                      thread.current_status === "Completed"
+                  )
+                  .map((thread) => (
+                    <div className="team-screen-threads-card">
+                      <div className="thread-card">
+                        {showModalStates[thread._id] && (
+                          <Modal
+                            imageUrl={thread.image}
+                            handleClose={() => handleClose(thread._id)}
+                          />
+                        )}
+                        {thread.image ? (
+                          <div className="image-container">
+                            <img src={thread.image} alt="thread" />
+                            <div className="view-btn-container">
+                              <button
+                                className="view-btn"
+                                onClick={() => handleImageClick(thread._id)}
+                              >
+                                View
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                        <div className="team-screen-threads-container">
+                          <h3
+                            style={{
+                              color: "#005734",
+                              fontSize: "1.3rem",
+                              marginBottom: "0",
+                            }}
+                          >
+                            {thread.thread}
+                          </h3>
+                          <div>
+                            <p>Assigned to : Team Development A</p>
+                            <p>Raised by : {thread.created_by}</p>
+                          </div>
+                          <div className="team-screen-threads-progress">
+                            <div className="progress">
+                              <p>Created</p>
+                              <div
+                                className={
+                                  thread.current_status === "Created"
+                                    ? "active-thread-btn"
+                                    : "threads-btn"
+                                }
+                              ></div>
+                            </div>
+                            <div className="progress">
+                              <p>In progress</p>
+                              <div
+                                className={
+                                  thread.current_status === "In progress"
+                                    ? "active-thread-btn"
+                                    : "threads-btn"
+                                }
+                              ></div>
+                            </div>
+                            <div className="progress">
+                              <p>Completed</p>
+                              <div
+                                className={
+                                  thread.current_status === "Completed"
+                                    ? "active-thread-btn"
+                                    : "threads-btn"
+                                }
+                              ></div>
+                            </div>
+                            <div className="progress">
+                              <p>Resolved</p>
+                              <div
+                                className={
+                                  thread.current_status === "Resolved"
+                                    ? "active-thread-btn"
+                                    : "threads-btn"
+                                }
+                              ></div>
+                            </div>
+                          </div>
+                          <div className="comments-section">
+                            <p className="comments">
+                              <FaRegComments
+                                onClick={() =>
+                                  setFormVisibility((prevVisibility) => ({
+                                    ...prevVisibility,
+                                    [thread._id]: !prevVisibility[thread._id],
+                                  }))
+                                }
+                              />
+                              &bull;
+                              <span
+                                onClick={() =>
+                                  setCommentsVisibility((prevVisibility) => ({
+                                    ...prevVisibility,
+                                    [thread._id]: !prevVisibility[thread._id],
+                                  }))
+                                }
+                              >{`${thread.comments.length} Comment${
+                                thread.comments.length !== 1 ? "s" : ""
+                              }`}</span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="comment-action">
+                        {formVisibility[thread._id] && (
+                          <form onSubmit={(e) => onSubmit(e, thread._id)}>
+                            <h3
+                              style={{
+                                fontSize: "0.8rem",
+                                marginBottom: "0.6rem",
+                              }}
+                            >
+                              Add Comment
+                            </h3>
+                            <textarea
+                              value={text}
+                              onChange={handleChange}
+                              placeholder="Enter a comment..."
+                              className="comment-input"
+                            />
+                            <button
+                              disabled={isTextareaDisabled}
+                              className="action-btn"
+                            >
+                              Comment
+                            </button>
+                          </form>
+                        )}
+                        {commentsVisibility[thread._id] && (
+                          <div>
+                            <h3
+                              style={{
+                                fontSize: "0.8rem",
+                                marginBottom: "0.6rem",
+                                marginTop: "0.6rem",
+                                color: "#005734",
+                              }}
+                            >
+                              Comments
+                            </h3>
+                            {React.Children.toArray(
+                              thread.comments.map((comment) => (
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    gap: "1rem",
+                                    marginBottom: "0.7rem",
+                                    marginLeft: comment.parentId ? "2rem" : "0",
+                                  }}
+                                >
+                                  <div>
+                                    <img
+                                      src={userIcon}
+                                      alt="userIcon"
+                                      width={35}
+                                      height={35}
+                                    />
+                                  </div>
+                                  {editingCommentId === comment._id ? (
+                                    <div>
+                                      <textarea
+                                        value={editingCommentText}
+                                        onChange={(e) =>
+                                          setEditingCommentText(e.target.value)
+                                        }
+                                        className="comment-input"
+                                      />
+                                      <button
+                                        onClick={() =>
+                                          saveEditedComment(
+                                            comment._id,
+                                            thread._id
+                                          )
+                                        }
+                                        className="action-btn"
+                                      >
+                                        Save
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div>
+                                      <p style={{ fontWeight: "600" }}>
+                                        {comment.user}
+                                      </p>
+                                      <p>{comment.comment}</p>
+                                      <button
+                                        onClick={() =>
+                                          handleEdit(
+                                            comment.comment,
+                                            comment._id,
+                                            thread._id
+                                          )
+                                        }
+                                        className="action-btn"
+                                      >
+                                        Edit
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          setReplyingComment({
+                                            commentId: comment._id,
+                                            threadId: thread._id,
+                                            text: "",
+                                          })
+                                        }
+                                        className="action-btn"
+                                      >
+                                        Reply
+                                      </button>
+                                      {replyingComment.commentId ===
+                                        comment._id &&
+                                        replyingComment.threadId ===
+                                          thread._id && (
+                                          <div>
+                                            <textarea
+                                              name="text"
+                                              value={replyingComment.text}
+                                              onChange={handleReplyChange}
+                                              className="comment-input"
+                                              placeholder="Enter your reply..."
+                                            />
+                                            <button
+                                              onClick={onSubmitReply}
+                                              className="action-btn"
+                                            >
+                                              Reply
+                                            </button>
+                                          </div>
+                                        )}
+                                    </div>
+                                  )}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+              )}
+            </>
+          ))}
+
+        {status === "resolved" && (
+          <>
+            {React.Children.toArray(
+              threads
+                .filter((thread) => thread.current_status === "Resolved")
+                .map((thread) => (
+                  <div className="team-screen-threads-card">
+                    <div className="thread-card">
+                      {showModalStates[thread._id] && (
+                        <Modal
+                          imageUrl={thread.image}
+                          handleClose={() => handleClose(thread._id)}
+                        />
+                      )}
+                      {thread.image ? (
+                        <div className="image-container">
+                          <img src={thread.image} alt="thread" />
+                          <div className="view-btn-container">
+                            <button
+                              className="view-btn"
+                              onClick={() => handleImageClick(thread._id)}
+                            >
+                              View
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                      <div className="team-screen-threads-container">
+                        <h3
+                          style={{
+                            color: "#005734",
+                            fontSize: "1.3rem",
+                            marginBottom: "0",
+                          }}
+                        >
+                          {thread.thread}
+                        </h3>
+                        <div>
+                          <p>Assigned to : Team Development A</p>
+                          <p>Raised by : {thread.created_by}</p>
+                        </div>
+                        <div className="team-screen-threads-progress">
+                          <div className="progress">
+                            <p>Created</p>
+                            <div
+                              className={
+                                thread.current_status === "Created"
+                                  ? "active-thread-btn"
+                                  : "threads-btn"
+                              }
+                            ></div>
+                          </div>
+                          <div className="progress">
+                            <p>In progress</p>
+                            <div
+                              className={
+                                thread.current_status === "In progress"
+                                  ? "active-thread-btn"
+                                  : "threads-btn"
+                              }
+                            ></div>
+                          </div>
+                          <div className="progress">
+                            <p>Completed</p>
+                            <div
+                              className={
+                                thread.current_status === "Completed"
+                                  ? "active-thread-btn"
+                                  : "threads-btn"
+                              }
+                            ></div>
+                          </div>
+                          <div className="progress">
+                            <p>Resolved</p>
+                            <div
+                              className={
+                                thread.current_status === "Resolved"
+                                  ? "active-thread-btn"
+                                  : "threads-btn"
+                              }
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="comments-section">
+                          <p className="comments">
+                            <FaRegComments
+                              onClick={() =>
+                                setFormVisibility((prevVisibility) => ({
+                                  ...prevVisibility,
+                                  [thread._id]: !prevVisibility[thread._id],
+                                }))
+                              }
+                            />
+                            &bull;
+                            <span
+                              onClick={() =>
+                                setCommentsVisibility((prevVisibility) => ({
+                                  ...prevVisibility,
+                                  [thread._id]: !prevVisibility[thread._id],
+                                }))
+                              }
+                            >{`${thread.comments.length} Comment${
+                              thread.comments.length !== 1 ? "s" : ""
+                            }`}</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="comment-action">
+                      {formVisibility[thread._id] && (
+                        <form onSubmit={(e) => onSubmit(e, thread._id)}>
+                          <h3
+                            style={{
+                              fontSize: "0.8rem",
+                              marginBottom: "0.6rem",
+                            }}
+                          >
+                            Add Comment
+                          </h3>
+                          <textarea
+                            value={text}
+                            onChange={handleChange}
+                            placeholder="Enter a comment..."
+                            className="comment-input"
+                          />
+                          <button
+                            disabled={isTextareaDisabled}
+                            className="action-btn"
+                          >
+                            Comment
+                          </button>
+                        </form>
+                      )}
+                      {commentsVisibility[thread._id] && (
+                        <div>
+                          <h3
+                            style={{
+                              fontSize: "0.8rem",
+                              marginBottom: "0.6rem",
+                              marginTop: "0.6rem",
+                              color: "#005734",
+                            }}
+                          >
+                            Comments
+                          </h3>
+                          {React.Children.toArray(
+                            thread.comments.map((comment) => (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  gap: "1rem",
+                                  marginBottom: "0.7rem",
+                                  marginLeft: comment.parentId ? "2rem" : "0",
+                                }}
+                              >
+                                <div>
+                                  <img
+                                    src={userIcon}
+                                    alt="userIcon"
+                                    width={35}
+                                    height={35}
+                                  />
+                                </div>
+                                {editingCommentId === comment._id ? (
+                                  <div>
+                                    <textarea
+                                      value={editingCommentText}
+                                      onChange={(e) =>
+                                        setEditingCommentText(e.target.value)
+                                      }
+                                      className="comment-input"
+                                    />
+                                    <button
+                                      onClick={() =>
+                                        saveEditedComment(
+                                          comment._id,
+                                          thread._id
+                                        )
+                                      }
+                                      className="action-btn"
+                                    >
+                                      Save
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <p style={{ fontWeight: "600" }}>
+                                      {comment.user}
+                                    </p>
+                                    <p>{comment.comment}</p>
+                                    <button
+                                      onClick={() =>
+                                        handleEdit(
+                                          comment.comment,
+                                          comment._id,
+                                          thread._id
+                                        )
+                                      }
+                                      className="action-btn"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        setReplyingComment({
+                                          commentId: comment._id,
+                                          threadId: thread._id,
+                                          text: "",
+                                        })
+                                      }
+                                      className="action-btn"
+                                    >
+                                      Reply
+                                    </button>
+                                    {replyingComment.commentId ===
+                                      comment._id &&
+                                      replyingComment.threadId ===
+                                        thread._id && (
+                                        <div>
+                                          <textarea
+                                            name="text"
+                                            value={replyingComment.text}
+                                            onChange={handleReplyChange}
+                                            className="comment-input"
+                                            placeholder="Enter your reply..."
+                                          />
+                                          <button
+                                            onClick={onSubmitReply}
+                                            className="action-btn"
+                                          >
+                                            Reply
+                                          </button>
+                                        </div>
+                                      )}
+                                  </div>
+                                )}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+            )}
+          </>
         )}
       </div>
     </div>

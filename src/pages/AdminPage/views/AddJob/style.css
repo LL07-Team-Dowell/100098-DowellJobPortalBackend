@@ -107,7 +107,7 @@ h3 {
   margin-bottom: 2rem;
 }
 
-.job_details .select {
+.job_details .module {
   padding: 1.1rem 1.1rem 1.1rem 2rem;
   border-radius: 0.8rem;
   border: 0.1rem solid var(--primary-color);

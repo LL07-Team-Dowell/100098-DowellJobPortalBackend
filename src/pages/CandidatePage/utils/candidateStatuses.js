@@ -8,4 +8,5 @@ export const candidateStatuses = {
     ONBOARDING: "hired",
     PENDING_SELECTION: "Pending",
     GUEST_PENDING_SELECTION: "Guest_Pending",
+    REHIRE: "rehired",
 }

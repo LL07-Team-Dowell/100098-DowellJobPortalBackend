@@ -7,8 +7,9 @@ import TeamScreenMembersContainer from './compoonent/teamScreenMembersContainer/
 import AddMemberPopup from './compoonent/addMemberPopup/addMemberPopup';
 import { HiOutlinePlusSm } from 'react-icons/hi';
 import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContext';
-import { getAllTeams } from '../../../../../services/createMembersTasks';
+import { getAllTeams, getSingleTeam } from '../../../../../services/createMembersTasks';
 import LoadingSpinner from '../../../../../components/LoadingSpinner/LoadingSpinner'; 
+
 const TeamScreenMembers = () => {
   const { currentUser } = useCurrentUserContext();
     const {id} = useParams();
@@ -20,12 +21,20 @@ const TeamScreenMembers = () => {
     useEffect(()=>{
       if(team?.members === undefined){
         setloading(true)
-        getAllTeams(currentUser.portfolio_info[0].org_id)
-          .then(resp =>{ 
-          setteam(resp.data.response.data.find(team => team["_id"] === id))
-          console.log(resp.data.response.data.find(team => team["_id"] === id))
-          setloading(false)})
-      .catch(err => console.log(err))
+        // getAllTeams(currentUser.portfolio_info[0].org_id)
+        // .then(resp =>{ 
+        //   setteam(resp.data.response.data.find(team => team["_id"] === id))
+        //   console.log(resp.data.response.data.find(team => team["_id"] === id))
+        //   setloading(false)
+        // })
+
+        // GET A SINGLE TEAM INSTEAD
+        getSingleTeam(id)
+        .then(resp =>{ 
+          setteam(resp.data.response.data[0])
+          setloading(false)
+        })
+        .catch(err => console.log(err))
       }
     },[])
         const getElementToTeamState = (teamName, members )=>{
