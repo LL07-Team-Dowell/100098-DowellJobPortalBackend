@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap");
+
 .report_select {
   position: absolute;
   top: 50%;
@@ -70,10 +72,11 @@
   ); /* Black background with opacity (0.8) */
   z-index: 1000; /* Adjust the z-index value to ensure the overlay appears on top */
   .form_date_popup_container {
+    font-family: "Poppins", sans-serif;
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%);
+    transform: translate(-50%, -70%);
     background-color: #fff;
     width: 500px;
     padding: 20px;
@@ -83,19 +86,28 @@
     .closebutton {
       display: block;
       width: fit-content;
+
       cursor: pointer;
-      margin-left: 100;
+      margin-left: 100%;
       margin-right: 00%;
     }
     input {
-      width: 80%;
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
     button {
       display: block;
       margin: 10px auto;
       width: 70px;
-      color: #005734;
+      background-color: #005734;
       color: white;
+      width: 80px;
+      border-radius: 5px;
+      border: none;
+      height: 24px;
+      cursor: pointer;
     }
   }
 }
