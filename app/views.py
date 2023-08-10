@@ -3164,12 +3164,12 @@ class Thread_Apis(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def get(self, request):
-        data = request.data  
+    def get(self, request , document_id):
+        # data = request.data  
         #print(data) 
-        if data:
+        if document_id:
             field = {
-                "_id": data.get("document_id"),
+                "_id": document_id,
             }
             update_field = {}
         
@@ -3178,7 +3178,7 @@ class Thread_Apis(APIView):
             )
             
             get_comment = dowellconnection(
-                *comment_report_module, "fetch", {"thread_id":data.get("document_id")}, update_field
+                *comment_report_module, "fetch", {"thread_id":document_id}, update_field
             )
             #print(get_response)
             #print(get_comment)
@@ -3188,7 +3188,7 @@ class Thread_Apis(APIView):
 
             if json.loads(get_response)["isSuccess"] == True:
                 return Response(
-                    {"message": f"Thread with id-{data.get('document_id')}","data": response}, status=status.HTTP_200_OK
+                    {"message": f"Thread with id-{document_id}","data": response}, status=status.HTTP_200_OK
                 )
             else:
                 return Response(
@@ -3197,7 +3197,7 @@ class Thread_Apis(APIView):
         else:
             return Response(
                 {"message": "Parameters are not valid",
-                 "errors":data},
+                 "errors":document_id},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -3378,12 +3378,12 @@ class Comment_Apis(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def get(self, request):
-        data = request.data
+    def get(self, request, document_id):
+        # data = request.data
         
-        if data:
+        if document_id:
             field = {
-                "_id": data.get("document_id"),
+                "_id": document_id,
             }
             update_field = {}
             
@@ -3393,7 +3393,7 @@ class Comment_Apis(APIView):
             #print(insert_response)
             if json.loads(insert_response)["isSuccess"] == True:
                 return Response(
-                    {"message": f"Comment with id-{data.get('document_id')}",
+                    {"message": f"Comment with id-{document_id}",
                      "data": json.loads(insert_response)}, status=status.HTTP_200_OK
                 )
             else:
@@ -3403,7 +3403,7 @@ class Comment_Apis(APIView):
                 )
         else:
             return Response(
-                {"message": "Parameters are not valid","error":data},
+                {"message": "Parameters are not valid","error":document_id},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

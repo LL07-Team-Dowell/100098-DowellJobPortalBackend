@@ -151,3 +151,12 @@
 -                                               -------->   __post__ to `generate_discord_invite/`
 -                                               -------->   __get__ to `get_discord_server_channels/<str:token>/<int:guild_id>/`
 -                                               -------->   __get__ to `get_discord_server_members/<str:token>/<int:guild_id>/`
+
+
+### thread apis---------
+
+-_get_ from `https://100098.pythonanywhere.com/fetch_thread/` --------> to _get_ `https://100098.pythonanywhere.com/fetch_thread/<str:documnet_id>/`
+
+### comment apis---------
+
+-_get_ from `https://100098.pythonanywhere.com/fetch_comment/` -------->' to _get_ `https://100098.pythonanywhere.com/fetch_comment/<int:document_id>/`
