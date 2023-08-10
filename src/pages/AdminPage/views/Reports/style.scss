@@ -1,96 +1,126 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap");
 
 .report_select {
   position: absolute;
-  top:50%;
-  left:50%;
+  top: 50%;
+  left: 50%;
   transform: translateX(-50%);
-    padding: 1.1rem 1.1rem 1.1rem 2rem;
-    border-radius: 0.8rem;
-    border: 0.1rem solid var(--primary-color);
-    background-color: #f4f4f4;
-    color: #7e7e7e;
-    font-weight: 400;
-    margin-bottom: 2rem;
+  padding: 1.1rem 1.1rem 1.1rem 2rem;
+  border-radius: 0.8rem;
+  border: 0.1rem solid var(--primary-color);
+  background-color: #f4f4f4;
+  color: #7e7e7e;
+  font-weight: 400;
+  margin-bottom: 2rem;
   z-index: 1001; /* Adjust the z-index value to ensure the overlay appears on top */
-
+}
+.reports__container {
+  padding: 20px;
+  padding-bottom: 40px;
+  h6 {
+    font-size: 30px;
   }
-  .reports__container{
-    padding:20px;
-    padding-bottom: 40px;
-    h6{
-        font-size: 30px;
-
+  .reports__container_header {
+    h3 {
+      font-size: 35px;
     }
-    .reports__container_header{
-        h3{
-            font-size: 35px;
-        }
-        p{
-            font-size: 25px;
-        }
-        .report_header{
-            display: flex;
-            justify-content: space-around;
-        }
-        
+    p {
+      font-size: 25px;
     }
-    .application{
-        display: flex;
-        align-items: center;
+    .report_header {
+      display: flex;
+      justify-content: space-around;
+    }
+    > div {
+      width: 70%;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
     }
   }
-  .graphs{
-    padding-bottom: 80px;
-  }
-  .job_applications{
-    >div{
-        display: flex;
-        gap:30px    
-    }
-  }
-  .candidates_graph{
+  .application {
     display: flex;
-    gap:30px ;
     align-items: center;
   }
+}
+.graphs {
+  padding-bottom: 80px;
+}
+.job_applications {
+  > div {
+    display: flex;
+    gap: 30px;
+  }
+}
+.candidates_graph {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
 
-.overlay{
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity (0.8) */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* Black background with opacity (0.8) */
   z-index: 1000; /* Adjust the z-index value to ensure the overlay appears on top */
-  .form_date_popup_container{
+  .form_date_popup_container {
+    font-family: "Poppins", sans-serif;
     position: absolute;
-    top:50%;
+    top: 50%;
     left: 50%;
-    transform: translate(-50%);
+    transform: translate(-50%, -70%);
     background-color: #fff;
     width: 500px;
     padding: 20px;
-    label{
+    label {
       display: block;
     }
-    .closebutton{
+    .closebutton {
       display: block;
       width: fit-content;
+
       cursor: pointer;
-      margin-left: 100;
+      margin-left: 100%;
       margin-right: 00%;
     }
-    input{
-      width: 80%;
-
+    input {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
-    button{
+    button {
       display: block;
-      margin:10px auto ; 
+      margin: 10px auto;
       width: 70px;
-      color:#005734 ; 
-      color:white; 
-      
+      background-color: #005734;
+      color: white;
+      width: 80px;
+      border-radius: 5px;
+      border: none;
+      height: 24px;
+      cursor: pointer;
     }
   }
+}
+
+.select_time_tage {
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #005734;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  gap: 1rem;
+  padding: 0.6rem 0.8rem;
+  width: -webkit-max-content;
+  width: max-content;
 }
