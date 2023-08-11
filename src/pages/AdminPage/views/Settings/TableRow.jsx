@@ -8,8 +8,7 @@ export default function TableRow({
   rolesDict,
   currentUser,
   Proj_Lead,
-  setAlert,
-  setLoading,
+  projectList
 }) {
   const roleAssignedPerson = settingUserProfileInfo
     .reverse()
@@ -38,26 +37,7 @@ export default function TableRow({
       : "No Role assigned yet"
     : "No Role assigned yet";
   const [roleAssigned, setRoleAssigned] = useState(roleAssignedPerson);
-  const projectList = [
-    "Workflow AI",
-    "Data Analyst",
-    "Global functions",
-    "Organiser",
-    "Hr Hiring",
-    "Law Intern",
-    "NPS Live",
-    "Voice of Consumer",
-    "Login",
-    "Business development",
-    "QR code generation",
-    "Social Media Automation",
-    "Online shops",
-    "License compatibility",
-    "Live UX Dashboard",
-    "HR Intern",
-    "Sale Agent",
-    "Sales Coordinator",
-  ];
+  
   const submit2 = (e) => {
     console.log({ valueofSubmit: e.target.value });
     const teamManagementProduct = currentUser.portfolio_info.find(
@@ -99,7 +79,7 @@ export default function TableRow({
       <td>
         <select defaultValue={""} onChange={submit2}>
           <option value="">update role</option>
-          {projectList.map((projectValue, index) => (
+          {Object.keys(projectList).map((projectValue, index) => (
             <option key={index} value={projectValue}>
               {projectValue}
             </option>
