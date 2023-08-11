@@ -377,6 +377,7 @@ function CandidateTranningScreen({ shorlistedJob }) {
       company_id: currentUser.portfolio_info[0].org_id,
       data_type: currentUser.portfolio_info[0].data_type,
       username: currentUser.userinfo.username,
+      portfolio_name: currentUser.portfolio_info[0].org_name,
       started_on: new Date().toString(),
       module: itemModule
     }

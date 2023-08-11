@@ -405,6 +405,7 @@ function TraningProgress({ shorlistedJob }) {
             data_type: currentUser.portfolio_info[0].data_type,
             username: currentUser.userinfo.username,
             started_on: new Date().toString(),
+            portfolio_name:currentUser.portfolio_info[0].org_name,
             module: itemModule
         }
 
