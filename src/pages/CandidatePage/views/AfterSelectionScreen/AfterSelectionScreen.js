@@ -15,6 +15,7 @@ import AddIssueScreen from "../../../TeamleadPage/views/AddIssueScreen/AddIssueS
 import "./style.css";
 import { useParams } from "react-router-dom";
 import { getAllTeams } from "../../../../services/createMembersTasks";
+import { getSettingUserProject } from "../../../../services/hrServices";
 
 const AfterSelectionScreen = ({ assignedProjects }) => {
   const { currentUser } = useCurrentUserContext();
@@ -28,6 +29,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
   const { setUserTasks } = useCandidateTaskContext();
   const [candidateTeams, setCandidateTeams] = useState([]);
   const [ candidateAssignedProjects, setCandidateAssignedProjects ] = useState([]);
+  const [ allProjects, setAllProjects ] = useState([]);
 
   useEffect(() => {
     if (assignedProjects.length < 1) {
@@ -41,23 +43,35 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
       setCandidateAssignedProjects(assignedProjects)
     }
 
-    getAllTeams(currentUser.portfolio_info[0].org_id)
-      .then((resp) => {
-        console.log(resp.data.response.data);
-        setCandidateTeams(
-          resp.data.response.data.filter((team) =>
-            team.members.includes(currentUser.userinfo.username)
+    Promise.all([
+      getAllTeams(currentUser.portfolio_info[0].org_id),
+      getSettingUserProject(),
+    ]).then(res => {
+      setCandidateTeams(
+        res[0]?.data?.response?.data?.filter((team) =>
+          team?.members.includes(currentUser.userinfo.username)
+        )
+      );
+
+      const list = res[1]?.data
+      ?.filter(
+        (project) =>
+          project?.data_type === currentUser.portfolio_info[0].data_type &&
+          project?.company_id === currentUser.portfolio_info[0].org_id &&
+          project.project_list &&
+          project.project_list.every(
+            (listing) => typeof listing === "string"
           )
-        );
-        console.log(
-          resp.data.response.data.filter((team) =>
-            team.members.includes(currentUser.userinfo.username)
-          )
-        );
-      })
-      .catch((err) => {
-        console.log('error occurred fetching teams');
-      });
+      ).reverse();
+
+      setAllProjects(
+        list.length < 1  ? []
+        :
+        list[0]?.project_list
+      );
+    }).catch(err => {
+      console.log('An error occured trying to fetch teams or projects for candidate');
+    })
   }, []);
 
   return (
@@ -67,7 +81,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
           <JobLandingLayout
             user={currentUser}
             afterSelection={true}
-            hideSideNavigation={showAddTaskModal}
+            hideSideNavigation={showAddTaskModal || showAddIssueModal}
           >
             {showAddTaskModal && (
               <AddTaskScreen
@@ -75,7 +89,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
                 afterSelectionScreen={true}
                 closeTaskScreen={() => setShowAddTaskModal(false)}
                 updateTasks={setUserTasks}
-                assignedProject={candidateAssignedProjects}
+                assignedProject={allProjects}
               />
             )}
             {showAddIssueModal && (
@@ -103,7 +117,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
             <div className="candidate__After__Selection__Screen">
               <TaskScreen
                 candidateAfterSelectionScreen={true}
-                assignedProject={candidateAssignedProjects}
+                assignedProject={allProjects}
               />
             </div>
           </JobLandingLayout>

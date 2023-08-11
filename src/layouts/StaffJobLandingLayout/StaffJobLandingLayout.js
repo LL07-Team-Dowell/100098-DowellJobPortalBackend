@@ -55,7 +55,8 @@ const StaffJobLandingLayout = ({
   publicAccountConfigurationBtnDisabled,
   publicAccountDetailState,
   handleChangeInPublicAccountState,
-  searchTeam
+  searchTeam,
+  layoutBgColor,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const { currentUser } = useCurrentUserContext();
@@ -222,6 +223,14 @@ const StaffJobLandingLayout = ({
             className={`jobs__Layout__Content ${
               adminView ? "full__Width" : ""
             }`}
+            style={{
+              backgroundColor:
+                layoutBgColor ?
+                  layoutBgColor
+                :
+                  '#fff'
+              ,
+            }}
           >
             {children}
           </div>
