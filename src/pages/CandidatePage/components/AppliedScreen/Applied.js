@@ -97,7 +97,7 @@ function Applied() {
           currentUserApplications.find(
             ({ job_number }) => currentJob.job_number === job_number
           )
-        );
+        )
         // const sortJob = currentUserAppliedJobs.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserApplications.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });

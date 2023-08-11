@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import Avatar from "react-avatar";
 import styled from "styled-components";
-import { fetchThread, postComment } from "../../../../../../../services/teamleadServices";
+import { fetchThread, postComment, updateSingleComment } from "../../../../../../../services/teamleadServices";
 import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import LittleLoading from "../../../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
@@ -15,8 +15,8 @@ const Wrapper = styled.div`
   border: 1px solid #ccc;
   border-radius: 8px;
   justify-content: center;
-    align-items: center;
-    width: 100%;
+  align-items: center;
+  width: 100%;
   margin-bottom: 10px;
 }
 
@@ -79,16 +79,21 @@ textarea {
 .comment-text {
   margin-top: 4px;
   width: 100%;
+  padding: 6px 0;
 }
 
 `
 
-const ThreadComment = ({ comments, commentInput, user, threadId }) => {
+const ThreadComment = ({ comments, commentInput, user, threadId, forceUpdate, loading }) => {
+  console.log(forceUpdate);
   const userName = user.trim();
   const initials = userName.charAt(0).toUpperCase();
   const [text, setText] = useState("");
   const { currentUser } = useCurrentUserContext();
   const [loadingcmnt, setLoadingcmnt] = useState(false);
+  const [updateComment, setUpdateComment] = useState(false);
+  const [editIndex, setEditIndex] = useState();
+  const [updateCommentInput, setUpdateCommentInput] = useState("")
 
   console.log(currentUser.portfolio_info[0].username);
   const handleChange = (e) => {
@@ -110,8 +115,19 @@ const ThreadComment = ({ comments, commentInput, user, threadId }) => {
     } catch (error) {
       console.error('Failed to create comment:', error.message);
     }
-
+    forceUpdate()
   };
+
+  const handleUpdate = (comment) => {
+    const document_id = comment._id;
+    const created_by = comment.created_by;
+    updateSingleComment({
+      comment: updateCommentInput,
+      document_id: document_id,
+      created_by: created_by
+    }).then(resp => console.log(resp))
+    setEditIndex(null)
+  }
 
 
   return (
@@ -127,11 +143,16 @@ const ThreadComment = ({ comments, commentInput, user, threadId }) => {
           loadingcmnt ? <LittleLoading /> :
             <button onClick={handleComment}>Post</button>
         )}
+
+        {
+          loading && <LittleLoading />
+        }
+
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", widows: "100%" }}>
         {
-          comments.map((comment) => {
+          comments.map((comment, index) => {
             return <div className="comment-container">
               <div className="avatar-container">
                 <Avatar name={initials} size={40} round />
@@ -139,11 +160,23 @@ const ThreadComment = ({ comments, commentInput, user, threadId }) => {
               <div className="comment-content">
                 <div className="comment-details">
                   <p className="user-name">{comment.created_by}</p>
-                  <input className="comment-text" value={comment.comment} />
+                  {
+                    editIndex === index ? <input className="comment-text" style={{ paddingLeft: "5px", border: "1px solid black" }} defaultValue={comment.comment} onChange={(e) => setUpdateCommentInput(e.target.value)} /> : <input className="comment-text" defaultValue={comment.comment} disabled />
+                  }
+
                 </div>
-                <div className="button">
-                  {currentUser.portfolio_info[0].username == comment.created_by && <button style={{ padding: "2px 10px", cursor: "pointer" }}>Edit</button>}
-                </div>
+                {
+                  editIndex === index ? <>
+                    <div className="button">
+                      {currentUser.portfolio_info[0].username == comment.created_by && <button style={{ padding: "5px 10px", cursor: "pointer", backgroundColor: "#005734", border: "none", color: "white" }} onClick={() => handleUpdate(comment)}>Update</button>}
+                    </div>
+                  </> : <>
+                    <div className="button">
+                      {currentUser.portfolio_info[0].username == comment.created_by && <button style={{ padding: "5px 10px", cursor: "pointer", backgroundColor: "#005734", border: "none", color: "white" }} onClick={() => setEditIndex(index)}>Edit</button>}
+                    </div>
+                  </>
+                }
+
               </div>
             </div>
           })

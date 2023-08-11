@@ -4,7 +4,8 @@
     --green-color: #005734;
     --yellow-color: #C09F2C;
 }
-.add__New__Task__Overlay{
+
+.add__New__Task__Overlay {
     background: var(--background-blur);
     backdrop-filter: blur(30px);
     height: 100%;
@@ -43,7 +44,7 @@
     color: #000;
 }
 
-.add__New__Task__Container .team__Members__Container .team__Member__Item{
+.add__New__Task__Container .team__Members__Container .team__Member__Item {
     cursor: pointer;
     border-radius: 10px;
     transition: 0.3s ease-in-out;
@@ -57,7 +58,8 @@
 }
 
 .add__New__Task__Container .add__Task__Btn,
-.add__New__Task__Container input, .add__New__Task__Container textarea {
+.add__New__Task__Container input,
+.add__New__Task__Container textarea {
     outline: none;
     border: none;
     display: block;
@@ -66,7 +68,8 @@
     margin: 6% 0;
 }
 
-.add__New__Task__Container input, .add__New__Task__Container textarea {
+.add__New__Task__Container input,
+.add__New__Task__Container textarea {
     box-shadow: 0px 4px 8px var(--background-blur);
     border: 1px solid var(--yellow-color);
     width: 100%;
@@ -83,7 +86,7 @@
     border-radius: 10px;
 }
 
-.add__New__Task__Container .selectProject{
+.add__New__Task__Container .selectProject {
     font-size: 0.9rem;
     font-weight: 500;
 }
@@ -96,7 +99,7 @@
     resize: none;
 }
 
-.add__New__Task__Container .add__Task__Btn{
+.add__New__Task__Container .add__Task__Btn {
     background-color: var(--green-color);
     color: var(--white);
     cursor: pointer;
@@ -106,7 +109,7 @@
 }
 
 .add__New__Task__Container .add__Task__Btn:hover,
-.add__New__Task__Container .add__Task__Btn:focus{
+.add__New__Task__Container .add__Task__Btn:focus {
     filter: brightness(0.9);
 }
 
@@ -118,20 +121,22 @@
 
 
 @keyframes fadeIn {
-    from{
+    from {
         opacity: 0;
-    }to{
+    }
+
+    to {
         opacity: 1;
     }
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
-    .add__New__Task__Container h1.title__Item{
+    .add__New__Task__Container h1.title__Item {
         margin-bottom: 6%;
     }
-    
-    .add__New__Task__Container .add__Task__Btn{
-        padding: 3%;   
+
+    .add__New__Task__Container .add__Task__Btn {
+        padding: 3%;
     }
 }
 
@@ -147,15 +152,17 @@
         padding: 2%;
     }
 
-    .add__New__Task__Container input, .add__New__Task__Container textarea {
+    .add__New__Task__Container input,
+    .add__New__Task__Container textarea {
         margin: 3% 0;
     }
 
-    .add__New__Task__Container input, .add__New__Task__Container textarea {
+    .add__New__Task__Container input,
+    .add__New__Task__Container textarea {
         padding: 2%;
     }
 
-    .add__New__Task__Container .add__Task__Btn{
+    .add__New__Task__Container .add__Task__Btn {
         padding: 2.5% 3%;
     }
 }

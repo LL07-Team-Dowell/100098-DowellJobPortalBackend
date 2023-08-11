@@ -13,7 +13,7 @@ import {
   getAllTeams,
 } from "../../../../services/createMembersTasks";
 
-const AddIssueScreen = ({
+const AddIssueScreen = ({ 
   closeIssuesScreen,
   afterSelectionScreen,
   editPage,
