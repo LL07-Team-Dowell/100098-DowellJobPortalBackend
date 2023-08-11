@@ -26,6 +26,7 @@
     overflow-y: auto;
     padding: 4% 2%;
     max-height: 80%;
+    scrollbar-width: thin;
 }
 
 .add__New__Task__Container .title__Item {

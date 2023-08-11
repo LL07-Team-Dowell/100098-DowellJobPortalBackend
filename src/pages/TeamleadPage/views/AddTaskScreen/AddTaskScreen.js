@@ -48,7 +48,7 @@ const AddTaskScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelecti
     console.log(formattedDate);
 
     // console.log(time);
-    useClickOutside(ref, () => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) });
+    // useClickOutside(ref, () => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) });
 
     // useEffect (() => {
 

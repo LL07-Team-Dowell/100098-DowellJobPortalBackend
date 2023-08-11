@@ -250,6 +250,7 @@ const AdminSettings = () => {
       adminView={true}
       adminAlternativePageActive={true}
       pageTitle={"Settings"}
+      layoutBgColor={'#fafafa'}
     >
       {loading || loading2 ? (
         <LoadingSpinner />
