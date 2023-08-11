@@ -332,11 +332,12 @@ const FormDatePopup = ({
 }) => {
   const handleFormSubmit = () => {
     if (firstDate && lastDate) {
-      if (isValidDate(firstDate) && isValidDate(lastDate)) {
-        handleSubmitDate(firstDate, lastDate);
+      if (firstDate && lastDate) {
+        handleSubmitDate(formatDateAndTime(firstDate), formatDateAndTime(lastDate));
         closeModal();
       } else {
         toast.error("the first or last date are not valid");
+        console.log({firstDate, lastDate,isValidDatefirstDate:isValidDate(firstDate),isValidDateLastDate:isValidDate(lastDate) })
       }
     } else {
       toast.error("there is no first date or last date in ");
@@ -350,14 +351,14 @@ const FormDatePopup = ({
         </div>
         <label htmlFor="first_date">Start Date</label>
         <input
-          type="text"
+          type="date"
           id="first_date"
           placeholder="mm/dd/yy"
           onChange={(e) => setFirstDate(e.target.value)}
         />
         <label htmlFor="first_date">End Date</label>
         <input
-          type="text"
+          type="date"
           id="first_date"
           placeholder="mm/dd/yy"
           onChange={(e) => setLastDate(e.target.value)}
@@ -379,6 +380,19 @@ function formatDateFromMilliseconds(milliseconds) {
   const seconds = String(dateObj.getSeconds()).padStart(2, "0");
 
   return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
+}
+function formatDateAndTime(inputDate) {
+  const dateObj = new Date(inputDate);
+
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const hours = String(dateObj.getHours()).padStart(2, '0');
+  const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+  const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+
+  const formattedDateAndTime = `${month}/${day}/${year} 00:00:00`;
+  return formattedDateAndTime;
 }
 function isValidDate(inputDate) {
   const currentDate = new Date();
