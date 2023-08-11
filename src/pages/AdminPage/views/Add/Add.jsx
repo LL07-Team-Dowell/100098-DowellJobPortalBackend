@@ -30,6 +30,7 @@ const Add = () => {
     setProjectsLoaded,
     setProjectsLoading,
     setProjectsAdded,
+    projectsAdded,
   } = useJobContext();
   const { currentUser } = useCurrentUserContext();
 
@@ -76,7 +77,7 @@ const Add = () => {
       hideSideBar={showProjectsPop}
     >
        <div className="new__task__container">
-        <h1 style={{ color: "#005734", fontSize: "1.6rem" }}>Add New Item</h1>
+        {/* <h1 style={{ color: "#005734", fontSize: "1.6rem" }}>Add New Item</h1> */}
         <div style={{ position: "relative", display: "flex", gap: "3rem" }} >
           <div style={{ marginTop: 30 }} className="Create_Team" onClick={()=>navigate('/add-job')}>
             <div>
@@ -87,8 +88,8 @@ const Add = () => {
                 />
               </div>
               <h4>Add Job</h4>
-              <p>
-                Lorem, ipsum dolor sit amet adipisicing elit. Ex sunt eius in, consectetur laudantium a, obcaecati repudiandae 
+              <p style={{ fontSize: '0.8rem' }}>
+                Create simple jobs for people to apply to join your amazing organization 
               </p>
             </div>
           </div>
@@ -100,20 +101,32 @@ const Add = () => {
                   style={{ fontSize: "2rem" }}
                 />
               </div>
-              <h4>Add Project</h4>
+              <h4>
+                {
+                  projectsAdded[0]?.project_list ?
+                  'Edit Project'
+                    :
+                  'Add Project'
+                }
+              </h4>
               {
                 projectsLoading ? 
                   <div style={{ margin: '1rem auto', width: 'max-content', backgroundColor: '#fff' }}>
                     <LoadingSpinner />
                   </div>
                 :
-                  <p>
-                    Lorem, ipsum dolor sit amet adipisicing elit. Ex sunt eius in, consectetur laudantium a, obcaecati repudiandae 
+                  <p style={{ fontSize: '0.8rem' }}>
+                    {
+                      projectsAdded[0]?.project_list ?
+                      'View projects that have been implemented throughout your organization' 
+                      :
+                      'Add projects that would be implemented throughout your organization'
+                    }
                   </p>  
               }
             </div>
           </div>
-          <div style={{ marginTop: 30 }} className="Create_Team" onClick={() => toast.info('Still in development')}  >
+          <div style={{ marginTop: 30 }} className="Create_Team" onClick={() => navigate('/teams/create-new-team/')}  >
             <div>
               <div>
                 <AiOutlinePlusCircle
@@ -122,7 +135,7 @@ const Add = () => {
                 />
               </div>
               <h4>Add team</h4>
-              <p>
+              <p style={{ fontSize: '0.8rem' }}>
               Bring everyone together and get to work. Work together in a team to increase productivity.
               </p>
             </div>

@@ -36,7 +36,7 @@ const AdminSettings = () => {
   const [ usersToDisplay, setUsersToDisplay ] = useState([]);
   const [ indexes, setIndexes ] = useState({
     start: 0,
-    end: 20,
+    end: 10,
   });
   const [ currentRoleFilter, setCurrentRoleFilter ] = useState('all');
   const roleFilterRef = useRef();
@@ -111,6 +111,9 @@ const AdminSettings = () => {
       :
       currentRoleFilter === 'no' ?
         options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).slice(indexes.start, indexes.end)
+      :
+      currentRoleFilter === 'hired' ?
+        options1?.filter(user => hiredCandidates.includes(user.portfolio_name)).slice(indexes.start, indexes.end)
       :
       options1.slice(indexes.start, indexes.end)
     );
@@ -208,12 +211,13 @@ const AdminSettings = () => {
     if (selection === 'forward') {
       if ((currentRoleFilter === 'yes') && (currentIndexes.end >= options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length)) return  
       if ((currentRoleFilter === 'no') && (currentIndexes.end >= options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length)) return  
+      if ((currentRoleFilter === 'hired') && (currentIndexes.end >= options1?.filter(user => hiredCandidates.includes(user.portfolio_name)).length)) return
 
       if (currentIndexes.end >= options1?.length) return
 
       setIndexes({
-        start: currentIndexes.start + 20,
-        end: currentIndexes.end + 20,
+        start: currentIndexes.start + 10,
+        end: currentIndexes.end + 10,
       })
     }
 
@@ -222,8 +226,8 @@ const AdminSettings = () => {
       if (currentIndexes.start < 1) return
 
       setIndexes({
-        start: currentIndexes.start - 20,
-        end: currentIndexes.end - 20,
+        start: currentIndexes.start - 10,
+        end: currentIndexes.end - 10,
       })
     }
   }
@@ -243,6 +247,9 @@ const AdminSettings = () => {
                   :
                   currentRoleFilter === 'no' ?
                     options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length
+                  :
+                  currentRoleFilter === 'hired' ?
+                    options1?.filter(user => hiredCandidates.includes(user.portfolio_name)).length
                   :
                   options1?.length
                 }
@@ -273,6 +280,7 @@ const AdminSettings = () => {
               <option value={'all'}>All</option>
               <option value={'yes'}>Role assigned</option>
               <option value={'no'}>No role assigned</option>
+              <option value={'hired'}>Hired</option>
             </select>
           </div>
 
@@ -282,6 +290,7 @@ const AdminSettings = () => {
                   <th>S/N</th>
                   <th>Member portfolio name</th>
                   <th>Role Assigned</th>
+                  <th>Candidate Hired</th>
                   <th>Update role</th>
                 </tr>
             </thead>
@@ -298,6 +307,8 @@ const AdminSettings = () => {
                     setAlert={setAlert}
                     setLoading={setLoading}
                     projectList={options2}
+                    hiredCandidates={hiredCandidates}
+                    currentFilter={currentRoleFilter}
                   />
                 ))}
 

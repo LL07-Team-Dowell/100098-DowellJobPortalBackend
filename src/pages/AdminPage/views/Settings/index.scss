@@ -7,10 +7,13 @@ $span__gray: #b8b8b8;
 $slider__gray: #d9d9d9;
 
 .table_team_roles {
-  width: 50%;
+  width: 70%;
   margin: auto;
   margin-top: 40px;
   transform: translateX(-70px);
+  padding-bottom: 100px;
+  margin-bottom: 100px;
+  
   table {
     text-align: left;
     width: 100%;
@@ -18,12 +21,70 @@ $slider__gray: #d9d9d9;
     max-height: 100px;
     overflow: auto;
     border-radius: 5px;
-    padding-bottom: 100px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     th,
     td {
       background-color: white;
       padding: 10px;
-      border-bottom: 2.5px solid #fafafa;
+    }
+    thead tr {
+      background-color: #005734;
+      border-bottom: 1px solid $placeholder__gray;
+    }
+    th {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    td {
+      font-size: .875rem;
+      &:last-child {
+        border-color: #fff;
+      }
+      select {
+        background: none;
+        outline: none;  
+        border: none;
+        // width: 100%;
+        cursor: pointer;
+        border: 1px solid #005734;
+        padding: 0.35rem 0.7rem;
+        border-radius: 5px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+        font-size: 0.78rem;
+      }
+      &.update__Role {
+        width: max-content;
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+    }
+    .update__Role__For__Portfolio__Wrapper {
+      display: flex;
+      gap: 1rem;
+      .update__Role__For__Portfolio__Btn {
+        border: 1px solid #fff;
+        background: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.7rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &.green {
+          border-color: #2ec946;
+        }
+
+        &.red {
+          border-color: #ff0000;
+        }
+      }
     }
   }
 
@@ -44,6 +105,7 @@ $slider__gray: #d9d9d9;
       outline: none;  
       border: none;
       width: 100%;
+      cursor: pointer;
     }
   }
   
@@ -69,7 +131,7 @@ $slider__gray: #d9d9d9;
         gap: 0.3rem;
         button {
           border: 1px solid #2ec946;
-          background: none;
+          background: #fff;
           border-radius: 4px;
           cursor: pointer;
           font-size: 0.7rem;
@@ -80,6 +142,10 @@ $slider__gray: #d9d9d9;
           justify-content: center;
         }
       }
+    }
+
+    h2 {
+      font-weight: 500;
     }
   }
 }

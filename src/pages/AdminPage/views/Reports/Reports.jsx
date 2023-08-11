@@ -18,6 +18,7 @@ import {
 import { Doughnut, Bar } from "react-chartjs-2";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
+import { AiOutlineClose } from "react-icons/ai";
 // register chart.js
 ChartJs.register(ArcElement, Tooltip, Legend);
 
@@ -96,6 +97,7 @@ const AdminReports = ({ subAdminView }) => {
       adminAlternativePageActive={true}
       pageTitle={"Reports"}
       subAdminView={subAdminView}
+      hideSideBar={showCustomTimeModal}
     >
       <div className="reports__container">
         <div className="reports__container_header">
@@ -107,12 +109,12 @@ const AdminReports = ({ subAdminView }) => {
             >
               <option value="select_time">select time</option>
               <option value="last_7_days">last 7 days</option>
-              <option value="custom_time">cutom time</option>
+              <option value="custom_time">custom time</option>
             </select>
           </div>
         </div>
         <div className="graphs">
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>jobs</h6>
             <div style={{ width: 400, height: 300 }}>
               <Doughnut
@@ -133,7 +135,7 @@ const AdminReports = ({ subAdminView }) => {
               ></Doughnut>
             </div>
           </div>
-          <div>
+          <div className="graph__Item">
             <h6>applications</h6>
             <div className="application">
               <div style={{ width: 400, height: 300 }}>
@@ -161,7 +163,7 @@ const AdminReports = ({ subAdminView }) => {
             </div>
           </div>
 
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>candidates</h6>
             <div className="candidates_graph">
               <div style={{ width: 400, height: 300 }}>
@@ -185,17 +187,17 @@ const AdminReports = ({ subAdminView }) => {
                           data.selected_candidates,
                         ],
                         backgroundColor: [
-                          "black",
+                          "#005734",
                           "red",
-                          "green",
+                          "black",
                           "yellow",
                           "pink",
                           "blue",
                         ],
                         borderColor: [
-                          "black",
+                          "#005734",
                           "red",
-                          "green",
+                          "black",
                           "yellow",
                           "pink",
                           "blue",
@@ -227,17 +229,17 @@ const AdminReports = ({ subAdminView }) => {
                           data.selected_candidates,
                         ],
                         backgroundColor: [
-                          "black",
+                          "#005734",
                           "red",
-                          "green",
+                          "black",
                           "yellow",
                           "pink",
                           "blue",
                         ],
                         borderColor: [
-                          "black",
+                          "#005734",
                           "red",
-                          "green",
+                          "black",
                           "yellow",
                           "pink",
                           "blue",
@@ -250,7 +252,7 @@ const AdminReports = ({ subAdminView }) => {
             </div>
           </div>
 
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>Teams and tasks</h6>
             <div style={{ width: 400, height: 300 }}>
               <Bar
@@ -268,7 +270,7 @@ const AdminReports = ({ subAdminView }) => {
               ></Bar>
             </div>
           </div>
-          <div className="job_applications">
+          <div className="job_applications graph__Item">
             <h6>applications</h6>
             <div>
               <div>
@@ -347,7 +349,7 @@ const FormDatePopup = ({
     <div className="overlay">
       <div className="form_date_popup_container">
         <div className="closebutton" onClick={() => closeModal()}>
-          X
+          <AiOutlineClose />
         </div>
         <label htmlFor="first_date">Start Date</label>
         <input
