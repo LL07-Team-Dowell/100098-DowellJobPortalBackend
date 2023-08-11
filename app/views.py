@@ -3743,3 +3743,40 @@ class Generate_Lead_Report(APIView):
                          "message": f"Lead reported Generated for team with id-{payload.get('team_id')}", 
                          "response":data}, status=status.HTTP_201_CREATED)
 
+@method_decorator(csrf_exempt, name="dispatch")
+class Generate_candidate_dublicates(APIView):
+    def get(self, request,company_id):
+        field = {"company_id": company_id}
+        update_field = {}
+        data = {}
+        job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        Total_job_applications=(json.loads(job_applications)['data'])
+        applicants = []
+        duplicates=[]
+        for job in Total_job_applications:
+            username = job.get("username")
+            email = job.get("applicant_email")
+            applied_on=job.get("application_submitted_on")
+            applicant_status=job.get("status")
+            
+            applicant = {
+                "username": username,
+                "email": email,
+                "applied_on":applied_on,
+                "applicant_status":applicant_status
+            }
+            if applicant in applicants:
+                duplicates.append(applicant)
+            else:
+                applicants.append(applicant)
+
+        unique_usernames = set(applicant["username"] for applicant in applicants)
+        data['unique_applicants']=unique_usernames
+        data['duplicates_applicants']=duplicates
+
+
+        return Response({
+            "success":True,
+            "data":data,
+            }, status=status.HTTP_200_OK)
+     
