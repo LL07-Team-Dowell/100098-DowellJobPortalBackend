@@ -18,7 +18,6 @@ const TeamThreadScreen = () => {
     const { team, setteam } = useTeam()
     const [loading, setloading] = useState(false)
     const [detail, setdetail] = useState('in progress')
-    const [showCreatTask, setShowCreateTask] = useState(false)
     const [tasks, setTasks] = useState([])
     const [addedNewTask, setAddedNewTask] = useState(true)
     // useEffect
@@ -70,7 +69,7 @@ const TeamThreadScreen = () => {
 
     return (
         <div>
-            {team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true} addTeamTask={true} handleAddTeamTaskFunction={() => setShowCreateTask(true)} addTeamTaskTitle='Add Task' /> : null}
+            {team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true} /> : null}
             <TeamScreenLinks id={id} />            {
                 issue && (
                     <AddIssueTeamLead
@@ -94,7 +93,7 @@ const TeamThreadScreen = () => {
                             </div>
                             <h4>Create New</h4>
                             <p>
-                                Lorem, ipsum dolor sit amet adipisicing elit. Ex sunt eius in, consectetur laudantium a, obcaecati repudiandae
+                                Create, monitor and get quick feedback on issues encountered in our products.
                             </p>
                         </div>
                     </div>
@@ -110,13 +109,12 @@ const TeamThreadScreen = () => {
                             </div>
                             <h4>View</h4>
                             <p>
-                                Lorem, ipsum dolor sit amet adipisicing elit. Ex sunt eius in, consectetur laudantium a, obcaecati repudiandae
+                                View the progress on the resolution of issues raised by your team.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
-            {showCreatTask && <CreateTask id={id} setTasks={setTasks} members={team.members} team={team} unShowCreateTask={() => setShowCreateTask(false)} />}
 
         </div>
     )

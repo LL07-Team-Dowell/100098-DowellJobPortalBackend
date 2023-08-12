@@ -14,6 +14,7 @@ import { differenceInCalendarDays } from 'date-fns';
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getCandidateTask } from "../../../../services/candidateServices";
 import styled from "styled-components";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 
 
 const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, handleEditBtnClick, className, assignedProject }) => {
@@ -29,11 +30,22 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
     const [tasksofuser, settasksofuser] = useState([]);
     const [taskdetail2, settaskdetail2] = useState([]);
     const [value, onChange] = useState(new Date());
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
+        setproject(assignedProject[0]);
+
         getCandidateTask(currentUser.portfolio_info[0].org_id)
-            .then(resp => { setUserTasks(resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username)); console.log('a;aaaa', resp.data.response.data, resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username)) })
+        .then(resp => { 
+            setUserTasks(resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username)); 
+            console.log('a;aaaa', resp.data.response.data, resp.data.response.data.filter(v => v.applicant === currentUser.userinfo.username)) 
+            setLoading(false);
+        }).catch(err => {
+            setLoading(false);
+        })
     }, []);
+
     useEffect(() => {
         console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         settaskdetail2(userTasks.filter(d => {
@@ -42,12 +54,24 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
             console.log({ dateTime, calendatTime })
             return dateTime === calendatTime;
         }))
-    }, [value, userTasks, project]);
+    }, [value, userTasks]);
+
+    useEffect(() => {
+        if (!project) return
+
+        const projectsMatching = userTasks.filter(task => task?.project === project);
+        const datesUserHasTaskForProject = [...new Set(projectsMatching.map(task => [new Date(task.task_created_date)])).values()].flat();
+        setDatesToStyle(datesUserHasTaskForProject);
+
+        settaskdetail2(projectsMatching);
+    }, [project])
 
     useEffect(() => {
 
         if (!currentUser) return navigate(-1);
-        if (userTasks.length > 0) return
+        if (userTasks.length > 0) return;
+
+        setproject(assignedProject[0]);
 
         getCandidateTask(currentUser.portfolio_info[0].org_id).then(res => {
             const tasksForCurrentUser = res.data.response.data.filter(v => v.applicant === currentUser.userinfo.username);
@@ -160,14 +184,19 @@ const TaskScreen = ({ handleAddTaskBtnClick, candidateAfterSelectionScreen, hand
                 </>
             }
 
-            <AssignedProjectDetails assignedProject={project ? project : assignedProject[0]} showTask={true} availableProjects={assignedProject} removeDropDownIcon={true} handleSelectionClick={e => setproject(e)} />
+            <AssignedProjectDetails assignedProject={project ? project : assignedProject[0]} showTask={true} availableProjects={assignedProject} removeDropDownIcon={false} handleSelectionClick={e => setproject(e)} />
 
             <div className="all__Tasks__Container">
-                <Calendar onChange={handleDateChange} value={value} tileClassName={tileClassName} />
-                <div className="tasks__Wrapper">
-                    {taskdetail2.length > 0 && <><h3 className="task__Title">Tasks</h3><br /></>}
-                    <ul>{taskdetail2.length > 0 ? taskdetail2.map((d, i) => <li style={{ color: "#000", fontWeight: 400 }} key={i}>{d.task}</li>) : "No Tasks Found For Today"}</ul>
-                </div>
+                {
+                    loading ? <LoadingSpinner /> :
+                    <>
+                        <Calendar onChange={handleDateChange} value={value} tileClassName={tileClassName} />
+                        <div className="tasks__Wrapper">
+                            {taskdetail2.length > 0 && <><h3 className="task__Title">Tasks</h3><br /></>}
+                            <ul>{taskdetail2.length > 0 ? taskdetail2.map((d, i) => <li style={{ color: "#000", fontWeight: 400 }} key={i}>{d.task}</li>) : "No Tasks Found For Today"}</ul>
+                        </div>   
+                    </>
+                }
             </div>
         </div>
     </>

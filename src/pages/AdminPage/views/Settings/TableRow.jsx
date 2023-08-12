@@ -19,64 +19,41 @@ export default function TableRow({
   availableProjects,
   updateSettingsUserProfileInfo,
 }) {
-  const [roleAssigned, setRoleAssigned] = useState('No role assigned yet');
+  const [roleAssigned, setRoleAssigned] = useState('No role assigned');
   const [ updatedRole, setUpdatedRole ] = useState(null);
   const [ loading, setLoading ] = useState(false);
-  const [ projectAssigned, setProjectAssigned ] = useState('');
+  const [ projectAssigned, setProjectAssigned ] = useState('No project assigned');
   const [ updatedProject, setUpdatedProject ] = useState(null);
   const roleRef = useRef();
   const projectAssignedRef = useRef();
   
   useEffect(() => {
-    setRoleAssigned(
-      settingUserProfileInfo
-      .reverse()
-      .find(
+    const [roleAssignedToPortfolio, projectAssignedToPortfolio] = [
+      settingUserProfileInfo?.reverse()
+      ?.find(
         (value) =>
-          value["profile_info"][0]["profile_title"] === option.portfolio_name
-      )
-      ? rolesDict[
-          settingUserProfileInfo
-            .reverse()
-            .find(
-              (value) =>
-                value["profile_info"][0]["profile_title"] ===
-                option.portfolio_name
-            )["profile_info"][0]["Role"]
-        ]
-        ? rolesDict[
-            settingUserProfileInfo
-              .reverse()
-              .find(
-                (value) =>
-                  value["profile_info"][0]["profile_title"] ===
-                  option.portfolio_name
-              )["profile_info"][0]["Role"]
-          ]
-        : "Invalid role"
+          value?.profile_info[0]?.profile_title === option.portfolio_name
+      )?.profile_info[0]?.Role
+      ,
+      settingUserProfileInfo?.reverse()
+      ?.find(
+        (value) =>
+          value?.profile_info[0]?.profile_title === option.portfolio_name
+      )?.profile_info[0]?.project
+    ];
+
+    setRoleAssigned(
+      roleAssignedToPortfolio ?
+        rolesDict[roleAssignedToPortfolio] ?
+          rolesDict[roleAssignedToPortfolio]
+          : 
+          "Invalid role"        
       : "No Role assigned"
     )
 
     setProjectAssigned(
-      settingUserProfileInfo
-      .reverse()
-      .find(
-        (value) =>
-          value["profile_info"][0]["profile_title"] === option.portfolio_name
-      ) &&
-      settingUserProfileInfo
-      .reverse()
-      .find(
-        (value) =>
-          value["profile_info"][0]["profile_title"] === option.portfolio_name
-      )["profile_info"][0]["project"] ?
-        settingUserProfileInfo
-          .reverse()
-          .find(
-            (value) =>
-              value["profile_info"][0]["profile_title"] ===
-              option.portfolio_name
-          )["profile_info"][0]["project"]
+      projectAssignedToPortfolio ?
+        projectAssignedToPortfolio
       :
       'No project assigned'
     )

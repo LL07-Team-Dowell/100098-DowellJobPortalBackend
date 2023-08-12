@@ -156,11 +156,11 @@ const CreateTaskScreen = ({
               className ? className : ""
             }`}
           >
-            {!candidateAfterSelectionScreen && (
+            {/* {!candidateAfterSelectionScreen && (
               <>
                 <ApplicantIntro showTask={true} />
               </>
-            )}
+            )} */}
             <AssignedProjectDetails
               showTask={true}
               availableProjects={selectOption}
