@@ -14,6 +14,7 @@ import { testingRoles } from "../../../../utils/testingRoles";
 import { MdArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
 import { IoFilterOutline } from "react-icons/io5";
 import TableRow from "./TableRow";
+import { getSettingUserProject } from "../../../../services/hrServices";
 
 const rolesDict = { 'Dept_Lead': 'Account', "Proj_Lead": 'Teamlead', "Hr": "Hr", "sub_admin": "Sub Admin", "group_lead": "Group Lead", "super_admin": "Super Admin" };
 
@@ -41,6 +42,7 @@ const AdminSettings = () => {
   const [ currentRoleFilter, setCurrentRoleFilter ] = useState('all');
   const roleFilterRef = useRef();
   const [ hiredCandidates, setHiredCandidates ] = useState([]);
+  const [ allProjects, setAllProjects ] = useState([]);
 
 
   useEffect(() => {
@@ -140,7 +142,37 @@ const AdminSettings = () => {
   };
   useEffect(() => {
     setLoading(true);
-    getSettingUserProfileInfo().then(resp => { setSettingUsetProfileInfo(resp.data); setLoading(false); console.log(resp.data.reverse()) }).catch(err => { console.log(err); setLoading(false) })
+    Promise.all([
+      getSettingUserProfileInfo(),
+      getSettingUserProject(),
+    ]).then(res => {
+      console.log(res[0]?.data?.reverse());
+
+      setSettingUsetProfileInfo(res[0]?.data); 
+
+      const projectListing = res[1]?.data
+      ?.filter(
+        (project) =>
+          project?.data_type === currentUser.portfolio_info[0].data_type &&
+          project?.company_id === currentUser.portfolio_info[0].org_id &&
+          project.project_list &&
+          project.project_list.every(
+            (listing) => typeof listing === "string"
+          )
+      ).reverse();
+
+      setAllProjects(
+        projectListing.length < 1  ? []
+        :
+        projectListing[0]?.project_list
+      );
+
+      setLoading(false); 
+    }).catch(err => {
+      console.log(err); 
+      setLoading(false);
+    })
+
     if (list.length < 1) {
       getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
         .then(resp => {
@@ -184,26 +216,6 @@ const AdminSettings = () => {
       .then(response => { console.log(response); setFirstSelection(""); setSecondSelection(""); setAlert(true); setLoading(false); })
       .catch(error => console.log(error))
   }
-  const projectList = [
-    "Workflow AI",
-    "Data Analyst",
-    "Global functions",
-    "Organiser",
-    "Hr Hiring",
-    "Law Intern",
-    "NPS Live",
-    "Voice of Consumer",
-    "Login",
-    "Business development",
-    "QR code generation",
-    "Social Media Automation",
-    "Online shops",
-    "License compatibility",
-    "Live UX Dashboard",
-    "HR Intern",
-    "Sale Agent",
-    "Sales Coordinator"
-  ]
 
   const handleNavSelectionClick = (selection) => {
 
@@ -291,6 +303,7 @@ const AdminSettings = () => {
                   <th>Member portfolio name</th>
                   <th>Role Assigned</th>
                   <th>Candidate Hired</th>
+                  <th>Project Assigned</th>
                   <th>Update role</th>
                 </tr>
             </thead>
@@ -309,6 +322,9 @@ const AdminSettings = () => {
                     projectList={options2}
                     hiredCandidates={hiredCandidates}
                     currentFilter={currentRoleFilter}
+                    setTeamleadProject={setProj_Lead}
+                    availableProjects={allProjects}
+                    updateSettingsUserProfileInfo={setSettingUsetProfileInfo}
                   />
                 ))}
 
@@ -373,5 +389,27 @@ const AdminSettings = () => {
 
   </StaffJobLandingLayout>
 }
+
+
+const projectList = [
+  "Workflow AI",
+  "Data Analyst",
+  "Global functions",
+  "Organiser",
+  "Hr Hiring",
+  "Law Intern",
+  "NPS Live",
+  "Voice of Consumer",
+  "Login",
+  "Business development",
+  "QR code generation",
+  "Social Media Automation",
+  "Online shops",
+  "License compatibility",
+  "Live UX Dashboard",
+  "HR Intern",
+  "Sale Agent",
+  "Sales Coordinator"
+]
 
 export default AdminSettings;

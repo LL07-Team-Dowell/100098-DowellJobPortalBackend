@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
@@ -15,10 +15,17 @@ export default function TableRow({
   projectList,
   hiredCandidates,
   currentFilter,
+  setTeamleadProject,
+  availableProjects,
+  updateSettingsUserProfileInfo,
 }) {
   const [roleAssigned, setRoleAssigned] = useState('No role assigned yet');
   const [ updatedRole, setUpdatedRole ] = useState(null);
   const [ loading, setLoading ] = useState(false);
+  const [ projectAssigned, setProjectAssigned ] = useState('');
+  const [ updatedProject, setUpdatedProject ] = useState(null);
+  const roleRef = useRef();
+  const projectAssignedRef = useRef();
   
   useEffect(() => {
     setRoleAssigned(
@@ -46,8 +53,32 @@ export default function TableRow({
                   option.portfolio_name
               )["profile_info"][0]["Role"]
           ]
-        : "Invalid role assigned"
-      : "No Role assigned yet"
+        : "Invalid role"
+      : "No Role assigned"
+    )
+
+    setProjectAssigned(
+      settingUserProfileInfo
+      .reverse()
+      .find(
+        (value) =>
+          value["profile_info"][0]["profile_title"] === option.portfolio_name
+      ) &&
+      settingUserProfileInfo
+      .reverse()
+      .find(
+        (value) =>
+          value["profile_info"][0]["profile_title"] === option.portfolio_name
+      )["profile_info"][0]["project"] ?
+        settingUserProfileInfo
+          .reverse()
+          .find(
+            (value) =>
+              value["profile_info"][0]["profile_title"] ===
+              option.portfolio_name
+          )["profile_info"][0]["project"]
+      :
+      'No project assigned'
     )
   }, [currentFilter])
   
@@ -82,15 +113,35 @@ export default function TableRow({
         setRoleAssigned(rolesDict[updatedRole]);
         setLoading(false);
         setUpdatedRole(null);
+        setUpdatedProject(null);
+        setProjectAssigned(Proj_Lead);
+        updateSettingsUserProfileInfo([response.data, ...settingUserProfileInfo])
         toast.success(`Successfully updated role for ${option.portfolio_name}`)
       })
       .catch((error) => {
         console.log(error)
         setLoading(false);
         setUpdatedRole(null);
+        setUpdatedProject(null);
       });
   };
-  console.log({ roleAssigned });
+  // console.log({ roleAssigned });
+
+  const handleCancelRoleUpdate = () => {
+    
+    setUpdatedRole(null);
+    setUpdatedProject(null);
+
+    if (projectAssigned === 'No project assigned') {
+      projectAssignedRef.current.value = ''
+    } else {
+      projectAssignedRef.current.value = projectAssigned;
+    };
+
+    const currentRoleVal = Object.keys(rolesDict).find(role => rolesDict[role] === roleAssigned);
+    if (currentRoleVal) roleRef.current.value = currentRoleVal;
+  }
+
   return (
     <tr>
       {" "}
@@ -112,15 +163,44 @@ export default function TableRow({
           'No'
         }
       </td>
-      <td className="update__Role">
+      <td>
+        <select 
+          defaultValue={""} 
+          onChange={({ target }) => {
+            setTeamleadProject(target.value)
+            setUpdatedProject(true);
+          }} 
+          style={{
+            backgroundColor: ((roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || (updatedRole && rolesDict[updatedRole] === 'Teamlead')) ? '#fff' : `#f5f5f5`,
+            filter: ((roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || (updatedRole && rolesDict[updatedRole] === 'Teamlead')) ? 'brightness(1)': 'brightness(0.9)',
+            cursor: ((roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || (updatedRole && rolesDict[updatedRole] === 'Teamlead')) ? 'pointer' : 'not-allowed',
+            maxWidth: '50%'
+          }}
+          disabled={!((roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || (updatedRole && rolesDict[updatedRole] === 'Teamlead'))}
+          ref={projectAssignedRef}
+        >
+          <option value="" disabled>Set project</option>
+          {availableProjects.map((projectValue, index) => (
+            <option key={index} value={projectValue} selected={projectAssigned === projectValue}>
+              {projectValue}
+            </option>
+          ))}
+        </select>
+      </td>
+      <td 
+        className="update__Role"
+      >
         <select 
           defaultValue={""} 
           onChange={({ target }) => setUpdatedRole(target.value)} 
           style={{
-            pointerEvents: hiredCandidates.includes(option.portfolio_name) ? 'all' : 'none',
+            // pointerEvents: hiredCandidates.includes(option.portfolio_name) ? 'all' : 'none',
             backgroundColor: hiredCandidates.includes(option.portfolio_name) ? '#fff' : `#f5f5f5`,
-            filter: hiredCandidates.includes(option.portfolio_name) ? 'brightness(1)': 'brightness(0.9)'
+            filter: hiredCandidates.includes(option.portfolio_name) ? 'brightness(1)': 'brightness(0.9)',
+            cursor: hiredCandidates.includes(option.portfolio_name) ? 'pointer' : 'not-allowed'
           }}
+          disabled={!hiredCandidates.includes(option.portfolio_name)}
+          ref={roleRef}
         >
           <option value="" disabled>Update role</option>
           {Object.keys(projectList).map((projectValue, index) => (
@@ -130,14 +210,14 @@ export default function TableRow({
           ))}
         </select>
         {
-          updatedRole && rolesDict[roleAssigned] && roleAssigned !== rolesDict[updatedRole] && <div className="update__Role__For__Portfolio__Wrapper">
+          ((updatedProject) || (updatedRole && roleAssigned !== rolesDict[updatedRole])) && <div className="update__Role__For__Portfolio__Wrapper">
             <button disabled={loading} className="update__Role__For__Portfolio__Btn green" onClick={() => submit2()}>
               {
                 loading ? <LoadingSpinner width={'0.8rem'} height={'0.8rem'} /> :
                 <AiOutlineCheck />
               }
             </button>
-            <button disabled={loading} className="update__Role__For__Portfolio__Btn red" onClick={() => setUpdatedRole(null)}>
+            <button disabled={loading} className="update__Role__For__Portfolio__Btn red" onClick={handleCancelRoleUpdate}>
               <AiOutlineClose />
             </button>
           </div>
