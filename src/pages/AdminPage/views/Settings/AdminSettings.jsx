@@ -16,7 +16,15 @@ import { IoFilterOutline } from "react-icons/io5";
 import TableRow from "./TableRow";
 import { getSettingUserProject } from "../../../../services/hrServices";
 
-const rolesDict = { "Dept_Lead": 'Account', "Proj_Lead": 'Teamlead', "Hr": "Hr", "sub_admin": "Sub Admin", "group_lead": "Group Lead", "super_admin": "Super Admin" };
+const rolesDict = { 
+  "Dept_Lead": 'Account', 
+  "Proj_Lead": 'Teamlead', 
+  "Hr": "Hr", 
+  "sub_admin": "Sub Admin", 
+  "group_lead": "Group Lead", 
+  "super_admin": "Super Admin",
+  "candidate": "Candidate",
+};
 
 const AdminSettings = () => {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
