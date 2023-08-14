@@ -3192,13 +3192,11 @@ class public_product(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
     def get(self,request,job_company_id):
-        print(job_company_id)
         fields = {
                 "job_company_id": job_company_id
             }
         update_field = {"status": "Nothing to update"}
         dowellresponse = json.loads(dowellconnection(*Publiclink_reports, "fetch", fields, update_field))
-
         if dowellresponse["isSuccess"]:
             if len(dowellresponse["data"]) == 0:
                 return Response(
@@ -3220,8 +3218,7 @@ class public_product(APIView):
                                 }
                         data.append(item)
                     except Exception:
-                        pass
-                    
+                        pass  
                 return Response(
                     {
                         "message": f"List of links present",
