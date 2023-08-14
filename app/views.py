@@ -3198,6 +3198,7 @@ class public_product(APIView):
             }
         update_field = {"status": "Nothing to update"}
         dowellresponse = json.loads(dowellconnection(*Publiclink_reports, "fetch", fields, update_field))
+
         if dowellresponse["isSuccess"]:
             if len(dowellresponse["data"]) == 0:
                 return Response(
@@ -3208,10 +3209,23 @@ class public_product(APIView):
                     status=status.HTTP_204_NO_CONTENT,
                 )
             else:
+                data=[]
+                for res in dowellresponse["data"]:
+                    try:
+                        if "public_link_name" in res.keys():
+                            item={
+                                    "master_link": res["master_link"],
+                                    "link_name": res["public_link_name"],
+                                    "type": "product",
+                                }
+                        data.append(item)
+                    except Exception:
+                        pass
+                    
                 return Response(
                     {
                         "message": f"List of links present",
-                        "response": dowellresponse,
+                        "response": data,
                     },
                     status=status.HTTP_200_OK,
                 )
