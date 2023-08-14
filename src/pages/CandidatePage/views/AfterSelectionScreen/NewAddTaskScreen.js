@@ -18,7 +18,7 @@ const NewAddTaskScreen = ({ handleAddTaskBtnClick, handleAddIssueBtnClick }) => 
               </div>
               <h4>Create Issues</h4>
               <p>
-                Create, monitor and get quick feedback on issues ecountered in our products.
+                Create, monitor and get quick feedback on issues encountered in our products.
               </p>
             </div>
           </div>

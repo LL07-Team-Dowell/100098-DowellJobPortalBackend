@@ -374,7 +374,7 @@ function App() {
           path="/teams/create-new-team/"
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout adminView={true}>
+              <StaffJobLandingLayout adminView={true} pageTitle={"New Team"} adminAlternativePageActive={true}>
                 <ValuesProvider>
                   <CreateTeam />
                 </ValuesProvider>

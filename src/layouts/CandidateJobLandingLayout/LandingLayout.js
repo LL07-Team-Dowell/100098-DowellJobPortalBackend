@@ -82,7 +82,9 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
                             </Link>
                         }
                         <Link to={"/user"}>
-                            <HiOutlineUserCircle className="icon" />
+                            {
+                                currentUser.userinfo.profile_img?<img src={currentUser.userinfo.profile_img} alt="#" style={{width:"30px", borderRadius: '50%',height:'30px',objectFit: 'cover'}} />:<HiOutlineUserCircle className="icon" />
+                            }
                         </Link>
                     </div>
                 }

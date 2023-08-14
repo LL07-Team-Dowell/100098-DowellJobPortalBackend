@@ -48,6 +48,13 @@ export const fetchThread = async(data)=>{
   )
 }
 
+export const updateSingleThread= async(data)=>{
+  return await currentBackendAxiosInstance.patch(
+    `update_thread/`,
+    data
+  )
+}
+
 //Apis For comment 
 export const postComment = async(data)=>{
   return await currentBackendAxiosInstance.post(
@@ -60,7 +67,7 @@ export const featchAllComment = async (data) => {
   return await currentBackendAxiosInstance.get("fetch_comment/", data );
 };
 
-export const updateComment = async(data)=>{
+export const updateSingleComment = async(data)=>{
   return await currentBackendAxiosInstance.patch(
     "update_comment/",
     data

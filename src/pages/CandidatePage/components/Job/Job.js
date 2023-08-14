@@ -67,7 +67,7 @@ function JobScreen() {
 
             const matchedJobs = findJobsMatchingCategory(jobCategoryParam);
             setJobsMatchingCategory(matchedJobs);
-            // console.log(matchedJobs);
+            // console.log(matchedJobs)
 
             if (jobCategoryParam === "Internship") {
                 setJobSelectionCategories(["Full time", "Part time"])
