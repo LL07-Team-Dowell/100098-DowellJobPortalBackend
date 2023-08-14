@@ -2941,10 +2941,16 @@ class createPublicApplication(APIView):
         update_field = {"status": "Nothing to update"}
         responses = dowellconnection(*Publiclink_reports, "fetch", field, update_field)
         response = json.loads(responses)
+        print(response)
 
         master_links = []
         for i in response["data"]:
-            master_links.append(i["master_link"])
+            link_and_id={
+                "master_link":i["master_link"],
+                "job_id":i["job_id"]
+            }
+            master_links.append(link_and_id)
+            # master_links.append(i["job_id"])
 
         if response["isSuccess"] == True:
             return Response(
