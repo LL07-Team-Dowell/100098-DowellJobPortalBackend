@@ -9,10 +9,13 @@ import Modal from "../TeamThread/Modal";
 import {
   fetchThread,
   postComment,
+  updateComment,
 } from "../../../../../../../services/threadServices";
+import { toast } from "react-toastify";
 import { getAllTeams } from "../../../../../../../services/createMembersTasks";
 import Avatar from "react-avatar";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
+import { set } from "date-fns";
 
 const TeamScreenThreads = ({ status, id }) => {
   const { currentUser } = useCurrentUserContext();
@@ -33,6 +36,7 @@ const TeamScreenThreads = ({ status, id }) => {
   const [commentsVisibility, setCommentsVisibility] = useState({});
   const [showModalStates, setShowModalStates] = useState({});
   const [loading, setLoading] = useState(true);
+  const [loadingcmnt, setLoadingcmnt] = useState(false);
 
   const handleChange = (e) => {
     setText(e.target.value);
@@ -75,7 +79,7 @@ const TeamScreenThreads = ({ status, id }) => {
 
   const addComment = async (text, id) => {
     console.log("addComment", text, id);
-
+    setLoadingcmnt(true);
     try {
       const updatedThreads = await postComment({
         created_by: currentUser.userinfo.username,
@@ -84,9 +88,11 @@ const TeamScreenThreads = ({ status, id }) => {
         _id: crypto.randomUUID(),
       });
       console.log(updatedThreads);
+      toast.success("Comment added successfully");
       setText("");
+      setLoadingcmnt(false);
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to add comment");
     }
   };
 
