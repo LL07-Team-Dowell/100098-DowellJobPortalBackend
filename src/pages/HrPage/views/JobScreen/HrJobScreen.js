@@ -399,6 +399,8 @@ function HrJobScreen() {
     if (missingValueIndex !== -1) return toast.info(`Please enter ${readablePublicAccountStateNames[copyOfPublicDetailKeys[missingValueIndex]]}`)
     
     // console.log(copyOfPublicDetail);
+    if (copyOfPublicDetail.portfolio_name === currentUser?.portfolio_info[0]?.portfolio_name) return toast.info('You cannot use the same portfolio name as yours');
+    if (currentUser?.userportfolio?.find(item => item?.portfolio_name === copyOfPublicDetail.portfolio_name)) return toast.info('A member of your organization already has this portfolio name');
 
     setNewPublicConfigurationLoading(true);
 
