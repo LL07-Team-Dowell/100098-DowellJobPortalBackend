@@ -26,6 +26,16 @@ const rolesDict = {
   "candidate": "Candidate",
 };
 
+const rolesNamesDict = {
+  'Account': "Dept_Lead", 
+  'Teamlead': "Proj_Lead", 
+  "Hr": "Hr", 
+  "Sub Admin": "sub_admin", 
+  "Group Lead": "group_lead", 
+  "Super Admin": "super_admin",
+  "Candidate": "candidate",
+}
+
 const AdminSettings = () => {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   console.log({ CURRENTUSER: currentUser })
@@ -117,10 +127,10 @@ const AdminSettings = () => {
 
     setUsersToDisplay(
       currentRoleFilter === 'yes' ?
-        options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).slice(indexes.start, indexes.end)
+        options1?.filter(user => settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).filter(item => item).slice(indexes.start, indexes.end)
       :
       currentRoleFilter === 'no' ?
-        options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).slice(indexes.start, indexes.end)
+        options1?.filter(user => !settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).filter(item => item).slice(indexes.start, indexes.end)
       :
       currentRoleFilter === 'hired' ?
         options1?.filter(user => hiredCandidates.includes(user.portfolio_name)).slice(indexes.start, indexes.end)
@@ -154,9 +164,9 @@ const AdminSettings = () => {
       getSettingUserProfileInfo(),
       getSettingUserProject(),
     ]).then(res => {
-      console.log(res[0]?.data?.reverse());
-
-      setSettingUsetProfileInfo(res[0]?.data); 
+      setSettingUsetProfileInfo(
+        res[0]?.data?.filter(item => item.company_id === currentUser.portfolio_info[0].org_id)
+      ); 
 
       const projectListing = res[1]?.data
       ?.filter(
@@ -333,6 +343,8 @@ const AdminSettings = () => {
                     setTeamleadProject={setProj_Lead}
                     availableProjects={allProjects}
                     updateSettingsUserProfileInfo={setSettingUsetProfileInfo}
+                    updatedUsers={usersToDisplay}
+                    rolesNamesDict={rolesNamesDict}
                   />
                 ))}
 

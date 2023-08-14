@@ -18,6 +18,8 @@ export default function TableRow({
   setTeamleadProject,
   availableProjects,
   updateSettingsUserProfileInfo,
+  updatedUsers,
+  rolesNamesDict,
 }) {
   const [roleAssigned, setRoleAssigned] = useState('No role assigned');
   const [ updatedRole, setUpdatedRole ] = useState(null);
@@ -26,8 +28,11 @@ export default function TableRow({
   const [ updatedProject, setUpdatedProject ] = useState(null);
   const roleRef = useRef();
   const projectAssignedRef = useRef();
+  const [loaded, setLoaded] = useState(false);
   
   useEffect(() => {
+    setLoaded(false);
+
     const [roleAssignedToPortfolio, projectAssignedToPortfolio] = [
       settingUserProfileInfo?.reverse()
       ?.find(
@@ -57,7 +62,16 @@ export default function TableRow({
       :
       'No project assigned'
     )
-  }, [currentFilter])
+
+    const timeout = setTimeout(() => {
+      setLoaded(true)
+    }, 300);
+
+    return (() => {
+      clearTimeout(timeout)
+    })
+
+  }, [updatedUsers, currentFilter])
   
   const submit2 = () => {
     const teamManagementProduct = currentUser.portfolio_info.find(
@@ -119,6 +133,8 @@ export default function TableRow({
     if (currentRoleVal) roleRef.current.value = currentRoleVal;
   }
 
+  if (!loaded) return <></>
+
   return (
     <tr>
       {" "}
@@ -142,7 +158,7 @@ export default function TableRow({
       </td>
       <td>
         <select 
-          defaultValue={""} 
+          defaultValue={availableProjects.includes(projectAssigned) ? projectAssigned : ""} 
           onChange={({ target }) => {
             setTeamleadProject(target.value)
             setUpdatedProject(true);
@@ -158,7 +174,7 @@ export default function TableRow({
         >
           <option value="" disabled>Set project</option>
           {availableProjects.map((projectValue, index) => (
-            <option key={index} value={projectValue} selected={projectAssigned === projectValue}>
+            <option key={index} value={projectValue}>
               {projectValue}
             </option>
           ))}
@@ -168,7 +184,7 @@ export default function TableRow({
         className="update__Role"
       >
         <select 
-          defaultValue={""} 
+          defaultValue={Object.keys(rolesNamesDict).find(item => item === roleAssigned) ? rolesNamesDict[roleAssigned] : ""} 
           onChange={({ target }) => setUpdatedRole(target.value)} 
           style={{
             // pointerEvents: hiredCandidates.includes(option.portfolio_name) ? 'all' : 'none',
@@ -180,9 +196,9 @@ export default function TableRow({
           ref={roleRef}
         >
           <option value="" disabled>Update role</option>
-          {Object.keys(projectList).map((projectValue, index) => (
-            <option key={index} value={projectValue} selected={roleAssigned === projectList[projectValue]}>
-              {projectList[projectValue]}
+          {Object.keys(rolesDict).map((role, index) => (
+            <option key={index} value={role}>
+              {rolesDict[role]}
             </option>
           ))}
         </select>
