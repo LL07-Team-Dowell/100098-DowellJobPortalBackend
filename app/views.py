@@ -46,7 +46,8 @@ from .serializers import (
     CreatePublicLinkSerializer,
     SendMailToPublicSerializer,
     ThreadsSerializer,
-    CommentsSerializer
+    CommentsSerializer,
+    PublicProductURLSerializer
 )
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -3111,6 +3112,77 @@ class updateTheUserDetails(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
+@method_decorator(csrf_exempt,name="dispatch")
+class public_product(APIView):
+    def post(self,request):
+        
+        field = {
+            "public_link_name" : request.data.get('public_link_name'),
+            "product_url" : request.data.get('product_url'),
+            "qr_ids": request.data.get("qr_ids"),
+            "job_company_id": request.data.get("job_company_id"),
+            "company_data_type": request.data.get("company_data_type"),
+        }
+
+        serializer = PublicProductURLSerializer(data=request.data)
+        if serializer.is_valid():
+            qr_ids = field["qr_ids"]
+            generated_links = [
+                {
+                    "link": generate_product_link.format(
+                        field["product_url"],
+                        qr_id,
+                        field["job_company_id"],
+                        field["company_data_type"],
+                    )
+                }
+                for qr_id in qr_ids
+            ]
+            response_qr_code = create_master_link(
+                field["job_company_id"], generated_links,field["public_link_name"]
+            )
+            response = json.loads(response_qr_code)
+            fields = {
+                "eventId": get_event_id()["event_id"],
+                "job_company_id": field["job_company_id"],
+                "company_data_type": field["company_data_type"],
+                "qr_ids": field["qr_ids"],
+                "generated_links": generated_links,
+                "master_link": response["qrcodes"][0]["masterlink"],
+                "qr_code": response["qrcodes"][0]["qrcode_image_url"],
+                "qrcode_id": response["qrcodes"][0]["qrcode_id"],
+                "api_key": response["qrcodes"][0]["links"][0]["response"]["api_key"],
+                "public_link_name": field["public_link_name"]
+            }
+            update_field = {"status": "Nothing to update"}
+            dowellresponse = json.loads(dowellconnection(
+                *Publiclink_reports, "insert", fields, update_field
+            ))
+            if dowellresponse["isSuccess"]:
+                return Response(
+                    {
+                        "success": True,
+                        "message": "Master link for public access for the product generated successfully",
+                        "master_link": response["qrcodes"][0]["masterlink"],
+                        "qr_code": response["qrcodes"][0]["qrcode_image_url"],
+                        "link_name": response["qrcodes"][0]["document_name"],
+                    },
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response({
+                    "success": False,
+                    "message": "Failed to insert data to db"
+                })
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Something went wrong",
+                    "error": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 # _________________Thread And Comment_____________
 

@@ -143,3 +143,5 @@ comment_report_module = [
 
 
 generate_public_link = "https://ll07-team-dowell.github.io/Jobportal/#?view=public&qr_id={}&job_company_id={}&job_id={}&company_data_type={}"
+
+generate_product_link = "{}?view=product&qr_id={}&company_id={}&company_data_type={}"
