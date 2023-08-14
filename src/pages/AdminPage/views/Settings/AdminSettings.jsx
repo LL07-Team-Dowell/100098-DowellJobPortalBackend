@@ -127,15 +127,15 @@ const AdminSettings = () => {
 
     setUsersToDisplay(
       currentRoleFilter === 'yes' ?
-        options1?.filter(user => settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).filter(item => item).slice(indexes.start, indexes.end)
+        options1?.filter(user => settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name))?.filter(item => item)?.slice(indexes.start, indexes.end)
       :
       currentRoleFilter === 'no' ?
-        options1?.filter(user => !settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).filter(item => item).slice(indexes.start, indexes.end)
+        options1?.filter(user => !settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name))?.filter(item => item)?.slice(indexes.start, indexes.end)
       :
       currentRoleFilter === 'hired' ?
-        options1?.filter(user => hiredCandidates.includes(user.portfolio_name)).slice(indexes.start, indexes.end)
+        options1?.filter(user => hiredCandidates.includes(user.portfolio_name))?.slice(indexes.start, indexes.end)
       :
-      options1.slice(indexes.start, indexes.end)
+      options1?.slice(indexes.start, indexes.end)
     );
 
   }, [options1, indexes, currentRoleFilter])
