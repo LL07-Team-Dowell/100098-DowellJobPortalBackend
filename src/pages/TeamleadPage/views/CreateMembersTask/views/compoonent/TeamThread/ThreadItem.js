@@ -6,10 +6,11 @@ import Comment from '../../../../../../CandidatePage/views/TeamsScreen/component
 import ThreadComment from './ThreadComment';
 import Modal from './Modal';
 import { featchAllComment, fetchThread, updateSingleThread } from '../../../../../../../services/teamleadServices';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 import { getAllTeams } from '../../../../../../../services/createMembersTasks';
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
+import { toast } from 'react-toastify';
 
 const Wrapper = styled.div`
 display: flex;
@@ -245,20 +246,11 @@ const ThreadItem = ({ status }) => {
   const [showModalStates, setShowModalStates] = useState({});
   const [completedThreads, setCompletedThreads] = useState([])
   const [resolvedThreads, setResolvedThreads] = useState([]);
-  console.log(resolvedThreads);
   const [inProgressThreads, setInProgressThreads] = useState([]);
   const [reducerComment, forceUpdate] = useReducer(x => x + 1, 0)
   const [reducerStatus, forceUpdateStatus] = useReducer(x => x + 1, 0)
 
-  console.log(inProgressThreads);
-  //Filter Based on status
-  // const completedThreads = threads.filter((thread) => thread.current_status === status);
-  // const resolvedThreads = threads.filter((thread) => thread.current_status == "Resolved");
-  // const inProgressThreads = threads.filter(
-  //   (thread) => thread.current_status === "In progress" || thread.current_status === "Created" || thread.current_status == undefined
-  // );
 
-  // Function to handle opening the modal for a specific thread
   const handleImageClick = (threadId) => {
     setShowModalStates((prevShowModalStates) => ({
       ...prevShowModalStates,
@@ -283,8 +275,8 @@ const ThreadItem = ({ status }) => {
   };
 
   //Get All Teams
-  const [teamdata, setTeamData] = useState([])
   const [teamNamesArray, setTeamNamesArray] = useState([]);
+  const nevigate = useNavigate();
   const filteredData = teamNamesArray.filter(item => item.admin_team === true);
 
   useEffect(() => {
@@ -318,11 +310,8 @@ const ThreadItem = ({ status }) => {
     fetchThread(documentId)
       .then((resp) => {
         const threads = resp.data.data;
-        const sortedThreads = threads.slice().sort((a, b) => {
-          const timeA = new Date(a.creation_time).getTime();
-          const timeB = new Date(b.creation_time).getTime();
-          return timeA - timeB;
-        });
+        const sortedThreads = threads.reverse()
+        setThreads(sortedThreads)
 
         const completedThreads = sortedThreads.filter((thread) => thread.current_status == "Completed");
         const resolvedThreads = sortedThreads.filter((thread) => thread.current_status == "Resolved");
@@ -339,20 +328,26 @@ const ThreadItem = ({ status }) => {
   }, [reducerComment, reducerStatus, status]);
 
 
+  const [statusLoading, setStatusLoading] = useState(false)
 
   const updateStatus = (data) => {
+    setStatusLoading(true)
     updateSingleThread({
       document_id: data.document_id,
       current_status: data.status
     }).then((resp) => {
       console.log(resp);
-      forceUpdateStatus();
+      if (resp.data.data.isSuccess) {
+        setStatusLoading(false);
+        toast.success("Thread Status Update")
+        forceUpdateStatus();
+      }
     })
   }
 
 
   const handleSubmit = () => { };
-  // if (loading) return <LoadingSpinner />
+  if (loading) return <LoadingSpinner />
 
   return (
     <Wrapper>
@@ -395,7 +390,7 @@ const ThreadItem = ({ status }) => {
                         </div>
                         <div className="progress">
                           <p>In progress</p>
-                          <div className={thread.current_status == "In progress" ? "active-thread-btn" : "threads-btn"}></div>
+                          <div className={thread.current_status == "In progress" || "Completed" ? "active-thread-btn" : "threads-btn"}></div>
                         </div>
                         <div className="progress">
                           <p>Completed</p>
@@ -561,6 +556,7 @@ const ThreadItem = ({ status }) => {
                           </div>
                           <div className="progress">
                             <p>Completed</p>
+
                             {
                               currentUser.portfolio_info[0].username == thread.created_by && thread.current_status == "In progress" ? <div className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"} onClick={(e) => updateStatus({ status: "Completed", document_id: thread._id })}></div> : <div className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"} onClick={() => alert("You can't update the status")}></div>
                             }
