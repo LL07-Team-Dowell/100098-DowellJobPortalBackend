@@ -244,6 +244,12 @@ const TeamScreenThreads = ({ status, id }) => {
               threads
                 .filter((thread) => thread.current_status === "Completed")
                 .map((thread) => {
+                  const assignedTeam = teamNamesArray.find(
+                    (item) => item[1].id === thread.team_alerted_id
+                  );
+                  const assignedTeamName = assignedTeam
+                    ? assignedTeam[0].name
+                    : "N/A";
                   return (
                     <div className="team-screen-threads-card">
                       <div className="thread-card">
@@ -294,7 +300,7 @@ const TeamScreenThreads = ({ status, id }) => {
                             {thread.thread}
                           </h3>
                           <div>
-                            <p>Assigned to : {thread.team_name}</p>
+                            <p>Assigned to : {assignedTeamName}</p>
                             <p>Raised by : {thread.created_by}</p>
                           </div>
                           <div className="team-screen-threads-progress">
@@ -417,7 +423,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                   <div className="avatar-container">
                                     <Avatar
                                       name={thread.created_by}
-                                      size={50}
+                                      size={40}
                                       round
                                     />
                                   </div>
@@ -485,6 +491,12 @@ const TeamScreenThreads = ({ status, id }) => {
                     thread.current_status === "Created"
                 )
                 .map((thread) => {
+                  const assignedTeam = teamNamesArray.find(
+                    (item) => item[1].id === thread.team_alerted_id
+                  );
+                  const assignedTeamName = assignedTeam
+                    ? assignedTeam[0].name
+                    : "N/A";
                   return (
                     <div className="team-screen-threads-card">
                       <div className="thread-card">
@@ -535,7 +547,7 @@ const TeamScreenThreads = ({ status, id }) => {
                             {thread.thread}
                           </h3>
                           <div>
-                            <p>Assigned to : {thread.team_name}</p>
+                            <p>Assigned to : {assignedTeamName}</p>
                             <p>Raised by : {thread.created_by}</p>
                           </div>
                           <div className="team-screen-threads-progress">
@@ -658,7 +670,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                       <div className="avatar-container">
                                         <Avatar
                                           name={thread.created_by}
-                                          size={50}
+                                          size={40}
                                           round
                                         />
                                       </div>
@@ -726,6 +738,12 @@ const TeamScreenThreads = ({ status, id }) => {
               threads
                 .filter((thread) => thread.current_status === "Resolved")
                 .map((thread) => {
+                  const assignedTeam = teamNamesArray.find(
+                    (item) => item[1].id === thread.team_alerted_id
+                  );
+                  const assignedTeamName = assignedTeam
+                    ? assignedTeam[0].name
+                    : "N/A";
                   return (
                     <div className="team-screen-threads-card">
                       <div className="thread-card">
@@ -776,7 +794,7 @@ const TeamScreenThreads = ({ status, id }) => {
                             {thread.thread}
                           </h3>
                           <div>
-                            <p>Assigned to : {thread.team_name}</p>
+                            <p>Assigned to : {assignedTeamName}</p>
                             <p>Raised by : {thread.created_by}</p>
                           </div>
                           <div className="team-screen-threads-progress">
@@ -839,8 +857,8 @@ const TeamScreenThreads = ({ status, id }) => {
                                     [thread._id]: !prevVisibility[thread._id],
                                   }))
                                 }
-                              >{`${thread.comments.length} Comment${
-                                thread.comments.length !== 1 ? "s" : ""
+                              >{`${thread.comments.data.length} Comment${
+                                thread.comments.data.length !== 1 ? "s" : ""
                               }`}</span>
                             </p>
                           </div>
@@ -896,7 +914,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                   <div className="avatar-container">
                                     <Avatar
                                       name={thread.created_by}
-                                      size={50}
+                                      size={40}
                                       round
                                     />
                                   </div>
