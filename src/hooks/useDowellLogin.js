@@ -76,7 +76,7 @@ export default function useDowellLogin(
           .then(async (res) => {
             const currentUserDetails = res.data;
 
-            if (currentUserDetails.message) {
+            if (currentUserDetails.message || currentUserDetails.msg) {
               updateNoUserDetailFound(true);
               updatePageLoading(false);
 
@@ -139,7 +139,7 @@ export default function useDowellLogin(
           .then(async (res) => {
             const currentUserDetails = res.data;
             
-            if (currentUserDetails.message) {
+            if (currentUserDetails.message || currentUserDetails.msg) {
               updateNoUserDetailFound(true);
               updatePageLoading(true);
 
@@ -180,7 +180,7 @@ export default function useDowellLogin(
         .then(async (res) => {
           const currentUserDetails = res.data;
 
-          if (currentUserDetails.message) {
+          if (currentUserDetails.message || currentUserDetails.msg) {
             updateNoUserDetailFound(true);
             updatePageLoading(false);
 
@@ -213,7 +213,7 @@ export default function useDowellLogin(
       .then(async (res) => {
         const currentUserDetails = res.data;
 
-        if (currentUserDetails.message) {
+        if (currentUserDetails.message || currentUserDetails.msg) {
           updateNoUserDetailFound(true);
           updatePageLoading(false);
 
