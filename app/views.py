@@ -3192,17 +3192,18 @@ class public_product(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
     def get(self,request,job_company_id):
+        print(job_company_id)
         fields = {
                 "job_company_id": job_company_id
             }
         update_field = {"status": "Nothing to update"}
         dowellresponse = json.loads(dowellconnection(*Publiclink_reports, "fetch", fields, update_field))
         if dowellresponse["isSuccess"]:
-            if len(json.loads(dowellresponse)["data"]) == 0:
+            if len(dowellresponse["data"]) == 0:
                 return Response(
                     {
                         "message": f"There is no link",
-                        "response": json.loads(dowellresponse),
+                        "response": dowellresponse,
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
@@ -3210,7 +3211,7 @@ class public_product(APIView):
                 return Response(
                     {
                         "message": f"List of links present",
-                        "response": json.loads(dowellresponse),
+                        "response": dowellresponse,
                     },
                     status=status.HTTP_200_OK,
                 )

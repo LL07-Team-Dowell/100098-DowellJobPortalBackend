@@ -91,7 +91,7 @@ urlpatterns = [
     path('send_mail_to_public/',sendMailToPublicCandidate.as_view()),
     path('update_user_status/',updateTheUserDetails.as_view()),
     path('public_product_url/',public_product.as_view()),
-    path('fetch_public_product_url/<str:company_id>/',public_product.as_view()),
+    path('fetch_public_product_url/<str:job_company_id>/',public_product.as_view()),
 
     # Thread-------------------------------------
     path('fetch_thread/<str:document_id>/',Thread_Apis.as_view()),
