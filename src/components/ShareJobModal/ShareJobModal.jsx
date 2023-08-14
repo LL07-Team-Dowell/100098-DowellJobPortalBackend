@@ -7,6 +7,7 @@ import { Tooltip } from "react-tooltip";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import {
+  createNewProductLink,
   generatePublicJobLink,
   getUsedQrCodes,
 } from "../../services/adminServices";
@@ -16,7 +17,7 @@ import { useRef } from "react";
 import { useJobContext } from "../../contexts/Jobs";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
-const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
+const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
   const [copyOptionActive, setCopyOptionActive] = useState(false);
   const [activeItemId, setActiveItemId] = useState(null);
   const [mouseOverShareLinkContainer, setMouseOverShareLinkContainer] =
@@ -32,6 +33,9 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
   const selectItemRef = useRef();
   const { jobLinks, setJobLinks } = useJobContext();
   const [usedIdsLoaded, setUsedIdsLoaded] = useState(false);
+  const [ customLinksNumber, setCustomLinksNumber ] = useState(null);
+  const [ currentPage, setCurrentPage ] = useState(1);
+  const [ customLinkName, setCustomLinkName ] = useState("");
 
   useEffect(() => {
     if (!currentUser) return;
@@ -134,6 +138,8 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
   };
 
   const handleGenerateLink = async () => {
+    if (isProductLink && currentPage === 1) return setCurrentPage(currentPage + 1);
+
     const dataToPost = {
       qr_ids: publicIdsSelected,
       job_company_id: linkToShareObj?.job_company_id,
@@ -147,12 +153,25 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
     setLinkLoading(true);
 
     try {
-      const response = (await generatePublicJobLink(dataToPost)).data;
+      let response;
+      if (isProductLink) {
+        response = (await createNewProductLink({
+          "public_link_name": customLinkName,
+          "product_url": linkToShareObj?.product_url,
+          "qr_ids": publicIdsSelected,
+          "job_company_id": linkToShareObj?.job_company_id,
+          "company_data_type": linkToShareObj?.company_data_type,
+        })).data
+      } else {
+        response = (await generatePublicJobLink(dataToPost)).data;
+      }
+
       // console.log(response);
       setQrCodeImage(response.qr_code);
       setLinkToDisplay(response.master_link);
       setLinkGenerated(true);
 
+      if (isProductLink) return
       currentJobLinks.push(response.master_link);
       setJobLinks(currentJobLinks);
     } catch (error) {
@@ -162,6 +181,18 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
 
     setLinkLoading(false);
   };
+
+  const handleSelectCustomBtnClick = () => {
+    if (!customLinksNumber) return
+
+    const currentPublicIds = publicIds.slice();
+    const publicItemsIds = currentPublicIds.map(idItem => idItem.username.map(userItem => userItem)).flat();
+    if (customLinksNumber > publicItemsIds.length) return toast.info(`You cannot add ${customLinksNumber} links because you only have ${publicItemsIds.length} links.`);
+
+    const publicIdsToSelect = publicItemsIds.slice(0, Number(customLinksNumber));
+
+    setPublicIdsSelected(publicIdsToSelect);
+  }
 
   return (
     <>
@@ -174,29 +205,85 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
             />
           </div>
           <div>
-            <h2>Share Job</h2>
+            {
+              currentPage === 1 ? 
+              <h2>Share {isProductLink ? 'Product' : 'Job'}</h2> : 
+              <h2 style={{ textTransform: 'capitalize' }}>
+                {
+                  linkGenerated ? `${customLinkName} created!` : 
+                  "Add custom name"
+                }
+              </h2>
+            }
             <p className={styles.share__Subtitle__Info}>
-              {!linkGenerated
-                ? "Generate a link for this job to share to other platforms"
-                : "Share a link for this job to other platforms for people to apply"}
+              {
+                !linkGenerated
+                ? 
+                  isProductLink ?
+                    currentPage === 1 ?
+                      "Generate a link to this product for others to view your active jobs"
+                    :
+                      "One last step, add a custom name for this link"
+                  :
+                  "Generate a link for this job to share to other platforms"
+                : 
+                  isProductLink ?
+                  "Share this product link to other platforms"
+                  :
+                "Share a link for this job to other platforms for people to apply"
+              }
             </p>
           </div>
+          {
+            currentPage === 1 && !linkGenerated ? <div className={styles.select__Links__Num}>
+              <label>
+                <span>Enter number of links</span>
+                <input 
+                  placeholder="10"
+                  value={customLinksNumber}
+                  onChange={({ target }) => setCustomLinksNumber(target.value.replace(/\D/g, ""))}
+                />
+              </label>
+              <button
+                className={`${styles.copy__Link__Btn} ${styles.generate__Link__Btn}`}
+                onClick={() => handleSelectCustomBtnClick()}
+                disabled={linkLoading || !customLinksNumber}
+              >
+                Go
+              </button>
+            </div> : <></>
+          }
           {!linkGenerated ? (
             <>
               <div className={styles.select__Items__Wrapper}>
-                <p className={styles.select__Items__Text}>
-                  <span>Select number of public links</span>
-                  <span className={styles.indicator}>
-                    Count: {publicIdsSelected.length}
-                  </span>
-                </p>
-                {usedIdsLoaded ? (
+                {
+                  currentPage === 1 ? <p className={styles.select__Items__Text}>
+                    <span>Select number of public links</span>
+                    <span className={styles.indicator}>
+                      Count: {publicIdsSelected.length}
+                    </span>
+                  </p> : <>
+                    <div className={styles.select__Links__Num}>
+                      <label>
+                        <span>Enter name for link</span>
+                        <input 
+                          placeholder="custom link name"
+                          value={customLinkName}
+                          onChange={({ target }) => setCustomLinkName(target.value)}
+                        />
+                      </label>
+                    </div>
+                  </>
+                }
+                {usedIdsLoaded ? 
+                  currentPage === 2 ? <></> :
+                  (
                   <select
                     className={styles.select__Item}
                     ref={selectItemRef}
                     size={
-                      maximumNumberOfPublicIds > 10
-                        ? 10
+                      maximumNumberOfPublicIds > 8
+                        ? 8
                         : maximumNumberOfPublicIds <= 1
                         ? 2
                         : maximumNumberOfPublicIds
@@ -237,21 +324,23 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal }) => {
                   <LoadingSpinner />
                 )}
               </div>
-              <button
-                className={`${styles.copy__Link__Btn} ${styles.generate__Link__Btn}`}
-                onClick={() => handleGenerateLink()}
-                disabled={linkLoading || publicIdsSelected.length < 1}
-              >
-                {linkLoading ? (
-                  <LoadingSpinner
-                    width={"1rem"}
-                    height={"1rem"}
-                    color={"#fff"}
-                  />
-                ) : (
-                  "Generate link"
-                )}
-              </button>
+              {
+                !linkGenerated && <button
+                  className={`${styles.copy__Link__Btn} ${styles.generate__Link__Btn}`}
+                  onClick={() => handleGenerateLink()}
+                  disabled={linkLoading || publicIdsSelected.length < 1 || (isProductLink && currentPage === 2 && customLinkName.length < 1)}
+                >
+                  {linkLoading ? (
+                    <LoadingSpinner
+                      width={"1rem"}
+                      height={"1rem"}
+                      color={"#fff"}
+                    />
+                  ) : (
+                    "Generate link"
+                  )}
+                </button>
+              }
             </>
           ) : (
             <>

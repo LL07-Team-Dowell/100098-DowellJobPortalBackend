@@ -60,6 +60,9 @@ const JobApplicationScreen = () => {
         publicUserDetails, 
         userDetailsNotFound,
         setPublicUserDetails,
+        isProductUser,
+        productUserDetails, 
+        setProductUserDetails,
     } = useCurrentUserContext();
     const [jobSaved, setJobSaved] = useState(false);
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
@@ -109,10 +112,18 @@ const JobApplicationScreen = () => {
 
         if (!currentUser) {
             if (userDetailsNotFound) return navigate('/');
-            if (!isPublicUser) return setJobsLoading(false);
+            if (!isPublicUser && !isProductUser) return setJobsLoading(false);
 
-            getJobs(publicUserDetails?.company_id).then(res => {
-                const filterJob = res.data.response.data.filter(job => job.data_type === publicUserDetails?.data_type);
+            const [
+                companyIdToUse,
+                dataTypeToUse,
+            ] = [
+                isPublicUser ? publicUserDetails?.company_id : productUserDetails?.company_id,
+                isPublicUser ? publicUserDetails?.data_type : productUserDetails?.data_type,
+            ]
+
+            getJobs(companyIdToUse).then(res => {
+                const filterJob = res.data.response.data.filter(job => job.data_type === dataTypeToUse);
                 setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
     
             }).catch(err => {
@@ -163,7 +174,7 @@ const JobApplicationScreen = () => {
     useEffect(() => {
 
         if (jobsLoading) return;
-        if (!currentUser && !isPublicUser) return;
+        if (!currentUser && !isPublicUser && !isProductUser) return;
 
         setDisableApplyBtn(false);
         setDisableNextBtn(true);
@@ -188,7 +199,7 @@ const JobApplicationScreen = () => {
             dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.REWRITE_EXISTING_STATE, payload: { newState: currentState } });
         }
 
-        if ((currentJob.job_category !== "Employee" || currentJob.job_category !== "Internship") && !isPublicUser) {
+        if ((currentJob.job_category !== "Employee" || currentJob.job_category !== "Internship") && !isPublicUser && !isProductUser) {
             //delete currentState.others[mutableNewApplicationStateNames.others_applicant_first_name];
             //delete currentState.others[mutableNewApplicationStateNames.others_applicant_email];
             //dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.REWRITE_EXISTING_STATE, payload: { newState: currentState } });
@@ -216,17 +227,59 @@ const JobApplicationScreen = () => {
 
         // console.log(currentJob);
         // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_TIME_INTERVAL, payload: { stateToChange: mutableNewApplicationStateNames.time_interval, value: currentJob.time_interval } });
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_USERNAME, payload: { stateToChange: mutableNewApplicationStateNames.username, value: isPublicUser ? publicUserDetails?.qr_id : currentUser.userinfo.username } });
-        !isPublicUser && dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_email, value: currentUser.userinfo.email } });
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_COMPANY_ID, payload: { stateToChange: mutableNewApplicationStateNames.company_id, value: isPublicUser ? publicUserDetails?.company_id : currentUser.portfolio_info[0].org_id } })
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATA_TYPE, payload: { stateToChange: mutableNewApplicationStateNames.data_type, value: isPublicUser ? publicUserDetails?.data_type : currentUser.portfolio_info[0].data_type } })
+        dispatchToNewApplicationData({ 
+            type: newJobApplicationDataReducerActions.UPDATE_USERNAME, 
+            payload: { 
+                stateToChange: mutableNewApplicationStateNames.username, 
+                value: isPublicUser ? 
+                    publicUserDetails?.qr_id 
+                    :
+                    isProductUser ? 
+                        productUserDetails?.qr_id
+                : currentUser.userinfo.username 
+            } 
+        });
+        !isPublicUser && !isProductUser && dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT_EMAIL, payload: { stateToChange: mutableNewApplicationStateNames.others_applicant_email, value: currentUser.userinfo.email } });
+        dispatchToNewApplicationData({ 
+            type: newJobApplicationDataReducerActions.UPDATE_COMPANY_ID, 
+            payload: { 
+                stateToChange: mutableNewApplicationStateNames.company_id, 
+                value: isPublicUser ? 
+                    publicUserDetails?.company_id 
+                    :
+                    isProductUser ? 
+                        productUserDetails?.company_id
+                : currentUser.portfolio_info[0].org_id 
+            } 
+        })
+        dispatchToNewApplicationData({
+            type: newJobApplicationDataReducerActions.UPDATE_DATA_TYPE, 
+            payload: { 
+                stateToChange: mutableNewApplicationStateNames.data_type, 
+                value: isPublicUser ? 
+                    publicUserDetails?.data_type 
+                    :
+                    isProductUser ? 
+                        productUserDetails?.data_type
+                : currentUser.portfolio_info[0].data_type 
+            } 
+        })
         // console.log(currentUser);
         // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICANT, payload: { stateToChange: mutableNewApplicationStateNames.applicant, value: currentUser.username } })
         // dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_TITLE, payload: { stateToChange: mutableNewApplicationStateNames.title, value: currentJob.title } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_DATE_APPLIED, payload: { stateToChange: mutableNewApplicationStateNames.application_submitted_on, value: new Date() } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_DESCRIPTION, payload: { stateToChange: mutableNewApplicationStateNames.jobDescription, value: currentJob.description } })
         dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_JOB_CATEGORY, payload: { stateToChange: mutableNewApplicationStateNames.job_category, value: currentJob.job_category } })
-        dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_PORTFOLIO_NAME, payload: { stateToChange: mutableNewApplicationStateNames.portfolio_name, value: isPublicUser ? "" : currentUser.portfolio_info[0].portfolio_name } })
+        dispatchToNewApplicationData({ 
+            type: newJobApplicationDataReducerActions.UPDATE_PORTFOLIO_NAME, 
+            payload: { 
+                stateToChange: mutableNewApplicationStateNames.portfolio_name, 
+                value: isPublicUser || isProductUser ? 
+                "" 
+                : 
+                currentUser.portfolio_info[0].portfolio_name 
+            } 
+        })
         
         if (currentJob.typeof === "Employee" || currentJob.typeof === "Internship") return setRemoveFreelanceOptions(true);
 
@@ -244,7 +297,7 @@ const JobApplicationScreen = () => {
 
     useEffect(() => {
 
-        if (!currentUser && !isPublicUser) return
+        if (!currentUser && !isPublicUser && !isProductUser) return
 
         if (formPage === 1) {
 
@@ -332,6 +385,7 @@ const JobApplicationScreen = () => {
         removeFreelanceOptions,
         currentUser,
         isPublicUser,
+        isProductUser,
         ]
     )
 
@@ -348,7 +402,7 @@ const JobApplicationScreen = () => {
 
     const handleSubmitApplicationBtnClick = () => {
 
-        if (!currentUser && !isPublicUser) return window.location.href = dowellLoginUrl + `/apply/job/${id}/`;
+        if (!currentUser && !isPublicUser && !isProductUser) return window.location.href = dowellLoginUrl + `/apply/job/${id}/`;
         // console.log(currentUser);
         setDisableApplyBtn(true);
         setDisableNextBtn(true);
@@ -362,17 +416,18 @@ const JobApplicationScreen = () => {
         console.log(newApplicationData)
         // return
 
-        if (isPublicUser) {
+        if (isPublicUser || isProductUser) {
             if (newApplicationData.applicant_email.length < 1) return toast.info('Please enter your email')
             if (!isEmailValid) return toast.info('Please enter a valid email')
-            if (publicUserDetails.linkUsed) return toast.info('You have already submitted an application for this job')
+            if (publicUserDetails.linkUsed)
+            if (productUserDetails?.jobsAppliedFor.includes(currentJob._id)) return toast.info('You have already submitted an application for this job')
         }
 
         setDisableNextBtn(true);
 
 
         // PUBLIC USER APPLICATION SUBMISSION
-        if (isPublicUser) {
+        if (isPublicUser || isProductUser) {
             const copyOfNewApplicationData = structuredClone(newApplicationData);
             delete copyOfNewApplicationData.portfolio_name;
 
@@ -387,7 +442,7 @@ const JobApplicationScreen = () => {
             formData.append('toname', newApplicationData.applicant);
             formData.append('subject', 'New Job Application Submission');
 
-            submitPublicApplication(copyOfNewApplicationData, publicUserDetails?.masterLinkId)
+            submitPublicApplication(copyOfNewApplicationData, isPublicUser ? publicUserDetails?.masterLinkId : productUserDetails?.masterLinkId)
             .then(async (res) => {
                 // console.log(res.data);
                 let mailError = false;
@@ -406,7 +461,23 @@ const JobApplicationScreen = () => {
                     "Successfully submitted job application! Please check your email for a confirmation."
                 );
                 // setDisableNextBtn(false);
-                setShowPublicSuccessModal(true);
+                isPublicUser && setShowPublicSuccessModal(true);
+
+                if (isProductUser) {
+                    const updatedProductUser = { ...productUserDetails };
+                    
+                    if (updatedProductUser.jobsAppliedFor) {
+                        updatedProductUser.jobsAppliedFor.push(currentJob?._id)
+                    } else {
+                        updatedProductUser.jobsAppliedFor = [currentJob?._id]
+                    }
+
+                    setProductUserDetails(updatedProductUser);
+                    sessionStorage.setItem('product_user', JSON.stringify(updatedProductUser));
+
+                    navigate(`/jobs?jobCategory=${currentJob?.job_category}`)
+                    return
+                }
 
                 const updatedPublicUser = { ...publicUserDetails };
                 updatedPublicUser.linkUsed = true;
@@ -566,7 +637,7 @@ const JobApplicationScreen = () => {
                                     </div>
 
                                     {
-                                        isPublicUser &&
+                                        (isPublicUser || isProductUser) &&
                                         <div className="job__Application__Item">
                                             <h2>Enter Your Email<span className="required-indicator">*</span></h2>
                                             <label className="input__Text__Container">
@@ -574,7 +645,7 @@ const JobApplicationScreen = () => {
                                             </label>
 
                                             {
-                                                !isEmailValid && isPublicUser && (
+                                                !isEmailValid && (isPublicUser || isProductUser) && (
                                                 <p style={{ color: "red" }}>
                                                     Please enter a valid email
                                                 </p>
@@ -776,10 +847,25 @@ const JobApplicationScreen = () => {
                             </div>
                             {
                                 isLargeScreen && <div className="job__Quick__Apply__Container">
-                                    <button className="apply__Btn green__Btn" onClick={handleSubmitApplicationBtnClick} disabled={disableApplyBtn}>
-                                        <span>Apply</span>
-                                        <RiShareBoxFill />
-                                    </button>
+                                    {
+                                        isProductUser ? 
+                                        <button className="apply__Btn green__Btn" onClick={handleSubmitApplicationBtnClick} disabled={productUserDetails?.jobsAppliedFor?.includes(currentJob._id)}>
+                                            <span>
+                                                {
+                                                    productUserDetails?.jobsAppliedFor?.includes(currentJob._id) ?
+                                                    "Applied"
+                                                    : 
+                                                    "Apply"
+                                                }
+                                            </span>
+                                            <RiShareBoxFill />
+                                        </button>
+                                        :
+                                        <button className="apply__Btn green__Btn" onClick={handleSubmitApplicationBtnClick} disabled={disableApplyBtn}>
+                                            <span>Apply</span>
+                                            <RiShareBoxFill />
+                                        </button>
+                                    }
                                 </div>
                             }
                         </div>
@@ -797,10 +883,24 @@ const JobApplicationScreen = () => {
                         </div>
 
                         <div className='apply_Btn_Container'>
-                            <button className="apply__Btn green__Btn" onClick={handleSubmitApplicationBtnClick} disabled={disableApplyBtn}>
-                                <span>Apply for Job</span>
-                                <RiShareBoxFill />
-                            </button>
+                            {
+                                isProductUser ? 
+                                <button className="apply__Btn green__Btn" onClick={handleSubmitApplicationBtnClick} disabled={productUserDetails?.jobsAppliedFor?.includes(currentJob._id)}>
+                                    <span>
+                                        {
+                                            productUserDetails?.jobsAppliedFor?.includes(currentJob._id) ?
+                                            "Applied" : 
+                                            "Apply for Job"
+                                        }
+                                    </span>
+                                    <RiShareBoxFill />
+                                </button>
+                                :
+                                <button className="apply__Btn green__Btn" onClick={handleSubmitApplicationBtnClick} disabled={disableApplyBtn}>
+                                    <span>Apply for Job</span>
+                                    <RiShareBoxFill />
+                                </button>
+                            }
                             <button className={`save__Btn grey__Btn ${jobSaved ? 'active' : ''}`} onClick={() => setJobSaved(!jobSaved)}>
                                 <span>{jobSaved ? "Saved" : "Save"}</span>
                                 <IoBookmarkSharp />

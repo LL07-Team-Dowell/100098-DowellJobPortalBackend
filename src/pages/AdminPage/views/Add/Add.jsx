@@ -15,9 +15,18 @@ import { adminAddSettingUserProject, adminEditSettingUserProject } from '../../.
 import { getSettingUserProject } from '../../../../services/hrServices'
 
 const Add = () => {
-  
+  const { currentUser } = useCurrentUserContext();
   const navigate = useNavigate() 
   const [showProjectsPop, setShowProjectsPop] = useState(false)
+  const [ showShareModal, setShowShareModal ] = useState(false);
+  const [ isProductLink, setIsProductLink ] = useState(false);
+
+  const jobLinkToShareObj = {
+    "product_url": window.location.origin + "/100098-DowellJobPortal/#/",
+    "job_company_id": currentUser?.portfolio_info[0]?.org_id,
+    "company_data_type": currentUser?.portfolio_info[0]?.data_type,
+  };
+
   const showProjectPopup = () => {
     setShowProjectsPop(true)
   }
@@ -32,7 +41,6 @@ const Add = () => {
     setProjectsAdded,
     projectsAdded,
   } = useJobContext();
-  const { currentUser } = useCurrentUserContext();
 
   useEffect(() => {
     
@@ -75,11 +83,15 @@ const Add = () => {
       btnIcon={<MdArrowBackIos size="1.5rem" />}
       handleNavIcon={() => navigate(-1)}
       hideSideBar={showProjectsPop}
+      showShareModalForJob={showShareModal}
+      jobLinkToShareObj={jobLinkToShareObj}
+      handleCloseShareJobModal={() => setShowShareModal(false)}
+      isProductLink={isProductLink}
     >
        <div className="new__task__container">
         {/* <h1 style={{ color: "#005734", fontSize: "1.6rem" }}>Add New Item</h1> */}
-        <div style={{ position: "relative", display: "flex", gap: "3rem" }} >
-          <div style={{ marginTop: 30 }} className="Create_Team" onClick={()=>navigate('/add-job')}>
+        <div style={{ position: "relative", display: "flex", gap: "2rem", flexWrap: 'wrap', paddingBottom: '12rem' }} >
+          <div style={{ marginTop: 30, maxWidth: '18rem' }} className="Create_Team" onClick={()=>navigate('/add-job')}>
             <div>
               <div>
                 <AiOutlinePlusCircle
@@ -93,7 +105,7 @@ const Add = () => {
               </p>
             </div>
           </div>
-          <div style={{ marginTop: 30 }} className="Create_Team" onClick={projectsLoading ? () => {} : () => showProjectPopup()}  >
+          <div style={{ marginTop: 30, maxWidth: '18rem' }} className="Create_Team" onClick={projectsLoading ? () => {} : () => showProjectPopup()}  >
             <div>
               <div>
                 <AiOutlinePlusCircle
@@ -126,7 +138,7 @@ const Add = () => {
               }
             </div>
           </div>
-          <div style={{ marginTop: 30 }} className="Create_Team" onClick={() => navigate('/teams/create-new-team/')}  >
+          <div style={{ marginTop: 30, maxWidth: '18rem' }} className="Create_Team" onClick={() => navigate('/teams/create-new-team/')}  >
             <div>
               <div>
                 <AiOutlinePlusCircle
@@ -137,6 +149,28 @@ const Add = () => {
               <h4>Add team</h4>
               <p style={{ fontSize: '0.8rem' }}>
               Bring everyone together and get to work. Work together in a team to increase productivity.
+              </p>
+            </div>
+          </div>
+          <div 
+            style={{ marginTop: 30, maxWidth: '18rem' }} 
+            className="Create_Team" 
+            onClick={
+              () => {
+                setShowShareModal(true);
+                setIsProductLink(true);
+              }  
+            }>
+            <div>
+              <div>
+                <AiOutlinePlusCircle
+                  className="icon"
+                  style={{ fontSize: "2rem" }}
+                />
+              </div>
+              <h4>Create product link</h4>
+              <p style={{ fontSize: '0.8rem' }}>
+                Create a product link for users to view open jobs in your amazing organization.
               </p>
             </div>
           </div>

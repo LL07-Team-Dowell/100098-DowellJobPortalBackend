@@ -32,7 +32,7 @@ function JobScreen() {
     const [jobSelectionCategories, setJobSelectionCategories] = useState(null);
     const [currentJobCategory, setCurrentJobCategory] = useState(null);
     const [jobsToDisplay, setJobsToDisplay] = useState([]);
-    const { currentUser, isPublicUser, publicUserDetails } = useCurrentUserContext();
+    const { currentUser, isPublicUser, publicUserDetails, isProductUser, productUserDetails,  } = useCurrentUserContext();
     console.log(jobs);
     useEffect(() => {
         // console.log(jobs);
@@ -185,10 +185,22 @@ function JobScreen() {
         }
 
         if (!currentUser) {
-            if (!isPublicUser) return
+            if (!isPublicUser && !isProductUser) {
+                setAllRequestsDone(true);
+                setJobsLoading(false);
+                return
+            }
 
-            getJobs(publicUserDetails?.company_id).then(res => {
-                const filterJob = res.data.response.data.filter(job => job.data_type === publicUserDetails?.data_type);
+            const [
+                companyIdToUse,
+                dataTypeToUse,
+            ] = [
+                isPublicUser ? publicUserDetails?.company_id : productUserDetails?.company_id,
+                isPublicUser ? publicUserDetails?.data_type : productUserDetails?.data_type,
+            ]
+
+            getJobs(companyIdToUse).then(res => {
+                const filterJob = res.data.response.data.filter(job => job.data_type === dataTypeToUse);
                 setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
 
             }).catch(err => {
@@ -244,6 +256,31 @@ function JobScreen() {
     }
 
     const handleRefreshForCandidateApplications = () => {
+        if (!currentUser) {
+            setJobsLoading(true);
+
+            const [
+                companyIdToUse,
+                dataTypeToUse,
+            ] = [
+                isPublicUser ? publicUserDetails?.company_id : productUserDetails?.company_id,
+                isPublicUser ? publicUserDetails?.data_type : productUserDetails?.data_type,
+            ]
+
+            getJobs(companyIdToUse).then(res => {
+                const filterJob = res.data.response.data.filter(job => job.data_type === dataTypeToUse);
+                setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
+                setJobsLoading(false);
+                setAllRequestsDone(true);
+            }).catch(err => {
+                console.log(err);
+                setJobsLoading(false);
+                setAllRequestsDone(true);
+            })
+
+            return
+        }
+
         const datass = currentUser.portfolio_info[0].org_id;
         setJobsLoading(true);
         Promise.all([
@@ -319,8 +356,22 @@ function JobScreen() {
                                                             job={job}
                                                             candidateViewJob={true}
                                                             subtitle={currentCategory}
-                                                            disableActionBtn={currentUser ? candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? false : true : false}
-                                                            buttonText={currentUser ? candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? "Apply" : "Applied" : "Apply"}
+                                                            disableActionBtn={
+                                                                currentUser ? 
+                                                                    candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? false : true 
+                                                                :
+                                                                isProductUser ?
+                                                                    productUserDetails?.jobsAppliedFor?.includes(job._id) ? true : false   
+                                                                : false
+                                                            }
+                                                            buttonText={
+                                                                currentUser ? 
+                                                                    candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? "Apply" : "Applied" 
+                                                                : 
+                                                                isProductUser ?
+                                                                    productUserDetails?.jobsAppliedFor?.includes(job._id) ? "Applied" : 'Apply'  :
+                                                                "Apply"
+                                                            }
                                                             handleBtnClick={(job) => handleApplyButtonClick(job)}
                                                         />
                                                         </>

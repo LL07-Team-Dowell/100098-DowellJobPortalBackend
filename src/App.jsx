@@ -79,6 +79,9 @@ function App() {
     setPublicUserDetails,
     userDetailsNotFound,
     setUserDetailsNotFound,
+    isProductUser,
+    setIsProductUser,
+    setProductUserDetails,
   } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
@@ -87,14 +90,23 @@ function App() {
   const [shorlistedJob, setshorlistedJob] = useState([]);
 
   // console.log(shorlistedJob); 
-  useDowellLogin(setCurrentUser, setLoading, setIsPublicUser, setPublicUserDetails, setUserDetailsNotFound);
+  useDowellLogin(
+    setCurrentUser, 
+    setLoading, 
+    setIsPublicUser, 
+    setPublicUserDetails, 
+    setUserDetailsNotFound,
+    setIsProductUser,
+    setProductUserDetails,
+  );
+
   useTitle("Dowell Job Portal");
 
   if (loading) return <LoadingPage />;
 
   console.log("CURRENT USER", currentUser);
 
-  // NO LOGGED IN USER VIEW
+  // NO LOGGED IN PUBLIC USER VIEW
   if (isPublicUser) {
     return (
       <Routes>
@@ -128,6 +140,126 @@ function App() {
       </Routes>
     );
   }
+
+  // NON LOGGED IN PRODUCT USER
+  if (isProductUser) {
+    return (
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <JobContextProvider>
+              <NewApplicationContextProvider>
+                <CandidateHomeScreen
+                  setHired={setCandidateHired}
+                  setAssignedProjects={setAssignedProjects}
+                  setCandidateShortListed={setCandidateShortListed}
+                  setshorlistedJob={setshorlistedJob}
+                />
+              </NewApplicationContextProvider>
+            </JobContextProvider>
+          }
+        >
+          <Route
+            path=":section"
+            element={
+              <JobContextProvider>
+                <NewApplicationContextProvider>
+                    <CandidateHomeScreen />
+                </NewApplicationContextProvider>
+              </JobContextProvider>
+            }
+          />
+        </Route>
+
+        <Route path="/jobs">
+          <Route
+            index
+            element={
+              <JobContextProvider>
+                <NewApplicationContextProvider>
+                  <JobScreen />
+                </NewApplicationContextProvider>
+              </JobContextProvider>
+            }
+          />
+          <Route
+            path=":jobTitle"
+            element={
+              <JobContextProvider>
+                <NewApplicationContextProvider>
+                  <SingleJobScreen />
+                </NewApplicationContextProvider>
+              </JobContextProvider>
+            }
+          />
+          <Route
+            exact
+            path="c/research-associate"
+            element={<ResearchAssociatePage />}
+          />
+          <Route
+            exact
+            path="c/employee"
+            element={
+              <JobContextProvider>
+                <NewApplicationContextProvider>
+                  <EmployeeJobScreen />
+                </NewApplicationContextProvider>
+              </JobContextProvider>
+            }
+          />
+          <Route
+            exact
+            path="c/intern"
+            element={
+              <JobContextProvider>
+                <NewApplicationContextProvider>
+                  <InternJobScreen />
+                </NewApplicationContextProvider>
+              </JobContextProvider>
+            }
+          />
+          <Route
+            exact
+            path="c/freelancer"
+            element={
+              <JobContextProvider>
+                <NewApplicationContextProvider>
+                  <FreelancerJobScreen />
+                </NewApplicationContextProvider>
+              </JobContextProvider>
+            }
+          />
+        </Route>
+
+        <Route
+          path="/apply/job/:id"
+          element={
+            <JobContextProvider>
+              <NewApplicationContextProvider>
+                <JobApplicationScreen />
+              </NewApplicationContextProvider>
+            </JobContextProvider>
+          }
+        >
+          <Route
+            path=":section"
+            element={
+              <JobContextProvider>
+                <NewApplicationContextProvider>
+                  <JobApplicationScreen />
+                </NewApplicationContextProvider>
+              </JobContextProvider>
+            }
+          />
+        </Route>
+
+        <Route path="*" element={<ErrorPage />} />
+      </Routes>
+    )
+  }
+
 
   if (!currentUser || userDetailsNotFound) {
     return (

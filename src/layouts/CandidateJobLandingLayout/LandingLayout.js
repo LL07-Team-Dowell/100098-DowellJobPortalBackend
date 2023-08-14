@@ -34,6 +34,8 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
     }, [location])
 
     useEffect(() => {
+        if (!currentUser) return
+        
         const teamManagementProduct = currentUser?.portfolio_info?.find(portfolio => portfolio.product === teamManagementProductName);
         
         if (

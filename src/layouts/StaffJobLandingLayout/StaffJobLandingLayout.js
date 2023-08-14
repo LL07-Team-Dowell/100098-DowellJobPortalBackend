@@ -57,6 +57,7 @@ const StaffJobLandingLayout = ({
   handleChangeInPublicAccountState,
   searchTeam,
   layoutBgColor,
+  isProductLink,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const { currentUser } = useCurrentUserContext();
@@ -210,6 +211,7 @@ const StaffJobLandingLayout = ({
                 :
                 () => {}
               }
+              isProductLink={isProductLink}
             />
           }
 

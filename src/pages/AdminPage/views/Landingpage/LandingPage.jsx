@@ -41,6 +41,7 @@ const LandingPage = ({ subAdminView }) => {
   } = useJobContext();
   const [ showShareModal, setShowShareModal ] = useState(false);
   const [ jobLinkToShareObj, setJobLinkToShareObj ] = useState({});
+  const [ activeLinkTab, setActiveLinkTab ] = useState('jobs');
 
   const handleSearchChange = (value) => {
     console.log("kasaksldjalksdjalksdjlkjsakl")
@@ -193,9 +194,21 @@ const LandingPage = ({ subAdminView }) => {
       <div className="isActive-container">
         <p onClick={()=>setIsActive('active')} className={isActive === 'active' && 'isActive'}>Active jobs</p>
         <p onClick={()=>setIsActive('inactive')} className={isActive === 'inactive' && 'isActive'}>Inactive jobs</p>
-        <p onClick={() => setIsActive('links')} className={isActive === 'links' && 'isActive'}>Job Links</p>
+        <p onClick={() => setIsActive('links')} className={isActive === 'links' && 'isActive'}>Links</p>
       </div>
       <div className="landing-page">
+        {
+          isActive === 'links' && <div className="landing_Nav_Wrapper">
+            <div className={`landing_Nav_Item ${activeLinkTab === 'jobs' ? 'active' : ''}`} onClick={() => setActiveLinkTab('jobs')}>
+              <p>Job links</p>
+              <span></span>
+            </div>
+            <div className={`landing_Nav_Item ${activeLinkTab === 'products' ? 'active' : ''}`} onClick={() => setActiveLinkTab('products')}>
+              <p>Product links</p>
+              <span></span>
+            </div>
+          </div>
+        }
         <div className="cards">
           {
             jobs?.length === 0 && searchValue || jobs?.length === 0 && resp ? <h3 style={{ textAlign: 'center' }}>You have not created any jobs yet</h3>
@@ -237,12 +250,40 @@ const LandingPage = ({ subAdminView }) => {
                 :
                 <>
                   {
-                    React.Children.toArray(jobLinks.map(link => {
-                      return <div className="job__Link__Container" onClick={() => handleCopyLink(link)}>
-                        <span>{link}</span>
-                        <IoCopyOutline />
+                    activeLinkTab === 'products' &&
+                    <>
+                    {
+                      [].length < 1 ?
+                      <div>
+                        <p>You have not created any links yet</p>
                       </div>
-                    }))
+                      :
+                      React.Children.toArray([].map(link => {
+                        return <div className="job__Link__Container" onClick={() => handleCopyLink(link)}>
+                          <span>{link}</span>
+                          <IoCopyOutline />
+                        </div>
+                      }))
+                    }
+                    </>
+                  }
+                  {
+                    activeLinkTab === 'jobs' &&
+                    <>
+                    {
+                      jobLinks.length < 1 ?
+                      <div>
+                        <p>You have not created any links yet</p>
+                      </div>
+                      :
+                      React.Children.toArray(jobLinks.map(link => {
+                        return <div className="job__Link__Container" onClick={() => handleCopyLink(link)}>
+                          <span>{link}</span>
+                          <IoCopyOutline />
+                        </div>
+                      }))
+                    }
+                    </>
                   }
                 </>
               ) : (
