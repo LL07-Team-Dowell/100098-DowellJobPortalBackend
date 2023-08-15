@@ -38,11 +38,11 @@ const TeamScreenThreads = ({ status, id }) => {
   const [showModalStates, setShowModalStates] = useState({});
   const [loading, setLoading] = useState(true);
   const [loadingcmnt, setLoadingcmnt] = useState(false);
-  const [reducerStatus, forceUpdateStatus] = useReducer((x) => x + 1, 0);
-  const [reducerComment, forceUpdate] = useReducer((x) => x + 1, 0);
   const [completedThreads, setCompletedThreads] = useState([]);
   const [resolvedThreads, setResolvedThreads] = useState([]);
   const [inProgressThreads, setInProgressThreads] = useState([]);
+  const [reducerComment, forceUpdate] = useReducer((x) => x + 1, 0);
+  const [reducerStatus, forceUpdateStatus] = useReducer((x) => x + 1, 0);
   const [statusLoading, setStatusLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -396,33 +396,19 @@ const TeamScreenThreads = ({ status, id }) => {
                           </div>
                           <div className="progress">
                             <p>Resolved</p>
-                            {currentUser.portfolio_info[0].username ===
-                            thread.created_by ? (
-                              <div
-                                className={
-                                  thread.current_status === "Resolved"
-                                    ? "active-thread-btn"
-                                    : "threads-btn"
-                                }
-                                onClick={(e) =>
-                                  updateStatus({
-                                    status: "Resolved",
-                                    document_id: thread._id,
-                                  })
-                                }
-                              ></div>
-                            ) : (
-                              <div
-                                className={
-                                  thread.current_status === "Resolved"
-                                    ? "active-thread-btn"
-                                    : "threads-btn"
-                                }
-                                onClick={() =>
-                                  alert("You can't update the status")
-                                }
-                              ></div>
-                            )}
+                            <div
+                              className={
+                                thread.current_status === "Resolved"
+                                  ? "active-thread-btn"
+                                  : "threads-btn"
+                              }
+                              onClick={(e) =>
+                                updateStatus({
+                                  status: "Resolved",
+                                  document_id: thread._id,
+                                })
+                              }
+                            ></div>
                           </div>
                         </div>
                         <div className="comments-section">
@@ -560,7 +546,7 @@ const TeamScreenThreads = ({ status, id }) => {
           </>
         )}
 
-        {(status === "In progress" || status === "Created") && (
+        {status === "In progress" && (
           <>
             {React.Children.toArray(
               inProgressThreads.map((thread) => {
@@ -677,7 +663,9 @@ const TeamScreenThreads = ({ status, id }) => {
                                     : "threads-btn"
                                 }
                                 onClick={() =>
-                                  toast.info("You can't update this status only Assigned team")
+                                  toast.info(
+                                    "Only Assigned team to issue can update this status"
+                                  )
                                 }
                               ></div>
                             )}
@@ -708,7 +696,9 @@ const TeamScreenThreads = ({ status, id }) => {
                                     : "threads-btn"
                                 }
                                 onClick={() =>
-                                  toast.info("Wait for Assigned team to complete issue")
+                                  toast.info(
+                                    "Wait for Assigned team to issue to update completed status"
+                                  )
                                 }
                               ></div>
                             )}
