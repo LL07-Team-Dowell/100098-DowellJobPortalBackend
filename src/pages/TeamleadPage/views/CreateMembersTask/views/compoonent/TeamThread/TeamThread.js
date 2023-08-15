@@ -3,6 +3,7 @@ import { MdOutlineArrowBackIosNew } from 'react-icons/md';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import ThreadItem from './ThreadItem';
 import styled from 'styled-components';
+import TeamScreenLinks from '../teamScreenLinks/teamScreenLinks';
 
 const TeamThread = ({ title = "Team Issues", color }) => {
   const { id } = useParams();
@@ -73,8 +74,9 @@ const TeamThread = ({ title = "Team Issues", color }) => {
     <div className='create-new-team-header'>
       <div>
         <div>
-          <button className='back' onClick={() => navigate(`/team-screen-member/${id}/team-issues`)}><MdOutlineArrowBackIosNew /></button>
-          {title !== undefined && <h1 style={{ color: color ? color : '#000' }}>{title}</h1>}
+          {/* <button className='back' onClick={() => navigate(`/team-screen-member/${id}/team-issues`)}><MdOutlineArrowBackIosNew /></button>
+          {title !== undefined && <h1 style={{ color: color ? color : '#000' }}>{title}</h1>} */}
+          <TeamScreenLinks id={id} />
         </div>
       </div>
     </div>

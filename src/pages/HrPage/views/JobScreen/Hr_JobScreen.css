@@ -135,11 +135,25 @@
     margin-top: 30%;
     margin-bottom: 10%;
   }
+
+  #refresh-container {
+    position: absolute;
+    top: 13rem !important;
+    z-index: 1000;
+    right: 2rem;
+  }
 }
 
-@media screen and (min-width: 469.98px) {
+@media screen and (min-width: 300.98px) {
   .search {
     margin-top: 20%;
+  }
+
+  #refresh-container {
+    position: absolute;
+    top: 13rem !important;
+    z-index: 1000;
+    right: 2rem;
   }
 }
 
@@ -147,12 +161,31 @@
   .search {
     margin-top: 18%;
   }
+
+  #refresh-container {
+    position: absolute;
+    top: 13rem !important;
+    z-index: 1000;
+    /* right: 7.4rem; */
+    top: 10rem;
+  }
 }
 
 @media (min-width: 576px) and (max-width: 767.98px) {
   .search {
     margin-top: 14%;
   }
+
+  #refresh-container {
+    position: absolute;
+    top: 16rem !important;
+    z-index: 1000;
+    right: 7.4rem;
+    top: 10rem;
+  }
+
+
+
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
@@ -198,6 +231,14 @@
   .sort__Title__Item {
     margin-bottom: 2%;
   }
+
+  #refresh-container {
+    position: absolute;
+    top: 16rem !important;
+    z-index: 1000;
+    right: 7.4rem;
+    top: 10rem;
+  }
 }
 
 @media screen and (min-width: 992px) {
@@ -216,7 +257,7 @@
     margin-right: 0;
   }
 
-  .job__wrapper > * {
+  .job__wrapper>* {
     width: calc(94% / 2) !important;
     margin-right: 4%;
     margin-left: 0;
@@ -349,6 +390,8 @@
   .hr__Page__Container .tasks-container.hr__Page {
     margin-bottom: 0;
   }
+
+
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {

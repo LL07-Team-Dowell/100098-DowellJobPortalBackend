@@ -32,7 +32,7 @@ import { useCandidateTaskContext } from "../../contexts/CandidateTasksContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { IoMdRefresh } from "react-icons/io";
 
-const Teamlead = () => {
+const Teamlead = ({isGrouplead}) => {
   const { currentUser } = useCurrentUserContext();
   const { section, searchParams } = useNavigationContext();
   const {
@@ -418,7 +418,10 @@ const Teamlead = () => {
         {section !== "user" && !showCandidate && (
           <TogglerNavMenuBar
             className={"teamlead"}
-            menuItems={["Approval", "Tasks", "Rehire"]}
+            menuItems={
+              isGrouplead?["Tasks"]:
+              ["Approval", "Tasks", "Rehire"]
+            }
             currentActiveItem={currentActiveItem}
             handleMenuItemClick={handleMenuItemClick}
           />

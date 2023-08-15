@@ -13,9 +13,9 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
 
     const handleItemClick = (item) => {
         handleCloseModal();
-        
-        if (item === testingRoles.groupLeadRole) return toast.info('Still in development');
-        
+
+        // if (item === testingRoles.groupLeadRole) return toast.info('Still in development');
+
         navigate("/");
 
         if (item === 'default') {
@@ -24,7 +24,7 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
             delete copyOfCurrentUser.fakeSubAdminRoleSet
 
             if (
-                currentUser.settings_for_profile_info && 
+                currentUser.settings_for_profile_info &&
                 currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
             ) {
                 copyOfCurrentUser.settings_for_profile_info = {
@@ -58,7 +58,7 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
         if (item === 'sub_admin') updatedUserDetail.fakeSubAdminRoleSet = true;
 
         if (
-            currentUser.settings_for_profile_info && 
+            currentUser.settings_for_profile_info &&
             currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
         ) {
             updatedUserDetail.isSuperAdmin = true;

@@ -122,6 +122,7 @@ function Applied() {
     <TogglerNavMenuBar className={"applied__Nav__Toggler"} menuItems={["Applied", "Interview", "Declined"]} handleMenuItemClick={(item) => setCurrentNavigationTab(item)} currentActiveItem={currentNavigationTab} />
     <button
       className="refresh-container"
+      id='refresh-container'
       onClick={handleRefreshForCandidateApplications}
     >
       <div className="refresh-btn">

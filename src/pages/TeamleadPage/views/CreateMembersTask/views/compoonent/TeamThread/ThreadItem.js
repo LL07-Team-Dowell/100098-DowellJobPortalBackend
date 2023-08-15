@@ -53,7 +53,6 @@ align-items: left !important;
   }
 
   .thread-card{
-    width: 400px;
     flex-wrap: wrap;
     display: flex;
     flex-direction: column;
@@ -68,9 +67,10 @@ align-items: left !important;
   }
   
   .team-screen-thread-container{
+    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content:center;
+    justify-content:space-around;
   }
 
   .team-screen-threads-container {
