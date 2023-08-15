@@ -19,7 +19,14 @@ import { testingRoles } from "../../../../../utils/testingRoles";
 
 const CreateTeam = () => {
   // USER
-  const { currentUser, setCurrentUser, portfolioLoaded, setPortfolioLoaded, isNotOwnerUser, setIsNotOwnerUser } = useCurrentUserContext();
+  const {
+    currentUser,
+    setCurrentUser,
+    portfolioLoaded,
+    setPortfolioLoaded,
+    isNotOwnerUser,
+    setIsNotOwnerUser,
+  } = useCurrentUserContext();
   // DATA
   const { data, setdata } = useValues();
   const MembersCurrentUser = currentUser?.settings_for_profile_info
@@ -32,7 +39,9 @@ const CreateTeam = () => {
     : currentUser?.selected_product?.userportfolio
         .map((v) =>
           v.username.length !== 0 && v.username[0] !== "owner"
-            ? v.username[0]
+            ? Array.isArray(v.username)
+              ? v.username[0]
+              : v.username
             : null
         )
         .filter((v) => v !== null)
@@ -44,7 +53,7 @@ const CreateTeam = () => {
   const [inputMembers, setInputMembers] = useState([]);
   const [query, setquery] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   // Navigate
   const navigate = useNavigate();
   // FUNCTIONS
@@ -73,24 +82,25 @@ const CreateTeam = () => {
   useEffect(() => {
     if (portfolioLoaded) {
       setDesplaidMembers(
-        isNotOwnerUser ?
-        currentUser?.selected_product?.userportfolio
-          .map((v) =>
-            v.username.length !== 0 && v.username[0] !== "owner"
-              ? v.username[0]
-              : null
-          )
-          .filter((v) => v !== null)
-          .map((v, i) => ({ member: v, id: i }))
-        :
-        currentUser?.userportfolio
-          ?.filter((user) => user.member_type !== "owner")
-          .map((v) => (v.username.length !== 0 ? v.username[0] : null))
-          .filter((v) => v !== null)
-          .map((v, i) => ({ member: v, id: i }))
+        isNotOwnerUser
+          ? currentUser?.selected_product?.userportfolio
+              .map((v) =>
+                v.username.length !== 0 && v.username[0] !== "owner"
+                  ? Array.isArray(v.username)
+                    ? v.username[0]
+                    : v.username
+                  : null
+              )
+              .filter((v) => v !== null)
+              .map((v, i) => ({ member: v, id: i }))
+          : currentUser?.userportfolio
+              ?.filter((user) => user.member_type !== "owner")
+              .map((v) => (v.username.length !== 0 ? v.username[0] : null))
+              .filter((v) => v !== null)
+              .map((v, i) => ({ member: v, id: i }))
       );
-      return
-    };
+      return;
+    }
 
     const currentSessionId = sessionStorage.getItem("session_id");
     if (!currentSessionId) return;
@@ -102,22 +112,21 @@ const CreateTeam = () => {
 
     if (
       !(
-        (
-          currentUser.settings_for_profile_info && 
-          currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
-        ) ||
-        (
-          currentUser.isSuperAdmin
-        )
+        (currentUser.settings_for_profile_info &&
+          currentUser.settings_for_profile_info.profile_info[0].Role ===
+            testingRoles.superAdminRole) ||
+        currentUser.isSuperAdmin
       ) &&
-        !teamManagementProduct
-      ) {
+      !teamManagementProduct
+    ) {
       console.log("No team management product found for current user");
       setDesplaidMembers(
         currentUser?.selected_product?.userportfolio
           .map((v) =>
             v.username.length !== 0 && v.username[0] !== "owner"
-              ? v.username[0]
+              ? Array.isArray(v.username)
+                ? v.username[0]
+                : v.username
               : null
           )
           .filter((v) => v !== null)
@@ -131,7 +140,7 @@ const CreateTeam = () => {
       session_id: currentSessionId,
       product: teamManagementProduct.product,
     };
-    
+
     getUserInfoFromLoginAPI(dataToPost)
       .then((res) => {
         setCurrentUser(res.data);
@@ -150,7 +159,6 @@ const CreateTeam = () => {
         console.log(err.response ? err.response.data : err.message);
         setPortfolioLoaded(true);
       });
-
   }, []);
 
   const createTeamSubmit = () => {
