@@ -87,7 +87,7 @@ const LandingPage = ({ subAdminView }) => {
         );
         setresponse(true);
 
-        setJobLinks(response[1]?.data?.master_link)
+        // setJobLinks(response[1]?.data?.master_link)
 
         const projectsGotten = response[2]?.data
         ?.filter(
