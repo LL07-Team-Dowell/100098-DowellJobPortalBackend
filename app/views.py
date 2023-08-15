@@ -2962,11 +2962,15 @@ class createPublicApplication(APIView):
 
         master_links = []
         for i in response["data"]:
-            link_and_id={
-                "master_link":i["master_link"],
-                "job_id":i["job_id"]
-            }
-            master_links.append(link_and_id)
+            try:
+                link_and_id={
+                    "master_link":i["master_link"],
+                    "job_id":i["job_id"]
+                }
+                master_links.append(link_and_id)
+            except KeyError:
+                pass
+
             # master_links.append(i["job_id"])
 
         if response["isSuccess"] == True:
