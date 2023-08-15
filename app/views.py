@@ -1,6 +1,7 @@
 import json
 import requests
 import threading
+import calendar
 from collections import Counter
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
@@ -47,7 +48,8 @@ from .serializers import (
     SendMailToPublicSerializer,
     ThreadsSerializer,
     CommentsSerializer,
-    PublicProductURLSerializer
+    PublicProductURLSerializer,
+    UpdatePaymentStatusSerializer
 )
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -67,7 +69,7 @@ from .helper import get_event_id, dowellconnection, call_notification, set_final
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
     SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
-    SettingUserProjectSerializer, UpdateSettingUserProjectSerializer, SettingUserProfileInfo, UpdateuserSerializer, UserProject , CreatePublicLinkSerializer ,SendMailToPublicSerializer
+    SettingUserProjectSerializer, UpdateSettingUserProjectSerializer, SettingUserProfileInfo, UpdateuserSerializer, UserProject , CreatePublicLinkSerializer ,SendMailToPublicSerializer,UpdatePaymentStatusSerializer
 import datetime
 from dateutil.relativedelta import relativedelta
 import jwt
@@ -761,8 +763,9 @@ class candidate_apply_job(APIView):
             "selected_on": "",
             "hired_on": "",
             "onboarded_on": "",
-            "module": data.get("module")
-
+            "module": data.get("module"),
+            "payment_requested": False,
+            "current_payment_request_status": "",
         }
         update_field = {"status": "nothing to update"}
 
@@ -1745,6 +1748,7 @@ class create_team(APIView):
                 "team_name": data.get("team_name"),
                 "team_description": data.get("team_description"),
                 "created_by": data.get("created_by"),
+                "date_created": data.get("date_created"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
                 "members": data.get("members"),
@@ -1938,6 +1942,12 @@ class delete_team(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class create_team_task(APIView):
+    def max_updated_date(self, updated_date):
+        task_updated_date = datetime.datetime.strptime(
+            updated_date, "%m/%d/%Y %H:%M:%S"
+        )
+        _date = task_updated_date + relativedelta(hours=12)
+        return str(_date)
     def post(self, request):
         data = request.data
         if data:
@@ -1949,7 +1959,13 @@ class create_team_task(APIView):
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
                 "data_type": data.get("data_type"),
+                "task_created_date":data.get("task_created_date"),
                 "due_date": data.get("due_date"),
+                "task_updated_date": "",
+                "approval": False,
+                "max_updated_date": self.max_updated_date(
+                    data.get("task_created_date")
+                ),
             }
             update_field = {"status": "nothing to update"}
             response = dowellconnection(
@@ -1992,11 +2008,11 @@ class edit_team_task(APIView):
                 "description": data.get("description"),
                 "assignee": data.get("assignee"),
                 "completed": data.get("completed"),
-                "team_name": data.get("team_name"),
+                "team_name": data.get("team_name")
             }
             # check if task exists---
             check = dowellconnection(
-                *team_management_modules, "fetch", field, update_field
+                *task_management_reports, "fetch", field, update_field
             )
             if len(json.loads(check)["data"]) == 0:
                 return Response(
@@ -3115,7 +3131,6 @@ class updateTheUserDetails(APIView):
 @method_decorator(csrf_exempt,name="dispatch")
 class public_product(APIView):
     def post(self,request):
-        
         field = {
             "public_link_name" : request.data.get('public_link_name'),
             "product_url" : request.data.get('product_url'),
@@ -3123,7 +3138,6 @@ class public_product(APIView):
             "job_company_id": request.data.get("job_company_id"),
             "company_data_type": request.data.get("company_data_type"),
         }
-
         serializer = PublicProductURLSerializer(data=request.data)
         if serializer.is_valid():
             qr_ids = field["qr_ids"]
@@ -3183,9 +3197,50 @@ class public_product(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+    def get(self,request,job_company_id):
+        fields = {
+                "job_company_id": job_company_id
+            }
+        update_field = {"status": "Nothing to update"}
+        dowellresponse = json.loads(dowellconnection(*Publiclink_reports, "fetch", fields, update_field))
+        if dowellresponse["isSuccess"]:
+            if len(dowellresponse["data"]) == 0:
+                return Response(
+                    {
+                        "message": f"There is no link",
+                        "response": dowellresponse,
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+            else:
+                data=[]
+                for res in dowellresponse["data"]:
+                    try:
+                        if "public_link_name" in res.keys():
+                            item={
+                                    "master_link": res["master_link"],
+                                    "link_name": res["public_link_name"],
+                                    "type": "product",
+                                }
+                        data.append(item)
+                    except Exception:
+                        pass  
+                return Response(
+                    {
+                        "message": f"List of links present",
+                        "response": data,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+        else:
+            return Response({
+                "success": False,
+                "message": "Failed to get link"
+            },status=status.HTTP_400_BAD_REQUEST)
+        
+
 
 # _________________Thread And Comment_____________
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Thread_Apis(APIView):
@@ -3210,6 +3265,7 @@ class Thread_Apis(APIView):
             "created_by": data.get("created_by"),
             "team_id":data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
+            "created_date":datetime.datetime.now().Date(),
             "current_status": serializer_data["current_status"],
             "previous_status": [],
         }
@@ -3426,6 +3482,7 @@ class Comment_Apis(APIView):
         field = {
             "event_id": get_event_id()["event_id"],
             "created_by": data.get("created_by"),
+            "created_date":datetime.datetime.now().Date(),
             "comment": data.get("comment"),
             "thread_id": data.get("thread_id"),
         }
@@ -3788,9 +3845,9 @@ class Generate_Lead_Report(APIView):
         data["team_tasks_completed_on_time"]=len(on_time)
 
         try:
-            data["percentage_tasks_completed_on_time"]=str((data["team_tasks_completed_on_time"]/data["team_tasks"])*100)+" %"
+            data["percentage_team_tasks_completed_on_time"]=str((data["team_tasks_completed_on_time"]/data["team_tasks"])*100)+" %"
         except Exception:
-            data["percentage_tasks_completed_on_time"]="0 %"
+            data["percentage_team_tasks_completed_on_time"]="0 %"
 
         ## list of tasks-----------
         team_tasks_list=[]
@@ -3858,3 +3915,301 @@ class Generate_candidate_dublicates(APIView):
             "data":data,
             }, status=status.HTTP_200_OK)
      
+class Generate_Individual_Report(APIView):
+    def post(self, request):
+        payload = request.data
+        field = {
+            "applicant_email":payload.get("email"),
+            "username":payload.get("username")
+        }
+        username=payload.get("username")
+
+        update_field = {}
+        data = {}
+        info = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        data["personal_info"]=json.loads(info)['data'][0:]
+
+        data['data']=[]
+        
+        month_list=calendar.month_name
+        #print(calendar.month_name[1:])
+        
+        item={'January':{}, 'February':{}, 'March':{}, 'April':{}, 'May':{}, 'June':{}, 'July':{}, 'August':{}, 'September':{}, 'October':{}, 'November':{}, 'December':{}}
+        for key, value in item.items():
+                item[key]={"tasks_added": 0,
+                            "tasks_completed": 0,
+                            "tasks_uncompleted": 0,
+                            "tasks_approved": 0,
+                            "percentage_tasks_completed":"0 %",
+                            "teams":0,
+                            "team_tasks":0,
+                            "team_tasks_completed":0,
+                            "team_tasks_uncompleted":0,
+                            "percentage_team_tasks_completed":"0 %",
+                            "team_tasks_approved":0,
+                            "team_tasks_issues_raised":0,
+                            "team_tasks_issues_resolved":0,
+                            "team_tasks_comments_added":0
+                            }
+                
+        tasks_added = dowellconnection(*task_management_reports, "fetch", {"task_added_by":username}, update_field) 
+        
+        if len(json.loads(tasks_added)['data']) != 0: 
+            months=[]
+            for task in json.loads(tasks_added)['data']: 
+                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                    #print(month_name,"=====",task["task_created_date"],"====",item.keys())
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        item[month_name].update({"tasks_added":months.count(month_name)}) 
+        else:
+            for key, value in item.items():
+                item[key].update({"tasks_added":0})  
+        
+        tasks_completed = dowellconnection(*task_management_reports, "fetch", {"task_added_by":username,"status": "Completed"}, update_field)
+        if len(json.loads(tasks_completed)['data']) != 0:
+            months=[]
+            for task in json.loads(tasks_completed)['data']: 
+                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                    #print(month_name,"=====",task["task_created_date"],"====",item.keys())
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        item[month_name].update({"tasks_completed":months.count(month_name)}) 
+                        percentage_tasks_completed=str((item[month_name]["tasks_completed"]/item[month_name]["tasks_added"])*100)+" %" 
+                        item[month_name].update({"percentage_tasks_completed":percentage_tasks_completed})       
+        else:
+            for key, value in item.items():
+                item[key].update({"tasks_completed":0})  
+
+        tasks_uncompleted = dowellconnection(*task_management_reports, "fetch", {"task_added_by":username,"status": "Incomplete"}, update_field)
+        if len(json.loads(tasks_uncompleted)['data']) != 0:
+            months=[]
+            for task in json.loads(tasks_uncompleted)['data']: 
+                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                    #print(month_name,"=====",task["task_created_date"],"====",item.keys())
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        item[month_name].update({"tasks_uncompleted":months.count(month_name)})  
+        else:
+            for key, value in item.items():
+                item[key].update({"tasks_uncompleted":0})  
+
+        tasks_approved = dowellconnection(*task_management_reports, "fetch", {"task_added_by":username,"approval": True}, update_field)
+        if len(json.loads(tasks_approved)['data']) != 0:
+            months=[]
+            for task in json.loads(tasks_approved)['data']: 
+                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        item[month_name].update({"tasks_approved":months.count(month_name)})                        
+        else:
+            for key, value in item.items():
+                item[key].update({"tasks_approved":0})
+
+        teams = dowellconnection(*team_management_modules, "fetch", {}, update_field)
+        
+        if len(json.loads(teams)['data']) != 0:
+            months=[]
+            for team in json.loads(teams)['data']: 
+                try:
+                    if username in team["members"]:
+                        #print(team)
+                        month_name=month_list[datetime.datetime.strptime(team["date_created"], "%m/%d/%Y %H:%M:%S").month]
+                        months.append(month_name)
+                        item[month_name].update({"teams":months.count(month_name)}) 
+                except Exception as e:
+                    pass 
+        else:
+            for key, value in item.items():
+                item[key].update({"teams":0})
+
+        if len(json.loads(teams)['data']) != 0:
+            months=[]
+            for team in json.loads(teams)['data']:
+                try:
+                    if username in team["members"]: 
+                        team_tasks = dowellconnection(*task_management_reports, "fetch", {"team_id":team["_id"]}, update_field)
+                        if len(json.loads(team_tasks)['data']) != 0:
+                            for task in json.loads(team_tasks)['data']:
+                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                                months.append(month_name)
+                                item[month_name].update({"team_tasks":months.count(month_name)})
+                except Exception as e:
+                    pass 
+        else:
+            for key, value in item.items():
+                item[key].update({"team_tasks":0}) 
+
+        if len(json.loads(teams)['data']) != 0:
+            months=[]
+            for team in json.loads(teams)['data']:
+                try:
+                    if username in team["members"]: 
+                        team_tasks_completed = dowellconnection(*task_management_reports, "fetch", {"team_id":team["_id"],"completed": "True"}, update_field)
+                        if len(json.loads(team_tasks_completed)['data']) != 0:
+                            for task in json.loads(team_tasks_completed)['data']:
+                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                                months.append(month_name)
+                                item[month_name].update({"team_tasks_completed":months.count(month_name)})
+                                item[month_name].update({"percentage_team_tasks_completed":str((len(json.loads(team_tasks_completed)['data'])/len(json.loads(team_tasks)['data']))*100)+" %"})
+                except Exception as e:
+                    pass 
+        else:
+            for key, value in item.items():
+                item[key].update({"team_tasks_completed":0}) 
+
+        if len(json.loads(teams)['data']) != 0:
+            months=[]
+            for team in json.loads(teams)['data']:
+                try:
+                    if username in team["members"]: 
+                        team_tasks_uncompleted = dowellconnection(*task_management_reports, "fetch", {"team_id":team["_id"],"completed": "False"}, update_field)
+                        if len(json.loads(team_tasks_uncompleted)['data']) != 0:
+                            for task in json.loads(team_tasks_uncompleted)['data']:
+                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                                months.append(month_name)
+                                item[month_name].update({"team_tasks_uncompleted":months.count(month_name)})
+                except Exception as e:
+                    pass 
+        else:
+            for key, value in item.items():
+                item[key].update({"team_tasks_uncompleted":0}) 
+
+        if len(json.loads(teams)['data']) != 0:
+            months=[]
+            for team in json.loads(teams)['data']:
+                try:
+                    if username in team["members"]: 
+                        team_tasks_approved = dowellconnection(*task_management_reports, "fetch", {"team_id":team["_id"],"approval": True}, update_field)
+                        if len(json.loads(team_tasks_approved)['data']) != 0:
+                            for task in json.loads(team_tasks_approved)['data']:
+                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                                months.append(month_name)
+                                item[month_name].update({"team_tasks_approved":months.count(month_name)})
+                except Exception as e:
+                    pass 
+        else:
+            for key, value in item.items():
+                item[key].update({"team_tasks_approved":0}) 
+
+        if len(json.loads(teams)['data']) != 0:
+            months=[]
+            for team in json.loads(teams)['data']:
+                try:
+                    if username in team["members"]: 
+                        team_tasks_issues_raised = dowellconnection(*thread_report_module, "fetch", {"team_id":team["_id"]}, update_field)
+                        if len(json.loads(team_tasks_issues_raised)['data']) != 0:
+                            for thread in json.loads(team_tasks_issues_raised)['data']:
+                                month_name=month_list[datetime.datetime.strptime(thread["created_date"], "%Y-%m-%d").month]
+                                months.append(month_name)
+                                item[month_name].update({"team_tasks_issues_raised":months.count(month_name)}) 
+                except Exception as e:
+                    pass 
+        else:
+            for key, value in item.items():
+                item[key].update({"team_tasks_issues_raised":0}) 
+        
+        if len(json.loads(teams)['data']) != 0:
+            months=[]
+            for team in json.loads(teams)['data']:
+                try:
+                    if username in team["members"]: 
+                        team_tasks_issues_resolved = dowellconnection(*thread_report_module, "fetch", {"team_id":team["_id"],"current_status":"Resolved"}, update_field)
+                        if len(json.loads(team_tasks_issues_resolved)['data']) != 0:
+                            for thread in json.loads(team_tasks_issues_resolved)['data']:
+                                month_name=month_list[datetime.datetime.strptime(thread["created_date"], "%Y-%m-%d").month]
+                                months.append(month_name)
+                                item[month_name].update({"team_tasks_issues_resolved":months.count(month_name)}) 
+                except Exception as e:
+                    pass 
+        else:
+            for key, value in item.items():
+                item[key].update({"team_tasks_issues_resolved":0}) 
+        
+        if len(json.loads(teams)['data']) != 0:
+            months=[]
+            for team in json.loads(teams)['data']:
+                try:
+                    if username in team["members"]: 
+                        team_tasks_issues_raised = dowellconnection(*thread_report_module, "fetch", {"team_id":team["_id"]}, update_field)
+                        if len(json.loads(team_tasks_issues_raised)['data']) != 0:
+                            for thread in json.loads(team_tasks_issues_raised)['data']:
+                                if not len(json.loads(team_tasks_issues_raised)["data"]) <= 0:
+                                    team_tasks_comments_added = dowellconnection(*comment_report_module, "fetch", {"thread_id":thread["_id"]}, update_field)
+                                    for comment in json.loads(team_tasks_comments_added)['data']:
+                                        if not len(json.loads(team_tasks_comments_added)["data"]) <= 0:
+                                            month_name=month_list[datetime.datetime.strptime(comment["created_date"], "%Y-%m-%d").month]
+                                            months.append(month_name)
+                                            item[month_name].update({"team_tasks_comments_added":months.count(month_name)})
+                except Exception as e:
+                    pass 
+        else:
+            for key, value in item.items():
+                item[key].update({"team_tasks_comments_added":0}) 
+                
+        data['data'].append(item)
+        return Response(data, status=status.HTTP_201_CREATED)
+
+class Update_payment_status(APIView):
+    def patch(self, request,document_id):
+        data=request.data
+        if data:
+            field = {
+                "_id": document_id,
+            }
+            update_field = {
+                        "payment_requested": True,
+                        "current_payment_request_status": data.get("current_payment_request_status"),
+                        }
+            # check if candidate application exists exists---
+            check = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field
+            )
+            if len(json.loads(check)["data"]) == 0:
+                return Response(
+                    {
+                        "message": "Cannot be Updated, there is no application with this id",
+                        "response": json.loads(check),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+            else:
+                serializer = UpdatePaymentStatusSerializer(data=update_field)
+                if serializer.is_valid():
+                    if update_field["payment_requested"]==False:
+                        return Response(
+                        {"message": "Parameters are not valid","errors":"The field, 'payment_requested'  must be True"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                    response = dowellconnection(
+                            *candidate_management_reports, "update", field, update_field
+                        )
+                    #print(response)
+                    if json.loads(response)["isSuccess"] == True:
+                        return Response(
+                            {
+                                "message": "Candidate application has been Updated successfully",
+                                "response": json.loads(response),
+                            },
+                            status=status.HTTP_200_OK,
+                        )
+                    else:
+                        return Response(
+                            {
+                                "message": "Candidate application failed to be updated",
+                                "response": json.loads(response),
+                            },
+                            status=status.HTTP_404_NOT_FOUND,
+                        )
+                else:
+                    return Response(
+                        {"message": "Parameters are not valid","errors":serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+

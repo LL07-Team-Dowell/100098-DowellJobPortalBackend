@@ -299,10 +299,13 @@ class CommentsSerializer(serializers.Serializer):
     comment = serializers.CharField(allow_null=False, allow_blank=False)
     thread_id = serializers.CharField(allow_null=False, allow_blank=False)
 
-
 class PublicProductURLSerializer(serializers.Serializer):
     public_link_name = serializers.CharField(allow_null=False, allow_blank=False)
     product_url = serializers.URLField(allow_null=False, allow_blank=False)
     qr_ids = serializers.ListField(child=serializers.CharField(allow_null=False, allow_blank=False))
     job_company_id = serializers.CharField(allow_null=False, allow_blank=False)
     company_data_type = serializers.CharField(allow_null=False, allow_blank=False)
+
+class UpdatePaymentStatusSerializer(serializers.Serializer):
+    payment_requested = serializers.BooleanField(required=True, allow_null=False)
+    current_payment_request_status = serializers.CharField(allow_null=False, allow_blank=False)
