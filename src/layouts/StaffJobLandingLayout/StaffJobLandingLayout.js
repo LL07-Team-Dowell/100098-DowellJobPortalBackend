@@ -6,7 +6,7 @@ import NewSideNavigationBar from "../../components/SideNavigationBar/NewSideNavi
 import { Link } from "react-router-dom";
 import { hrNavigationLinks } from "../../pages/HrPage/views/hrNavigationLinks";
 import { accountNavigationLinks } from "../../pages/AccountPage/accountNavigationLinks";
-import { teamleadNavigationLinks } from "../../pages/TeamleadPage/teamleadNavigationLinks";
+import { groupLeadNavigationLinks, teamleadNavigationLinks } from "../../pages/TeamleadPage/teamleadNavigationLinks";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useMediaQuery } from "@mui/material";
 import {
@@ -185,7 +185,10 @@ const StaffJobLandingLayout = ({
                   : accountView
                   ? accountNavigationLinks
                   : teamleadView
-                  ? teamleadNavigationLinks
+                  ? 
+                    isGrouplead ? 
+                    groupLeadNavigationLinks :
+                    teamleadNavigationLinks
                   : adminView
                   ? subAdminView
                     ? subAdminNavigationLinks

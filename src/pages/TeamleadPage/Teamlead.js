@@ -140,6 +140,41 @@ const Teamlead = ({isGrouplead}) => {
 
     setLoading(true);
 
+    if (isGrouplead) {
+      getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id)
+      .then((res) => {
+        setLoading(false);
+        setCandidatesDataLoaded(true);
+
+        if (userTasks.length > 0) return;
+
+        const tasksToDisplay = res?.data?.response?.data
+          ?.filter(
+            (task) =>
+              task.data_type === currentUser?.portfolio_info[0]?.data_type
+          )
+          .filter(
+            (task) =>
+              task.project ===
+              currentUser?.settings_for_profile_info.profile_info[0]?.project
+          );
+
+        const usersWithTasks = [
+          ...new Map(
+            tasksToDisplay.map((task) => [task.applicant, task])
+          ).values(),
+        ];
+        setUserTasks(usersWithTasks.reverse());
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+
+      return
+    }
+
+    
     Promise.all([
       getJobs2(requestData),
       getCandidateApplicationsForTeamLead(
@@ -386,14 +421,17 @@ const Teamlead = ({isGrouplead}) => {
         setSearchValue={handleSearch}
         searchPlaceHolder={
           section === "home"
-            ? "applicant"
+            ? isGrouplead ? 
+                "task" : 
+                "applicant"
             : section === "task"
             ? "task"
             : rehireTabActive
             ? "rehire"
             : "applicant"
         }
-        hideSearchBar={section === "user" ? true : false}
+        hideSearchBar={(section === "home" || section === undefined || section === "user") ? true : false}
+        isGrouplead={isGrouplead}
       >
         <TitleNavigationBar
           title={
@@ -403,16 +441,18 @@ const Teamlead = ({isGrouplead}) => {
               ? "Profile"
               : showCandidate
               ? "Application Details"
+              :
+              isGrouplead ? 
+                "Add Item"
               : "Applications"
           }
           hideBackBtn={showCandidate || showCandidateTask ? false : true}
           handleBackBtnClick={handleBackBtnClick}
         />
-        {section !== "user" && !showCandidate && (
+        {section !== "user" && !showCandidate && !isGrouplead && (
           <TogglerNavMenuBar
             className={"teamlead"}
             menuItems={
-              isGrouplead?["Tasks"]:
               ["Approval", "Tasks", "Rehire"]
             }
             currentActiveItem={currentActiveItem}
@@ -471,6 +511,8 @@ const Teamlead = ({isGrouplead}) => {
                   </div>
                 ) : (
                   <>
+                    { isGrouplead && (section === 'home' || section === undefined) ? <></> :
+                    <> 
                     <button
                       className="refresh-container"
                       onClick={handleRefreshForCandidateApplicationsForTeamlead}
@@ -490,8 +532,14 @@ const Teamlead = ({isGrouplead}) => {
                           ? candidatesData.candidatesToRehire.length
                           : 0
                       }
-                    />
+                    /> 
+                    </>
+                    }
 
+                    {
+                    isGrouplead ? <>
+                      <p style={{ textAlign: 'center' }}>More content coming soon...</p>
+                    </> :  
                     <div className="jobs-container">
                       {selectedTabActive ? (
                         searchValue.length >= 1 ? (
@@ -605,6 +653,7 @@ const Teamlead = ({isGrouplead}) => {
                         <></>
                       )}
                     </div>
+                    }
                   </>
                 )
               ) : section === "task" ? (
