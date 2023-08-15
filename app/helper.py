@@ -250,7 +250,6 @@ def periodic_application(start_dt, end_dt, data_list):
 
 
 def periodic_application_account(start_dt, end_dt, data_list):
-    #convert to date format--------
     start_date = datetime.datetime.strptime(
             start_dt, "%m/%d/%Y %H:%M:%S"
         )
@@ -259,23 +258,26 @@ def periodic_application_account(start_dt, end_dt, data_list):
         )
     
     items=[]
-    print(data_list)
+    
     for l in data_list:
         try:
-            application_submitted_on=datetime.datetime.strptime(l["onboarded_on"],"%Y-%m-%dT%H:%M:%S.%fZ")
-            if application_submitted_on >= start_date and application_submitted_on <= end_date:
-                items.append(l)
-        except ValueError:
-            try:
-                application_submitted_on=datetime.datetime.strptime(l["onboarded_on"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
-                if application_submitted_on >= start_date and application_submitted_on <= end_date:
-                    items.append(l)
-            except ValueError:
-                try:
-                    application_submitted_on=datetime.datetime.strptime(l["onboarded_on"], "%m/%d/%Y %H:%M:%S")
-                    if application_submitted_on >= start_date and application_submitted_on <= end_date:
+            if "/" in l["onboarded_on"]:
+                format_strings = ["%Y-%m-%dT%H:%M:%S.%fZ", "%m/%d/%Y %H:%M:%S"]
+                for format_str in format_strings:
+                    try:
+                        if l["onboarded_on"] != "<onboarded on>":
+                            application_submitted_on = datetime.datetime.strptime(l["onboarded_on"], format_str)
+                            if start_date <= application_submitted_on <= end_date:
+                                items.append(l)
+                            break
+                    except ValueError:
+                        pass
+            else:
+                if l["onboarded_on"] != "<onboarded on>":
+                    application_submitted_on = datetime.datetime.strptime(l["onboarded_on"], "%Y-%m-%dT%H:%M:%S.%fZ")
+                    if start_date <= application_submitted_on <= end_date:
                         items.append(l)
-                except ValueError:
-                    pass
+        except KeyError:
+            pass
 
-    return (items, len(items))
+    return items, len(items)

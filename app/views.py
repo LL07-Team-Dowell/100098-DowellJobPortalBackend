@@ -2958,10 +2958,16 @@ class createPublicApplication(APIView):
         update_field = {"status": "Nothing to update"}
         responses = dowellconnection(*Publiclink_reports, "fetch", field, update_field)
         response = json.loads(responses)
+        print(response)
 
         master_links = []
         for i in response["data"]:
-            master_links.append(i["master_link"])
+            link_and_id={
+                "master_link":i["master_link"],
+                "job_id":i["job_id"]
+            }
+            master_links.append(link_and_id)
+            # master_links.append(i["job_id"])
 
         if response["isSuccess"] == True:
             return Response(
@@ -3761,8 +3767,8 @@ class Generate_account_Report(APIView):
         job_applications = dowellconnection(*account_management_reports, "fetch", field, update_field)
         data["job_applications"]=len(json.loads(job_applications)['data'])
         
-        # p_application = periodic_application_account(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
-        # data[f"nojob_applications_from_start_date_to_end_date"]=p_application[1]
+        p_application = periodic_application_account(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
+        data[f"nojob_applications_from_start_date_to_end_date"]=p_application[1]
 
         Rehired = dowellconnection(*account_management_reports, "fetch", {"status": "Rehired"}, update_field)
         #print(Rehired)
@@ -3871,6 +3877,42 @@ class Generate_Lead_Report(APIView):
                          "response":data}, status=status.HTTP_201_CREATED)
 
 @method_decorator(csrf_exempt, name="dispatch")
+class Generate_candidate_dublicates(APIView):
+    def get(self, request,company_id):
+        field = {"company_id": company_id}
+        update_field = {}
+        data = {}
+        job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        Total_job_applications=(json.loads(job_applications)['data'])
+        applicants = []
+        duplicates=[]
+        for job in Total_job_applications:
+            username = job.get("username")
+            email = job.get("applicant_email")
+            applied_on=job.get("application_submitted_on")
+            applicant_status=job.get("status")
+            
+            applicant = {
+                "username": username,
+                "email": email,
+                "applied_on":applied_on,
+                "applicant_status":applicant_status
+            }
+            if applicant in applicants:
+                duplicates.append(applicant)
+            else:
+                applicants.append(applicant)
+
+        unique_usernames = set(applicant["username"] for applicant in applicants)
+        data['unique_applicants']=unique_usernames
+        data['duplicates_applicants']=duplicates
+
+
+        return Response({
+            "success":True,
+            "data":data,
+            }, status=status.HTTP_200_OK)
+     
 class Generate_Individual_Report(APIView):
     def post(self, request):
         payload = request.data
@@ -4168,3 +4210,4 @@ class Update_payment_status(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
