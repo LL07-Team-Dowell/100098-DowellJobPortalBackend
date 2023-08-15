@@ -3259,7 +3259,7 @@ class Thread_Apis(APIView):
             "created_by": data.get("created_by"),
             "team_id":data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
-            "created_date":datetime.datetime.now().Date(),
+            "created_date":str(datetime.date.today()),
             "current_status": serializer_data["current_status"],
             "previous_status": [],
         }
@@ -3267,9 +3267,7 @@ class Thread_Apis(APIView):
         serializer = ThreadsSerializer(data=serializer_data)
         if serializer.is_valid():
             
-            insert_response = dowellconnection(
-                *thread_report_module, "insert", field, update_field
-            )
+            insert_response = dowellconnection(*thread_report_module, "insert", field, update_field)
             #print(insert_response)
             if json.loads(insert_response)["isSuccess"] == True:
                 return Response(
@@ -3476,7 +3474,7 @@ class Comment_Apis(APIView):
         field = {
             "event_id": get_event_id()["event_id"],
             "created_by": data.get("created_by"),
-            "created_date":datetime.datetime.now().Date(),
+            "created_date":str(datetime.date.today()),
             "comment": data.get("comment"),
             "thread_id": data.get("thread_id"),
         }
