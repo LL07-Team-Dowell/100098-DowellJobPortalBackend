@@ -284,7 +284,7 @@ class UpdateuserSerializer(serializers.Serializer):
 
 class ThreadsSerializer(serializers.Serializer):
     thread = serializers.CharField(allow_null=False, allow_blank=False)
-    image = serializers.URLField(allow_null=False, allow_blank=False)
+    image = serializers.URLField(allow_null=False, allow_blank=True)
     created_by = serializers.CharField(allow_null=False, allow_blank=False)
     team_id = serializers.CharField(allow_null=False, allow_blank=False)
     team_alerted_id = serializers.CharField(allow_null=False, allow_blank=False)
