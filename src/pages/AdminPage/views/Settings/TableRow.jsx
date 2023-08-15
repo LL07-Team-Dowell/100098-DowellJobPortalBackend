@@ -91,7 +91,7 @@ export default function TableRow({
           profile_info: [
             {
               profile_title: option.portfolio_name,
-              Role: updatedRole,
+              Role: !updatedRole ? rolesNamesDict[roleAssigned] : updatedRole,
               version: "1.0",
               project: Proj_Lead,
             },
@@ -101,7 +101,7 @@ export default function TableRow({
       )
       .then((response) => {
         console.log(response);
-        setRoleAssigned(rolesDict[updatedRole]);
+        setRoleAssigned(!updatedRole ? roleAssigned : rolesDict[updatedRole]);
         setLoading(false);
         setUpdatedRole(null);
         setUpdatedProject(null);
