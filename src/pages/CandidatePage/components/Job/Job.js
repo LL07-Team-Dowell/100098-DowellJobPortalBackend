@@ -79,7 +79,10 @@ function JobScreen() {
 
             if (jobCategoryParam === "Employee") {
                 setJobSelectionCategories(["Full time"])
-                setJobsToDisplay(matchedJobs);
+                const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.type_of_job === currentJobCategory);
+                console.log(jobsToDisplayForCurrentCategory);
+                if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
+                setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
 
             if (jobCategoryParam === "Research Associate") {
