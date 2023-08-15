@@ -87,9 +87,9 @@ const LandingPage = ({ subAdminView }) => {
         );
         setresponse(true);
 
-        setJobLinks(response[1].data?.master_link)
+        setJobLinks(response[1]?.data?.master_link)
 
-        const projectsGotten = response[2].data
+        const projectsGotten = response[2]?.data
         ?.filter(
           (project) =>
             project?.data_type === currentUser.portfolio_info[0].data_type &&
@@ -108,7 +108,10 @@ const LandingPage = ({ subAdminView }) => {
 
         setProjectsAdded(projectsGotten);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error)
+        setresponse(true);
+      });
     }
     if (currentUser?.userportfolio?.length > 0) return;
 
