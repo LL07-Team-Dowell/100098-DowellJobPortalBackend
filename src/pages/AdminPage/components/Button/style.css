@@ -16,6 +16,9 @@
     cursor: pointer;
     transition: 0.35s ease-in-out;
     filter: brightness(1);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
 }
 
 .add__Btn:hover, .add__Btn:focus{
@@ -35,7 +38,7 @@
 
 @media screen and (min-width: 992px) {
     .add__Btn{
-        padding: 1.7075% 3.065%;
+        padding: 1% 1%;
         bottom: 15%;
         right: 10.4%;
     }

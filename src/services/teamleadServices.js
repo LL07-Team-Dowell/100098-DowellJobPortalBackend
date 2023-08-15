@@ -73,3 +73,10 @@ export const updateSingleComment = async(data)=>{
     data
   )
 }
+
+export const approveTask = async(data)=>{
+  return await currentBackendAxiosInstance.patch(
+    "approve_task/",
+    data
+  )
+}
