@@ -33,18 +33,16 @@ export default function TableRow({
   useEffect(() => {
     setLoaded(false);
 
+    const foundUserSettingItem = settingUserProfileInfo?.reverse()
+    ?.find(
+      (value) =>
+        value?.profile_info[0]?.profile_title === option.portfolio_name
+    );
+
     const [roleAssignedToPortfolio, projectAssignedToPortfolio] = [
-      settingUserProfileInfo?.reverse()
-      ?.find(
-        (value) =>
-          value?.profile_info[0]?.profile_title === option.portfolio_name
-      )?.profile_info[0]?.Role
+      foundUserSettingItem?.profile_info[0]?.Role
       ,
-      settingUserProfileInfo?.reverse()
-      ?.find(
-        (value) =>
-          value?.profile_info[0]?.profile_title === option.portfolio_name
-      )?.profile_info[0]?.project
+      foundUserSettingItem?.profile_info[0]?.project
     ];
 
     setRoleAssigned(
@@ -65,19 +63,21 @@ export default function TableRow({
 
     const timeout = setTimeout(() => {
       setLoaded(true)
-    }, 300);
+    }, 200);
 
     return (() => {
       clearTimeout(timeout)
     })
 
-  }, [updatedUsers, currentFilter])
+  }, [updatedUsers, currentFilter, availableProjects, hiredCandidates])
   
   const submit2 = () => {
     const teamManagementProduct = currentUser.portfolio_info.find(
       (item) => item.product === "Team Management"
     );
     if (!teamManagementProduct) return;
+
+    if (updatedRole && rolesDict[updatedRole] === "Teamlead" && Proj_Lead.length < 1 && projectAssigned === 'No project assigned') return toast.info("Please assign a project for teamlead");
 
     setLoading(true);
     axios

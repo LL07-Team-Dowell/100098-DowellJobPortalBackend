@@ -135,6 +135,18 @@ const AdminSettings = () => {
       currentRoleFilter === 'hired' ?
         options1?.filter(user => hiredCandidates.includes(user.portfolio_name))?.slice(indexes.start, indexes.end)
       :
+      currentRoleFilter === 'teamlead' ?
+        options1?.filter(user => 
+          settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
+          settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict.Teamlead)
+        )?.filter(item => item)?.slice(indexes.start, indexes.end)
+      :
+      currentRoleFilter === 'grouplead' ?
+        options1?.filter(user => 
+          settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
+          settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict["Group Lead"])
+        )?.filter(item => item)?.slice(indexes.start, indexes.end)
+      :
       options1?.slice(indexes.start, indexes.end)
     );
 
@@ -242,6 +254,26 @@ const AdminSettings = () => {
       if ((currentRoleFilter === 'yes') && (currentIndexes.end >= options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length)) return  
       if ((currentRoleFilter === 'no') && (currentIndexes.end >= options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length)) return  
       if ((currentRoleFilter === 'hired') && (currentIndexes.end >= options1?.filter(user => hiredCandidates.includes(user.portfolio_name)).length)) return
+      if (
+        (currentRoleFilter === 'teamlead') && 
+        (
+          currentIndexes.end >= 
+          options1?.filter(user => 
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict.Teamlead)
+          ).length
+        )
+      ) return
+      if (
+        (currentRoleFilter === 'grouplead') && 
+        (
+          currentIndexes.end >= 
+          options1?.filter(user => 
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict["Group Lead"])
+          ).length
+        )
+      ) return
 
       if (currentIndexes.end >= options1?.length) return
 
@@ -281,6 +313,18 @@ const AdminSettings = () => {
                   currentRoleFilter === 'hired' ?
                     options1?.filter(user => hiredCandidates.includes(user.portfolio_name)).length
                   :
+                  currentRoleFilter === 'teamlead' ?
+                    options1?.filter(user => 
+                      settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
+                      settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict.Teamlead)
+                    ).length
+                  :
+                  currentRoleFilter === 'grouplead' ?
+                    options1?.filter(user => 
+                      settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
+                      settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict["Group Lead"])
+                    ).length
+                  :
                   options1?.length
                 }
               </span>
@@ -311,6 +355,8 @@ const AdminSettings = () => {
               <option value={'yes'}>Role assigned</option>
               <option value={'no'}>No role assigned</option>
               <option value={'hired'}>Hired</option>
+              <option value={'teamlead'}>Teamlead</option>
+              <option value={'grouplead'}>Grouplead</option>
             </select>
           </div>
 

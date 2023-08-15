@@ -11,7 +11,7 @@ import Loading from "../../../CandidatePage/views/ResearchAssociatePage/Loading"
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import { s, useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { getApplicationForAdmin, getJobsFromAdmin, getMasterLinks } from "../../../../services/adminServices";
+import { getApplicationForAdmin, getCreatedProductLinks, getJobsFromAdmin, getMasterLinks } from "../../../../services/adminServices";
 import { useState } from "react";
 import { IoCopyOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
@@ -38,6 +38,8 @@ const LandingPage = ({ subAdminView }) => {
     setProjectsAdded,
     setProjectsLoaded,
     setProjectsLoading,
+    setProductLinks,
+    productLinks,
   } = useJobContext();
   const [ showShareModal, setShowShareModal ] = useState(false);
   const [ jobLinkToShareObj, setJobLinkToShareObj ] = useState({});
@@ -71,6 +73,7 @@ const LandingPage = ({ subAdminView }) => {
         getJobsFromAdmin(currentUser.portfolio_info[0].org_id),
         getMasterLinks(currentUser.portfolio_info[0].org_id),
         getSettingUserProject(),
+        getCreatedProductLinks(currentUser.portfolio_info[0].org_id),
       ]).then((response) => {
         console.log('AAAAAAAA', response[0]?.data?.response?.data?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type));
         setJobs(
@@ -87,7 +90,19 @@ const LandingPage = ({ subAdminView }) => {
         );
         setresponse(true);
 
-        // setJobLinks(response[1]?.data?.master_link)
+        setJobLinks([
+          ...new Map(
+            response[1]?.data?.master_link?.reverse()
+            .map((link) => [link.master_link, link])
+          ).values()
+        ])
+        
+        setProductLinks([
+          ...new Map(
+            response[3]?.data?.response?.reverse()
+            .map((link) => [link.master_link, link])
+          ).values()
+        ])
 
         const projectsGotten = response[2]?.data
         ?.filter(
@@ -256,15 +271,22 @@ const LandingPage = ({ subAdminView }) => {
                     activeLinkTab === 'products' &&
                     <>
                     {
-                      [].length < 1 ?
+                      productLinks.length < 1 ?
                       <div>
                         <p>You have not created any links yet</p>
                       </div>
                       :
-                      React.Children.toArray([].map(link => {
-                        return <div className="job__Link__Container" onClick={() => handleCopyLink(link)}>
-                          <span>{link}</span>
-                          <IoCopyOutline />
+                      React.Children.toArray(productLinks.map(link => {
+                        return <div className="job__Link__Wrapper">
+                          <p>
+                            {
+                              link.link_name
+                            }
+                          </p>
+                          <div className="job__Link__Container" onClick={() => handleCopyLink(link.master_link)}>
+                            <span>{link.master_link}</span>
+                            <IoCopyOutline />
+                          </div>
                         </div>
                       }))
                     }
@@ -280,9 +302,21 @@ const LandingPage = ({ subAdminView }) => {
                       </div>
                       :
                       React.Children.toArray(jobLinks.map(link => {
-                        return <div className="job__Link__Container" onClick={() => handleCopyLink(link)}>
-                          <span>{link}</span>
-                          <IoCopyOutline />
+                        return <div className="job__Link__Wrapper">
+                          {
+                            link.newly_created ? <p>
+                              {link.job_name}
+                            </p> :
+                            jobs.find(job => job._id === link.job_id) && <p>
+                              {
+                              jobs.find(job => job._id === link.job_id)?.job_title
+                              }
+                            </p>
+                          }
+                          <div className="job__Link__Container" onClick={() => handleCopyLink(link.master_link)}>
+                            <span>{link.master_link}</span>
+                            <IoCopyOutline />
+                          </div>
                         </div>
                       }))
                     }

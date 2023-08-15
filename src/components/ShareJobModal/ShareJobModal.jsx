@@ -31,7 +31,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
   const [publicIdsSelected, setPublicIdsSelected] = useState([]);
   const [qrCodeImage, setQrCodeImage] = useState("");
   const selectItemRef = useRef();
-  const { jobLinks, setJobLinks } = useJobContext();
+  const { jobLinks, setJobLinks, productLinks, setProductLinks } = useJobContext();
   const [usedIdsLoaded, setUsedIdsLoaded] = useState(false);
   const [ customLinksNumber, setCustomLinksNumber ] = useState(null);
   const [ currentPage, setCurrentPage ] = useState(1);
@@ -149,6 +149,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
     };
 
     const currentJobLinks = jobLinks.slice();
+    const currentProductLinks = productLinks.slice();
 
     setLinkLoading(true);
 
@@ -171,8 +172,20 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
       setLinkToDisplay(response.master_link);
       setLinkGenerated(true);
 
-      if (isProductLink) return
-      currentJobLinks.push(response.master_link);
+      if (isProductLink) {
+        currentProductLinks.unshift({
+          link_name: response.link_name,
+          master_link: response.master_link
+        });
+        setProductLinks(currentJobLinks);
+        return
+      }
+      
+      currentJobLinks.unshift({
+        job_name: response.job_name,
+        master_link: response.master_link,
+        newly_created: true,
+      });
       setJobLinks(currentJobLinks);
     } catch (error) {
       console.log(error.response ? error.response.data : error.message);

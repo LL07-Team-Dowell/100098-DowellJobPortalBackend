@@ -202,25 +202,39 @@ $red__color: #FE0000;
     }
   }
 
-  .job__Link__Container {
+  .job__Link__Wrapper {
     background-color: #fcfcfc;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    transition: 0.3s;
-    padding: 4% 2%;
     border-radius: 5px;
+    padding: 4% 2%;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+
+    p {
+      color: #005734;
+      text-transform: capitalize;
+      font-weight: 500;
+    }
+
+    .job__Link__Container {
+      transition: 0.3s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+  
+      span {
+        flex: 80%;
+      }
+    }
+
     &:hover {
       box-shadow: rgba($main__green, 0.6) 0px 7px 29px 0px;
     }
-
-    span {
-      flex: 80%;
-    }
   }
+  
 
   .landing_Nav_Wrapper {
     display: flex;

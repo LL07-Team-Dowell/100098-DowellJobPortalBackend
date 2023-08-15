@@ -71,8 +71,8 @@ export const createNewProductLink = async (data) => {
   );
 };
 
-export const getCreatedProductLinks = async () => {
+export const getCreatedProductLinks = async (companyId) => {
   return await currentBackendAxiosInstance.get(
-    "/t-b-d",
+    `/fetch_public_product_url/${companyId}/`,
   );
 };
