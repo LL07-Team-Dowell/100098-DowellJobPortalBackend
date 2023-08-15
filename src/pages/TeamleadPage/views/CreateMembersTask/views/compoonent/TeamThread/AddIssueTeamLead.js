@@ -27,11 +27,8 @@ const AddIssueTeamLead = ({
   const [selectedTeam, setSelectedTeam] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
-  const {id} = useParams();
+  const { id } = useParams();
 
-  console.log(teams);
-
-  console.log(teamId);
   const [createIssue, setCreateIssue] = useState({
     thread: "",
     image: "",
@@ -119,51 +116,102 @@ const AddIssueTeamLead = ({
     setDisabled(false);
   }, [createIssue.thread]);
 
+  // const handleCreateIssue = async (e) => {
+  //   e.preventDefault();
+  //   // console.log(createIssue);
+  //   setDisabled(true);
+
+  //   // Create a FormData object to send the file
+  //   const formData = new FormData();
+  //   formData.append("image", selectedFile);
+
+  //   try {
+  //     // Send a POST request to the upload URL
+  //     const response = await fetch(
+  //       "http://67.217.61.253/uploadfiles/upload-hr-image/",
+  //       {
+  //         method: "POST",
+  //         body: formData,
+  //       }
+  //     );
+
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       const imageUrl = data.file_url;
+
+  //       try {
+  //         const response = await createThread({ ...createIssue, image: imageUrl });
+  //         console.log(response.data);
+  //         if (response.status === 201) {
+  //           toast.success("Issue Created Successfully");
+  //           navigate(`/team-screen-member/${id}/issue-inprogress`)
+  //           setDisabled(false);
+  //           closeIssuesScreen();
+  //         }
+  //       } catch (error) {
+  //         toast.error("Something went wrong");
+  //         setDisabled(false);
+  //       }
+  //     } else {
+  //       // Handle the case where the request is not successful
+  //       console.error("Error uploading image");
+  //     }
+  //   } catch (error) {
+  //     // Handle any errors that occurred during the request
+  //     console.error("Error uploading image", error);
+  //   }
+  // };
+
+
   const handleCreateIssue = async (e) => {
     e.preventDefault();
-    // console.log(createIssue);
     setDisabled(true);
 
-    // Create a FormData object to send the file
     const formData = new FormData();
-    formData.append("image", selectedFile);
+
+    // Check if an image is selected before appending to FormData
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
 
     try {
-      // Send a POST request to the upload URL
-      const response = await fetch(
-        "http://67.217.61.253/uploadfiles/upload-hr-image/",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (response.ok) {
-        // If the request is successful, parse the JSON response
-        const data = await response.json();
-        console.log(data);
-        // Assuming the response contains a field called "imageUrl"
-        const imageUrl = data.file_url;
-
-        try {
-          const response = await createThread({ ...createIssue, image: imageUrl });
-          console.log(response.data);
-          if (response.status === 201) {
-            toast.success("Issue Created Successfully");
-            navigate(`/team-screen-member/${id}/issue-inprogress`)
-            setDisabled(false);
-            closeIssuesScreen();
+      // Upload image if selectedFile exists
+      let imageUrl = "";
+      if (selectedFile) {
+        const response = await fetch(
+          "http://67.217.61.253/uploadfiles/upload-hr-image/",
+          {
+            method: "POST",
+            body: formData,
           }
-        } catch (error) {
-          toast.error("Something went wrong");
-          setDisabled(false);
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          imageUrl = data.file_url;
+        } else {
+          console.error("Error uploading image");
         }
-      } else {
-        // Handle the case where the request is not successful
-        console.error("Error uploading image");
+      }
+
+      try {
+        // Create the issue with the provided data and imageUrl
+        const response = await createThread({
+          ...createIssue,
+          image: imageUrl, // Assign the imageUrl, whether it's empty or from the upload
+        });
+
+        if (response.status === 201) {
+          toast.success("Issue Created Successfully");
+          navigate(`/team-screen-member/${id}/issue-inprogress`);
+          setDisabled(false);
+          closeIssuesScreen();
+        }
+      } catch (error) {
+        toast.error("Something went wrong");
+        setDisabled(false);
       }
     } catch (error) {
-      // Handle any errors that occurred during the request
       console.error("Error uploading image", error);
     }
   };

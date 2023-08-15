@@ -58,6 +58,7 @@ const StaffJobLandingLayout = ({
   searchTeam,
   layoutBgColor,
   isProductLink,
+  isGrouplead
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const { currentUser } = useCurrentUserContext();
