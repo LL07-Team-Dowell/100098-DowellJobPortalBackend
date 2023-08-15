@@ -63,6 +63,10 @@
   height: max-content;
 }
 
+.add__btn {
+  padding: 0;
+}
+
 @media (min-width: 768px) and (max-width: 991.98px) {
   .candidate-task-screen-container .applicant-title-text {
     margin-bottom: 2%;

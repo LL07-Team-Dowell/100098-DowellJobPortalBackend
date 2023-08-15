@@ -15,6 +15,11 @@ import { useCandidateTaskContext } from "../../../../contexts/CandidateTasksCont
 import { getCandidateTaskForTeamLead } from "../../../../services/teamleadServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import Button from "../../../AdminPage/components/Button/Button";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { approveTask } from "../../../../services/teamleadServices";
+import { toast } from "react-toastify";
+import { is } from "date-fns/locale";
 
 const CreateTaskScreen = ({
   candidateAfterSelectionScreen,
@@ -39,12 +44,11 @@ const CreateTaskScreen = ({
   const [selectOption, setSelectOption] = useState([]);
   const [loading, setLoading] = useState(true);
   const { currentUser } = useCurrentUserContext();
+  const [isApproved, setIsApproved] = useState(false);
 
   useEffect(() => {
     if (userTasks.length > 0) return setLoading(false);
-    getCandidateTaskForTeamLead(
-      currentUser?.portfolio_info[0].org_id,
-    )
+    getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id)
       .then((res) => {
         setLoading(false);
         setUserTasks(
@@ -86,7 +90,6 @@ const CreateTaskScreen = ({
     setCurrentApplicantTasks(applicantTasks);
     setSelectOption(Array.from(new Set(applicantTasks.map((d) => d.project))));
   }, [userTasks, applicant]);
-  
 
   useEffect(() => {
     // const newData = userTasks.filter((d) => d.project === selectedProject);
@@ -137,6 +140,22 @@ const CreateTaskScreen = ({
       if (datesToStyle.find((dDate) => isSameDay(dDate, date))) {
         return "task__Indicator";
       }
+    }
+  };
+
+  const handleApproveTask = async (task) => {
+    try {
+      const response = await approveTask({
+        document_id: task._id,
+        task: task.task,
+      });
+      console.log(response.data);
+      if (response.status === 200) {
+        toast.success("Task approved");
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error("Task approval failed");
     }
   };
 
@@ -205,6 +224,11 @@ const CreateTaskScreen = ({
                 )}
               </div>
             </div>
+            <Button
+              text={"Approve Task"}
+              icon={<AddCircleOutlineIcon />}
+              handleClick={handleApproveTask}
+            />
           </div>
         )}
       </>

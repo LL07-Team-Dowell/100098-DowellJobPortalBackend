@@ -150,16 +150,19 @@ const Teamlead = () => {
       .then((res) => {
         console.log("res", res);
         const jobsMatchingCurrentCompany = res[0].data.response.data.filter(
-          (job) => job.data_type === currentUser?.portfolio_info[0].data_type &&
-          job.is_active
+          (job) =>
+            job.data_type === currentUser?.portfolio_info[0].data_type &&
+            job.is_active
         );
         console.log(jobsMatchingCurrentCompany);
         setJobs(jobsMatchingCurrentCompany);
 
-        const applicationForMatching = res[1].data.response.data.filter(
-          (application) =>
-            application.data_type === currentUser?.portfolio_info[0].data_type
-        ).reverse();
+        const applicationForMatching = res[1].data.response.data
+          .filter(
+            (application) =>
+              application.data_type === currentUser?.portfolio_info[0].data_type
+          )
+          .reverse();
         const selectedCandidates = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.SELECTED
         );
@@ -291,96 +294,88 @@ const Teamlead = () => {
   };
 
   const handleRefreshForCandidateApplicationsForTeamlead = () => {
-          setLoading(true);
-          getCandidateApplicationsForTeamLead(
-            currentUser?.portfolio_info[0].org_id
+    setLoading(true);
+    getCandidateApplicationsForTeamLead(currentUser?.portfolio_info[0].org_id)
+      .then((res) => {
+        console.log("res", res);
+        const applicationForMatching = res.data.response.data
+          .filter(
+            (application) =>
+              application.data_type === currentUser?.portfolio_info[0].data_type
           )
-            .then((res) => {
-              console.log("res", res);
-              const applicationForMatching = res.data.response.data.filter(
-                (application) =>
-                  application.data_type ===
-                  currentUser?.portfolio_info[0].data_type
-              ).reverse();
-              const selectedCandidates = applicationForMatching.filter(
-                (application) =>
-                  application.status === candidateStatuses.SELECTED
-              );
-              const candidatesToRehire = applicationForMatching.filter(
-                (application) =>
-                  application.status === candidateStatuses.TO_REHIRE
-              );
-              const onboardingCandidates = applicationForMatching.filter(
-                (application) =>
-                  application.status === candidateStatuses.ONBOARDING
-              );
-              dispatchToCandidatesData({
-                type: candidateDataReducerActions.UPDATE_SELECTED_CANDIDATES,
-                payload: {
-                  stateToChange:
-                    initialCandidatesDataStateNames.selectedCandidates,
-                  value: selectedCandidates,
-                },
-              });
-              dispatchToCandidatesData({
-                type: candidateDataReducerActions.UPDATE_REHIRED_CANDIDATES,
-                payload: {
-                  stateToChange:
-                    initialCandidatesDataStateNames.candidatesToRehire,
-                  value: candidatesToRehire,
-                },
-              });
-              dispatchToCandidatesData({
-                type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES,
-                payload: {
-                  stateToChange:
-                    initialCandidatesDataStateNames.onboardingCandidates,
-                  value: onboardingCandidates,
-                },
-              });
+          .reverse();
+        const selectedCandidates = applicationForMatching.filter(
+          (application) => application.status === candidateStatuses.SELECTED
+        );
+        const candidatesToRehire = applicationForMatching.filter(
+          (application) => application.status === candidateStatuses.TO_REHIRE
+        );
+        const onboardingCandidates = applicationForMatching.filter(
+          (application) => application.status === candidateStatuses.ONBOARDING
+        );
+        dispatchToCandidatesData({
+          type: candidateDataReducerActions.UPDATE_SELECTED_CANDIDATES,
+          payload: {
+            stateToChange: initialCandidatesDataStateNames.selectedCandidates,
+            value: selectedCandidates,
+          },
+        });
+        dispatchToCandidatesData({
+          type: candidateDataReducerActions.UPDATE_REHIRED_CANDIDATES,
+          payload: {
+            stateToChange: initialCandidatesDataStateNames.candidatesToRehire,
+            value: candidatesToRehire,
+          },
+        });
+        dispatchToCandidatesData({
+          type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES,
+          payload: {
+            stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
+            value: onboardingCandidates,
+          },
+        });
 
-              setLoading(false);
-            })
-            .catch((err) => {
-              console.log(err);
-              setLoading(false);
-            });
-        };
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  };
 
   const handleRefreshForCandidateTask = () => {
-          setLoading(true);
-          getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id)
-            .then((res) => {
-              console.log("res", res);
+    setLoading(true);
+    getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id)
+      .then((res) => {
+        console.log("res", res);
 
-              const tasksToDisplay = res.data.response.data
-                .filter(
-                  (task) =>
-                    task.data_type === currentUser?.portfolio_info[0].data_type
-                )
-                .filter(
-                  (task) =>
-                    task.project ===
-                    currentUser?.settings_for_profile_info.profile_info[0]
-                      .project
-                );
-              console.log("tasksToDisplay", tasksToDisplay);
+        const tasksToDisplay = res.data.response.data
+          .filter(
+            (task) =>
+              task.data_type === currentUser?.portfolio_info[0].data_type
+          )
+          .filter(
+            (task) =>
+              task.project ===
+              currentUser?.settings_for_profile_info.profile_info[0].project
+          );
+        console.log("tasksToDisplay", tasksToDisplay);
 
-              const usersWithTasks = [
-                ...new Map(
-                  tasksToDisplay.map((task) => [task.applicant, task])
-                ).values(),
-              ];
-              console.log(usersWithTasks);
-              // console.log(res.data.response.data);
-              setUserTasks(usersWithTasks.reverse());
-              setLoading(false);
-            })
-            .catch((err) => {
-              console.log(err);
-              setLoading(false);
-            });
-        };
+        const usersWithTasks = [
+          ...new Map(
+            tasksToDisplay.map((task) => [task.applicant, task])
+          ).values(),
+        ];
+        console.log(usersWithTasks);
+        // console.log(res.data.response.data);
+        setUserTasks(usersWithTasks.reverse());
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  };
 
   return (
     <>
@@ -398,9 +393,7 @@ const Teamlead = () => {
             ? "rehire"
             : "applicant"
         }
-        hideSearchBar={
-          section === "user" ? true : false
-        }
+        hideSearchBar={section === "user" ? true : false}
       >
         <TitleNavigationBar
           title={
@@ -613,12 +606,16 @@ const Teamlead = () => {
                 )
               ) : section === "task" ? (
                 showCandidateTask ? (
-                  <TaskScreen
-                    currentUser={currentTeamMember}
-                    handleAddTaskBtnClick={() => setShowAddTaskModal(true)}
-                    handleEditBtnClick={handleEditTaskBtnClick}
-                    assignedProject={currentUserProject}
-                  />
+                  <>
+                    <TaskScreen
+                      currentUser={currentTeamMember}
+                      handleAddTaskBtnClick={() => setShowAddTaskModal(true)}
+                      handleEditBtnClick={handleEditTaskBtnClick}
+                      assignedProject={currentUserProject}
+                      teamleadScreen={true}
+                    />
+                    <h1>Button</h1>
+                  </>
                 ) : (
                   <>
                     <button
@@ -697,13 +694,6 @@ const Teamlead = () => {
                       ) : (
                         <></>
                       )}
-
-                      {/*<Button
-                        text={"Add Task"}
-                        icon={<AddCircleOutlineIcon />}
-                        handleClick={() => setShowAddTaskModal(true)}
-                      />*/}
-                      
                     </div>
                   </>
                 )
