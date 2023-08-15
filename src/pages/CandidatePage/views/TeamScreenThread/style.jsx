@@ -32,5 +32,7 @@ export const Wrappen = styled.section`
     background: #005734;
     box-shadow: 0px 2.79922px 25px rgba(0, 87, 52, 0.67);
     color: #fff;
+    padding: 1.5rem;
+    white-space: nowrap;
   }
 `;

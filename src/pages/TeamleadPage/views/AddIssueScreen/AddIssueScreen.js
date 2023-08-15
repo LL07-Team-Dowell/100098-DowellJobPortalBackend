@@ -204,6 +204,7 @@ const AddIssueScreen = ({
             <img
               src={URL.createObjectURL(selectedFile)}
               alt="Uploaded Preview"
+              style={{ display: "block" }}
             />
           )}
           {candidateView && teams && (

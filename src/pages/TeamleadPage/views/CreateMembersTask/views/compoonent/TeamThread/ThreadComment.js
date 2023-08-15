@@ -189,3 +189,4 @@ const ThreadComment = ({ comments, commentInput, user, threadId, forceUpdate, lo
 };
 
 export default ThreadComment;
+

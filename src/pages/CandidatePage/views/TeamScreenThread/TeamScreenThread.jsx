@@ -32,7 +32,6 @@ const TeamScreenThreadCandidate = () => {
 
       // GET A SINGLE TEAM INSTEAD
       getSingleTeam(id)
-
         .then((resp) => {
           setteam(resp.data.response.data[0]);
           setloading(false);
@@ -44,7 +43,6 @@ const TeamScreenThreadCandidate = () => {
 
   const [panding, setPanding] = useState(true);
   const [status, setStatus] = useState("In progress");
-  
 
   if (loading) return <LoadingSpinner />;
   return (
@@ -76,7 +74,7 @@ const TeamScreenThreadCandidate = () => {
           Resolved
         </NavLink>
       </Wrappen>
-      <TeamScreenThreads status={status} id={id}/>
+      <TeamScreenThreads status={status} id={id} />
     </div>
   );
 };
