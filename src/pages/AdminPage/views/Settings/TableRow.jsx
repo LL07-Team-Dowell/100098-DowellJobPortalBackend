@@ -78,6 +78,7 @@ export default function TableRow({
     if (!teamManagementProduct) return;
 
     if (updatedRole && rolesDict[updatedRole] === "Teamlead" && Proj_Lead.length < 1 && projectAssigned === 'No project assigned') return toast.info("Please assign a project for teamlead");
+    if (updatedRole && rolesDict[updatedRole] === "Group Lead" && Proj_Lead.length < 1 && projectAssigned === 'No project assigned') return toast.info("Please assign a project for grouplead");
 
     setLoading(true);
     axios
@@ -164,12 +165,41 @@ export default function TableRow({
             setUpdatedProject(true);
           }} 
           style={{
-            backgroundColor: ((roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || (updatedRole && rolesDict[updatedRole] === 'Teamlead')) ? '#fff' : `#f5f5f5`,
-            filter: ((roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || (updatedRole && rolesDict[updatedRole] === 'Teamlead')) ? 'brightness(1)': 'brightness(0.9)',
-            cursor: ((roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || (updatedRole && rolesDict[updatedRole] === 'Teamlead')) ? 'pointer' : 'not-allowed',
+            backgroundColor: (
+                (roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || 
+                (updatedRole && rolesDict[updatedRole] === 'Teamlead') ||
+                (roleAssigned === 'Group Lead' && hiredCandidates.includes(option.portfolio_name)) || 
+                (updatedRole && rolesDict[updatedRole] === 'Group Lead')
+              ) ? '#fff' 
+              : 
+              `#f5f5f5`
+            ,
+            filter: (
+                (roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || 
+                (updatedRole && rolesDict[updatedRole] === 'Teamlead') ||
+                (roleAssigned === 'Group Lead' && hiredCandidates.includes(option.portfolio_name)) || 
+                (updatedRole && rolesDict[updatedRole] === 'Group Lead')
+              ) ? 'brightness(1)'
+              : 
+              'brightness(0.9)'
+            ,
+            cursor: (
+                (roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || 
+                (updatedRole && rolesDict[updatedRole] === 'Teamlead') ||
+                (roleAssigned === 'Group Lead' && hiredCandidates.includes(option.portfolio_name)) || 
+                (updatedRole && rolesDict[updatedRole] === 'Group Lead')
+              ) ? 'pointer' 
+              : 
+              'not-allowed'
+            ,
             maxWidth: '50%'
           }}
-          disabled={!((roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || (updatedRole && rolesDict[updatedRole] === 'Teamlead'))}
+          disabled={!(
+            (roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || 
+            (updatedRole && rolesDict[updatedRole] === 'Teamlead') ||
+            (roleAssigned === 'Group Lead' && hiredCandidates.includes(option.portfolio_name)) || 
+            (updatedRole && rolesDict[updatedRole] === 'Group Lead')
+          )}
           ref={projectAssignedRef}
         >
           <option value="" disabled>Set project</option>
