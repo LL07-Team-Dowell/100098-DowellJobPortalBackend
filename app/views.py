@@ -2675,6 +2675,7 @@ class SettingUserProfileInfoView(APIView):
                 {
                     "profile_info": data["profile_title"],
                     "Role": data["Role"],
+                    "project": data["project"],
                     "version": update_number(current_version),
                 }
             )
