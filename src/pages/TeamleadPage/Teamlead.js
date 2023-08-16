@@ -430,7 +430,7 @@ const Teamlead = ({isGrouplead}) => {
             ? "rehire"
             : "applicant"
         }
-        hideSearchBar={(section === "home" || section === undefined || section === "user") ? true : false}
+        hideSearchBar={((isGrouplead && (section === "home" || section === undefined)) || section === "user") ? true : false}
         isGrouplead={isGrouplead}
       >
         <TitleNavigationBar
