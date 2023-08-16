@@ -132,7 +132,7 @@ export default function useDowellLogin(
               //CHECK IF USER HAS ROLE CONFIGURED
               const userHasRoleConfigured = settingForCurrentUserOrg.find(
                 (setting) =>
-                  setting.profile_info[0].profile_title ===
+                  setting.profile_info[setting.profile_info.length - 1].profile_title ===
                   currentUserDetails.portfolio_info[0].portfolio_name
               );
 
@@ -269,7 +269,7 @@ export default function useDowellLogin(
           //CHECK IF USER HAS ROLE CONFIGURED
           const userHasRoleConfigured = settingForCurrentUserOrg.find(
             (setting) =>
-              setting.profile_info[0].profile_title ===
+              setting.profile_info[setting.profile_info.length - 1].profile_title ===
               currentUserDetails.portfolio_info[0].portfolio_name
           );
 

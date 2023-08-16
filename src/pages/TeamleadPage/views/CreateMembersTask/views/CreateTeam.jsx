@@ -113,7 +113,7 @@ const CreateTeam = () => {
     if (
       !(
         (currentUser.settings_for_profile_info &&
-          currentUser.settings_for_profile_info.profile_info[0].Role ===
+          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role ===
             testingRoles.superAdminRole) ||
         currentUser.isSuperAdmin
       ) &&

@@ -15,6 +15,7 @@ import { MdArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
 import { IoFilterOutline } from "react-icons/io5";
 import TableRow from "./TableRow";
 import { getSettingUserProject } from "../../../../services/hrServices";
+import { AiOutlineSearch } from "react-icons/ai";
 
 const rolesDict = { 
   "Dept_Lead": 'Account', 
@@ -61,6 +62,7 @@ const AdminSettings = () => {
   const roleFilterRef = useRef();
   const [ hiredCandidates, setHiredCandidates ] = useState([]);
   const [ allProjects, setAllProjects ] = useState([]);
+  const [ searchValue, setSearchValue ] = useState("");
 
 
   useEffect(() => {
@@ -80,7 +82,7 @@ const AdminSettings = () => {
     if (
       (
         currentUser.settings_for_profile_info && 
-        currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role === testingRoles.superAdminRole
       ) || 
       (
         currentUser.isSuperAdmin
@@ -127,30 +129,66 @@ const AdminSettings = () => {
 
     setUsersToDisplay(
       currentRoleFilter === 'yes' ?
-        options1?.filter(user => settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name))?.filter(item => item)?.slice(indexes.start, indexes.end)
+        searchValue.length > 0 ?
+          options1?.filter(user => 
+            settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name)
+          )?.filter(item => item)?.filter(item => item.portfolio_name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+          .slice(indexes.start, indexes.end)
+        :
+        options1?.filter(user => settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name))?.filter(item => item)?.slice(indexes.start, indexes.end)
       :
       currentRoleFilter === 'no' ?
-        options1?.filter(user => !settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name))?.filter(item => item)?.slice(indexes.start, indexes.end)
+        searchValue.length > 0 ?
+          options1?.filter(user => 
+            !settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name)
+          )?.filter(item => item)?.filter(item => item.portfolio_name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+          .slice(indexes.start, indexes.end)
+        :
+        options1?.filter(user => !settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name))?.filter(item => item)?.slice(indexes.start, indexes.end)
       :
       currentRoleFilter === 'hired' ?
+        searchValue.length > 0 ?
+          options1?.filter(user => 
+            hiredCandidates.includes(user.portfolio_name)
+          )?.filter(item => item.portfolio_name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+          .slice(indexes.start, indexes.end)
+        :
         options1?.filter(user => hiredCandidates.includes(user.portfolio_name))?.slice(indexes.start, indexes.end)
       :
       currentRoleFilter === 'teamlead' ?
+        searchValue.length > 0 ?
+          options1?.filter(user => 
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name) && 
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name && value["profile_info"][value.profile_info.length - 1]["Role"] === rolesNamesDict.Teamlead)
+          )?.filter(item => item)?.filter(item => item.portfolio_name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+          .slice(indexes.start, indexes.end)
+        :
         options1?.filter(user => 
-          settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
-          settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict.Teamlead)
+          settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name) && 
+          settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name && value["profile_info"][value.profile_info.length - 1]["Role"] === rolesNamesDict.Teamlead)
         )?.filter(item => item)?.slice(indexes.start, indexes.end)
       :
       currentRoleFilter === 'grouplead' ?
+        searchValue.length > 0 ?
+          options1?.filter(user => 
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name) && 
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name && value["profile_info"][value.profile_info.length - 1]["Role"] === rolesNamesDict["Group Lead"])
+          )?.filter(item => item)?.filter(item => item.portfolio_name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+          .slice(indexes.start, indexes.end)
+        :
         options1?.filter(user => 
-          settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
-          settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict["Group Lead"])
+          settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name) && 
+          settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name && value["profile_info"][value.profile_info.length - 1]["Role"] === rolesNamesDict["Group Lead"])
         )?.filter(item => item)?.slice(indexes.start, indexes.end)
+      :
+
+      searchValue.length > 0 ?
+        options1?.filter(user => user.portfolio_name?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))?.slice(indexes.start, indexes.end)
       :
       options1?.slice(indexes.start, indexes.end)
     );
 
-  }, [options1, indexes, currentRoleFilter])
+  }, [options1, indexes, currentRoleFilter, searchValue])
 
   useEffect(() => {
 
@@ -251,16 +289,16 @@ const AdminSettings = () => {
 
     const currentIndexes = {...indexes};
     if (selection === 'forward') {
-      if ((currentRoleFilter === 'yes') && (currentIndexes.end >= options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length)) return  
-      if ((currentRoleFilter === 'no') && (currentIndexes.end >= options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length)) return  
+      if ((currentRoleFilter === 'yes') && (currentIndexes.end >= options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name)).length)) return  
+      if ((currentRoleFilter === 'no') && (currentIndexes.end >= options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name)).length)) return  
       if ((currentRoleFilter === 'hired') && (currentIndexes.end >= options1?.filter(user => hiredCandidates.includes(user.portfolio_name)).length)) return
       if (
         (currentRoleFilter === 'teamlead') && 
         (
           currentIndexes.end >= 
           options1?.filter(user => 
-            settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
-            settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict.Teamlead)
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name) && 
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name && value["profile_info"][value.profile_info.length - 1]["Role"] === rolesNamesDict.Teamlead)
           ).length
         )
       ) return
@@ -269,8 +307,8 @@ const AdminSettings = () => {
         (
           currentIndexes.end >= 
           options1?.filter(user => 
-            settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
-            settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict["Group Lead"])
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name) && 
+            settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name && value["profile_info"][value.profile_info.length - 1]["Role"] === rolesNamesDict["Group Lead"])
           ).length
         )
       ) return
@@ -305,26 +343,61 @@ const AdminSettings = () => {
               <span>
                 Showing {indexes.start + 1} to {indexes.end} out of {
                   currentRoleFilter === 'yes' ?
-                    options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length
+                    searchValue.length > 0 ?
+                      options1?.filter(user => 
+                        settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name)
+                      )?.filter(item => item)?.filter(item => item.portfolio_name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+                      ?.length
+                    :
+                    options1?.filter(user => settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name)).length
                   :
                   currentRoleFilter === 'no' ?
-                    options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name)).length
+                    searchValue.length > 0 ?
+                      options1?.filter(user => 
+                        !settingUserProfileInfo?.reverse()?.find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name)
+                      )?.filter(item => item)?.filter(item => item.portfolio_name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+                      ?.length
+                    :
+                    options1?.filter(user => !settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name)).length
                   :
                   currentRoleFilter === 'hired' ?
+                    searchValue.length > 0 ?
+                      options1?.filter(user => 
+                        hiredCandidates.includes(user.portfolio_name)
+                      )?.filter(item => item.portfolio_name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+                      ?.length
+                    :
                     options1?.filter(user => hiredCandidates.includes(user.portfolio_name)).length
                   :
                   currentRoleFilter === 'teamlead' ?
+                    searchValue.length > 0 ?
+                      options1?.filter(user => 
+                        settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name) && 
+                        settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name && value["profile_info"][value.profile_info.length - 1]["Role"] === rolesNamesDict.Teamlead)
+                      )?.filter(item => item)?.filter(item => item.portfolio_name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+                      ?.length
+                    :
                     options1?.filter(user => 
-                      settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
-                      settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict.Teamlead)
+                      settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name) && 
+                      settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name && value["profile_info"][value.profile_info.length - 1]["Role"] === rolesNamesDict.Teamlead)
                     ).length
                   :
                   currentRoleFilter === 'grouplead' ?
+                    searchValue.length > 0 ?
+                      options1?.filter(user => 
+                        settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name) && 
+                        settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name && value["profile_info"][value.profile_info.length - 1]["Role"] === rolesNamesDict["Group Lead"])
+                      )?.filter(item => item)?.filter(item => item.portfolio_name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+                      ?.length
+                    :
                     options1?.filter(user => 
-                      settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name) && 
-                      settingUserProfileInfo.reverse().find(value => value["profile_info"][0]["profile_title"] === user.portfolio_name && value["profile_info"][0]["Role"] === rolesNamesDict["Group Lead"])
+                      settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name) && 
+                      settingUserProfileInfo.reverse().find(value => value["profile_info"][value.profile_info.length - 1]["profile_title"] === user.portfolio_name && value["profile_info"][value.profile_info.length - 1]["Role"] === rolesNamesDict["Group Lead"])
                     ).length
                   :
+                  searchValue.length > 0 ?
+                      options1?.filter(user => user.portfolio_name?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))?.length
+                    :
                   options1?.length
                 }
               </span>
@@ -348,16 +421,27 @@ const AdminSettings = () => {
             </div>
           </div>
           
-          <div className="role__Filter__Wrapper" onClick={() => roleFilterRef.current.click()}>
-            <IoFilterOutline />
-            <select ref={roleFilterRef} className="role__Filter" value={currentRoleFilter} onChange={({ target }) => setCurrentRoleFilter(target.value)}>
-              <option value={'all'}>All</option>
-              <option value={'yes'}>Role assigned</option>
-              <option value={'no'}>No role assigned</option>
-              <option value={'hired'}>Hired</option>
-              <option value={'teamlead'}>Teamlead</option>
-              <option value={'grouplead'}>Grouplead</option>
-            </select>
+          <div className="role__Filter__Item">
+            <div className="role__Filter__Search">
+              <AiOutlineSearch />
+              <input 
+                value={searchValue}
+                onChange={({ target }) => setSearchValue(target.value)}
+                type="text"
+                placeholder="Search for portfolio name"
+              />
+            </div>
+            <div className="role__Filter__Wrapper" onClick={() => roleFilterRef.current.click()}>
+              <IoFilterOutline />
+              <select ref={roleFilterRef} className="role__Filter" value={currentRoleFilter} onChange={({ target }) => setCurrentRoleFilter(target.value)}>
+                <option value={'all'}>All</option>
+                <option value={'yes'}>Role assigned</option>
+                <option value={'no'}>No role assigned</option>
+                <option value={'hired'}>Hired</option>
+                <option value={'teamlead'}>Teamlead</option>
+                <option value={'grouplead'}>Grouplead</option>
+              </select>
+            </div>
           </div>
 
           <table>
@@ -391,6 +475,7 @@ const AdminSettings = () => {
                     updateSettingsUserProfileInfo={setSettingUsetProfileInfo}
                     updatedUsers={usersToDisplay}
                     rolesNamesDict={rolesNamesDict}
+                    currentSearch={searchValue}
                   />
                 ))}
 

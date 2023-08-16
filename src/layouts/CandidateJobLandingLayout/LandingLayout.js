@@ -41,7 +41,7 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
         if (
             (
                 currentUser.settings_for_profile_info && 
-                currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role === testingRoles.superAdminRole
             ) ||
             (
                 currentUser.isSuperAdmin

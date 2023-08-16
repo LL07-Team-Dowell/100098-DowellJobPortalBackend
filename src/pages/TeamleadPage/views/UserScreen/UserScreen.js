@@ -71,7 +71,7 @@ const UserScreen = () => {
             </div> 
             <div className="user__Intro__Item">
                 <h2>Project</h2>
-                <span>{currentUser.settings_for_profile_info.profile_info[0]?.project}</span>
+                <span>{currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project}</span>
             </div>
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout

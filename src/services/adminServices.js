@@ -76,3 +76,10 @@ export const getCreatedProductLinks = async (companyId) => {
     `/fetch_public_product_url/${companyId}/`,
   );
 };
+
+export const adminEditUserSettingProfile = async (id, data) => {
+  return await currentBackendAxiosInstance.put(
+    `settinguserprofileinfo/${id}`,
+    data
+  );
+};

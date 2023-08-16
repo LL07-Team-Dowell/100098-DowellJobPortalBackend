@@ -61,7 +61,7 @@ const CreateTaskScreen = ({
             .filter(
               (task) =>
                 task.project ===
-                currentUser?.settings_for_profile_info.profile_info[0].project
+                currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].project
             )
         );
       })

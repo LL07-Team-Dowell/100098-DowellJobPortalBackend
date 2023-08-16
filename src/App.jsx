@@ -287,7 +287,7 @@ function App() {
   // ACCOUNT PAGE
   if (
     currentUser.settings_for_profile_info &&
-    currentUser.settings_for_profile_info.profile_info[0].Role ===
+    currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role ===
     testingRoles.accountRole
   ) {
     return (
@@ -317,7 +317,7 @@ function App() {
   if (
     (
       currentUser.settings_for_profile_info &&
-      currentUser.settings_for_profile_info.profile_info[0].Role ===
+      currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role ===
       testingRoles.subAdminRole
     ) || (
       currentUser.settings_for_profile_info &&
@@ -421,7 +421,7 @@ function App() {
     ||
     (
       currentUser.settings_for_profile_info &&
-      currentUser.settings_for_profile_info.profile_info[0].Role === testingRoles.superAdminRole
+      currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role === testingRoles.superAdminRole
     )
   ) {
     return (
@@ -580,7 +580,7 @@ function App() {
   // HR PAGE
   if (
     currentUser.settings_for_profile_info &&
-    currentUser.settings_for_profile_info.profile_info[0].Role ===
+    currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role ===
     testingRoles.hrRole
   ) {
     return (
@@ -653,7 +653,7 @@ function App() {
   // TEAMLEAD PAGE
   if (
     currentUser.settings_for_profile_info &&
-    currentUser.settings_for_profile_info.profile_info[0].Role ===
+    currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role ===
     testingRoles.teamLeadRole
   ) {
     return (
@@ -818,7 +818,7 @@ function App() {
   // GROUPLEAD PAGE
   if (
     currentUser.settings_for_profile_info &&
-    currentUser.settings_for_profile_info.profile_info[0].Role ===
+    currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role ===
     testingRoles.groupLeadRole
   ) {
     return (
@@ -984,7 +984,7 @@ function App() {
   //Provertion Period Page
   if (
     currentUser.settings_for_profile_info &&
-    currentUser.settings_for_profile_info.profile_info[0].Role ===
+    currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role ===
     testingRoles.provertionRole
   ) {
     return <Routes>
