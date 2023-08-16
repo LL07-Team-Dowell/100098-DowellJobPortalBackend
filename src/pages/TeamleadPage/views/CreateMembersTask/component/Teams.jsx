@@ -11,16 +11,31 @@ import { deleteTeam } from "../../../../../services/createMembersTasks";
 import { Tooltip } from "react-tooltip";
 import { RiEdit2Fill } from "react-icons/ri";
 import { MdDelete, MdVerified } from "react-icons/md";
+import DeleteConfirmationTeam from "../../../../../components/DeleteConfirmationTeam/DeleteConfirmationTeam";
 const Teams = ({
   back,
   setChoosedTeam,
   searchValue,
   data,
   deleteTeamState,
+  unshowDeletePopup,
+  showDeletePopup,
+  teamId,
+  showDeletePopupFunction
 }) => {
   const { currentUser } = useCurrentUserContext();
   const reversedTeams = [...data.TeamsSelected].reverse();
-  // console.log({reversedTeams})
+  const deleteFunction = () => {
+    deleteTeam(teamId)
+      .then((resp) => {
+        deleteTeamState(teamId);
+        console.log(resp);
+        unshowDeletePopup()
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   return (
     <div className="teams_data">
       {reversedTeams
@@ -36,8 +51,11 @@ const Teams = ({
                 team_name={v.team_name}
                 setChoosedTeam={setChoosedTeam}
                 deleteTeamState={deleteTeamState}
+                showDeletePopupFunction={showDeletePopupFunction}
               />
             ))}
+        { showDeletePopup && <DeleteConfirmationTeam close={unshowDeletePopup} deleteFunction={deleteFunction}/>}
+
         </div>
       ) : (
         <h4>There is no Team in this Profile.</h4>
@@ -48,18 +66,12 @@ const Teams = ({
 
 export default Teams;
 
-const Team = ({ v, team_name, setChoosedTeam, deleteTeamState }) => {
+const Team = ({ v, team_name, setChoosedTeam, deleteTeamState,showDeletePopupFunction }) => {
   console.log({ v });
   const navigate = useNavigate();
-  const deleteTeamFunction = () => {
-    deleteTeam(v._id)
-      .then((resp) => {
-        deleteTeamState(v._id);
-        console.log(resp);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const showDeletePopup = () => {
+    showDeletePopupFunction(v._id)
+    
   };
   return (
     <li className="team">
@@ -72,7 +84,7 @@ const Team = ({ v, team_name, setChoosedTeam, deleteTeamState }) => {
           zIndex: 999,
           cursor: "pointer",
         }}
-        onClick={deleteTeamFunction}
+        onClick={showDeletePopup}
         data-tooltip-id={v._id}
         data-tooltip-content={"Delete"}
       >

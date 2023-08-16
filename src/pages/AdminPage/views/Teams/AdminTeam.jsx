@@ -17,8 +17,13 @@ const AdminTeam = () => {
   const [response, setresponse] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [showDeletePopup, setShowDeletePopup] = useState(true)
+  const [teamId, setTeamId] = useState("")
   const unshowDeletePopup = () =>{
     setShowDeletePopup(false)
+  }
+  const showDeletePopupFunction = (id) =>{
+    setTeamId(id) 
+    setShowDeletePopup(true)
   }
   const deleteTeamState = (id) => {
     setdata({
@@ -66,8 +71,12 @@ const AdminTeam = () => {
           searchValue={searchValue}
           data={data}
           deleteTeamState={deleteTeamState}
+          unshowDeletePopup={unshowDeletePopup}
+          showDeletePopup={showDeletePopup}
+          teamId={teamId}
+          setTeamId={setTeamId}
+          showDeletePopupFunction={showDeletePopupFunction}
         />
-        { showDeletePopup && <DeleteConfirmationTeam />}
       </div>
     </StaffJobLandingLayout>
   );
