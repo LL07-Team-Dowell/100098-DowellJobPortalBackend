@@ -1,9 +1,15 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdOutlineArrowBackIosNew } from 'react-icons/md';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import ThreadItem from './ThreadItem';
 import styled from 'styled-components';
 import TeamScreenLinks from '../teamScreenLinks/teamScreenLinks';
+import AddIssueTeamLead from './AddIssueTeamLead';
+import Navbar from '../../../component/Navbar';
+import { getAllTeams, getSingleTeam } from '../../../../../../../services/createMembersTasks';
+import { useTeam } from '../../../context/Team';
+import { getSettingUserProject } from '../../../../../../../services/hrServices';
+import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 
 const TeamThread = ({ title = "Team Issues", color }) => {
   const { id } = useParams();
@@ -42,10 +48,18 @@ const TeamThread = ({ title = "Team Issues", color }) => {
     color: #fff;
   }
 `;
+
   const [panding, setPanding] = useState(true);
   const [resolve, setResolve] = useState(false);
   const [progress, setProgress] = useState(false);
   const [status, setStatus] = useState();
+  const { team, setteam } = useTeam()
+  const [issue, setIssue] = useState(false);
+  const [candidateTeams, setCandidateTeams] = useState([]);
+  const [showIssueForm, setShowIssueForm] = useState(false);
+
+  console.log(candidateTeams);
+  const { currentUser } = useCurrentUserContext();
 
   const clickToPandingApproval = () => {
     setPanding(true);
@@ -68,18 +82,50 @@ const TeamThread = ({ title = "Team Issues", color }) => {
     setStatus('Resolved')
   };
 
+  useEffect(() => {
+    if (team?.members === undefined) {
+      // GET A SINGLE TEAM INSTEAD
+      getSingleTeam(id)
+        .then(resp => {
+          setteam(resp.data.response.data[0])
+        })
+        .catch(err => console.log(err))
+    }
+  }, []);
+
+  useEffect(() => {
+    Promise.all([
+      getAllTeams(currentUser.portfolio_info[0].org_id),
+      getSettingUserProject(),
+    ]).then(res => {
+      setCandidateTeams(
+        res[0]?.data?.response?.data?.filter((team) =>
+          team?.members.includes(currentUser.userinfo.username)
+        )
+      );
+    }).catch(err => {
+      console.log('An error occured trying to fetch teams or projects for candidate');
+    })
+  }, []);
+
+
   const navigate = useNavigate()
 
+
   return (<>
-    <div className='create-new-team-header'>
-      <div>
-        <div>
-          {/* <button className='back' onClick={() => navigate(`/team-screen-member/${id}/team-issues`)}><MdOutlineArrowBackIosNew /></button>
-          {title !== undefined && <h1 style={{ color: color ? color : '#000' }}>{title}</h1>} */}
-          <TeamScreenLinks id={id} />
-        </div>
-      </div>
-    </div>
+    {team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true} /> : null}
+
+    <TeamScreenLinks id={id} />            {
+      issue && (
+        <AddIssueTeamLead
+          afterSelectionScreen={true}
+          teamId={id}
+          candidateView={true}
+          closeIssuesScreen={() => setShowIssueForm(false)}
+          teams={candidateTeams}
+        />)
+    }
+
 
     <div className="create-new-team-heade">
       <Wrappen>

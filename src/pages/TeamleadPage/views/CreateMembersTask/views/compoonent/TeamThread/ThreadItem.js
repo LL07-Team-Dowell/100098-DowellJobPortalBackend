@@ -250,7 +250,7 @@ const ThreadItem = ({ status }) => {
   const [reducerComment, forceUpdate] = useReducer(x => x + 1, 0)
   const [reducerStatus, forceUpdateStatus] = useReducer(x => x + 1, 0)
 
-
+  console.log(threads);
   const handleImageClick = (threadId) => {
     setShowModalStates((prevShowModalStates) => ({
       ...prevShowModalStates,
@@ -306,9 +306,11 @@ const ThreadItem = ({ status }) => {
 
   useEffect(() => {
     const documentId = id;
+    console.log(documentId);
     setLoading(true);
     fetchThread(documentId)
       .then((resp) => {
+        console.log(resp);
         const threads = resp.data.data;
         const sortedThreads = threads.reverse()
         setThreads(sortedThreads)
@@ -325,7 +327,7 @@ const ThreadItem = ({ status }) => {
       .catch((error) => {
         setLoading(false);
       });
-  }, [reducerComment, reducerStatus, status]);
+  }, [reducerComment, reducerStatus, status, undefined]);
 
 
   const [statusLoading, setStatusLoading] = useState(false)
@@ -636,11 +638,11 @@ const ThreadItem = ({ status }) => {
                         </div>
                         <div className="progress">
                           <p>In progress</p>
-                          <div className={thread.current_status == "In progress" ? "active-thread-btn" : "threads-btn"}></div>
+                          <div className={thread.current_status == "In progress" ? "active-thread-btn" : "active-thread-btn"}></div>
                         </div>
                         <div className="progress">
                           <p>Completed</p>
-                          <div className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"}></div>
+                          <div className={thread.current_status == "Completed" ? "active-thread-btn" : "active-thread-btn"}></div>
                         </div>
                         <div className="progress">
                           <p>Resolved</p>

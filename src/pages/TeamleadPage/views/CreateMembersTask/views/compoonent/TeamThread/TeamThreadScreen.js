@@ -6,9 +6,10 @@ import TeamScreenLinks from '../teamScreenLinks/teamScreenLinks';
 import Navbar from '../../../component/Navbar';
 import { useTeam } from '../../../context/Team';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
-import { getSingleTeam, getTeamTask } from '../../../../../../../services/createMembersTasks';
+import { getAllTeams, getSingleTeam, getTeamTask } from '../../../../../../../services/createMembersTasks';
 import CreateTask from '../createTask/createTask';
 import AddIssueTeamLead from './AddIssueTeamLead';
+import { getSettingUserProject } from '../../../../../../../services/hrServices';
 
 const TeamThreadScreen = () => {
     const { id } = useParams();
@@ -20,6 +21,9 @@ const TeamThreadScreen = () => {
     const [detail, setdetail] = useState('in progress')
     const [tasks, setTasks] = useState([])
     const [addedNewTask, setAddedNewTask] = useState(true)
+    const [candidateTeams, setCandidateTeams] = useState([]);
+    const [showIssueForm, setShowIssueForm] = useState(false);
+
     // useEffect
     useEffect(() => {
         if (team?.members === undefined) {
@@ -57,6 +61,21 @@ const TeamThreadScreen = () => {
         }
     }, [addedNewTask])
 
+    useEffect(() => {
+        Promise.all([
+            getAllTeams(currentUser.portfolio_info[0].org_id),
+            getSettingUserProject(),
+        ]).then(res => {
+            setCandidateTeams(
+                res[0]?.data?.response?.data?.filter((team) =>
+                    team?.members.includes(currentUser.userinfo.username)
+                )
+            );
+        }).catch(err => {
+            console.log('An error occured trying to fetch teams or projects for candidate');
+        })
+    }, []);
+
     const navigate = useNavigate(); // Initialize the useNavigate hook
     const navigateToIssueInProgress = () => {
         // Navigate to the specified route when clicked
@@ -64,22 +83,26 @@ const TeamThreadScreen = () => {
     };
 
     const addIssue = () => {
-        setIssue(!issue)
+        setShowIssueForm(!showIssueForm)
     }
 
     return (
         <div>
             {team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true} /> : null}
             <TeamScreenLinks id={id} />            {
-                issue && (
+                showIssueForm && (
                     <AddIssueTeamLead
                         afterSelectionScreen={true}
-                        closeIssuesScreen={() => setIssue(false)}
                         teamId={id}
+                        candidateView={true}
+                        teams={candidateTeams}
+                        closeIssuesScreen={() => setShowIssueForm(false)}
                     />)
             }
             <br />
             <br />
+
+
             <div className="new__task__container">
                 {/* <h1 style={{ color: "#005734", fontSize: "1.6rem" }}>Add New Item</h1> */}
                 <div style={{ position: "relative", display: "flex", gap: "3rem" }} >
