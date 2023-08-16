@@ -158,7 +158,7 @@ def get_guild_members(guildid,token):
 
 
 def create_master_link(company_id,links,job_name):
-    url = "https://100099.pythonanywhere.com/api/v3/qr-code/"
+    url = "https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/"
     
     payload = {
         "qrcode_type": "Link",
@@ -196,7 +196,7 @@ def interview_email(toname,toemail,subject,email_content):
 
 def set_finalize(linkid):
     #print(linkid)
-    url = f"https://100099.pythonanywhere.com/api/v3/masterlink/?link_id={linkid}"
+    url = f"https://www.qrcodereviews.uxlivinglab.online/api/v3/masterlink/?link_id={linkid}"
     payload = {
         "is_finalized": True,
     }
