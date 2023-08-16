@@ -15,6 +15,15 @@ const Index = () => {
   const {data , setdata} = useValues() ;
   const [response , setresponse] = useState(false)
   const [searchValue, setSearchValue] = useState('');
+  const [showDeletePopup, setShowDeletePopup] = useState(false)
+  const [teamId, setTeamId] = useState("")
+  const unshowDeletePopup = () =>{
+    setShowDeletePopup(false)
+  }
+  const showDeletePopupFunction = (id) =>{
+    setTeamId(id) 
+    setShowDeletePopup(true)
+  }
   const deleteTeamState = (id) => {
     setdata({...data,TeamsSelected:data.TeamsSelected.filter(v => v._id !== id)})
   }
@@ -37,7 +46,16 @@ const Index = () => {
     <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue} searchTeam={true}>
       <Navbar title={"All Teams"} color={'#005734'} noButtonBack={true} />
       <div className='container'>
-      <Teams searchValue={searchValue} data={data} deleteTeamState={deleteTeamState}/>
+      <Teams 
+      searchValue={searchValue}
+      data={data}
+      deleteTeamState={deleteTeamState}
+      unshowDeletePopup={unshowDeletePopup}
+      showDeletePopup={showDeletePopup}
+      teamId={teamId}
+      setTeamId={setTeamId}
+      showDeletePopupFunction={showDeletePopupFunction}
+        />
       </div>
     </StaffJobLandingLayout>
   )

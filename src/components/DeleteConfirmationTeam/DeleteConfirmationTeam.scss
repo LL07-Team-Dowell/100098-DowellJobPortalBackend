@@ -18,13 +18,28 @@
     background-color: white;
     padding: 20px;
     padding-bottom: 20px;
-    width: 600px;
+    width: 450px;
     border-radius: 10px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    min-height: 380px;
-    max-height: 620px;
+    max-height: 270px;
+    text-align: center;
     overflow-y: auto;
+    button{
+      margin:15px 10px 0;
+      width: 70px;
+      height: 27px;
+      background-color: #fff;
+      border: 1px solid #D2122E;
+      color: #D2122E;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .delete{
+      background-color: #D2122E;
+      color: #fff;
+
+    }
   }
 }

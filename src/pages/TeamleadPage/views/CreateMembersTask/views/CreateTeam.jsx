@@ -33,7 +33,9 @@ const CreateTeam = () => {
     ?.fakeSuperUserInfo
     ? currentUser?.userportfolio
         ?.filter((user) => user.member_type !== "owner")
-        .map((v) => (v.username.length !== 0 ? v.username[0] : null))
+        .map((v) => (v.username.length !== 0 ? Array.isArray(v.username)
+        ? v.username[0]
+        : v.username : null))
         .filter((v) => v !== null)
         .map((v, i) => ({ member: v, id: i }))
     : currentUser?.selected_product?.userportfolio
@@ -95,7 +97,9 @@ const CreateTeam = () => {
               .map((v, i) => ({ member: v, id: i }))
           : currentUser?.userportfolio
               ?.filter((user) => user.member_type !== "owner")
-              .map((v) => (v.username.length !== 0 ? v.username[0] : null))
+              .map((v) => (v.username.length !== 0 ? Array.isArray(v.username)
+              ? v.username[0]
+              : v.username : null))
               .filter((v) => v !== null)
               .map((v, i) => ({ member: v, id: i }))
       );
@@ -147,7 +151,9 @@ const CreateTeam = () => {
         setDesplaidMembers(
           res.data?.userportfolio
             ?.filter((user) => user.member_type !== "owner")
-            .map((v) => (v.username.length !== 0 ? v.username[0] : null))
+            .map((v) => (v.username.length !== 0 ? Array.isArray(v.username)
+            ? v.username[0]
+            : v.username : null))
             .filter((v) => v !== null)
             .map((v, i) => ({ member: v, id: i }))
         );
