@@ -15,7 +15,7 @@ const Index = () => {
   const {data , setdata} = useValues() ;
   const [response , setresponse] = useState(false)
   const [searchValue, setSearchValue] = useState('');
-  const [showDeletePopup, setShowDeletePopup] = useState(true)
+  const [showDeletePopup, setShowDeletePopup] = useState(false)
   const [teamId, setTeamId] = useState("")
   const unshowDeletePopup = () =>{
     setShowDeletePopup(false)

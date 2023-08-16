@@ -107,7 +107,7 @@ const Team = ({ v, team_name, setChoosedTeam, deleteTeamState,showDeletePopupFun
           data-tooltip-id={v._id}
           data-tooltip-content={"Admin"}
         >
-          <MdVerified />
+          <MdVerified color="#005734"/>
           <Tooltip
             id={v._id}
             style={{ fontSize: "0.7rem", fontWeight: "normal" }}
