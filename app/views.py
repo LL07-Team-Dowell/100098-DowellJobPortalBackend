@@ -2920,7 +2920,7 @@ class createPublicApplication(APIView):
                 "eventId": get_event_id()["event_id"],
                 "job_company_id": field["job_company_id"],
                 "company_data_type": field["company_data_type"],
-                "job_id": field["job_company_id"],
+                "job_id": field["job_id"],
                 "job_name": field["job_name"],
                 "qr_ids": field["qr_ids"],
                 "generated_links": generated_links,
@@ -2958,7 +2958,7 @@ class createPublicApplication(APIView):
         update_field = {"status": "Nothing to update"}
         responses = dowellconnection(*Publiclink_reports, "fetch", field, update_field)
         response = json.loads(responses)
-        print(response)
+        # print(response)
 
         master_links = []
         for i in response["data"]:
