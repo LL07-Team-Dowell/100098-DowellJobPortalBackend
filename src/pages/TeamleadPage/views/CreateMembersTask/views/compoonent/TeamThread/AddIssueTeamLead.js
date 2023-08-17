@@ -596,11 +596,11 @@ const AddIssueTeamLead = ({
                 onChange={handleCandidateTeamChange}
                 value={createIssue.team_id}
                 name={"team_id"}
+                disabled
               >
-                <option value="">Select Team</option>
                 {/* Dynamically populate the options */}
                 {teams.map((team) => (
-                  <option key={team._id} value={team._id}>
+                  <option key={team._id} value={team._id} disabled>
                     {team.team_name}
                   </option>
                 ))}
