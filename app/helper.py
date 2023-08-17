@@ -218,6 +218,37 @@ def save_image(image):
     return response.text
 
 
+def periodic_jobs(start_dt, end_dt, data_list):
+    #convert to date format--------
+    start_date = datetime.datetime.strptime(
+            start_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    end_date = datetime.datetime.strptime(
+            end_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    
+    items=[]
+    for l in data_list:
+        try:
+            created_on=datetime.datetime.strptime(l["created_on"],"%Y-%m-%dT%H:%M:%S.%fZ")
+            if created_on >= start_date and created_on <= end_date:
+                items.append(l)
+            
+        except Exception:
+            try:
+                created_on=datetime.datetime.strptime(l["created_on"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
+                if created_on >= start_date and created_on <= end_date:
+                    items.append(l) 
+            except Exception:
+                try:
+                    created_on=datetime.datetime.strptime(l["created_on"], "%m/%d/%Y %H:%M:%S")
+                    if created_on >= start_date and created_on <= end_date:
+                        items.append(l)
+                except Exception:
+                    pass
+
+    return (items, len(items))
+
 def periodic_application(start_dt, end_dt, data_list):
     #convert to date format--------
     start_date = datetime.datetime.strptime(
@@ -233,22 +264,84 @@ def periodic_application(start_dt, end_dt, data_list):
             application_submitted_on=datetime.datetime.strptime(l["application_submitted_on"],"%Y-%m-%dT%H:%M:%S.%fZ")
             if application_submitted_on >= start_date and application_submitted_on <= end_date:
                 items.append(l)
-        except ValueError:
+        except Exception:
             try:
                 application_submitted_on=datetime.datetime.strptime(l["application_submitted_on"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
                 if application_submitted_on >= start_date and application_submitted_on <= end_date:
-                    items.append(l)
-            except ValueError:
+                    items.append(l) 
+            except Exception:
                 try:
                     application_submitted_on=datetime.datetime.strptime(l["application_submitted_on"], "%m/%d/%Y %H:%M:%S")
                     if application_submitted_on >= start_date and application_submitted_on <= end_date:
                         items.append(l)
-                except ValueError:
+                except Exception:
                     pass
 
     return (items, len(items))
 
+def periodic_teams(start_dt, end_dt, data_list):
+    #convert to date format--------
+    start_date = datetime.datetime.strptime(
+            start_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    end_date = datetime.datetime.strptime(
+            end_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    
+    items=[]
+    for l in data_list:
+        try:
+            date_created=datetime.datetime.strptime(l["date_created"],"%Y-%m-%dT%H:%M:%S.%fZ")
+            if date_created >= start_date and date_created <= end_date:
+                items.append(l)
+            
+        except Exception:
+            try:
+                date_created=datetime.datetime.strptime(l["date_created"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
+                if date_created >= start_date and date_created <= end_date:
+                    items.append(l) 
+                
+            except Exception:
+                try:
+                    date_created=datetime.datetime.strptime(l["date_created"], "%m/%d/%Y %H:%M:%S")
+                    if date_created >= start_date and date_created <= end_date:
+                        items.append(l)
+                    
+                except Exception:
+                    pass
 
+    return (items, len(items))
+
+def periodic_tasks(start_dt, end_dt, data_list):
+    #convert to date format--------
+    start_date = datetime.datetime.strptime(
+            start_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    end_date = datetime.datetime.strptime(
+            end_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    
+    items=[]
+    for l in data_list:
+        try:
+            task_created_date=datetime.datetime.strptime(l["task_created_date"],"%Y-%m-%dT%H:%M:%S.%fZ")
+            if task_created_date >= start_date and task_created_date <= end_date:
+                items.append(l)
+            
+        except Exception:
+            try:
+                task_created_date=datetime.datetime.strptime(l["task_created_date"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
+                if task_created_date >= start_date and task_created_date <= end_date:
+                    items.append(l) 
+            except Exception:
+                try:
+                    task_created_date=datetime.datetime.strptime(l["task_created_date"], "%m/%d/%Y %H:%M:%S")
+                    if task_created_date >= start_date and task_created_date <= end_date:
+                        items.append(l)
+                except Exception:
+                    pass
+
+    return (items, len(items))
 def periodic_application_account(start_dt, end_dt, data_list):
     start_date = datetime.datetime.strptime(
             start_dt, "%m/%d/%Y %H:%M:%S"
