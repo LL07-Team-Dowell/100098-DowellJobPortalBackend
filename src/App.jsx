@@ -69,6 +69,7 @@ import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
 import Payment from "./pages/AccountPage/Payment";
 import Add from "./pages/AdminPage/views/Add/Add";
 import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThreadScreen";
+import GroupLeadTask from "./pages/GroupLeadPage/components/GroupLeadTask";
 
 function App() {
   const {
@@ -91,10 +92,10 @@ function App() {
 
   // console.log(shorlistedJob); 
   useDowellLogin(
-    setCurrentUser, 
-    setLoading, 
-    setIsPublicUser, 
-    setPublicUserDetails, 
+    setCurrentUser,
+    setLoading,
+    setIsPublicUser,
+    setPublicUserDetails,
     setUserDetailsNotFound,
     setIsProductUser,
     setProductUserDetails,
@@ -165,7 +166,7 @@ function App() {
             element={
               <JobContextProvider>
                 <NewApplicationContextProvider>
-                    <CandidateHomeScreen />
+                  <CandidateHomeScreen />
                 </NewApplicationContextProvider>
               </JobContextProvider>
             }
@@ -862,6 +863,22 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
+
+        <Route
+          path="/task"
+          element={
+            <NavigationContextProvider>
+              <CandidateContextProvider>
+                <CandidateTaskContextProvider>
+                  <ValuesProvider>
+                    <GroupLeadTask />
+                  </ValuesProvider>
+                </CandidateTaskContextProvider>
+              </CandidateContextProvider>
+            </NavigationContextProvider>
+          }
+        />
+
         <Route
           path="/create-task"
           element={
