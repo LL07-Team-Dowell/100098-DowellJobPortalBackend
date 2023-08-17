@@ -327,7 +327,7 @@ const ThreadItem = ({ status }) => {
       .catch((error) => {
         setLoading(false);
       });
-  }, [reducerComment, reducerStatus, status, undefined]);
+  }, [reducerComment, reducerStatus, undefined]);
 
 
   const [statusLoading, setStatusLoading] = useState(false)
