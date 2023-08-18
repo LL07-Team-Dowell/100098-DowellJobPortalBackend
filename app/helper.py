@@ -342,35 +342,70 @@ def periodic_tasks(start_dt, end_dt, data_list):
                     pass
 
     return (items, len(items))
-def periodic_application_account(start_dt, end_dt, data_list):
-    start_date = datetime.datetime.strptime(
-            start_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    end_date = datetime.datetime.strptime(
-            end_dt, "%m/%d/%Y %H:%M:%S"
-        )
+def periodic_application_account(start_dt, end_dt, data_list, status=None):
+    start_date = datetime.datetime.strptime(start_dt, "%m/%d/%Y")
+    end_date = datetime.datetime.strptime(end_dt, "%m/%d/%Y")
     
-    items=[]
+    items = []
     
-    for l in data_list:
+    for application in data_list:
         try:
-            if "/" in l["onboarded_on"]:
-                format_strings = ["%Y-%m-%dT%H:%M:%S.%fZ", "%m/%d/%Y %H:%M:%S"]
-                for format_str in format_strings:
-                    try:
-                        if l["onboarded_on"] != "<onboarded on>":
-                            application_submitted_on = datetime.datetime.strptime(l["onboarded_on"], format_str)
-                            if start_date <= application_submitted_on <= end_date:
-                                items.append(l)
-                            break
-                    except ValueError:
-                        pass
+            onboarded_on = application.get("onboarded_on")
+            rejected_on = application.get("rejected_on")
+            
+            if onboarded_on and "/" in onboarded_on:
+                application_date = datetime.datetime.strptime(onboarded_on, "%m/%d/%Y")
+            elif onboarded_on:
+                application_date = datetime.datetime.strptime(onboarded_on, "%Y-%m-%dT%H:%M:%S.%fZ")
+            elif rejected_on:
+                application_date = datetime.datetime.strptime(rejected_on, "%m/%d/%Y")
             else:
-                if l["onboarded_on"] != "<onboarded on>":
-                    application_submitted_on = datetime.datetime.strptime(l["onboarded_on"], "%Y-%m-%dT%H:%M:%S.%fZ")
-                    if start_date <= application_submitted_on <= end_date:
-                        items.append(l)
-        except KeyError:
+                continue
+                
+            if start_date <= application_date <= end_date and (status is None or application.get("status") == status):
+                items.append(application)
+        except (KeyError, ValueError):
             pass
 
-    return items, len(items)
+    return len(items)
+
+
+
+import datetime
+
+def periodic_application_hr(start_dt, end_dt, data_list, status=None):
+    start_date = datetime.datetime.strptime(start_dt, "%m/%d/%Y")
+    end_date = datetime.datetime.strptime(end_dt, "%m/%d/%Y")
+    
+    filtered_data = []
+    
+    for entry in data_list:
+        if status is None or entry['status'].lower() == status.lower():
+            date_field = None
+            if status is None:
+                date_field_options = ['selected_on', 'shortlisted_on', 'rejected_on']
+                for date_field_option in date_field_options:
+                    if date_field_option in entry:
+                        date_field = date_field_option
+                        break
+            else:
+                if status.lower() == 'selected':
+                    date_field = 'selected_on'
+                elif status.lower() == 'shortlisted':
+                    date_field = 'shortlisted_on'
+                elif status.lower() == 'rejected':
+                    date_field = 'rejected_on'
+            
+            if date_field and date_field in entry:
+                try:
+                    entry_date = datetime.datetime.strptime(entry[date_field], '%Y-%m-%dT%H:%M:%S.%fZ')
+                except ValueError:
+                    try:
+                        entry_date = datetime.datetime.strptime(entry[date_field], '%m/%d/%Y')
+                    except ValueError:
+                        continue  # Skip entries with invalid date formats
+                    
+                if start_date <= entry_date <= end_date:
+                    filtered_data.append(entry)
+    
+    return len(filtered_data)

@@ -24,7 +24,11 @@ from .helper import (
     create_master_link,
     send_mail,
     interview_email,
-    periodic_application
+    periodic_application,
+    periodic_jobs,
+    periodic_teams,
+    periodic_tasks,
+    periodic_application_hr
 )
 from .serializers import (
     AccountSerializer,
@@ -65,7 +69,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constant import *
 from .helper import get_event_id, dowellconnection, call_notification, set_finalize, update_number, update_string, discord_invite,\
-    get_guild_channels, get_guild_members , create_master_link , send_mail , interview_email,periodic_application,periodic_application_account
+    get_guild_channels, get_guild_members , create_master_link , send_mail , interview_email,periodic_jobs,periodic_teams,periodic_tasks,periodic_application,periodic_application_account
 from .serializers import AccountSerializer, RejectSerializer, AdminSerializer, TrainingSerializer, \
     UpdateQuestionSerializer, CandidateSerializer, HRSerializer, LeadSerializer, TaskSerializer, \
     SubmitResponseSerializer, SettingUserProfileInfoSerializer, UpdateSettingUserProfileInfoSerializer, \
@@ -1748,7 +1752,7 @@ class create_team(APIView):
                 "team_name": data.get("team_name"),
                 "team_description": data.get("team_description"),
                 "created_by": data.get("created_by"),
-                "date_created": data.get("date_created"),
+                "date_created": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
                 "members": data.get("members"),
@@ -1959,7 +1963,7 @@ class create_team_task(APIView):
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
                 "data_type": data.get("data_type"),
-                "task_created_date":data.get("task_created_date"),
+                "task_created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
                 "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
@@ -2115,6 +2119,7 @@ class create_member_task(APIView):
                 "assignee": data.get("assignee"),
                 "completed": data.get("completed"),
                 "team_name": data.get("team_name"),
+                "task_created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
                 "team_member": data.get("team_member"),
                 "data_type": data.get("data_type"),
             }
@@ -3270,7 +3275,7 @@ class Thread_Apis(APIView):
             "created_by": data.get("created_by"),
             "team_id":data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
-            "created_date":str(datetime.date.today()),
+            "created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
             "current_status": serializer_data["current_status"],
             "previous_status": [],
         }
@@ -3485,7 +3490,7 @@ class Comment_Apis(APIView):
         field = {
             "event_id": get_event_id()["event_id"],
             "created_by": data.get("created_by"),
-            "created_date":str(datetime.date.today()),
+            "created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
             "comment": data.get("comment"),
             "thread_id": data.get("thread_id"),
         }
@@ -3577,21 +3582,20 @@ class Generate_admin_Report(APIView):
         data = {  }
 
         job  = dowellconnection(*jobs, "fetch", field, update_field)
-        j_ds = [t["_id"] for t in json.loads(job)['data']]
-        data["no_of_jobs"] = len(j_ds)
+        p_jobs = periodic_jobs(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job)['data'])
+        data[f"no_of_jobs"]=p_jobs[1]
 
         active_jobs=[]
         inactive_jobs=[]
-        unkown_jobs = []
-        for t in json.loads(job)['data']:
+        for t in p_jobs[0]:
             if "is_active" in t.keys():
                 if t["is_active"] =="True" or t["is_active"] =="true" or t["is_active"] ==True:
                     active_jobs.append([t["_id"],t["is_active"]])
                 if t["is_active"] =="False" or t["is_active"] =="false" or t["is_active"] ==False:
                     inactive_jobs.append([t["_id"],t["is_active"]])
 
-        data["number_active_jobs"] = len(active_jobs)
-        data["number_inactive_jobs"] = len(inactive_jobs)
+        data["no_of_active_jobs"] = len(active_jobs)
+        data["no_of_inactive_jobs"] = len(inactive_jobs)
         
         job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
        
@@ -3601,7 +3605,7 @@ class Generate_admin_Report(APIView):
         #print(p_application)
         data[f"no_job_applications_from_start_date_to_end_date"]=p_application[1]
         try:
-            ids = [t["_id"] for t in json.loads(job_applications)['data']]
+            ids = [t["_id"] for t in p_application[0]]
             counter = Counter(ids)
             most_applied_job = counter.most_common(1)[0][0]
             least_applied_job = counter.most_common()[-1][0]
@@ -3613,46 +3617,52 @@ class Generate_admin_Report(APIView):
             data["least_applied_job"]={"_id":"none"}
 
         new_candidates = dowellconnection(*candidate_management_reports, "fetch", {"status": "Pending"}, update_field)
-        data["new_candidates"]=len(json.loads(new_candidates)['data'])
-
+        candidates= periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(new_candidates)['data'])
+        data["new_candidates"]=candidates[1]
+        
         guest_candidates = dowellconnection(*candidate_management_reports, "fetch", {'status': 'Guest_Pending'}, update_field)
-        data["guest_candidates"]=len(json.loads(guest_candidates)['data'])
+        candidates= periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(guest_candidates)['data'])
+        data["guest_candidates"]=candidates[1]
         
         selected = dowellconnection(*candidate_management_reports, "fetch", {"status": "selected"}, update_field)
-        data["selected_candidates"]=len(json.loads(selected)['data'])
+        candidates= periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(selected)['data'])
+        data["selected_candidates"]=candidates[1]
 
         shortlisted = dowellconnection(*candidate_management_reports, "fetch", {"status": "shortlisted"}, update_field)
-        data["shortlisted_candidates"]=len(json.loads(shortlisted)['data'])
+        candidates= periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(shortlisted)['data'])
+        data["shortlisted_candidates"]=candidates[1]
         
         hired = dowellconnection(*candidate_management_reports, "fetch", {"status": "hired"}, update_field)
-        data["hired_candidates"]=len(json.loads(hired)['data'])
+        candidates= periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(hired)['data'])
+        data["hired_candidates"]=candidates[1]
 
         rehire = dowellconnection(*candidate_management_reports, "fetch", {"status": "rehired"}, update_field)
-        data["rehired_candidates"]=len(json.loads(rehire)['data'])
+        candidates= periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(rehire)['data'])
+        data["rehired_candidates"]=candidates[1]
 
         rejected = dowellconnection(*candidate_management_reports, "fetch", {"status": "Rejected"}, update_field)
-        data["rejected_candidates"]=len(json.loads(rejected)['data'])
+        candidates= periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(rejected)['data'])
+        data["rejected_candidates"]=candidates[1]
 
         probationary = dowellconnection(*candidate_management_reports, "fetch", {"status": "probationary"}, update_field)
-        data["probationary_candidates"]=len(json.loads(probationary)['data'])
+        candidates= periodic_application(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(probationary)['data'])
+        data["probationary_candidates"]=candidates[1]
+
         try:
-            data["hiring_rate"] = str((data["hired_candidates"]/data["job_applications"])*100)+" %"
+            data["hiring_rate"] = str((data["hired_candidates"]/data["no_job_applications_from_start_date_to_end_date"])*100)+" %"
         except Exception:
             data["hiring_rate"] ="0 %"
 
-        teams = dowellconnection(*team_management_modules, "fetch", field, update_field)
-        data["teams"]=len(json.loads(teams)['data'])
-
+        
         tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
-        data["tasks"]=len(json.loads(tasks)['data'])
-
-        team_tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
-        data["team_tasks"]=len([t for t in json.loads(team_tasks)['data'] 
-                                    if "team_id" in t.keys() or "team_name" in t.keys()])
+        p_tasks=periodic_tasks(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(tasks)['data'])
+        data["tasks"]=p_tasks[1]
         
         tasks_completed = dowellconnection(*task_management_reports, "fetch", {"status":"Completed"}, update_field)
+        p_tasks=periodic_tasks(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(tasks_completed)['data'])
+        data["tasks_completed"]=p_tasks[1]
         try:
-            data["tasks_completed_on_time"]=len([t for t in json.loads(tasks_completed)['data'] 
+            data["tasks_completed_on_time"]=len([t for t in p_tasks[0] 
                                              if "due_date" in t.keys() and "task_updated_date" in t.keys() and 
                                                 datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > 
                                                 datetime.datetime.strptime(t["task_updated_date"], "%m/%d/%Y %H:%M:%S")
@@ -3660,13 +3670,22 @@ class Generate_admin_Report(APIView):
         except Exception:
             data["tasks_completed_on_time"]="0"
         try:
-            data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks"])*100)+" %"
+            data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["no_tasks_from_start_date_to_end_date"])*100)+" %"
         except Exception:
             data["percentage_tasks_completed_on_time"]="0 %"
 
+        teams = dowellconnection(*team_management_modules, "fetch", field, update_field)
+        p_teams=periodic_teams(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(teams)['data'])
+        data["teams"]=p_teams[1]
+
+        team_tasks = dowellconnection(*task_management_reports, "fetch", field, update_field)
+        p_tasks=periodic_tasks(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(team_tasks)['data'])
+        data["team_tasks"]=len([t for t in p_tasks[0]  if "team_id" in t.keys() or "team_name" in t.keys()])
+        
         team_tasks_completed = dowellconnection(*task_management_reports, "fetch", {"completed":True}, update_field)
-        data["team_tasks_completed"]=len([t for t in json.loads(team_tasks_completed)['data'] 
-                                             if "team_id" in t.keys() or "team_name" in t.keys()])
+        p_tasks=periodic_tasks(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(team_tasks_completed)['data'])
+        
+        data["team_tasks_completed"]=len([t for t in p_tasks[0] if "team_id" in t.keys() or "team_name" in t.keys()])
         try:
             data["percentage_team_tasks_completed"]=str((data["team_tasks_completed"]/data["team_tasks"])*100)+" %"
         except Exception:
@@ -3745,21 +3764,57 @@ class Generate_public_Report(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_hr_Report(APIView):
     def post(self, request):
-        field = {}
+        payload = request.data
+        field = {
+            # "company_id":request.data.get("company_id")
+            }
         update_field = {}
         data = {}
-        job_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
-        data["job_applications"]=len(json.loads(job_applications)['data'])
+        job_applications = dowellconnection(*hr_management_reports, "fetch", field, update_field)
+        Total_job_applications=(json.loads(job_applications)['data'])
+        data["Total_candidates_applied"] = len(Total_job_applications)
 
-        shortlisted = dowellconnection(*hr_management_reports, "fetch", {"status": "shortlisted"}, update_field)
-        data["shortlisted_candidates"]=len(json.loads(shortlisted)['data'])
+        shortlisted_candidates = [candidate for candidate in Total_job_applications if candidate['status'] == 'shortlisted']
+        data["Total_shortlisted_candidates"] = len(shortlisted_candidates)
 
-        rejected = dowellconnection(*hr_management_reports, "fetch", {"status": "Rejected"}, update_field)
-        data["rejected_candidates"]=len(json.loads(rejected)['data'])
+        Rejected_candidates = [candidate for candidate in Total_job_applications if candidate['status'] == 'Rejected']
+        data["Total_rejected_candidates"] = len(Rejected_candidates)
 
-        Selected = dowellconnection(*candidate_management_reports, "fetch", {"status": "selected"}, update_field)
-        data["selected_candidates"]=len(json.loads(Selected)['data'])
+        selected_candidates = [candidate for candidate in Total_job_applications if candidate['status'] == 'selected']
+        data["Total_selected_candidates"] = len(selected_candidates)
 
+        total_applications = periodic_application_hr(
+        start_dt=f"{payload['start_date']}",
+        end_dt=f"{payload['end_date']}",
+        data_list=Total_job_applications,
+        )
+        data["Dated_candidates_applied"] = total_applications
+
+        dated_Shortlisted_applications = periodic_application_hr(
+        start_dt=f"{payload['start_date']}",
+        end_dt=f"{payload['end_date']}",
+        data_list=Total_job_applications,
+        status="shortlisted"
+        )
+        data["Dated_candidates_shortlisted"] = dated_Shortlisted_applications
+
+        dated_rejected_applications = periodic_application_hr(
+        start_dt=f"{payload['start_date']}",
+        end_dt=f"{payload['end_date']}",
+        data_list=Total_job_applications,
+        status="Rejected"
+        )
+        data["Dated_candidates_rejected"] = dated_rejected_applications
+
+        dated_selected_applications = periodic_application_hr(
+        start_dt=f"{payload['start_date']}",
+        end_dt=f"{payload['end_date']}",
+        data_list=Total_job_applications,
+        status="selected"
+        )
+        data["Dated_candidates_selected"] = dated_selected_applications
+
+       
         return Response({"isSuccess":True,"message": f"Hr reported Generated", "response":data}, status=status.HTTP_201_CREATED)
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -3770,17 +3825,48 @@ class Generate_account_Report(APIView):
         update_field = {}
         data = {}
         job_applications = dowellconnection(*account_management_reports, "fetch", field, update_field)
-        data["job_applications"]=len(json.loads(job_applications)['data'])
-        
-        p_application = periodic_application_account(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
-        data[f"nojob_applications_from_start_date_to_end_date"]=p_application[1]
+        data["Total_applications"]=len(json.loads(job_applications)['data'])       
+
+        total_applications = periodic_application_account(
+        start_dt=f"{payload['start_date']}",
+        end_dt=f"{payload['end_date']}",
+        data_list=json.loads(job_applications)['data'],
+        )
+
+        data["Dated_Total_application"]=total_applications
+
+        dated_rejected_applications = periodic_application_account(
+        start_dt=f"{payload['start_date']}",
+        end_dt=f"{payload['end_date']}",
+        data_list=json.loads(job_applications)['data'],
+        status="Rejected"
+        )
+        data["Dated_Rejected_candidates"]=dated_rejected_applications
+
+        dated_rehired_applications = periodic_application_account(
+        start_dt=f"{payload['start_date']}",
+        end_dt=f"{payload['end_date']}",
+        data_list=json.loads(job_applications)['data'],
+        status="Rehired"
+        )
+        data["Dated_Rehired_candidates"]=dated_rehired_applications
+
+        dated_hired_applications = periodic_application_account(
+        start_dt=f"{payload['start_date']}",
+        end_dt=f"{payload['end_date']}",
+        data_list=json.loads(job_applications)['data'],
+        status="hired"
+        )
+        data["Dated_hired_candidates"]=dated_hired_applications
+
+        hired = dowellconnection(*account_management_reports, "fetch", {"status": "hired"}, update_field)
+        data["Total_hired_candidates"]=len(json.loads(hired)['data'])
 
         Rehired = dowellconnection(*account_management_reports, "fetch", {"status": "Rehired"}, update_field)
-        #print(Rehired)
-        data["rehired_candidates"]=len(json.loads(Rehired)['data'])
+        data["Total_Rehired_candidates"]=len(json.loads(Rehired)['data'])
 
         Rejected = dowellconnection(*account_management_reports, "fetch", {"status": "Rejected"}, update_field)
-        data["rejected_candidates"]=len(json.loads(Rejected)['data'])
+        data["Total_Rejected_candidates"]=len(json.loads(Rejected)['data'])
 
         return Response({"isSuccess":True,"message": f"Account reported Generated", "response":data}, status=status.HTTP_201_CREATED)
 
@@ -4241,4 +4327,3 @@ class Update_payment_status(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
