@@ -208,7 +208,7 @@ def set_finalize(linkid):
 import base64
 
 def save_image(image):
-    url = "http://67.217.61.253/uploadfiles/upload-hr-image/"
+    url = "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/"
     payload = {
         "image": image  # Read the binary data from the file object
     }
@@ -409,3 +409,51 @@ def periodic_application_hr(start_dt, end_dt, data_list, status=None):
                     items.append(entry)
     
     return len(items)
+
+def targeted_population(database, collection, fields, period):
+
+    url = 'http://100032.pythonanywhere.com/api/targeted_population/'
+
+    database_details = {
+        'database_name': 'mongodb',
+        'collection': collection,
+        'database': database,
+        'fields': fields
+    }
+
+
+    # number of variables for sampling rule
+    number_of_variables = 1
+
+    time_input = {
+        'period': period,
+        'start_point': '2021/01/08',
+        'end_point': '2021/01/25',
+        'split': 'week',
+        'time_input_type' : 'eventID',
+        'column_name': 'eventId',
+    }
+
+    stage_input_list= []
+
+    distribution_input={
+        'normal': 1,
+        'poisson':0,
+        'binomial':0,
+        'bernoulli':0
+        
+    }
+
+    request_data={
+        'database_details': database_details,
+        'distribution_input': distribution_input,
+        'number_of_variable':number_of_variables,
+        'stages':stage_input_list,
+        'time_input':time_input,
+    }
+
+    headers = {'content-type': 'application/json'}
+
+    response = requests.post(url, json=request_data,headers=headers)
+
+    return response.text

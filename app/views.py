@@ -28,7 +28,8 @@ from .helper import (
     periodic_jobs,
     periodic_teams,
     periodic_tasks,
-    periodic_application_hr
+    periodic_application_hr,
+    targeted_population
 )
 from .serializers import (
     AccountSerializer,
@@ -94,7 +95,7 @@ INVERVIEW_CALL = """
 <body style="font-family: poppins;background-color: #f5f5f5;margin: 0;padding: 0;text-align: center;">
     <div style="max-width: 600px;margin: 20px auto;background-color: #fff;padding: 20px;border-radius: 4px;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
         <div style= :text-align: center;margin-bottom: 20px;>
-            <img src="http://67.217.61.253/hr/logo-2-min-min.png" alt="Company Logo" style="width: 200px;">
+            <img src="https://dowellfileuploader.uxlivinglab.online/hr/logo-2-min-min.png" alt="Company Logo" style="width: 200px;">
         </div>
         <div >
             <h3 style="text-align: center;font-size: 24px;margin: 0;margin-bottom: 10px;">Hello {},</h3>
@@ -128,7 +129,7 @@ INVITATION_MAIL = """
 </head>
 <body>
     <div style="width: 80%; margin: 0 auto;font-family: 'Poppins', sans-serif;">
-        <img src="http://67.217.61.253/hr/logo-2-min-min.png" alt="Dowell Logo" width="70px" height="70px" style="display: block; margin: 0 auto;">
+        <img src="https://dowellfileuploader.uxlivinglab.online/hr/logo-2-min-min.png" alt="Dowell Logo" width="70px" height="70px" style="display: block; margin: 0 auto;">
         <div style="width: 80%; margin: 0 auto; text-align: center;">
             <p style="font-size: 2rem; font-weight: 700;">Hello {},</p>
             <img src="https://img.freepik.com/free-vector/reading-letter-concept-illustration_114360-4591.jpg?size=626&ext=jpg&ga=GA1.1.225976907.1673277028&semt=sph" alt="mail-logo" width="250px" height="250px">
@@ -3868,7 +3869,10 @@ class Generate_account_Report(APIView):
         Rejected = dowellconnection(*account_management_reports, "fetch", {"status": "Rejected"}, update_field)
         data["Total_Rejected_candidates"]=len(json.loads(Rejected)['data'])
 
-        return Response({"isSuccess":True,"message": f"Account reported Generated", "response":data}, status=status.HTTP_201_CREATED)
+        # a = json.loads(targeted_population("jobportal","candidate_reports",["company_id"],"last_1_day"))
+
+
+        return Response({"isSuccess":True,"message": f"Account reported Generated", "response":a}, status=status.HTTP_201_CREATED)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
