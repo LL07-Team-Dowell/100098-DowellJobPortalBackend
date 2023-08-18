@@ -60,61 +60,97 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
         window.location.href = dowellLoginUrl + window.location.hash.replace("#", "");
     }
 
-    return <>
+    return (
+      <>
         <nav>
-            <div className="jobs__Layout__Navigation__Container">
-                { 
-                    isLargeScreen && <Link to={"/"} className="jobs__Layout__Link__Item">
-                        <img src={logo} alt={"dowell logo"} />
-                    </Link>
-                }
-                { 
-                    afterSelection ? 
-                        <TitleNavigationBar title={screenTitle} hideBackBtn={true} /> 
-                    : hideSearch ? 
-                        <></> 
-                    :  
-                        <SearchBar placeholder={"Search for job/project"} searchValue={searchValue} handleSearchChange={setSearchValue} /> 
-                }
-                { 
-                    user && <div className="jobs__Layout__Icons__Container">
-                        { 
-                            !afterSelection && <Link to={"/alerts"}>
-                                <TbBellRinging className="icon" />
-                            </Link>
-                        }
-                        <Link to={"/user"}>
-                            {
-                                currentUser.userinfo.profile_img?<img src={currentUser.userinfo.profile_img} alt="#" style={{width:"30px", borderRadius: '50%',height:'30px',objectFit: 'cover'}} />:<HiOutlineUserCircle className="icon" />
-                            }
-                        </Link>
-                    </div>
-                }
-                {
-                    !user && <div></div> 
-                    // <button onClick={handleLogin} className="jobs__Landing__Layout__Login__Btn">
-                    //     Login
-                    // </button>
-                }
-                <hr />
-            </div>
+          <div style={{ position: "relative" }}>
+            <p
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "1rem",
+                fontWeight: "700",
+                fontSize: "1.1rem",
+                position: "absolute",
+                top: "-1rem",
+                right: "45%",
+                zIndex: "100",
+                color: "red",
+              }}
+            >
+              You're on the Beta Version of Jobportal
+            </p>
+          </div>
+          <div className="jobs__Layout__Navigation__Container">
+            {isLargeScreen && (
+              <Link to={"/"} className="jobs__Layout__Link__Item">
+                <img src={logo} alt={"dowell logo"} />
+              </Link>
+            )}
+            {afterSelection ? (
+              <TitleNavigationBar title={screenTitle} hideBackBtn={true} />
+            ) : hideSearch ? (
+              <></>
+            ) : (
+              <SearchBar
+                placeholder={"Search for job/project"}
+                searchValue={searchValue}
+                handleSearchChange={setSearchValue}
+              />
+            )}
+            {user && (
+              <div className="jobs__Layout__Icons__Container">
+                {!afterSelection && (
+                  <Link to={"/alerts"}>
+                    <TbBellRinging className="icon" />
+                  </Link>
+                )}
+                <Link to={"/user"}>
+                  {currentUser.userinfo.profile_img ? (
+                    <img
+                      src={currentUser.userinfo.profile_img}
+                      alt="#"
+                      style={{
+                        width: "30px",
+                        borderRadius: "50%",
+                        height: "30px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <HiOutlineUserCircle className="icon" />
+                  )}
+                </Link>
+              </div>
+            )}
+            {
+              !user && <div></div>
+              // <button onClick={handleLogin} className="jobs__Landing__Layout__Login__Btn">
+              //     Login
+              // </button>
+            }
+            <hr />
+          </div>
         </nav>
         <main>
-            <div className="jobs__Layout__Content__Container">
-                { 
-                    !hideSideNavigation && user && 
-                    <NewSideNavigationBar 
-                        links={afterSelection ? afterSelectionLinks : loggedInCandidateNavLinks} 
-                        superUser={isSuperUser}
-                    /> 
+          <div className="jobs__Layout__Content__Container">
+            {!hideSideNavigation && user && (
+              <NewSideNavigationBar
+                links={
+                  afterSelection
+                    ? afterSelectionLinks
+                    : loggedInCandidateNavLinks
                 }
-                <div className="jobs__Layout__Content">
-                    { children }
-                </div>
-                {/* {!afterSelection && <BsFillChatTextFill className="chat__With__CS__Icon" onClick={handleChatIconClick} /> } */}
-            </div>
+                superUser={isSuperUser}
+              />
+            )}
+            <div className="jobs__Layout__Content">{children}</div>
+            {/* {!afterSelection && <BsFillChatTextFill className="chat__With__CS__Icon" onClick={handleChatIconClick} /> } */}
+          </div>
         </main>
-    </>
+      </>
+    );
 }
 
 export default JobLandingLayout;

@@ -94,14 +94,14 @@ const TeamScreenThreads = ({ status, id }) => {
         setThreads(sortedThreads);
 
         const completedThreads = sortedThreads.filter(
-          (thread) => thread.current_status == "Completed"
+          (thread) => thread.current_status === "Completed"
         );
         const resolvedThreads = sortedThreads.filter(
-          (thread) => thread.current_status == "Resolved"
+          (thread) => thread.current_status === "Resolved"
         );
         const inProgressThreads = sortedThreads.filter(
           (thread) =>
-            thread.current_status == "In progress" ||
+            thread.current_status === "In progress" ||
             thread.current_status === "Created" ||
             thread.current_status === undefined
         );
@@ -114,7 +114,7 @@ const TeamScreenThreads = ({ status, id }) => {
       .catch((error) => {
         setLoading(false);
       });
-  }, [reducerComment, reducerStatus, status]);
+  }, [reducerComment, reducerStatus, status, undefined]);
 
   const addComment = async (text, id) => {
     console.log("addComment", text, id);
@@ -172,61 +172,8 @@ const TeamScreenThreads = ({ status, id }) => {
     setEditingCommentText("");
   };
 
-  const replyToComment = (text, commentId, threadId) => {
-    const updatedThreads = threads.map((thread) => {
-      if (thread._id === threadId) {
-        const newComment = {
-          user: currentUser.userinfo.username,
-          comment: text,
-          thread_id: threadId,
-          _id: crypto.randomUUID(),
-          parentId: commentId,
-        };
-        return {
-          ...thread,
-          comments: [...thread.comments, newComment],
-        };
-      }
-      return thread;
-    });
-    setThreads(updatedThreads);
-    setReplyingCommentId(null);
-  };
-
-  // const deleteComment = (commentId, threadId) => {
-  //   const updatedThreads = threads.map((thread) => {
-  //     if (thread._id === threadId) {
-  //       const filteredComments = thread.comments.filter(
-  //         (comment) => comment._id !== commentId
-  //       );
-  //       return {
-  //         ...thread,
-  //         comments: filteredComments,
-  //       };
-  //     }
-  //     return thread;
-  //   });
-  //   setThreads(updatedThreads);
-  //   setDeletingCommentId(commentId);
-  // };
-
   const handleEdit = (text, commentId, threadId) => {
     editComment(text, commentId, threadId);
-  };
-
-  // handle reply submission
-  const onSubmitReply = (e) => {
-    e.preventDefault();
-    replyToComment(
-      replyingComment.text,
-      replyingComment.commentId,
-      replyingComment.threadId
-    );
-    setReplyingComment({
-      commentId: null,
-      threadId: null,
-      text: "",
-    });
   };
 
   const handleClose = (threadId) => {
@@ -263,13 +210,13 @@ const TeamScreenThreads = ({ status, id }) => {
               return [{ name: data.team_name }, { id: data._id }];
             })
         );
-        console.log(
-          resp.data.response.data
-            .filter((item) => item.admin_team === true)
-            .map((data) => {
-              return [{ name: data.team_name }, { id: data._id }];
-            })
-        );
+        // console.log(
+        //   resp.data.response.data
+        //     .filter((item) => item.admin_team === true)
+        //     .map((data) => {
+        //       return [{ name: data.team_name }, { id: data._id }];
+        //     })
+        // );
       })
       .catch((e) => {
         console.log(e);

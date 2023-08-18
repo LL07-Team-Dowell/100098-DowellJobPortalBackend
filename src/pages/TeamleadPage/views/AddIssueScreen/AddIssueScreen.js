@@ -4,16 +4,14 @@ import useClickOutside from "../../../../hooks/useClickOutside";
 import { IoIosArrowBack } from "react-icons/io";
 
 import "../AddTaskScreen/style.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { createCandidateTask } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
 import { createThread } from "../../../../services/threadServices";
-import {
-  getAllTeams,
-} from "../../../../services/createMembersTasks";
+import { getAllTeams } from "../../../../services/createMembersTasks";
 
-const AddIssueScreen = ({ 
+const AddIssueScreen = ({
   closeIssuesScreen,
   afterSelectionScreen,
   editPage,
@@ -28,10 +26,11 @@ const AddIssueScreen = ({
   const { currentUser } = useCurrentUserContext();
   const [selectedTeam, setSelectedTeam] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const navigate = useNavigate();
 
-  console.log(teams);
+  // console.log(teams);
 
-  console.log(teamId);
+  // console.log(teamId);
   const [createIssue, setCreateIssue] = useState({
     thread: "",
     image: "",
@@ -40,8 +39,6 @@ const AddIssueScreen = ({
     team_id: teamId,
     previous_status: "",
   });
-
-
 
   // useClickOutside(ref, () => {
   //   closeIssuesScreen();
@@ -59,13 +56,13 @@ const AddIssueScreen = ({
               return [{ name: data.team_name }, { id: data._id }];
             })
         );
-        console.log(
-          resp.data.response.data
-            .filter((item) => item.admin_team === true)
-            .map((data) => {
-              return [{ name: data.team_name }, { id: data._id }];
-            })
-        );
+        // console.log(
+        //   resp.data.response.data
+        //     .filter((item) => item.admin_team === true)
+        //     .map((data) => {
+        //       return [{ name: data.team_name }, { id: data._id }];
+        //     })
+        // );
       })
       .catch((e) => {
         console.log(e);
@@ -121,49 +118,58 @@ const AddIssueScreen = ({
 
   const handleCreateIssue = async (e) => {
     e.preventDefault();
-    // console.log(createIssue);
     setDisabled(true);
 
     // Create a FormData object to send the file
     const formData = new FormData();
-    formData.append("image", selectedFile);
+
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
 
     try {
       // Send a POST request to the upload URL
-      const response = await fetch(
-        "http://67.217.61.253/uploadfiles/upload-hr-image/",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (response.ok) {
-        // If the request is successful, parse the JSON response
-        const data = await response.json();
-        console.log(data);
-        // Assuming the response contains a field called "imageUrl"
-        const imageUrl = data.file_url;
-
-        try {
-          const response = await createThread({ ...createIssue, image: imageUrl });
-          console.log(response.data);
-          if (response.status === 201) {
-            toast.success("Issue Created Successfully");
-            setDisabled(false);
-            closeIssuesScreen();
+      let imageUrl = "";
+      if (selectedFile) {
+        const response = await fetch(
+          "http://67.217.61.253/uploadfiles/upload-hr-image/",
+          {
+            method: "POST",
+            body: formData,
           }
-        } catch (error) {
+        );
+
+        if (response.ok) {
+          // If the request is successful, parse the JSON response
+          const data = await response.json();
+          imageUrl = data.file_url;
+        } else {
+          // Handle the case where the request is not successful
+          toast.error("Error uploading image");
+        }
+      }
+
+      try {
+        const response = await createThread({
+          ...createIssue,
+          image: imageUrl,
+        });
+
+        if (response.status === 201) {
+          toast.success("Issue Created Successfully");
+          setDisabled(false);
+          closeIssuesScreen();
+        } else {
           toast.error("Something went wrong");
           setDisabled(false);
         }
-      } else {
-        // Handle the case where the request is not successful
-        console.error("Error uploading image");
+      } catch (error) {
+        console.error("Something went wrong", error);
+        setDisabled(false);
       }
     } catch (error) {
       // Handle any errors that occurred during the request
-      console.error("Error uploading image", error);
+      toast.error("Error uploading image", error);
     }
   };
 

@@ -6,7 +6,10 @@ import NewSideNavigationBar from "../../components/SideNavigationBar/NewSideNavi
 import { Link } from "react-router-dom";
 import { hrNavigationLinks } from "../../pages/HrPage/views/hrNavigationLinks";
 import { accountNavigationLinks } from "../../pages/AccountPage/accountNavigationLinks";
-import { groupLeadNavigationLinks, teamleadNavigationLinks } from "../../pages/TeamleadPage/teamleadNavigationLinks";
+import {
+  groupLeadNavigationLinks,
+  teamleadNavigationLinks,
+} from "../../pages/TeamleadPage/teamleadNavigationLinks";
 import { AiOutlinePlus } from "react-icons/ai";
 import { useMediaQuery } from "@mui/material";
 import {
@@ -58,7 +61,7 @@ const StaffJobLandingLayout = ({
   searchTeam,
   layoutBgColor,
   isProductLink,
-  isGrouplead
+  isGrouplead,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const { currentUser } = useCurrentUserContext();
@@ -70,14 +73,13 @@ const StaffJobLandingLayout = ({
     );
 
     if (
-      (
-        currentUser.settings_for_profile_info && 
-        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role === testingRoles.superAdminRole
-      ) ||
-      (
-        currentUser.isSuperAdmin
-      )
-    ) return setIsSuperUser(true); 
+      (currentUser.settings_for_profile_info &&
+        currentUser.settings_for_profile_info.profile_info[
+          currentUser.settings_for_profile_info.profile_info.length - 1
+        ].Role === testingRoles.superAdminRole) ||
+      currentUser.isSuperAdmin
+    )
+      return setIsSuperUser(true);
 
     if (!teamManagementProduct || teamManagementProduct.member_type !== "owner")
       return setIsSuperUser(false);
@@ -88,6 +90,25 @@ const StaffJobLandingLayout = ({
   return (
     <>
       <nav style={{ display: hideTitleBar ? "none" : "block" }}>
+        <div style={{ position: "relative" }}>
+          <p
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "1rem",
+              fontWeight: "600",
+              fontSize: "1.1rem",
+              position: "absolute",
+              top: "-1rem",
+              right: "45%",
+              zIndex: "100",
+              color: "red",
+            }}
+          >
+            You're on the Beta Version of Jobportal
+          </p>
+        </div>
         <div
           className={`staff__Jobs__Layout__Navigation__Container ${
             adminView ? "admin" : ""
@@ -135,15 +156,14 @@ const StaffJobLandingLayout = ({
           {/*adminView ? "Search by skill, job" : "Search for job/applicant";*/}
           {adminView && adminAlternativePageActive ? (
             <></>
+          ) : hideSearchBar ? (
+            <></>
           ) : (
-            hideSearchBar ?
-            <></> :
             <SearchBar
               placeholder={
-                searchTeam ?
-                'Search for Team'
-                :
-                adminView
+                searchTeam
+                  ? "Search for Team"
+                  : adminView
                   ? "Search by skill, job"
                   : `Search for job/${searchPlaceHolder}`
               }
@@ -157,12 +177,20 @@ const StaffJobLandingLayout = ({
             <>
               <div className="jobs__Layout__Icons__Container">
                 <Link to={"/user"}>
-                  {
-                    currentUser.userinfo.profile_img ?
-                    <img src={currentUser.userinfo.profile_img} alt="#" style={{width:"30px", borderRadius: '50%',height:'30px',objectFit: 'cover'}} />
-                      :
+                  {currentUser.userinfo.profile_img ? (
+                    <img
+                      src={currentUser.userinfo.profile_img}
+                      alt="#"
+                      style={{
+                        width: "30px",
+                        borderRadius: "50%",
+                        height: "30px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
                     <HiOutlineUserCircle className="icon" />
-                  }
+                  )}
                 </Link>
               </div>
               <hr />
@@ -185,10 +213,9 @@ const StaffJobLandingLayout = ({
                   : accountView
                   ? accountNavigationLinks
                   : teamleadView
-                  ? 
-                    isGrouplead ? 
-                    groupLeadNavigationLinks :
-                    teamleadNavigationLinks
+                  ? isGrouplead
+                    ? groupLeadNavigationLinks
+                    : teamleadNavigationLinks
                   : adminView
                   ? subAdminView
                     ? subAdminNavigationLinks
@@ -204,43 +231,36 @@ const StaffJobLandingLayout = ({
               <ProgressTracker durationInSec={modelDurationInSec} />
             </BlurBackground>
           )}
-          
-          {
-            adminView && showShareModalForJob && 
+
+          {adminView && showShareModalForJob && (
             <ShareJobModal
               linkToShareObj={jobLinkToShareObj}
               handleCloseModal={
-                handleCloseShareJobModal && typeof handleCloseShareJobModal === 'function' ?
-                () => handleCloseShareJobModal()
-                :
-                () => {}
+                handleCloseShareJobModal &&
+                typeof handleCloseShareJobModal === "function"
+                  ? () => handleCloseShareJobModal()
+                  : () => {}
               }
               isProductLink={isProductLink}
             />
-          }
+          )}
 
-          {
-            hrView && showPublicAccountConfigurationModal &&
-            <PublicAccountConfigurationModal 
+          {hrView && showPublicAccountConfigurationModal && (
+            <PublicAccountConfigurationModal
               handleCloseModal={handleClosePublicAccountConfigurationModal}
               handleBtnClick={handlePublicAccountConfigurationModalBtnClick}
               btnDisabled={publicAccountConfigurationBtnDisabled}
               details={publicAccountDetailState}
               handeDetailChange={handleChangeInPublicAccountState}
             />
-          }
+          )}
 
           <div
             className={`jobs__Layout__Content ${
               adminView ? "full__Width" : ""
             }`}
             style={{
-              backgroundColor:
-                layoutBgColor ?
-                  layoutBgColor
-                :
-                  '#fff'
-              ,
+              backgroundColor: layoutBgColor ? layoutBgColor : "#fff",
             }}
           >
             {children}
