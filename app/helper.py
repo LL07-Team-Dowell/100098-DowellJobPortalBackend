@@ -3,6 +3,8 @@ import requests
 import pprint
 import os
 import datetime
+from rest_framework.response import Response
+from rest_framework import status
 from discord.ext import commands
 from discord import Intents
 
@@ -218,159 +220,99 @@ def save_image(image):
     return response.text
 
 
-def periodic_jobs(start_dt, end_dt, data_list):
-    #convert to date format--------
+def period_check(start_dt, end_dt, data_list, key):
     start_date = datetime.datetime.strptime(
             start_dt, "%m/%d/%Y %H:%M:%S"
         )
     end_date = datetime.datetime.strptime(
             end_dt, "%m/%d/%Y %H:%M:%S"
         )
-    
     items=[]
+    
     for l in data_list:
         try:
-            created_on=datetime.datetime.strptime(l["created_on"],"%Y-%m-%dT%H:%M:%S.%fZ")
-            if created_on >= start_date and created_on <= end_date:
-                items.append(l)
-            
+            custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%dT%H:%M:%S.%fZ")
+            if custom_time >= start_date and custom_time <= end_date:
+                items.append(l) 
         except Exception:
             try:
-                created_on=datetime.datetime.strptime(l["created_on"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
-                if created_on >= start_date and created_on <= end_date:
+                custom_time=datetime.datetime.strptime(l[key],"%m/%d/%Y")
+                if custom_time >= start_date and custom_time <= end_date:
                     items.append(l) 
             except Exception:
                 try:
-                    created_on=datetime.datetime.strptime(l["created_on"], "%m/%d/%Y %H:%M:%S")
-                    if created_on >= start_date and created_on <= end_date:
+                    date_string = l[key].replace('(West Africa Standard Time)', '').rstrip()
+                    date_object = datetime.datetime.strptime(date_string, '%a %b %d %Y %H:%M:%S %Z%z').strftime("%m/%d/%Y %H:%M:%S")
+                    custom_time = datetime.datetime.strptime(date_object,"%m/%d/%Y %H:%M:%S")
+                    if custom_time >= start_date and custom_time <= end_date:
                         items.append(l)
                 except Exception:
-                    pass
-
-    return (items, len(items))
-
-def periodic_application(start_dt, end_dt, data_list):
-    #convert to date format--------
-    start_date = datetime.datetime.strptime(
-            start_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    end_date = datetime.datetime.strptime(
-            end_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    
-    items=[]
-    for l in data_list:
-        try:
-            application_submitted_on=datetime.datetime.strptime(l["application_submitted_on"],"%Y-%m-%dT%H:%M:%S.%fZ")
-            if application_submitted_on >= start_date and application_submitted_on <= end_date:
-                items.append(l)
-        except Exception:
-            try:
-                application_submitted_on=datetime.datetime.strptime(l["application_submitted_on"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
-                if application_submitted_on >= start_date and application_submitted_on <= end_date:
-                    items.append(l) 
-            except Exception:
-                try:
-                    application_submitted_on=datetime.datetime.strptime(l["application_submitted_on"], "%m/%d/%Y %H:%M:%S")
-                    if application_submitted_on >= start_date and application_submitted_on <= end_date:
-                        items.append(l)
-                except Exception:
-                    pass
-
-    return (items, len(items))
-
-def periodic_teams(start_dt, end_dt, data_list):
-    #convert to date format--------
-    start_date = datetime.datetime.strptime(
-            start_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    end_date = datetime.datetime.strptime(
-            end_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    
-    items=[]
-    for l in data_list:
-        try:
-            date_created=datetime.datetime.strptime(l["date_created"],"%Y-%m-%dT%H:%M:%S.%fZ")
-            if date_created >= start_date and date_created <= end_date:
-                items.append(l)
-            
-        except Exception:
-            try:
-                date_created=datetime.datetime.strptime(l["date_created"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
-                if date_created >= start_date and date_created <= end_date:
-                    items.append(l) 
-                
-            except Exception:
-                try:
-                    date_created=datetime.datetime.strptime(l["date_created"], "%m/%d/%Y %H:%M:%S")
-                    if date_created >= start_date and date_created <= end_date:
-                        items.append(l)
-                    
-                except Exception:
-                    pass
-
-    return (items, len(items))
-
-def periodic_tasks(start_dt, end_dt, data_list):
-    #convert to date format--------
-    start_date = datetime.datetime.strptime(
-            start_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    end_date = datetime.datetime.strptime(
-            end_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    
-    items=[]
-    for l in data_list:
-        try:
-            task_created_date=datetime.datetime.strptime(l["task_created_date"],"%Y-%m-%dT%H:%M:%S.%fZ")
-            if task_created_date >= start_date and task_created_date <= end_date:
-                items.append(l)
-            
-        except Exception:
-            try:
-                task_created_date=datetime.datetime.strptime(l["task_created_date"]+" 0:00:00", "%m/%d/%Y %H:%M:%S")
-                if task_created_date >= start_date and task_created_date <= end_date:
-                    items.append(l) 
-            except Exception:
-                try:
-                    task_created_date=datetime.datetime.strptime(l["task_created_date"], "%m/%d/%Y %H:%M:%S")
-                    if task_created_date >= start_date and task_created_date <= end_date:
-                        items.append(l)
-                except Exception:
-                    pass
-
-    return (items, len(items))
-def periodic_application_account(start_dt, end_dt, data_list):
-    start_date = datetime.datetime.strptime(
-            start_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    end_date = datetime.datetime.strptime(
-            end_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    
-    items=[]
-    
-    for l in data_list:
-        try:
-            if "/" in l["onboarded_on"]:
-                format_strings = ["%Y-%m-%dT%H:%M:%S.%fZ", "%m/%d/%Y %H:%M:%S"]
-                for format_str in format_strings:
                     try:
-                        if l["onboarded_on"] != "<onboarded on>":
-                            application_submitted_on = datetime.datetime.strptime(l["onboarded_on"], format_str)
-                            if start_date <= application_submitted_on <= end_date:
-                                items.append(l)
-                            break
-                    except ValueError:
-                        pass
-            else:
-                if l["onboarded_on"] != "<onboarded on>":
-                    application_submitted_on = datetime.datetime.strptime(l["onboarded_on"], "%Y-%m-%dT%H:%M:%S.%fZ")
-                    if start_date <= application_submitted_on <= end_date:
-                        items.append(l)
-        except KeyError:
-            pass
-
+                        custom_time=datetime.datetime.strptime(l[key],"%m/%d/%Y %H:%M:%S")
+                        if custom_time >= start_date and custom_time <= end_date:
+                            items.append(l) 
+                    except Exception:
+                        try:
+                            custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%d")
+                            if custom_time >= start_date and custom_time <= end_date:
+                                items.append(l) 
+                        except Exception:
+                            try:
+                                custom_time=datetime.datetime.strptime(l[key],"%d/%m/%Y")
+                                if custom_time >= start_date and custom_time <= end_date:
+                                    items.append(l) 
+                            except Exception as error:
+                                #print("error", error)
+                                pass
     return items, len(items)
+
+def targeted_population(database, collection, fields, period, start_point,end_point):
+    url = 'http://100032.pythonanywhere.com/api/targeted_population/'
+
+    database_details = {
+        'database_name': 'mongodb',
+        'collection': collection,
+        'database': database,
+        'fields': fields
+    }
+    # number of variables for sampling rule
+    number_of_variables = 1
+    """
+        period can be 'custom' or 'last_1_day' or 'last_30_days' or 'last_90_days' or 'last_180_days' or 'last_1_year' or 'life_time'
+        if custom is given then need to specify start_point and end_point
+        for others datatpe 'm_or_A_selction' can be 'maximum_point' or 'population_average'
+        the the value of that selection in 'm_or_A_value'
+        error is the error allowed in percentage
+    """
+    time_input = {
+        'period': period,
+        'start_point': start_point,
+        'end_point': end_point,
+        'split': 'week',
+        'time_input_type' : 'eventID',
+        'column_name': 'eventId',
+    }
+
+    stage_input_list= []
+
+    distribution_input={
+        'normal': 1,
+        'poisson':0,
+        'binomial':0,
+        'bernoulli':0
+        
+    }
+
+    request_data={
+        'database_details': database_details,
+        'distribution_input': distribution_input,
+        'number_of_variable':number_of_variables,
+        'stages':stage_input_list,
+        'time_input':time_input,
+    }
+
+    headers = {'content-type': 'application/json'}
+
+    response = requests.post(url, json=request_data,headers=headers)
+
+    return response.text
