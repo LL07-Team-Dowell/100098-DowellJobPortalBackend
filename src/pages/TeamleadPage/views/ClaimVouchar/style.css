@@ -1,0 +1,92 @@
+button.claim__button {
+    position: absolute;
+    top: 1rem;
+    right: 8rem;
+    border: none;
+    color: white;
+    background: #005734;
+    padding: 10px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.form__data {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #00000063;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form__data form {
+    background-color: white;
+    width: 400px;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.form__data label {
+    font-size: 0.9rem;
+}
+
+.form__data form input {
+    padding: 7px;
+    font-size: 0.9rem;
+}
+
+.form__data svg {
+    position: absolute;
+    right: 18px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.des {
+    display: flex;
+    flex-direction: column;
+}
+
+.mail {
+    display: flex;
+    flex-direction: column;
+}
+
+.form__data button {
+    border: none;
+    font-size: 0.8rem;
+    background-color: #005734;
+    padding: 0.5rem;
+    color: white;
+    margin-top: 0.2rem;
+    cursor: pointer;
+}
+
+.form__data h2 {
+    font-size: 1.5rem;
+}
+
+.coupon__data {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.coupon__data p {
+    font-size: 0.8rem;
+}
+
+.coupon__data p span {
+    font-size: 0.9rem;
+    background-color: gray;
+    padding: 6px;
+    color: white;
+    border-radius: 5px;
+}

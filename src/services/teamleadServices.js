@@ -1,3 +1,4 @@
+import axios from "axios";
 import { currentBackendAxiosInstance } from "./axios";
 
 export const leadHireCandidate = async (data) => {
@@ -42,13 +43,13 @@ export const candidateUpdateTaskForTeamLead = async (data) => {
 };
 
 // Apis For Threads 
-export const fetchThread = async(data)=>{
+export const fetchThread = async (data) => {
   return await currentBackendAxiosInstance.get(
     `fetch_team_thread/${data}/`
   )
 }
 
-export const updateSingleThread= async(data)=>{
+export const updateSingleThread = async (data) => {
   return await currentBackendAxiosInstance.patch(
     `update_thread/`,
     data
@@ -56,7 +57,7 @@ export const updateSingleThread= async(data)=>{
 }
 
 //Apis For comment 
-export const postComment = async(data)=>{
+export const postComment = async (data) => {
   return await currentBackendAxiosInstance.post(
     "create_comment/",
     data
@@ -64,19 +65,30 @@ export const postComment = async(data)=>{
 }
 
 export const featchAllComment = async (data) => {
-  return await currentBackendAxiosInstance.get("fetch_comment/", data );
+  return await currentBackendAxiosInstance.get("fetch_comment/", data);
 };
 
-export const updateSingleComment = async(data)=>{
+export const updateSingleComment = async (data) => {
   return await currentBackendAxiosInstance.patch(
     "update_comment/",
     data
   )
 }
 
-export const approveTask = async(data)=>{
+export const approveTask = async (data) => {
   return await currentBackendAxiosInstance.patch(
     "approve_task/",
     data
   )
 }
+
+
+//Claim Vouchar
+export const claimVoucher = async (data) => {
+  try {
+    const response = await axios.post('https://100105.pythonanywhere.com/api/v3/voucher/?type=claim_voucher', data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

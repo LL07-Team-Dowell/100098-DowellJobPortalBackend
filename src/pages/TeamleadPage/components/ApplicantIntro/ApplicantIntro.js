@@ -5,7 +5,6 @@ import "./style.css";
 
 const ApplicantIntro = ({ applicant, showTask, hrPageActive, jobTitle }) => {
     return <>
-
         {
             hrPageActive ? <div className="applicant-title-container">
                 <h1 className="applicant-title-text">{applicant[mutableNewApplicationStateNames.applicant]}</h1>
