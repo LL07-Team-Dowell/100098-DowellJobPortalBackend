@@ -507,7 +507,7 @@ const AddIssueTeamLead = ({
       let imageUrl = "";
       if (selectedFile) {
         const response = await fetch(
-          "http://67.217.61.253/uploadfiles/upload-hr-image/",
+          "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
           {
             method: "POST",
             body: formData,
