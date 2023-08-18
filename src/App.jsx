@@ -73,6 +73,7 @@ import GroupLeadTask from "./pages/GroupLeadPage/components/GroupLeadTask";
 import ClaimVouchar from "./pages/TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 
 function App() {
+  console.log = () => {}
   const {
     currentUser,
     isPublicUser,

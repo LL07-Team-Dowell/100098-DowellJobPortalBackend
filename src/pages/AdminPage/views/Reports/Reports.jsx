@@ -442,6 +442,7 @@ function isValidDate(inputDate) {
 }
 
 function extractNumber(inputString) {
+  if(inputString === undefined) return 0
   const cleanedString = inputString.replace('%', '').trim();
   const number = parseFloat(cleanedString).toFixed(2);
   return parseFloat(number);}
