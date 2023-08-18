@@ -3847,7 +3847,7 @@ class Generate_account_Report(APIView):
         start_dt=f"{payload['start_date']}",
         end_dt=f"{payload['end_date']}",
         data_list=json.loads(job_applications)['data'],
-        status="Rehired"
+        status="rehired"
         )
         data["Dated_Rehired_candidates"]=dated_rehired_applications
 
@@ -3862,7 +3862,7 @@ class Generate_account_Report(APIView):
         hired = dowellconnection(*account_management_reports, "fetch", {"status": "hired"}, update_field)
         data["Total_hired_candidates"]=len(json.loads(hired)['data'])
 
-        Rehired = dowellconnection(*account_management_reports, "fetch", {"status": "Rehired"}, update_field)
+        Rehired = dowellconnection(*account_management_reports, "fetch", {"status": "rehired"}, update_field)
         data["Total_Rehired_candidates"]=len(json.loads(Rehired)['data'])
 
         Rejected = dowellconnection(*account_management_reports, "fetch", {"status": "Rejected"}, update_field)

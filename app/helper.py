@@ -377,10 +377,10 @@ def periodic_application_hr(start_dt, end_dt, data_list, status=None):
     start_date = datetime.datetime.strptime(start_dt, "%m/%d/%Y")
     end_date = datetime.datetime.strptime(end_dt, "%m/%d/%Y")
     
-    filtered_data = []
+    items = []
     
     for entry in data_list:
-        if status is None or entry['status'].lower() == status.lower():
+        if status is None or entry['status'] == status:
             date_field = None
             if status is None:
                 date_field_options = ['selected_on', 'shortlisted_on', 'rejected_on']
@@ -403,9 +403,9 @@ def periodic_application_hr(start_dt, end_dt, data_list, status=None):
                     try:
                         entry_date = datetime.datetime.strptime(entry[date_field], '%m/%d/%Y')
                     except ValueError:
-                        continue  # Skip entries with invalid date formats
+                        continue
                     
                 if start_date <= entry_date <= end_date:
-                    filtered_data.append(entry)
+                    items.append(entry)
     
-    return len(filtered_data)
+    return len(items)
