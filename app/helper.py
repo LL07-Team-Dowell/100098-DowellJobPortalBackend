@@ -249,35 +249,74 @@ def periodic_application(start_dt, end_dt, data_list):
     return (items, len(items))
 
 
-def periodic_application_account(start_dt, end_dt, data_list):
-    start_date = datetime.datetime.strptime(
-            start_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    end_date = datetime.datetime.strptime(
-            end_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    
-    items=[]
-    
+def periodic_application_account(start_dt, end_dt, data_list, status=None):
+    start_date = datetime.datetime.strptime(start_dt, "%m/%d/%Y %H:%M:%S")
+    end_date = datetime.datetime.strptime(end_dt, "%m/%d/%Y %H:%M:%S")
+
+    items = []
+
     for l in data_list:
         try:
-            if "/" in l["onboarded_on"]:
+            if l["onboarded_on"] != "<onboarded on>":
                 format_strings = ["%Y-%m-%dT%H:%M:%S.%fZ", "%m/%d/%Y %H:%M:%S"]
                 for format_str in format_strings:
                     try:
-                        if l["onboarded_on"] != "<onboarded on>":
-                            application_submitted_on = datetime.datetime.strptime(l["onboarded_on"], format_str)
-                            if start_date <= application_submitted_on <= end_date:
-                                items.append(l)
+                        application_submitted_on = datetime.datetime.strptime(l["onboarded_on"], format_str)
+                        if start_date <= application_submitted_on <= end_date and (status is None or l["status"] == status):
+                            items.append(l)
                             break
                     except ValueError:
                         pass
-            else:
-                if l["onboarded_on"] != "<onboarded on>":
-                    application_submitted_on = datetime.datetime.strptime(l["onboarded_on"], "%Y-%m-%dT%H:%M:%S.%fZ")
-                    if start_date <= application_submitted_on <= end_date:
-                        items.append(l)
         except KeyError:
             pass
 
     return items, len(items)
+
+
+def targeted_population(database, collection, fields, period):
+
+    url = 'http://100032.pythonanywhere.com/api/targeted_population/'
+
+    database_details = {
+        'database_name': 'mongodb',
+        'collection': collection,
+        'database': database,
+        'fields': fields
+    }
+
+
+    # number of variables for sampling rule
+    number_of_variables = 1
+
+    time_input = {
+        'period': "custom",
+        'start_point': '2023-05-08',
+        'end_point': '2023-05-09',
+        'split': 'week',
+        'time_input_type' : 'eventID',
+        'column_name': 'eventId',
+    }
+
+    stage_input_list= []
+
+    distribution_input={
+        'normal': 1,
+        'poisson':0,
+        'binomial':0,
+        'bernoulli':0
+        
+    }
+
+    request_data={
+        'database_details': database_details,
+        'distribution_input': distribution_input,
+        'number_of_variable':number_of_variables,
+        'stages':stage_input_list,
+        'time_input':time_input,
+    }
+
+    headers = {'content-type': 'application/json'}
+
+    response = requests.post(url, json=request_data,headers=headers)
+
+    return response.text

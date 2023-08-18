@@ -24,7 +24,8 @@ from .helper import (
     create_master_link,
     send_mail,
     interview_email,
-    periodic_application
+    periodic_application,
+    targeted_population
 )
 from .serializers import (
     AccountSerializer,
@@ -3770,17 +3771,32 @@ class Generate_account_Report(APIView):
         update_field = {}
         data = {}
         job_applications = dowellconnection(*account_management_reports, "fetch", field, update_field)
-        data["job_applications"]=len(json.loads(job_applications)['data'])
+        data["job_applications"]=(json.loads(job_applications)['data'])
+        p_application = periodic_application_account(
+            start_dt=f"{payload['start_date']}",
+            end_dt=f"{payload['end_date']}",
+            data_list=json.loads(job_applications)['data'],
+            # status="none"
+        )
+
+        rehired_candidates = periodic_application_account(
+            start_dt=f"{payload['start_date']}",
+            end_dt=f"{payload['end_date']}",
+            data_list=json.loads(job_applications)['data'],
+            status="Rehired"
+        )
+
+        rejected_candidates = periodic_application_account(
+            start_dt=f"{payload['start_date']}",
+            end_dt=f"{payload['end_date']}",
+            data_list=json.loads(job_applications)['data'],
+            status="Rejected"
+        )
         
-        p_application = periodic_application_account(start_dt=f"{payload['start_date']}", end_dt=f"{payload['end_date']}", data_list=json.loads(job_applications)['data'])
+
         data[f"nojob_applications_from_start_date_to_end_date"]=p_application[1]
-
-        Rehired = dowellconnection(*account_management_reports, "fetch", {"status": "Rehired"}, update_field)
-        #print(Rehired)
-        data["rehired_candidates"]=len(json.loads(Rehired)['data'])
-
-        Rejected = dowellconnection(*account_management_reports, "fetch", {"status": "Rejected"}, update_field)
-        data["rejected_candidates"]=len(json.loads(Rejected)['data'])
+        data[f"rehired candidates"]=rehired_candidates
+        data[f"rejected candidates"]=rejected_candidates
 
         return Response({"isSuccess":True,"message": f"Account reported Generated", "response":data}, status=status.HTTP_201_CREATED)
 
