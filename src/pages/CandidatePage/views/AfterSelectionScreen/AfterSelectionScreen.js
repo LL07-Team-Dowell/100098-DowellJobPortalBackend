@@ -51,6 +51,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
         res[0]?.data?.response?.data?.filter((team) =>
           team?.members.includes(currentUser.userinfo.username)
         )
+        .filter((team) => team?.data_type === currentUser.portfolio_info[0].data_type)
       );
 
       const list = res[1]?.data
