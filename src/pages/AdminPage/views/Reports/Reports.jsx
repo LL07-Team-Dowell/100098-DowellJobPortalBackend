@@ -129,8 +129,8 @@ const AdminReports = ({ subAdminView }) => {
                         data.number_active_jobs,
                         data.number_inactive_jobs,
                       ],
-                      backgroundColor: ["#D3D3D3", "#005734"],
-                      borderColor: ["#D3D3D3", "#005734"],
+                      backgroundColor: ["#005734", "#D3D3D3"],
+                      borderColor: ["#005734", "#D3D3D3"],
                     },
                   ],
                 }}
