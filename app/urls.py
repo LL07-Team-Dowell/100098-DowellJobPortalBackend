@@ -115,7 +115,6 @@ urlpatterns = [
     path('generate_lead_Report/',Generate_Lead_Report.as_view()),
     path('generate_candidate_duplicates/<str:company_id>/',Generate_candidate_dublicates.as_view()),
     path('generate_individual_Report/',Generate_Individual_Report.as_view()),
-    path('generate_populate_report/',Populate_report.as_view()),
 
     # Payment Request Status -------------------------------------
     path('update_payment_request_status/<str:document_id>/',Update_payment_status.as_view())

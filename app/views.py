@@ -4074,7 +4074,8 @@ class Generate_candidate_dublicates(APIView):
             "success":True,
             "data":data,
             }, status=status.HTTP_200_OK)
-     
+
+@method_decorator(csrf_exempt, name="dispatch")   
 class Generate_Individual_Report(APIView):
     def post(self, request):
         payload = request.data
@@ -4336,32 +4337,6 @@ class Generate_Individual_Report(APIView):
         data['data'].append(item)
         return Response(data, status=status.HTTP_201_CREATED)
 
-class Populate_report(APIView):
-    def post(self, request):
-        payload =request.data
-        start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-        end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-
-        if payload:
-            data={}
-            #get all details firstly---------------
-            custom=targeted_population("jobportal",'candidate_reports',["application_submitted_on"],"custom",start_date,end_date)
-            data["custom"] =len(json.loads(custom)["normal"]["data"][0])
-            lifetime=targeted_population("jobportal",'candidate_reports',["application_submitted_on"],"life_time",start_date,end_date)
-            data["lifetime"] =len(json.loads(lifetime)["normal"]["data"][0])
-            last_30_days=targeted_population("jobportal",'candidate_reports',["application_submitted_on"],"last_30_days",start_date,end_date)
-            data["last_30_days"] =len(json.loads(last_30_days)["normal"]["data"][0])
-            
-            
-
-            return Response(
-                {"message": "Report Generated","response":data},
-                status=status.HTTP_201_CREATED)
-        else:
-            return Response(
-                {"message": "Parameters are not valid"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
 
 class Update_payment_status(APIView):
