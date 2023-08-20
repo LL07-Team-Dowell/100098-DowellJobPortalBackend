@@ -44,7 +44,7 @@ urlpatterns = [
     path('get_task/<str:company_id>/', get_task.as_view()),
     path('get_candidate_task/<str:document_id>/', get_candidate_task.as_view()),
     path('update_task/', update_task.as_view()),
-    path('task_request_update/', task_request_update.as_view()),
+    path('task_request_update/<str:document_id>/', task_request_update.as_view()),
     path('approve_task/', approve_task.as_view()),
     path('delete_task/<str:document_id>/', delete_task.as_view()),
 
