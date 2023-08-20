@@ -141,7 +141,7 @@ comment_report_module = [
     "ABCDE",
 ]
 
-update_task_module = [
+update_task_request_module = [
     "jobportal",
     "jobportal",
     "task_update_requests",
