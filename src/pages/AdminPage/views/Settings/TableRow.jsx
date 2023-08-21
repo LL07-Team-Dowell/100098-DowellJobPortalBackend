@@ -39,7 +39,7 @@ export default function TableRow({
     const foundUserSettingItem = settingUserProfileInfo?.reverse()
     ?.find(
       (value) =>
-        value?.profile_info[value?.profile_info.length - 1]?.profile_title === option.portfolio_name
+        value?.profile_info[value?.profile_info?.length - 1]?.profile_title === option.portfolio_name
     );
 
     setCurrentSettingItem(foundUserSettingItem);
@@ -93,7 +93,7 @@ export default function TableRow({
         (value) =>
           value?.id === currentSettingItem?.id
       );
-      
+
       const dataToPost = {
         profile_title: option.portfolio_name,
         Role: !updatedRole ? rolesNamesDict[roleAssigned] : updatedRole,
@@ -110,8 +110,7 @@ export default function TableRow({
 
         if (foundIndexOfItem === -1) return
         const copyOfSettingUserInfo = settingUserProfileInfo?.slice();
-        copyOfSettingUserInfo[foundIndexOfItem].profile_info = res.data;
-
+        copyOfSettingUserInfo[foundIndexOfItem].profile_info = res.data?.profile_info;
         updateSettingsUserProfileInfo(copyOfSettingUserInfo);
       }).catch(err => {
         console.log(err)
@@ -149,8 +148,8 @@ export default function TableRow({
         setUpdatedRole(null);
         setUpdatedProject(null);
         setProjectAssigned(Proj_Lead);
-        updateSettingsUserProfileInfo([response.data, ...settingUserProfileInfo])
-        toast.success(`Successfully updated role for ${option.portfolio_name}`)
+        updateSettingsUserProfileInfo([...settingUserProfileInfo, response.data])
+        toast.success(`Successfully created role for ${option.portfolio_name}`)
       })
       .catch((error) => {
         console.log(error)
