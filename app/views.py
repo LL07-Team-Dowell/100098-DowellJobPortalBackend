@@ -72,7 +72,7 @@ INVERVIEW_CALL = """
 <body style="font-family: poppins;background-color: #f5f5f5;margin: 0;padding: 0;text-align: center;">
     <div style="max-width: 600px;margin: 20px auto;background-color: #fff;padding: 20px;border-radius: 4px;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
         <div style= :text-align: center;margin-bottom: 20px;>
-            <img src="http://67.217.61.253/hr/logo-2-min-min.png" alt="Company Logo" style="width: 200px;">
+            <img src="https://dowellfileuploader.uxlivinglab.online/hr/logo-2-min-min.png" alt="Company Logo" style="width: 200px;">
         </div>
         <div >
             <h3 style="text-align: center;font-size: 24px;margin: 0;margin-bottom: 10px;">Hello {},</h3>
@@ -106,7 +106,7 @@ INVITATION_MAIL = """
 </head>
 <body>
     <div style="width: 80%; margin: 0 auto;font-family: 'Poppins', sans-serif;">
-        <img src="http://67.217.61.253/hr/logo-2-min-min.png" alt="Dowell Logo" width="70px" height="70px" style="display: block; margin: 0 auto;">
+        <img src="https://dowellfileuploader.uxlivinglab.online/hr/logo-2-min-min.png" alt="Dowell Logo" width="70px" height="70px" style="display: block; margin: 0 auto;">
         <div style="width: 80%; margin: 0 auto; text-align: center;">
             <p style="font-size: 2rem; font-weight: 700;">Hello {},</p>
             <img src="https://img.freepik.com/free-vector/reading-letter-concept-illustration_114360-4591.jpg?size=626&ext=jpg&ga=GA1.1.225976907.1673277028&semt=sph" alt="mail-logo" width="250px" height="250px">
@@ -502,6 +502,7 @@ class admin_create_jobs(APIView):
             "data_type": data.get("data_type"),
             "created_by": data.get("created_by"),
             "created_on": data.get("created_on"),
+            "paymentInterval":data.get("paymentInterval")
         }
         update_field = {"status": "nothing to update"}
         serializer = AdminSerializer(data=field)
@@ -1590,10 +1591,10 @@ class update_task(APIView):
             )
 @method_decorator(csrf_exempt, name="dispatch")
 class task_request_update(APIView):
-    def patch(self, request,document_id):
+    def patch(self, request, document_id):
         data = request.data
         if data:
-            field = {"_id": document_id}
+            field = {"_id":document_id}
             update_field = {
                 "company_id": data.get("company_id"),
                 "task_created_date": data.get("task_created_date"),
@@ -3103,6 +3104,7 @@ class sendMailToPublicCandidate(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
 @method_decorator(csrf_exempt, name="dispatch")
 class updateTheUserDetails(APIView):
     """Update the user details by login team"""
@@ -3835,8 +3837,9 @@ class Generate_public_Report(APIView):
                         })
         data = filtered_job_applications
         return Response({
-            "message": "Public job report Generated",
-            "data": data
+            "isSuccess": True,
+            "message": f"public job report Generated",
+            "Data": data
         }, status=status.HTTP_201_CREATED)
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -4397,6 +4400,7 @@ class Generate_Individual_Report(APIView):
         data['data'].append(item)
         return Response(data, status=status.HTTP_201_CREATED)
 
+
 @method_decorator(csrf_exempt, name="dispatch")   
 class Update_payment_status(APIView):
     def patch(self, request,document_id):
@@ -4460,4 +4464,3 @@ class Update_payment_status(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
