@@ -502,6 +502,7 @@ class admin_create_jobs(APIView):
             "data_type": data.get("data_type"),
             "created_by": data.get("created_by"),
             "created_on": data.get("created_on"),
+            "paymentInterval":data.get("paymentInterval")
         }
         update_field = {"status": "nothing to update"}
         serializer = AdminSerializer(data=field)
