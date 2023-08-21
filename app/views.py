@@ -4401,7 +4401,7 @@ class Generate_Individual_Report(APIView):
         return Response(data, status=status.HTTP_201_CREATED)
 
 
-
+@method_decorator(csrf_exempt, name="dispatch")   
 class Update_payment_status(APIView):
     def patch(self, request,document_id):
         data=request.data
