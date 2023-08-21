@@ -1,4 +1,5 @@
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import React, { useRef, useState } from 'react';
 import useClickOutside from '../../../../hooks/useClickOutside';
 
@@ -25,7 +26,7 @@ const DropdownButton = ({ currentSelection, selections, adminPageActive, handleS
     return <>
         <div className={`dropdown-btn ${className ? className : ''} ${adminPageActive ? currentSelectionRef.current ? currentSelectionRef.current.innerText.toLocaleLowerCase() === 'active' ? 'green__Color abs__Pos' : 'orange__Color abs__Pos' : 'abs__Pos' : ''}`} onClick={() => handleClick ? handleClick(currentSelection) : setShowDropdown(prevValue => { return !prevValue })}>
             <span ref={currentSelectionRef}>{ currentSelection }</span>
-            { !removeDropDownIcon && <KeyboardArrowDownIcon className="down-icon" /> }
+            { !removeDropDownIcon && <KeyboardArrowRightIcon className="down-icon right-icon" /> }
 
             {
                 selections ? 
@@ -34,6 +35,7 @@ const DropdownButton = ({ currentSelection, selections, adminPageActive, handleS
                     {React.Children.toArray(selections.map(selection => {
                         return <div className="dropdown-selection-item" onClick={ () => updateCurrentSelection(selection) }>
                             {selection}
+                            <hr style={{ color: "lightgray" }}/>
                         </div>
                     }))}
                 </div> : <></>

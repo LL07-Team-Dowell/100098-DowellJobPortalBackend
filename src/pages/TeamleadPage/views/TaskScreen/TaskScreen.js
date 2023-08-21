@@ -273,7 +273,7 @@ const TaskScreen = ({
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <Calendar
                 onChange={handleDateChange}
                 value={value}
@@ -282,21 +282,28 @@ const TaskScreen = ({
               <div className="tasks__Wrapper">
                 {taskdetail2.length > 0 && (
                   <>
-                    <h3 className="task__Title">Tasks</h3>
-                    <br />
+                    <p className="task__Title">Tasks Added</p>
                   </>
                 )}
                 <ul>
                   {taskdetail2.length > 0
                     ? taskdetail2.map((d, i) => (
-                        <li style={{ color: "#000", fontWeight: 400 }} key={i}>
-                          {d.task}
-                        </li>
+                        <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }} key={i}>
+                          {new Date(d.task_created_date).toLocaleString(
+                            "default",
+                            { month: "long" }
+                          )}
+                          <p style={{ display: "inline", marginLeft: "0.2rem"}}>{new Date(d.task_created_date).getDate()}</p>
+
+                          <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem"}}>
+                            {d.task}
+                          </p>
+                        </div>
                       ))
                     : "No Tasks Found For Today"}
                 </ul>
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
