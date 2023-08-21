@@ -64,6 +64,7 @@
     border-radius: 1.5rem;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
     border: none;
+    max-width: 18.8rem;
 }
 
 .candidate-task-screen-container .all__Tasks__Container .task__Title {
