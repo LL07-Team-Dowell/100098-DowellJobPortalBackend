@@ -2691,7 +2691,7 @@ class SettingUserProfileInfoView(APIView):
             current_version = setting.profile_info[-1]["version"]
             setting.profile_info.append(
                 {
-                    "profile_info": data["profile_title"],
+                    "profile_title": data["profile_title"],
                     "Role": data["Role"],
                     "project": data["project"],
                     "version": update_number(current_version),
