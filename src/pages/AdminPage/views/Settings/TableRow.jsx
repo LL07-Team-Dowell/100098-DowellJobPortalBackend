@@ -148,7 +148,9 @@ export default function TableRow({
         setUpdatedRole(null);
         setUpdatedProject(null);
         setProjectAssigned(Proj_Lead);
-        updateSettingsUserProfileInfo([...settingUserProfileInfo, response.data])
+
+        const copyOfSettingUserInfo = settingUserProfileInfo?.slice();
+        updateSettingsUserProfileInfo([...copyOfSettingUserInfo, response.data])
         toast.success(`Successfully created role for ${option.portfolio_name}`)
       })
       .catch((error) => {

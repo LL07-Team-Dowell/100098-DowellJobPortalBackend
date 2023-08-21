@@ -45,6 +45,8 @@ const CreateTaskScreen = ({
   const [loading, setLoading] = useState(true);
   const { currentUser } = useCurrentUserContext();
   const [isApproved, setIsApproved] = useState(false);
+  const [ updatedTasks, setUpdatedTasks ] = useState([]);
+  const [ tasksBeingApproved, setTasksBeingApproved ] = useState([]);
 
   useEffect(() => {
     if (userTasks.length > 0) return setLoading(false);
@@ -106,6 +108,19 @@ const CreateTaskScreen = ({
   }, [tasksForSelectedProject]);
 
   useEffect(() => {
+    setTasksMonth(selectedDate.toLocaleString("en-us", { month: "long" }));
+
+    if (applicant) {
+
+      setTasksDate(
+        currentApplicantTasks.filter(
+          (d) => new Date(d.task_created_date).toDateString() === new Date(selectedDate).toDateString()
+        )
+      );
+  
+      return
+    }
+
     setTasksDate(
       tasksForSelectedProject.filter((d) => {
         const dateTime =
@@ -128,7 +143,6 @@ const CreateTaskScreen = ({
       })
     );
 
-    setTasksMonth(selectedDate.toLocaleString("en-us", { month: "long" }));
   }, [selectedDate, tasksForSelectedProject, userTasks]);
 
   const isSameDay = (a, b) => differenceInCalendarDays(a, b) === 0;
@@ -144,11 +158,24 @@ const CreateTaskScreen = ({
   };
 
   const handleApproveTask = async (task) => {
+    const copyOfTasksBeingApproved = tasksBeingApproved.slice();
+    copyOfTasksBeingApproved.push(task);
+    setTasksBeingApproved(copyOfTasksBeingApproved);
+
     try {
       const response = await approveTask({
         document_id: task._id,
         task: task.task,
       });
+    
+      const copyOfUpdatedTasks = updatedTasks.slice();
+      copyOfUpdatedTasks.push({...task, approved: true, status: null});
+      setUpdatedTasks(copyOfUpdatedTasks);
+    
+      const copyOfTasksBeingApproved = tasksBeingApproved.slice();
+      copyOfTasksBeingApproved.filter(t => t._id !== task._id);
+      setTasksBeingApproved(copyOfTasksBeingApproved);
+      
       console.log(response.data);
       if (response.status === 200) {
         toast.success("Task approved");
@@ -206,7 +233,7 @@ const CreateTaskScreen = ({
                     tasksDate.map((d, i) => {
                       return (
                         <CandidateTaskItem
-                          currentTask={d}
+                          currentTask={updatedTasks.find(task => task._id === d._id) ? updatedTasks.find(task => task._id === d._id) : d}
                           taskNum={i + 1}
                           candidatePage={candidateAfterSelectionScreen}
                           handleEditBtnClick={() => {}}
@@ -217,6 +244,8 @@ const CreateTaskScreen = ({
                               )
                             )
                           }
+                          handleApproveTask={handleApproveTask}
+                          taskIsBeingApproved={tasksBeingApproved.find(task => task._id === d._id)}
                         />
                       );
                     })
@@ -224,11 +253,11 @@ const CreateTaskScreen = ({
                 )}
               </div>
             </div>
-            <Button
+            {/* <Button
               text={"Approve Task"}
               icon={<AddCircleOutlineIcon />}
               handleClick={handleApproveTask}
-            />
+            /> */}
           </div>
         )}
       </>

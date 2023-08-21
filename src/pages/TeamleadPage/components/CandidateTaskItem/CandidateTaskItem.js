@@ -6,9 +6,11 @@ import CustomHr from "../CustomHr/CustomHr";
 import DropdownButton from "../DropdownButton/Dropdown";
 import { toast } from "react-toastify";
 import "./style.css";
+import Button from "../../../AdminPage/components/Button/Button";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 
-const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnClick, updateTasks }) => {
+const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnClick, updateTasks, handleApproveTask, taskIsBeingApproved }) => {
 
     const [ currentTaskStatus, setCurrentTaskStatus ] = useState("");
     const [isFetchingData, setIsFetchingData] = useState(false);
@@ -94,34 +96,48 @@ const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnC
                 </>
               ) : (
                 <>
-                  <DropdownButton
-                    className={
-                      currentTaskStatus === "Complete" && "task__Active"
-                    }
-                    currentSelection={"Complete"}
-                    removeDropDownIcon={true}
-                    handleClick={handleTaskStatusUpdate}
-                    disabled={isFetchingData}
-                  />
-                  <DropdownButton
-                    className={
-                      currentTaskStatus === "Incomplete" && "task__Active"
-                    }
-                    currentSelection={"Incomplete"}
-                    removeDropDownIcon={true}
-                    handleClick={handleTaskStatusUpdate}
-                    disabled={isFetchingData}
-                  />
+                  {
+                    !currentTask.approved ? <>
+                      <Button
+                        text={taskIsBeingApproved ? "Approving..." : "Approve Task"}
+                        icon={<AddCircleOutlineIcon />}
+                        handleClick={() => handleApproveTask(currentTask)}
+                        className={'approve__Task__Btn'}
+                        isDisabled={taskIsBeingApproved}
+                      />
+                    </> 
+                    : 
+                    <>
+                      <DropdownButton
+                        className={
+                          currentTaskStatus === "Complete" && "task__Active"
+                        }
+                        currentSelection={"Complete"}
+                        removeDropDownIcon={true}
+                        handleClick={handleTaskStatusUpdate}
+                        disabled={isFetchingData}
+                      />
+                      <DropdownButton
+                        className={
+                          currentTaskStatus === "Incomplete" && "task__Active"
+                        }
+                        currentSelection={"Incomplete"}
+                        removeDropDownIcon={true}
+                        handleClick={handleTaskStatusUpdate}
+                        disabled={isFetchingData}
+                      /> 
+                    </>
+                  }
                 </>
               )}
             </div>
           </div>
           <div className="candidate-task-date-container">
             <span>
-              Given on {formatDateAndTime(currentTask.task_created_date)}
+              Added on {formatDateAndTime(currentTask.task_created_date)}
             </span>
-            {formatDateAndTime(currentTask.task_updated_date) ? (
-              <span>on {formatDateAndTime(currentTask.task_updated_date)}</span>
+            {currentTask.task_updated_date ? (
+              <span>Task status updated last on {formatDateAndTime(currentTask.task_updated_date)}</span>
             ) : (
               <></>
             )}
