@@ -1590,10 +1590,10 @@ class update_task(APIView):
             )
 @method_decorator(csrf_exempt, name="dispatch")
 class task_request_update(APIView):
-    def patch(self, request):
+    def patch(self, request,document_id):
         data = request.data
         if data:
-            field = {"_id": data.get("document_id")}
+            field = {"_id": document_id}
             update_field = {
                 "company_id": data.get("company_id"),
                 "task_created_date": data.get("task_created_date"),

@@ -298,8 +298,7 @@ def targeted_population(database, collection, fields, period, start_point,end_po
         'normal': 1,
         'poisson':0,
         'binomial':0,
-        'bernoulli':0
-        
+        'bernoulli':0 
     }
 
     request_data={
