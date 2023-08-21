@@ -35,7 +35,7 @@ const DropdownButton = ({ currentSelection, selections, adminPageActive, handleS
                     {React.Children.toArray(selections.map(selection => {
                         return <div className="dropdown-selection-item" onClick={ () => updateCurrentSelection(selection) }>
                             {selection}
-                            <hr style={{ color: "lightgray" }}/>
+                            <div style={{ backgroundColor: "#fafafa", height: "0.2rem", marginTop: "0.5rem" }}></div>
                         </div>
                     }))}
                 </div> : <></>

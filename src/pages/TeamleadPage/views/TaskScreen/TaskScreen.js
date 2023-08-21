@@ -273,7 +273,7 @@ const TaskScreen = ({
           {loading ? (
             <LoadingSpinner />
           ) : (
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <>
               <Calendar
                 onChange={handleDateChange}
                 value={value}
@@ -303,7 +303,7 @@ const TaskScreen = ({
                     : "No Tasks Found For Today"}
                 </ul>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>

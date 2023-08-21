@@ -52,6 +52,7 @@
     display: none;
     z-index: -1;
     font-size: 0.8rem;
+    cursor: pointer;
 }
 
 .dropdown-selections.active_{
@@ -63,10 +64,12 @@
 .dropdown-selections .dropdown-selection-item{
     margin: 10% auto;
     white-space: nowrap;
+    cursor: pointer;
 }
 
 .dropdown-selections .dropdown-selection-item:hover, .dropdown-selections .dropdown-selection-item:focus{
     filter: brightness(0.5);
+    cursor: pointer;
 }
 
 @media (min-width: 1200px){
