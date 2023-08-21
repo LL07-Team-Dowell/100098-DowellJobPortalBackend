@@ -32,6 +32,7 @@ export default function TableRow({
   const projectAssignedRef = useRef();
   const [loaded, setLoaded] = useState(false);
   const [ currentSettingItem, setCurrentSettingItem ] = useState(null);
+  const [ reload, setReload ] = useState(false);
   
   useEffect(() => {
     setLoaded(false);
@@ -74,7 +75,7 @@ export default function TableRow({
       clearTimeout(timeout)
     })
 
-  }, [updatedUsers, currentFilter, availableProjects, hiredCandidates, currentSearch])
+  }, [updatedUsers, currentFilter, availableProjects, hiredCandidates, currentSearch, reload])
   
   const submit2 = () => {
     const teamManagementProduct = currentUser.portfolio_info.find(
@@ -112,6 +113,7 @@ export default function TableRow({
         const copyOfSettingUserInfo = settingUserProfileInfo?.slice();
         copyOfSettingUserInfo[foundIndexOfItem].profile_info = res.data?.profile_info;
         updateSettingsUserProfileInfo(copyOfSettingUserInfo);
+        setReload(!reload);
       }).catch(err => {
         console.log(err)
         setLoading(false);
@@ -148,9 +150,11 @@ export default function TableRow({
         setUpdatedRole(null);
         setUpdatedProject(null);
         setProjectAssigned(Proj_Lead);
+        setReload(!reload);
 
         const copyOfSettingUserInfo = settingUserProfileInfo?.slice();
-        updateSettingsUserProfileInfo([...copyOfSettingUserInfo, response.data])
+        copyOfSettingUserInfo.push(response.data);
+        updateSettingsUserProfileInfo(copyOfSettingUserInfo)
         toast.success(`Successfully created role for ${option.portfolio_name}`)
       })
       .catch((error) => {
