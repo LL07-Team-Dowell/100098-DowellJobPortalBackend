@@ -1590,10 +1590,10 @@ class update_task(APIView):
             )
 @method_decorator(csrf_exempt, name="dispatch")
 class task_request_update(APIView):
-    def patch(self, request):
+    def patch(self, request, document_id):
         data = request.data
         if data:
-            field = {"_id": data.get("document_id")}
+            field = {"_id":document_id}
             update_field = {
                 "company_id": data.get("company_id"),
                 "task_created_date": data.get("task_created_date"),
@@ -2691,7 +2691,7 @@ class SettingUserProfileInfoView(APIView):
             current_version = setting.profile_info[-1]["version"]
             setting.profile_info.append(
                 {
-                    "profile_title": data["profile_title"],
+                    "profile_info": data["profile_title"],
                     "Role": data["Role"],
                     "project": data["project"],
                     "version": update_number(current_version),
@@ -3103,6 +3103,7 @@ class sendMailToPublicCandidate(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
 
 @method_decorator(csrf_exempt, name="dispatch")
 class updateTheUserDetails(APIView):
@@ -3836,8 +3837,9 @@ class Generate_public_Report(APIView):
                         })
         data = filtered_job_applications
         return Response({
-            "message": "Public job report Generated",
-            "data": data
+            "isSuccess": True,
+            "message": f"public job report Generated",
+            "Data": data
         }, status=status.HTTP_201_CREATED)
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -4398,7 +4400,8 @@ class Generate_Individual_Report(APIView):
         data['data'].append(item)
         return Response(data, status=status.HTTP_201_CREATED)
 
-@method_decorator(csrf_exempt, name="dispatch")   
+
+
 class Update_payment_status(APIView):
     def patch(self, request,document_id):
         data=request.data
