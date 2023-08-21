@@ -210,7 +210,7 @@ def set_finalize(linkid):
 import base64
 
 def save_image(image):
-    url = "http://67.217.61.253/uploadfiles/upload-hr-image/"
+    url = "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/"
     payload = {
         "image": image  # Read the binary data from the file object
     }
