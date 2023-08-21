@@ -1608,7 +1608,6 @@ class task_request_update(APIView):
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
             )
-            #print(check, "=====================[[[[[[]]]]]]")
             if json.loads(check)["isSuccess"] is True:
                 if len(json.loads(check)["data"]) == 0:
                     return Response(
