@@ -9,7 +9,7 @@ import { teamManagementProductName } from "../../../../utils/utils";
 import ClaimVouchar from "../ClaimVouchar/ClaimVouchar";
 
 
-const UserScreen = () => {
+const UserScreen = ({ isGrouplead }) => {
     const { currentUser } = useCurrentUserContext();
     const [success, setsuccsess] = useState(false);
 
@@ -64,7 +64,13 @@ const UserScreen = () => {
             }
             <div className="user__Intro__Item">
                 <h2>Role</h2>
-                <span>TeamLead</span>
+                <span>
+                    {
+                        isGrouplead ? 
+                        "GroupLead" : 
+                        "TeamLead"
+                    }
+                </span>
             </div>
             <div className="user__Intro__Item" style={{ display: "flex", gap: 5, alignItems: "center" }}>
                 <h2>Active Status</h2>

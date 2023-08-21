@@ -7,9 +7,9 @@ const GroupLeadTask = () => {
     const [searchValue, setSearchValue] = useState('');
 
     return (
-        <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue} searchTeam={true}>
+        <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue} searchTeam={true} isGrouplead={true}>
             <br />
-            <Navbar title={"View Tasks"} color={'#005734'} noButtonBack={false} removeButton={true} />
+            <Navbar title={"View Tasks"} color={'#005734'} noButtonBack={true} removeButton={true} />
             <div className="container">
                 <div style={{ marginTop: 30 }} className="Create_Team">
                     <div>

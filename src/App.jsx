@@ -869,7 +869,7 @@ function App() {
         />
 
         <Route
-          path="/task"
+          path="/grouplead-tasks"
           element={
             <NavigationContextProvider>
               <CandidateContextProvider>
@@ -888,7 +888,7 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
-                <Index />
+                <Index isGrouplead={true} />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
@@ -897,7 +897,7 @@ function App() {
           path="/create-task/create-new-team/"
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true}>
+              <StaffJobLandingLayout teamleadView={true} isGrouplead={true}>
                 <ValuesProvider>
                   <CreateTeam />
                 </ValuesProvider>

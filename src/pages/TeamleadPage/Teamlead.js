@@ -437,7 +437,10 @@ const Teamlead = ({ isGrouplead }) => {
         <TitleNavigationBar
           title={
             section === "task"
-              ? "Tasks"
+              ?
+                isGrouplead ? '' 
+                : 
+                "Tasks"
               : section === "user"
                 ? "Profile"
                 : showCandidate
@@ -670,6 +673,11 @@ const Teamlead = ({ isGrouplead }) => {
                     <h1>Button</h1>
                   </>
                 ) : (
+                  isGrouplead ? <>
+                    <div className="tasks-container">
+                      Page not found
+                    </div>
+                  </> :
                   <>
                     <button
                       className="refresh-container"
@@ -751,7 +759,7 @@ const Teamlead = ({ isGrouplead }) => {
                   </>
                 )
               ) : section === "user" ? (
-                <UserScreen currentUser={currentUser} />
+                <UserScreen isGrouplead={isGrouplead} />
               ) : (
                 <>
                   <ErrorPage disableNav={true} />

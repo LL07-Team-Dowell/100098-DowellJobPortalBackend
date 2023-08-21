@@ -34,7 +34,7 @@ export const groupLeadNavigationLinks = [
         text: "Add",
     },
     {
-        linkAddress: "/task",
+        linkAddress: "/grouplead-tasks",
         icon: <ImStack />,
         text: "Tasks"
     },

@@ -10,7 +10,7 @@ import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner
 import "./index.scss"
 import { getAllTeams } from '../../../../services/createMembersTasks';
 import Navbar from './component/Navbar';
-const Index = () => {
+const Index = ({ isGrouplead }) => {
   const { currentUser } = useCurrentUserContext();
   const {data , setdata} = useValues() ;
   const [response , setresponse] = useState(false)
@@ -43,7 +43,7 @@ const Index = () => {
   console.log(data.TeamsSelected.length)
   if(data.TeamsSelected.length === 0 && !response )return <StaffJobLandingLayout  teamleadView={true}><LoadingSpinner/></StaffJobLandingLayout> 
   return (
-    <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue} searchTeam={true}>
+    <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue} searchTeam={true} isGrouplead={isGrouplead}>
       <Navbar title={"All Teams"} color={'#005734'} noButtonBack={true} />
       <div className='container'>
       <Teams 
