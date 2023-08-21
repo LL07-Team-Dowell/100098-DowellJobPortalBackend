@@ -217,9 +217,7 @@ def save_image(image):
     #print(response.text)
     return response.text
 
-
-def periodic_jobs(start_dt, end_dt, data_list):
-    #convert to date format--------
+def period_check(start_dt, end_dt, data_list, key):
     start_date = datetime.datetime.strptime(
             start_dt, "%m/%d/%Y %H:%M:%S"
         )

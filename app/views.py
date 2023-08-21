@@ -1588,7 +1588,70 @@ class update_task(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
+@method_decorator(csrf_exempt, name="dispatch")
+class task_request_update(APIView):
+    def patch(self, request):
+        data = request.data
+        if data:
+            field = {"_id": data.get("document_id")}
+            update_field = {
+                "company_id": data.get("company_id"),
+                "task_created_date": data.get("task_created_date"),
+                "username": data.get("username"),
+                "portfolio_name": data.get("portfolio_name"),
+                "project": data.get("project"),
+                "task_updated_date": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+                "approved":False,
+                "request_denied":False,
+            }
+            # check if task exists---
+            check = dowellconnection(
+                *task_management_reports, "fetch", field, update_field
+            )
+            #print(check, "=====================[[[[[[]]]]]]")
+            if json.loads(check)["isSuccess"] is True:
+                if len(json.loads(check)["data"]) == 0:
+                    return Response(
+                        {
+                            "message": "Task failed to be updated, there is no task with this document id",
+                            "response": json.loads(check),
+                        },
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
+                else:
+                    response = dowellconnection(
+                        *update_task_request_module, "update", field, update_field
+                    )
+                    # print(response, "=========================")
+                    if json.loads(response)["isSuccess"] is True:
+                        return Response(
+                            {
+                                "message": "Task updated successfully",
+                                "response": json.loads(response),
+                            },
+                            status=status.HTTP_200_OK,
+                        )
+                    else:
+                        return Response(
+                            {
+                                "message": "Task failed to be updated",
+                                "response": json.loads(response),
+                            },
+                            status=status.HTTP_204_NO_CONTENT,
+                        )
+            else:
+                return Response(
+                    {
+                        "message": "Task failed to be updated, there is no task with this document id",
+                        "response": json.loads(check),
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 @method_decorator(csrf_exempt, name="dispatch")
 class approve_task(APIView):
@@ -2628,7 +2691,7 @@ class SettingUserProfileInfoView(APIView):
             current_version = setting.profile_info[-1]["version"]
             setting.profile_info.append(
                 {
-                    "profile_info": data["profile_title"],
+                    "profile_title": data["profile_title"],
                     "Role": data["Role"],
                     "project": data["project"],
                     "version": update_number(current_version),
@@ -3040,7 +3103,6 @@ class sendMailToPublicCandidate(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class updateTheUserDetails(APIView):
@@ -3774,9 +3836,8 @@ class Generate_public_Report(APIView):
                         })
         data = filtered_job_applications
         return Response({
-            "isSuccess": True,
-            "message": f"public job report Generated",
-            "Data": data
+            "message": "Public job report Generated",
+            "data": data
         }, status=status.HTTP_201_CREATED)
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -4337,8 +4398,7 @@ class Generate_Individual_Report(APIView):
         data['data'].append(item)
         return Response(data, status=status.HTTP_201_CREATED)
 
-
-
+@method_decorator(csrf_exempt, name="dispatch")   
 class Update_payment_status(APIView):
     def patch(self, request,document_id):
         data=request.data
