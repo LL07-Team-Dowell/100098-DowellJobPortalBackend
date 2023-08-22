@@ -74,7 +74,7 @@ import ClaimVouchar from "./pages/TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
 
 function App() {
-  console.log = () => {}
+  // console.log = () => {}
   const {
     currentUser,
     isPublicUser,

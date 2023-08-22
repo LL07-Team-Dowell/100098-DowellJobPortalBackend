@@ -37,6 +37,7 @@ const TaskScreen = ({
   const [value, onChange] = useState(new Date());
   const [loading, setLoading] = useState(false);
 
+  console.log(assignedProject);
   useEffect(() => {
     setLoading(true);
     setproject(assignedProject[0]);
@@ -249,9 +250,8 @@ const TaskScreen = ({
       </Wrappen>
 
       <div
-        className={`candidate-task-screen-container ${
-          className ? className : ""
-        }`}
+        className={`candidate-task-screen-container ${className ? className : ""
+          }`}
       >
         {!candidateAfterSelectionScreen && (
           <>
@@ -288,18 +288,18 @@ const TaskScreen = ({
                 <ul>
                   {taskdetail2.length > 0
                     ? taskdetail2.map((d, i) => (
-                        <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }} key={i}>
-                          {new Date(d.task_created_date).toLocaleString(
-                            "default",
-                            { month: "long" }
-                          )}
-                          <p style={{ display: "inline", marginLeft: "0.2rem"}}>{new Date(d.task_created_date).getDate()}</p>
+                      <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }} key={i}>
+                        {new Date(d.task_created_date).toLocaleString(
+                          "default",
+                          { month: "long" }
+                        )}
+                        <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(d.task_created_date).getDate()}</p>
 
-                          <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem"}}>
-                            {d.task}
-                          </p>
-                        </div>
-                      ))
+                        <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
+                          {d.task}
+                        </p>
+                      </div>
+                    ))
                     : "No Tasks Found For Today"}
                 </ul>
               </div>

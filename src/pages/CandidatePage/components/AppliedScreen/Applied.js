@@ -55,9 +55,9 @@ function Applied() {
         });
 
         console.log(sortedJobs);
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserApplications.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserApplications.reverse() } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.reverse() } });
         return setLoading(false);
 
       } catch (error) {
@@ -99,9 +99,9 @@ function Applied() {
           )
         )
         // const sortJob = currentUserAppliedJobs.sort((a, b) => new Date(b.created_on) - new Date(a.created_on));
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserApplications.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "appliedJobs": currentUserApplications.reverse() } });
         setCandidateJobs((prevJobs) => { return { ...prevJobs, "currentUserApplications": currentUserApplications } });
-        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)) } });
+        setCandidateJobs((prevJobs) => { return { ...prevJobs, "userInterviews": currentUserApplications.reverse() } });
         return setLoading(false);
 
       } catch (error) {
@@ -122,7 +122,7 @@ function Applied() {
     <TogglerNavMenuBar className={"applied__Nav__Toggler"} menuItems={["Applied", "Interview", "Declined"]} handleMenuItemClick={(item) => setCurrentNavigationTab(item)} currentActiveItem={currentNavigationTab} />
     <button
       className="refresh-container"
-      id='refresh-container'
+      id='refresh-container-applied'
       onClick={handleRefreshForCandidateApplications}
     >
       <div className="refresh-btn">
