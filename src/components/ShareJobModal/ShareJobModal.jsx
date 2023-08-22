@@ -36,6 +36,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
   const [ customLinksNumber, setCustomLinksNumber ] = useState(null);
   const [ currentPage, setCurrentPage ] = useState(1);
   const [ customLinkName, setCustomLinkName ] = useState("");
+  const [ jobCategory, setJobCategory ] = useState(null);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -156,13 +157,17 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
     try {
       let response;
       if (isProductLink) {
-        response = (await createNewProductLink({
+        const productDataToPost = {
           "public_link_name": customLinkName,
           "product_url": linkToShareObj?.product_url,
           "qr_ids": publicIdsSelected,
           "job_company_id": linkToShareObj?.job_company_id,
           "company_data_type": linkToShareObj?.company_data_type,
-        })).data
+        }
+
+        if (jobCategory) productDataToPost.jobCategory = jobCategory;
+
+        response = (await createNewProductLink(productDataToPost)).data
       } else {
         response = (await generatePublicJobLink(dataToPost)).data;
       }
@@ -276,14 +281,29 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
                       Count: {publicIdsSelected.length}
                     </span>
                   </p> : <>
-                    <div className={styles.select__Links__Num}>
+                    <div className={`${styles.select__Links__Num} ${styles.last__Page}`}>
                       <label>
-                        <span>Enter name for link</span>
+                        <span>Enter name for link <span className={styles.required}>*</span></span>
                         <input 
                           placeholder="custom link name"
                           value={customLinkName}
                           onChange={({ target }) => setCustomLinkName(target.value)}
                         />
+                      </label>
+                      <label>
+                        <span>Select custom job category for link</span>
+                        <select
+                          defaultValue={''}
+                          onChange={({ target }) => setJobCategory(target.value)}
+                          className={styles.select__Category}
+                        >
+                          <option value={''} selected disabled>Select job category</option>
+                          {
+                            React.Children.toArray(validJobCategories.map(category => {
+                              return <option value={category}>{category} jobs</option>
+                            }))
+                          }
+                        </select>
                       </label>
                     </div>
                   </>
@@ -441,5 +461,11 @@ const shareOptions = [
     _id: crypto.randomUUID(),
   },
 ];
+
+const validJobCategories = [
+  'Freelancer',
+  'Employee',
+  'Internship',
+]
 
 export default ShareJobModal;

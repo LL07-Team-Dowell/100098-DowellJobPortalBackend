@@ -30,6 +30,19 @@
   margin-left: 0;
 }
 
+.category__Not__Found {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.category__Not__Found img {
+  max-width: 100%;
+  width: 50%;
+}
+
 @media screen and (max-width: 991px) {
   .candidate__Jobs__Container {
     width: 90%;

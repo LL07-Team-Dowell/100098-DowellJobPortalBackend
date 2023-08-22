@@ -8,7 +8,7 @@ import AddJob from "./pages/AdminPage/views/AddJob/AddJob";
 import ViewJob from "./pages/AdminPage/views/ViewJob/ViewJob";
 import EditJob from "./pages/AdminPage/views/EditJob/EditJob";
 import LandingPage from "./pages/AdminPage/views/Landingpage/LandingPage";
-import { useState } from "react";
+import React, { useState } from "react";
 import useDowellLogin from "./hooks/useDowellLogin";
 import useTitle from "./hooks/useTitle";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
@@ -85,6 +85,7 @@ function App() {
     isProductUser,
     setIsProductUser,
     setProductUserDetails,
+    productUserDetails,
   } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
@@ -146,6 +147,66 @@ function App() {
 
   // NON LOGGED IN PRODUCT USER
   if (isProductUser) {
+    if (productUserDetails.onlySingleJobCategoryPermitted) {
+      return (
+        <Routes>
+          <Route
+            path={`c/${productUserDetails.categoryAllowed}`}
+            element={
+              <JobContextProvider>
+                <NewApplicationContextProvider>
+                  <>
+                    {
+                      React.Children.toArray(categoriesForScreen.map(item => {
+                        if (item.category === productUserDetails.categoryAllowed) return <item.component />
+                        return <></>
+                      }))
+                    }
+                  </>
+                </NewApplicationContextProvider>
+              </JobContextProvider>
+            }
+          />
+          <Route 
+            path={`/jobs`}
+            element={
+              <JobContextProvider>
+                <CandidateJobsContextProvider>
+                  <JobScreen />
+                </CandidateJobsContextProvider>
+              </JobContextProvider>
+            }
+          />
+          <Route
+            path="/apply/job/:id"
+            element={
+              <JobContextProvider>
+                <NewApplicationContextProvider>
+                  <JobApplicationScreen />
+                </NewApplicationContextProvider>
+              </JobContextProvider>
+            }
+          >
+            <Route
+              path=":section"
+              element={
+                <JobContextProvider>
+                  <NewApplicationContextProvider>
+                    <JobApplicationScreen />
+                  </NewApplicationContextProvider>
+                </JobContextProvider>
+              }
+            />
+          </Route>
+          <Route path="*"
+            element={
+              <>Page Not found</>
+            }
+          />
+        </Routes>
+      )
+    }
+
     return (
       <Routes>
         <Route
@@ -1543,4 +1604,19 @@ function App() {
 //   </>
 // );
 
+
+const categoriesForScreen = [
+  {
+    'category': 'employee',
+    'component': EmployeeJobScreen,
+  },
+  {
+    'category': 'intern',
+    'component': InternJobScreen,
+  },
+  {
+    'category': 'freelancer',
+    'component': FreelancerJobScreen,
+  }
+]
 export default App;

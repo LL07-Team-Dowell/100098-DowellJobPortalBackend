@@ -36,6 +36,7 @@ export default function useDowellLogin(
     const publicUserQrId = searchParams.get("qr_id");
     const masterLinkId = searchParams.get("link_id");
     const companyId = searchParams.get("company_id");
+    const jobCategory = searchParams.get("jobCategory");
 
     // FOR PUBLIC USERS
     if (currentPublicSession && currentPublicUserDetails) {
@@ -91,11 +92,19 @@ export default function useDowellLogin(
         masterLinkId: masterLinkId,
       };
 
+      if (jobCategory) {
+        productUserDetails.onlySingleJobCategoryPermitted = true;
+        productUserDetails.categoryPassed = jobCategory;
+        productUserDetails.categoryAllowed = jobCategory === 'Internship' ? 'intern' : jobCategory.toLocaleLowerCase();
+      }
+
+
       updateDetailsForProductUser(productUserDetails)
 
       sessionStorage.setItem('product_user_session', true);
       sessionStorage.setItem('product_user', JSON.stringify(productUserDetails));
 
+      if (jobCategory) navigate(`c/${productUserDetails.categoryAllowed}`);
       return
     }
   
