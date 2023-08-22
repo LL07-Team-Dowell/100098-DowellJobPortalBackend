@@ -219,51 +219,45 @@ def save_image(image):
     #print(response.text)
     return response.text
 
+import datetime
+
 def period_check(start_dt, end_dt, data_list, key):
     start_date = datetime.datetime.strptime(
-            start_dt, "%m/%d/%Y %H:%M:%S"
-        )
+        start_dt, "%m/%d/%Y %H:%M:%S"
+    )
     end_date = datetime.datetime.strptime(
-            end_dt, "%m/%d/%Y %H:%M:%S"
-        )
-    items=[]
-    
+        end_dt, "%m/%d/%Y %H:%M:%S"
+    )
+    items = []
+
     for l in data_list:
         try:
-            custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%dT%H:%M:%S.%fZ")
-            if custom_time >= start_date and custom_time <= end_date:
-                items.append(l) 
-        except Exception:
+            custom_time = datetime.datetime.strptime(l[key], "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
             try:
-                custom_time=datetime.datetime.strptime(l[key],"%m/%d/%Y")
-                if custom_time >= start_date and custom_time <= end_date:
-                    items.append(l) 
-            except Exception:
+                custom_time = datetime.datetime.strptime(l[key], "%m/%d/%Y")
+            except ValueError:
                 try:
                     date_string = l[key].replace('(West Africa Standard Time)', '').rstrip()
-                    date_object = datetime.datetime.strptime(date_string, '%a %b %d %Y %H:%M:%S %Z%z').strftime("%m/%d/%Y %H:%M:%S")
-                    custom_time = datetime.datetime.strptime(date_object,"%m/%d/%Y %H:%M:%S")
-                    if custom_time >= start_date and custom_time <= end_date:
-                        items.append(l)
-                except Exception:
+                    date_object = datetime.datetime.strptime(date_string, '%a %b %d %Y %H:%M:%S %Z%z')
+                    custom_time = datetime.datetime.strptime(date_object.strftime("%m/%d/%Y %H:%M:%S"), "%m/%d/%Y %H:%M:%S")
+                except ValueError:
                     try:
-                        custom_time=datetime.datetime.strptime(l[key],"%m/%d/%Y %H:%M:%S")
-                        if custom_time >= start_date and custom_time <= end_date:
-                            items.append(l) 
-                    except Exception:
+                        custom_time = datetime.datetime.strptime(l[key], "%m/%d/%Y %H:%M:%S")
+                    except ValueError:
                         try:
-                            custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%d")
-                            if custom_time >= start_date and custom_time <= end_date:
-                                items.append(l) 
-                        except Exception:
+                            custom_time = datetime.datetime.strptime(l[key], "%Y-%m-%d")
+                        except ValueError:
                             try:
-                                custom_time=datetime.datetime.strptime(l[key],"%d/%m/%Y")
-                                if custom_time >= start_date and custom_time <= end_date:
-                                    items.append(l) 
-                            except Exception as error:
-                                #print("error", error)
-                                pass
+                                custom_time = datetime.datetime.strptime(l[key], "%d/%m/%Y")
+                            except ValueError:
+                                continue  # Skip this item if no valid date format matches
+
+        if start_date <= custom_time <= end_date:
+            items.append(l)
+
     return items, len(items)
+
 
 def targeted_population(database, collection, fields, period, start_point,end_point):
     url = 'http://100032.pythonanywhere.com/api/targeted_population/'
