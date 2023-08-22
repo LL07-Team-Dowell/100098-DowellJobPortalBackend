@@ -130,6 +130,11 @@
   margin-bottom: 30%;
 }
 
+#refresh-container-applied {
+  position: absolute;
+  top: 4rem;
+}
+
 @media screen and (max-width: 300px) {
   .search {
     margin-top: 30%;
@@ -149,12 +154,12 @@
     margin-top: 20%;
   }
 
-  #refresh-container {
+  /* #refresh-container {
     position: absolute;
     top: 13rem !important;
     z-index: 1000;
     right: 2rem;
-  }
+  } */
 }
 
 @media (min-width: 470px) and (max-width: 575.98px) {
@@ -232,13 +237,7 @@
     margin-bottom: 2%;
   }
 
-  #refresh-container {
-    position: absolute;
-    top: 16rem !important;
-    z-index: 1000;
-    right: 7.4rem;
-    top: 10rem;
-  }
+
 }
 
 @media screen and (min-width: 992px) {

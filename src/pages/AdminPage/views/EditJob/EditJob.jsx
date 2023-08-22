@@ -46,6 +46,7 @@ function EditJob({ subAdminView }) {
   const { jobs, setJobs } = useJobContext();
   const { id } = useParams();
   const singleJob = jobs?.filter(job => job["_id"] === id)[0];
+  console.log(singleJob);
   const { payment_terms, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, module } = singleJob || {};
   const [selectedOption, setSelectedOption] = useState(job_category || "");
   const [active, setActive] = useState(is_active);
@@ -569,6 +570,22 @@ function EditJob({ subAdminView }) {
                     </div>
                   </div>
                 </div>
+
+                <div className='input__data'>
+                  <label htmlFor="module">Payment Interval</label>
+                  <select
+                    className="select"
+                    name={"module"}
+                    id="module"
+                    value={thirdOption}
+                    onChange={handleThirdOptionChange}
+                  >
+                    <option value="Frontend" selected={thirdOption === "Frontend"}>
+                      05/20/08/2023
+                    </option>
+                  </select>
+                </div>
+
                 <div className='input__data'>
                   <label htmlFor="description">Description</label>
                   <textarea
