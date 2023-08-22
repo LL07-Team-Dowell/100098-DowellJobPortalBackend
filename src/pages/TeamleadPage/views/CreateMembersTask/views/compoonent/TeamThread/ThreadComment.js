@@ -23,28 +23,29 @@ const Wrapper = styled.div`
 .text-area{
   display: flex;
   margin: 0.5rem;
+  align-items: center;
 
-  button{
+  .button-comment{
     padding: 0px 1rem;
     margin-left: 0.5rem;
-    font-size: 1rem;
-    font-weight: 800;
+    font-size: 0.9rem;
     background: #005734;
+    font-weight: 400;
+    height: 2.5rem;
     color: white;
     cursor: pointer;
     border: none;
-    border-radius: 10px;
+    border-radius: 5px;
     border: 1px solid white;
 
   }
 
-  button:hover{
+  .button-comment:hover{
     background: white;
     color: #005734;
     border: 1px solid #005734;
   }
 }
-
 
 
 .avatar-container {
@@ -141,7 +142,7 @@ const ThreadComment = ({ comments, commentInput, user, threadId, forceUpdate, lo
         />
         {text.length > 0 && (
           loadingcmnt ? <LittleLoading /> :
-            <button onClick={handleComment}>Post</button>
+            <button className="button-comment" onClick={handleComment}>Post</button>
         )}
 
         {
