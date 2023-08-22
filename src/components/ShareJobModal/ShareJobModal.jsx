@@ -298,6 +298,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
                           className={styles.select__Category}
                         >
                           <option value={''} selected disabled>Select job category</option>
+                          <option value={null}>None</option>
                           {
                             React.Children.toArray(validJobCategories.map(category => {
                               return <option value={category}>{category} jobs</option>
