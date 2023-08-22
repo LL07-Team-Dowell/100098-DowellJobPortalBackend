@@ -325,14 +325,19 @@ function JobScreen() {
                     <TitleNavigationBar 
                         title={`Category not found`} 
                         showSearchBar={false} 
-                        handleBackBtnClick={() => navigate(`/c/${productUserDetails.categoryAllowed}`)}
+                        handleBackBtnClick={() => navigate(`/jobs/?jobCategory=${productUserDetails.categoryPassed}`)}
                     />
                     <div className='category__Not__Found'>
                         <img src={notFOundImage} alt='not found illustration' />
                     </div>
                 </> :
                 <>
-                    <TitleNavigationBar title={`${changeToTitleCase(currentCategory)} Jobs`} showSearchBar={true} handleBackBtnClick={() => currentCategory ? navigate(-1) : navigate("/home")} />
+                    <TitleNavigationBar 
+                        title={`${changeToTitleCase(currentCategory)} Jobs`} 
+                        hideBackBtn={isProductUser && productUserDetails.onlySingleJobCategoryPermitted ? true : false} 
+                        showSearchBar={true} 
+                        handleBackBtnClick={() => currentCategory ? navigate(-1) : navigate("/home")} 
+                    />
 
                     <div className='candidate__Jobs__Container'>
                         {/* <div className="refresh-container" onClick={handleRefreshForCandidateApplications} id='refresh-container'>

@@ -157,7 +157,7 @@ function App() {
     if (productUserDetails.onlySingleJobCategoryPermitted) {
       return (
         <Routes>
-          <Route
+          {/* <Route
             path={`c/${productUserDetails.categoryAllowed}`}
             element={
               <JobContextProvider>
@@ -173,7 +173,7 @@ function App() {
                 </NewApplicationContextProvider>
               </JobContextProvider>
             }
-          />
+          /> */}
           <Route 
             path={`/jobs`}
             element={

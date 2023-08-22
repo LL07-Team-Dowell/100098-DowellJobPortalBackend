@@ -104,7 +104,8 @@ export default function useDowellLogin(
       sessionStorage.setItem('product_user_session', true);
       sessionStorage.setItem('product_user', JSON.stringify(productUserDetails));
 
-      if (jobCategory) navigate(`c/${productUserDetails.categoryAllowed}`);
+      // if (jobCategory) navigate(`c/${productUserDetails.categoryAllowed}`);
+      if (jobCategory) navigate(`/jobs?jobCategory=${jobCategory}`);
       return
     }
   
