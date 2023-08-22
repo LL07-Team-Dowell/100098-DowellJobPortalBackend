@@ -96,6 +96,7 @@
   top: 10rem;
 }
 
+
 .refresh-container:hover {
   background-color: #005734;
   box-shadow: 0 0.2rem 0.5rem rgba(0, 84, 50, 1);
@@ -189,8 +190,14 @@
     top: 10rem;
   }
 
+}
 
-
+@media (max-width:876px) {
+  #refresh-container {
+    position: absolute;
+    right: 1rem;
+    top: 2.4rem !important;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
