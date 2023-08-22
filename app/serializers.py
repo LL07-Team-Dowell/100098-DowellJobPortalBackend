@@ -285,16 +285,15 @@ class UpdateuserSerializer(serializers.Serializer):
     toemail = serializers.CharField(allow_null=False, allow_blank=False)
 
 class ThreadsSerializer(serializers.Serializer):
+    PREVIOUS_STATUS_CHOICE = (("", ""),("Created", "Created"),("In progress", "In progress"), ("Completed", "Completed"), ("Resolved", "Resolved"))
+
     thread = serializers.CharField(allow_null=False, allow_blank=False)
     image = serializers.URLField(allow_null=False, allow_blank=True)
     created_by = serializers.CharField(allow_null=False, allow_blank=False)
     team_id = serializers.CharField(allow_null=False, allow_blank=False)
     team_alerted_id = serializers.CharField(allow_null=False, allow_blank=False)
     current_status = serializers.CharField(allow_null=False, allow_blank=False)
-    PREVIOUS_STATUS_CHOICE = (("", ""),("Created", "Created"),("In progress", "In progress"), ("Completed", "Completed"), ("Resolved", "Resolved"))
-
-    previous_status =serializers.ListField(child=serializers.ChoiceField(
-        choices=PREVIOUS_STATUS_CHOICE, allow_null=False, allow_blank=False, ))
+    previous_status =serializers.ListField(child=serializers.ChoiceField(choices=PREVIOUS_STATUS_CHOICE, allow_null=False, allow_blank=False, ))
 
 class CommentsSerializer(serializers.Serializer):
     created_by = serializers.CharField(allow_null=False, allow_blank=False)
