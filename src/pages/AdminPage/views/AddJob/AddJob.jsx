@@ -31,6 +31,7 @@ const AddJob = ({ subAdminView }) => {
     time_interval: "",
     is_active: true,
     payment: "",
+    paymentInterval: "",
     description: "",
     general_terms: [],
     technical_specification: [],
@@ -50,6 +51,7 @@ const AddJob = ({ subAdminView }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [secondOption, setSecondOption] = useState("");
   const [thirdOption, setThirdOption] = useState("");
+  const [fourthOption, setFourthOption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currency, setCurrency] = useState("Select Currency");
   const [isValidCurrency, setIsValidCurrency] = useState(false);
@@ -90,6 +92,15 @@ const AddJob = ({ subAdminView }) => {
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
       copyOfPrevValue["module"] = e.target.value;
+      return copyOfPrevValue;
+    });
+  };
+
+  const handleFourthOptionChange = (e) => {
+    setFourthOption(e.target.value);
+    setNewJob((prevValue) => {
+      const copyOfPrevValue = { ...prevValue };
+      copyOfPrevValue["paymentInterval"] = e.target.value;
       return copyOfPrevValue;
     });
   };
@@ -149,6 +160,7 @@ const AddJob = ({ subAdminView }) => {
       "type_of_job",
       "time_interval",
       "payment",
+      "paymentInterval",
       "description",
       "job_category",
       "module",
@@ -190,6 +202,17 @@ const AddJob = ({ subAdminView }) => {
       );
       return;
     }
+
+    if (newJob.paymentInterval === "") {
+      toast.info("Please select payment interval");
+      return;
+    } else if (fields.find((field) => newJob[field] === "")) {
+      toast.info(
+        `Please select ${fields.find((field) => newJob[field] === "")} field`
+      );
+      return;
+    }
+
     // if (newJob.qualification === "") {
     //   toast.info("Please input qualification");
     //   return;
@@ -593,6 +616,28 @@ const AddJob = ({ subAdminView }) => {
                   />
                 </div>
               </div>
+
+              <label htmlFor="paymentInterval">Payment Interval</label>
+              <select
+                className="module"
+                name={"paymentInterval"}
+                id="paymentInterval"
+                onChange={handleFourthOptionChange}
+              >
+                <option value="">Select Module</option>
+                <option value="hour" selected={fourthOption === "hour"}>
+                  Per hour
+                </option>
+                <option value="day" selected={fourthOption === "day"}>
+                  Per day
+                </option>
+                <option value="month" selected={fourthOption === "month"}>
+                  Per month
+                </option>
+                <option value="year" selected={fourthOption === "year"}>
+                  Per year
+                </option>
+              </select>
 
               <label htmlFor="description">Description</label>
               <textarea
