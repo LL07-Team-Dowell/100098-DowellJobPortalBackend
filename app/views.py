@@ -3160,21 +3160,39 @@ class public_product(APIView):
             "qr_ids": request.data.get("qr_ids"),
             "job_company_id": request.data.get("job_company_id"),
             "company_data_type": request.data.get("company_data_type"),
+            "job_category":request.data.get("job_category")
         }
         serializer = PublicProductURLSerializer(data=request.data)
         if serializer.is_valid():
             qr_ids = field["qr_ids"]
-            generated_links = [
-                {
-                    "link": generate_product_link.format(
-                        field["product_url"],
-                        qr_id,
-                        field["job_company_id"],
-                        field["company_data_type"],
-                    )
-                }
-                for qr_id in qr_ids
-            ]
+            job_category=request.data.get("job_category")
+            if job_category:
+                # print(job_category)
+                generated_links = [
+                    {
+                        "link": generate_product_link_with_category.format(
+                            field["product_url"],
+                            qr_id,
+                            field["job_company_id"],
+                            field["company_data_type"],
+                            field["job_category"]
+                        )
+                    }
+                    for qr_id in qr_ids
+                ]
+            else:
+                generated_links = [
+                    {
+                        "link": generate_product_link.format(
+                            field["product_url"],
+                            qr_id,
+                            field["job_company_id"],
+                            field["company_data_type"],
+                        )
+                    }
+                    for qr_id in qr_ids
+                ]
+            # print(generated_links)
             response_qr_code = create_master_link(
                 field["job_company_id"], generated_links,field["public_link_name"]
             )
