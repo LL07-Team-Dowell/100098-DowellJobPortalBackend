@@ -95,10 +95,10 @@ function App() {
   const [shorlistedJob, setshorlistedJob] = useState([]);
 
 
-  // USE ONLY WHEN APP IS BROKEN/UNDERGOING MAJOR CHANGES
-  return <Routes>
-    <Route path="*" element={<PageUnderConstruction showProductView={true} />} />
-  </Routes>
+  // // USE ONLY WHEN APP IS BROKEN/UNDERGOING MAJOR CHANGES
+  // return <Routes>
+  //   <Route path="*" element={<PageUnderConstruction showProductView={true} />} />
+  // </Routes>
   
   // console.log(shorlistedJob); 
   useDowellLogin(
@@ -1295,75 +1295,79 @@ function App() {
   // CANDIDATE PAGE
   return (candidateHired || currentUser.candidateIsHired) ? (
     <Routes>
-      <Route
-        path="/team-screen-member/:id/team-tasks"
-        element={
-          <NavigationContextProvider>
-            <CandidateTaskContextProvider>
-              <TeamCandidateProvider>
-                <CandidateValuesProvider>
-                  <JobLandingLayout user={currentUser} afterSelection={true}>
-                    <TeamScreenTasksCandidate />
-                  </JobLandingLayout>
-                </CandidateValuesProvider>
-              </TeamCandidateProvider>
-            </CandidateTaskContextProvider>
-          </NavigationContextProvider>
-        }
-      />
-      <Route
-        path="/team-screen-member/:id/team-members"
-        element={
-          <NavigationContextProvider>
-            <CandidateTaskContextProvider>
-              <TeamCandidateProvider>
-                <CandidateValuesProvider>
-                  <JobLandingLayout user={currentUser} afterSelection={true}>
-                    <TeamScreenMembersCandidate />
-                  </JobLandingLayout>
-                </CandidateValuesProvider>
-              </TeamCandidateProvider>
-            </CandidateTaskContextProvider>
-          </NavigationContextProvider>
-        }
-      />
-      <Route
-        path="/team-screen-member/:id/team-issues"
-        element={
-          <NavigationContextProvider>
-            <CandidateTaskContextProvider>
-              <TeamCandidateProvider>
-                <CandidateValuesProvider>
-                  <JobLandingLayout user={currentUser} afterSelection={true}>
-                    <TeamScreenThreadCandidate />
-                  </JobLandingLayout>
-                </CandidateValuesProvider>
-              </TeamCandidateProvider>
-            </CandidateTaskContextProvider>
-          </NavigationContextProvider>
-        }
-      />
-      <Route
-        path="/"
-        element={
-          <NavigationContextProvider>
-            <CandidateTaskContextProvider>
-              <CandidateJobsContextProvider>
-                <JobContextProvider>
-                  <CandidateValuesProvider>
-                    <AfterSelectionScreen assignedProjects={assignedProjects} />
-                  </CandidateValuesProvider>
-                </JobContextProvider>
-              </CandidateJobsContextProvider>
-            </CandidateTaskContextProvider>
-          </NavigationContextProvider>
-        }
-      >
-        <Route path=":section" element={<AfterSelectionScreen />} />
-      </Route>
-      <Route path="/logout" element={<Logout />} />
-      <Route path="*" element={<ErrorPage />} />
+      <Route path="*" element={<PageUnderConstruction showProductView={true} />} />
     </Routes>
+
+    // <Routes>
+    //   <Route
+    //     path="/team-screen-member/:id/team-tasks"
+    //     element={
+    //       <NavigationContextProvider>
+    //         <CandidateTaskContextProvider>
+    //           <TeamCandidateProvider>
+    //             <CandidateValuesProvider>
+    //               <JobLandingLayout user={currentUser} afterSelection={true}>
+    //                 <TeamScreenTasksCandidate />
+    //               </JobLandingLayout>
+    //             </CandidateValuesProvider>
+    //           </TeamCandidateProvider>
+    //         </CandidateTaskContextProvider>
+    //       </NavigationContextProvider>
+    //     }
+    //   />
+    //   <Route
+    //     path="/team-screen-member/:id/team-members"
+    //     element={
+    //       <NavigationContextProvider>
+    //         <CandidateTaskContextProvider>
+    //           <TeamCandidateProvider>
+    //             <CandidateValuesProvider>
+    //               <JobLandingLayout user={currentUser} afterSelection={true}>
+    //                 <TeamScreenMembersCandidate />
+    //               </JobLandingLayout>
+    //             </CandidateValuesProvider>
+    //           </TeamCandidateProvider>
+    //         </CandidateTaskContextProvider>
+    //       </NavigationContextProvider>
+    //     }
+    //   />
+    //   <Route
+    //     path="/team-screen-member/:id/team-issues"
+    //     element={
+    //       <NavigationContextProvider>
+    //         <CandidateTaskContextProvider>
+    //           <TeamCandidateProvider>
+    //             <CandidateValuesProvider>
+    //               <JobLandingLayout user={currentUser} afterSelection={true}>
+    //                 <TeamScreenThreadCandidate />
+    //               </JobLandingLayout>
+    //             </CandidateValuesProvider>
+    //           </TeamCandidateProvider>
+    //         </CandidateTaskContextProvider>
+    //       </NavigationContextProvider>
+    //     }
+    //   />
+    //   <Route
+    //     path="/"
+    //     element={
+    //       <NavigationContextProvider>
+    //         <CandidateTaskContextProvider>
+    //           <CandidateJobsContextProvider>
+    //             <JobContextProvider>
+    //               <CandidateValuesProvider>
+    //                 <AfterSelectionScreen assignedProjects={assignedProjects} />
+    //               </CandidateValuesProvider>
+    //             </JobContextProvider>
+    //           </CandidateJobsContextProvider>
+    //         </CandidateTaskContextProvider>
+    //       </NavigationContextProvider>
+    //     }
+    //   >
+    //     <Route path=":section" element={<AfterSelectionScreen />} />
+    //   </Route>
+    //   <Route path="/logout" element={<Logout />} />
+    //   <Route path="*" element={<ErrorPage />} />
+    // </Routes>
   ) : candidateShortListed ? (
     <Routes>
       <Route
