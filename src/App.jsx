@@ -71,6 +71,7 @@ import Add from "./pages/AdminPage/views/Add/Add";
 import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThreadScreen";
 import GroupLeadTask from "./pages/GroupLeadPage/components/GroupLeadTask";
 import ClaimVouchar from "./pages/TeamleadPage/views/ClaimVouchar/ClaimVouchar";
+import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
 
 function App() {
   console.log = () => {}
@@ -93,6 +94,12 @@ function App() {
   const [assignedProjects, setAssignedProjects] = useState([]);
   const [shorlistedJob, setshorlistedJob] = useState([]);
 
+
+  // USE ONLY WHEN APP IS BROKEN/UNDERGOING MAJOR CHANGES
+  return <Routes>
+    <Route path="*" element={<PageUnderConstruction showProductView={true} />} />
+  </Routes>
+  
   // console.log(shorlistedJob); 
   useDowellLogin(
     setCurrentUser,
