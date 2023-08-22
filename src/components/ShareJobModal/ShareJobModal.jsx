@@ -165,7 +165,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
           "company_data_type": linkToShareObj?.company_data_type,
         }
 
-        if (jobCategory) productDataToPost.jobCategory = jobCategory;
+        if (jobCategory) productDataToPost.job_category = jobCategory;
 
         response = (await createNewProductLink(productDataToPost)).data
       } else {

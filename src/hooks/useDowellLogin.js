@@ -36,7 +36,7 @@ export default function useDowellLogin(
     const publicUserQrId = searchParams.get("qr_id");
     const masterLinkId = searchParams.get("link_id");
     const companyId = searchParams.get("company_id");
-    const jobCategory = searchParams.get("jobCategory");
+    const jobCategory = searchParams.get("job_category");
 
     // FOR PUBLIC USERS
     if (currentPublicSession && currentPublicUserDetails) {
