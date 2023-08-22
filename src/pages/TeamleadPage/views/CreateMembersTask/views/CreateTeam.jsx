@@ -33,9 +33,13 @@ const CreateTeam = () => {
     ?.fakeSuperUserInfo
     ? currentUser?.userportfolio
         ?.filter((user) => user.member_type !== "owner")
-        .map((v) => (v.username.length !== 0 ? Array.isArray(v.username)
-        ? v.username[0]
-        : v.username : null))
+        .map((v) =>
+          v.username.length !== 0
+            ? Array.isArray(v.username)
+              ? v.username[0]
+              : v.username
+            : null
+        )
         .filter((v) => v !== null)
         .map((v, i) => ({ member: v, id: i }))
     : currentUser?.selected_product?.userportfolio
@@ -97,9 +101,13 @@ const CreateTeam = () => {
               .map((v, i) => ({ member: v, id: i }))
           : currentUser?.userportfolio
               ?.filter((user) => user.member_type !== "owner")
-              .map((v) => (v.username.length !== 0 ? Array.isArray(v.username)
-              ? v.username[0]
-              : v.username : null))
+              .map((v) =>
+                v.username.length !== 0
+                  ? Array.isArray(v.username)
+                    ? v.username[0]
+                    : v.username
+                  : null
+              )
               .filter((v) => v !== null)
               .map((v, i) => ({ member: v, id: i }))
       );
@@ -117,8 +125,9 @@ const CreateTeam = () => {
     if (
       !(
         (currentUser.settings_for_profile_info &&
-          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role ===
-            testingRoles.superAdminRole) ||
+          currentUser.settings_for_profile_info.profile_info[
+            currentUser.settings_for_profile_info.profile_info.length - 1
+          ].Role === testingRoles.superAdminRole) ||
         currentUser.isSuperAdmin
       ) &&
       !teamManagementProduct
@@ -151,9 +160,13 @@ const CreateTeam = () => {
         setDesplaidMembers(
           res.data?.userportfolio
             ?.filter((user) => user.member_type !== "owner")
-            .map((v) => (v.username.length !== 0 ? Array.isArray(v.username)
-            ? v.username[0]
-            : v.username : null))
+            .map((v) =>
+              v.username.length !== 0
+                ? Array.isArray(v.username)
+                  ? v.username[0]
+                  : v.username
+                : null
+            )
             .filter((v) => v !== null)
             .map((v, i) => ({ member: v, id: i }))
         );
@@ -309,7 +322,7 @@ const CreateTeam = () => {
                   <h3>No More Members</h3>
                 )}
               </div>
-
+              {/* a */}
               <br />
               <div className="buttons">
                 <button onClick={createTeamSubmit}>
