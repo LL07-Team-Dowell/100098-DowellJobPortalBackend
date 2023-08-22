@@ -4040,7 +4040,6 @@ class Generate_candidate_Report(APIView):
             except Exception:
                 data["hiring_rate"] ="0 %"
 
-            
             return Response(
                 {"message": "Candidate Report Generated","response":data},
                 status=status.HTTP_201_CREATED)
@@ -4150,7 +4149,6 @@ class Generate_candidate_dublicates(APIView):
         data['unique_applicants']=unique_usernames
         data['duplicates_applicants']=duplicates
 
-
         return Response({
             "success":True,
             "data":data,
@@ -4201,7 +4199,6 @@ class Generate_Individual_Report(APIView):
                             }
                 
         tasks_added = dowellconnection(*task_management_reports, "fetch", {"task_added_by":username}, update_field) 
-        
         if len(json.loads(tasks_added)['data']) != 0: 
             months=[]
             for task in json.loads(tasks_added)['data']: 
@@ -4263,7 +4260,6 @@ class Generate_Individual_Report(APIView):
                 item[key].update({"tasks_approved":0})
 
         teams = dowellconnection(*team_management_modules, "fetch", {}, update_field)
-        
         if len(json.loads(teams)['data']) != 0:
             months=[]
             for team in json.loads(teams)['data']: 
@@ -4413,8 +4409,7 @@ class Generate_Individual_Report(APIView):
                     pass 
         else:
             for key, value in item.items():
-                item[key].update({"team_tasks_comments_added":0}) 
-                
+                item[key].update({"team_tasks_comments_added":0})        
         data['data'].append(item)
         return Response(data, status=status.HTTP_201_CREATED)
 
