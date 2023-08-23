@@ -26,6 +26,10 @@ const AddTaskScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelecti
     const [time, settime] = useState(new Date().toString());
     const TimeValue = `${time.split(" ")[0]} ${time.split(" ")[1]} ${time.split(" ")[2]} ${time.split(" ")[3]}`
     const [optionValue, setoptionValue] = useState("");
+    const [ taskStartTime, setTaskStartTime ] = useState("");
+    const [ taskEndTime, setTaskEndTime ] = useState("");
+    const [loading, setLoading] = useState(false);
+
     const selctChange = (e) => {
         setoptionValue(e.target.value);
     }
@@ -43,6 +47,10 @@ const AddTaskScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelecti
         return formattedDate;
     }
 
+    function getDifferenceInMinutes(date1, date2) {
+        const diffInMs = Math.abs(date2 - date1);
+        return diffInMs / (1000 * 60);
+    }
 
     const formattedDate = convertDateFormat(time);
     console.log(formattedDate);
@@ -61,11 +69,27 @@ const AddTaskScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelecti
     // }, [newTaskDetails])
     useEffect(() => {
         if (newTaskDetails.description.length < 1 || optionValue.length < 1) return setDisabled(true);
+        if (taskStartTime.length < 1 || taskEndTime.length < 1) return setDisabled(true);
+
         setDisabled(false)
 
-    }, [newTaskDetails.description, optionValue]);
+    }, [newTaskDetails.description, optionValue, taskStartTime, taskEndTime]);
+
     const CreateNewTaskFunction = () => {
+        const [ endTimeInDateFormat, startTimeInDateFormat, today ] = [
+            new Date(`${new Date().toDateString()} ${taskEndTime}`), 
+            new Date(`${new Date().toDateString()} ${taskStartTime}`),
+            new Date(),
+        ]
+        // if (startTimeInDateFormat.getTime() < today.getTime()) return toast.info('The time you are starting this task has to be later than the current time for today');
+        if (endTimeInDateFormat.getTime() < startTimeInDateFormat.getTime()) return toast.info('The time you finished your task has to be later than the time you started it');
+
+        const minutesDiffInStartAndEndTime = getDifferenceInMinutes(endTimeInDateFormat, startTimeInDateFormat);
+        if (minutesDiffInStartAndEndTime > 15) return toast.info('The time you finished your task must be within 15 minutes of its starting time');
+
         setDisabled(true)
+        setLoading(true)
+
         const dataToPost = {
             project: optionValue,
             applicant: currentUser.userinfo.username,
@@ -73,7 +97,10 @@ const AddTaskScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelecti
             task_added_by: currentUser.userinfo.username,
             data_type: currentUser.portfolio_info[0].data_type,
             company_id: currentUser.portfolio_info[0].org_id,
-            task_created_date: formattedDate
+            task_created_date: formattedDate,
+            task_type: "Custom",
+            start_time: convertDateFormat(startTimeInDateFormat),
+            end_time: convertDateFormat(endTimeInDateFormat),
         }
         createCandidateTask(dataToPost).then(resp => {
             console.log(resp);
@@ -82,13 +109,16 @@ const AddTaskScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelecti
             })
             setNewTaskDetails({ ...newTaskDetails, "description": "" });
             setoptionValue("");
-            toast.success("New task sucessfully added")
+            toast.success("New task successfully added")
             setDisabled(false)
+            setLoading(false)
             closeTaskScreen();
         })
             .catch(err => {
                 console.log(err);
                 setDisabled(false)
+                setLoading(false)
+                toast.error("An error occurred while trying to add your task")
             })
     }
     useEffect(() => {
@@ -204,9 +234,43 @@ const AddTaskScreen = ({ teamMembers, closeTaskScreen, updateTasks, afterSelecti
                         <span className="selectProject">Select Project</span>
                         <br />
                         <select onChange={e => selctChange(e)} className="addTaskDropDown" style={{ margin: 0, marginBottom: "0.8rem"  }} ><option value={""}>Select</option>{assignedProject.map((v, i) => <option key={i} value={v}>{v}</option>)}</select>
+                        <div className="task__Timing__Wrapper">
+                            <div>
+                                <span className="selectProject">Time started task</span>   
+                                <input 
+                                    type={"time"} 
+                                    placeholder={"start time of task"} 
+                                    value={taskStartTime} 
+                                    style={{ margin: 0, marginBottom: "0.8rem" }} 
+                                    onChange={({ target }) => setTaskStartTime(target.value)}
+                                />
+                            </div>   
+                            <div>
+                                <span className="selectProject">Time finished task</span>   
+                                <input 
+                                    type={"time"} 
+                                    placeholder={"end time of task"} 
+                                    value={taskEndTime} 
+                                    style={{ margin: 0, marginBottom: "0.8rem" }} 
+                                    onChange={({ target }) => setTaskEndTime(target.value)}
+                                    max={
+                                        `${
+                                            Number(new Date(new Date(`${new Date().toDateString()} ${taskStartTime}`).getTime() + 15 * 60000).getHours()) < 10 ? 
+                                                '0' + new Date(new Date(`${new Date().toDateString()} ${taskStartTime}`).getTime() + 15 * 60000).getHours() 
+                                                    : 
+                                                new Date(new Date(`${new Date().toDateString()} ${taskStartTime}`).getTime() + 15 * 60000).getHours()
+                                        }:${
+                                            new Date(new Date(`${new Date().toDateString()} ${taskStartTime}`).getTime() + 15 * 60000).getMinutes()
+                                        }`
+                                    }
+                                    readOnly={taskStartTime.length < 1 ? true : false}
+                                />
+                            </div>    
+                        </div>
+                        
                         <span className="selectProject">Enter Task Details</span>
                         <textarea placeholder="Enter Task" name="description" value={newTaskDetails.description} style={{ margin: 0 }} onChange={handleChange} rows={5}></textarea>
-                        <button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateTaskBtnClick() : CreateNewTaskFunction()}>{editPage ? "Update Task" : "Add Task"}</button>
+                        <button type={"button"} className="add__Task__Btn" disabled={disabled} onClick={() => editPage ? handleUpdateTaskBtnClick() : CreateNewTaskFunction()}>{loading ? "Please wait..." : editPage ? "Update Task" : "Add Task"}</button>
                     </> :
 
                         <>

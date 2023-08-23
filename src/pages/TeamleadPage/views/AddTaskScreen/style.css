@@ -120,6 +120,16 @@
     filter: brightness(0.8);
 }
 
+.add__New__Task__Container .task__Timing__Wrapper {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    min-height: 2rem;
+}
+
+.add__New__Task__Container .task__Timing__Wrapper input {
+    padding: 0.6rem;
+}
 
 @keyframes fadeIn {
     from {

@@ -17,6 +17,8 @@ import { SettingsAccessibility } from '@mui/icons-material';
 import { IoMdRefresh } from 'react-icons/io';
 import { getCandidateApplicationsForHr } from '../../../../services/hrServices';
 import notFOundImage from '../../../../assets/images/user-not-found.jpg';
+import dowellLogo from '../../../../assets/images/landing-logo.png';
+import { uxlivingLabURL } from "../../../../utils/utils";
 
 function JobScreen() {
     const { jobs, setJobs } = useJobContext();
@@ -322,6 +324,7 @@ function JobScreen() {
             isLoading ? <LoadingSpinner /> :
 
                 isProductUser && productUserDetails.onlySingleJobCategoryPermitted && (productUserDetails.categoryPassed !== currentCategory) ? <>
+                    <img src={dowellLogo} alt='dowell logo' className='logo__Dowell' onClick={() => window.location.replace(uxlivingLabURL)} />
                     <TitleNavigationBar 
                         title={`Category not found`} 
                         showSearchBar={false} 
@@ -332,6 +335,10 @@ function JobScreen() {
                     </div>
                 </> :
                 <>
+                    {
+                        isProductUser && productUserDetails.onlySingleJobCategoryPermitted &&
+                        <img src={dowellLogo} alt='dowell logo' className='logo__Dowell' onClick={() => window.location.replace(uxlivingLabURL)} />
+                    }
                     <TitleNavigationBar 
                         title={`${changeToTitleCase(currentCategory)} Jobs`} 
                         hideBackBtn={isProductUser && productUserDetails.onlySingleJobCategoryPermitted ? true : false} 

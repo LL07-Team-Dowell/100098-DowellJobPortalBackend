@@ -32,7 +32,7 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 <div className="vertical__Seperator"></div>
                 <div className="detail__Item">
                     <span className="dot"></span>
-                    <span className="job__Highlight__Item">Stipend: </span>
+                    <span className="job__Highlight__Item">Pay: </span>
                     <span>{job.payment ? job.payment : "Not specified"}</span>
                 </div>
             </div>

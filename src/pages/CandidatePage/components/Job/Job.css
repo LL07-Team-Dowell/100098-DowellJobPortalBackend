@@ -43,6 +43,15 @@
   width: 50%;
 }
 
+.logo__Dowell {
+  max-width: 100%;
+  width: 60px;
+  height: 60px;
+  display: block;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
 @media screen and (max-width: 991px) {
   .candidate__Jobs__Container {
     width: 90%;
