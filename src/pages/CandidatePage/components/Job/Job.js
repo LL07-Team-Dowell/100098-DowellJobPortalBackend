@@ -94,7 +94,7 @@ function JobScreen() {
             }
 
             if (jobCategoryParam === "Freelancer") {
-                setJobSelectionCategories(["Task based", "Time based"])
+                setJobSelectionCategories(["Time based","Task based"])
                 const jobsToDisplayForCurrentCategory = matchedJobs?.filter(job => job.type_of_job === currentJobCategory);
                 if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
