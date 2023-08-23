@@ -51,7 +51,7 @@ class AdminSerializer(serializers.Serializer):
     MODULE_CHOICE = (("Frontend", "Frontend"), ("Backend", "Backend"), ("UI/UX", "UI/UX"),
                      ("Virtual Assistant", "Virtual Assistant"),
                      ("Web", "Web"), ("Mobile", "Mobile"))
-    paymentInterval_choice=(("hour","hour"),("day","day"),("month","month"),("year","year"))
+    paymentInterval_choice=(("hour","hour"),("day","day"),("week","week"),("month","month"),("year","year"))
 
     job_number = serializers.CharField(allow_null=False, allow_blank=False)
     job_title = serializers.CharField(allow_null=False, allow_blank=False)
