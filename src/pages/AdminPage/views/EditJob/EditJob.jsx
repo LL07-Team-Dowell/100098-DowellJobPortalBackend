@@ -585,11 +585,14 @@ function EditJob({ subAdminView }) {
                     value={intervalOption}
                     onChange={handleIntervalChange}
                   >
-                    <option value="" selected={intervalOption === ""} disabled>
+                    <option value="" selected={intervalOption === "" || !intervalOption} disabled>
                       Select payment interval
                     </option>
                     <option value="hour" selected={intervalOption === "hour"}>
                       Per Hour
+                    </option>
+                    <option value="week" selected={intervalOption === "week"}>
+                      Per Week
                     </option>
                     <option value="day" selected={intervalOption === "day"}>
                       Per Day

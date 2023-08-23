@@ -624,9 +624,12 @@ const AddJob = ({ subAdminView }) => {
                 id="paymentInterval"
                 onChange={handleFourthOptionChange}
               >
-                <option value="">Select Module</option>
+                <option value="">Select payment interval</option>
                 <option value="hour" selected={fourthOption === "hour"}>
                   Per hour
+                </option>
+                <option value="week" selected={fourthOption === "week"}>
+                  Per week
                 </option>
                 <option value="day" selected={fourthOption === "day"}>
                   Per day
