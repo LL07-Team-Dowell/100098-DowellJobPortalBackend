@@ -27,7 +27,9 @@ from .helper import (get_event_id,
     send_mail,
     interview_email,
     targeted_population,
-    period_check
+    period_check,
+    validate_and_generate_times,
+    CustomValidationError
 )
 from .serializers import (
     AccountSerializer,
@@ -1428,6 +1430,18 @@ class create_task(APIView):
     def post(self, request):
         data = request.data
         if data:
+            try:
+                start_time_dt, end_time_dt=validate_and_generate_times(
+                    data.get("task_type"),
+                    data.get("task_created_date"),
+                    data.get("start_time"),
+                    data.get("end_time")
+                )
+
+            except CustomValidationError as e:
+                return Response({
+                    "success":False,
+                    "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
             field = {
                 "eventId": get_event_id()["event_id"],
                 "project": data.get("project"),
@@ -1443,7 +1457,11 @@ class create_task(APIView):
                 "max_updated_date": self.max_updated_date(
                     data.get("task_created_date")
                 ),
+                "task_type":data.get("task_type"),
+                "start_time":start_time_dt,
+                "end_time":end_time_dt
             }
+            
             update_field = {"status": "Nothing to update"}
             insert_response = dowellconnection(
                 *task_management_reports, "insert", field, update_field

@@ -2,7 +2,7 @@ import json
 import requests
 import pprint
 import os
-import datetime
+from datetime import datetime, timedelta
 from rest_framework.response import Response
 from rest_framework import status
 from discord.ext import commands
@@ -314,3 +314,26 @@ def targeted_population(database, collection, fields, period, start_point,end_po
     response = requests.post(url, json=request_data,headers=headers)
 
     return response.text
+
+
+class CustomValidationError(Exception):
+    pass
+
+def validate_and_generate_times(task_type, task_created_date, start_time=None, end_time=None):
+    date_format = "%m/%d/%Y %H:%M:%S" 
+    if task_type == "Day":
+        start_time_dt = datetime.strptime(task_created_date, date_format)
+        end_time_dt = start_time_dt + timedelta(days=1)
+    elif task_type == "Custom":
+        if start_time is None or end_time is None:
+            raise CustomValidationError("For custom task_type, both start_time and end_time are required.")
+        
+        start_time_dt = datetime.strptime(start_time, date_format)
+        end_time_dt = datetime.strptime(end_time, date_format)
+        
+        if end_time_dt > start_time_dt + timedelta(minutes=15):
+            raise CustomValidationError("For custom task_type, end_time must be within 15 minutes of start_time.")
+    else:
+        raise CustomValidationError("Invalid task_type. Please provide a valid task_type.")
+
+    return start_time_dt.strftime(date_format), end_time_dt.strftime(date_format)
