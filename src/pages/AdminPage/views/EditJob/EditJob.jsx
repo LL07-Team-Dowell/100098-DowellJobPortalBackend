@@ -39,7 +39,8 @@ function EditJob({ subAdminView }) {
     workflow_terms: [],
     other_info: [],
     document_id: '',
-    module: ''
+    module: '',
+    paymentInterval: ''
   });
 
   const { currentUser } = useCurrentUserContext();
@@ -47,12 +48,12 @@ function EditJob({ subAdminView }) {
   const { id } = useParams();
   const singleJob = jobs?.filter(job => job["_id"] === id)[0];
   console.log(singleJob);
-  const { payment_terms, created_by, created_on, data_type, description, document_id, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, module } = singleJob || {};
+  const { payment_terms, created_by, created_on, data_type, description, paymentInterval, eventId, general_terms, is_active, job_category, job_number, job_title, other_info, payment, qualification, skills, technical_specification, time_interval, type_of_job, workflow_terms, _id, module } = singleJob || {};
   const [selectedOption, setSelectedOption] = useState(job_category || "");
   const [active, setActive] = useState(is_active);
   // console.log(singleJob);
   const [typeofOption, setTypeofOption] = useState(type_of_job || "");
-  const [secondOption, setSecondOption] = useState("");
+  const [intervalOption, setIntervalOption] = useState("");
   const [thirdOption, setThirdOption] = useState("");
   console.log(thirdOption);
   useEffect(() => {
@@ -60,6 +61,7 @@ function EditJob({ subAdminView }) {
     setActive(is_active);
     setTypeofOption(type_of_job);
     setThirdOption(module)
+    setIntervalOption(paymentInterval)
   }, [singleJob]);
 
   const handleSubmit = async (event) => {
@@ -122,17 +124,20 @@ function EditJob({ subAdminView }) {
 
 
   const handleThirdOptionChange = (e) => {
-    // console.log("Hello");
     const selectedOption = e.target.value;
     console.log("Selected option:", selectedOption);
     setThirdOption(selectedOption);
     setFormData({ ...formData, module: selectedOption })
   };
-  // console.log(formData);
+
+  const handleIntervalChange = (e) => {
+    const selectedOption = e.target.value;
+    setIntervalOption(selectedOption);
+    setFormData({ ...formData, paymentInterval: selectedOption })
+  }
 
   useEffect(() => {
     if (jobs.length > 0) return setLoading(false);
-    // setLoading(true);
     const datass = currentUser.portfolio_info[0].org_id;
     getJobs(datass).then(res => {
       setJobs(res.data.response.data.filter(job => job.data_type === currentUser?.portfolio_info[0]?.data_type));
@@ -575,13 +580,25 @@ function EditJob({ subAdminView }) {
                   <label htmlFor="module">Payment Interval</label>
                   <select
                     className="select"
-                    name={"module"}
+                    name={"paymentInterval"}
                     id="module"
-                    value={thirdOption}
-                    onChange={handleThirdOptionChange}
+                    value={intervalOption}
+                    onChange={handleIntervalChange}
                   >
-                    <option value="Frontend" selected={thirdOption === "Frontend"}>
-                      05/20/08/2023
+                    <option value="hour" selected={intervalOption === "hour"}>
+                      Per Hour
+                    </option>
+                    <option value="day" selected={intervalOption === "day"}>
+                      Per Day
+                    </option>
+                    <option value="month" selected={intervalOption === "month"}>
+                      Per Month
+                    </option>
+                    <option
+                      value="year"
+                      selected={intervalOption === "year"}
+                    >
+                      Per Year
                     </option>
                   </select>
                 </div>

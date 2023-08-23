@@ -99,7 +99,7 @@ function App() {
   // return <Routes>
   //   <Route path="*" element={<PageUnderConstruction showProductView={true} />} />
   // </Routes>
-  
+
   // console.log(shorlistedJob); 
   useDowellLogin(
     setCurrentUser,
@@ -174,7 +174,7 @@ function App() {
               </JobContextProvider>
             }
           /> */}
-          <Route 
+          <Route
             path={`/jobs`}
             element={
               <JobContextProvider>

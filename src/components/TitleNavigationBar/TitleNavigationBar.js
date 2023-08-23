@@ -19,6 +19,7 @@ const TitleNavigationBar = ({ className, title, showSearchBar, handleBackBtnClic
                 }
                 {title && <h1>{title}</h1>}
             </div>
+            
             {isLargeScreen && showSearchBar && <SearchBar />}
         </div>
     </>

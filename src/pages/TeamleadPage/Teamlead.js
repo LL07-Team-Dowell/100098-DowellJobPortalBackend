@@ -32,6 +32,7 @@ import { useCandidateTaskContext } from "../../contexts/CandidateTasksContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { IoMdRefresh } from "react-icons/io";
 import ClaimVouchar from "./views/ClaimVouchar/ClaimVouchar";
+import AddPage from "../GroupLeadPage/components/AddPage";
 
 const Teamlead = ({ isGrouplead }) => {
   const { currentUser } = useCurrentUserContext();
@@ -447,7 +448,7 @@ const Teamlead = ({ isGrouplead }) => {
                   ? "Application Details"
                   :
                   isGrouplead ?
-                    "Add Item"
+                    " "
                     : "Applications"
           }
           hideBackBtn={showCandidate || showCandidateTask ? false : true}
@@ -542,7 +543,8 @@ const Teamlead = ({ isGrouplead }) => {
 
                     {
                       isGrouplead ? <>
-                        <p style={{ textAlign: 'center' }}>More content coming soon...</p>
+                        {/* <p style={{ textAlign: 'center' }}>More content coming soon...</p> */}
+                        <AddPage />
                       </> :
                         <div className="jobs-container">
                           {selectedTabActive ? (
