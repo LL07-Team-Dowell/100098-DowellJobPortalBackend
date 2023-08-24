@@ -3,6 +3,8 @@ import requests
 import pprint
 import os
 from datetime import datetime, timedelta
+import datetime
+import base64
 from rest_framework.response import Response
 from rest_framework import status
 from discord.ext import commands
@@ -33,7 +35,6 @@ def dowellconnection(cluster, database, collection, document, team_member_ID, fu
     res = json.loads(response.text)
 
     return res
-
 
 def get_event_id():
     url = "https://uxlivinglab.pythonanywhere.com/create_event"
@@ -71,7 +72,6 @@ def get_event_id():
     else:
         #print("r---->", r.text,json.loads(r.text))
         return json.loads(r.text)['error']
-
 ### for notification api----------------------------
 def call_notification(url, request_type, data):  ## calling  notification api
     if request_type == 'post':
@@ -102,7 +102,6 @@ def update_string(string):
             return new_str
 
 ### calling the discord api----------------------------
-
 # generate discord invite link
 def discord_invite(server_owner_ids,guild_id, token):
     invite_link = []
@@ -129,7 +128,6 @@ def discord_invite(server_owner_ids,guild_id, token):
     # token file is the token for the bot created
     client.run(token=token)
     return invite_link
-
 # get the channels in the server
 def get_guild_channels(guildid,token):
     """with open(os.getcwd()+"/app/token", "r", encoding="utf-8") as t:
@@ -141,8 +139,8 @@ def get_guild_channels(guildid,token):
     url = f"https://discord.com/api/v9/guilds/{guildid}/channels"  # /{userid}"
     response = requests.request("GET", url=url, headers=headers)
     res = json.loads(response.text)
-
     return res
+
 def get_guild_members(guildid,token):
     """with open(os.getcwd()+"/app/token", "r", encoding="utf-8") as t:
         token = t.read()"""
@@ -155,9 +153,6 @@ def get_guild_members(guildid,token):
     res = json.loads(response.text)
 
     return res
-
-
-
 
 def create_master_link(company_id,links,job_name):
     url = "https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/"
@@ -207,8 +202,6 @@ def set_finalize(linkid):
     #print(response.text)
     return response.text
 
-import base64
-
 def save_image(image):
     url = "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/"
     payload = {
@@ -227,17 +220,20 @@ def period_check(start_dt, end_dt, data_list, key):
             end_dt, "%m/%d/%Y %H:%M:%S"
         )
     items=[]
+    items_ids=[]
     
     for l in data_list:
         try:
             custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%dT%H:%M:%S.%fZ")
             if custom_time >= start_date and custom_time <= end_date:
                 items.append(l) 
+                items_ids.append(l["_id"])
         except Exception:
             try:
                 custom_time=datetime.datetime.strptime(l[key],"%m/%d/%Y")
                 if custom_time >= start_date and custom_time <= end_date:
                     items.append(l) 
+                    items_ids.append(l["_id"])
             except Exception:
                 try:
                     date_string = l[key].replace('(West Africa Standard Time)', '').rstrip()
@@ -245,28 +241,55 @@ def period_check(start_dt, end_dt, data_list, key):
                     custom_time = datetime.datetime.strptime(date_object,"%m/%d/%Y %H:%M:%S")
                     if custom_time >= start_date and custom_time <= end_date:
                         items.append(l)
+                        items_ids.append(l["_id"])
                 except Exception:
                     try:
                         custom_time=datetime.datetime.strptime(l[key],"%m/%d/%Y %H:%M:%S")
                         if custom_time >= start_date and custom_time <= end_date:
                             items.append(l) 
+                            items_ids.append(l["_id"])
                     except Exception:
                         try:
                             custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%d")
                             if custom_time >= start_date and custom_time <= end_date:
                                 items.append(l) 
+                                items_ids.append(l["_id"])
                         except Exception:
                             try:
                                 custom_time=datetime.datetime.strptime(l[key],"%d/%m/%Y")
                                 if custom_time >= start_date and custom_time <= end_date:
                                     items.append(l) 
+                                    items_ids.append(l["_id"])
                             except Exception as error:
                                 #print("error", error)
                                 pass
-    return items, len(items)
-
-def targeted_population(database, collection, fields, period, start_point,end_point):
-    url = 'http://100032.pythonanywhere.com/api/targeted_population/'
+    return items, len(items),items_ids,len(items_ids)
+def set_date_format(date):
+    try:
+        iso_format =datetime.datetime.strptime(date, '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        return iso_format
+    except Exception:
+        try:
+            iso_format =datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+            return iso_format
+        except Exception:
+            try:
+                iso_format =datetime.datetime.strptime(date, '%m/%d/%Y').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                return iso_format
+            except Exception:
+                try:
+                    date_string = date.replace('(West Africa Standard Time)', '').rstrip()
+                    iso_format =datetime.datetime.strptime(date_string, '%a %b %d %Y %H:%M:%S %Z%z').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                    return iso_format
+                except Exception:
+                    try:
+                        iso_format =datetime.datetime.strptime(date, '%d/%m/%Y').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                        return iso_format
+                    except Exception:
+                        return ""
+    
+def targeted_population(database, collection, fields, period,column_name, start_point,end_point):
+    url = 'https://100032.pythonanywhere.com/api/targeted_population/'
 
     database_details = {
         'database_name': 'mongodb',
@@ -288,8 +311,8 @@ def targeted_population(database, collection, fields, period, start_point,end_po
         'start_point': start_point,
         'end_point': end_point,
         'split': 'week',
-        'time_input_type' : 'eventID',
-        'column_name': 'eventId',
+        'time_type_in_db': "iso",#iso|eventID|dowell_time
+        'column_name': column_name# eg'created_on','application_submitted_on','eventId', etc
     }
 
     stage_input_list= []
@@ -312,7 +335,6 @@ def targeted_population(database, collection, fields, period, start_point,end_po
     headers = {'content-type': 'application/json'}
 
     response = requests.post(url, json=request_data,headers=headers)
-
     return response.text
 
 
@@ -320,16 +342,16 @@ class CustomValidationError(Exception):
     pass
 
 def validate_and_generate_times(task_type, task_created_date, start_time=None, end_time=None):
-    date_format = "%m/%d/%Y %H:%M:%S" 
+    date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
     if task_type == "Day":
-        start_time_dt = datetime.strptime(task_created_date, date_format)
+        start_time_dt = datetime.datetime.strptime(task_created_date, date_format)
         end_time_dt = start_time_dt + timedelta(days=1)
     elif task_type == "Custom":
         if start_time is None or end_time is None:
             raise CustomValidationError("For custom task_type, both start_time and end_time are required.")
         
-        start_time_dt = datetime.strptime(start_time, date_format)
-        end_time_dt = datetime.strptime(end_time, date_format)
+        start_time_dt = datetime.datetime.strptime(start_time, date_format)
+        end_time_dt = datetime.datetime.strptime(end_time, date_format)
         
         if end_time_dt > start_time_dt + timedelta(minutes=15):
             raise CustomValidationError("For custom task_type, end_time must be within 15 minutes of start_time.")
@@ -337,3 +359,4 @@ def validate_and_generate_times(task_type, task_created_date, start_time=None, e
         raise CustomValidationError("Invalid task_type. Please provide a valid task_type.")
 
     return start_time_dt.strftime(date_format), end_time_dt.strftime(date_format)
+
