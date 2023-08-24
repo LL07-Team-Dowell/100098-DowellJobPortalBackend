@@ -124,7 +124,7 @@ const AddTaskScreen = ({
         console.log({ taskStartTime, taskEndTime, duration });
       }
     } else {
-      toast.error("Not all inputs should be filled");
+      toast.error("all inputs should be filled");
     }
   };
 
@@ -142,7 +142,7 @@ const AddTaskScreen = ({
         console.log({ taskStartTime, taskEndTime, duration });
       }
     } else {
-      toast.error("Not all inputs should be filled");
+      toast.error(" all inputs should be filled");
     }
   };
 
