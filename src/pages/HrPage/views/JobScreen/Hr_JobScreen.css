@@ -140,6 +140,26 @@
   margin-bottom: 2rem;
 }
 
+.refresh-container-account {
+  position: relative;
+  top: 2rem;
+  left: 0;
+  right: 1rem;
+  width: 100%;
+  margin: auto;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.3rem;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  width: 75%;
+  display: flex;
+  flex-direction: row-reverse;
+  background-color: white;
+  margin-bottom: 2rem;
+}
+
+
 .refresh-btn-teamlead {
   background-color: #005734;
   width: 100px;
@@ -147,6 +167,17 @@
   padding: 0.4rem 0.8rem;
   border-radius: 0.3rem;
   color: #fff;
+}
+
+.refresh-btn-account {
+  background-color: #005734;
+  width: 100px;
+  margin-left: 0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.3rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
 }
 
 .refresh-btn-applied {

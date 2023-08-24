@@ -42,7 +42,7 @@ const AccountPage = () => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const [searchValue, setSearchValue] = useState("");
   const [filteredJobs, setFilteredJobs] = useState(jobs);
-  const [ loading, setLoading ] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = (value) => {
     console.log("value", value);
@@ -114,7 +114,7 @@ const AccountPage = () => {
       .then((res) => {
         const jobsMatchingCurrentCompany = res[0].data.response.data.filter(
           (job) => job.data_type === currentUser?.portfolio_info[0].data_type &&
-          job.is_active
+            job.is_active
         );
         setJobs(jobsMatchingCurrentCompany);
 
@@ -314,12 +314,12 @@ const AccountPage = () => {
           section === "home"
             ? "hire"
             : section === "rejected"
-            ? "reject"
-            : showOnboarding
-            ? "onboarding"
-            : rehireTabActive
-            ? "rehire"
-            : "hire"
+              ? "reject"
+              : showOnboarding
+                ? "onboarding"
+                : rehireTabActive
+                  ? "rehire"
+                  : "hire"
         }
         hideSearchBar={section === "user" ? true : false}
       >
@@ -328,8 +328,8 @@ const AccountPage = () => {
             showCandidate
               ? "Application Details"
               : section === "user"
-              ? "Profile"
-              : "Applications"
+                ? "Profile"
+                : "Applications"
           }
           hideBackBtn={!showCandidate ? true : false}
           handleBackBtnClick={handleBackBtnClick}
@@ -340,11 +340,11 @@ const AccountPage = () => {
               isLargeScreen
                 ? ["Hire", "Onboarding", "Rehire", "Reject"]
                 : [
-                    { icon: <BsPersonPlus />, text: "Hire" },
-                    { icon: <BsPersonCheck />, text: "Onboarding" },
-                    { icon: <AiOutlineRedo />, text: "Rehire" },
-                    { icon: <BsPersonX />, text: "Reject" },
-                  ]
+                  { icon: <BsPersonPlus />, text: "Hire" },
+                  { icon: <BsPersonCheck />, text: "Onboarding" },
+                  { icon: <AiOutlineRedo />, text: "Rehire" },
+                  { icon: <BsPersonX />, text: "Reject" },
+                ]
             }
             currentActiveItem={currentActiveItem}
             handleMenuItemClick={handleMenuItemClick}
@@ -370,19 +370,19 @@ const AccountPage = () => {
                       hireTabActive
                         ? candidatesData.candidatesToHire
                         : showOnboarding
-                        ? candidatesData.onboardingCandidates
-                        : rehireTabActive
-                        ? candidatesData.candidatesToRehire
-                        : []
+                          ? candidatesData.onboardingCandidates
+                          : rehireTabActive
+                            ? candidatesData.candidatesToRehire
+                            : []
                     }
                     jobTitle={
                       jobs.filter(
                         (job) => job.job_number === currentCandidate.job_number
                       ).length >= 1
                         ? jobs.filter(
-                            (job) =>
-                              job.job_number === currentCandidate.job_number
-                          )[0].job_title
+                          (job) =>
+                            job.job_number === currentCandidate.job_number
+                        )[0].job_title
                         : ""
                     }
                     showApplicationDetails={true}
@@ -393,10 +393,10 @@ const AccountPage = () => {
                 ) : (
                   <>
                     <button
-                      className="refresh-container"
+                      className="refresh-container-account"
                       onClick={handleRefreshForCandidateApplicationsForTeamlead}
                     >
-                      <div className="refresh-btn">
+                      <div className="refresh-btn-account">
                         <IoMdRefresh />
                         <p>Refresh</p>
                       </div>
@@ -409,12 +409,14 @@ const AccountPage = () => {
                             ? filteredJobs.length
                             : candidatesData.candidatesToHire.length
                           : showOnboarding
-                          ? candidatesData.onboardingCandidates.length
-                          : rehireTabActive
-                          ? candidatesData.candidatesToRehire.length
-                          : 0
+                            ? candidatesData.onboardingCandidates.length
+                            : rehireTabActive
+                              ? candidatesData.candidatesToRehire.length
+                              : 0
                       }
                     />
+
+
 
                     <div className="jobs-container">
                       {hireTabActive ? (
@@ -432,10 +434,10 @@ const AccountPage = () => {
                                         job.job_number === dataitem.job_number
                                     )
                                       ? jobs.find(
-                                          (job) =>
-                                            job.job_number ===
-                                            dataitem.job_number
-                                        ).job_title
+                                        (job) =>
+                                          job.job_number ===
+                                          dataitem.job_number
+                                      ).job_title
                                       : ""
                                   }
                                   handleBtnClick={handleViewBtnClick}
@@ -457,10 +459,10 @@ const AccountPage = () => {
                                         job.job_number === dataitem.job_number
                                     )
                                       ? jobs.find(
-                                          (job) =>
-                                            job.job_number ===
-                                            dataitem.job_number
-                                        ).job_title
+                                        (job) =>
+                                          job.job_number ===
+                                          dataitem.job_number
+                                      ).job_title
                                       : ""
                                   }
                                   handleBtnClick={handleViewBtnClick}
@@ -484,10 +486,10 @@ const AccountPage = () => {
                                         job.job_number === dataitem.job_number
                                     )
                                       ? jobs.find(
-                                          (job) =>
-                                            job.job_number ===
-                                            dataitem.job_number
-                                        ).job_title
+                                        (job) =>
+                                          job.job_number ===
+                                          dataitem.job_number
+                                      ).job_title
                                       : ""
                                   }
                                   handleBtnClick={handleViewBtnClick}
@@ -510,10 +512,10 @@ const AccountPage = () => {
                                           job.job_number === dataitem.job_number
                                       )
                                         ? jobs.find(
-                                            (job) =>
-                                              job.job_number ===
-                                              dataitem.job_number
-                                          ).job_title
+                                          (job) =>
+                                            job.job_number ===
+                                            dataitem.job_number
+                                        ).job_title
                                         : ""
                                     }
                                     handleBtnClick={handleViewBtnClick}
@@ -538,10 +540,10 @@ const AccountPage = () => {
                                         job.job_number === dataitem.job_number
                                     )
                                       ? jobs.find(
-                                          (job) =>
-                                            job.job_number ===
-                                            dataitem.job_number
-                                        ).job_title
+                                        (job) =>
+                                          job.job_number ===
+                                          dataitem.job_number
+                                      ).job_title
                                       : ""
                                   }
                                   handleBtnClick={handleViewBtnClick}
@@ -564,10 +566,10 @@ const AccountPage = () => {
                                           job.job_number === dataitem.job_number
                                       )
                                         ? jobs.find(
-                                            (job) =>
-                                              job.job_number ===
-                                              dataitem.job_number
-                                          ).job_title
+                                          (job) =>
+                                            job.job_number ===
+                                            dataitem.job_number
+                                        ).job_title
                                         : ""
                                     }
                                     handleBtnClick={handleViewBtnClick}
@@ -616,9 +618,9 @@ const AccountPage = () => {
                                 (job) => job.job_number === dataitem.job_number
                               )
                                 ? jobs.find(
-                                    (job) =>
-                                      job.job_number === dataitem.job_number
-                                  ).job_title
+                                  (job) =>
+                                    job.job_number === dataitem.job_number
+                                ).job_title
                                 : ""
                             }
                             handleBtnClick={handleViewBtnClick}
