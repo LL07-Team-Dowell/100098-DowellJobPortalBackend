@@ -54,7 +54,10 @@ from .serializers import (
     ThreadsSerializer,
     CommentsSerializer,
     PublicProductURLSerializer,
-    UpdatePaymentStatusSerializer
+    UpdatePaymentStatusSerializer,
+    TaskModuleSerializer,
+    GetCandidateTaskSerializer,
+    UpdateTaskByCandidateSerializer
 )
 
 
@@ -4495,3 +4498,236 @@ class Update_payment_status(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class task_module(APIView):
+    def post(self, request):
+        type_request = request.GET.get('type')
+
+        if type_request == "add_task":
+            return self.add_task(request)
+        elif type_request == "get_candidate_task":
+            return self.get_candidate_task(request)
+        elif type_request == "update_candidate_task":
+            return self.update_candidate_task(request)
+        else:
+            return self.handle_error(request)
+    
+    def get(self, request):
+        type_request = request.GET.get('type')
+
+        if type_request == "save_task":
+            return self.save_task(request)
+        else:
+            return self.handle_error(request)
+
+    def add_task(self, request):
+        data = request.data
+        project =  data.get("project")
+        applicant =  data.get("applicant")
+        task =  data.get("task")
+        task_added_by =  data.get("task_added_by")
+        data_type =  data.get("data_type")
+        company_id =  data.get("company_id")
+        task_created_date =  data.get("task_created_date")
+        task_type = data.get("task_type")
+        start_time =  data.get("start_time")
+        end_time =  data.get("end_time")
+        user_id =  data.get("user_id")
+
+        data = {
+            "project": project,
+            "applicant": applicant,
+            "task": task,
+            "task_added_by": task_added_by, 
+            "data_type": data_type,
+            "company_id": company_id,
+            "task_created_date": task_created_date,
+            "task_type": task_type,
+            "start_time": start_time,
+            "end_time": end_time,
+            "user_id": user_id     
+        }
+
+        serializer = TaskModuleSerializer(data = data)
+        if serializer.is_valid():
+            field = {
+                "eventId": get_event_id()["event_id"],
+                "applicant": applicant,
+                "task_added_by": task_added_by, 
+                "data_type": data_type,
+                "company_id": company_id,
+                "task_created_date": task_created_date,
+                "task_updated_date": "",
+                "user_id": user_id,
+                "status": "Incomplete",
+                "approval": False,
+                "task_saved": False,
+            }
+            
+            response = json.loads(dowellconnection(*task_management_reports,"insert", field, update_field=None))
+            if response["isSuccess"]:
+                field = {
+                    "task": task,
+                    "project": project,
+                    "user_id": user_id,
+                    "task_type": task_type,
+                    "company_id": company_id,
+                    "start_time": start_time,
+                    "end_time": end_time,
+                    "task_created_date":task_created_date,
+                    "task_id": response["inserted_id"],
+                }
+                response = json.loads(dowellconnection(*task_details_module, "insert", field, update_field= None))
+                if response["isSuccess"]:
+                    return Response({
+                        "success": True,
+                        "message": "Task added successfully"
+                    })
+                else:
+                    return Response({
+                        "success": False,
+                        "message": "Failed to add task"
+                    })
+            else:
+                return Response({
+                    "success": False,
+                    "message": "Failed to create task",
+                })
+        else:
+            return Response({
+                "success": False,
+                "message": "Posting wrong data to API",
+                "error": serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)
+    
+    def get_candidate_task(self,request):
+        data = request.data
+        user_id = data.get('user_id')
+        company_id = data.get('company_id')
+        data_type = data.get('data_type')
+        task_created_date = data.get('task_created_date')
+
+        field = {
+            "user_id": user_id,
+            "company_id": company_id,
+            "data_type": data_type,
+            "task_created_date": task_created_date
+        }
+        serializer = GetCandidateTaskSerializer(data=field)
+        if serializer.is_valid():
+            task_details_field = {
+                "user_id": user_id,
+                "company_id": company_id,
+                "data_type": data_type,
+            }
+            respone = json.loads(dowellconnection(*task_management_reports,"fetch", task_details_field , update_field= None))
+            task_field = {
+                "user_id": user_id,
+                "task_created_date": task_created_date
+            }
+            task_resonse = json.loads(dowellconnection(*task_details_module,"fetch", task_field , update_field= None))
+            return Response({
+                "success": True,
+                "message": f"Task details of {user_id}",
+                "task_details": respone["data"],
+                "task": task_resonse["data"]
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "Posting wrong data to API",
+                "error": serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)
+
+    def update_candidate_task(self,request):
+        data = request.data
+        task_id=  request.GET.get("task_id")
+        project =  data.get("project")
+        task =  data.get("task")
+        data_type =  data.get("data_type")
+        company_id =  data.get("company_id")
+        task_type = data.get("task_type")
+        start_time =  data.get("start_time")
+        end_time =  data.get("end_time")
+        user_id =  data.get("user_id")
+        task_created_date =  data.get("task_created_date")
+
+        data = {
+            "task_id": task_id,
+            "project": project,
+            "task": task,
+            "data_type": data_type,
+            "company_id": company_id,
+            "task_created_date": task_created_date,
+            "task_type": task_type,
+            "start_time": start_time,
+            "end_time": end_time,
+            "user_id": user_id     
+        }
+
+        serializer = UpdateTaskByCandidateSerializer(data=data)
+        if serializer.is_valid():
+            field = {
+                "task": task,
+                "user_id": user_id,
+                "company_id": company_id,
+                "start_time": start_time,
+                "end_time": end_time,
+                "task_created_date":task_created_date,
+                "task_id": task_id,
+            }
+            response = json.loads(dowellconnection(*task_details_module,"insert",field, update_field=None))
+            if response["isSuccess"]:
+                return Response({
+                    "success": True,
+                    "message": "Task added successfully"
+                })
+            else:
+                return Response({
+                    "success": True,
+                    "message": "Failed to add task"
+                })
+        else:
+            return Response({
+                "success": False,
+                "message": "Posting wrong data to API",
+                "error": serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)
+
+    def save_task(self, request):
+        task_id= request.GET.get("task_id")
+        field = {
+            "_id": task_id
+        }
+        update_field = {
+           "task_saved": True 
+        }
+        response = json.loads(dowellconnection(*task_management_reports,"update",field,update_field))
+        if response["isSuccess"]:
+            return Response({
+                "success": True,
+                "message": "Task saved successfully"
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "Failed save task"
+            })
+        
+    """HANDLE ERROR"""
+    def handle_error(self, request): 
+        return Response({
+            "success": False,
+            "message": "Invalid request type"
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # def max_updated_date(self, updated_date):
+    #     task_updated_date = datetime.datetime.strptime(
+    #         updated_date, "%m/%d/%Y %H:%M:%S"
+    #     )
+    #     _date = task_updated_date + relativedelta(hours=12)
+    #     return str(_date)
+
+   

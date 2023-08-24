@@ -47,6 +47,10 @@ urlpatterns = [
     path('task_request_update/<str:document_id>/', task_request_update.as_view()),
     path('approve_task/', approve_task.as_view()),
     path('delete_task/<str:document_id>/', delete_task.as_view()),
+    
+    # task management v2-----------
+    path('task_module/', task_module.as_view()),
+
 
     # team task management--------------------------------------------
     path('create_team/', create_team.as_view()),

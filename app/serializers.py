@@ -310,3 +310,43 @@ class PublicProductURLSerializer(serializers.Serializer):
 class UpdatePaymentStatusSerializer(serializers.Serializer):
     payment_requested = serializers.BooleanField(required=True, allow_null=False)
     current_payment_request_status = serializers.CharField(allow_null=False, allow_blank=False)
+
+
+class TaskModuleSerializer(serializers.Serializer):
+    TASK_TYPE = (
+        ('MEETING UPDATE', 'MEETING UPDATE'),
+        ('TASK UPDATE', 'TASK UPDATE'),
+    )
+    project = serializers.CharField(allow_null=False, allow_blank=False)
+    task_type = serializers.ChoiceField(allow_null=False, allow_blank=False, choices=TASK_TYPE)
+    applicant = serializers.CharField(allow_null=False, allow_blank=False)
+    task = serializers.CharField(allow_null=False, allow_blank=False)
+    task_added_by = serializers.CharField(allow_null=False, allow_blank=False)
+    data_type = serializers.CharField(allow_null=True, allow_blank=True)
+    company_id = serializers.CharField(allow_null=True, allow_blank=True)
+    task_created_date = serializers.DateField(allow_null=True)
+    start_time = serializers.TimeField(allow_null=False) 
+    end_time = serializers.TimeField(allow_null=False)   
+    user_id = serializers.CharField(allow_null=True, allow_blank=True)
+
+class GetCandidateTaskSerializer(serializers.Serializer):
+    company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    user_id = serializers.CharField(allow_null=False, allow_blank=False)
+    data_type = serializers.CharField(allow_null=False, allow_blank=False)
+    task_created_date = serializers.DateField(allow_null=True)
+
+class UpdateTaskByCandidateSerializer(serializers.Serializer):
+    TASK_TYPE = (
+        ('MEETING UPDATE', 'MEETING UPDATE'),
+        ('TASK UPDATE', 'TASK UPDATE'),
+    )
+    project = serializers.CharField(allow_null=False, allow_blank=False)
+    task_type = serializers.ChoiceField(allow_null=False, allow_blank=False, choices=TASK_TYPE)
+    task_id = serializers.CharField(allow_null=False, allow_blank=False)
+    task = serializers.CharField(allow_null=False, allow_blank=False)
+    data_type = serializers.CharField(allow_null=True, allow_blank=True)
+    company_id = serializers.CharField(allow_null=True, allow_blank=True)
+    task_created_date = serializers.DateField(allow_null=True)
+    start_time = serializers.TimeField(allow_null=False) 
+    end_time = serializers.TimeField(allow_null=False)   
+    user_id = serializers.CharField(allow_null=True, allow_blank=True)  
