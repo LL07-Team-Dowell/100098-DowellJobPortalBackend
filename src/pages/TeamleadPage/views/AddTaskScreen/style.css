@@ -188,7 +188,9 @@
   border: 1px solid #ddd;
   padding: 8px;
 }
-
+#customers tr {
+  position: relative;
+}
 #customers tr:nth-child(even) {
   background-color: #f2f2f2;
 }
@@ -203,4 +205,17 @@
   text-align: left;
   background-color: #04aa6d;
   color: white;
+}
+#customers button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 999;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+#customers .delete {
+  top: 50%;
+  bottom: 0;
 }

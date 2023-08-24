@@ -413,9 +413,14 @@ const AddTaskScreen = ({
                         <td>{task.end_time}</td>
                         <td>{task.taskName}</td>
                         <td>{task.details}</td>
-                        <button onClick={() => getTaskId(task.id)}>edit</button>
-                        <button onClick={() => deleteTask(task.id)}>
-                          delete
+                        <button onClick={() => getTaskId(task.id)}>
+                          <AiFillEdit />
+                        </button>
+                        <button
+                          onClick={() => deleteTask(task.id)}
+                          className="delete"
+                        >
+                          <AiOutlineClose />
                         </button>
                       </tr>
                     ))}
@@ -494,23 +499,37 @@ const AddTaskScreen = ({
                 </div>
                 <div>
                   <button
-                    style={{ backgroundColor: "##005734" }}
+                    style={{
+                      backgroundColor: "#005734",
+                      width: 50,
+                      height: 50,
+                      borderRadius: "50%",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
                     onClick={isCreatingTask ? addNewTask : updateTask}
                   >
-                    {isCreatingTask ? <AiOutlinePlus /> : <AiFillEdit />}
+                    {isCreatingTask ? (
+                      <AiOutlinePlus
+                        style={{
+                          color: "white",
+                          fontWeight: "600",
+                          fontSize: 20,
+                        }}
+                      />
+                    ) : (
+                      <AiFillEdit
+                        style={{
+                          color: "white",
+                          fontWeight: "600",
+                          fontSize: 20,
+                        }}
+                      />
+                    )}
                   </button>
                 </div>
               </div>
 
-              <span className="selectProject">Enter Task Details</span>
-              <textarea
-                placeholder="Enter Task"
-                name="description"
-                value={newTaskDetails.description}
-                style={{ margin: 0 }}
-                onChange={handleChange}
-                rows={5}
-              ></textarea>
               <button
                 type={"button"}
                 className="add__Task__Btn"
