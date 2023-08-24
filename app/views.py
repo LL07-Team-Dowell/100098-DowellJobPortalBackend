@@ -29,7 +29,8 @@ from .helper import (get_event_id,
     targeted_population,
     period_check,
     validate_and_generate_times,
-    CustomValidationError
+    CustomValidationError,
+    set_date_format
 )
 from .serializers import (
     AccountSerializer,
@@ -143,8 +144,6 @@ class serverStatus(APIView):
             {"info": "Welcome to Dowell-Job-Portal-Version 2.0"},
             status=status.HTTP_200_OK,
         )
-
-
 # api for job portal ends here--------------------------------
 
 
@@ -160,7 +159,7 @@ class accounts_onboard_candidate(APIView):
             }
             update_field = {
                 "status": data.get("status"),
-                "onboarded_on": data.get("onboarded_on"),
+                "onboarded_on": set_date_format(data.get("onboarded_on")),
             }
             insert_to_hr_report = {
                 "event_id": get_event_id()["event_id"],
@@ -169,8 +168,7 @@ class accounts_onboard_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
-                "onboarded_on": data.get("onboarded_on"),
-               
+                "onboarded_on": set_date_format(data.get("onboarded_on"))
             }
             serializer = AccountSerializer(data=data)
             if serializer.is_valid():
@@ -384,7 +382,7 @@ class accounts_reject_candidate(APIView):
             update_field = {
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
-                "rejected_on": data.get("rejected_on"),
+                "rejected_on": set_date_format(data.get("rejected_on")),
                 "data_type": data.get("data_type"),
             }
             insert_to_account_report = {
@@ -394,7 +392,7 @@ class accounts_reject_candidate(APIView):
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
-                "rejected_on": data.get("rejected_on"),
+                "rejected_on": set_date_format(data.get("rejected_on")),
 
             }
             serializer = RejectSerializer(data=data)
@@ -476,7 +474,6 @@ class accounts_reject_candidate(APIView):
                 for field_name, field_errors in default_errors.items():
                     new_error[field_name] = field_errors[0]
                 return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-
 # api for account management ends here______________________
 
 # api for admin management starts here______________________
@@ -506,7 +503,7 @@ class admin_create_jobs(APIView):
             "company_id": data.get("company_id"),
             "data_type": data.get("data_type"),
             "created_by": data.get("created_by"),
-            "created_on": data.get("created_on"),
+            "created_on": set_date_format(data.get("created_on")),
             "paymentInterval":data.get("paymentInterval")
         }
         update_field = {"status": "nothing to update"}
@@ -667,7 +664,7 @@ class candidate_apply_job(APIView):
         # Check if applicant is present in rejected_reports_modules
         if applicant is not None:
             rejected_dates = [
-                datetime.datetime.strptime(item["rejected_on"], "%m/%d/%Y")
+                datetime.datetime.strptime(item["rejected_on"], "%Y-%m-%dT%H:%M:%S.%fZ")
                 for item in json.loads(applicant)["data"]
             ]
             if len(rejected_dates) >= 1:
@@ -734,7 +731,7 @@ class candidate_apply_job(APIView):
             "data_type": data.get("data_type"),
             "user_type": data.get("user_type"),
             "scheduled_interview_date": "",
-            "application_submitted_on": data.get("application_submitted_on"),
+            "application_submitted_on": set_date_format(data.get("application_submitted_on")),
             "shortlisted_on": "",
             "selected_on": "",
             "hired_on": "",
@@ -888,7 +885,6 @@ class get_all_onboarded_candidate(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_candidate_application(APIView):
     def delete(self, request, document_id):
@@ -930,7 +926,7 @@ class hr_shortlisted_candidate(APIView):
             update_field = {
                 "hr_remarks": data.get("hr_remarks"),
                 "status": data.get("status"),
-                "shortlisted_on": data.get("shortlisted_on"),
+                "shortlisted_on": set_date_format(data.get("shortlisted_on")),
             }
             insert_to_hr_report = {
                 "event_id": get_event_id()["event_id"],
@@ -939,7 +935,7 @@ class hr_shortlisted_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
-                "shortlisted_on": data.get("shortlisted_on"),
+                "shortlisted_on": set_date_format(data.get("shortlisted_on")),
             }
 
             serializer = HRSerializer(data=data)
@@ -1006,7 +1002,6 @@ class hr_shortlisted_candidate(APIView):
                 for field_name, field_errors in default_errors.items():
                     new_error[field_name] = field_errors[0]
                 return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-
 @method_decorator(csrf_exempt, name="dispatch")
 class hr_selected_candidate(APIView):
     def post(self, request):
@@ -1020,7 +1015,7 @@ class hr_selected_candidate(APIView):
                 "project": data.get("project"),
                 "product_discord_link": data.get("product_discord_link"),
                 "status": data.get("status"),
-                "selected_on": data.get("selected_on"),
+                "selected_on": set_date_format(data.get("selected_on")),
             }
             insert_to_hr_report = {
                 "event_id": get_event_id()["event_id"],
@@ -1031,7 +1026,7 @@ class hr_selected_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
-                "selected_on": data.get("selected_on"),
+                "selected_on": set_date_format(data.get("selected_on")),
             }
 
             c_r = []
@@ -1096,7 +1091,6 @@ class hr_selected_candidate(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 @method_decorator(csrf_exempt, name="dispatch")
 class hr_reject_candidate(APIView):
     def post(self, request):
@@ -1111,7 +1105,7 @@ class hr_reject_candidate(APIView):
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
-                "rejected_on": data.get("rejected_on"),
+                "rejected_on": set_date_format(data.get("rejected_on")),
             }
             insert_to_hr_report = {
                 "company_id": data.get("company_id"),
@@ -1120,7 +1114,7 @@ class hr_reject_candidate(APIView):
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
-                "rejected_on": data.get("rejected_on"),
+                "rejected_on": set_date_format(data.get("rejected_on")),
             }
 
         serializer = RejectSerializer(data=data)
@@ -1203,7 +1197,7 @@ class lead_hire_candidate(APIView):
             update_field = {
                 "teamlead_remarks": data.get("teamlead_remarks"),
                 "status": data.get("status"),
-                "hired_on": data.get("hired_on"),
+                "hired_on": set_date_format(data.get("hired_on")),
             }
             insert_to_lead_report = {
                 "event_id": get_event_id()["event_id"],
@@ -1212,7 +1206,7 @@ class lead_hire_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
-                "hired_on": data.get("hired_on"),
+                "hired_on": set_date_format(data.get("hired_on")),
  
             }
             serializer = LeadSerializer(data=data)
@@ -1280,7 +1274,6 @@ class lead_hire_candidate(APIView):
                 for field_name, field_errors in default_errors.items():
                     new_error[field_name] = field_errors[0]
                 return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-
 @method_decorator(csrf_exempt, name="dispatch")
 class lead_rehire_candidate(APIView):
     def post(self, request):
@@ -1314,7 +1307,6 @@ class lead_rehire_candidate(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 @method_decorator(csrf_exempt, name="dispatch")
 class lead_reject_candidate(APIView):
     def post(self, request):
@@ -1328,7 +1320,7 @@ class lead_reject_candidate(APIView):
             update_field = {
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
-                "rejected_on": data.get("rejected_on"),
+                "rejected_on": set_date_format(data.get("rejected_on")),
                 "data_type": data.get("data_type"),
             }
             insert_to_lead_report = {
@@ -1338,7 +1330,7 @@ class lead_reject_candidate(APIView):
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
-                "rejected_on": data.get("rejected_on"),
+                "rejected_on": set_date_format(data.get("rejected_on")),
             }
 
             serializer = RejectSerializer(data=data)
@@ -1417,7 +1409,6 @@ class lead_reject_candidate(APIView):
                 for field_name, field_errors in default_errors.items():
                     new_error[field_name] = field_errors[0]
                 return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-
 # api for lead management ends here________________________
 
 # api for task management starts here________________________
@@ -1425,7 +1416,7 @@ class lead_reject_candidate(APIView):
 class create_task(APIView):
     def max_updated_date(self, updated_date):
         task_updated_date = datetime.datetime.strptime(
-            updated_date, "%m/%d/%Y %H:%M:%S"
+            updated_date, "%Y-%m-%dT%H:%M:%S.%fZ"
         )
         _date = task_updated_date + relativedelta(hours=12)
         return str(_date)
@@ -1436,9 +1427,9 @@ class create_task(APIView):
             try:
                 start_time_dt, end_time_dt=validate_and_generate_times(
                     data.get("task_type"),
-                    data.get("task_created_date"),
-                    data.get("start_time"),
-                    data.get("end_time")
+                    set_date_format(data.get("task_created_date")),
+                    set_date_format(data.get("start_time")),
+                    set_date_format(data.get("end_time")),
                 )
 
             except CustomValidationError as e:
@@ -1454,11 +1445,11 @@ class create_task(APIView):
                 "task_added_by": data.get("task_added_by"),
                 "data_type": data.get("data_type"),
                 "company_id": data.get("company_id"),
-                "task_created_date": data.get("task_created_date"),
+                "task_created_date": set_date_format(data.get("task_created_date")),
                 "task_updated_date": "",
                 "approval": False,
                 "max_updated_date": self.max_updated_date(
-                    data.get("task_created_date")
+                    set_date_format(data.get("task_created_date"))
                 ),
                 "task_type":data.get("task_type"),
                 "start_time":start_time_dt,
@@ -1560,7 +1551,7 @@ class update_task(APIView):
                 "status": data.get("status"),
                 "task": data.get("task"),
                 "task_added_by": data.get("task_added_by"),
-                "task_updated_date": data.get("task_updated_date"),
+                "task_updated_date": set_date_format(data.get("task_updated_date")),
             }
             # check if task exists---
             check = dowellconnection(
@@ -1618,11 +1609,11 @@ class task_request_update(APIView):
             field = {"_id":document_id}
             update_field = {
                 "company_id": data.get("company_id"),
-                "task_created_date": data.get("task_created_date"),
+                "task_created_date": set_date_format(data.get("task_created_date")),
                 "username": data.get("username"),
                 "portfolio_name": data.get("portfolio_name"),
                 "project": data.get("project"),
-                "task_updated_date": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+                "task_updated_date": set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"),
                 "approved":False,
                 "request_denied":False,
             }
@@ -1687,7 +1678,7 @@ class approve_task(APIView):
             current_date = datetime.datetime.today()
             max_updated_dates = [
                 datetime.datetime.strptime(
-                    item["max_updated_date"], "%Y-%m-%d %H:%M:%S"
+                    item["max_updated_date"], "%Y-%m-%dT%H:%M:%S.%fZ"
                 )
                 for item in json.loads(response)["data"]
             ]
@@ -1742,7 +1733,6 @@ class approve_task(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_task(APIView):
     def delete(self, request, document_id):
@@ -1768,14 +1758,10 @@ class delete_task(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
 # api for task management ends here________________________
 
 
 # api for team_task management starts here__________________________
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class create_team(APIView):
     def post(self, request):
@@ -1786,7 +1772,7 @@ class create_team(APIView):
                 "team_name": data.get("team_name"),
                 "team_description": data.get("team_description"),
                 "created_by": data.get("created_by"),
-                "date_created": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+                "date_created": set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
                 "members": data.get("members"),
@@ -1821,8 +1807,6 @@ class create_team(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_team(APIView):
     def get(self, request, team_id):
@@ -1859,8 +1843,6 @@ class get_team(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_teams(APIView):  # all teams
     def get(self, request, company_id):
@@ -1897,8 +1879,6 @@ class get_all_teams(APIView):  # all teams
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class edit_team(APIView):
     def patch(self, request, team_id):
@@ -1953,7 +1933,6 @@ class edit_team(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_team(APIView):
     def delete(self, request, team_id):
@@ -1977,18 +1956,18 @@ class delete_team(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class create_team_task(APIView):
     def max_updated_date(self, updated_date):
         task_updated_date = datetime.datetime.strptime(
-            updated_date, "%m/%d/%Y %H:%M:%S"
+            updated_date, "%Y-%m-%dT%H:%M:%S.%fZ"
         )
         _date = task_updated_date + relativedelta(hours=12)
         return str(_date)
     def post(self, request):
         data = request.data
         if data:
+            task_created_date=set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}")
             field = {
                 "eventId": get_event_id()["event_id"],
                 "title": data.get("title"),
@@ -1997,13 +1976,11 @@ class create_team_task(APIView):
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
                 "data_type": data.get("data_type"),
-                "task_created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
-                "due_date": data.get("due_date"),
+                "task_created_date":task_created_date,
+                "due_date": set_date_format(data.get("due_date")),
                 "task_updated_date": "",
                 "approval": False,
-                "max_updated_date": self.max_updated_date(
-                    data.get("task_created_date")
-                ),
+                "max_updated_date": self.max_updated_date(task_created_date),
             }
             update_field = {"status": "nothing to update"}
             response = dowellconnection(
@@ -2031,7 +2008,6 @@ class create_team_task(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class edit_team_task(APIView):
@@ -2087,7 +2063,6 @@ class edit_team_task(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_team_task(APIView):
     def get(self, request, team_id):
@@ -2111,7 +2086,6 @@ class get_team_task(APIView):
             return Response({"message": "There is no task with team id",
                              "response": json.loads(response)},
                             status=status.HTTP_204_NO_CONTENT)
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_team_task(APIView):
@@ -2139,7 +2113,6 @@ class delete_team_task(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 # this is the api for creating a task for a team member
 @method_decorator(csrf_exempt, name="dispatch")
 class create_member_task(APIView):
@@ -2153,7 +2126,7 @@ class create_member_task(APIView):
                 "assignee": data.get("assignee"),
                 "completed": data.get("completed"),
                 "team_name": data.get("team_name"),
-                "task_created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+                "task_created_date":set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"),
                 "team_member": data.get("team_member"),
                 "data_type": data.get("data_type"),
             }
@@ -2183,7 +2156,6 @@ class create_member_task(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_member_task(APIView):
@@ -2262,7 +2234,7 @@ class create_question(APIView):
             "data_type": data.get("data_type"),
             "question_link": data.get("question_link"),
             "module": data.get("module"),
-            "created_on": data.get("created_on"),
+            "created_on": set_date_format(data.get("created_on")),
             "created_by": data.get("created_by"),
             "is_active": data.get("is_active"),
         }
@@ -2432,7 +2404,7 @@ class response(APIView):
                 "live_link": data.get("live_link"),
                 "documentation_link": data.get("documentation_link"),
                 "started_on": data.get("started_on"),
-                "submitted_on": data.get("submitted_on"),
+                "submitted_on": set_date_format(data.get("submitted_on")),
                 "rating": data.get("rating"),
                 "portfolio_name": data.get("portfolio_name")
             }
@@ -2459,7 +2431,6 @@ class response(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class update_response(APIView):
@@ -2605,7 +2576,6 @@ class get_response(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class submit_response(APIView):
     def patch(self, request):
@@ -2619,7 +2589,7 @@ class submit_response(APIView):
             "video_link": data.get("video_link"),
             "documentation_link": data.get("documentation_link"),
             "answer_link": data.get("answer_link"),
-            "submitted_on": data.get("submitted_on"),
+            "submitted_on": set_date_format(data.get("submitted_on")),
         }
         serializer = SubmitResponseSerializer(data=update_field)
         if serializer.is_valid():
@@ -2652,7 +2622,6 @@ class submit_response(APIView):
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_responses(APIView):
     def get(self, request, company_id):
@@ -2682,7 +2651,6 @@ class get_all_responses(APIView):
                 {"message": f"There is no responses", "response": json.loads(response)},
                 status=status.HTTP_204_NO_CONTENT,
             )
-
 
 # api for training management ends here______________________
 
@@ -2725,7 +2693,6 @@ class SettingUserProfileInfoView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class SettingUserProjectView(APIView):
     serializer_class = SettingUserProjectSerializer
@@ -2750,7 +2717,6 @@ class SettingUserProjectView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 # api for setting ends here____________________________
 
 
@@ -2789,7 +2755,6 @@ class generate_discord_invite(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_discord_server_channels(APIView):
     def get(self, request, guild_id, token):
@@ -2813,7 +2778,6 @@ class get_discord_server_channels(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_discord_server_members(APIView):
     def get(self, request, guild_id, token):
@@ -2836,8 +2800,6 @@ class get_discord_server_members(APIView):
                 {"message": f"There is no members", "response": members},
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
 # api for discord ends here____________________________
 
 
@@ -2878,7 +2840,7 @@ class Public_apply_job(APIView):
             "data_type": data.get("data_type"),
             "user_type": data.get("user_type"),
             "scheduled_interview_date": "",
-            "application_submitted_on": data.get("application_submitted_on"),
+            "application_submitted_on": set_date_format(data.get("application_submitted_on")),
             "shortlisted_on": "",
             "selected_on": "",
             "hired_on": "",
@@ -2920,16 +2882,11 @@ class Public_apply_job(APIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 # Generating public link for job application
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class createPublicApplication(APIView):
     """Create Job Public Job Application link using QRCode function"""
-
     def post(self, request):
         field = {
             "qr_ids": request.data.get("qr_ids"),
@@ -3047,7 +3004,7 @@ class sendMailToPublicCandidate(APIView):
         subject = request.data.get("subject")
         job_role = request.data.get("job_role")
         data_type = request.data.get("data_type")
-        date_time = request.data.get("date_time")
+        date_time = set_date_format(request.data.get("date_time")("application_submitted_on"))
 
         data = {
             "qr_id": qr_id,
@@ -3327,7 +3284,7 @@ class Thread_Apis(APIView):
             "created_by": data.get("created_by"),
             "team_id":data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
-            "created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+            "created_date":set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"),
             "current_status": serializer_data["current_status"],
             "previous_status": [],
         }
@@ -3542,7 +3499,7 @@ class Comment_Apis(APIView):
         field = {
             "event_id": get_event_id()["event_id"],
             "created_by": data.get("created_by"),
-            "created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+            "created_date":set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"),
             "comment": data.get("comment"),
             "thread_id": data.get("thread_id"),
         }
@@ -3629,44 +3586,35 @@ class Comment_Apis(APIView):
 class Generate_admin_Report(APIView):
     def post(self, request):
         payload =request.data
-        start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-        end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-
+        start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         if payload:
             data={}
             #get all details firstly---------------
-            jobs=targeted_population("jobportal",'jobs',["_id"],"custom",start_date,end_date)
-            job_application=targeted_population("jobportal",'candidate_reports',["application_submitted_on"],"custom",start_date,end_date)
+            jobs=targeted_population("jobportal",'jobs',["_id"],"custom","created_on",start_date,end_date)
+            job_application=targeted_population("jobportal",'candidate_reports',["_id"],"custom","application_submitted_on",start_date,end_date)
             new_candidates = job_application
-            selected = targeted_population("jobportal",'candidate_reports',["selected_on"],"custom",start_date,end_date)
-            shortlisted = targeted_population("jobportal",'candidate_reports',["shortlisted_on"],"custom",start_date,end_date)
-            hired = targeted_population("jobportal",'candidate_reports',["hired_on"],"custom",start_date,end_date)
-            rehire = targeted_population("jobportal",'candidate_reports',["rehired_on"],"custom",start_date,end_date)
-            rejected = targeted_population("jobportal",'candidate_reports',["rejected_on"],"custom",start_date,end_date)
-            onboarded = targeted_population("jobportal",'candidate_reports',["onboarded_on"],"custom",start_date,end_date)
-            tasks = targeted_population("jobportal",'task_reports',["_id"],"custom",start_date,end_date)
-            teams = targeted_population("jobportal",'team_management_report',["_id"],"custom",start_date,end_date)
-            team_tasks = targeted_population("jobportal",'task_reports',["team_id"],"custom",start_date,end_date)
-            """print(len(json.loads(jobs)["normal"]["data"][0]),
-                  len(json.loads(job_application)["normal"]["data"][0]),
-                  len(json.loads(new_candidates)["normal"]["data"][0]),
-                  len(json.loads(selected)["normal"]["data"][0]),
-                  len(json.loads(shortlisted)["normal"]["data"][0]),
-                  len(json.loads(hired)["normal"]["data"][0]),
-                  len(json.loads(rehire)["normal"]["data"][0]),
-                  len(json.loads(rejected)["normal"]["data"][0]),
-                  len(json.loads(onboarded)["normal"]["data"][0]),
-                  len(json.loads(tasks)["normal"]["data"][0]),
-                  len(json.loads(teams)["normal"]["data"][0]),
-                  len(json.loads(team_tasks)["normal"]["data"][0]))"""
+            selected = targeted_population("jobportal",'candidate_reports',["selected_on"],"custom","selected_on",start_date,end_date)
+            shortlisted = targeted_population("jobportal",'candidate_reports',["shortlisted_on"],"custom","shortlisted_on",start_date,end_date)
+            hired = targeted_population("jobportal",'candidate_reports',["hired_on"],"custom","hired_on",start_date,end_date)
+            rehire = targeted_population("jobportal",'candidate_reports',["rehired_on"],"custom","rehired_on",start_date,end_date)
+            rejected = targeted_population("jobportal",'candidate_reports',["rejected_on"],"custom","rejected_on",start_date,end_date)
+            onboarded = targeted_population("jobportal",'candidate_reports',["onboarded_on"],"custom","onboarded_on",start_date,end_date)
+            tasks = targeted_population("jobportal",'task_reports',["_id"],"custom","task_created_date",start_date,end_date)
+            teams = targeted_population("jobportal",'team_management_report',["_id"],"custom","date_created",start_date,end_date)
             
-            #jobs----------------------
-            p_jobs = period_check(payload["start_date"], payload["end_date"], json.loads(jobs)["normal"]["data"][0],"created_on")
-            data["no_of_jobs"]=p_jobs[1]
-
+            if json.loads(jobs)["normal"]["is_error"] ==  False:
+                data["no_of_jobs"]=len(json.loads(jobs)["normal"]["data"][0])
+            else:
+                data["no_of_jobs"]=0
+            if json.loads(job_application)["normal"]["is_error"] ==  False:
+                data["no_job_applications"]=len(json.loads(job_application)["normal"]["data"][0])
+            else:
+                data["no_job_applications"]=0
+            
             active_jobs=[]
             inactive_jobs=[]
-            for t in p_jobs[0]:
+            for t in json.loads(jobs)["normal"]["data"][0]:
                 if "is_active" in t.keys():
                     if t["is_active"] =="True" or t["is_active"] =="true" or t["is_active"] ==True:
                         active_jobs.append([t["_id"],t["is_active"]])
@@ -3677,68 +3625,77 @@ class Generate_admin_Report(APIView):
             data["no_of_inactive_jobs"] = len(inactive_jobs)
 
             #applications----------------------
-            p_application = period_check(payload["start_date"], payload["end_date"], json.loads(job_application)["normal"]["data"][0],"application_submitted_on")
-            data["no_job_applications"]=p_application[1]
             try:
                 job_titles = {}
-                for t in p_application[0]:
-                    job_titles[t["job_number"]]=t["job_title"]
-                ids = [t["job_number"] for t in p_application[0]]
-                counter = Counter(ids)
-                most_applied_job = counter.most_common(1)[0][0]
-                least_applied_job = counter.most_common()[-1][0]
-                
-                data["most_applied_job"]={"job_number":most_applied_job,
-                                          "job_title":job_titles[most_applied_job],
-                                          "no_job_applications":ids.count(most_applied_job)}
-                data["least_applied_job"]={"job_number":least_applied_job,
-                                           "job_title":job_titles[least_applied_job],
+                if json.loads(job_application)["normal"]["is_error"] ==  False:
+                    for t in json.loads(job_application)["normal"]["data"][0]:
+                        job_titles[t["job_number"]]=t["job_title"]
+                    ids = [t["job_number"] for t in json.loads(job_application)["normal"]["data"][0]]
+                    counter = Counter(ids)
+                    most_applied_job = counter.most_common(1)[0][0]
+                    least_applied_job = counter.most_common()[-1][0]
+                    
+                    data["most_applied_job"]={"job_number":most_applied_job,
+                                            "job_title":job_titles[most_applied_job],
+                                            "no_job_applications":ids.count(most_applied_job)}
+                    data["least_applied_job"]={"job_number":least_applied_job,
+                                            "job_title":job_titles[least_applied_job],
                                            "no_job_applications":ids.count(least_applied_job)}
+                else:
+                    data["most_applied_job"]={"job_number":"none"}
+                    data["least_applied_job"]={"job_number":"none"}     
             except Exception:
                 data["most_applied_job"]={"job_number":"none"}
                 data["least_applied_job"]={"job_number":"none"}
+            if json.loads(new_candidates)["normal"]["is_error"] ==  False:
+                data["new_candidates"]=len([c for c in json.loads(new_candidates)["normal"]["data"][0] if c["status"]=="Pending"])
+            else:
+                data["new_candidates"]=0
+            if json.loads(new_candidates)["normal"]["is_error"] ==  False:
+                data["guest_candidates"]=len([c for c in json.loads(new_candidates)["normal"]["data"][0] if c["status"]=="Guest_Pending"])
+            else:
+                data["guest_candidates"]=0
+            if json.loads(new_candidates)["normal"]["is_error"] ==  False:
+                data["probationary_candidates"]=len([c for c in json.loads(new_candidates)["normal"]["data"][0] if c["status"]=="probationary"])
+            else:
+                data["probationary_candidates"]=0
+            if json.loads(selected)["normal"]["is_error"] ==  False:
+                data["selected_candidates"]=len(json.loads(selected)["normal"]["data"][0])
+            else:
+                data["selected_candidates"]=0
+            if json.loads(shortlisted)["normal"]["is_error"] ==  False:
+                data["shortlisted_candidates"]=len(json.loads(shortlisted)["normal"]["data"][0])
+            else:
+                data["shortlisted_candidates"]=0
+            if json.loads(hired)["normal"]["is_error"] ==  False:
+                data["hired_candidates"]=len(json.loads(hired)["normal"]["data"][0])
+            else:
+                data["hired_candidates"]=0
+            if json.loads(rehire)["normal"]["is_error"] ==  False:
+                data["rehire_candidates"]=len(json.loads(rehire)["normal"]["data"][0])
+            else:
+                data["rehire_candidates"]=0
+            if json.loads(rejected)["normal"]["is_error"] ==  False:
+                data["rejected_candidates"]=len(json.loads(rejected)["normal"]["data"][0])
+            else:
+                data["rejected_candidates"]=0
+            if json.loads(onboarded)["normal"]["is_error"] ==  False:
+                data["onboarded_candidates"]=len(json.loads(onboarded)["normal"]["data"][0])
+            else:
+                data["onboarded_candidates"]=0
             
-            #new, guest and probationary candidates----------------------
-            candidates = period_check(payload['start_date'],payload['end_date'],json.loads(new_candidates)["normal"]["data"][0], "application_submitted_on")
-            data["new_candidates"]=len([c for c in candidates[0] if c["status"]=="Pending"])
-            data["guest_candidates"]=len([c for c in candidates[0] if c["status"]=="Guest_Pending"])
-            data["probationary_candidates"]=len([c for c in candidates[0] if c["status"]=="probationary"])
-
-            #selected candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(selected)["normal"]["data"][0], "selected_on")
-            data["selected_candidates"]=(candidates[1])
-
-            #shortlisted candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(shortlisted)["normal"]["data"][0], "shortlisted_on")
-            data["shortlisted_candidates"]=candidates[1]
             
-            #hired candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(hired)["normal"]["data"][0], "hired_on")
-            data["hired_candidates"]=candidates[1]
-
-            #rehired candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(rehire)["normal"]["data"][0], "rehired_on")
-            data["rehired_candidates"]=candidates[1]
-
-            #rejected candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(rejected)["normal"]["data"][0], "rejected_on")
-            data["rejected_candidates"]=candidates[1]
-
-            #onboarded candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(onboarded)["normal"]["data"][0], "onboarded_on")
-            data["onboarded_candidates"]=candidates[1]
-
             try:
                 data["hiring_rate"] = str((data["hired_candidates"]/data["no_job_applications"])*100)+" %"
             except Exception:
                 data["hiring_rate"] ="0 %"
 
-            #tasks----------------------
-            p_tasks=period_check(payload['start_date'],payload['end_date'],json.loads(tasks)["normal"]["data"][0], "task_created_date")
-            data["tasks"]=p_tasks[1]
-
+            if json.loads(tasks)["normal"]["is_error"] ==  False:
+                data["tasks"]=len(json.loads(tasks)["normal"]["data"][0])
+            else:
+                data["tasks"]=0
             tasks_completed=[]
-            for t in p_tasks[0]:
+            for t in json.loads(tasks)["normal"]["data"][0]:
                 try:
                     if t["status"]=="Completed":
                         tasks_completed.append(t)
@@ -3753,30 +3710,35 @@ class Generate_admin_Report(APIView):
                 data["percentage_tasks_completed"]="0 %"
 
             tasks_completed_on_time=[]
-            for t in p_tasks[0] :
-                try:
-                    if "due_date" in t.keys() and "task_updated_date" in t.keys() and datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > datetime.datetime.strptime(t["task_updated_date"], "%m/%d/%Y %H:%M:%S"):
-                        tasks_completed_on_time.append(t)
-                except Exception as e:
-                    #print("error",e)
-                    pass
-            data["tasks_completed_on_time"]=len(tasks_completed_on_time)
+            if json.loads(tasks)["normal"]["is_error"] ==  False:
+                for t in json.loads(tasks)["normal"]["data"][0] :
+                    try:
+                        if "due_date" in t.keys() and "task_updated_date" in t.keys() and datetime.datetime.strptime(t["due_date"], "%Y-%m-%dT%H:%M:%S.%fZ") > datetime.datetime.strptime(t["task_updated_date"], "%Y-%m-%dT%H:%M:%S.%fZ"):
+                            tasks_completed_on_time.append(t)
+                    except Exception as e:
+                        #print("error",e)
+                        pass
+                data["tasks_completed_on_time"]=len(tasks_completed_on_time)
 
             try:
                 data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks_completed"])*100)+" %"
             except Exception:
                 data["percentage_tasks_completed_on_time"]="0 %"
-
-            #teams candidates----------------------
-            p_teams=period_check(payload['start_date'],payload['end_date'],json.loads(teams)["normal"]["data"][0], "date_created")
-            data["teams"]=p_teams[1]
-
-            #team_tasks candidates----------------------
-            p_team_tasks=period_check(payload['start_date'],payload['end_date'],json.loads(team_tasks)["normal"]["data"][0], "task_created_date")
-            data["team_tasks"]=len([t for t in p_team_tasks[0]  if "team_id" in t.keys() or "team_name" in t.keys()])
             
+            if json.loads(teams)["normal"]["is_error"] ==  False:
+                print(json.loads(teams)["normal"]["data"][0])
+                data["teams"]=len(json.loads(teams)["normal"]["data"][0])
+            else:
+                data["teams"]=0
+            if json.loads(teams)["normal"]["is_error"] ==  False:
+                team_tasks = [t for t in json.loads(teams)["normal"]["data"][0] if "team_id" in t.keys() or "team_name" in t.keys()]
+                data["team_tasks"]=len(team_tasks)
+            else:
+                data["team_tasks"]=0
+            
+
             team_tasks_completed=[]
-            for t in p_team_tasks[0]:
+            for t in team_tasks:
                 try:
                     if t["status"]=="Completed":
                         #print(t)
@@ -3792,28 +3754,21 @@ class Generate_admin_Report(APIView):
                 data["percentage_team_tasks_completed"]="0 %"
 
             team_tasks_completed_on_time=[]
-            for t in p_team_tasks[0] :
+            for t in team_tasks:
                 try:
-                    if "due_date" in t.keys() and "task_updated_date" in t.keys() and datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > datetime.datetime.strptime(t["task_updated_date"], "%m/%d/%Y %H:%M:%S"):
+                    if "due_date" in t.keys() and "task_updated_date" in t.keys() and datetime.datetime.strptime(t["due_date"], "%Y-%m-%dT%H:%M:%S.%fZ") > datetime.datetime.strptime(t["task_updated_date"], "%Y-%m-%dT%H:%M:%S.%fZ"):
                         team_tasks_completed_on_time.append(t)
                 except Exception as e:
                     #print("error",e)
                     pass
             data["team_tasks_completed_on_time"]=len(team_tasks_completed_on_time)
-
             try:
                 data["percentage_team_tasks_completed_on_time"]=str((data["team_tasks_completed_on_time"]/data["team_tasks_completed"])*100)+" %"
             except Exception:
-                data["percentage_team_tasks_completed_on_time"]="0 %"
-
-            return Response(
-                {"message": "Report Generated","response":data},
-                status=status.HTTP_201_CREATED)
+                data["percentage_team_tasks_completed_on_time"]="0 %" 
+            return Response({"message": "Report Generated","response":data},status=status.HTTP_201_CREATED)
         else:
-            return Response(
-                {"message": "Parameters are not valid"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"message": "Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)       
 @method_decorator(csrf_exempt, name="dispatch")
 class GetQRCode(APIView):
     def get(self, request, job_company_id):
@@ -3842,8 +3797,7 @@ class GetQRCode(APIView):
                     {"message": "Failed to fetch",
                      "number of qr_ids": f"{len(data)}",
                      "data": data}, status=status.HTTP_400_BAD_REQUEST
-                )
-         
+                )       
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_public_Report(APIView):
     def post(self, request):
@@ -3880,38 +3834,30 @@ class Generate_public_Report(APIView):
             "message": f"public job report Generated",
             "Data": data
         }, status=status.HTTP_201_CREATED)
-
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_hr_Report(APIView):
     def post(self, request):
         payload =request.data
-        start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-        end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-
+        start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         if payload:
             data={}
             #get all details firstly---------------
-            selected = targeted_population("jobportal",'candidate_reports',["selected_on"],"custom",start_date,end_date)
-            shortlisted = targeted_population("jobportal",'candidate_reports',["shortlisted_on"],"custom",start_date,end_date)
-            rejected = targeted_population("jobportal",'candidate_reports',["rejected_on"],"custom",start_date,end_date)
-            """print(len(json.loads(selected)["normal"]["data"][0]),
-                  len(json.loads(shortlisted)["normal"]["data"][0]),
-                  len(json.loads(rejected)["normal"]["data"][0]))
-            print(selected)"""
-            
-            
-            #selected candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(selected)["normal"]["data"][0], "selected_on")
-            data["selected_candidates"]=(candidates[1])
-
-            #shortlisted candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(shortlisted)["normal"]["data"][0], "shortlisted_on")
-            data["shortlisted_candidates"]=candidates[1]
-            
-            #rejected candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(rejected)["normal"]["data"][0], "rejected_on")
-            data["rejected_candidates"]=candidates[1]
-
+            selected = targeted_population("jobportal",'hr_reports',["selected_on"],"custom","selected_on",start_date,end_date)
+            shortlisted = targeted_population("jobportal",'hr_reports',["shortlisted_on"],"custom","shortlisted_on",start_date,end_date)
+            rejected = targeted_population("jobportal",'hr_reports',["rejected_on"],"custom","rejected_on",start_date,end_date)
+            if json.loads(selected)["normal"]["is_error"] ==  False:
+                data["selected_candidates"]=len(json.loads(selected)["normal"]["data"][0])
+            else:
+                data["selected_candidates"]=0
+            if json.loads(shortlisted)["normal"]["is_error"] ==  False:
+                data["shortlisted_candidates"]=len(json.loads(shortlisted)["normal"]["data"][0])
+            else:
+                data["shortlisted_candidates"]=0
+            if json.loads(rejected)["normal"]["is_error"] ==  False:
+                data["rejected_candidates"]=len(json.loads(rejected)["normal"]["data"][0])
+            else:
+                data["rejected_candidates"]=0
             return Response(
                 {"message": "Hr Report Generated","response":data},
                 status=status.HTTP_201_CREATED)
@@ -3920,36 +3866,32 @@ class Generate_hr_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_account_Report(APIView):
     def post(self, request):
         payload =request.data
-        start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-        end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-
+        start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         if payload:
             data={}
             #get all details firstly---------------
-            rehire = targeted_population("jobportal",'candidate_reports',["rehired_on"],"custom",start_date,end_date)
-            rejected = targeted_population("jobportal",'candidate_reports',["rejected_on"],"custom",start_date,end_date)
-            onboarded = targeted_population("jobportal",'candidate_reports',["onboarded_on"],"custom",start_date,end_date)
-            """print(len(json.loads(rehire)["normal"]["data"][0]),
-                  len(json.loads(rejected)["normal"]["data"][0]),
-                  len(json.loads(onboarded)["normal"]["data"][0]))"""
+            rehire = targeted_population("jobportal",'account_reports',["rehired_on"],"custom","rehired_on",start_date,end_date)
+            rejected = targeted_population("jobportal",'account_reports',["rejected_on"],"custom","rejected_on",start_date,end_date)
+            onboarded = targeted_population("jobportal",'account_reports',["onboarded_on"],"custom","onboarded_on",start_date,end_date)
             
-            #rehired candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(rehire)["normal"]["data"][0], "rehired_on")
-            data["rehired_candidates"]=candidates[1]
-
-            #rejected candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(rejected)["normal"]["data"][0], "rejected_on")
-            data["rejected_candidates"]=candidates[1]
-
-            #onboarded candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(onboarded)["normal"]["data"][0], "onboarded_on")
-            data["onboarded_candidates"]=candidates[1]
-
+            if json.loads(rehire)["normal"]["is_error"] ==  False:
+                data["rehired_candidates"]=len(json.loads(rehire)["normal"]["data"][0])
+            else:
+                data["rehired_candidates"]=0
+            if json.loads(rejected)["normal"]["is_error"] ==  False:
+                print(json.loads(rejected)["normal"])
+                data["rejected_candidates"]=len(json.loads(rejected)["normal"]["data"][0])
+            else:
+                data["rejected_candidates"]=0
+            if json.loads(onboarded)["normal"]["is_error"] ==  False:
+                data["onboarded_candidates"]=len(json.loads(onboarded)["normal"]["data"][0])
+            else:
+                data["onboarded_candidates"]=0
             return Response(
                 {"message": "Account Report Generated","response":data},
                 status=status.HTTP_201_CREATED)
@@ -3958,43 +3900,37 @@ class Generate_account_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_candidate_Report(APIView):
     def post(self, request):
         payload =request.data
-        start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-        end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-
+        start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         if payload:
             data={}
             #get all details firstly---------------
-            jobs=targeted_population("jobportal",'jobs',["_id"],"custom",start_date,end_date)
-            job_application=targeted_population("jobportal",'candidate_reports',["application_submitted_on"],"custom",start_date,end_date)
+            jobs=targeted_population("jobportal",'jobs',["_id"],"custom","created_on",start_date,end_date)
+            job_application=targeted_population("jobportal",'candidate_reports',["_id"],"custom","application_submitted_on",start_date,end_date)
             new_candidates = job_application
-            selected = targeted_population("jobportal",'candidate_reports',["selected_on"],"custom",start_date,end_date)
-            shortlisted = targeted_population("jobportal",'candidate_reports',["shortlisted_on"],"custom",start_date,end_date)
-            hired = targeted_population("jobportal",'candidate_reports',["hired_on"],"custom",start_date,end_date)
-            rehire = targeted_population("jobportal",'candidate_reports',["rehired_on"],"custom",start_date,end_date)
-            rejected = targeted_population("jobportal",'candidate_reports',["rejected_on"],"custom",start_date,end_date)
-            onboarded = targeted_population("jobportal",'candidate_reports',["onboarded_on"],"custom",start_date,end_date)
-            """print(len(json.loads(jobs)["normal"]["data"][0]),
-                  len(json.loads(job_application)["normal"]["data"][0]),
-                  len(json.loads(new_candidates)["normal"]["data"][0]),
-                  len(json.loads(selected)["normal"]["data"][0]),
-                  len(json.loads(shortlisted)["normal"]["data"][0]),
-                  len(json.loads(hired)["normal"]["data"][0]),
-                  len(json.loads(rehire)["normal"]["data"][0]),
-                  len(json.loads(rejected)["normal"]["data"][0]),
-                  len(json.loads(onboarded)["normal"]["data"][0]))"""
+            selected = targeted_population("jobportal",'candidate_reports',["selected_on"],"custom","selected_on",start_date,end_date)
+            shortlisted = targeted_population("jobportal",'candidate_reports',["shortlisted_on"],"custom","shortlisted_on",start_date,end_date)
+            hired = targeted_population("jobportal",'candidate_reports',["hired_on"],"custom","hired_on",start_date,end_date)
+            rehire = targeted_population("jobportal",'candidate_reports',["rehired_on"],"custom","rehired_on",start_date,end_date)
+            rejected = targeted_population("jobportal",'candidate_reports',["rejected_on"],"custom","rejected_on",start_date,end_date)
+            onboarded = targeted_population("jobportal",'candidate_reports',["onboarded_on"],"custom","onboarded_on",start_date,end_date)
             
-            #jobs----------------------
-            p_jobs = period_check(payload["start_date"], payload["end_date"], json.loads(jobs)["normal"]["data"][0],"created_on")
-            data["no_of_jobs"]=p_jobs[1]
-
+            if json.loads(jobs)["normal"]["is_error"] ==  False:
+                data["no_of_jobs"]=len(json.loads(jobs)["normal"]["data"][0])
+            else:
+                data["no_of_jobs"]=0
+            if json.loads(job_application)["normal"]["is_error"] ==  False:
+                data["no_job_applications"]=len(json.loads(job_application)["normal"]["data"][0])
+            else:
+                data["no_job_applications"]=0
+            
             active_jobs=[]
             inactive_jobs=[]
-            for t in p_jobs[0]:
+            for t in json.loads(jobs)["normal"]["data"][0]:
                 if "is_active" in t.keys():
                     if t["is_active"] =="True" or t["is_active"] =="true" or t["is_active"] ==True:
                         active_jobs.append([t["_id"],t["is_active"]])
@@ -4005,61 +3941,70 @@ class Generate_candidate_Report(APIView):
             data["no_of_inactive_jobs"] = len(inactive_jobs)
 
             #applications----------------------
-            p_application = period_check(payload["start_date"], payload["end_date"], json.loads(job_application)["normal"]["data"][0],"application_submitted_on")
-            data["no_job_applications"]=p_application[1]
             try:
                 job_titles = {}
-                for t in p_application[0]:
-                    job_titles[t["job_number"]]=t["job_title"]
-                ids = [t["job_number"] for t in p_application[0]]
-                counter = Counter(ids)
-                most_applied_job = counter.most_common(1)[0][0]
-                least_applied_job = counter.most_common()[-1][0]
-                
-                data["most_applied_job"]={"job_number":most_applied_job,
-                                          "job_title":job_titles[most_applied_job],
-                                          "no_job_applications":ids.count(most_applied_job)}
-                data["least_applied_job"]={"job_number":least_applied_job,
-                                           "job_title":job_titles[least_applied_job],
+                if json.loads(job_application)["normal"]["is_error"] ==  False:
+                    for t in json.loads(job_application)["normal"]["data"][0]:
+                        job_titles[t["job_number"]]=t["job_title"]
+                    ids = [t["job_number"] for t in json.loads(job_application)["normal"]["data"][0]]
+                    counter = Counter(ids)
+                    most_applied_job = counter.most_common(1)[0][0]
+                    least_applied_job = counter.most_common()[-1][0]
+                    
+                    data["most_applied_job"]={"job_number":most_applied_job,
+                                            "job_title":job_titles[most_applied_job],
+                                            "no_job_applications":ids.count(most_applied_job)}
+                    data["least_applied_job"]={"job_number":least_applied_job,
+                                            "job_title":job_titles[least_applied_job],
                                            "no_job_applications":ids.count(least_applied_job)}
+                else:
+                    data["most_applied_job"]={"job_number":"none"}
+                    data["least_applied_job"]={"job_number":"none"}     
             except Exception:
                 data["most_applied_job"]={"job_number":"none"}
                 data["least_applied_job"]={"job_number":"none"}
+            if json.loads(new_candidates)["normal"]["is_error"] ==  False:
+                data["new_candidates"]=len([c for c in json.loads(new_candidates)["normal"]["data"][0] if c["status"]=="Pending"])
+            else:
+                data["new_candidates"]=0
+            if json.loads(new_candidates)["normal"]["is_error"] ==  False:
+                data["guest_candidates"]=len([c for c in json.loads(new_candidates)["normal"]["data"][0] if c["status"]=="Guest_Pending"])
+            else:
+                data["guest_candidates"]=0
+            if json.loads(new_candidates)["normal"]["is_error"] ==  False:
+                data["probationary_candidates"]=len([c for c in json.loads(new_candidates)["normal"]["data"][0] if c["status"]=="probationary"])
+            else:
+                data["probationary_candidates"]=0
+            if json.loads(selected)["normal"]["is_error"] ==  False:
+                data["selected_candidates"]=len(json.loads(selected)["normal"]["data"][0])
+            else:
+                data["selected_candidates"]=0
+            if json.loads(shortlisted)["normal"]["is_error"] ==  False:
+                data["shortlisted_candidates"]=len(json.loads(shortlisted)["normal"]["data"][0])
+            else:
+                data["shortlisted_candidates"]=0
+            if json.loads(hired)["normal"]["is_error"] ==  False:
+                data["hired_candidates"]=len(json.loads(hired)["normal"]["data"][0])
+            else:
+                data["hired_candidates"]=0
+            if json.loads(rehire)["normal"]["is_error"] ==  False:
+                data["rehire_candidates"]=len(json.loads(rehire)["normal"]["data"][0])
+            else:
+                data["rehire_candidates"]=0
+            if json.loads(rejected)["normal"]["is_error"] ==  False:
+                data["rejected_candidates"]=len(json.loads(rejected)["normal"]["data"][0])
+            else:
+                data["rejected_candidates"]=0
+            if json.loads(onboarded)["normal"]["is_error"] ==  False:
+                data["onboarded_candidates"]=len(json.loads(onboarded)["normal"]["data"][0])
+            else:
+                data["onboarded_candidates"]=0
             
-            #new, guest and probationary candidates----------------------
-            candidates = period_check(payload['start_date'],payload['end_date'],json.loads(new_candidates)["normal"]["data"][0], "application_submitted_on")
-            data["new_candidates"]=len([c for c in candidates[0] if c["status"]=="Pending"])
-            data["guest_candidates"]=len([c for c in candidates[0] if c["status"]=="Guest_Pending"])
-            data["probationary_candidates"]=len([c for c in candidates[0] if c["status"]=="probationary"])
-
-            #selected candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(selected)["normal"]["data"][0], "selected_on")
-            data["selected_candidates"]=(candidates[1])
-
-            #shortlisted candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(shortlisted)["normal"]["data"][0], "shortlisted_on")
-            data["shortlisted_candidates"]=candidates[1]
-            
-            #hired candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(hired)["normal"]["data"][0], "hired_on")
-            data["hired_candidates"]=candidates[1]
-
-            #rehired candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(rehire)["normal"]["data"][0], "rehired_on")
-            data["rehired_candidates"]=candidates[1]
-
-            #rejected candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(rejected)["normal"]["data"][0], "rejected_on")
-            data["rejected_candidates"]=candidates[1]
-
-            #onboarded candidates----------------------
-            candidates= period_check(payload['start_date'],payload['end_date'],json.loads(onboarded)["normal"]["data"][0], "onboarded_on")
-            data["onboarded_candidates"]=candidates[1]
-
             try:
                 data["hiring_rate"] = str((data["hired_candidates"]/data["no_job_applications"])*100)+" %"
             except Exception:
                 data["hiring_rate"] ="0 %"
+
 
             return Response(
                 {"message": "Candidate Report Generated","response":data},
@@ -4069,38 +4014,32 @@ class Generate_candidate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_Lead_Report(APIView):
     def post(self, request):
         payload = request.data
         if payload:
             data = {}
-            start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
-            end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y/%m/%d')
+            start_date= datetime.datetime.strptime(payload["start_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+            end_date= datetime.datetime.strptime(payload["end_date"], '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
-            t = targeted_population("jobportal",'team_management_report',["_id"],"custom",start_date,end_date)
-            ts = targeted_population("jobportal",'task_reports',["team_id"],"custom",start_date,end_date)
-            teams= []
-            team_tasks=[]
-           
-            for team in json.loads(t)["normal"]["data"][0]:
-                if team["_id"]==payload["team_id"]:
-                    teams.append(team)
-            for task in json.loads(ts)["normal"]["data"][0]:
-                if task["team_id"]==payload["team_id"]:
-                    team_tasks.append(task)
-
-            #teams candidates----------------------
-            p_teams=period_check(payload['start_date'],payload['end_date'],teams, "date_created")
-            data["teams"]=p_teams[0]
-
-            #team_tasks candidates----------------------
-            p_team_tasks=period_check(payload['start_date'],payload['end_date'],team_tasks, "task_created_date")
-            data["team_tasks"]=len([t for t in p_team_tasks[0]  if "team_id" in t.keys() or "team_name" in t.keys()])
+            tasks = targeted_population("jobportal",'task_reports',["_id"],"custom","task_created_date",start_date,end_date)
+            teams = targeted_population("jobportal",'team_management_report',["_id"],"custom","date_created",start_date,end_date)
             
+            
+            if json.loads(teams)["normal"]["is_error"] ==  False:
+                data["teams"]=len([tsk for tsk in json.loads(teams)["normal"]["data"][0]  if "_id" in tsk.keys() and tsk["_id"]==payload["team_id"]])
+            else:
+                data["teams"]=0
+            if json.loads(teams)["normal"]["is_error"] ==  False:
+                team_task_list =[tsk for tsk in json.loads(tasks)["normal"]["data"][0] if "team_id" in tsk.keys() and tsk["team_id"]==payload["team_id"]]
+                data["team_tasks"]=len(team_task_list)
+            else:
+                data["team_tasks"]=0
+            
+
             team_tasks_completed=[]
-            for t in p_team_tasks[0]:
+            for t in team_task_list:
                 try:
                     if t["status"]=="Completed":
                         #print(t)
@@ -4116,19 +4055,18 @@ class Generate_Lead_Report(APIView):
                 data["percentage_team_tasks_completed"]="0 %"
 
             team_tasks_completed_on_time=[]
-            for t in p_team_tasks[0] :
+            for t in team_task_list:
                 try:
-                    if "due_date" in t.keys() and "task_updated_date" in t.keys() and datetime.datetime.strptime(t["due_date"], "%m/%d/%Y %H:%M:%S") > datetime.datetime.strptime(t["task_updated_date"], "%m/%d/%Y %H:%M:%S"):
+                    if "due_date" in t.keys() and "task_updated_date" in t.keys() and datetime.datetime.strptime(t["due_date"], "%Y-%m-%dT%H:%M:%S.%fZ") > datetime.datetime.strptime(t["task_updated_date"], "%Y-%m-%dT%H:%M:%S.%fZ"):
                         team_tasks_completed_on_time.append(t)
                 except Exception as e:
                     #print("error",e)
                     pass
             data["team_tasks_completed_on_time"]=len(team_tasks_completed_on_time)
-
             try:
                 data["percentage_team_tasks_completed_on_time"]=str((data["team_tasks_completed_on_time"]/data["team_tasks_completed"])*100)+" %"
             except Exception:
-                data["percentage_team_tasks_completed_on_time"]="0 %"
+                data["percentage_team_tasks_completed_on_time"]="0 %" 
 
             return Response(
                 {"message": "Lead Report Generated","response":data},
@@ -4138,7 +4076,6 @@ class Generate_Lead_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 @method_decorator(csrf_exempt, name="dispatch")
 class Generate_candidate_dublicates(APIView):
     def get(self, request,company_id):
@@ -4174,7 +4111,6 @@ class Generate_candidate_dublicates(APIView):
             "success":True,
             "data":data,
             }, status=status.HTTP_200_OK)
-
 @method_decorator(csrf_exempt, name="dispatch")   
 class Generate_Individual_Report(APIView):
     def post(self, request):
@@ -4433,8 +4369,6 @@ class Generate_Individual_Report(APIView):
                 item[key].update({"team_tasks_comments_added":0})        
         data['data'].append(item)
         return Response(data, status=status.HTTP_201_CREATED)
-
-
 @method_decorator(csrf_exempt, name="dispatch")   
 class Update_payment_status(APIView):
     def patch(self, request,document_id):
@@ -4498,8 +4432,6 @@ class Update_payment_status(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class task_module(APIView):
     def post(self, request):
@@ -4729,5 +4661,37 @@ class task_module(APIView):
     #     )
     #     _date = task_updated_date + relativedelta(hours=12)
     #     return str(_date)
+@method_decorator(csrf_exempt, name="dispatch")   
+class ISO_time_setter(APIView):
+    def post(self, request):
+        #jobs,candidate_management_reports,account_management_reports,admin_management_reports,task_management_reports,questionnaire_modules,rejected_reports_modules,response_modules,team_management_modules,thread_report_module,comment_report_module,
+        paras=[task_management_reports,Publiclink_reports,update_task_request_module]
+        for pa in paras:
+            response = dowellconnection(*pa, "fetch", {}, {})
+            print(pa,"===========================================================",len(json.loads(response)["data"]))
+            count=0
+            for j in json.loads(response)["data"]:
+                    count+=1
+                    if "due_date" in j.keys():
+                        due_date = set_date_format(j["due_date"])
+                        res = dowellconnection(*pa, "update", {"_id":j["_id"]}, 
+                                                    {"due_date":due_date})
+                        print(res,count)
+                    if "end_time" in j.keys():
+                        end_time = set_date_format(j["end_time"])
+                        res = dowellconnection(*pa, "update", {"_id":j["_id"]}, 
+                                                    {"end_time":end_time})
+                        print(res,count)
+                    if "start_time" in j.keys():
+                        start_time = set_date_format(j["start_time"])
+                        res = dowellconnection(*pa, "update", {"_id":j["_id"]}, 
+                                                    {"start_time":start_time})
+                        print(res,count)
+                    if "date_time" in j.keys():
+                        date_time = set_date_format(j["date_time"])
+                        res = dowellconnection(*pa, "update", {"_id":j["_id"]}, 
+                                                    {"date_time":date_time})
+                        print(res,count)
 
-   
+        return Response({"message":"changed all the dates"},status=status.HTTP_201_CREATED)
+
