@@ -4159,11 +4159,11 @@ class Generate_Individual_Report(APIView):
         if len(json.loads(tasks_added)['data']) != 0: 
             months=[]
             for task in json.loads(tasks_added)['data']: 
-                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                     #print(month_name,"=====",task["task_created_date"],"====",item.keys())
                     months.append(month_name)
                     if month_name in item.keys():
-                        if str(datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").year) == year:
+                        if str(datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                             item[month_name].update({"tasks_added":months.count(month_name)}) 
         else:
             for key, value in item.items():
@@ -4173,11 +4173,11 @@ class Generate_Individual_Report(APIView):
         if len(json.loads(tasks_completed)['data']) != 0:
             months=[]
             for task in json.loads(tasks_completed)['data']: 
-                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                     #print(month_name,"=====",task["task_created_date"],"====",item.keys())
                     months.append(month_name)
                     if month_name in item.keys():
-                        if str(datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").year) == year:
+                        if str(datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                             item[month_name].update({"tasks_completed":months.count(month_name)}) 
                             try:
                                 percentage_tasks_completed=(item[month_name]["tasks_completed"]/item[month_name]["tasks_added"])*100
@@ -4193,11 +4193,11 @@ class Generate_Individual_Report(APIView):
         if len(json.loads(tasks_uncompleted)['data']) != 0:
             months=[]
             for task in json.loads(tasks_uncompleted)['data']: 
-                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                     #print(month_name,"=====",task["task_created_date"],"====",item.keys())
                     months.append(month_name)
                     if month_name in item.keys():
-                        if str(datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").year) == year:
+                        if str(datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                             item[month_name].update({"tasks_uncompleted":months.count(month_name)})  
         else:
             for key, value in item.items():
@@ -4207,10 +4207,10 @@ class Generate_Individual_Report(APIView):
         if len(json.loads(tasks_approved)['data']) != 0:
             months=[]
             for task in json.loads(tasks_approved)['data']: 
-                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                    month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                     months.append(month_name)
                     if month_name in item.keys():
-                        if str(datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").year) == year:
+                        if str(datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                             item[month_name].update({"tasks_approved":months.count(month_name)})                        
         else:
             for key, value in item.items():
@@ -4223,9 +4223,9 @@ class Generate_Individual_Report(APIView):
                 try:
                     if username in team["members"]:
                         #print(team)
-                        month_name=month_list[datetime.datetime.strptime(team["date_created"], "%m/%d/%Y %H:%M:%S").month]
+                        month_name=month_list[datetime.datetime.strptime(team["date_created"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                         months.append(month_name)
-                        if str(datetime.datetime.strptime(team["date_created"], "%m/%d/%Y %H:%M:%S").year) == year:
+                        if str(datetime.datetime.strptime(team["date_created"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                             item[month_name].update({"teams":months.count(month_name)}) 
                 except Exception as e:
                     pass 
@@ -4241,9 +4241,9 @@ class Generate_Individual_Report(APIView):
                         team_tasks = dowellconnection(*task_management_reports, "fetch", {"team_id":team["_id"]}, update_field)
                         if len(json.loads(team_tasks)['data']) != 0:
                             for task in json.loads(team_tasks)['data']:
-                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                                 months.append(month_name)
-                                if str(datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").year) == year:
+                                if str(datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                                     item[month_name].update({"team_tasks":months.count(month_name)})
                 except Exception as e:
                     pass 
@@ -4259,9 +4259,9 @@ class Generate_Individual_Report(APIView):
                         team_tasks_completed = dowellconnection(*task_management_reports, "fetch", {"team_id":team["_id"],"completed": "True"}, update_field)
                         if len(json.loads(team_tasks_completed)['data']) != 0:
                             for task in json.loads(team_tasks_completed)['data']:
-                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                                 months.append(month_name)
-                                if str(datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").year) == year:
+                                if str(datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                                     item[month_name].update({"team_tasks_completed":months.count(month_name)})
                                     try:
                                         item[month_name].update({"percentage_team_tasks_completed":(len(json.loads(team_tasks_completed)['data'])/len(json.loads(team_tasks)['data']))*100})
@@ -4282,9 +4282,9 @@ class Generate_Individual_Report(APIView):
                         team_tasks_uncompleted = dowellconnection(*task_management_reports, "fetch", {"team_id":team["_id"],"completed": "False"}, update_field)
                         if len(json.loads(team_tasks_uncompleted)['data']) != 0:
                             for task in json.loads(team_tasks_uncompleted)['data']:
-                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                                 months.append(month_name)
-                                if str(datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").year) == year:
+                                if str(datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                                     item[month_name].update({"team_tasks_uncompleted":months.count(month_name)})
                 except Exception as e:
                     pass 
@@ -4300,9 +4300,9 @@ class Generate_Individual_Report(APIView):
                         team_tasks_approved = dowellconnection(*task_management_reports, "fetch", {"team_id":team["_id"],"approval": True}, update_field)
                         if len(json.loads(team_tasks_approved)['data']) != 0:
                             for task in json.loads(team_tasks_approved)['data']:
-                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").month]
+                                month_name=month_list[datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                                 months.append(month_name)
-                                if str(datetime.datetime.strptime(task["task_created_date"], "%m/%d/%Y %H:%M:%S").year) == year:
+                                if str(datetime.datetime.strptime(task["task_created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                                     item[month_name].update({"team_tasks_approved":months.count(month_name)})
                 except Exception as e:
                     pass 
@@ -4318,9 +4318,9 @@ class Generate_Individual_Report(APIView):
                         team_tasks_issues_raised = dowellconnection(*thread_report_module, "fetch", {"team_id":team["_id"]}, update_field)
                         if len(json.loads(team_tasks_issues_raised)['data']) != 0:
                             for thread in json.loads(team_tasks_issues_raised)['data']:
-                                month_name=month_list[datetime.datetime.strptime(thread["created_date"], "%Y-%m-%d").month]
+                                month_name=month_list[datetime.datetime.strptime(thread["created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                                 months.append(month_name)
-                                if str(datetime.datetime.strptime(thread["created_date"], "%Y-%m-%d").year) == year:
+                                if str(datetime.datetime.strptime(thread["created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                                     item[month_name].update({"team_tasks_issues_raised":months.count(month_name)}) 
                 except Exception as e:
                     pass 
@@ -4336,9 +4336,9 @@ class Generate_Individual_Report(APIView):
                         team_tasks_issues_resolved = dowellconnection(*thread_report_module, "fetch", {"team_id":team["_id"],"current_status":"Resolved"}, update_field)
                         if len(json.loads(team_tasks_issues_resolved)['data']) != 0:
                             for thread in json.loads(team_tasks_issues_resolved)['data']:
-                                month_name=month_list[datetime.datetime.strptime(thread["created_date"], "%Y-%m-%d").month]
+                                month_name=month_list[datetime.datetime.strptime(thread["created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                                 months.append(month_name)
-                                if str(datetime.datetime.strptime(thread["created_date"], "%Y-%m-%d").year) == year:
+                                if str(datetime.datetime.strptime(thread["created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                                     item[month_name].update({"team_tasks_issues_resolved":months.count(month_name)}) 
                 except Exception as e:
                     pass 
@@ -4358,9 +4358,9 @@ class Generate_Individual_Report(APIView):
                                     team_tasks_comments_added = dowellconnection(*comment_report_module, "fetch", {"thread_id":thread["_id"]}, update_field)
                                     for comment in json.loads(team_tasks_comments_added)['data']:
                                         if not len(json.loads(team_tasks_comments_added)["data"]) <= 0:
-                                            month_name=month_list[datetime.datetime.strptime(comment["created_date"], "%Y-%m-%d").month]
+                                            month_name=month_list[datetime.datetime.strptime(comment["created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").month]
                                             months.append(month_name)
-                                            if str(datetime.datetime.strptime(comment["created_date"], "%Y-%m-%d").year) == year:
+                                            if str(datetime.datetime.strptime(comment["created_date"], "%Y-%m-%dT%H:%M:%S.%fZ").year) == year:
                                                 item[month_name].update({"team_tasks_comments_added":months.count(month_name)})
                 except Exception as e:
                     pass 
