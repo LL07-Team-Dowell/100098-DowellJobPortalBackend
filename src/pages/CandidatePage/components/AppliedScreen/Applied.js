@@ -121,11 +121,11 @@ function Applied() {
 
     <TogglerNavMenuBar className={"applied__Nav__Toggler"} menuItems={["Applied", "Interview", "Declined"]} handleMenuItemClick={(item) => setCurrentNavigationTab(item)} currentActiveItem={currentNavigationTab} />
     <button
-      className="refresh-container"
+      className="refresh-container-applied"
       id='refresh-container-applied'
-      onClick={handleRefreshForCandidateApplications}
     >
-      <div className="refresh-btn">
+      <div className="refresh-btn-applied refresh-btn" onClick={handleRefreshForCandidateApplications}
+      >
         <IoMdRefresh />
         <p>Refresh</p>
       </div>
@@ -208,6 +208,8 @@ function Applied() {
                 }
               </> : <></>
       }
+
+
     </div>
   </>
 }

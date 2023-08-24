@@ -82,16 +82,18 @@ const ClaimVouchar = () => {
                     <form action="#">
                         <AiOutlineClose onClick={() => setShowForm(!showform)} />
                         <h2>Fill this form</h2>
+                        <br />
                         <div className="des">
                             <label htmlFor="#">Description</label>
                             <input type="text" name="description" value={formData.description} onChange={handleChange} required />
                         </div>
-
+                        <br />
 
                         <div className="mail">
                             <label htmlFor="#">Email</label>
                             <input type="text" name="email" value={formData.email} onChange={handleChange} />
                         </div>
+                        <br />
                         {
                             loading ? <LittleLoading /> : <button onClick={(e) => handleSubmit(e)}>Submit</button>
 

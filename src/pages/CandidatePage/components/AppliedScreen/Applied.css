@@ -11,6 +11,15 @@
   margin-bottom: 3%;
 }
 
-.candidate__View__Applications__Container > *:nth-child(2n + 2){
+@media screen and (max-width:600px) {
+  .candidate__View__Applications__Container .job__Card__Container {
+    width: 100%;
+    margin: auto;
+    margin-left: 1rem;
+  }
+
+}
+
+.candidate__View__Applications__Container>*:nth-child(2n + 2) {
   margin-right: 0;
 }

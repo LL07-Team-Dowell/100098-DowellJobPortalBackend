@@ -6,8 +6,9 @@
 }
 
 .title__Navigation__Bar__Container {
-    width: 80%;
+    width: 70%;
     margin: 1% auto 4%;
+    position: relative;
 }
 
 .title__Navigation__Bar__Container,
@@ -26,7 +27,7 @@
     font-weight: 700;
     color: var(--green-color);
     font-size: 2rem;
-    letter-spacing: 0.05em; 
+    letter-spacing: 0.05em;
     margin-left: 8%;
     transform: translateX(40px);
 }
@@ -53,10 +54,20 @@
 
 @media screen and (max-width: 991px) {
     .title__Navigation__Bar__Container {
-        width: 90%;
+        width: 40%;
         margin-top: 6%;
+        margin-left: 1rem;
     }
+
     .title__Navigation__Bar__Container .title__Item h1 {
         font-size: 1.4rem;
+    }
+}
+
+@media screen and (max-width:442px) {
+
+    .title__Navigation__Bar__Container,
+    .title__Navigation__Bar__Container .title__Item {
+        width: 300px;
     }
 }

@@ -35,7 +35,7 @@ function JobScreen() {
     const [jobSelectionCategories, setJobSelectionCategories] = useState(null);
     const [currentJobCategory, setCurrentJobCategory] = useState(null);
     const [jobsToDisplay, setJobsToDisplay] = useState([]);
-    const { currentUser, isPublicUser, publicUserDetails, isProductUser, productUserDetails,  } = useCurrentUserContext();
+    const { currentUser, isPublicUser, publicUserDetails, isProductUser, productUserDetails, } = useCurrentUserContext();
     console.log(jobs);
     useEffect(() => {
         // console.log(jobs);
@@ -96,7 +96,7 @@ function JobScreen() {
             }
 
             if (jobCategoryParam === "Freelancer") {
-                setJobSelectionCategories(["Time based","Task based"])
+                setJobSelectionCategories(["Time based", "Task based"])
                 const jobsToDisplayForCurrentCategory = matchedJobs?.filter(job => job.type_of_job === currentJobCategory);
                 if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
@@ -201,9 +201,9 @@ function JobScreen() {
                 companyIdToUse,
                 dataTypeToUse,
             ] = [
-                isPublicUser ? publicUserDetails?.company_id : productUserDetails?.company_id,
-                isPublicUser ? publicUserDetails?.data_type : productUserDetails?.data_type,
-            ]
+                    isPublicUser ? publicUserDetails?.company_id : productUserDetails?.company_id,
+                    isPublicUser ? publicUserDetails?.data_type : productUserDetails?.data_type,
+                ]
 
             getJobs(companyIdToUse).then(res => {
                 const filterJob = res.data.response.data.filter(job => job.data_type === dataTypeToUse);
@@ -269,9 +269,9 @@ function JobScreen() {
                 companyIdToUse,
                 dataTypeToUse,
             ] = [
-                isPublicUser ? publicUserDetails?.company_id : productUserDetails?.company_id,
-                isPublicUser ? publicUserDetails?.data_type : productUserDetails?.data_type,
-            ]
+                    isPublicUser ? publicUserDetails?.company_id : productUserDetails?.company_id,
+                    isPublicUser ? publicUserDetails?.data_type : productUserDetails?.data_type,
+                ]
 
             getJobs(companyIdToUse).then(res => {
                 const filterJob = res.data.response.data.filter(job => job.data_type === dataTypeToUse);
@@ -325,92 +325,91 @@ function JobScreen() {
 
                 isProductUser && productUserDetails.onlySingleJobCategoryPermitted && (productUserDetails.categoryPassed !== currentCategory) ? <>
                     <img src={dowellLogo} alt='dowell logo' className='logo__Dowell' onClick={() => window.location.replace(uxlivingLabURL)} />
-                    <TitleNavigationBar 
-                        title={`Category not found`} 
-                        showSearchBar={false} 
+                    <TitleNavigationBar
+                        title={`Category not found`}
+                        showSearchBar={false}
                         handleBackBtnClick={() => navigate(`/jobs/?jobCategory=${productUserDetails.categoryPassed}`)}
                     />
                     <div className='category__Not__Found'>
                         <img src={notFOundImage} alt='not found illustration' />
                     </div>
                 </> :
-                <>
-                    {
-                        isProductUser && productUserDetails.onlySingleJobCategoryPermitted &&
-                        <img src={dowellLogo} alt='dowell logo' className='logo__Dowell' onClick={() => window.location.replace(uxlivingLabURL)} />
-                    }
-                    <TitleNavigationBar 
-                        title={`${changeToTitleCase(currentCategory)} Jobs`} 
-                        hideBackBtn={isProductUser && productUserDetails.onlySingleJobCategoryPermitted ? true : false} 
-                        showSearchBar={true} 
-                        handleBackBtnClick={() => currentCategory ? navigate(-1) : navigate("/home")} 
-                    />
-
-                    <div className='candidate__Jobs__Container'>
-                        {/* <div className="refresh-container" onClick={handleRefreshForCandidateApplications} id='refresh-container'>
-                            <IoMdRefresh />
-                        </div> */}
-                        <button
-                            className="refresh-container"
-                            id='refresh-container'
-                            onClick={handleRefreshForCandidateApplications}
-                        >
-                            <div className="refresh-btn">
-                                <IoMdRefresh />
-                                <p>Refresh</p>
-                            </div>
-                        </button>
+                    <>
                         {
-                            jobsLoading || !jobSelectionHasCategory ? <></> :
-                                <TogglerNavMenuBar className={`candidate__Job__Selections__Toggler ${currentCategory.toLocaleLowerCase() === "employee" ? "single__Item" : ""}`} menuItems={jobSelectionCategories} currentActiveItem={currentJobCategory} handleMenuItemClick={(item) => setCurrentJobCategory(item)} />
+                            isProductUser && productUserDetails.onlySingleJobCategoryPermitted &&
+                            <img src={dowellLogo} alt='dowell logo' className='logo__Dowell' onClick={() => window.location.replace(uxlivingLabURL)} />
                         }
+                        <TitleNavigationBar
+                            title={`${changeToTitleCase(currentCategory)} Jobs`}
+                            hideBackBtn={isProductUser && productUserDetails.onlySingleJobCategoryPermitted ? true : false}
+                            showSearchBar={true}
+                            handleBackBtnClick={() => currentCategory ? navigate(-1) : navigate("/home")}
+                        />
 
-                        <div className='all__Current__Jobs__Container'>
+                        <div className='candidate__Jobs__Container'>
+
                             {
-                                section == undefined || section === "home" ? <>
-                                    {
-                                        jobsLoading ? <LoadingSpinner /> :
-
-                                            jobsToDisplay.length === 0 ? <>No '{currentCategory}' jobs currently available</> :
-
-                                                jobsToDisplay.length >= 1 && currentCategory !== "all" && jobsToDisplay.every(job => !job.is_active) ? <>No '{currentCategory}' jobs currently available</> :
-
-                                                    React.Children.toArray(jobsToDisplay.map(job => {
-
-                                                        if (!job.is_active) return <></>
-                                                        return <><JobCard
-                                                            job={job}
-                                                            candidateViewJob={true}
-                                                            subtitle={currentCategory}
-                                                            disableActionBtn={
-                                                                currentUser ? 
-                                                                    candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? false : true 
-                                                                :
-                                                                isProductUser ?
-                                                                    productUserDetails?.jobsAppliedFor?.includes(job._id) ? true : false   
-                                                                : false
-                                                            }
-                                                            buttonText={
-                                                                currentUser ? 
-                                                                    candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? "Apply" : "Applied" 
-                                                                : 
-                                                                isProductUser ?
-                                                                    productUserDetails?.jobsAppliedFor?.includes(job._id) ? "Applied" : 'Apply'  :
-                                                                "Apply"
-                                                            }
-                                                            handleBtnClick={(job) => handleApplyButtonClick(job)}
-                                                        />
-                                                        </>
-                                                    }))
-                                    }
-                                </> :
-                                    <>
-                                        <ErrorPage disableNav={true} />
-                                    </>
+                                jobsLoading || !jobSelectionHasCategory ? <></> :
+                                    <TogglerNavMenuBar className={`candidate__Job__Selections__Toggler ${currentCategory.toLocaleLowerCase() === "employee" ? "single__Item" : ""}`} menuItems={jobSelectionCategories} currentActiveItem={currentJobCategory} handleMenuItemClick={(item) => setCurrentJobCategory(item)} />
                             }
+
+                            <button
+                                className="refresh-container-job"
+                                id='refresh-container-job'
+                                onClick={handleRefreshForCandidateApplications}
+                            >
+                                <div className="refresh-btn">
+                                    <IoMdRefresh />
+                                    <p>Refresh</p>
+                                </div>
+                            </button>
+
+                            <div className='all__Current__Jobs__Container'>
+                                {
+                                    section == undefined || section === "home" ? <>
+                                        {
+                                            jobsLoading ? <LoadingSpinner /> :
+
+                                                jobsToDisplay.length === 0 ? <>No '{currentCategory}' jobs currently available</> :
+
+                                                    jobsToDisplay.length >= 1 && currentCategory !== "all" && jobsToDisplay.every(job => !job.is_active) ? <>No '{currentCategory}' jobs currently available</> :
+
+                                                        React.Children.toArray(jobsToDisplay.map(job => {
+
+                                                            if (!job.is_active) return <></>
+                                                            return <><JobCard
+                                                                job={job}
+                                                                candidateViewJob={true}
+                                                                subtitle={currentCategory}
+                                                                disableActionBtn={
+                                                                    currentUser ?
+                                                                        candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? false : true
+                                                                        :
+                                                                        isProductUser ?
+                                                                            productUserDetails?.jobsAppliedFor?.includes(job._id) ? true : false
+                                                                            : false
+                                                                }
+                                                                buttonText={
+                                                                    currentUser ?
+                                                                        candidateJobs.appliedJobs.find(appliedJob => appliedJob.job_number === job.job_number) == undefined ? "Apply" : "Applied"
+                                                                        :
+                                                                        isProductUser ?
+                                                                            productUserDetails?.jobsAppliedFor?.includes(job._id) ? "Applied" : 'Apply' :
+                                                                            "Apply"
+                                                                }
+                                                                handleBtnClick={(job) => handleApplyButtonClick(job)}
+                                                            />
+                                                            </>
+                                                        }))
+                                        }
+                                    </> :
+                                        <>
+                                            <ErrorPage disableNav={true} />
+                                        </>
+                                }
+                            </div>
                         </div>
-                    </div>
-                </>
+                    </>
         }
 
     </div>

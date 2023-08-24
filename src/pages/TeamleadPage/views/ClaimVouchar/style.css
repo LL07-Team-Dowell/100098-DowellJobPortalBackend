@@ -12,7 +12,7 @@ button.claim__button {
 
 .form__data {
     position: absolute;
-    top: 0;
+    top: 0rem;
     bottom: 0;
     left: 0;
     right: 0;
@@ -20,15 +20,18 @@ button.claim__button {
     z-index: 100;
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* align-items: center; */
 }
 
 .form__data form {
     background-color: white;
-    width: 400px;
-    padding: 20px;
+    width: 500px;
+    height: 320px;
+    padding: 40px;
     border-radius: 10px;
     position: relative;
+    margin-top: 10rem;
+
 }
 
 .form__data label {
@@ -38,6 +41,7 @@ button.claim__button {
 .form__data form input {
     padding: 7px;
     font-size: 0.9rem;
+    height: 2.5rem;
 }
 
 .form__data svg {
@@ -60,12 +64,23 @@ button.claim__button {
 
 .form__data button {
     border: none;
-    font-size: 0.8rem;
+    font-size: 1rem;
+    width: 6rem;
+    height: 2.5rem;
+    border: 1px solid white;
+    border-radius: 5px;
     background-color: #005734;
     padding: 0.5rem;
     color: white;
     margin-top: 0.2rem;
     cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.form__data button:hover {
+    border: 1px solid #005734;
+    background-color: white;
+    color: #005734;
 }
 
 .form__data h2 {

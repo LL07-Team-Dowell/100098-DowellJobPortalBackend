@@ -455,14 +455,28 @@ const Teamlead = ({ isGrouplead }) => {
           handleBackBtnClick={handleBackBtnClick}
         />
         {section !== "user" && !showCandidate && !isGrouplead && (
-          <TogglerNavMenuBar
-            className={"teamlead"}
-            menuItems={
-              ["Approval", "Tasks", "Rehire"]
-            }
-            currentActiveItem={currentActiveItem}
-            handleMenuItemClick={handleMenuItemClick}
-          />
+          <>
+            <TogglerNavMenuBar
+              className={"teamlead"}
+              menuItems={
+                ["Approval", "Tasks", "Rehire"]
+              }
+              currentActiveItem={currentActiveItem}
+              handleMenuItemClick={handleMenuItemClick}
+            />
+
+            <button
+              className="refresh-container-teamlead desktop"
+            >
+              <div className="refresh-btn refresh-btn-teamlead" onClick={handleRefreshForCandidateApplicationsForTeamlead}
+              >
+                <IoMdRefresh />
+                <p>Refresh</p>
+              </div>
+            </button>
+          </>
+
+
         )}
         {/* <ClaimVouchar /> */}
         <>
@@ -513,12 +527,22 @@ const Teamlead = ({ isGrouplead }) => {
                         setShowApplicationDetails(!showApplicationDetails)
                       }
                     />
+
+                    {/* <button
+                      className="refresh-container-teamlead"
+                    >
+                      <div className="refresh-btn refresh-btn-teamlead" onClick={handleRefreshForCandidateApplicationsForTeamlead}
+                      >
+                        <IoMdRefresh />
+                        <p>Refresh</p>
+                      </div>
+                    </button> */}
                   </div>
                 ) : (
                   <>
                     {isGrouplead && (section === 'home' || section === undefined) ? <></> :
                       <>
-                        <button
+                        {/* <button
                           className="refresh-container"
                           onClick={handleRefreshForCandidateApplicationsForTeamlead}
                         >
@@ -526,7 +550,7 @@ const Teamlead = ({ isGrouplead }) => {
                             <IoMdRefresh />
                             <p>Refresh</p>
                           </div>
-                        </button>
+                        </button> */}
                         <SelectedCandidates
                           candidatesCount={
                             selectedTabActive
@@ -538,6 +562,17 @@ const Teamlead = ({ isGrouplead }) => {
                                 : 0
                           }
                         />
+
+                        <button
+                          className="refresh-container-teamlead mobile"
+                        >
+                          <div className="refresh-btn refresh-btn-teamlead" onClick={handleRefreshForCandidateApplicationsForTeamlead}
+                          >
+                            <IoMdRefresh />
+                            <p>Refresh</p>
+                          </div>
+                        </button>
+
                       </>
                     }
 

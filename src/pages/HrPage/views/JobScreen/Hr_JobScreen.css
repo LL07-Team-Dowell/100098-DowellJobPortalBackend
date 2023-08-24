@@ -91,6 +91,139 @@
   cursor: pointer;
 }
 
+.refresh-container-job {
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.3rem;
+  background-color: #005734;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.refresh-container-applied {
+  position: relative;
+  top: 2rem;
+  left: 0;
+  right: 1rem;
+  width: 100%;
+  margin: auto;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.3rem;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  width: 75%;
+  display: flex;
+  flex-direction: row-reverse;
+  background-color: white;
+}
+
+.refresh-container-teamlead {
+  position: relative;
+  top: 2rem;
+  left: 0;
+  right: 1rem;
+  width: 100%;
+  margin: auto;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.3rem;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  width: 75%;
+  display: flex;
+  flex-direction: row-reverse;
+  background-color: white;
+  margin-bottom: 2rem;
+}
+
+.refresh-btn-teamlead {
+  background-color: #005734;
+  width: 100px;
+  margin-left: 0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.3rem;
+  color: #fff;
+}
+
+.refresh-btn-applied {
+  width: 100px;
+  margin-left: 0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.3rem;
+  color: #fff;
+  background-color: #005734;
+}
+
+.desktop {
+  display: flex;
+}
+
+.mobile {
+  display: none;
+}
+
+@media screen and (max-width:990px) {
+  .refresh-container-job {
+    position: relative;
+    display: flex;
+    width: 100px;
+    margin-left: auto;
+    justify-content: center;
+    text-align: center;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.3rem;
+    background-color: #005734;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    margin-bottom: 1rem;
+  }
+
+  #refresh-container-applied {
+    position: relative;
+    display: flex;
+    width: 100px;
+    margin-left: auto;
+    justify-content: center;
+    text-align: center;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.3rem;
+    background-color: #005734;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    margin-bottom: 3rem;
+    margin-right: 3%;
+  }
+
+  .refresh-btn-applied {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    width: auto;
+    padding: 0;
+  }
+
+  .refresh-btn-teamlead {
+    margin-right: -3rem !important;
+  }
+
+  .mobile {
+    display: flex;
+  }
+
+  .desktop {
+    display: none;
+  }
+
+}
+
 #refresh-container {
   position: absolute;
   top: 10rem;
@@ -131,10 +264,7 @@
   margin-bottom: 30%;
 }
 
-#refresh-container-applied {
-  position: absolute;
-  top: 4rem;
-}
+
 
 @media screen and (max-width: 300px) {
   .search {
