@@ -4515,18 +4515,19 @@ class task_module(APIView):
                 if response["isSuccess"]:
                     return Response({
                         "success": True,
-                        "message": "Task added successfully"
-                    })
+                        "message": "Task added successfully",
+                        "response": field
+                    },status.HTTP_201_CREATED)
                 else:
                     return Response({
                         "success": False,
                         "message": "Failed to add task"
-                    })
+                    },status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({
                     "success": False,
                     "message": "Failed to create task",
-                })
+                },status.HTTP_400_BAD_REQUEST)
         else:
             return Response({
                 "success": False,
@@ -4565,7 +4566,7 @@ class task_module(APIView):
                 "message": f"Task details of {user_id}",
                 "task_details": respone["data"],
                 "task": task_resonse["data"]
-            })
+            },status.HTTP_200_OK)
         else:
             return Response({
                 "success": False,
@@ -4614,13 +4615,14 @@ class task_module(APIView):
             if response["isSuccess"]:
                 return Response({
                     "success": True,
-                    "message": "Task added successfully"
-                })
+                    "message": "Task added successfully",
+                    "response": field
+                },status.HTTP_201_CREATED)
             else:
                 return Response({
                     "success": True,
                     "message": "Failed to add task"
-                })
+                },status.HTTP_400_BAD_REQUEST)
         else:
             return Response({
                 "success": False,
@@ -4641,12 +4643,12 @@ class task_module(APIView):
             return Response({
                 "success": True,
                 "message": "Task saved successfully"
-            })
+            },status.HTTP_200_OK)
         else:
             return Response({
                 "success": False,
                 "message": "Failed save task"
-            })
+            },status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     """HANDLE ERROR"""
     def handle_error(self, request): 
@@ -4654,6 +4656,7 @@ class task_module(APIView):
             "success": False,
             "message": "Invalid request type"
         }, status=status.HTTP_400_BAD_REQUEST)
+
 
     # def max_updated_date(self, updated_date):
     #     task_updated_date = datetime.datetime.strptime(
