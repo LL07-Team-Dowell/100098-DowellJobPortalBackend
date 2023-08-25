@@ -3013,7 +3013,7 @@ class sendMailToPublicCandidate(APIView):
         subject = request.data.get("subject")
         job_role = request.data.get("job_role")
         data_type = request.data.get("data_type")
-        date_time = set_date_format(request.data.get("date_time")("application_submitted_on"))
+        date_time = request.data.get("date_time")
 
         data = {
             "qr_id": qr_id,
