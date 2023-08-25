@@ -4120,7 +4120,7 @@ class Generate_Individual_Report(APIView):
             "username":payload.get("username")
         }
         username=payload.get("username")
-        year=payload.get("year")
+        year=payload.get("year".)
         
         if not int(year) <= datetime.date.today().year:
             return Response({"isSuccess":False,
@@ -4462,10 +4462,10 @@ class task_module(APIView):
         task_added_by =  data.get("task_added_by")
         data_type =  data.get("data_type")
         company_id =  data.get("company_id")
-        task_created_date =  data.get("task_created_date")
+        task_created_date =  set_date_format(data.get("task_created_date"))
         task_type = data.get("task_type")
-        start_time =  data.get("start_time")
-        end_time =  data.get("end_time")
+        start_time =  set_date_format(data.get("start_time"))
+        end_time =  set_date_format(data.get("end_time"))
         user_id =  data.get("user_id")
 
         data = {
@@ -4540,7 +4540,7 @@ class task_module(APIView):
         user_id = data.get('user_id')
         company_id = data.get('company_id')
         data_type = data.get('data_type')
-        task_created_date = data.get('task_created_date')
+        task_created_date = set_date_format(data.get('task_created_date'))
 
         field = {
             "user_id": user_id,
@@ -4582,10 +4582,10 @@ class task_module(APIView):
         data_type =  data.get("data_type")
         company_id =  data.get("company_id")
         task_type = data.get("task_type")
-        start_time =  data.get("start_time")
-        end_time =  data.get("end_time")
+        start_time =  set_date_format(data.get("start_time"))
+        end_time =  set_date_format(data.get("end_time"))
         user_id =  data.get("user_id")
-        task_created_date =  data.get("task_created_date")
+        task_created_date =  set_date_format(data.get('task_created_date'))
 
         data = {
             "task_id": task_id,
@@ -4664,37 +4664,5 @@ class task_module(APIView):
     #     )
     #     _date = task_updated_date + relativedelta(hours=12)
     #     return str(_date)
-@method_decorator(csrf_exempt, name="dispatch")   
-class ISO_time_setter(APIView):
-    def post(self, request):
-        #jobs,candidate_management_reports,account_management_reports,admin_management_reports,task_management_reports,questionnaire_modules,rejected_reports_modules,response_modules,team_management_modules,thread_report_module,comment_report_module,
-        paras=[task_management_reports,Publiclink_reports,update_task_request_module]
-        for pa in paras:
-            response = dowellconnection(*pa, "fetch", {}, {})
-            print(pa,"===========================================================",len(json.loads(response)["data"]))
-            count=0
-            for j in json.loads(response)["data"]:
-                    count+=1
-                    if "due_date" in j.keys():
-                        due_date = set_date_format(j["due_date"])
-                        res = dowellconnection(*pa, "update", {"_id":j["_id"]}, 
-                                                    {"due_date":due_date})
-                        print(res,count)
-                    if "end_time" in j.keys():
-                        end_time = set_date_format(j["end_time"])
-                        res = dowellconnection(*pa, "update", {"_id":j["_id"]}, 
-                                                    {"end_time":end_time})
-                        print(res,count)
-                    if "start_time" in j.keys():
-                        start_time = set_date_format(j["start_time"])
-                        res = dowellconnection(*pa, "update", {"_id":j["_id"]}, 
-                                                    {"start_time":start_time})
-                        print(res,count)
-                    if "date_time" in j.keys():
-                        date_time = set_date_format(j["date_time"])
-                        res = dowellconnection(*pa, "update", {"_id":j["_id"]}, 
-                                                    {"date_time":date_time})
-                        print(res,count)
 
-        return Response({"message":"changed all the dates"},status=status.HTTP_201_CREATED)
 

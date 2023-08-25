@@ -264,6 +264,7 @@ def period_check(start_dt, end_dt, data_list, key):
                                 #print("error", error)
                                 pass
     return items, len(items),items_ids,len(items_ids)
+
 def set_date_format(date):
     try:
         iso_format =datetime.datetime.strptime(date, '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
@@ -337,10 +338,8 @@ def targeted_population(database, collection, fields, period,column_name, start_
     response = requests.post(url, json=request_data,headers=headers)
     return response.text
 
-
 class CustomValidationError(Exception):
     pass
-
 def validate_and_generate_times(task_type, task_created_date, start_time=None, end_time=None):
     date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
     if task_type == "Day":

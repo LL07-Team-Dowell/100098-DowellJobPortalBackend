@@ -122,7 +122,6 @@ urlpatterns = [
     path('generate_individual_Report/',Generate_Individual_Report.as_view()),
 
     # Payment Request Status -------------------------------------
-    path('update_payment_request_status/<str:document_id>/',Update_payment_status.as_view()),
-    path('iso_time_setter/',ISO_time_setter.as_view())
+    path('update_payment_request_status/<str:document_id>/',Update_payment_status.as_view())
 ]
 
