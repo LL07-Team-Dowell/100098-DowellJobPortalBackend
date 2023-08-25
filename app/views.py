@@ -2663,6 +2663,11 @@ class SettingUserProfileInfoView(APIView):
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
+            for data in request.data['profile_info']:
+                if not 'version' in data.keys():
+                    return Response({"error":" 'version', is not in parameter"}, status=status.HTTP_400_BAD_REQUEST)
+                if len(data['version'])==0:
+                    return Response({"error":" the parameter 'version', cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -2677,7 +2682,11 @@ class SettingUserProfileInfoView(APIView):
         setting = SettingUserProfileInfo.objects.get(pk=pk)
         serializer = UpdateSettingUserProfileInfoSerializer(setting, data=request.data)
         if serializer.is_valid():
-            current_version = setting.profile_info[-1]["version"]
+            try:
+                index=len(setting.profile_info)-1
+                current_version = setting.profile_info[index]["version"]
+            except Exception:
+                current_version = "1" 
             setting.profile_info.append(
                 {
                     "profile_title": data["profile_title"],
