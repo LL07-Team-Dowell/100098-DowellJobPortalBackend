@@ -74,7 +74,7 @@ import ClaimVouchar from "./pages/TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
 
 function App() {
-  // console.log = () => {};
+  console.log = () => {};
   const {
     currentUser,
     isPublicUser,
@@ -1611,18 +1611,19 @@ function App() {
 //   </>
 // );
 
-const categoriesForScreen = [
-  {
-    category: "employee",
-    component: EmployeeJobScreen,
-  },
-  {
-    category: "intern",
-    component: InternJobScreen,
-  },
-  {
-    category: "freelancer",
-    component: FreelancerJobScreen,
-  },
-];
+// const categoriesForScreen = [
+//   {
+//     category: "employee",
+//     component: EmployeeJobScreen,
+//   },
+//   {
+//     category: "intern",
+//     component: InternJobScreen,
+//   },
+//   {
+//     category: "freelancer",
+//     component: FreelancerJobScreen,
+//   },
+// ];
+
 export default App;
