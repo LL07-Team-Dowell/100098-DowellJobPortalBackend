@@ -4120,7 +4120,7 @@ class Generate_Individual_Report(APIView):
             "username":payload.get("username")
         }
         username=payload.get("username")
-        year=payload.get("year".)
+        year=payload.get("year")
         
         if not int(year) <= datetime.date.today().year:
             return Response({"isSuccess":False,

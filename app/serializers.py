@@ -225,11 +225,12 @@ class SettingUserProfileInfoSerializer(serializers.ModelSerializer):
         return representation
 
 
-
 class UpdateSettingUserProfileInfoSerializer(serializers.ModelSerializer):
+    version = serializers.CharField(required=False)
     class Meta:
         model = SettingUserProfileInfo
-        fields = ["profile_info"]
+        fields = ["profile_info","version"]
+
 
 
 class SettingUserProjectSerializer(serializers.ModelSerializer):
