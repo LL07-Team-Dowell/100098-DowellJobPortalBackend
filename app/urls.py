@@ -83,6 +83,8 @@ urlpatterns = [
     path('settinguserprofileinfo/<int:pk>', SettingUserProfileInfoView.as_view()),
     path('settinguserproject/', SettingUserProjectView.as_view()),
     path('settinguserproject/<int:pk>', SettingUserProjectView.as_view()),
+    path('settinguserdatatype/<int:pk>', SettingUserProfileInfoView.as_view()),
+
 
     # discord -------------------------------------------------------
     path('generate_discord_invite/', generate_discord_invite.as_view()),

@@ -58,7 +58,7 @@ from .serializers import (
     UpdatePaymentStatusSerializer,
     TaskModuleSerializer,
     GetCandidateTaskSerializer,
-    UpdateTaskByCandidateSerializer
+    UpdateTaskByCandidateSerializer,
 )
 
 
@@ -159,7 +159,7 @@ class accounts_onboard_candidate(APIView):
             }
             update_field = {
                 "status": data.get("status"),
-                "onboarded_on": set_date_format(data.get("onboarded_on")),
+                "onboarded_on": data.get("onboarded_on"),
             }
             insert_to_hr_report = {
                 "event_id": get_event_id()["event_id"],
@@ -168,7 +168,7 @@ class accounts_onboard_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
-                "onboarded_on": set_date_format(data.get("onboarded_on"))
+                "onboarded_on": data.get("onboarded_on")
             }
             serializer = AccountSerializer(data=data)
             if serializer.is_valid():
@@ -382,7 +382,7 @@ class accounts_reject_candidate(APIView):
             update_field = {
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
-                "rejected_on": set_date_format(data.get("rejected_on")),
+                "rejected_on": data.get("rejected_on"),
                 "data_type": data.get("data_type"),
             }
             insert_to_account_report = {
@@ -392,7 +392,7 @@ class accounts_reject_candidate(APIView):
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
-                "rejected_on": set_date_format(data.get("rejected_on")),
+                "rejected_on": data.get("rejected_on"),
 
             }
             serializer = RejectSerializer(data=data)
@@ -503,7 +503,7 @@ class admin_create_jobs(APIView):
             "company_id": data.get("company_id"),
             "data_type": data.get("data_type"),
             "created_by": data.get("created_by"),
-            "created_on": set_date_format(data.get("created_on")),
+            "created_on": data.get("created_on"),
             "paymentInterval":data.get("paymentInterval")
         }
         update_field = {"status": "nothing to update"}
@@ -731,7 +731,7 @@ class candidate_apply_job(APIView):
             "data_type": data.get("data_type"),
             "user_type": data.get("user_type"),
             "scheduled_interview_date": "",
-            "application_submitted_on": set_date_format(data.get("application_submitted_on")),
+            "application_submitted_on": data.get("application_submitted_on"),
             "shortlisted_on": "",
             "selected_on": "",
             "hired_on": "",
@@ -926,7 +926,7 @@ class hr_shortlisted_candidate(APIView):
             update_field = {
                 "hr_remarks": data.get("hr_remarks"),
                 "status": data.get("status"),
-                "shortlisted_on": set_date_format(data.get("shortlisted_on")),
+                "shortlisted_on": data.get("shortlisted_on"),
             }
             insert_to_hr_report = {
                 "event_id": get_event_id()["event_id"],
@@ -935,7 +935,7 @@ class hr_shortlisted_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
-                "shortlisted_on": set_date_format(data.get("shortlisted_on")),
+                "shortlisted_on": data.get("shortlisted_on"),
             }
 
             serializer = HRSerializer(data=data)
@@ -1015,7 +1015,7 @@ class hr_selected_candidate(APIView):
                 "project": data.get("project"),
                 "product_discord_link": data.get("product_discord_link"),
                 "status": data.get("status"),
-                "selected_on": set_date_format(data.get("selected_on")),
+                "selected_on": data.get("selected_on"),
             }
             insert_to_hr_report = {
                 "event_id": get_event_id()["event_id"],
@@ -1026,7 +1026,7 @@ class hr_selected_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
-                "selected_on": set_date_format(data.get("selected_on")),
+                "selected_on": data.get("selected_on"),
             }
 
             c_r = []
@@ -1105,7 +1105,7 @@ class hr_reject_candidate(APIView):
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
-                "rejected_on": set_date_format(data.get("rejected_on")),
+                "rejected_on": data.get("rejected_on"),
             }
             insert_to_hr_report = {
                 "company_id": data.get("company_id"),
@@ -1114,7 +1114,7 @@ class hr_reject_candidate(APIView):
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
-                "rejected_on": set_date_format(data.get("rejected_on")),
+                "rejected_on": data.get("rejected_on"),
             }
 
         serializer = RejectSerializer(data=data)
@@ -1197,7 +1197,7 @@ class lead_hire_candidate(APIView):
             update_field = {
                 "teamlead_remarks": data.get("teamlead_remarks"),
                 "status": data.get("status"),
-                "hired_on": set_date_format(data.get("hired_on")),
+                "hired_on": data.get("hired_on"),
             }
             insert_to_lead_report = {
                 "event_id": get_event_id()["event_id"],
@@ -1206,7 +1206,7 @@ class lead_hire_candidate(APIView):
                 "status": data.get("status"),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
-                "hired_on": set_date_format(data.get("hired_on")),
+                "hired_on": data.get("hired_on"),
  
             }
             serializer = LeadSerializer(data=data)
@@ -1320,7 +1320,7 @@ class lead_reject_candidate(APIView):
             update_field = {
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
-                "rejected_on": set_date_format(data.get("rejected_on")),
+                "rejected_on": data.get("rejected_on"),
                 "data_type": data.get("data_type"),
             }
             insert_to_lead_report = {
@@ -1330,7 +1330,7 @@ class lead_reject_candidate(APIView):
                 "reject_remarks": data.get("reject_remarks"),
                 "status": "Rejected",
                 "data_type": data.get("data_type"),
-                "rejected_on": set_date_format(data.get("rejected_on")),
+                "rejected_on": data.get("rejected_on"),
             }
 
             serializer = RejectSerializer(data=data)
@@ -1427,9 +1427,9 @@ class create_task(APIView):
             try:
                 start_time_dt, end_time_dt=validate_and_generate_times(
                     data.get("task_type"),
-                    set_date_format(data.get("task_created_date")),
-                    set_date_format(data.get("start_time")),
-                    set_date_format(data.get("end_time")),
+                    data.get("task_created_date"),
+                    data.get("start_time"),
+                    data.get("end_time"),
                 )
 
             except CustomValidationError as e:
@@ -1445,12 +1445,11 @@ class create_task(APIView):
                 "task_added_by": data.get("task_added_by"),
                 "data_type": data.get("data_type"),
                 "company_id": data.get("company_id"),
-                "task_created_date": set_date_format(data.get("task_created_date")),
+                "task_created_date": data.get("task_created_date"),
                 "task_updated_date": "",
                 "approval": False,
                 "max_updated_date": self.max_updated_date(
-                    set_date_format(data.get("task_created_date"))
-                ),
+                    data.get("task_created_date")),
                 "task_type":data.get("task_type"),
                 "start_time":start_time_dt,
                 "end_time":end_time_dt
@@ -1551,7 +1550,7 @@ class update_task(APIView):
                 "status": data.get("status"),
                 "task": data.get("task"),
                 "task_added_by": data.get("task_added_by"),
-                "task_updated_date": set_date_format(data.get("task_updated_date")),
+                "task_updated_date": data.get("task_updated_date"),
             }
             # check if task exists---
             check = dowellconnection(
@@ -1609,7 +1608,7 @@ class task_request_update(APIView):
             field = {"_id":document_id}
             update_field = {
                 "company_id": data.get("company_id"),
-                "task_created_date": set_date_format(data.get("task_created_date")),
+                "task_created_date": data.get("task_created_date"),
                 "username": data.get("username"),
                 "portfolio_name": data.get("portfolio_name"),
                 "project": data.get("project"),
@@ -1976,8 +1975,8 @@ class create_team_task(APIView):
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
                 "data_type": data.get("data_type"),
-                "task_created_date":task_created_date,
-                "due_date": set_date_format(data.get("due_date")),
+                "task_created_date":data.get("task_created_date"),
+                "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
                 "max_updated_date": self.max_updated_date(task_created_date),
@@ -2234,7 +2233,7 @@ class create_question(APIView):
             "data_type": data.get("data_type"),
             "question_link": data.get("question_link"),
             "module": data.get("module"),
-            "created_on": set_date_format(data.get("created_on")),
+            "created_on": data.get("created_on"),
             "created_by": data.get("created_by"),
             "is_active": data.get("is_active"),
         }
@@ -2404,7 +2403,7 @@ class response(APIView):
                 "live_link": data.get("live_link"),
                 "documentation_link": data.get("documentation_link"),
                 "started_on": data.get("started_on"),
-                "submitted_on": set_date_format(data.get("submitted_on")),
+                "submitted_on": data.get("submitted_on"),
                 "rating": data.get("rating"),
                 "portfolio_name": data.get("portfolio_name")
             }
@@ -2589,7 +2588,7 @@ class submit_response(APIView):
             "video_link": data.get("video_link"),
             "documentation_link": data.get("documentation_link"),
             "answer_link": data.get("answer_link"),
-            "submitted_on": set_date_format(data.get("submitted_on")),
+            "submitted_on": data.get("submitted_on"),
         }
         serializer = SubmitResponseSerializer(data=update_field)
         if serializer.is_valid():
@@ -2701,6 +2700,22 @@ class SettingUserProfileInfoView(APIView):
             setting.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            setting = SettingUserProfileInfo.objects.get(pk=pk)
+        except SettingUserProfileInfo.DoesNotExist:
+            return Response({
+                "success":False,
+                "message":"the given user _id does not match with the database"},
+                status=status.HTTP_404_NOT_FOUND)
+        setting.data_type ="Archived_Data"
+        new_data_type="Archived_Data"
+        new_data_type
+        setting.save()
+        return Response({
+            "success":True,
+            "message":f"Data_type for the user has been changes to  {new_data_type}"},status=status.HTTP_200_OK)
 
 @method_decorator(csrf_exempt, name="dispatch")
 class SettingUserProjectView(APIView):
@@ -2726,6 +2741,8 @@ class SettingUserProjectView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    
 # api for setting ends here____________________________
 
 
@@ -2849,7 +2866,7 @@ class Public_apply_job(APIView):
             "data_type": data.get("data_type"),
             "user_type": data.get("user_type"),
             "scheduled_interview_date": "",
-            "application_submitted_on": set_date_format(data.get("application_submitted_on")),
+            "application_submitted_on": data.get("application_submitted_on"),
             "shortlisted_on": "",
             "selected_on": "",
             "hired_on": "",
@@ -4471,10 +4488,10 @@ class task_module(APIView):
         task_added_by =  data.get("task_added_by")
         data_type =  data.get("data_type")
         company_id =  data.get("company_id")
-        task_created_date =  set_date_format(data.get("task_created_date"))
+        task_created_date =  data.get("task_created_date")
         task_type = data.get("task_type")
-        start_time =  set_date_format(data.get("start_time"))
-        end_time =  set_date_format(data.get("end_time"))
+        start_time =  data.get("start_time")
+        end_time =  data.get("end_time")
         user_id =  data.get("user_id")
 
         data = {
@@ -4549,7 +4566,7 @@ class task_module(APIView):
         user_id = data.get('user_id')
         company_id = data.get('company_id')
         data_type = data.get('data_type')
-        task_created_date = set_date_format(data.get('task_created_date'))
+        task_created_date = data.get('task_created_date')
 
         field = {
             "user_id": user_id,
@@ -4591,10 +4608,10 @@ class task_module(APIView):
         data_type =  data.get("data_type")
         company_id =  data.get("company_id")
         task_type = data.get("task_type")
-        start_time =  set_date_format(data.get("start_time"))
-        end_time =  set_date_format(data.get("end_time"))
+        start_time =  data.get("start_time")
+        end_time =  data.get("end_time")
         user_id =  data.get("user_id")
-        task_created_date =  set_date_format(data.get('task_created_date'))
+        task_created_date =  data.get('task_created_date')
 
         data = {
             "task_id": task_id,
