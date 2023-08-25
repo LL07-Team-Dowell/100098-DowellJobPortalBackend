@@ -1344,8 +1344,8 @@ function App() {
               <CandidateJobsContextProvider>
                 <JobContextProvider>
                   <CandidateValuesProvider>
-                    {/* <PageUnderConstruction showProductView={true} /> */}
-                    <AfterSelectionScreen assignedProjects={assignedProjects} />
+                    <PageUnderConstruction showProductView={true} />
+                    {/*<AfterSelectionScreen assignedProjects={assignedProjects} /> */}
                   </CandidateValuesProvider>
                 </JobContextProvider>
               </CandidateJobsContextProvider>

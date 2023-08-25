@@ -264,6 +264,28 @@ $red__color: #FE0000;
   }
 }
 
+// @media (max-width: 380px) {
+// .staff__Jobs__Layout__Content__Container .jobs__Layout__Content{
+//     overflow-y: visible;
+//   }
+//   .landing-page {
+//     padding: 0rem 9rem;
+//     width: 100%;
+
+//     .cards {
+//       // grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+//       display: flex;
+//       gap:40px; 
+//       flex-direction: column;
+//       width: 100%;
+//       .card{
+//         width: 373px;
+//         transform: translateX(-135px);
+//       }
+//     }
+//   }
+// }
+
 @media (max-width: 767px) {
   .landing-page {
     padding: 0rem 9rem;
