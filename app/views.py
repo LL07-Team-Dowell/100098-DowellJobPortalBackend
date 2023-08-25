@@ -58,7 +58,7 @@ from .serializers import (
     UpdatePaymentStatusSerializer,
     TaskModuleSerializer,
     GetCandidateTaskSerializer,
-    UpdateTaskByCandidateSerializer
+    UpdateTaskByCandidateSerializer,
 )
 
 
@@ -2700,6 +2700,22 @@ class SettingUserProfileInfoView(APIView):
             setting.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            setting = SettingUserProfileInfo.objects.get(pk=pk)
+        except SettingUserProfileInfo.DoesNotExist:
+            return Response({
+                "success":False,
+                "message":"the given user _id does not match with the database"},
+                status=status.HTTP_404_NOT_FOUND)
+        setting.data_type ="Archived_Data"
+        new_data_type="Archived_Data"
+        new_data_type
+        setting.save()
+        return Response({
+            "success":True,
+            "message":f"Data_type for the user has been changes to  {new_data_type}"},status=status.HTTP_200_OK)
 
 @method_decorator(csrf_exempt, name="dispatch")
 class SettingUserProjectView(APIView):
@@ -2725,6 +2741,8 @@ class SettingUserProjectView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    
 # api for setting ends here____________________________
 
 
