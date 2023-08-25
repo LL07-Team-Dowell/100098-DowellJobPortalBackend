@@ -82,24 +82,23 @@ const SelectedCandidatesScreen = ({
     setCandidatePlatform(
       selectedCandidateData[mutableNewApplicationStateNames.freelancePlatform]
     );
-    
-    availableProjects && setAssignedProject(
-      availableProjects.length > 0 ?
-      availableProjects[0] 
-      : 
-      ''
-    )
+
+    availableProjects &&
+      setAssignedProject(
+        availableProjects.length > 0 ? availableProjects[0] : ""
+      );
   }, []);
 
   useEffect(() => {
     if (
-      !guestApplication || 
-      !updateInterviewTimeSelected || 
-      typeof updateInterviewTimeSelected !== 'function'
-    ) return
-    
+      !guestApplication ||
+      !updateInterviewTimeSelected ||
+      typeof updateInterviewTimeSelected !== "function"
+    )
+      return;
+
     updateInterviewTimeSelected(interviewDate);
-  }, [interviewDate])
+  }, [interviewDate]);
 
   const handleClick = async (ref, disableOtherBtns, action) => {
     if (!ref.current) return;
@@ -422,14 +421,13 @@ const SelectedCandidatesScreen = ({
       case hrPageActions.MOVE_TO_SELECTED:
         if (!selectedCandidateData) return;
 
-        if(selectedCandidateData.status === candidateStatuses.SELECTED) 
+        if (selectedCandidateData.status === candidateStatuses.SELECTED)
+          if (hrDiscordLink.length < 1) {
+            disableOtherBtns && setDisabled(false);
+            ref.current.classList.toggle("active");
 
-        if (hrDiscordLink.length < 1) {
-          disableOtherBtns && setDisabled(false);
-          ref.current.classList.toggle("active");
-
-          return toast.info("Please add discord link for candidate");
-        }
+            return toast.info("Please add discord link for candidate");
+          }
 
         if (hrDiscordLink.length >= 1) {
           const urlPattern =
@@ -438,7 +436,7 @@ const SelectedCandidatesScreen = ({
           if (!isValidUrl) {
             disableOtherBtns && setDisabled(false);
             ref.current.classList.toggle("active");
-          
+
             setHrDiscordLink("");
             return toast.info("Please add valid discord link for candidate");
           }
@@ -471,13 +469,14 @@ const SelectedCandidatesScreen = ({
 
       case hrPageActions.MOVE_TO_REJECTED:
         if (!selectedCandidateData) return;
-        
 
         //Rejection Function For HR
         Promise.all([
           rejectCandidateApplicationforHr({
             document_id: selectedCandidateData._id,
-            reject_remarks: selectedCandidateData.hr_remarks, 
+            reject_remarks: guestApplication
+              ? "Rejected"
+              : selectedCandidateData.hr_remarks,
             applicant: selectedCandidateData.applicant,
             username: selectedCandidateData.username,
             company_id: currentUser.portfolio_info[0].org_id,
@@ -493,7 +492,9 @@ const SelectedCandidatesScreen = ({
             data_type: currentUser.portfolio_info[0].data_type,
             profile_info: [
               {
-                profile_title: selectedCandidateData.portfolio_name,
+                profile_title: guestApplication
+                  ? selectedCandidateData.applicant_email
+                  : selectedCandidateData.portfolio_name,
                 Role: "Viewer",
                 version: "1.0",
                 // project: selectedCandidateData.project,
@@ -518,7 +519,11 @@ const SelectedCandidatesScreen = ({
 
         if (!selectedCandidateData) return;
 
-        if (!setShowPublicAccountConfigurationModal || typeof setShowPublicAccountConfigurationModal !== 'function') return
+        if (
+          !setShowPublicAccountConfigurationModal ||
+          typeof setShowPublicAccountConfigurationModal !== "function"
+        )
+          return;
 
         return setShowPublicAccountConfigurationModal(true);
 
@@ -545,7 +550,12 @@ const SelectedCandidatesScreen = ({
 
         {!hrPageActive && (
           <AssignedProjectDetails
-            assignedProject={selectedCandidateData.project && Array.isArray(selectedCandidateData.project) ? selectedCandidateData.project[0] : ""}
+            assignedProject={
+              selectedCandidateData.project &&
+              Array.isArray(selectedCandidateData.project)
+                ? selectedCandidateData.project[0]
+                : ""
+            }
             removeDropDownIcon={true}
           />
         )}
@@ -677,7 +687,9 @@ const SelectedCandidatesScreen = ({
                 value={interviewDate}
                 onChange={(e) => setInterviewDate(e.target.value)}
                 type={"datetime-local"}
-                min={new Date().toISOString().slice(0, new Date().toISOString().lastIndexOf(":"))}
+                min={new Date()
+                  .toISOString()
+                  .slice(0, new Date().toISOString().lastIndexOf(":"))}
               ></input>
             </div>
           </>

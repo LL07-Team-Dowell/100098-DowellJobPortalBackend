@@ -90,10 +90,6 @@ const SingleJobScreen = () => {
                                 { isLargeScreen && <span>{jobSaved ? "Saved": "Save"}</span> }
                                 <IoBookmarkSharp className="save__Icon" />
                             </button>
-                            <button className="share__Btn grey__Btn" onClick={() => handleShareBtnClick(currentJob.title, `Apply for ${currentJob.title} on Dowell!`, window.location)}>
-                                { isLargeScreen && <span>Share</span> }
-                                <IoMdShare />
-                            </button>
                         </div>
                     </div>
                     <div className="job__Info__Container">
