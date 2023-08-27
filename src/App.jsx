@@ -74,7 +74,7 @@ import ClaimVouchar from "./pages/TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => {};
   const {
     currentUser,
     isPublicUser,
@@ -1344,8 +1344,8 @@ function App() {
               <CandidateJobsContextProvider>
                 <JobContextProvider>
                   <CandidateValuesProvider>
-                    <PageUnderConstruction showProductView={true} />
-                    {/*<AfterSelectionScreen assignedProjects={assignedProjects} /> */}
+                    {/* <PageUnderConstruction showProductView={true} /> */}
+                    <AfterSelectionScreen assignedProjects={assignedProjects} />
                   </CandidateValuesProvider>
                 </JobContextProvider>
               </CandidateJobsContextProvider>
@@ -1356,8 +1356,8 @@ function App() {
         <Route
           path=":section"
           element={
-            <PageUnderConstruction showProductView={true} />
-            // <AfterSelectionScreen />
+            // <PageUnderConstruction showProductView={true} />
+            <AfterSelectionScreen assignedProjects={assignedProjects} />
           }
         />
       </Route>

@@ -19,7 +19,6 @@ import { getSettingUserProject } from "../../../../services/hrServices";
 
 const AfterSelectionScreen = ({ assignedProjects }) => {
   const { currentUser } = useCurrentUserContext();
-  console.log(currentUser);
 
   const { id } = useParams();
 

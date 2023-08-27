@@ -12,7 +12,7 @@ import "react-calendar/dist/Calendar.css";
 import { getDaysInMonth } from "../../../../helpers/helpers";
 import { differenceInCalendarDays } from "date-fns";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { getCandidateTask } from "../../../../services/candidateServices";
+import { getCandidateTask, getCandidateTasksOfTheDayV2 } from "../../../../services/candidateServices";
 import styled from "styled-components";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 
@@ -36,6 +36,8 @@ const TaskScreen = ({
   const [taskdetail2, settaskdetail2] = useState([]);
   const [value, onChange] = useState(new Date());
   const [loading, setLoading] = useState(false);
+  const [singleTaskLoading, setSingleTaskLoading] = useState(false);
+  const [ tasksForTheDay, setTasksForTheDay ] = useState(null);
 
   console.log(assignedProject);
   useEffect(() => {
@@ -168,7 +170,7 @@ const TaskScreen = ({
     }
   };
 
-  const handleDateChange = (dateSelected) => {
+  const handleDateChange = async (dateSelected) => {
     setDaysInMonth(getDaysInMonth(dateSelected));
 
     // setTasksToShow(userTasks.filter(task => new Date(task.created).toDateString() === dateSelected.toDateString()));
@@ -183,7 +185,29 @@ const TaskScreen = ({
       dateSelected.toLocaleDateString("en-us", { month: "long" })
     );
 
-    console.log(daysInMonth);
+    setSingleTaskLoading(true);
+    setTasksForTheDay(null);
+
+    const currentDate = new Date(new Date(dateSelected).setHours(dateSelected.getHours() + 1)).toISOString().split('T')[0]
+    const dataToPost = {
+      "company_id": currentUser.portfolio_info[0].org_id,
+      "user_id": currentUser.userinfo.userID,
+      "data_type": currentUser.portfolio_info[0].data_type,
+      "task_created_date": currentDate,
+    }
+
+    try {
+      const res = (await getCandidateTasksOfTheDayV2(dataToPost)).data;
+
+      if (res.task.length > 0) {
+        setTasksForTheDay(res.task)
+      }
+      setSingleTaskLoading(false);
+    } catch (error) {
+      console.log(error);
+      setSingleTaskLoading(false);
+    }
+
   };
 
   const Wrappen = styled.section`
@@ -280,28 +304,72 @@ const TaskScreen = ({
                 tileClassName={tileClassName}
               />
               <div className="tasks__Wrapper">
-                {taskdetail2.length > 0 && (
+                {
+                  singleTaskLoading ? <>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <LoadingSpinner 
+                        width={'16px'}
+                        height={'16px'}
+                      />
+                      <p className="task__Title" style={{ margin: 0 }}>Loading tasks...</p>
+                    </div>
+                    
+                  </> :
                   <>
-                    <p className="task__Title">Tasks Added</p>
-                  </>
-                )}
-                <ul>
-                  {taskdetail2.length > 0
-                    ? taskdetail2.map((d, i) => (
-                      <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }} key={i}>
-                        {new Date(d.task_created_date).toLocaleString(
-                          "default",
-                          { month: "long" }
-                        )}
-                        <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(d.task_created_date).getDate()}</p>
+                    {taskdetail2.length > 0 && (
+                      <>
+                        <p className="task__Title">Tasks Added</p>
+                      </>
+                    )}
+                    <ul>
+                      {
+                        taskdetail2.length > 0 ?
+                          tasksForTheDay && Array.isArray(tasksForTheDay) ? 
+                            <>
+                              {console.log(taskdetail2)}
+                              {
+                                React.Children.toArray(tasksForTheDay.filter(task => task.project === project).map(task => {
+                                  return <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }}>
+                                    {new Date(task.task_created_date).toLocaleString(
+                                      "default",
+                                      { month: "long" }
+                                    )}
+                                    <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(task.task_created_date).getDate()}</p>
+        
+                                    <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
+                                      {task.task} <span style={{ color: "#B8B8B8" }}> from {task.start_time} to {task.end_time}</span>
+                                    </p>
+                                  </div>
+                                }))
+                              }
+                            </>
+                          :
 
-                        <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
-                          {d.task}
-                        </p>
-                      </div>
-                    ))
-                    : "No Tasks Found For Today"}
-                </ul>
+                          taskdetail2.map((d, i) => (
+                          <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }} key={i}>
+                            {new Date(d.task_created_date).toLocaleString(
+                              "default",
+                              { month: "long" }
+                            )}
+                            <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(d.task_created_date).getDate()}</p>
+
+                            <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
+                              {d.task}
+                            </p>
+                          </div>
+                        ))
+                        : 
+                        "No Tasks Found For Today"
+                      }
+                    </ul> 
+                  </>
+                }
               </div>
             </>
           )}

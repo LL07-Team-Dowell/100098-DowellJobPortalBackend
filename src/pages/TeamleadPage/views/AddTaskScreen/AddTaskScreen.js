@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AiFillEdit, AiOutlineClose, AiOutlinePlus } from "react-icons/ai";
+import { AiFillEdit, AiOutlineClose, AiOutlineFileDone, AiOutlinePlus } from "react-icons/ai";
 import useClickOutside from "../../../../hooks/useClickOutside";
 import { IoIosArrowBack } from "react-icons/io";
 
 import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { createCandidateTask } from "../../../../services/candidateServices";
+import { addNewCandidateTaskV2, createCandidateTask, getCandidateTasksOfTheDayV2, saveCandidateTaskV2, updateNewCandidateTaskV2 } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
+import { Tooltip } from "react-tooltip";
+import taskImg from "../../../../assets/images/tasks-done.jpg";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -45,8 +48,14 @@ const AddTaskScreen = ({
   console.log({ tasks });
   const [taskId, setTaskId] = useState("");
   const [isCreatingTask, setIsCreatingTask] = useState(true);
+  const [ showSubmitTaskInfo, setShowSubmitTaskInfo ] = useState(false);
+  const [ taskDetailForToday, setTaskDetailForToday ] = useState(null);
+  const [ taskDetailForTodayLoaded, setTaskDetailForTodayLoaded ] = useState(false);
+  const [ taskDetailForTodayLoading, setTaskDetailForTodayLoading ] = useState(true);
+  const [ savingLoading, setSavingLoading ] = useState(false);
+  
   //   var conditions
-  const inputsAreFilled = taskStartTime && taskEndTime && taskName && details;
+  const inputsAreFilled = taskStartTime && taskEndTime && taskName;
   const duration = getDifferenceInMinutes(
     new Date(`${new Date().toDateString()} ${taskStartTime}`),
     new Date(`${new Date().toDateString()} ${taskEndTime}`)
@@ -75,27 +84,28 @@ const AddTaskScreen = ({
 
   const getInputsForEditing = (id) => {
     editTaskCondition();
-    const { start_time, end_time, taskName, details } = tasks.find(
-      (task) => task.id == id
+    const { start_time, end_time, task, details } = tasks.find(
+      (task) => task._id === id
     );
-    fillAllInputs(start_time, end_time, taskName, details);
+    fillAllInputs(start_time, end_time, task, details);
   };
-  const addSingleTask = (start_time, end_time, taskName, details) => {
-    setTasks([
-      ...tasks,
-      { id: new Date().getTime(), start_time, end_time, taskName, details },
-    ]);
-    console.log([
-      ...tasks,
-      { id: new Date().getTime(), start_time, end_time, taskName, details },
-    ]);
-  };
+
+  // const addSingleTask = (start_time, end_time, taskName, details, _id) => {
+  //   setTasks([
+  //     ...tasks,
+  //     { _id: _id, start_time, end_time, taskName, details },
+  //   ]);
+  //   console.log([
+  //     ...tasks,
+  //     { id: new Date().getTime(), start_time, end_time, taskName, details },
+  //   ]);
+  // };
 
   const updateSingleTask = (start_time, end_time, taskName, details) => {
     console.log({ taskId });
     setTasks(
       tasks.map((task) => {
-        if (task.id == taskId) {
+        if (task._id === taskId) {
           console.log(true);
           return { ...task, start_time, end_time, taskName, details };
         }
@@ -104,19 +114,21 @@ const AddTaskScreen = ({
     );
   };
   const getTaskId = (id) => {
-    setTaskId(id);
-    editTaskCondition();
-    getInputsForEditing(id);
+    toast.info('Feature still in development');
+
+    /** COMMENT BELOW WHEN API IS READY */
+    // setTaskId(id);
+    // editTaskCondition();
+    // getInputsForEditing(id);
   };
 
   //   importand fuction
   const addNewTask = () => {
+    if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
-      if (duration < 15) {
-        addSingleTask(taskStartTime, taskEndTime, taskName, details);
-
-        clearAllInputs();
-        setTaskId("");
+      if (duration <= 15) {
+        if (!taskDetailForToday) return addTaskForToday(taskStartTime, taskEndTime, taskName, details);
+        updateTasksForToday(taskStartTime, taskEndTime, taskName, details);
       } else {
         toast.info(
           "The time you finished your task must be within 15 minutes of its starting time"
@@ -124,7 +136,7 @@ const AddTaskScreen = ({
         console.log({ taskStartTime, taskEndTime, duration });
       }
     } else {
-      toast.error("all inputs should be filled");
+      toast.error("All inputs should be filled");
     }
   };
 
@@ -146,8 +158,11 @@ const AddTaskScreen = ({
     }
   };
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const deleteTask = async (id) => {
+    toast.info('Feature still in development');
+
+    /** COMMENT BELOW WHEN API IS READY */
+    // setTasks(tasks.filter((task) => task._id !== id));
   };
 
   // Define the missing variables and functions here
@@ -189,74 +204,66 @@ const AddTaskScreen = ({
   //     setDisabled(false)
 
   // }, [newTaskDetails])
+
   useEffect(() => {
-    if (newTaskDetails.description.length < 1 || optionValue.length < 1)
+    if (taskDetailForToday) {
+      setTaskDetailForTodayLoading(false);
+      setTaskDetailForTodayLoaded(true);
+      return;
+    }
+
+    setTaskDetailForTodayLoading(true);
+    setTaskDetailForTodayLoaded(false);
+
+    const todayDate =  new Date().toISOString().split('T')[0];
+
+    const dataToPost = {
+      "company_id": currentUser.portfolio_info[0].org_id,
+      "user_id": currentUser.userinfo.userID,
+      "data_type": currentUser.portfolio_info[0].data_type,
+      "task_created_date": todayDate,
+    }
+
+    getCandidateTasksOfTheDayV2(dataToPost).then(res => {
+      const [ parentTaskAddedForToday, listsOfTasksForToday ] = [
+        res.data.task_details.find(task =>
+          task.task_created_date === todayDate &&
+          task.applicant === currentUser.userinfo.username &&
+          task.task_added_by === currentUser.userinfo.username &&
+          task.data_type === currentUser.portfolio_info[0].data_type &&
+          task.company_id === currentUser.portfolio_info[0].org_id
+        )
+        ,
+        res.data.task
+      ]
+
+      if (parentTaskAddedForToday && listsOfTasksForToday.length > 0) {
+        setTaskDetailForToday({
+          parentTask: parentTaskAddedForToday,
+          tasks: listsOfTasksForToday,
+        })
+        setTasks(listsOfTasksForToday);  
+      }
+      
+      setTaskDetailForTodayLoaded(true);
+      setTaskDetailForTodayLoading(false);
+
+    }).catch(err => {
+      console.log(err);
+      setTaskDetailForTodayLoading(false);
+    })
+
+  }, [])
+
+  useEffect(() => {
+    if (taskName?.length < 1 || optionValue.length < 1)
       return setDisabled(true);
     if (taskStartTime.length < 1 || taskEndTime.length < 1)
       return setDisabled(true);
 
     setDisabled(false);
-  }, [newTaskDetails.description, optionValue, taskStartTime, taskEndTime]);
+  }, [taskName, optionValue, taskStartTime, taskEndTime]);
 
-  const CreateNewTaskFunction = () => {
-    const [endTimeInDateFormat, startTimeInDateFormat, today] = [
-      new Date(`${new Date().toDateString()} ${taskEndTime}`),
-      new Date(`${new Date().toDateString()} ${taskStartTime}`),
-      new Date(),
-    ];
-    // if (startTimeInDateFormat.getTime() < today.getTime()) return toast.info('The time you are starting this task has to be later than the current time for today');
-    if (endTimeInDateFormat.getTime() < startTimeInDateFormat.getTime())
-      return toast.info(
-        "The time you finished your task has to be later than the time you started it"
-      );
-
-    const minutesDiffInStartAndEndTime = getDifferenceInMinutes(
-      endTimeInDateFormat,
-      startTimeInDateFormat
-    );
-    if (minutesDiffInStartAndEndTime > 15)
-      return toast.info(
-        "The time you finished your task must be within 15 minutes of its starting time"
-      );
-
-    setDisabled(true);
-    setLoading(true);
-
-    const dataToPost = {
-      project: optionValue,
-      applicant: currentUser.userinfo.username,
-      task: newTaskDetails.description,
-      task_added_by: currentUser.userinfo.username,
-      data_type: currentUser.portfolio_info[0].data_type,
-      company_id: currentUser.portfolio_info[0].org_id,
-      task_created_date: formattedDate,
-      task_type: "Custom",
-      start_time: convertDateFormat(startTimeInDateFormat),
-      end_time: convertDateFormat(endTimeInDateFormat),
-    };
-    createCandidateTask(dataToPost)
-      .then((resp) => {
-        console.log(resp);
-        updateTasks((prevTasks) => {
-          return [
-            ...prevTasks,
-            { ...dataToPost, status: newTaskDetails.status },
-          ];
-        });
-        setNewTaskDetails({ ...newTaskDetails, description: "" });
-        setoptionValue("");
-        toast.success("New task successfully added");
-        setDisabled(false);
-        setLoading(false);
-        closeTaskScreen();
-      })
-      .catch((err) => {
-        console.log(err);
-        setDisabled(false);
-        setLoading(false);
-        toast.error("An error occurred while trying to add your task");
-      });
-  };
   useEffect(() => {
     if (afterSelectionScreen) {
       setNewTaskDetails((prevValue) => {
@@ -277,6 +284,125 @@ const AddTaskScreen = ({
     }
   }, [editPage]);
 
+  
+  const addTaskForToday = async (startTime, endTime, task, details, updateTask=false) => {
+    const todayDate =  new Date().toISOString().split('T')[0];
+
+    const dataToPost = {
+      "project": optionValue,
+      "applicant": currentUser.userinfo.username,
+      "task": task,
+      "task_added_by": currentUser.userinfo.username,
+      "data_type": currentUser.portfolio_info[0].data_type,
+      "company_id": currentUser.portfolio_info[0].org_id,
+      "task_created_date": todayDate,
+      "task_type": updateTask ? "TASK UPDATE" : "MEETING UPDATE",
+      "start_time": startTime,
+      "end_time": endTime,
+      "user_id": currentUser.userinfo.userID,
+    }
+
+    const dataToPost2 = {
+      "company_id": currentUser.portfolio_info[0].org_id,
+      "user_id": currentUser.userinfo.userID,
+      "data_type": currentUser.portfolio_info[0].data_type,
+      "task_created_date": todayDate,
+    }
+
+    setLoading(true);
+    setDisabled(true);
+
+    try {
+      
+      let res;
+
+      // UPDATE TASKS FOR TODAY
+      if (updateTask) {
+        res = (await updateNewCandidateTaskV2(dataToPost, taskDetailForToday?.parentTask?._id)).data;
+
+        const copyOfTasksForToday = structuredClone(taskDetailForToday);
+        copyOfTasksForToday.tasks.push({...res.response, _id: crypto.randomUUID()});
+
+        setTaskDetailForToday(copyOfTasksForToday);
+
+        setLoading(false);
+        setDisabled(false);
+        
+        setTasks(copyOfTasksForToday.tasks);
+        clearAllInputs();
+        setTaskId("");
+
+        return
+      }
+      
+      res = (await addNewCandidateTaskV2(dataToPost)).data;
+      console.log(res);
+
+      try {
+        const taskRes = (await getCandidateTasksOfTheDayV2(dataToPost2)).data;
+
+        const [ parentTaskAddedForToday, listsOfTasksForToday ] = [
+          taskRes.task_details.find(task =>
+            task.task_created_date === todayDate &&
+            task.applicant === currentUser.userinfo.username &&
+            task.task_added_by === currentUser.userinfo.username &&
+            task.data_type === currentUser.portfolio_info[0].data_type &&
+            task.company_id === currentUser.portfolio_info[0].org_id
+          )
+          ,
+          taskRes.task
+        ]
+
+        setTaskDetailForToday({
+          parentTask: parentTaskAddedForToday,
+          tasks: listsOfTasksForToday,
+        })
+
+        setLoading(false);
+        setDisabled(false);
+        
+        setTasks(listsOfTasksForToday);
+        clearAllInputs();
+        setTaskId("");
+        
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+        setDisabled(false);
+      }
+
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong while trying to add your task. Please try again later')
+      setLoading(false);
+      setDisabled(false);
+    }
+  }
+
+  const updateTasksForToday = () => {
+    addTaskForToday(taskStartTime, taskEndTime, taskName, details, true);
+  }
+
+  const handleSaveTasksForTheDay = async () => {
+    setSavingLoading(true);
+
+    try {
+      const res = (await saveCandidateTaskV2(taskDetailForToday?.parentTask?._id)).data;
+
+      const copyOfTasksForToday = structuredClone(taskDetailForToday);
+      copyOfTasksForToday.parentTask.task_saved = true;
+      setTaskDetailForToday(copyOfTasksForToday);
+      setSavingLoading(false);
+      toast.success(res.message);
+      closeTaskScreen();
+
+    } catch (error) {
+      console.log(error);
+      toast.error('Something went wrong while trying to submit your tasks. Please try again later')
+      setSavingLoading(false);
+    }
+  }
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewTaskDetails((prevValue) => {
@@ -289,23 +415,6 @@ const AddTaskScreen = ({
       return { ...prevValue, username: member };
     });
     setShowTaskForm(true);
-  };
-
-  const handleNewTaskBtnClick = async () => {
-    // setDisabled(true);
-    // const dataToSend = { ...newTaskDetails };
-    // dataToSend.user = newTaskDetails.username;
-    // delete dataToSend["username"];
-    // try{
-    //     const response = await addNewTask(dataToSend);
-    //     if (!afterSelectionScreen) updateTasks(prevTasks => { return [ ...prevTasks.filter(task => task.user !== dataToSend.user) ] });
-    //     updateTasks(prevTasks => { return [ response.data, ...prevTasks ] } );
-    //     closeTaskScreen();
-    //     (afterSelectionScreen || hrPageActive) ? navigate("/tasks") : navigate("/task");
-    // } catch (err) {
-    //     console.log(err);
-    //     setDisabled(false);
-    // }
   };
 
   const handleUpdateTaskBtnClick = async () => {
@@ -335,247 +444,385 @@ const AddTaskScreen = ({
     <>
       <div className="add__New__Task__Overlay">
         <div className="add__New__Task__Container" ref={ref}>
-          <h1 className="title__Item">
+        {
+          showSubmitTaskInfo ? <>
+            <IoIosArrowBack
+              onClick={
+                () => setShowSubmitTaskInfo(false)
+              }
+              style={{ 
+                cursor: "pointer",
+                fontSize: '18px',
+              }}
+            />
+            <h1 className="title__Item">
+              {"Submit task for today"}
+            </h1>
+            <p>Done uploading tasks for today?</p>
+
+            <div className="task__Today__Submit__Wrapper">
+              <img src={taskImg} alt="task illustration" />
+              <p>You can submit all your tasks for today now or later if you would like to continue on updating later today.<br /><br />Please read and note the following:</p>
+              <ul>
+                <li>If you choose <b>Submit later</b>, you can always come back anytime <b>today</b> and make changes</li>
+                <li>If you choose <b>Submit now</b>, you will <b>not</b> be able to make <b>any more updates today</b></li>
+                <li><b>Do not click</b> on <b>Submit now</b> if you still have other tasks to submit for today</li>
+                <li>If you forget to submit your task for the day, do not worry, all your tasks are saved </li>
+              </ul>
+            </div>
+            <div className="buttons__Wrapper">
+              <button
+                type={"button"}
+                className="add__Task__Btn cancel__Btn"
+                disabled={savingLoading}
+                onClick={() =>
+                  {
+                    setShowSubmitTaskInfo(false);
+                    closeTaskScreen();
+                  }
+                }
+              >
+                {"Submit later"}
+              </button>
+              <button
+                type={"button"}
+                className="add__Task__Btn"
+                disabled={savingLoading}
+                onClick={
+                  () => handleSaveTasksForTheDay()
+                }
+              >
+                {
+                  savingLoading ? 
+                    "Submitting"
+                    :
+                    "Submit now"
+                }
+              </button>
+            </div>
+          </> : 
+          <>
+            <h1 className="title__Item">
+              {showTaskForm ? (
+                <>
+                  {!afterSelectionScreen && (
+                    <IoIosArrowBack
+                      onClick={
+                        editPage
+                          ? () => {
+                              closeTaskScreen();
+                              setEditPage(false);
+                            }
+                          : () => setShowTaskForm(false)
+                      }
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
+                  {
+                    editPage ? 
+                    "Edit Task" 
+                    :
+                    taskDetailForTodayLoading ? "Loading" :
+                    taskDetailForToday?.parentTask?.task_saved ?
+                    "View Task Details"
+                    : 
+                    "New Task Details"
+                  }
+                </>
+              ) : (
+                <>Add new task</>
+              )}
+
+              <AiOutlineClose
+                onClick={() => {
+                  closeTaskScreen();
+                  !afterSelectionScreen && setEditPage(false);
+                }}
+                style={{ cursor: "pointer" }}
+                fontSize={"1.2rem"}
+              />
+            </h1>
+            {
+              taskDetailForTodayLoading && <p className="task__Today__Detail__Loading">
+                <span>
+                  <LoadingSpinner 
+                    width={'14px'}
+                    height={'14px'}
+                  />
+                </span>
+                <span>Please wait...</span>
+              </p>
+            }
             {showTaskForm ? (
               <>
-                {!afterSelectionScreen && (
-                  <IoIosArrowBack
-                    onClick={
-                      editPage
-                        ? () => {
-                            closeTaskScreen();
-                            setEditPage(false);
-                          }
-                        : () => setShowTaskForm(false)
-                    }
-                    style={{ cursor: "pointer" }}
-                  />
-                )}
-                {editPage ? "Edit Task" : "New Task Details"}
-              </>
-            ) : (
-              <>Add new task</>
-            )}
-
-            <AiOutlineClose
-              onClick={() => {
-                closeTaskScreen();
-                !afterSelectionScreen && setEditPage(false);
-              }}
-              style={{ cursor: "pointer" }}
-              fontSize={"1.2rem"}
-            />
-          </h1>
-          {showTaskForm ? (
-            <>
-              <span className="selectProject">Username</span>
-              <input
-                type={"text"}
-                placeholder={"Task Assignee"}
-                value={newTaskDetails.username}
-                style={{ margin: 0, marginBottom: "0.8rem" }}
-                readOnly={true}
-              />
-              <span className="selectProject">Date of Submission</span>
-              <input
-                type={"text"}
-                placeholder={"today time"}
-                value={TimeValue}
-                style={{ margin: 0, marginBottom: "0.8rem" }}
-                readOnly={true}
-              />
-              <span className="selectProject">Select Project</span>
-              <br />
-              <select
-                onChange={(e) => selctChange(e)}
-                className="addTaskDropDown"
-                style={{ margin: 0, marginBottom: "0.8rem" }}
-              >
-                <option value={""}>Select</option>
-                {assignedProject.map((v, i) => (
-                  <option key={i} value={v}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-              {tasks.length > 0 ? (
-                <table id="customers">
-                  <tr>
-                    <th>Time started</th>
-                    <th>Time finished</th>
-                    <th>task</th>
-                    <th>details</th>
-                  </tr>
-                  <tbody>
-                    {tasks.map((task) => (
-                      <tr key={task.id}>
-                        <td>{task.start_time}</td>
-                        <td>{task.end_time}</td>
-                        <td>{task.taskName}</td>
-                        <td>{task.details}</td>
-                        <button onClick={() => getTaskId(task.id)}>
-                          <AiFillEdit />
-                        </button>
-                        <button
-                          onClick={() => deleteTask(task.id)}
-                          className="delete"
-                        >
-                          <AiOutlineClose />
-                        </button>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : null}
-              <div className="task__Timing__Wrapper">
-                <div>
-                  <span className="selectProject">Time started task</span>
-                  <input
-                    type={"time"}
-                    placeholder={"start time of task"}
-                    value={taskStartTime}
-                    style={{ margin: 0, marginBottom: "0.8rem" }}
-                    onChange={({ target }) => setTaskStartTime(target.value)}
-                  />
-                </div>
-                <div>
-                  <span className="selectProject">Time finished task</span>
-                  <input
-                    type={"time"}
-                    placeholder={"end time of task"}
-                    value={taskEndTime}
-                    style={{ margin: 0, marginBottom: "0.8rem" }}
-                    onChange={({ target }) => setTaskEndTime(target.value)}
-                    max={`${
-                      Number(
-                        new Date(
+                {
+                  taskDetailForTodayLoading ? <></> :
+                  !taskDetailForToday?.parentTask?.task_saved && <>
+                    <span className="selectProject">Username</span>
+                    <input
+                      type={"text"}
+                      placeholder={"Task Assignee"}
+                      value={newTaskDetails.username}
+                      style={{ margin: 0, marginBottom: "0.8rem" }}
+                      readOnly={true}
+                    />
+                    <span className="selectProject">Date of Submission</span>
+                    <input
+                      type={"text"}
+                      placeholder={"today time"}
+                      value={TimeValue}
+                      style={{ margin: 0, marginBottom: "0.8rem" }}
+                      readOnly={true}
+                    />
+                  </>
+                }
+                {
+                  taskDetailForTodayLoading ? <></> :
+                  !taskDetailForToday?.parentTask?.task_saved && <div className="task__Timing__Wrapper">
+                    <div>
+                      <span className="selectProject">Time started</span>
+                      <input
+                        type={"time"}
+                        placeholder={"start time of task"}
+                        value={taskStartTime}
+                        style={{ margin: 0, marginBottom: "0.8rem" }}
+                        onChange={({ target }) => setTaskStartTime(target.value)}
+                        readOnly={loading || !taskDetailForTodayLoaded ? true : false}
+                      />
+                    </div>
+                    <div>
+                      <span className="selectProject">Time finished</span>
+                      <input
+                        type={"time"}
+                        placeholder={"end time of task"}
+                        value={taskEndTime}
+                        style={{ margin: 0, marginBottom: "0.8rem" }}
+                        onChange={({ target }) => setTaskEndTime(target.value)}
+                        max={`${
+                          Number(
+                            new Date(
+                              new Date(
+                                `${new Date().toDateString()} ${taskStartTime}`
+                              ).getTime() +
+                                15 * 60000
+                            ).getHours()
+                          ) < 10
+                            ? "0" +
+                              new Date(
+                                new Date(
+                                  `${new Date().toDateString()} ${taskStartTime}`
+                                ).getTime() +
+                                  15 * 60000
+                              ).getHours()
+                            : new Date(
+                                new Date(
+                                  `${new Date().toDateString()} ${taskStartTime}`
+                                ).getTime() +
+                                  15 * 60000
+                              ).getHours()
+                        }:${new Date(
                           new Date(
                             `${new Date().toDateString()} ${taskStartTime}`
                           ).getTime() +
                             15 * 60000
-                        ).getHours()
-                      ) < 10
-                        ? "0" +
-                          new Date(
-                            new Date(
-                              `${new Date().toDateString()} ${taskStartTime}`
-                            ).getTime() +
-                              15 * 60000
-                          ).getHours()
-                        : new Date(
-                            new Date(
-                              `${new Date().toDateString()} ${taskStartTime}`
-                            ).getTime() +
-                              15 * 60000
-                          ).getHours()
-                    }:${new Date(
-                      new Date(
-                        `${new Date().toDateString()} ${taskStartTime}`
-                      ).getTime() +
-                        15 * 60000
-                    ).getMinutes()}`}
-                    readOnly={taskStartTime.length < 1 ? true : false}
-                  />
-                </div>
-                <div>
-                  <span className="selectProject"> task</span>
-                  <input
-                    type={"text"}
-                    placeholder={"task"}
-                    value={taskName}
-                    style={{ margin: 0, marginBottom: "0.8rem" }}
-                    onChange={({ target }) => setTaskName(target.value)}
-                  />
-                </div>
-                <div>
-                  <span className="selectProject">details</span>
-                  <input
-                    type={"text"}
-                    placeholder={"details"}
-                    value={details}
-                    style={{ margin: 0, marginBottom: "0.8rem" }}
-                    onChange={({ target }) => setDetails(target.value)}
-                  />
-                </div>
-                <div>
-                  <button
-                    style={{
-                      backgroundColor: "#005734",
-                      width: 50,
-                      height: 50,
-                      borderRadius: "50%",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
-                    onClick={isCreatingTask ? addNewTask : updateTask}
-                  >
-                    {isCreatingTask ? (
-                      <AiOutlinePlus
-                        style={{
-                          color: "white",
-                          fontWeight: "600",
-                          fontSize: 20,
-                        }}
+                        ).getMinutes()}`}
+                        readOnly={loading || !taskDetailForTodayLoaded || taskStartTime.length < 1 ? true : false}
                       />
-                    ) : (
-                      <AiFillEdit
-                        style={{
-                          color: "white",
-                          fontWeight: "600",
-                          fontSize: 20,
-                        }}
+                    </div>
+                    <div>
+                      <span className="selectProject">Task</span>
+                      <input
+                        type={"text"}
+                        placeholder={"task"}
+                        value={taskName}
+                        style={{ margin: 0, marginBottom: "0.8rem" }}
+                        onChange={({ target }) => setTaskName(target.value)}
+                        readOnly={loading || !taskDetailForTodayLoaded ? true : false}
                       />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type={"button"}
-                className="add__Task__Btn"
-                disabled={disabled}
-                onClick={() =>
-                  editPage
-                    ? handleUpdateTaskBtnClick()
-                    : CreateNewTaskFunction()
-                }
-              >
-                {loading
-                  ? "Please wait..."
-                  : editPage
-                  ? "Update Task"
-                  : "Add Task"}
-              </button>
-            </>
-          ) : (
-            <>
-              {teamMembers.length < 1 ? (
-                <>
-                  <h4>Your team members will appear here</h4>
-                </>
-              ) : (
-                <>
-                  <h4>Your team members ({teamMembers.length})</h4>
-                  <div className="team__Members__Container">
-                    {React.Children.toArray(
-                      teamMembers.map((member) => {
-                        return (
-                          <p
-                            className="team__Member__Item"
-                            onClick={() =>
-                              handleMemberItemClick(member.applicant)
-                            }
-                          >
-                            {member.applicant}
-                          </p>
-                        );
-                      })
-                    )}
+                    </div>
+                    <div>
+                      <span className="selectProject">Project</span>
+                      <select
+                        onChange={(e) => selctChange(e)}
+                        className="addTaskDropDown"
+                        style={{ 
+                          margin: 0, 
+                          marginBottom: "0.8rem",
+                        }}
+                        value={optionValue}
+                      >
+                        <option value={""}>Select</option>
+                        {assignedProject.map((v, i) => (
+                          <option key={i} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <button
+                        style={{
+                          backgroundColor: "#005734",
+                          width: 40,
+                          height: 40,
+                          borderRadius: "50%",
+                          border: "none",
+                          cursor: disabled ? "not-allowed" : "pointer",
+                        }}
+                        onClick={isCreatingTask ? addNewTask : updateTask}
+                        disabled={disabled}
+                      >
+                        {loading ? (
+                          <LoadingSpinner 
+                            color={'#fff'}
+                            width={'18px'}
+                            height={'18px'}
+                          />
+                        ) :
+                        isCreatingTask ? (
+                          <AiOutlinePlus
+                            style={{
+                              color: "white",
+                              fontWeight: "600",
+                              fontSize: 20,
+                            }}
+                          />
+                        ) : (
+                          <AiFillEdit
+                            style={{
+                              color: "white",
+                              fontWeight: "600",
+                              fontSize: 20,
+                            }}
+                          />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </>
-              )}
-            </>
-          )}
+                }
+
+                {tasks.length > 0 ? (
+                  <>
+                    {
+                      taskDetailForToday?.parentTask?.task_saved && <p className="task__Saved__Indicatore">
+                        <span><AiOutlineFileDone /></span>
+                        <span>Tasks have been submitted for today!</span>
+                      </p>
+                    }
+                    <table id="customers">
+                      <tr>
+                        <th>S/N</th>
+                        <th>Time started</th>
+                        <th>Time finished</th>
+                        <th>task</th>
+                        <th>project</th>
+                        <th>actions</th>
+                      </tr>
+                      <tbody>
+                        {tasks.map((task, index) => (
+                          <tr key={task._id}>
+                            <td>{index + 1}.</td>
+                            <td>{task.start_time}</td>
+                            <td>{task.end_time}</td>
+                            <td>{task.task}</td>
+                            <td>{task.project}</td>
+                            <td>
+                              <div className="edit__Item__Customer">
+                                <button 
+                                  onClick={taskDetailForToday?.parentTask?.task_saved ? () => {} : () => getTaskId(task._id)}
+                                  data-tooltip-id={task._id}
+                                  data-tooltip-content={'Edit task'}
+                                  style={{
+                                    cursor: taskDetailForToday?.parentTask?.task_saved ? "not-allowed" : "pointer"
+                                  }}
+                                >
+                                  <AiFillEdit />
+                                </button>
+                                <button
+                                  onClick={taskDetailForToday?.parentTask?.task_saved ? () => {} : () => deleteTask(task._id)}
+                                  className="delete"
+                                  data-tooltip-id={task._id + "1"}
+                                  data-tooltip-content={'Delete task'}
+                                  style={{
+                                    cursor: taskDetailForToday?.parentTask?.task_saved ? "not-allowed" : "pointer"
+                                  }}
+                                >
+                                  <AiOutlineClose />
+                                </button>
+                                <Tooltip id={task._id} />
+                                <Tooltip id={task._id + "1"} />
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                ) : null}
+                
+                {
+                  taskDetailForTodayLoading ? <></> : 
+                  <div className="buttons__Wrapper">
+                    <button
+                      type={"button"}
+                      className="add__Task__Btn cancel__Btn"
+                      // disabled={disabled}
+                      onClick={() =>
+                        closeTaskScreen()
+                      }
+                    >
+                      {taskDetailForToday?.parentTask?.task_saved ? "Close" : "Cancel"}
+                    </button>
+                    {
+                      !taskDetailForToday?.parentTask?.task_saved && <button
+                        type={"button"}
+                        className="add__Task__Btn"
+                        disabled={tasks.length < 1 ? true : false}
+                        onClick={
+                          editPage
+                            ? () => handleUpdateTaskBtnClick()
+                            : () => setShowSubmitTaskInfo(true)
+                        }
+                      >
+                        {editPage
+                          ? "Update Task"
+                          : "Next"}
+                      </button>
+                    }
+                  </div>
+                }
+              </>
+            ) : (
+              <>
+                {teamMembers.length < 1 ? (
+                  <>
+                    <h4>Your team members will appear here</h4>
+                  </>
+                ) : (
+                  <>
+                    <h4>Your team members ({teamMembers.length})</h4>
+                    <div className="team__Members__Container">
+                      {React.Children.toArray(
+                        teamMembers.map((member) => {
+                          return (
+                            <p
+                              className="team__Member__Item"
+                              onClick={() =>
+                                handleMemberItemClick(member.applicant)
+                              }
+                            >
+                              {member.applicant}
+                            </p>
+                          );
+                        })
+                      )}
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </>
+        }
         </div>
       </div>
     </>
@@ -586,3 +833,83 @@ export default AddTaskScreen;
 const Table = ({ tasks, deleteTask, getTaskId }) => {
   return null;
 };
+
+
+
+// const handleNewTaskBtnClick = async () => {
+  // setDisabled(true);
+  // const dataToSend = { ...newTaskDetails };
+  // dataToSend.user = newTaskDetails.username;
+  // delete dataToSend["username"];
+  // try{
+  //     const response = await addNewTask(dataToSend);
+  //     if (!afterSelectionScreen) updateTasks(prevTasks => { return [ ...prevTasks.filter(task => task.user !== dataToSend.user) ] });
+  //     updateTasks(prevTasks => { return [ response.data, ...prevTasks ] } );
+  //     closeTaskScreen();
+  //     (afterSelectionScreen || hrPageActive) ? navigate("/tasks") : navigate("/task");
+  // } catch (err) {
+  //     console.log(err);
+  //     setDisabled(false);
+  // }
+// };
+
+
+// const CreateNewTaskFunction = () => {
+//   const [endTimeInDateFormat, startTimeInDateFormat, today] = [
+//     new Date(`${new Date().toDateString()} ${taskEndTime}`),
+//     new Date(`${new Date().toDateString()} ${taskStartTime}`),
+//     new Date(),
+//   ];
+//   // if (startTimeInDateFormat.getTime() < today.getTime()) return toast.info('The time you are starting this task has to be later than the current time for today');
+//   if (endTimeInDateFormat.getTime() < startTimeInDateFormat.getTime())
+//     return toast.info(
+//       "The time you finished your task has to be later than the time you started it"
+//     );
+
+//   const minutesDiffInStartAndEndTime = getDifferenceInMinutes(
+//     endTimeInDateFormat,
+//     startTimeInDateFormat
+//   );
+//   if (minutesDiffInStartAndEndTime > 15)
+//     return toast.info(
+//       "The time you finished your task must be within 15 minutes of its starting time"
+//     );
+
+//   setDisabled(true);
+//   setLoading(true);
+
+//   const dataToPost = {
+//     project: optionValue,
+//     applicant: currentUser.userinfo.username,
+//     task: newTaskDetails.description,
+//     task_added_by: currentUser.userinfo.username,
+//     data_type: currentUser.portfolio_info[0].data_type,
+//     company_id: currentUser.portfolio_info[0].org_id,
+//     task_created_date: formattedDate,
+//     task_type: "Custom",
+//     start_time: convertDateFormat(startTimeInDateFormat),
+//     end_time: convertDateFormat(endTimeInDateFormat),
+//   };
+//   createCandidateTask(dataToPost)
+//     .then((resp) => {
+//       console.log(resp);
+//       updateTasks((prevTasks) => {
+//         return [
+//           ...prevTasks,
+//           { ...dataToPost, status: newTaskDetails.status },
+//         ];
+//       });
+//       setNewTaskDetails({ ...newTaskDetails, description: "" });
+//       setoptionValue("");
+//       toast.success("New task successfully added");
+//       setDisabled(false);
+//       setLoading(false);
+//       closeTaskScreen();
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       setDisabled(false);
+//       setLoading(false);
+//       toast.error("An error occurred while trying to add your task");
+//     });
+// };

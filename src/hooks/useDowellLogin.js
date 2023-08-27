@@ -137,6 +137,11 @@ export default function useDowellLogin(
                   (setting) =>
                     setting.company_id ===
                     currentUserDetails.portfolio_info[0].org_id
+                )
+                .filter(
+                  (setting) => 
+                    setting.data_type === 
+                    currentUserDetails.portfolio_info[0].data_type
                 );
 
               //CHECK IF USER HAS ROLE CONFIGURED
@@ -274,6 +279,11 @@ export default function useDowellLogin(
               (setting) =>
                 setting.company_id ===
                 currentUserDetails.portfolio_info[0].org_id
+            )
+            .filter(
+              (setting) => 
+                setting.data_type === 
+                currentUserDetails.portfolio_info[0].data_type
             );
 
           //CHECK IF USER HAS ROLE CONFIGURED

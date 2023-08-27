@@ -51,3 +51,30 @@ export const submitPublicApplication = async (data, linkId) => {
     data
   );
 };
+
+export const addNewCandidateTaskV2 = async (data) => {
+  return await currentBackendAxiosInstance.post(
+    'task_module/?type=add_task',
+    data
+  )
+};
+
+export const updateNewCandidateTaskV2 = async (data, taskId) => {
+  return await currentBackendAxiosInstance.post(
+    `task_module/?type=update_candidate_task&task_id=${taskId}`,
+    data
+  )
+};
+
+export const saveCandidateTaskV2 = async (taskId) => {
+  return await currentBackendAxiosInstance.get(
+    `task_module/?type=save_task&task_id=${taskId}`
+  )
+};
+
+export const getCandidateTasksOfTheDayV2 = async (data) => {
+  return await currentBackendAxiosInstance.post(
+    'task_module/?type=get_candidate_task',
+    data
+  )
+};

@@ -182,7 +182,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
           link_name: response.link_name,
           master_link: response.master_link
         });
-        setProductLinks(currentJobLinks);
+        setProductLinks(currentProductLinks);
         return
       }
       
