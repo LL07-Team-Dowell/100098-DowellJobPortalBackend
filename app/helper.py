@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from discord.ext import commands
 from discord import Intents
-
+from .constant import *
 
 def dowellconnection(cluster, database, collection, document, team_member_ID, function_ID, command, field,
                      update_field):
@@ -359,3 +359,13 @@ def validate_and_generate_times(task_type, task_created_date, start_time=None, e
 
     return start_time_dt.strftime(date_format), end_time_dt.strftime(date_format)
 
+
+def update_task_status(self, current_task_id, is_active):
+        field = {
+            "_id": current_task_id
+        }
+        update_field = {
+            "is_active": is_active
+        }
+        response = json.loads(dowellconnection(*task_details_module, "update", field, update_field))
+        return response.get("isSuccess", False)

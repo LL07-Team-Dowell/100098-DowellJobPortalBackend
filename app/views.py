@@ -30,7 +30,8 @@ from .helper import (get_event_id,
     period_check,
     validate_and_generate_times,
     CustomValidationError,
-    set_date_format
+    set_date_format,
+    update_task_status
 )
 from .serializers import (
     AccountSerializer,
@@ -4469,6 +4470,8 @@ class task_module(APIView):
             return self.get_candidate_task(request)
         elif type_request == "update_candidate_task":
             return self.update_candidate_task(request)
+        elif type_request == "update_single_task":
+            return self.update_single_task(request)
         else:
             return self.handle_error(request)
     
@@ -4477,6 +4480,8 @@ class task_module(APIView):
 
         if type_request == "save_task":
             return self.save_task(request)
+        elif type_request == "delete_current_task":
+            return self.delete_current_task(request)
         else:
             return self.handle_error(request)
 
@@ -4680,7 +4685,55 @@ class task_module(APIView):
                 "success": False,
                 "message": "Failed save task"
             },status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    def update_single_task(self, request):
+        current_task_id = request.GET.get('current_task_id')
+        update_task = request.data.get('update_task')
+
+        field= {
+            "_id": current_task_id
+        }
+
+        update_field = update_task
+
+        response = json.loads(dowellconnection(*task_details_module, "update", field , update_field))
+        if response["isSuccess"]:
+            return Response({
+                "success": True,
+                "message": "Task updated successfully",
+                "response": update_field
+            })
+        else:
+            return Response({
+                "success": True,
+                "message": "Failed to update task"
+            })
+
+
+    def delete_current_task(self, request):
+        current_task_id = request.GET.get('current_task_id')
+        action = request.GET.get('action')
         
+        if action in ["deactive", "active"]:
+            is_active = (action == "active")
+            if update_task_status(self, current_task_id, is_active):
+                success_message = "Task retrieved successfully" if is_active else "Task deleted successfully"
+                return Response({
+                    "success": True,
+                    "message": success_message
+                })
+            else:
+                return Response({
+                    "success": False,
+                    "message": "Failed to perform action on task"
+                })
+
+        return Response({
+            "success": False,
+            "message": "Invalid action"
+        })
+            
+
     """HANDLE ERROR"""
     def handle_error(self, request): 
         return Response({
