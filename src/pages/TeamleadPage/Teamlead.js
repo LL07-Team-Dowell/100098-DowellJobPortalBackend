@@ -65,6 +65,8 @@ const Teamlead = ({ isGrouplead }) => {
   const [searchValue, setSearchValue] = useState("");
   const [filteredJobs, setFilteredJobs] = useState(jobs);
   const [filteredTasks, setFilteredTasks] = useState(userTasks);
+  const [showAddTaskModalForGrouplead, setShowAddTaskModalForGrouplead] = useState(false);
+  const [showAddIssueModalForGrouplead, setShowAddIssueModalForGrouplead ] = useState(false);
 
   const handleSearch = (value) => {
     const toAnagram = (word) => {
@@ -418,7 +420,7 @@ const Teamlead = ({ isGrouplead }) => {
     <>
       <StaffJobLandingLayout
         teamleadView={true}
-        hideSideBar={showAddTaskModal}
+        hideSideBar={showAddTaskModal || showAddIssueModalForGrouplead || showAddTaskModalForGrouplead}
         searchValue={searchValue}
         setSearchValue={handleSearch}
         searchPlaceHolder={
@@ -435,23 +437,25 @@ const Teamlead = ({ isGrouplead }) => {
         hideSearchBar={((isGrouplead && (section === "home" || section === undefined)) || section === "user") ? true : false}
         isGrouplead={isGrouplead}
       >
-        <TitleNavigationBar
-          title={
-            section === "task"
-              ?
-                "Tasks"
-              : section === "user"
-                ? "Profile"
-                : showCandidate
-                  ? "Application Details"
-                  :
-                  isGrouplead ?
-                    " "
-                    : "Applications"
-          }
-          hideBackBtn={showCandidate || showCandidateTask ? false : true}
-          handleBackBtnClick={handleBackBtnClick}
-        />
+        {
+          !(isGrouplead && (section === "home" || section === undefined)) && <TitleNavigationBar
+            title={
+              section === "task"
+                ?
+                  "Tasks"
+                : section === "user"
+                  ? "Profile"
+                  : showCandidate
+                    ? "Application Details"
+                    :
+                    isGrouplead ?
+                      " "
+                      : "Applications"
+            }
+            hideBackBtn={showCandidate || showCandidateTask || (section === "task" && isGrouplead) ? false : true}
+            handleBackBtnClick={(section === "task" && isGrouplead) ? () => navigate(-1) : () => handleBackBtnClick()}
+          />
+        }
         {section !== "user" && !showCandidate && !isGrouplead && (
           <>
             <TogglerNavMenuBar
@@ -577,7 +581,12 @@ const Teamlead = ({ isGrouplead }) => {
                     {
                       isGrouplead ? <>
                         {/* <p style={{ textAlign: 'center' }}>More content coming soon...</p> */}
-                        <AddPage />
+                        <AddPage 
+                          showAddIssueModal={showAddIssueModalForGrouplead}
+                          setShowAddIssueModal={setShowAddIssueModalForGrouplead}
+                          showAddTaskModal={showAddTaskModalForGrouplead}
+                          setShowAddTaskModal={setShowAddTaskModalForGrouplead}
+                        />
                       </> :
                         <div className="jobs-container">
                           {selectedTabActive ? (

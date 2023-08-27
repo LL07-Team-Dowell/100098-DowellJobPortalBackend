@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiEdit } from "react-icons/bi";
 import { formatDateAndTime } from "../../../../helpers/helpers";
 import { candidateUpdateTaskForTeamLead } from "../../../../services/teamleadServices";
@@ -10,7 +10,17 @@ import Button from "../../../AdminPage/components/Button/Button";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 
-const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnClick, updateTasks, handleApproveTask, taskIsBeingApproved }) => {
+const CandidateTaskItem = ({ 
+  taskNum, 
+  currentTask, 
+  candidatePage, 
+  handleEditBtnClick, 
+  updateTasks, 
+  handleApproveTask, 
+  taskIsBeingApproved,
+  newTaskItem,
+  tasks,
+}) => {
 
     const [ currentTaskStatus, setCurrentTaskStatus ] = useState("");
     const [isFetchingData, setIsFetchingData] = useState(false);
@@ -76,13 +86,23 @@ const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnC
                   <BiEdit className="edit-icon" onClick={handleEditBtnClick} />
                 )}
                 </span>*/}
-              <span className="task__Title">
-                {" "}
-                {taskNum}. Task: {currentTask.task}{" "}
-                {!candidatePage && (
-                  <></>
-                )}
-              </span>
+              {
+                newTaskItem ? <span className="task__Title">
+                  {" "}
+                  Tasks added
+                  {!candidatePage && (
+                    <></>
+                  )}
+                </span> :
+                <span className="task__Title">
+                  {" "}
+                  {taskNum}. Task: {currentTask.task}{" "}
+                  {!candidatePage && (
+                    <></>
+                  )}
+                </span>
+              }
+              
               {/*<span className="task__Description">Task Description: <br />{currentTask.description}</span>*/}
             </div>
 
@@ -132,7 +152,8 @@ const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnC
               )}
             </div>
           </div>
-          <div className="candidate-task-date-container">
+          {
+            !newTaskItem && <div className="candidate-task-date-container">
             <span>
               Added on {formatDateAndTime(currentTask.task_created_date)}
             </span>
@@ -142,6 +163,24 @@ const CandidateTaskItem = ({ taskNum, currentTask, candidatePage, handleEditBtnC
               <></>
             )}
           </div>
+          }
+
+          {
+            newTaskItem && tasks &&
+              React.Children.toArray(tasks.map(task => {
+                return <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }}>
+                  {new Date(task.task_created_date).toLocaleString(
+                    "default",
+                    { month: "long" }
+                  )}
+                  <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(task.task_created_date).getDate()}</p>
+
+                  <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
+                    <span style={{ color: "#B8B8B8" }}>{task.start_time} to {task.end_time}:  </span> {task.task}
+                  </p>
+                </div>
+              }))
+          }
 
           <CustomHr />
         </div>

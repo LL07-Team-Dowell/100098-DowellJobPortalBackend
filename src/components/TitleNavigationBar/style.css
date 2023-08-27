@@ -48,6 +48,10 @@
     height: 2.5rem;
 }
 
+.title__Navigation__Bar__Container.teamleadView .title__Item .back__Icon__Container{
+    min-width: 3rem;
+}
+
 .title__Navigation__Bar__Container .title__Item .back__Icon__Container .back__Icon {
     font-size: 1.2rem;
 }

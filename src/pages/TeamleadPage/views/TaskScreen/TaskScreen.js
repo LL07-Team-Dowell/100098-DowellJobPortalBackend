@@ -290,7 +290,7 @@ const TaskScreen = ({
       {
         showBackBtn && <>
           <Navbar 
-            title={'Tasks'} 
+            title={'Your tasks'} 
             removeButton={true} 
           />
         </>

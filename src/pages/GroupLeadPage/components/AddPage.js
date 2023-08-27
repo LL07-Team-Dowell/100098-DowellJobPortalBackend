@@ -9,10 +9,14 @@ import { getAllTeams } from '../../../services/createMembersTasks';
 import { useCurrentUserContext } from '../../../contexts/CurrentUserContext';
 import { getSettingUserProject } from '../../../services/hrServices';
 
-const AddPage = ({ assignedProjects }) => {
+const AddPage = ({ 
+    assignedProjects,
+    showAddIssueModal,
+    setShowAddIssueModal,
+    showAddTaskModal,
+    setShowAddTaskModal,
+}) => {
     const { currentUser } = useCurrentUserContext();
-    const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-    const [showAddIssueModal, setShowAddIssueModal] = useState(false);
     const { setUserTasks } = useCandidateTaskContext();
     const [allProjects, setAllProjects] = useState([]);
     const [candidateTeams, setCandidateTeams] = useState([]);
@@ -64,7 +68,7 @@ const AddPage = ({ assignedProjects }) => {
     }, []);
 
     return (
-        <div className=''>
+        <div className='' style={{ marginTop: '1rem' }}>
 
             {showAddTaskModal && (
                 <AddTaskScreen

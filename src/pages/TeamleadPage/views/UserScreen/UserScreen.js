@@ -40,7 +40,9 @@ const UserScreen = ({ isGrouplead }) => {
     // },[])
     return <>
         <div className="user__Page__Container teamlead">
-            <ClaimVouchar />
+            {
+                !isGrouplead && <ClaimVouchar />
+            }
             <div className="user__Intro__Item__Container">
                 <div className="user__Intro__Item">
                     <h2>User Name</h2>

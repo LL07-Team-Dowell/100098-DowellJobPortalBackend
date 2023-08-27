@@ -42,7 +42,8 @@ const Index = ({ isGrouplead }) => {
   },[])
   console.log(searchValue)
   console.log(data.TeamsSelected.length)
-  if(data.TeamsSelected.length === 0 && !response ) return <StaffJobLandingLayout  teamleadView={true} isGrouplead={isGrouplead}>
+
+  if(data.TeamsSelected.length === 0 && !response ) return <StaffJobLandingLayout teamleadView={true} isGrouplead={isGrouplead} searchValue={searchValue} setSearchValue={setSearchValue} searchTeam={true}>
     <LoadingSpinner/>
   </StaffJobLandingLayout> 
   

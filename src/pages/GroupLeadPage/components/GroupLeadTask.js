@@ -39,12 +39,12 @@ const GroupLeadTask = () => {
 
     return (
 
-        <StaffJobLandingLayout teamleadView={true} searchValue={searchValue} setSearchValue={setSearchValue} searchTeam={true} isGrouplead={true}>
+        <StaffJobLandingLayout teamleadView={true} hideSearchBar={true} isGrouplead={true}>
             <br />
             <Navbar title={"View Tasks"} color={'#005734'} noButtonBack={true} removeButton={true} />
             <div className="container">
-                <div style={{ marginTop: 30 }} className="Create_Team">
-                    <div onClick={() => nevigate(`/user-tasks`)}>
+                <div style={{ marginTop: 30 }} className="Create_Team" onClick={() => nevigate(`/user-tasks`)}>
+                    <div>
                         <div>
                             <AiOutlineAim
                                 className="icon"
@@ -58,8 +58,8 @@ const GroupLeadTask = () => {
                     </div>
                 </div>
 
-                <div style={{ marginTop: 30 }} className="Create_Team">
-                    <div onClick={() => nevigate(`/task`)}>
+                <div style={{ marginTop: 30 }} className="Create_Team" onClick={() => nevigate(`/task`)}>
+                    <div>
                         <div>
                             <AiOutlineAim
                                 className="icon"
