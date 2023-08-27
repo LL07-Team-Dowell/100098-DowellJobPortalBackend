@@ -439,8 +439,6 @@ const Teamlead = ({ isGrouplead }) => {
           title={
             section === "task"
               ?
-              isGrouplead ? ''
-                :
                 "Tasks"
               : section === "user"
                 ? "Profile"
@@ -710,90 +708,85 @@ const Teamlead = ({ isGrouplead }) => {
                     <h1>Button</h1>
                   </>
                 ) : (
-                  isGrouplead ? <>
-                    <div className="tasks-container">
-                      Page not found
-                    </div>
-                  </> :
-                    <>
-                      <button
-                        className="refresh-container"
-                        onClick={handleRefreshForCandidateTask}
-                      >
-                        <div className="refresh-btn">
-                          <IoMdRefresh />
-                          <p>Refresh</p>
-                        </div>
-                      </button>
-                      <SelectedCandidates
-                        showTasks={true}
-                        tasksCount={
-                          searchValue.length >= 1
-                            ? filteredTasks.length
-                            : userTasks.length
-                        }
-                      />
+                  <>
+                    <button
+                      className="refresh-container"
+                      onClick={handleRefreshForCandidateTask}
+                    >
+                      <div className="refresh-btn">
+                        <IoMdRefresh />
+                        <p>Refresh</p>
+                      </div>
+                    </button>
+                    <SelectedCandidates
+                      showTasks={true}
+                      tasksCount={
+                        searchValue.length >= 1
+                          ? filteredTasks.length
+                          : userTasks.length
+                      }
+                    />
 
-                      <div className="tasks-container">
-                        {section === "task" ? (
-                          searchValue.length >= 1 ? (
-                            React.Children.toArray(
-                              filteredTasks.map((dataitem) => {
-                                return (
-                                  <JobCard
-                                    buttonText={"View"}
-                                    candidateCardView={true}
-                                    candidateData={dataitem}
-                                    jobAppliedFor={
-                                      jobs.find(
+                    <div className="tasks-container">
+                      {section === "task" ? (
+                        searchValue.length >= 1 ? (
+                          React.Children.toArray(
+                            filteredTasks.map((dataitem) => {
+                              return (
+                                <JobCard
+                                  buttonText={"View"}
+                                  candidateCardView={true}
+                                  candidateData={dataitem}
+                                  jobAppliedFor={
+                                    jobs.find(
+                                      (job) =>
+                                        job.job_number === dataitem.job_number
+                                    )
+                                      ? jobs.find(
                                         (job) =>
-                                          job.job_number === dataitem.job_number
-                                      )
-                                        ? jobs.find(
-                                          (job) =>
-                                            job.job_number ===
-                                            dataitem.job_number
-                                        ).job_title
-                                        : ""
-                                    }
-                                    handleBtnClick={handleViewTaskBtnClick}
-                                    taskView={true}
-                                  />
-                                );
-                              })
-                            )
-                          ) : (
-                            React.Children.toArray(
-                              userTasks.map((dataitem) => {
-                                return (
-                                  <JobCard
-                                    buttonText={"View"}
-                                    candidateCardView={true}
-                                    candidateData={dataitem}
-                                    jobAppliedFor={
-                                      jobs.find(
-                                        (job) =>
-                                          job.job_number === dataitem.job_number
-                                      )
-                                        ? jobs.find(
-                                          (job) =>
-                                            job.job_number ===
-                                            dataitem.job_number
-                                        ).job_title
-                                        : ""
-                                    }
-                                    handleBtnClick={handleViewTaskBtnClick}
-                                    taskView={true}
-                                  />
-                                );
-                              })
-                            )
+                                          job.job_number ===
+                                          dataitem.job_number
+                                      ).job_title
+                                      : ""
+                                  }
+                                  handleBtnClick={handleViewTaskBtnClick}
+                                  taskView={true}
+                                />
+                              );
+                            })
                           )
                         ) : (
-                          <></>
-                        )}
-                      </div>
-                    </>
+                          React.Children.toArray(
+                            userTasks.map((dataitem) => {
+                              return (
+                                <JobCard
+                                  buttonText={"View"}
+                                  candidateCardView={true}
+                                  candidateData={dataitem}
+                                  jobAppliedFor={
+                                    jobs.find(
+                                      (job) =>
+                                        job.job_number === dataitem.job_number
+                                    )
+                                      ? jobs.find(
+                                        (job) =>
+                                          job.job_number ===
+                                          dataitem.job_number
+                                      ).job_title
+                                      : ""
+                                  }
+                                  handleBtnClick={handleViewTaskBtnClick}
+                                  taskView={true}
+                                />
+                              );
+                            })
+                          )
+                        )
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  </>
                 )
               ) : section === "user" ? (
                 <UserScreen isGrouplead={isGrouplead} />

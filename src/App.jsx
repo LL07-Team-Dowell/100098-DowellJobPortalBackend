@@ -72,6 +72,7 @@ import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views
 import GroupLeadTask from "./pages/GroupLeadPage/components/GroupLeadTask";
 import ClaimVouchar from "./pages/TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
+import TaskScreen from "./pages/TeamleadPage/views/TaskScreen/TaskScreen";
 
 function App() {
   // console.log = () => {};
@@ -919,7 +920,7 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
-                <CreateTaskScreen />
+                <CreateTaskScreen isGrouplead={true} />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
@@ -967,7 +968,7 @@ function App() {
           path="/team-screen-member/:id/team-members"
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true} isGrouplead={true}>
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamScreenMembers />
@@ -982,7 +983,7 @@ function App() {
           path="/team-screen-member/:id/team-tasks"
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true} isGrouplead={true}>
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamScreenTasks />
@@ -996,7 +997,7 @@ function App() {
           path="/team-screen-member/:id/team-issues"
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true} isGrouplead={true}>
                 <TeamProvider>
                   <ValuesProvider>
                     {/* create a component here */}
@@ -1011,7 +1012,7 @@ function App() {
           path="/team-screen-member/:id/issue-inprogress"
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true} isGrouplead={true}>
                 <TeamProvider>
                   <ValuesProvider>
                     {/* create a component here */}
@@ -1026,7 +1027,7 @@ function App() {
           path="/team-screen-member/:id/issue-completed"
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true} isGrouplead={true}>
                 <TeamProvider>
                   <ValuesProvider>
                     {/* create a component here */}
@@ -1041,13 +1042,33 @@ function App() {
           path="/team-screen-member/:id/issue-resolved"
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true} isGrouplead={true}>
                 <TeamProvider>
                   <ValuesProvider>
                     {/* create a component here */}
                     <TeamThread />
                   </ValuesProvider>
                 </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+
+        <Route 
+          path="/user-tasks"
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout
+                teamleadView={true}
+                isGrouplead={true}
+              >
+                <TaskScreen
+                  candidateAfterSelectionScreen={true}
+                  assignedProject={assignedProjects}
+                  showBackBtn={true}
+                  loadProjects={true}
+                  isGrouplead={true}
+                />
               </StaffJobLandingLayout>
             </CandidateTaskContextProvider>
           }

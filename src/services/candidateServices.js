@@ -78,3 +78,16 @@ export const getCandidateTasksOfTheDayV2 = async (data) => {
     data
   )
 };
+
+export const updateSingleCandidateTaskV2 = async (data, taskId) => {
+  return await currentBackendAxiosInstance.post(
+    `task_module/?type=update_single_task&current_task_id=${taskId}`,
+    data
+  )
+}
+
+export const deleteSingleCandidateTaskV2 = async (taskId, status) => {
+  return await currentBackendAxiosInstance.get(
+    `task_module/?type=delete_current_task&current_task_id=${taskId}&action=${status}`,
+  )
+}

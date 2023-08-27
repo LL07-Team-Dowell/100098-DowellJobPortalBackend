@@ -5,7 +5,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CandidateTaskItem from "../../components/CandidateTaskItem/CandidateTaskItem";
 import React, { useEffect, useState } from "react";
 import "./style.css";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { useCandidateTaskContext } from "../../../../contexts/CandidateTasksContext";
 import { Calendar } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -15,6 +15,8 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getCandidateTask, getCandidateTasksOfTheDayV2 } from "../../../../services/candidateServices";
 import styled from "styled-components";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import Navbar from "../CreateMembersTask/component/Navbar";
+import { getSettingUserProject } from "../../../../services/hrServices";
 
 const TaskScreen = ({
   handleAddTaskBtnClick,
@@ -22,6 +24,9 @@ const TaskScreen = ({
   handleEditBtnClick,
   className,
   assignedProject,
+  showBackBtn,
+  loadProjects,
+  isGrouplead,
 }) => {
   const { currentUser } = useCurrentUserContext();
   const { userTasks, setUserTasks } = useCandidateTaskContext();
@@ -38,31 +43,49 @@ const TaskScreen = ({
   const [loading, setLoading] = useState(false);
   const [singleTaskLoading, setSingleTaskLoading] = useState(false);
   const [ tasksForTheDay, setTasksForTheDay ] = useState(null);
+  const [ allProjects, setAllProjects ] = useState([]);
+  const [ params, setParams ] = useSearchParams();
 
   console.log(assignedProject);
   useEffect(() => {
     setLoading(true);
     setproject(assignedProject[0]);
 
-    getCandidateTask(currentUser.portfolio_info[0].org_id)
-      .then((resp) => {
+    Promise.all([
+      getCandidateTask(currentUser.portfolio_info[0].org_id),
+      loadProjects && getSettingUserProject(),
+    ]).then(res => {
         setUserTasks(
-          resp.data.response.data.filter(
-            (v) => v.applicant === currentUser.userinfo.username
-          )
-        );
-        console.log(
-          "a;aaaa",
-          resp.data.response.data,
-          resp.data.response.data.filter(
+          res[0]?.data?.response?.data?.filter(
             (v) => v.applicant === currentUser.userinfo.username
           )
         );
         setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
+
+        if (loadProjects) {
+          const list = res[1]?.data
+          ?.filter(
+            (project) =>
+              project?.data_type === currentUser.portfolio_info[0].data_type &&
+              project?.company_id === currentUser.portfolio_info[0].org_id &&
+              project.project_list &&
+              project.project_list.every(
+                (listing) => typeof listing === "string"
+              )
+          ).reverse();
+
+          setAllProjects(
+            list.length < 1  ? []
+            :
+            list[0]?.project_list
+          )
+
+          list.length > 0 && setproject(list[0]?.project_list[0]);
+        }
+    }).catch(err => {
+      setLoading(false);
+    })
+
   }, []);
 
   useEffect(() => {
@@ -95,7 +118,8 @@ const TaskScreen = ({
     if (!project) return;
 
     const projectsMatching = userTasks.filter(
-      (task) => task?.project === project
+      (task) => task?.project === project ||
+      task?.user_id === currentUser.userinfo.userID
     );
     const datesUserHasTaskForProject = [
       ...new Set(
@@ -157,6 +181,13 @@ const TaskScreen = ({
       )
     );
   }, [userTasks]);
+
+  useEffect(() => {
+    const tab = params.get('tab');
+    if (!tab || tab === 'pending') return setPanding(true);
+
+    setPanding(false);
+  }, [params])
 
   const isSameDay = (a, b) => differenceInCalendarDays(a, b) === 0;
 
@@ -256,17 +287,35 @@ const TaskScreen = ({
 
   return (
     <>
+      {
+        showBackBtn && <>
+          <Navbar 
+            title={'Tasks'} 
+            removeButton={true} 
+          />
+        </>
+      }
       <Wrappen>
         <NavLink
           className={`${panding ? "link-isActive" : "link-notactive"}`}
-          to="/task?tab=pending"
+          to={
+            isGrouplead ? 
+            "/user-tasks?tab=pending"
+            :
+            "/task?tab=pending"
+          }
           onClick={clickToPandingApproval}
         >
           Pending Approval
         </NavLink>
         <NavLink
           className={`${panding ? "link-notactive" : "link-isActive"}`}
-          to="/task?tab=approval"
+          to={
+            isGrouplead ? 
+            "/user-tasks?tab=approval"
+            :
+            "/task?tab=approval"
+          }
           onClick={clickToApproved}
         >
           Approved
@@ -286,9 +335,21 @@ const TaskScreen = ({
         )}
 
         <AssignedProjectDetails
-          assignedProject={project ? project : assignedProject[0]}
+          assignedProject={
+            project ? project 
+            :
+            loadProjects ?
+            allProjects[0]
+            : 
+            assignedProject[0]
+          }
           showTask={true}
-          availableProjects={assignedProject}
+          availableProjects={
+            loadProjects ?
+            allProjects
+            :
+            assignedProject
+          }
           removeDropDownIcon={false}
           handleSelectionClick={(e) => setproject(e)}
         />
@@ -331,10 +392,12 @@ const TaskScreen = ({
                       {
                         taskdetail2.length > 0 ?
                           tasksForTheDay && Array.isArray(tasksForTheDay) ? 
+                            tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length < 1 ? <>
+                              <p className="task__Title">{!project ? "No project selected" : "No tasks found for today"}</p>
+                            </> :
                             <>
-                              {console.log(taskdetail2)}
                               {
-                                React.Children.toArray(tasksForTheDay.filter(task => task.project === project).map(task => {
+                                React.Children.toArray(tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).map(task => {
                                   return <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }}>
                                     {new Date(task.task_created_date).toLocaleString(
                                       "default",

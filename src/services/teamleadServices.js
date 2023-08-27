@@ -92,3 +92,10 @@ export const claimVoucher = async (data) => {
     throw error;
   }
 };
+
+export const getCandidateTasksV2 = async (data) => {
+  return await currentBackendAxiosInstance.post(
+    'task_module/?type=get_all_candidate_tasks',
+    data
+  )
+}

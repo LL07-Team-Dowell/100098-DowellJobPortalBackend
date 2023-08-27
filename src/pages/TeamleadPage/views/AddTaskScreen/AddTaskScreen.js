@@ -6,11 +6,12 @@ import { IoIosArrowBack } from "react-icons/io";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { addNewCandidateTaskV2, createCandidateTask, getCandidateTasksOfTheDayV2, saveCandidateTaskV2, updateNewCandidateTaskV2 } from "../../../../services/candidateServices";
+import { addNewCandidateTaskV2, createCandidateTask, deleteSingleCandidateTaskV2, getCandidateTasksOfTheDayV2, saveCandidateTaskV2, updateNewCandidateTaskV2, updateSingleCandidateTaskV2 } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
 import { Tooltip } from "react-tooltip";
 import taskImg from "../../../../assets/images/tasks-done.jpg";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import { IoRefresh } from "react-icons/io5";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -53,6 +54,8 @@ const AddTaskScreen = ({
   const [ taskDetailForTodayLoaded, setTaskDetailForTodayLoaded ] = useState(false);
   const [ taskDetailForTodayLoading, setTaskDetailForTodayLoading ] = useState(true);
   const [ savingLoading, setSavingLoading ] = useState(false);
+  const [ editLoading, setEditLoading ] = useState(false);
+  const [ deleteLoading, setDeleteLoading ] = useState(false);
   
   //   var conditions
   const inputsAreFilled = taskStartTime && taskEndTime && taskName;
@@ -66,12 +69,14 @@ const AddTaskScreen = ({
     setTaskEndTime("");
     setTaskName("");
     setDetails("");
+    setoptionValue("");
   };
-  const fillAllInputs = (taskStartTime, taskEndTime, taskName, details) => {
+  const fillAllInputs = (taskStartTime, taskEndTime, taskName, details, project) => {
     setTaskStartTime(taskStartTime);
     setTaskEndTime(taskEndTime);
     setTaskName(taskName);
     setDetails(details);
+    setoptionValue(project);
   };
 
   const addTaskCondition = () => {
@@ -84,10 +89,10 @@ const AddTaskScreen = ({
 
   const getInputsForEditing = (id) => {
     editTaskCondition();
-    const { start_time, end_time, task, details } = tasks.find(
+    const { start_time, end_time, task, details, project } = tasks.find(
       (task) => task._id === id
     );
-    fillAllInputs(start_time, end_time, task, details);
+    fillAllInputs(start_time, end_time, task, details, project);
   };
 
   // const addSingleTask = (start_time, end_time, taskName, details, _id) => {
@@ -101,25 +106,23 @@ const AddTaskScreen = ({
   //   ]);
   // };
 
-  const updateSingleTask = (start_time, end_time, taskName, details) => {
+  const updateSingleTask = (start_time, end_time, taskName, details, project) => {
     console.log({ taskId });
     setTasks(
       tasks.map((task) => {
         if (task._id === taskId) {
           console.log(true);
-          return { ...task, start_time, end_time, taskName, details };
+          return { ...task, start_time, end_time, task: taskName, details, project };
         }
         return task;
       })
     );
   };
   const getTaskId = (id) => {
-    toast.info('Feature still in development');
-
-    /** COMMENT BELOW WHEN API IS READY */
-    // setTaskId(id);
-    // editTaskCondition();
-    // getInputsForEditing(id);
+    setTaskId(id);
+    editTaskCondition();
+    getInputsForEditing(id);
+    setEditLoading(true);
   };
 
   //   importand fuction
@@ -140,13 +143,44 @@ const AddTaskScreen = ({
     }
   };
 
-  const updateTask = () => {
+  const updateTask = async () => {
     if (inputsAreFilled) {
       if (duration < 15) {
-        updateSingleTask(taskStartTime, taskEndTime, taskName, details);
-        clearAllInputs();
-        addTaskCondition();
-        setTaskId("");
+        setLoading(true);
+        setDisabled(true);
+        
+        try {
+          const res = (await updateSingleCandidateTaskV2(
+            {
+              update_task: {
+                "project": optionValue,
+                "task": taskName,
+                "task_type": "MEETING UPDATE",
+                "start_time": taskStartTime,
+                "end_time": taskEndTime,
+              }
+            },
+            taskId,
+          )).data;
+          toast.success(res.message);
+          setLoading(false);
+          setDisabled(false);
+          setEditLoading(false);
+
+          updateSingleTask(taskStartTime, taskEndTime, taskName, details, optionValue);
+          clearAllInputs();
+          addTaskCondition();
+          setTaskId("");
+
+        } catch (error) {
+          
+          console.log(error);
+          toast.error('An error occured while trying to edit your task');
+          setLoading(false);
+          setDisabled(false);
+          setEditLoading(false);
+        }
+        
       } else {
         toast.info(
           "The time you finished your task must be within 15 minutes of its starting time"
@@ -159,9 +193,30 @@ const AddTaskScreen = ({
   };
 
   const deleteTask = async (id) => {
-    toast.info('Feature still in development');
+    const copyOfTasks = tasks.slice();
+    const foundTask = copyOfTasks.find(task => task._id === id);
+    const foundTaskIndex = copyOfTasks.findIndex(task => task._id === id);
+    if (!foundTask) return
 
-    /** COMMENT BELOW WHEN API IS READY */
+    setDeleteLoading(true);
+    setTaskId(foundTask._id);
+    const updatedStatus = !foundTask.is_active;
+
+    try {
+      const res = (await deleteSingleCandidateTaskV2(foundTask._id, foundTask.is_active && foundTask.is_active === true ? 'deactive' : 'active')).data;
+      toast.success(res.message);
+
+      copyOfTasks[foundTaskIndex].is_active = updatedStatus;
+      setTasks(copyOfTasks); 
+      setDeleteLoading(false);
+      setTaskId("");
+
+    } catch (error) {
+      console.log(error);
+      setDeleteLoading(false);
+      setTaskId("");
+    }
+
     // setTasks(tasks.filter((task) => task._id !== id));
   };
 
@@ -321,7 +376,7 @@ const AddTaskScreen = ({
         res = (await updateNewCandidateTaskV2(dataToPost, taskDetailForToday?.parentTask?._id)).data;
 
         const copyOfTasksForToday = structuredClone(taskDetailForToday);
-        copyOfTasksForToday.tasks.push({...res.response, _id: crypto.randomUUID()});
+        copyOfTasksForToday.tasks.push({...res.response, _id: res.current_task_id});
 
         setTaskDetailForToday(copyOfTasksForToday);
 
@@ -644,7 +699,7 @@ const AddTaskScreen = ({
                       <span className="selectProject">Project</span>
                       <select
                         onChange={(e) => selctChange(e)}
-                        className="addTaskDropDown"
+                        className="addTaskDropDown new__Task"
                         style={{ 
                           margin: 0, 
                           marginBottom: "0.8rem",
@@ -722,32 +777,45 @@ const AddTaskScreen = ({
                         {tasks.map((task, index) => (
                           <tr key={task._id}>
                             <td>{index + 1}.</td>
-                            <td>{task.start_time}</td>
-                            <td>{task.end_time}</td>
-                            <td>{task.task}</td>
-                            <td>{task.project}</td>
+                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
+                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
+                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task}</td>
+                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.project}</td>
                             <td>
                               <div className="edit__Item__Customer">
-                                <button 
-                                  onClick={taskDetailForToday?.parentTask?.task_saved ? () => {} : () => getTaskId(task._id)}
-                                  data-tooltip-id={task._id}
-                                  data-tooltip-content={'Edit task'}
-                                  style={{
-                                    cursor: taskDetailForToday?.parentTask?.task_saved ? "not-allowed" : "pointer"
-                                  }}
-                                >
-                                  <AiFillEdit />
-                                </button>
+                                {
+                                  task.is_active &&  task.is_active === true && <button 
+                                    onClick={(taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? () => {} : () => getTaskId(task._id)}
+                                    data-tooltip-id={task._id}
+                                    data-tooltip-content={'Edit task'}
+                                    style={{
+                                      cursor: (taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? "not-allowed" : "pointer"
+                                    }}
+                                  >
+                                    <AiFillEdit />
+                                  </button>
+                                }
                                 <button
-                                  onClick={taskDetailForToday?.parentTask?.task_saved ? () => {} : () => deleteTask(task._id)}
+                                  onClick={(taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? () => {} : () => deleteTask(task._id)}
                                   className="delete"
                                   data-tooltip-id={task._id + "1"}
-                                  data-tooltip-content={'Delete task'}
+                                  data-tooltip-content={task.is_active &&  task.is_active === true ? 'Delete task' : 'Retrieve task'}
                                   style={{
-                                    cursor: taskDetailForToday?.parentTask?.task_saved ? "not-allowed" : "pointer"
+                                    cursor: (taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? "not-allowed" : "pointer"
                                   }}
                                 >
-                                  <AiOutlineClose />
+                                  {
+                                    deleteLoading && taskId === task._id ? 
+                                    <LoadingSpinner 
+                                      width={'0.7rem'}
+                                      height={'0.7rem'}
+                                    />
+                                    :
+                                    task.is_active &&  task.is_active === true ? 
+                                      <AiOutlineClose />
+                                    :
+                                    <IoRefresh />
+                                  }
                                 </button>
                                 <Tooltip id={task._id} />
                                 <Tooltip id={task._id + "1"} />
@@ -766,7 +834,7 @@ const AddTaskScreen = ({
                     <button
                       type={"button"}
                       className="add__Task__Btn cancel__Btn"
-                      // disabled={disabled}
+                      disabled={editLoading || deleteLoading ? true : false}
                       onClick={() =>
                         closeTaskScreen()
                       }
@@ -777,7 +845,7 @@ const AddTaskScreen = ({
                       !taskDetailForToday?.parentTask?.task_saved && <button
                         type={"button"}
                         className="add__Task__Btn"
-                        disabled={tasks.length < 1 ? true : false}
+                        disabled={tasks.length < 1 || editLoading || deleteLoading ? true : false}
                         onClick={
                           editPage
                             ? () => handleUpdateTaskBtnClick()

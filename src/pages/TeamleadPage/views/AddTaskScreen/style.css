@@ -83,9 +83,13 @@
   border: 1px solid var(--yellow-color);
   width: 100%;
   font-size: 0.875rem;
-  padding: 2% 4%;
+  padding: 2%;
   border-radius: 10px;
   display: block;
+}
+
+.add__New__Task__Container .addTaskDropDown.new__Task {
+  padding: 2% 4%;
   height: 2.3rem;
 }
 
@@ -293,4 +297,9 @@
 
 .edit__Item__Customer button {
   display: block;
+}
+
+#customers tbody td.deleted {
+  text-decoration: line-through;
+  color: #ff0000;
 }

@@ -12,7 +12,7 @@ import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleN
 import { differenceInCalendarDays } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useCandidateTaskContext } from "../../../../contexts/CandidateTasksContext";
-import { getCandidateTaskForTeamLead } from "../../../../services/teamleadServices";
+import { getCandidateTaskForTeamLead, getCandidateTasksV2 } from "../../../../services/teamleadServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import Button from "../../../AdminPage/components/Button/Button";
@@ -26,6 +26,7 @@ const CreateTaskScreen = ({
   handleEditBtnClick,
   className,
   assignedProject,
+  isGrouplead,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const applicant = searchParams.get("applicant");
@@ -47,6 +48,8 @@ const CreateTaskScreen = ({
   const [isApproved, setIsApproved] = useState(false);
   const [ updatedTasks, setUpdatedTasks ] = useState([]);
   const [ tasksBeingApproved, setTasksBeingApproved ] = useState([]);
+  const [singleTaskLoading, setSingleTaskLoading] = useState(false);
+  const [ tasksForTheDay, setTasksForTheDay ] = useState(null);
 
   useEffect(() => {
     if (userTasks.length > 0) return setLoading(false);
@@ -182,12 +185,44 @@ const CreateTaskScreen = ({
       }
     } catch (err) {
       console.log(err);
-      toast.error("Task approval failed");
+      toast.error(
+        err.response
+        ? err.response.status === 500
+          ? 'Task approval failed'
+          : err.response.data
+        : 'Task approval failed'
+      );
+      setTasksBeingApproved(copyOfTasksBeingApproved.filter(t => task._id !== t._id));
+
     }
   };
 
+  const handleSelectDateChange = async (date) => {
+    setSelectedDate(date);
+
+    const currentDate = new Date(new Date(date).setHours(date.getHours() + 1)).toISOString().split('T')[0]
+    const dataToPost = {
+      "company_id": currentUser.portfolio_info[0].org_id,
+      "data_type": currentUser.portfolio_info[0].data_type,
+      "task_created_date": currentDate,
+    }
+
+    try {
+      const res = (await getCandidateTasksV2(dataToPost)).data;
+
+      console.log(res.task);
+      if (res.task.length > 0) {
+        setTasksForTheDay(res.task)
+      }
+      setSingleTaskLoading(false);
+    } catch (error) {
+      console.log(error);
+      setSingleTaskLoading(false);
+    }
+  }
+
   return (
-    <StaffJobLandingLayout teamleadView={true}>
+    <StaffJobLandingLayout teamleadView={true} isGrouplead={isGrouplead}>
       <>
         <TitleNavigationBar
           title="Tasks"
@@ -218,7 +253,7 @@ const CreateTaskScreen = ({
             />
             <div className="all__Tasks__Container">
               <Calendar
-                onChange={setSelectedDate}
+                onChange={handleSelectDateChange}
                 value={selectedDate}
                 tileClassName={tileClassName}
               />
@@ -246,6 +281,8 @@ const CreateTaskScreen = ({
                           }
                           handleApproveTask={handleApproveTask}
                           taskIsBeingApproved={tasksBeingApproved.find(task => task._id === d._id)}
+                          singleTaskLoading={singleTaskLoading}
+                          tasksForTheDay={tasksForTheDay}
                         />
                       );
                     })
