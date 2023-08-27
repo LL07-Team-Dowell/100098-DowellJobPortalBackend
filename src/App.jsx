@@ -75,7 +75,7 @@ import { PageUnderConstruction } from "./pages/UnderConstructionPage/Constructio
 import TaskScreen from "./pages/TeamleadPage/views/TaskScreen/TaskScreen";
 
 function App() {
-  // console.log = () => {};
+  console.log = () => {};
   const {
     currentUser,
     isPublicUser,
