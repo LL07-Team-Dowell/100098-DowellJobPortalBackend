@@ -4534,6 +4534,7 @@ class task_module(APIView):
                     "company_id": company_id,
                     "start_time": start_time,
                     "end_time": end_time,
+                    "is_active": True,
                     "task_created_date":task_created_date,
                     "task_id": response["inserted_id"],
                 }
@@ -4635,14 +4636,18 @@ class task_module(APIView):
                 "start_time": start_time,
                 "end_time": end_time,
                 "task_created_date":task_created_date,
+                "project": project,
                 "task_id": task_id,
+                "task_type": task_type,
+                "is_active": True,
             }
             response = json.loads(dowellconnection(*task_details_module,"insert",field, update_field=None))
             if response["isSuccess"]:
                 return Response({
                     "success": True,
                     "message": "Task added successfully",
-                    "response": field
+                    "response": field,
+                    "current_task_id": response["inserted_id"]
                 },status.HTTP_201_CREATED)
             else:
                 return Response({
