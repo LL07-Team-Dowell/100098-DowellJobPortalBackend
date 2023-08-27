@@ -60,6 +60,7 @@ from .serializers import (
     TaskModuleSerializer,
     GetCandidateTaskSerializer,
     UpdateTaskByCandidateSerializer,
+    GetAllCandidateTaskSerializer
 )
 
 
@@ -4472,6 +4473,8 @@ class task_module(APIView):
             return self.update_candidate_task(request)
         elif type_request == "update_single_task":
             return self.update_single_task(request)
+        elif type_request == "get_all_candidate_tasks":
+            return self.get_all_candidate_tasks(request)
         else:
             return self.handle_error(request)
     
@@ -4709,7 +4712,6 @@ class task_module(APIView):
                 "message": "Failed to update task"
             })
 
-
     def delete_current_task(self, request):
         current_task_id = request.GET.get('current_task_id')
         action = request.GET.get('action')
@@ -4732,7 +4734,41 @@ class task_module(APIView):
             "success": False,
             "message": "Invalid action"
         })
-            
+
+    def get_all_candidate_tasks(self,request):
+        data = request.data
+        company_id = data.get('company_id')
+        data_type = data.get('data_type')
+        task_created_date = data.get('task_created_date')
+
+        field = {
+            "company_id": company_id,
+            "data_type": data_type,
+            "task_created_date": task_created_date
+        }
+        serializer = GetAllCandidateTaskSerializer(data=field)
+        if serializer.is_valid():
+            task_details_field = {
+                "company_id": company_id,
+                "data_type": data_type,
+            }
+            respone = json.loads(dowellconnection(*task_management_reports,"fetch", task_details_field , update_field= None))
+            task_field = {
+                "task_created_date": task_created_date
+            }
+            task_resonse = json.loads(dowellconnection(*task_details_module,"fetch", task_field , update_field= None))
+            return Response({
+                "success": True,
+                "message": f"List of task {company_id}",
+                "task_details": respone["data"],
+                "task": task_resonse["data"]
+            },status.HTTP_200_OK)
+        else:
+            return Response({
+                "success": False,
+                "message": "Posting wrong data to API",
+                "error": serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)    
 
     """HANDLE ERROR"""
     def handle_error(self, request): 

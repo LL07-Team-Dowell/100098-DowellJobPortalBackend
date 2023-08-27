@@ -336,6 +336,11 @@ class GetCandidateTaskSerializer(serializers.Serializer):
     data_type = serializers.CharField(allow_null=False, allow_blank=False)
     task_created_date = serializers.DateField(allow_null=True)
 
+class GetAllCandidateTaskSerializer(serializers.Serializer):
+    company_id = serializers.CharField(allow_null=False, allow_blank=False)
+    data_type = serializers.CharField(allow_null=False, allow_blank=False)
+    task_created_date = serializers.DateField(allow_null=True)
+
 class UpdateTaskByCandidateSerializer(serializers.Serializer):
     TASK_TYPE = (
         ('MEETING UPDATE', 'MEETING UPDATE'),
