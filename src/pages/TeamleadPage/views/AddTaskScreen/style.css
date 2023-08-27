@@ -86,6 +86,7 @@
   padding: 2%;
   border-radius: 10px;
   display: block;
+  background-color: #fff;
 }
 
 .add__New__Task__Container .addTaskDropDown.new__Task {
@@ -212,7 +213,7 @@
 @media screen and (min-width: 992px) {
   .add__New__Task__Container {
     padding: 2%;
-    width: 62%;
+    width: 75%;
     max-height: 90%;
   }
 

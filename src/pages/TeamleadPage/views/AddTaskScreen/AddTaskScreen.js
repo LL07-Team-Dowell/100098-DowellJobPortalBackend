@@ -56,9 +56,10 @@ const AddTaskScreen = ({
   const [ savingLoading, setSavingLoading ] = useState(false);
   const [ editLoading, setEditLoading ] = useState(false);
   const [ deleteLoading, setDeleteLoading ] = useState(false);
+  const [ taskType, setTaskType ] = useState("")
   
   //   var conditions
-  const inputsAreFilled = taskStartTime && taskEndTime && taskName;
+  const inputsAreFilled = taskStartTime && taskEndTime && taskName && taskType;
   const duration = getDifferenceInMinutes(
     new Date(`${new Date().toDateString()} ${taskStartTime}`),
     new Date(`${new Date().toDateString()} ${taskEndTime}`)
@@ -70,13 +71,15 @@ const AddTaskScreen = ({
     setTaskName("");
     setDetails("");
     setoptionValue("");
+    setTaskType("");
   };
-  const fillAllInputs = (taskStartTime, taskEndTime, taskName, details, project) => {
+  const fillAllInputs = (taskStartTime, taskEndTime, taskName, details, project, taskType) => {
     setTaskStartTime(taskStartTime);
     setTaskEndTime(taskEndTime);
     setTaskName(taskName);
     setDetails(details);
     setoptionValue(project);
+    setTaskType(taskType);
   };
 
   const addTaskCondition = () => {
@@ -89,10 +92,10 @@ const AddTaskScreen = ({
 
   const getInputsForEditing = (id) => {
     editTaskCondition();
-    const { start_time, end_time, task, details, project } = tasks.find(
+    const { start_time, end_time, task, details, project, task_type } = tasks.find(
       (task) => task._id === id
     );
-    fillAllInputs(start_time, end_time, task, details, project);
+    fillAllInputs(start_time, end_time, task, details, project, task_type);
   };
 
   // const addSingleTask = (start_time, end_time, taskName, details, _id) => {
@@ -106,13 +109,13 @@ const AddTaskScreen = ({
   //   ]);
   // };
 
-  const updateSingleTask = (start_time, end_time, taskName, details, project) => {
+  const updateSingleTask = (start_time, end_time, taskName, details, project, taskType) => {
     console.log({ taskId });
     setTasks(
       tasks.map((task) => {
         if (task._id === taskId) {
           console.log(true);
-          return { ...task, start_time, end_time, task: taskName, details, project };
+          return { ...task, start_time, end_time, task: taskName, details, project, task_type: taskType };
         }
         return task;
       })
@@ -167,7 +170,7 @@ const AddTaskScreen = ({
           setDisabled(false);
           setEditLoading(false);
 
-          updateSingleTask(taskStartTime, taskEndTime, taskName, details, optionValue);
+          updateSingleTask(taskStartTime, taskEndTime, taskName, details, optionValue, taskType);
           clearAllInputs();
           addTaskCondition();
           setTaskId("");
@@ -316,8 +319,10 @@ const AddTaskScreen = ({
     if (taskStartTime.length < 1 || taskEndTime.length < 1)
       return setDisabled(true);
 
+    if (taskType.length < 1) return setDisabled(true);
+
     setDisabled(false);
-  }, [taskName, optionValue, taskStartTime, taskEndTime]);
+  }, [taskName, optionValue, taskStartTime, taskEndTime, taskType]);
 
   useEffect(() => {
     if (afterSelectionScreen) {
@@ -351,7 +356,7 @@ const AddTaskScreen = ({
       "data_type": currentUser.portfolio_info[0].data_type,
       "company_id": currentUser.portfolio_info[0].org_id,
       "task_created_date": todayDate,
-      "task_type": updateTask ? "TASK UPDATE" : "MEETING UPDATE",
+      "task_type": taskType,
       "start_time": startTime,
       "end_time": endTime,
       "user_id": currentUser.userinfo.userID,
@@ -696,6 +701,25 @@ const AddTaskScreen = ({
                       />
                     </div>
                     <div>
+                      <span className="selectProject">Task type</span>
+                      <select
+                        onChange={({ target }) => setTaskType(target.value)}
+                        className="addTaskDropDown new__Task"
+                        style={{ 
+                          margin: 0, 
+                          marginBottom: "0.8rem",
+                        }}
+                        value={taskType}
+                      >
+                        <option value={""}>Select</option>
+                        {taskTypes.map((v, i) => (
+                          <option key={i} value={v}>
+                            {v}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
                       <span className="selectProject">Project</span>
                       <select
                         onChange={(e) => selctChange(e)}
@@ -706,7 +730,7 @@ const AddTaskScreen = ({
                         }}
                         value={optionValue}
                       >
-                        <option value={""}>Select</option>
+                        <option value={""}>Select project</option>
                         {assignedProject.map((v, i) => (
                           <option key={i} value={v}>
                             {v}
@@ -770,6 +794,7 @@ const AddTaskScreen = ({
                         <th>Time started</th>
                         <th>Time finished</th>
                         <th>task</th>
+                        <th>Task type</th>
                         <th>project</th>
                         <th>actions</th>
                       </tr>
@@ -780,6 +805,7 @@ const AddTaskScreen = ({
                             <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
                             <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
                             <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task}</td>
+                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task_type}</td>
                             <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.project}</td>
                             <td>
                               <div className="edit__Item__Customer">
@@ -898,6 +924,12 @@ const AddTaskScreen = ({
 };
 
 export default AddTaskScreen;
+
+const taskTypes = [
+  "TASK UPDATE",
+  "MEETING UPDATE",
+]
+
 const Table = ({ tasks, deleteTask, getTaskId }) => {
   return null;
 };
