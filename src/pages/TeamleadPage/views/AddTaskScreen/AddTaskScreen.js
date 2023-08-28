@@ -880,7 +880,7 @@ const AddTaskScreen = ({
                       >
                         {editPage
                           ? "Update Task"
-                          : "Next"}
+                          : "Done"}
                       </button>
                     }
                   </div>
