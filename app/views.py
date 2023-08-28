@@ -1605,6 +1605,9 @@ class update_task(APIView):
             )
 @method_decorator(csrf_exempt, name="dispatch")
 class task_request_update(APIView):
+    def get_current_datetime(self,date):
+        _date = datetime.datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f').strftime('%m/%d/%Y %H:%M:%S')
+        return str(_date)
     def patch(self, request, document_id):
         data = request.data
         if data:
@@ -1615,7 +1618,7 @@ class task_request_update(APIView):
                 "username": data.get("username"),
                 "portfolio_name": data.get("portfolio_name"),
                 "project": data.get("project"),
-                "task_updated_date": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+                "task_updated_date": self.get_current_datetime(datetime.datetime.now()),
                 "approved":False,
                 "request_denied":False,
             }
@@ -1766,6 +1769,9 @@ class delete_task(APIView):
 # api for team_task management starts here__________________________
 @method_decorator(csrf_exempt, name="dispatch")
 class create_team(APIView):
+    def get_current_datetime(self,date):
+        _date = datetime.datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f').strftime('%m/%d/%Y %H:%M:%S')
+        return str(_date)
     def post(self, request):
         data = request.data
         if data:
@@ -1774,7 +1780,7 @@ class create_team(APIView):
                 "team_name": data.get("team_name"),
                 "team_description": data.get("team_description"),
                 "created_by": data.get("created_by"),
-                "date_created": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+                "date_created": self.get_current_datetime(datetime.datetime.now()),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
                 "members": data.get("members"),
@@ -1967,10 +1973,12 @@ class create_team_task(APIView):
         _date = task_updated_date + relativedelta(hours=12)
         _date = _date.strftime('%m/%d/%Y %H:%M:%S')
         return str(_date)
+    def get_current_datetime(self,date):
+        _date = datetime.datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f').strftime('%m/%d/%Y %H:%M:%S')
+        return str(_date)
     def post(self, request):
         data = request.data
         if data:
-            task_created_date=f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"
             field = {
                 "eventId": get_event_id()["event_id"],
                 "title": data.get("title"),
@@ -1979,11 +1987,11 @@ class create_team_task(APIView):
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
                 "data_type": data.get("data_type"),
-                "task_created_date":task_created_date,
+                "task_created_date":self.get_current_datetime(datetime.datetime.now()),
                 "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
-                "max_updated_date": self.max_updated_date(task_created_date),
+                "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.datetime.now())),
             }
             update_field = {"status": "nothing to update"}
             response = dowellconnection(
@@ -2119,6 +2127,9 @@ class delete_team_task(APIView):
 # this is the api for creating a task for a team member
 @method_decorator(csrf_exempt, name="dispatch")
 class create_member_task(APIView):
+    def get_current_datetime(self,date):
+        _date = datetime.datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f').strftime('%m/%d/%Y %H:%M:%S')
+        return str(_date)
     def post(self, request):
         data = request.data
         if data:
@@ -2129,7 +2140,7 @@ class create_member_task(APIView):
                 "assignee": data.get("assignee"),
                 "completed": data.get("completed"),
                 "team_name": data.get("team_name"),
-                "task_created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+                "task_created_date":self.get_current_datetime(datetime.datetime.now()),
                 "team_member": data.get("team_member"),
                 "data_type": data.get("data_type"),
             }

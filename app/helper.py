@@ -359,7 +359,6 @@ def validate_and_generate_times(task_type, task_created_date, start_time=None, e
 
     return start_time_dt.strftime(date_format), end_time_dt.strftime(date_format)
 
-
 def update_task_status(self, current_task_id, is_active):
         field = {
             "_id": current_task_id
