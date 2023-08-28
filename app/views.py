@@ -666,7 +666,7 @@ class candidate_apply_job(APIView):
         # Check if applicant is present in rejected_reports_modules
         if applicant is not None:
             rejected_dates = [
-                datetime.datetime.strptime(item["rejected_on"], "%Y-%m-%dT%H:%M:%S.%fZ")
+                datetime.datetime.strptime(item["rejected_on"], "%m/%d/%Y %H:%M:%S")
                 for item in json.loads(applicant)["data"]
             ]
             if len(rejected_dates) >= 1:
@@ -1418,9 +1418,10 @@ class lead_reject_candidate(APIView):
 class create_task(APIView):
     def max_updated_date(self, updated_date):
         task_updated_date = datetime.datetime.strptime(
-            updated_date, "%Y-%m-%dT%H:%M:%S.%fZ"
+            updated_date, "%m/%d/%Y %H:%M:%S"
         )
         _date = task_updated_date + relativedelta(hours=12)
+        _date = _date.strftime('%m/%d/%Y %H:%M:%S')
         return str(_date)
 
     def post(self, request):
@@ -1614,7 +1615,7 @@ class task_request_update(APIView):
                 "username": data.get("username"),
                 "portfolio_name": data.get("portfolio_name"),
                 "project": data.get("project"),
-                "task_updated_date": set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"),
+                "task_updated_date": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
                 "approved":False,
                 "request_denied":False,
             }
@@ -1679,7 +1680,7 @@ class approve_task(APIView):
             current_date = datetime.datetime.today()
             max_updated_dates = [
                 datetime.datetime.strptime(
-                    item["max_updated_date"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                    item["max_updated_date"], "%m/%d/%Y %H:%M:%S"
                 )
                 for item in json.loads(response)["data"]
             ]
@@ -1773,7 +1774,7 @@ class create_team(APIView):
                 "team_name": data.get("team_name"),
                 "team_description": data.get("team_description"),
                 "created_by": data.get("created_by"),
-                "date_created": set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"),
+                "date_created": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
                 "members": data.get("members"),
@@ -1961,14 +1962,15 @@ class delete_team(APIView):
 class create_team_task(APIView):
     def max_updated_date(self, updated_date):
         task_updated_date = datetime.datetime.strptime(
-            updated_date, "%Y-%m-%dT%H:%M:%S.%fZ"
+            updated_date, "%m/%d/%Y %H:%M:%S"
         )
         _date = task_updated_date + relativedelta(hours=12)
+        _date = _date.strftime('%m/%d/%Y %H:%M:%S')
         return str(_date)
     def post(self, request):
         data = request.data
         if data:
-            task_created_date=set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}")
+            task_created_date=f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"
             field = {
                 "eventId": get_event_id()["event_id"],
                 "title": data.get("title"),
@@ -1977,7 +1979,7 @@ class create_team_task(APIView):
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
                 "data_type": data.get("data_type"),
-                "task_created_date":data.get("task_created_date"),
+                "task_created_date":task_created_date,
                 "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
@@ -2127,7 +2129,7 @@ class create_member_task(APIView):
                 "assignee": data.get("assignee"),
                 "completed": data.get("completed"),
                 "team_name": data.get("team_name"),
-                "task_created_date":set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"),
+                "task_created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
                 "team_member": data.get("team_member"),
                 "data_type": data.get("data_type"),
             }
@@ -3312,7 +3314,7 @@ class Thread_Apis(APIView):
             "created_by": data.get("created_by"),
             "team_id":data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
-            "created_date":set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"),
+            "created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
             "current_status": serializer_data["current_status"],
             "previous_status": [],
         }
@@ -3527,7 +3529,7 @@ class Comment_Apis(APIView):
         field = {
             "event_id": get_event_id()["event_id"],
             "created_by": data.get("created_by"),
-            "created_date":set_date_format(f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}"),
+            "created_date":f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
             "comment": data.get("comment"),
             "thread_id": data.get("thread_id"),
         }
