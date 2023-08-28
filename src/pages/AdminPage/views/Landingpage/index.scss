@@ -296,7 +296,8 @@ $red__color: #FE0000;
 }
 @media (max-width: 500px) {
   .staff__Jobs__Layout__Content__Container .jobs__Layout__Content{
-    overflow-y: visible;
+    overflow-y: auto;
+    padding-bottom: 100px;
   }
   .landing-page {
     padding: 0rem 9rem;
