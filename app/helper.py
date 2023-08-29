@@ -341,7 +341,7 @@ def targeted_population(database, collection, fields, period,column_name, start_
 class CustomValidationError(Exception):
     pass
 def validate_and_generate_times(task_type, task_created_date, start_time=None, end_time=None):
-    date_format = "%Y-%m-%dT%H:%M:%S.%fZ" 
+    date_format = "%m/%d/%Y %H:%M:%S" 
     if task_type == "Day":
         start_time_dt = datetime.datetime.strptime(task_created_date, date_format)
         end_time_dt = start_time_dt + timedelta(days=1)
@@ -358,7 +358,6 @@ def validate_and_generate_times(task_type, task_created_date, start_time=None, e
         raise CustomValidationError("Invalid task_type. Please provide a valid task_type.")
 
     return start_time_dt.strftime(date_format), end_time_dt.strftime(date_format)
-
 
 def update_task_status(self, current_task_id, is_active):
         field = {
