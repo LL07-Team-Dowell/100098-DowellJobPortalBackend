@@ -2985,14 +2985,16 @@ class createPublicApplication(APIView):
         response = json.loads(responses)
         # print(response)
 
-        master_links = []
+        data = []
         for i in response["data"]:
             try:
                 link_and_id={
                     "master_link":i["master_link"],
-                    "job_id":i["job_id"]
+                    "job_id":i["job_id"],
+                    "qr_link":i["qr_code"],
+                    "document_id":i["_id"]
                 }
-                master_links.append(link_and_id)
+                data.append(link_and_id)
             except KeyError:
                 pass
 
@@ -3003,7 +3005,8 @@ class createPublicApplication(APIView):
                 {
                     "success": True,
                     "message": "Master link deatils.",
-                    "master_link": master_links,
+                    "data": data,
+                    
                 },
                 status=status.HTTP_200_OK,
             )
