@@ -1420,7 +1420,7 @@ class create_task(APIView):
         task_updated_date = datetime.datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
         )
-        _date = task_updated_date + relativedelta(hours=12)
+        _date = task_updated_date + relativedelta(hours=48)
         _date = _date.strftime('%m/%d/%Y %H:%M:%S')
         return str(_date)
 
@@ -1683,13 +1683,14 @@ class approve_task(APIView):
             current_date = datetime.datetime.today()
             max_updated_dates = [
                 datetime.datetime.strptime(
-                    item["max_updated_date"], "%m/%d/%Y %H:%M:%S"
+                    item["max_updated_date"], "%Y-%m-%d %H:%M:%S"
                 )
                 for item in json.loads(response)["data"]
             ]
             if len(max_updated_dates) >= 1:
                 max_updated_date = max(max_updated_dates)
                 if current_date <= max_updated_date:
+                    
                     return True
                 else:
                     return False
@@ -1707,6 +1708,7 @@ class approve_task(APIView):
 
             if check_approvable is True:
                 update_field["approved"] = check_approvable
+                update_field["approval"] = check_approvable
                 response = dowellconnection(
                     *task_management_reports, "update", field, update_field
                 )
@@ -1966,13 +1968,13 @@ class delete_team(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class create_team_task(APIView):
-    def max_updated_date(self, updated_date):
-        task_updated_date = datetime.datetime.strptime(
-            updated_date, "%m/%d/%Y %H:%M:%S"
-        )
-        _date = task_updated_date + relativedelta(hours=12)
-        _date = _date.strftime('%m/%d/%Y %H:%M:%S')
-        return str(_date)
+    # def max_updated_date(self, updated_date):
+    #     task_updated_date = datetime.datetime.strptime(
+    #         updated_date, "%m/%d/%Y %H:%M:%S"
+    #     )
+    #     _date = task_updated_date + relativedelta(hours=12)
+    #     _date = _date.strftime('%m/%d/%Y %H:%M:%S')
+    #     return str(_date)
     def get_current_datetime(self,date):
         _date = datetime.datetime.strptime(str(date), '%Y-%m-%d %H:%M:%S.%f').strftime('%m/%d/%Y %H:%M:%S')
         return str(_date)
@@ -1991,7 +1993,7 @@ class create_team_task(APIView):
                 "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
-                "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.datetime.now())),
+                # "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.datetime.now())),
             }
             update_field = {"status": "nothing to update"}
             response = dowellconnection(
@@ -2998,14 +3000,16 @@ class createPublicApplication(APIView):
         response = json.loads(responses)
         # print(response)
 
-        master_links = []
+        data = []
         for i in response["data"]:
             try:
                 link_and_id={
                     "master_link":i["master_link"],
-                    "job_id":i["job_id"]
+                    "job_id":i["job_id"],
+                    "qr_link":i["qr_code"],
+                    "document_id":i["_id"]
                 }
-                master_links.append(link_and_id)
+                data.append(link_and_id)
             except KeyError:
                 pass
 
@@ -3016,7 +3020,8 @@ class createPublicApplication(APIView):
                 {
                     "success": True,
                     "message": "Master link deatils.",
-                    "master_link": master_links,
+                    "data": data,
+                    
                 },
                 status=status.HTTP_200_OK,
             )
@@ -4475,6 +4480,11 @@ class Update_payment_status(APIView):
             )
 @method_decorator(csrf_exempt, name="dispatch")
 class task_module(APIView):
+    def max_updated_date(self, updated_date):
+        task_updated_date = datetime.datetime.strptime(updated_date, "%Y-%m-%d")
+        _date = task_updated_date + relativedelta(hours=48)
+        _date = _date.strftime('%Y-%m-%d %H:%M:%S')
+        return (_date)
     def post(self, request):
         type_request = request.GET.get('type')
 
@@ -4526,7 +4536,9 @@ class task_module(APIView):
             "task_type": task_type,
             "start_time": start_time,
             "end_time": end_time,
-            "user_id": user_id     
+            "user_id": user_id,
+            "max_updated_date": self.max_updated_date(
+                    task_created_date),    
         }
 
         serializer = TaskModuleSerializer(data = data)
@@ -4538,7 +4550,8 @@ class task_module(APIView):
                 "data_type": data_type,
                 "company_id": company_id,
                 "task_created_date": task_created_date,
-                "task_updated_date": "",
+                "max_updated_date": self.max_updated_date(
+                    task_created_date),  
                 "user_id": user_id,
                 "status": "Incomplete",
                 "approval": False,
