@@ -1680,6 +1680,9 @@ class approve_task(APIView):
             *task_management_reports, "fetch", field, update_field
         )
         if response is not None:
+            for item in json.loads(response)["data"]:
+                if 'max_updated_date' not in item:
+                    return True
             current_date = datetime.datetime.today()
             max_updated_dates = [
                 datetime.datetime.strptime(
@@ -1730,8 +1733,8 @@ class approve_task(APIView):
                     )
             else:
                 return Response(
-                    {"message": "Task failed to be approved. Approval date is over"},
-                    status=status.HTTP_304_NOT_MODIFIED,
+                    {"message": "Task approval unsuccessful. The 48-hour approval window has elapsed."},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
         else:
@@ -2697,26 +2700,42 @@ class SettingUserProfileInfoView(APIView):
         data = request.data
         setting = SettingUserProfileInfo.objects.get(pk=pk)
         serializer = UpdateSettingUserProfileInfoSerializer(setting, data=request.data)
+        
         if serializer.is_valid():
             try:
-                index=len(setting.profile_info)-1
+                index = len(setting.profile_info) - 1
                 current_version = setting.profile_info[index]["version"]
             except Exception:
-                current_version = "1" 
-            setting.profile_info.append(
-                {
-                    "profile_title": data["profile_title"],
-                    "Role": data["Role"],
-                    "project": data["project"],
-                    "version": update_number(current_version),
-                }
-            )
+                current_version = "1"
+            
+            new_profile_info = {
+                "profile_title": data["profile_title"],
+                "Role": data["Role"],
+                "project": data["project"],
+                "version": update_number(current_version),
+            }
+            
+            payload_keys = request.data.keys()
+            for key in payload_keys:
+                if key == 'additional_projects' or key == 'other_roles':
+                    if isinstance(request.data[key], list):
+                        new_profile_info[key] = request.data[key]
+                    else:
+                        return Response({
+                            "success":False,
+                            "error": f"{key} must be a list"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            setting.profile_info.append(new_profile_info)
             setting.save()
+            
             old_version = setting.profile_info[-2]["version"]
             setting.profile_info[-2]["version"] = update_string(old_version)
             setting.save()
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.error_messages, status=status.HTTP_400_BAD_REQUEST)
+
     
     def delete(self, request, pk, *args, **kwargs):
         try:
