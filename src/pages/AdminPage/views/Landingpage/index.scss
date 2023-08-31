@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@0,200;0,300;0,400;0,700;0,800;1,200;1,300;1,700&family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:wght@300;400;600;800&family=Roboto+Condensed:ital,wght@0,700;1,400;1,700&family=Roboto:ital,wght@0,100;0,300;0,500;0,700;0,900;1,100;1,300;1,500;1,700;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@0,200;0,300;0,400;0,700;0,800;1,200;1,300;1,700&family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:wght@300;400;600;800&family=Roboto+Condensed:ital,wght@0,700;1,400;1,700&family=Roboto:ital,wght@0,100;0,300;0,500;0,700;0,900;1,100;1,300;1,500;1,700;1,900&display=swap");
 // colors
 $main__green: #005734;
 $background__gray: #f5f5f5;
@@ -6,7 +6,7 @@ $placeholder__gray: #a3a1a1;
 $text__gray: #b8b8b8;
 $span__gray: #b8b8b8;
 $slider__gray: #d9d9d9;
-$red__color: #FE0000;
+$red__color: #fe0000;
 
 .landing-page {
   position: relative;
@@ -69,7 +69,7 @@ $red__color: #FE0000;
     margin-top: 2rem;
     display: grid;
     gap: 4.4rem;
-    grid-template-columns: repeat(auto-fill, minmax(calc(100%/3), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(calc(100% / 3), 1fr));
     .card {
       padding: 1rem 1.37rem;
       width: 100%;
@@ -224,7 +224,7 @@ $red__color: #FE0000;
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-  
+
       span {
         flex: 80%;
       }
@@ -234,7 +234,6 @@ $red__color: #FE0000;
       box-shadow: rgba($main__green, 0.6) 0px 7px 29px 0px;
     }
   }
-  
 
   .landing_Nav_Wrapper {
     display: flex;
@@ -244,7 +243,7 @@ $red__color: #FE0000;
     cursor: pointer;
 
     .landing_Nav_Item {
-      font-family: 'Poppins', sans-serif;
+      font-family: "Poppins", sans-serif;
       font-weight: 500;
       position: relative;
       transition: 0.3s ease-in-out;
@@ -258,10 +257,43 @@ $red__color: #FE0000;
           position: absolute;
           left: 50%;
           transform: translateX(-50%);
-          
         }
       }
     }
+  }
+}
+
+.isActive-container {
+  width: 52%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  transform: translateX(40px);
+  p {
+    border-radius: 10px;
+    background: #f3f8f4;
+    color: #b8b8b8;
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    width: 10rem;
+    height: 3rem;
+    transition: 0.3s ease-in-out;
+    text-align: center;
+  }
+  .isActive {
+    background: #005734;
+    box-shadow: 0px 2.79922px 25px rgba(0, 87, 52, 0.67);
+    color: #fff;
   }
 }
 
@@ -276,7 +308,7 @@ $red__color: #FE0000;
 //     .cards {
 //       // grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
 //       display: flex;
-//       gap:40px; 
+//       gap:40px;
 //       flex-direction: column;
 //       width: 100%;
 //       .card{
@@ -287,16 +319,8 @@ $red__color: #FE0000;
 //   }
 // }
 
-@media (max-width: 767px) {
-  .landing-page {
-    padding: 0rem 9rem;
-    .cards {
-      grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-    }
-  }
-}
 @media (max-width: 500px) {
-  .staff__Jobs__Layout__Content__Container .jobs__Layout__Content{
+  .staff__Jobs__Layout__Content__Container .jobs__Layout__Content {
     overflow-y: auto;
     padding-bottom: 100px;
   }
@@ -307,13 +331,58 @@ $red__color: #FE0000;
     .cards {
       // grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
       display: flex;
-      gap:40px; 
+      gap: 40px;
       flex-direction: column;
       width: 100%;
-      .card{
+      .card {
         width: 373px;
-        transform: translateX(-135px);
+        transform: translateX(8px);
       }
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .landing-page {
+    padding: 0rem;
+    .cards {
+      grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    }
+
+    .job__Link__Wrapper {
+      gap: 1rem;
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+
+      p {
+        font-size: 0.9rem;
+      }
+
+      .job__Link__Container {
+        font-size: 0.7rem;
+      }
+    }
+
+    .landing_Nav_Wrapper {
+      margin: 1.5rem 2rem 0;
+      justify-content: space-around;
+      p{
+        font-size: 0.9rem;
+      }
+    }
+  }
+  .isActive-container {
+    width: 82%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    transform: translateX(1px);
+    p {
+      font-size: 0.8rem;
     }
   }
 }
@@ -336,7 +405,7 @@ $red__color: #FE0000;
 @media (min-width: 992px) {
   .landing-page {
     .cards {
-      grid-template-columns: repeat(auto-fill, minmax(calc(100%/3), 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(calc(100% / 3), 1fr));
       .card {
         button {
           width: 7.2rem;
@@ -351,7 +420,7 @@ $red__color: #FE0000;
 @media (min-width: 1400px) {
   .landing-page {
     .cards {
-      grid-template-columns: repeat(auto-fill, minmax(calc(100%/4), 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(calc(100% / 4), 1fr));
       .card {
         button {
           width: 7.5rem;
@@ -413,36 +482,3 @@ $red__color: #FE0000;
 // label:active:after {
 //   width: 30px;
 // }
-.isActive-container{
-  width: 52%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  transform: translateX(40px);
-  p{
-    border-radius: 10px;
-    background: #F3F8F4;
-    color: #B8B8B8;
-    font-family: "Poppins", sans-serif;
-    font-weight: 500;
-    font-size: 1rem;
-    line-height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    letter-spacing: 0.01em;
-    cursor: pointer;
-    width: 10rem;
-    height: 3rem;
-    transition: 0.3s ease-in-out;
-    text-align: center;
-  }
-  .isActive{
-    background: #005734;
-    box-shadow: 0px 2.79922px 25px rgba(0, 87, 52, 0.67);
-    color: #fff;
-  }
-}

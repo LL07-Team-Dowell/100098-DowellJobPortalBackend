@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import { getAllTeams } from "../../../../../../../services/createMembersTasks";
 import Avatar from "react-avatar";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
-import { set } from "date-fns";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 
 const TeamScreenThreads = ({ status, id }) => {
   const { currentUser } = useCurrentUserContext();
@@ -114,7 +114,7 @@ const TeamScreenThreads = ({ status, id }) => {
       .catch((error) => {
         setLoading(false);
       });
-  }, [reducerComment, reducerStatus, status, undefined]);
+  }, [reducerComment, reducerStatus, undefined]);
 
   const addComment = async (text, id) => {
     console.log("addComment", text, id);
@@ -221,7 +221,7 @@ const TeamScreenThreads = ({ status, id }) => {
       .catch((e) => {
         console.log(e);
       });
-  }, []);
+  }, [status]);
 
   const updateStatus = (data) => {
     setStatusLoading(true);
@@ -243,6 +243,7 @@ const TeamScreenThreads = ({ status, id }) => {
   if (loading) return <LoadingSpinner />;
 
   return (
+    <div className="wrapper">
     <div className="team-screen-threads">
       <div className="team-screen-thread-container">
         {status === "Completed" && (
@@ -295,23 +296,25 @@ const TeamScreenThreads = ({ status, id }) => {
                         <></>
                       )}
                       <div className="team-screen-threads-container">
-                        <h3
+                        <p
                           style={{
                             color: "#005734",
-                            fontSize: "1.3rem",
+                            fontSize: "1.2rem",
+                            fontWeight: "500",
                             marginBottom: "0",
+                            textTransform: "capitalize",
                           }}
                         >
                           {thread.thread}
-                        </h3>
+                        </p>
                         <div>
                           <p>Assigned to : {assignedTeamName}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
                         <div className="team-screen-threads-progress">
                           <div className="progress">
-                            <p>Created</p>
                             <div
+                              data-tooltio-id="created"
                               className={
                                 thread.current_status === "Created" ||
                                 "In progress"
@@ -319,10 +322,15 @@ const TeamScreenThreads = ({ status, id }) => {
                                   : "threads-btn"
                               }
                             ></div>
+                            <ReactTooltip
+                              id="created"
+                              place="bottom"
+                              content="Status Created"
+                            />
                           </div>
                           <div className="progress">
-                            <p>In progress</p>
                             <div
+                              data-tooltip-id="inprogress"
                               className={
                                 thread.current_status === "In progress" ||
                                 "Completed"
@@ -330,20 +338,30 @@ const TeamScreenThreads = ({ status, id }) => {
                                   : "threads-btn"
                               }
                             ></div>
+                            <ReactTooltip
+                              id="inprogress"
+                              place="bottom"
+                              content="Status In Progress"
+                            />
                           </div>
                           <div className="progress">
-                            <p>Completed</p>
                             <div
+                              data-tooltip-id="completed"
                               className={
                                 thread.current_status === "Completed"
                                   ? "active-thread-btn"
                                   : "threads-btn"
                               }
                             ></div>
+                            <ReactTooltip
+                              id="completed"
+                              place="bottom"
+                              content="Current Status Completed"
+                            />
                           </div>
                           <div className="progress">
-                            <p>Resolved</p>
                             <div
+                              data-tooltip-id="resolved"
                               className={
                                 thread.current_status === "Resolved"
                                   ? "active-thread-btn"
@@ -356,6 +374,11 @@ const TeamScreenThreads = ({ status, id }) => {
                                 })
                               }
                             ></div>
+                            <ReactTooltip
+                              id="resolved"
+                              place="bottom"
+                              content="Update Status Completed to Resolved"
+                            />
                           </div>
                         </div>
                         <div className="comments-section">
@@ -543,23 +566,25 @@ const TeamScreenThreads = ({ status, id }) => {
                         <></>
                       )}
                       <div className="team-screen-threads-container">
-                        <h3
+                        <p
                           style={{
                             color: "#005734",
                             fontSize: "1.3rem",
+                            fontWeight: "500",
                             marginBottom: "0",
+                            textTransform: "capitalize",
                           }}
                         >
                           {thread.thread}
-                        </h3>
+                        </p>
                         <div>
                           <p>Assigned to : {assignedTeamName}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
                         <div className="team-screen-threads-progress">
                           <div className="progress">
-                            <p>Created</p>
                             <div
+                              data-tooltip-id="created"
                               className={
                                 thread.current_status === "Created" ||
                                 "In progress"
@@ -567,29 +592,57 @@ const TeamScreenThreads = ({ status, id }) => {
                                   : "threads-btn"
                               }
                             ></div>
+                            <ReactTooltip
+                              id="created"
+                              place="bottom"
+                              content="Current Status Created"
+                            />
                           </div>
                           <div className="progress">
-                            <p>In progress</p>
-                            <div
-                              className={
-                                thread.current_status === "In progress"
-                                  ? "active-thread-btn"
-                                  : "threads-btn"
-                              }
-                              onClick={(e) =>
-                                updateStatus({
-                                  status: "In progress",
-                                  document_id: thread._id,
-                                })
-                              }
-                            ></div>
+                            {currentUser.portfolio_info[0].username ===
+                              thread.created_by &&
+                            thread.current_status === "In progress" ? (
+                              <div
+                                data-tooltip-id="inprogress"
+                                className={
+                                  thread.current_status === "In progress"
+                                    ? "active-thread-btn"
+                                    : "threads-btn"
+                                }
+                                onClick={(e) =>
+                                  updateStatus({
+                                    status: "In progress",
+                                    document_id: thread._id,
+                                  })
+                                }
+                              ></div>
+                            ) : (
+                              <div
+                                data-tooltip-id="inprogress"
+                                className={
+                                  thread.current_status === "In progress"
+                                    ? "active-thread-btn"
+                                    : "threads-btn"
+                                }
+                                onClick={() =>
+                                  toast.info(
+                                    "Only Assigned team to issue can update this status"
+                                  )
+                                }
+                              ></div>
+                            )}
+                            <ReactTooltip
+                              id="inprogress"
+                              place="bottom"
+                              content="Update Status Inprogress to Completed"
+                            />
                           </div>
                           <div className="progress">
-                            <p>Completed</p>
                             {currentUser.portfolio_info[0].username ===
                               thread.created_by &&
                             thread.current_status === "Completed" ? (
                               <div
+                                data-tooltip-id="completed"
                                 className={
                                   thread.current_status === "Completed"
                                     ? "active-thread-btn"
@@ -604,6 +657,7 @@ const TeamScreenThreads = ({ status, id }) => {
                               ></div>
                             ) : (
                               <div
+                                data-tooltip-id="completed"
                                 className={
                                   thread.current_status === "Completed"
                                     ? "active-thread-btn"
@@ -616,13 +670,18 @@ const TeamScreenThreads = ({ status, id }) => {
                                 }
                               ></div>
                             )}
+                            <ReactTooltip
+                              id="completed"
+                              place="bottom"
+                              content="Update Status Inprogress to Completed"
+                            />
                           </div>
                           <div className="progress">
-                            <p>Resolved</p>
                             {currentUser.portfolio_info[0].username ===
                               thread.created_by &&
                             thread.current_status === "Resolved" ? (
                               <div
+                                data-tooltip-id="resolved"
                                 className={
                                   thread.current_status === "Resolved"
                                     ? "active-thread-btn"
@@ -637,6 +696,7 @@ const TeamScreenThreads = ({ status, id }) => {
                               ></div>
                             ) : (
                               <div
+                                data-tooltip-id="resolved"
                                 className={
                                   thread.current_status === "Resolved"
                                     ? "active-thread-btn"
@@ -649,6 +709,11 @@ const TeamScreenThreads = ({ status, id }) => {
                                 }
                               ></div>
                             )}
+                            <ReactTooltip
+                              id="resolved"
+                              place="bottom"
+                              content="Update Status Completed to Resolve"
+                            />
                           </div>
                         </div>
                         <div className="comments-section">
@@ -841,23 +906,25 @@ const TeamScreenThreads = ({ status, id }) => {
                         <></>
                       )}
                       <div className="team-screen-threads-container">
-                        <h3
+                        <p
                           style={{
                             color: "#005734",
                             fontSize: "1.3rem",
+                            fontWeight: "500",
                             marginBottom: "0",
+                            textTransform: "capitalize",
                           }}
                         >
                           {thread.thread}
-                        </h3>
+                        </p>
                         <div>
                           <p>Assigned to : {assignedTeamName}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
                         <div className="team-screen-threads-progress">
                           <div className="progress">
-                            <p>Created</p>
                             <div
+                              data-tooltip-id="created"
                               className={
                                 thread.current_status === "Created" ||
                                 "In progress"
@@ -865,10 +932,15 @@ const TeamScreenThreads = ({ status, id }) => {
                                   : "threads-btn"
                               }
                             ></div>
+                            <ReactTooltip
+                              id="created"
+                              place="bottom"
+                              content=" Status Created"
+                            />
                           </div>
                           <div className="progress">
-                            <p>In progress</p>
                             <div
+                              data-tooltip-id="progress"
                               className={
                                 thread.current_status === "In progress" ||
                                 "Completed"
@@ -876,10 +948,15 @@ const TeamScreenThreads = ({ status, id }) => {
                                   : "threads-btn"
                               }
                             ></div>
+                            <ReactTooltip
+                              id="progress"
+                              place="bottom"
+                              content=" Status In Progress"
+                            />
                           </div>
                           <div className="progress">
-                            <p>Completed</p>
                             <div
+                              data-tooltip-id="completed"
                               className={
                                 thread.current_status === "Completed" ||
                                 "Resolved"
@@ -887,16 +964,26 @@ const TeamScreenThreads = ({ status, id }) => {
                                   : "threads-btn"
                               }
                             ></div>
+                            <ReactTooltip
+                              id="completed"
+                              place="bottom"
+                              content="Status Completed"
+                            />
                           </div>
                           <div className="progress">
-                            <p>Resolved</p>
                             <div
+                              data-tooltip-id="resolved"
                               className={
                                 thread.current_status === "Resolved"
                                   ? "active-thread-btn"
                                   : "threads-btn"
                               }
                             ></div>
+                            <ReactTooltip
+                              id="resolved"
+                              place="bottom"
+                              content="Current Status Resolved"
+                            />
                           </div>
                         </div>
                         <div className="comments-section">
@@ -1032,6 +1119,7 @@ const TeamScreenThreads = ({ status, id }) => {
           </>
         )}
       </div>
+    </div>
     </div>
   );
 };

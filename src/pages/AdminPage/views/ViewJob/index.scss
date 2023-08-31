@@ -1,132 +1,167 @@
-// colors 
-$main__green :  #005734;
-$light__green: #F3F8F4; 
-$main__black: #1F1F1F;
-$main__gray : #7C7C7C ; 
+// colors
+$main__green: #005734;
+$light__green: #f3f8f4;
+$main__black: #1f1f1f;
+$main__gray: #7c7c7c;
 
-  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@0,200;0,300;0,400;0,700;0,800;1,200;1,300;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:wght@300;400;600;800&family=Roboto+Condensed:ital,wght@0,700;1,400;1,700&family=Roboto:ital,wght@1,700;1,900&display=swap');
-.viewJob-container{
-            font-family: 'Inter', sans-serif;
-            width: 80%;
-            margin: auto;
-            padding-top: 30px;
-            flex-direction: column;
-            
-            button{
-            cursor: pointer;
-            }
-            .header{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            >div{
-            display: flex;
-            button{
-            width: 2.83rem;
-            height: 2.41rem;
-            border-radius: 10px;
-            outline: transparent;
-            border: #D5ECD699 1px solid;
-            position: relative;
-            background-color: white;
-            cursor: pointer;
-            
-            &::after{
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-color:  #D5ECD699;
-            z-index:-99 ; 
-            top:20% ;
-            left:20% ; 
-            border-radius: 10px;
-            }
-            }
-            p{
-              font-size: 2.1rem;
-              margin-left: 20px;
-              color: #005734;
-              text-transform: capitalize;
-              font-weight: 700;
-              letter-spacing: 0.80px;
-            }
-            }
-            >button{
-            width: 9.29rem;
-            height: 3.45rem;
-            outline: transparent;
-            border: none;
-            border-radius: 0.83rem;
-            font-weight: bold;
-            color: $main__gray;
-            font-weight: 500;
-            font-weight: bold;
-            font-size: 1.41rem;
-            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 6px;
-            text-transform: capitalize;
-            }
-            }
-            .job-discription{
-            margin-top:50px ; 
-            padding:2.20rem 4.45rem ; 
-            padding-bottom: 100px;
-            background-color: $light__green;
-            border-radius: 15px;
-            position: relative;
-            margin-bottom: 5rem;
-            >div{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            width: 100%;
-            margin-top: 20px;
-            h5{
-            font-weight: 600;
-            font-size: 16px;
-            }
-            span{
-              font-size: 15px;
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:ital,wght@0,200;0,300;0,400;0,700;0,800;1,200;1,300;1,700&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Poppins:wght@300;400;600;800&family=Roboto+Condensed:ital,wght@0,700;1,400;1,700&family=Roboto:ital,wght@1,700;1,900&display=swap");
+.viewJob-container {
+  font-family: "Inter", sans-serif;
+  width: 80%;
+  margin: auto;
+  padding-top: 30px;
+  flex-direction: column;
 
-            }
-            }
-            h4{
-            margin-top: 30px;
-            padding-bottom: 11px;
-            font-size: 20px;
-            }
-            ol{
-            margin-top: 10px ; 
-            margin-left: 19px;
-            li{
-              font-size: 17px;
-            margin-bottom: 10px;
-            }
-            }
-            .others{
-            margin-top: 50px;
-            }
-            >button{
-            position: absolute;
-            bottom:50px ; 
-            right:50px ;
-            width: 9.75rem ;
-            height: 3.16rem;
-            border-radius: 15px;
-            color: white;
-            background-color: #005734;
-            border: none; 
-            outline: transparent;
-            font-weight: 500;
-            font-size: 1.41rem;
-            text-transform: capitalize;
-            }
-            }
+  button {
+    cursor: pointer;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    > div {
+      display: flex;
+      button {
+        width: 2.83rem;
+        height: 2.41rem;
+        border-radius: 10px;
+        outline: transparent;
+        border: #d5ecd699 1px solid;
+        position: relative;
+        background-color: white;
+        cursor: pointer;
+
+        &::after {
+          content: "";
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background-color: #d5ecd699;
+          z-index: -99;
+          top: 20%;
+          left: 20%;
+          border-radius: 10px;
+        }
+      }
+      p {
+        font-size: 2.1rem;
+        margin-left: 20px;
+        color: #005734;
+        text-transform: capitalize;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+      }
+    }
+    > button {
+      width: 9.29rem;
+      height: 3.45rem;
+      outline: transparent;
+      border: none;
+      border-radius: 0.83rem;
+      font-weight: bold;
+      color: $main__gray;
+      font-weight: 500;
+      font-weight: bold;
+      font-size: 1.41rem;
+      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 6px;
+      text-transform: capitalize;
+    }
+  }
+  .job-discription {
+    margin-top: 50px;
+    padding: 2.2rem 4.45rem;
+    padding-bottom: 100px;
+    background-color: $light__green;
+    border-radius: 15px;
+    position: relative;
+    margin-bottom: 5rem;
+    > div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      width: 100%;
+      margin-top: 20px;
+      h5 {
+        font-weight: 600;
+        font-size: 16px;
+      }
+      span {
+        font-size: 15px;
+      }
+    }
+    h4 {
+      margin-top: 30px;
+      padding-bottom: 11px;
+      font-size: 20px;
+    }
+    ol {
+      margin-top: 10px;
+      margin-left: 19px;
+      li {
+        font-size: 17px;
+        margin-bottom: 10px;
+      }
+    }
+    .others {
+      margin-top: 50px;
+    }
+    > button {
+      position: absolute;
+      bottom: 50px;
+      right: 50px;
+      width: 9.75rem;
+      height: 3.16rem;
+      border-radius: 15px;
+      color: white;
+      background-color: #005734;
+      border: none;
+      outline: transparent;
+      font-weight: 500;
+      font-size: 1.41rem;
+      text-transform: capitalize;
+    }
+  }
 }
 
-@media(max-width:500px){
-  .container .header > div p{
+@media (max-width: 500px) {
+  .viewJob-container {
+    width: 90%;
+    .header {
+      > div {
+        p {
+          font-size: 1.5rem;
+        }
+      }
+      > button {
+        width: 8rem;
+        font-size: 1.2rem;
+      }
+    }
+    .job-discription {
+      padding: 2.2rem 1rem;
+      > div {
+        span {
+          font-size: 0.9rem;
+        }
+      }
+      > button {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 5rem;
+        height: 2rem;
+        border-radius: 10px;
+        font-size: 1.1rem;
+      }
+      ol {
+        li {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+  .container .header > div p {
     font-size: 1.1rem;
   }
   .container .header > button {
@@ -137,13 +172,13 @@ $main__gray : #7C7C7C ;
     padding-bottom: 75px;
     width: 350px;
     transform: translateX(-20px);
-}
-.container .job-discription > button{
+  }
+
+  .container .job-discription > button {
     width: 5.75rem;
     transform: translateY(+20px);
-
-}
-.container .job-discription > div{
-  width: 97%;
-}
+  }
+  .container .job-discription > div {
+    width: 97%;
+  }
 }

@@ -9,14 +9,14 @@
   --tertiary-color: #7e7e7e;
   --bg-color: #f3f8f4;
   --bg-secondary-color: #ffff;
-  width: 85%;
+  width: 95%;
   font-family: "Poppins", sans-serif;
   letter-spacing: 0.05em;
   margin: auto;
 }
 
 .job_container textarea {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 0.8rem;
   resize: none;
 }
@@ -311,7 +311,7 @@ h3 {
   margin-right: 11rem;
 }
 
-.terms_remove svg{
+.terms_remove svg {
   margin-bottom: 1rem;
 }
 
@@ -349,7 +349,7 @@ h3 {
   align-items: center;
   justify-content: center;
 }
-/* 
+
 @media screen and (max-width: 991px) {
   .add_section {
     margin: 2rem 0 0 1.8rem;
@@ -365,6 +365,10 @@ h3 {
     display: block;
   }
 
+  .job_details {
+    padding: 3rem 0.8rem;
+  }
+
   .terms {
     display: flex;
     flex-direction: column;
@@ -376,8 +380,9 @@ h3 {
   }
 
   .state_of_job {
-    display: block;
+    display: flex;
     margin-bottom: 2rem;
+    align-content: baseline;
   }
 
   .active_checkbox[type="checkbox"] {
@@ -390,14 +395,19 @@ h3 {
 
   .add_terms .terms_input {
     margin-bottom: 0.5rem;
+    width: 90%;
   }
 
   .terms_text {
     display: none;
   }
 
+  .terms_remove {
+    margin-right: 0rem;
+  }
+
   .tooltip {
     font-size: 0.7rem;
     visibility: visible;
   }
-} */
+}
