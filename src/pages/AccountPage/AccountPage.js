@@ -392,15 +392,7 @@ const AccountPage = () => {
                   />
                 ) : (
                   <>
-                    <button
-                      className="refresh-container-account"
-                      onClick={handleRefreshForCandidateApplicationsForTeamlead}
-                    >
-                      <div className="refresh-btn-account">
-                        <IoMdRefresh />
-                        <p>Refresh</p>
-                      </div>
-                    </button>
+
 
                     <SelectedCandidates
                       candidatesCount={
@@ -416,6 +408,15 @@ const AccountPage = () => {
                       }
                     />
 
+                    <button
+                      className="refresh-container-account"
+                      onClick={handleRefreshForCandidateApplicationsForTeamlead}
+                    >
+                      <div className="refresh-btn-account">
+                        <IoMdRefresh />
+                        <p>Refresh</p>
+                      </div>
+                    </button>
 
 
                     <div className="jobs-container">

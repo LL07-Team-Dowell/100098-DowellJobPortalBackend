@@ -251,6 +251,9 @@ const TaskScreen = ({
     width: 32%;
     margin-right: auto;
     margin-left: auto;
+
+    
+
     a {
       border-radius: 10px;
       background: #f3f8f4;
@@ -274,6 +277,19 @@ const TaskScreen = ({
       box-shadow: 0px 2.79922px 25px rgba(0, 87, 52, 0.67);
       color: #fff;
     }
+
+
+    @media only screen and (max-width: 1000px) {
+      width: 90%;
+
+      a{
+        font-size: 0.8rem;
+      }
+
+      
+
+    }
+
   `;
 
   const [panding, setPanding] = useState(true);
