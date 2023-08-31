@@ -3,7 +3,6 @@
   max-width: 100%;
   width: 100%;
   margin: 0 auto;
-
 }
 
 .hr__wrapper .selected-candidates-container {
@@ -36,7 +35,7 @@
   margin-bottom: 6%;
 }
 
-.job__wrapper>* {
+.job__wrapper > * {
   width: 90%;
   margin-left: auto;
   margin-right: auto;
@@ -159,7 +158,6 @@
   margin-bottom: 2rem;
 }
 
-
 .refresh-btn-teamlead {
   background-color: #005734;
   width: 100px;
@@ -197,7 +195,17 @@
   display: none;
 }
 
-@media screen and (max-width:990px) {
+@media screen and (max-width: 990px) {
+  .hr__wrapper .job__wrapper .job__Card__Container {
+    margin-top: 10%;
+  }
+
+  .refresh-container {
+    position: absolute;
+    right: 2rem;
+    top: 6.5rem;
+  }
+
   .refresh-container-job {
     position: relative;
     display: flex;
@@ -252,14 +260,12 @@
   .desktop {
     display: none;
   }
-
 }
 
 #refresh-container {
   position: absolute;
   top: 10rem;
 }
-
 
 .refresh-container:hover {
   background-color: #005734;
@@ -283,7 +289,7 @@
 
 .refresh-btn p {
   font-weight: 400;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .hr__Page__Container .tasks-container.hr__Page .job__Card__Container {
@@ -294,8 +300,6 @@
 .hr__Page__Container .tasks-container.hr__Page {
   margin-bottom: 30%;
 }
-
-
 
 @media screen and (max-width: 300px) {
   .search {
@@ -350,10 +354,9 @@
     right: 7.4rem;
     top: 10rem;
   }
-
 }
 
-@media (max-width:876px) {
+@media (max-width: 876px) {
   #refresh-container {
     position: absolute;
     right: 1rem;
@@ -378,7 +381,7 @@
     margin-right: 0;
   }
 
-  .job__wrapper>* {
+  .job__wrapper > * {
     width: calc(96% / 2);
     margin-right: 4%;
   }
@@ -404,12 +407,9 @@
   .sort__Title__Item {
     margin-bottom: 2%;
   }
-
-
 }
 
 @media screen and (min-width: 992px) {
-
   .job__wrapper,
   .selected-candidates-container.hr__Page,
   .sort__Title__Item {
@@ -424,7 +424,7 @@
     margin-right: 0;
   }
 
-  .job__wrapper>* {
+  .job__wrapper > * {
     width: calc(94% / 2) !important;
     margin-right: 4%;
     margin-left: 0;
@@ -432,11 +432,11 @@
     display: inline-block;
   }
 
-  .job__wrapper>*:nth-child(2n + 2) {
+  .job__wrapper > *:nth-child(2n + 2) {
     margin-right: 0;
   }
 
-  .job__wrapper>*:last-child {
+  .job__wrapper > *:last-child {
     margin-bottom: 15%;
   }
 
@@ -470,7 +470,9 @@
     padding-top: 4%;
   }
 
-  .hr__Job__Tile__Container .selected-candidate-screen-container .selected-applicant-details {
+  .hr__Job__Tile__Container
+    .selected-candidate-screen-container
+    .selected-applicant-details {
     width: 100%;
     margin-top: 3%;
     margin-bottom: 6%;
@@ -536,7 +538,10 @@
     gap: 2rem;
   }
 
-  .hr__Page__Container .title__Navigation__Bar__Container.view__Application__Navbar .title__Item .back__Icon__Container {
+  .hr__Page__Container
+    .title__Navigation__Bar__Container.view__Application__Navbar
+    .title__Item
+    .back__Icon__Container {
     width: 4.6rem;
   }
 
@@ -546,7 +551,9 @@
     margin-bottom: 4%;
   }
 
-  .hr__Page__Container .tasks-container.hr__Page .job__Card__Container:nth-child(2n + 2) {
+  .hr__Page__Container
+    .tasks-container.hr__Page
+    .job__Card__Container:nth-child(2n + 2) {
     margin-right: 0;
   }
 
@@ -557,8 +564,6 @@
   .hr__Page__Container .tasks-container.hr__Page {
     margin-bottom: 0;
   }
-
-
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
@@ -615,6 +620,6 @@
 
   .refresh-btn p {
     font-weight: 400;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
   }
 }

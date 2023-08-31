@@ -1,180 +1,188 @@
 .job__Card__Container {
-    --white-color: #fff;
-    --grey-color-1: #7C7C7C;
-    --grey-color-2: #A6A5A5;
-    --grey-color-3: #B8B8B8;
-    --black-color: #000;
-    --green-color: #005734;
-    --box-shadow-color-1: rgba(0, 87, 52, 0.49);
-    --box-shadow-color-2: rgba(3, 137, 83, 0.55);
-    --pale-grey-color: #FCFCFC;
-    --btn-box-shadow: rgba(0, 87, 52, 0.49);
+  --white-color: #fff;
+  --grey-color-1: #7c7c7c;
+  --grey-color-2: #a6a5a5;
+  --grey-color-3: #b8b8b8;
+  --black-color: #000;
+  --green-color: #005734;
+  --box-shadow-color-1: rgba(0, 87, 52, 0.49);
+  --box-shadow-color-2: rgba(3, 137, 83, 0.55);
+  --pale-grey-color: #fcfcfc;
+  --btn-box-shadow: rgba(0, 87, 52, 0.49);
 }
 
 .job__Card__Container {
-    background-color: var(--pale-grey-color);
-    width: max-content;
-    border-radius: 20px;
-    padding: 2% 2% 3%;
-    transition: 0.3s ease-in-out;
-    font-family: "Poppins", sans-serif;
-    position: relative;
+  background-color: var(--pale-grey-color);
+  width: max-content;
+  border-radius: 20px;
+  padding: 2% 2% 3%;
+  transition: 0.3s ease-in-out;
+  font-family: "Poppins", sans-serif;
+  position: relative;
 }
 
 .job__Card__Container:hover,
 .job__Card__Container:focus {
-    box-shadow: 0px 4px 30px var(--box-shadow-color-2);
+  box-shadow: 0px 4px 30px var(--box-shadow-color-2);
 }
 
 .job__Card__Container .job__Card__Title__Info h2 {
-    font-weight: 700;
-    font-size: 1.3rem;
-    letter-spacing: 0.05em;
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.05em;
 }
 
 .job__Card__Container span {
-    margin: 0;
-    font-size: 0.8rem;
-    color: var(--grey-color-2);
-    letter-spacing: 0.02em;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--grey-color-2);
+  letter-spacing: 0.02em;
 }
 
 .job__Card__Container .job__Card__Title__Info .subtitle__Item {
-    position: relative;
-    top: -.3rem;
+  position: relative;
+  top: -0.3rem;
 }
 
 .job__Card__Container .job__Card__Title__Info .subtitle__Item > *:first-child {
-    color: var(--grey-color-1);
-    font-weight: 600;
+  color: var(--grey-color-1);
+  font-weight: 600;
 }
 
 .job__Card__Container .job__Details__Info {
-    margin-top: 2%;
-    padding-left: 3%;
+  margin-top: 2%;
+  padding-left: 3%;
 }
 
 .job__Card__Container .job__Details__Info.task__View {
-    padding-left: 0;
+  padding-left: 0;
 }
 
 .job__Card__Container .job__Details__Info.mt__5 {
-    margin-top: 5%;
+  margin-top: 5%;
 }
 
 .job__Card__Container .job__Details__Info .detail__Item {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 50%;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 50%;
+  flex-wrap: wrap;
 }
 
 .job__Card__Container .job__Details__Info.task__View .detail__Item {
-    width: 100%;
+  width: 100%;
 }
 
 .job__Card__Container .job__Details__Info .detail__Item.full__Width {
-    width: 100%;
+  width: 100%;
 }
 
 .job__Card__Container .job__Details__Info .detail__Item > *:not(:last-child) {
-    margin-right: 4%;
+  margin-right: 4%;
 }
 
 .job__Card__Container .job__Details__Info .detail__Item .dot {
-    border-radius: 50%;
-    width: 5px;
-    height: 5px;
-    background-color: var(--grey-color-1);
+  border-radius: 50%;
+  width: 5px;
+  height: 5px;
+  background-color: var(--grey-color-1);
 }
 
 .job__Card__Container .job__Details__Info .detail__Item .status__Icon {
-    position: relative;
-    left: -.3rem;
-    font-size: 1rem;
+  position: relative;
+  left: -0.3rem;
+  font-size: 1rem;
 }
 
-.job__Card__Container .job__Details__Info .detail__Item .status__Icon.green__Color {
-    color: var(--green-color);
+.job__Card__Container
+  .job__Details__Info
+  .detail__Item
+  .status__Icon.green__Color {
+  color: var(--green-color);
 }
 
 .job__Card__Container .job__Details__Info .detail__Item .job__Highlight__Item {
-    color: var(--grey-color-1);
-    font-weight: 600;
-    white-space: nowrap;
+  color: var(--grey-color-1);
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .job__Card__Container .job__Details__Info .vertical__Seperator {
-    height: 20px;
-    width: 3px;
-    background-color: var(--grey-color-1);
-    margin-left: 1px;
+  height: 20px;
+  width: 3px;
+  background-color: var(--grey-color-1);
+  margin-left: 1px;
 }
 
 .job__Card__Container .job__Details__Info .vertical__Seperator.lg {
-    height: 35px;
+  height: 35px;
 }
 
 .job__Card__Container .cta__Button {
-    outline: none;
-    border: none;
-    background-color: var(--green-color);
-    color: var(--white-color);
-    box-shadow: 0px 1.85594px 12.373px var(--btn-box-shadow);
-    cursor: pointer;
-    position: absolute;
-    bottom: 10%;
-    right: 5%;
-    padding: 2.5% 7%;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    font-family: "Poppins", sans-serif;
+  outline: none;
+  border: none;
+  background-color: var(--green-color);
+  color: var(--white-color);
+  box-shadow: 0px 1.85594px 12.373px var(--btn-box-shadow);
+  cursor: pointer;
+  position: absolute;
+  bottom: 10%;
+  right: 5%;
+  padding: 2.5% 7%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-family: "Poppins", sans-serif;
 }
 
 .job__Card__Container .cta__Button.rel {
-    position: relative;
-    margin-left: auto;
-    margin-top: 3%;
+  position: relative;
+  margin-left: auto;
+  margin-top: 3%;
 }
 
 .job__Card__Container .cta__Button span {
-    color: var(--white-color);
-    font-size: 0.9rem;
-    margin-right: 4%;
+  color: var(--white-color);
+  font-size: 0.9rem;
+  margin-right: 4%;
 }
 
 .job__Card__Container .cta__Button:disabled,
 .job__Card__Container .cta__Button[disabled] {
-    background-color: var(--grey-color-2);
-    color: var(--white-color);
-    cursor: not-allowed;
+  background-color: var(--grey-color-2);
+  color: var(--white-color);
+  cursor: not-allowed;
 }
 
 .job__Card__Container .cta__Button:disabled span,
 .job__Card__Container .cta__Button[disabled] span {
-    color: var(--white-color);
+  color: var(--white-color);
 }
 
+@media (max-width: 767px) {
+  .job__Card__Container {
+    width: 90%;
+    transform: translateX(2px);
+  }
+}
 
 @media screen and (max-width: 991px) {
-    .job__Card__Container {
-        padding: 4%;
-        width: 97%;
-        margin-bottom: 1.3rem;   
-    }
-    .job__Card__Container .job__Card__Title__Info h2 {
-        font-size: 1.1rem;
-    }
-    .job__Card__Container span {
-        font-size: 0.7rem;
-    }
-    .job__Card__Container .job__Details__Info .detail__Item {
-        width: 60%;
-    }
+  .job__Card__Container {
+    padding: 4%;
+    margin-bottom: 1.3rem;
+  }
+  .job__Card__Container .job__Card__Title__Info h2 {
+    font-size: 1.1rem;
+  }
+  .job__Card__Container span {
+    font-size: 0.7rem;
+  }
+  .job__Card__Container .job__Details__Info .detail__Item {
+    width: 60%;
+  }
 }
 
 /* background-color: var(--pale-grey-color);

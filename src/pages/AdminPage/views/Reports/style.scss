@@ -18,7 +18,7 @@
   padding: 20px;
   padding-bottom: 40px;
   width: 85%;
-  margin: 0 auto ;
+  margin: 0 auto;
   h6 {
     font-size: 30px;
   }
@@ -54,7 +54,7 @@
     margin: 1rem 0;
     h6 {
       font-weight: 500;
-      font-family: 'Poppins', sans-serif;
+      font-family: "Poppins", sans-serif;
       text-transform: capitalize;
       font-size: 1.5rem;
       letter-spacing: 0.04em;
@@ -106,7 +106,7 @@
       cursor: pointer;
       margin-left: 100%;
       margin-right: 00%;
-      svg{
+      svg {
         font-size: 1rem;
       }
     }
@@ -115,7 +115,7 @@
       padding: 7px 10px;
       border: 1px solid #ccc;
       border-radius: 5px;
-      font-family: 'Poppins', sans-serif;
+      font-family: "Poppins", sans-serif;
       font-size: 0.75rem;
       margin-bottom: 1rem;
     }
@@ -130,7 +130,7 @@
       border: none;
       height: 36px;
       cursor: pointer;
-      font-family: 'Poppins', sans-serif;
+      font-family: "Poppins", sans-serif;
     }
   }
 }
@@ -146,4 +146,19 @@
   padding: 0.6rem 0.8rem;
   width: -webkit-max-content;
   width: max-content;
+}
+
+@media (max-width: 767px) {
+  .reports__container {
+    .reports__container_header {
+      p {
+        font-size: 17px;
+      }
+    }
+  }
+  .graphs {
+    .graph__Item {
+      width: 280%;
+    }
+  }
 }
