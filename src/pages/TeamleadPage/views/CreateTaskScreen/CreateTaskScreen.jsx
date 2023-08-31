@@ -46,11 +46,11 @@ const CreateTaskScreen = ({
   const [loading, setLoading] = useState(true);
   const { currentUser } = useCurrentUserContext();
   const [isApproved, setIsApproved] = useState(false);
-  const [ updatedTasks, setUpdatedTasks ] = useState([]);
-  const [ tasksBeingApproved, setTasksBeingApproved ] = useState([]);
+  const [updatedTasks, setUpdatedTasks] = useState([]);
+  const [tasksBeingApproved, setTasksBeingApproved] = useState([]);
   const [singleTaskLoading, setSingleTaskLoading] = useState(false);
-  const [ tasksForTheDay, setTasksForTheDay ] = useState(null);
-  const [ singleTaskItem, setSingleTaskItem ] = useState(null);
+  const [tasksForTheDay, setTasksForTheDay] = useState(null);
+  const [singleTaskItem, setSingleTaskItem] = useState(null);
 
   useEffect(() => {
     if (userTasks.length > 0) return setLoading(false);
@@ -121,7 +121,7 @@ const CreateTaskScreen = ({
           (d) => new Date(d.task_created_date).toDateString() === new Date(selectedDate).toDateString()
         )
       );
-  
+
       return
     }
 
@@ -171,15 +171,15 @@ const CreateTaskScreen = ({
         document_id: task._id,
         task: task.task,
       });
-    
+
       const copyOfUpdatedTasks = updatedTasks.slice();
-      copyOfUpdatedTasks.push({...task, approved: true, status: null});
+      copyOfUpdatedTasks.push({ ...task, approved: true, status: null });
       setUpdatedTasks(copyOfUpdatedTasks);
-    
+
       const copyOfTasksBeingApproved = tasksBeingApproved.slice();
       copyOfTasksBeingApproved.filter(t => t._id !== task._id);
       setTasksBeingApproved(copyOfTasksBeingApproved);
-      
+
       console.log(response.data);
       if (response.status === 200) {
         toast.success("Task approved");
@@ -188,10 +188,10 @@ const CreateTaskScreen = ({
       console.log(err);
       toast.error(
         err.response
-        ? err.response.status === 500
-          ? 'Task approval failed'
-          : err.response.data
-        : 'Task approval failed'
+          ? err.response.status === 500
+            ? 'Task approval failed'
+            : err.response.data
+          : 'Task approval failed'
       );
       setTasksBeingApproved(copyOfTasksBeingApproved.filter(t => task._id !== t._id));
 
@@ -238,9 +238,8 @@ const CreateTaskScreen = ({
           <LoadingSpinner />
         ) : (
           <div
-            className={`candidate-task-screen-container ${
-              className ? className : ""
-            }`}
+            className={`candidate-task-screen-container ${className ? className : ""
+              }`}
           >
             {/* {!candidateAfterSelectionScreen && (
               <>
@@ -267,66 +266,66 @@ const CreateTaskScreen = ({
                 {
                   singleTaskLoading ?
                     <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      width: 'max-content',
-                    }}
-                  >
-                    <LoadingSpinner
-                      width={'16px'}
-                      height={'16px'}
-                    />
-                    <p className="task__Title" style={{ margin: 0 }}>Loading tasks...</p>
-                  </div>
-                  :
-                  tasksDate.length === 0 ? (
-                    singleTaskItem ? <>
-                      <CandidateTaskItem 
-                        currentTask={singleTaskItem}
-                        candidatePage={candidateAfterSelectionScreen}
-                        handleEditBtnClick={() => {}}
-                        updateTasks={() =>
-                          setTasksForSelectedProject(
-                            userTasks.filter(
-                              (d) => d.project === selectedProject
-                            )
-                          )
-                        }
-                        handleApproveTask={handleApproveTask}
-                        taskIsBeingApproved={tasksBeingApproved.find(task => task._id === singleTaskItem._id)}
-                        newTaskItem={true}
-                        tasks={tasksForTheDay && Array.isArray(tasksForTheDay) ? tasksForTheDay : []}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        width: 'max-content',
+                      }}
+                    >
+                      <LoadingSpinner
+                        width={'16px'}
+                        height={'16px'}
                       />
-                    </> 
+                      <p className="task__Title" style={{ margin: 0 }}>Loading tasks...</p>
+                    </div>
                     :
-                    <p className="empty__task__Content">
-                      No task found for today
-                    </p>
-                  ) : (
-                    React.Children.toArray(
-                      tasksDate.map((d, i) => {
-                        return (
-                          <CandidateTaskItem
-                            currentTask={updatedTasks.find(task => task._id === d._id) ? updatedTasks.find(task => task._id === d._id) : d}
-                            taskNum={i + 1}
-                            candidatePage={candidateAfterSelectionScreen}
-                            handleEditBtnClick={() => {}}
-                            updateTasks={() =>
-                              setTasksForSelectedProject(
-                                userTasks.filter(
-                                  (d) => d.project === selectedProject
-                                )
+                    tasksDate.length === 0 ? (
+                      singleTaskItem ? <>
+                        <CandidateTaskItem
+                          currentTask={singleTaskItem}
+                          candidatePage={candidateAfterSelectionScreen}
+                          handleEditBtnClick={() => { }}
+                          updateTasks={() =>
+                            setTasksForSelectedProject(
+                              userTasks.filter(
+                                (d) => d.project === selectedProject
                               )
-                            }
-                            handleApproveTask={handleApproveTask}
-                            taskIsBeingApproved={tasksBeingApproved.find(task => task._id === d._id)}
-                          />
-                        );
-                      })
+                            )
+                          }
+                          handleApproveTask={handleApproveTask}
+                          taskIsBeingApproved={tasksBeingApproved.find(task => task._id === singleTaskItem._id)}
+                          newTaskItem={true}
+                          tasks={tasksForTheDay && Array.isArray(tasksForTheDay) ? tasksForTheDay : []}
+                        />
+                      </>
+                        :
+                        <p className="empty__task__Content">
+                          No task found for today
+                        </p>
+                    ) : (
+                      React.Children.toArray(
+                        tasksDate.map((d, i) => {
+                          return (
+                            <CandidateTaskItem
+                              currentTask={updatedTasks.find(task => task._id === d._id) ? updatedTasks.find(task => task._id === d._id) : d}
+                              taskNum={i + 1}
+                              candidatePage={candidateAfterSelectionScreen}
+                              handleEditBtnClick={() => { }}
+                              updateTasks={() =>
+                                setTasksForSelectedProject(
+                                  userTasks.filter(
+                                    (d) => d.project === selectedProject
+                                  )
+                                )
+                              }
+                              handleApproveTask={handleApproveTask}
+                              taskIsBeingApproved={tasksBeingApproved.find(task => task._id === d._id)}
+                            />
+                          );
+                        })
+                      )
                     )
-                  )
                 }
               </div>
             </div>
