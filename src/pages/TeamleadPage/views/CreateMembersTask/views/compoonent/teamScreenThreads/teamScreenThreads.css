@@ -240,3 +240,10 @@ textarea button:hover {
   color: #005734;
   border: 1px solid #005734;
 }
+
+@media screen and (max-width:468px) {
+  .team-screen-threads {
+    padding: 0;
+    width: 90%;
+  }
+}
