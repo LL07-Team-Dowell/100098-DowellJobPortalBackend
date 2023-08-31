@@ -223,71 +223,94 @@ def period_check(start_dt, end_dt, data_list, key):
     items_ids=[]
     
     for l in data_list:
-        try:
-            custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%dT%H:%M:%S.%fZ")
-            if custom_time >= start_date and custom_time <= end_date:
-                items.append(l) 
-                items_ids.append(l["_id"])
-        except Exception:
+        if key == '_id':
+            items.append(l) 
+            items_ids.append(l["_id"])
+        else:
             try:
-                custom_time=datetime.datetime.strptime(l[key],"%m/%d/%Y")
+                custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%d %H:%M:%S.%f")
                 if custom_time >= start_date and custom_time <= end_date:
                     items.append(l) 
                     items_ids.append(l["_id"])
             except Exception:
                 try:
-                    date_string = l[key].replace('(West Africa Standard Time)', '').rstrip()
-                    date_object = datetime.datetime.strptime(date_string, '%a %b %d %Y %H:%M:%S %Z%z').strftime("%m/%d/%Y %H:%M:%S")
-                    custom_time = datetime.datetime.strptime(date_object,"%m/%d/%Y %H:%M:%S")
+                    custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%d %H:%M:%S.%fZ")
                     if custom_time >= start_date and custom_time <= end_date:
-                        items.append(l)
+                        items.append(l) 
                         items_ids.append(l["_id"])
                 except Exception:
                     try:
-                        custom_time=datetime.datetime.strptime(l[key],"%m/%d/%Y %H:%M:%S")
+                        custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%dT%H:%M:%S.%fZ")
                         if custom_time >= start_date and custom_time <= end_date:
                             items.append(l) 
                             items_ids.append(l["_id"])
                     except Exception:
                         try:
-                            custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%d")
+                            custom_time=datetime.datetime.strptime(l[key],"%m/%d/%Y")
                             if custom_time >= start_date and custom_time <= end_date:
                                 items.append(l) 
                                 items_ids.append(l["_id"])
                         except Exception:
                             try:
-                                custom_time=datetime.datetime.strptime(l[key],"%d/%m/%Y")
+                                date_string = l[key].replace('(West Africa Standard Time)', '').rstrip()
+                                date_object = datetime.datetime.strptime(date_string, '%a %b %d %Y %H:%M:%S %Z%z').strftime("%m/%d/%Y %H:%M:%S")
+                                custom_time = datetime.datetime.strptime(date_object,"%m/%d/%Y %H:%M:%S")
                                 if custom_time >= start_date and custom_time <= end_date:
-                                    items.append(l) 
+                                    items.append(l)
                                     items_ids.append(l["_id"])
-                            except Exception as error:
-                                #print("error", error)
-                                pass
+                            except Exception:
+                                try:
+                                    custom_time=datetime.datetime.strptime(l[key],"%m/%d/%Y %H:%M:%S")
+                                    if custom_time >= start_date and custom_time <= end_date:
+                                        items.append(l) 
+                                        items_ids.append(l["_id"])
+                                except Exception:
+                                    try:
+                                        custom_time=datetime.datetime.strptime(l[key],"%Y-%m-%d")
+                                        if custom_time >= start_date and custom_time <= end_date:
+                                            items.append(l) 
+                                            items_ids.append(l["_id"])
+                                    except Exception:
+                                        try:
+                                            custom_time=datetime.datetime.strptime(l[key],"%d/%m/%Y")
+                                            if custom_time >= start_date and custom_time <= end_date:
+                                                items.append(l) 
+                                                items_ids.append(l["_id"])
+                                        except Exception:
+                                            pass
     return items, len(items),items_ids,len(items_ids)
 
 def set_date_format(date):
     try:
-        iso_format =datetime.datetime.strptime(date, '%m/%d/%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        iso_format =datetime.datetime.strptime(date, '%m/%d/%Y %H:%M:%S').strftime('%m/%d/%Y %H:%M:%S')
         return iso_format
     except Exception:
         try:
-            iso_format =datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+            iso_format =datetime.datetime.strptime(date, '%Y-%m-%d %H:%M:%S.%f').strftime('%m/%d/%Y %H:%M:%S')
             return iso_format
         except Exception:
             try:
-                iso_format =datetime.datetime.strptime(date, '%m/%d/%Y').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                iso_format =datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%m/%d/%Y %H:%M:%S')
                 return iso_format
             except Exception:
                 try:
-                    date_string = date.replace('(West Africa Standard Time)', '').rstrip()
-                    iso_format =datetime.datetime.strptime(date_string, '%a %b %d %Y %H:%M:%S %Z%z').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                    iso_format =datetime.datetime.strptime(date, '%m/%d/%Y').strftime('%m/%d/%Y %H:%M:%S')
                     return iso_format
                 except Exception:
                     try:
-                        iso_format =datetime.datetime.strptime(date, '%d/%m/%Y').strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                        date_string = date.replace('(West Africa Standard Time)', '').rstrip()
+                        iso_format =datetime.datetime.strptime(date_string, '%a %b %d %Y %H:%M:%S %Z%z').strftime('%m/%d/%Y %H:%M:%S')
                         return iso_format
                     except Exception:
-                        return ""
+                        try:
+                            iso_format =datetime.datetime.strptime(date, '%d/%m/%Y').strftime('%m/%d/%Y %H:%M:%S')
+                            return iso_format
+                        except Exception:
+                            try:
+                                iso_format =datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%Y %H:%M:%S')
+                                return iso_format
+                            except Exception:
+                                return ""
     
 def targeted_population(database, collection, fields, period,column_name, start_point,end_point):
     url = 'https://100032.pythonanywhere.com/api/targeted_population/'
