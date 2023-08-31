@@ -20,6 +20,89 @@
     cursor: pointer;
 }
 
+
+
+@media screen and (max-width:990px) {
+    .add__New__Task__Container h1.title__Item {
+        margin-bottom: 0;
+    }
+
+    .add__New__Task__Container .add__Task__Btn {
+        padding: 2%;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+}
+
+@media screen and (max-width:769px) {
+
+    .new__task__container h1 {
+        width: 90%;
+        margin: auto;
+    }
+
+    .child-task-create {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding-bottom: 200px;
+        width: 90%;
+        margin: auto;
+    }
+
+    .add__New__Task__Container {
+        width: 85%;
+        padding: 4% 5%;
+    }
+
+    .add__New__Task__Container .addTaskDropDown {
+        padding: 3%;
+    }
+
+    .add__New__Task__Container .selectProject {
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .add__New__Task__Container h1.title__Item {
+        margin-bottom: 0;
+    }
+
+    .add__New__Task__Container .add__Task__Btn {
+        padding: 5%;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+
+    .add__New__Task__Container .task__Timing__Wrapper {
+        display: flex;
+        align-items: normal;
+        /* gap: 1rem; */
+        justify-content: space-between;
+        min-height: 2rem;
+        width: 100%;
+        margin: 0.8rem 0;
+        flex-direction: column;
+    }
+
+}
+
+@media screen and (max-width:500px) {
+    /* .add__New__Task__Container {
+        width: 85%;
+        padding: 4% 5%;
+    }
+
+    .add__New__Task__Container .addTaskDropDown {
+        padding: 4%;
+    }
+
+    .add__New__Task__Container .selectProject {
+        font-size: 0.8rem;
+        font-weight: 500;
+    } */
+}
+
 @media (min-width: 768px) and (max-width: 991.98px) {
     .candidate__After__Selection__Screen .candidate-task-screen-container .project-details-container {
         margin-top: 12%;
@@ -30,6 +113,7 @@
     .candidate__After__Selection__Screen .candidate-task-screen-container .project-details-container {
         margin-top: 0;
     }
+
     .candidate__After__Selection__Screen .candidate-task-screen-container .all__Tasks__Container {
         padding-bottom: 3%;
     }

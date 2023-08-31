@@ -66,7 +66,7 @@ const Teamlead = ({ isGrouplead }) => {
   const [filteredJobs, setFilteredJobs] = useState(jobs);
   const [filteredTasks, setFilteredTasks] = useState(userTasks);
   const [showAddTaskModalForGrouplead, setShowAddTaskModalForGrouplead] = useState(false);
-  const [showAddIssueModalForGrouplead, setShowAddIssueModalForGrouplead ] = useState(false);
+  const [showAddIssueModalForGrouplead, setShowAddIssueModalForGrouplead] = useState(false);
 
   const handleSearch = (value) => {
     const toAnagram = (word) => {
@@ -442,7 +442,7 @@ const Teamlead = ({ isGrouplead }) => {
             title={
               section === "task"
                 ?
-                  "Tasks"
+                "Tasks"
                 : section === "user"
                   ? "Profile"
                   : showCandidate
@@ -581,7 +581,7 @@ const Teamlead = ({ isGrouplead }) => {
                     {
                       isGrouplead ? <>
                         {/* <p style={{ textAlign: 'center' }}>More content coming soon...</p> */}
-                        <AddPage 
+                        <AddPage
                           showAddIssueModal={showAddIssueModalForGrouplead}
                           setShowAddIssueModal={setShowAddIssueModalForGrouplead}
                           showAddTaskModal={showAddTaskModalForGrouplead}
@@ -718,7 +718,7 @@ const Teamlead = ({ isGrouplead }) => {
                   </>
                 ) : (
                   <>
-                    <button
+                    {/* <button
                       className="refresh-container"
                       onClick={handleRefreshForCandidateTask}
                     >
@@ -726,7 +726,7 @@ const Teamlead = ({ isGrouplead }) => {
                         <IoMdRefresh />
                         <p>Refresh</p>
                       </div>
-                    </button>
+                    </button> */}
                     <SelectedCandidates
                       showTasks={true}
                       tasksCount={

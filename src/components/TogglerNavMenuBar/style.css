@@ -50,4 +50,8 @@
         font-size: 0.8rem;
         margin-top: 4%;
     }
+
+    .toggler_Nav_Container {
+        transform: translateX(0px);
+    }
 }

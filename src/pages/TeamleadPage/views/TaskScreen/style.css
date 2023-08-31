@@ -1,4 +1,4 @@
-.candidate-task-screen-container{
+.candidate-task-screen-container {
     --grey-color: #838383;
     --light-grey-color: #E0E0E0;
     --black: #000;
@@ -9,11 +9,11 @@
     font-family: 'Inter', sans-serif;
 }
 
-.candidate-task-screen-container{
+.candidate-task-screen-container {
     padding: 3% 7%;
 }
 
-.candidate-task-screen-container > * {
+.candidate-task-screen-container>* {
     color: var(--grey-color);
 }
 
@@ -25,7 +25,7 @@
     margin: 0;
 }
 
-.candidate-task-screen-container .add-task-btn{
+.candidate-task-screen-container .add-task-btn {
     margin: 10% auto 50%;
     display: flex;
     align-items: center;
@@ -34,7 +34,7 @@
     color: var(--yellow-color);
 }
 
-.candidate-task-screen-container .add-task-btn span{
+.candidate-task-screen-container .add-task-btn span {
     margin-right: 1%;
 }
 
@@ -43,7 +43,7 @@
     flex-direction: column;
 }
 
-.candidate-task-screen-container .all__Tasks__Container .tasks__Wrapper{
+.candidate-task-screen-container .all__Tasks__Container .tasks__Wrapper {
     margin-left: 5rem;
 }
 
@@ -81,40 +81,81 @@
     .candidate-task-screen-container .applicant-title-text {
         margin-bottom: 2%;
     }
+
     .candidate-task-screen-container .selected-applicant-intro {
         margin-top: 2%;
     }
+
     .candidate-task-screen-container .all__Tasks__Container {
         flex-direction: row;
     }
+
     .candidate-task-screen-container .all__Tasks__Container .task__Details__Item {
         margin-left: 4%;
         width: 60%;
-    }   
+    }
+
     .candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {
         margin: 0 0 2.5%;
     }
 }
 
-@media (min-width: 992px){
+@media (min-width: 992px) {
+
     .candidate-task-screen-container .add-task-btn,
     .candidate-task-screen-container .all__Tasks__Container {
         width: 82%;
         margin: 3% auto;
     }
+
     .candidate-task-screen-container .add-task-btn {
         margin-bottom: 11%;
     }
+
     .candidate-task-screen-container .all__Tasks__Container {
         margin-top: 0;
         flex-direction: row;
         padding-bottom: 10%;
     }
+
     .candidate-task-screen-container .all__Tasks__Container .task__Details__Item {
         margin-left: 2%;
         width: 80%;
     }
+
     .candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {
         margin: 0 0 2%;
+    }
+}
+
+
+@media screen and (max-width:768px) {
+    .candidate-task-screen-container {
+        padding-bottom: 15rem !important;
+    }
+
+    .candidate-task-screen-container .project-details-container {
+        margin-top: 3%;
+        width: 90%;
+        margin: auto;
+        padding-bottom: 2rem;
+        padding-top: 2rem;
+    }
+
+    .all__Tasks__Container .task__Title {
+        margin-bottom: 0;
+    }
+
+    .candidate-task-screen-container .all__Tasks__Container .react-calendar {
+        margin: auto;
+    }
+
+    .candidate-task-screen-container .all__Tasks__Container .tasks__Wrapper {
+        width: 90%;
+        margin: 2rem auto;
+    }
+
+    .candidate-task-screen-container .all__Tasks__Container .tasks__Wrapper p {
+        margin-bottom: 0;
     }
 }

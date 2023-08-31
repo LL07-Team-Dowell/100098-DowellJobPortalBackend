@@ -7,7 +7,7 @@ const NewAddTaskScreen = ({ handleAddTaskBtnClick, handleAddIssueBtnClick }) => 
     <>
       <div className="new__task__container">
         <h1 style={{ color: "#005734", fontSize: "1.6rem" }}>Add New Item</h1>
-        <div style={{ position: "relative", display: "flex", gap: "3rem" }}>
+        <div style={{ position: "relative", display: "flex", gap: "3rem" }} className="child-task-create">
           <div style={{ marginTop: 30 }} className="Create_Team" onClick={handleAddIssueBtnClick}>
             <div>
               <div>

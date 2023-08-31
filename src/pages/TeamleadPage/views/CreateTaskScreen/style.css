@@ -14,7 +14,7 @@
   padding-bottom: 3%;
 }
 
-.candidate-task-screen-container > * {
+.candidate-task-screen-container>* {
   color: var(--grey-color);
 }
 
@@ -44,10 +44,7 @@
   flex-direction: column;
 }
 
-.candidate-task-screen-container
-  .all__Tasks__Container
-  .task__Details__Item
-  .month__Title {
+.candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {
   margin-top: 8%;
 }
 
@@ -71,20 +68,21 @@
   .candidate-task-screen-container .applicant-title-text {
     margin-bottom: 2%;
   }
+
   .candidate-task-screen-container .selected-applicant-intro {
     margin-top: 2%;
   }
+
   .candidate-task-screen-container .all__Tasks__Container {
     flex-direction: row;
   }
+
   .candidate-task-screen-container .all__Tasks__Container .task__Details__Item {
     margin-left: 4%;
     width: 60%;
   }
-  .candidate-task-screen-container
-    .all__Tasks__Container
-    .task__Details__Item
-    .month__Title {
+
+  .candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {
     margin: 0 0 2.5%;
   }
 }
@@ -93,27 +91,71 @@
   .task-bar {
     margin: 3% 5%;
   }
+
   .candidate-task-screen-container .add-task-btn,
   .candidate-task-screen-container .all__Tasks__Container {
     width: 82%;
     margin: 3% auto;
   }
+
   .candidate-task-screen-container .add-task-btn {
     margin-bottom: 11%;
   }
+
   .candidate-task-screen-container .all__Tasks__Container {
     margin-top: 0;
     flex-direction: row;
     padding-bottom: 10%;
   }
+
   .candidate-task-screen-container .all__Tasks__Container .task__Details__Item {
     margin-left: 2%;
     width: 80%;
   }
-  .candidate-task-screen-container
-    .all__Tasks__Container
-    .task__Details__Item
-    .month__Title {
+
+  .candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {
     margin: 0 0 2%;
+  }
+}
+
+@media screen and (max-width:886px) {
+  .title__Item {
+    font-size: 1rem;
+  }
+
+  .staff__Jobs__Layout__Content__Container .jobs__Layout__Content {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .staff__Jobs__Layout__Content__Container .candidate-task-screen-container {
+    margin-top: 0%;
+  }
+
+  .candidate-task-screen-container {
+    padding-top: 0;
+  }
+
+  .staff__Jobs__Layout__Content__Container .candidate-task-screen-container {
+    margin-top: 4%;
+    width: 90%;
+    margin: auto;
+  }
+
+  .task__Details__Item {
+    width: 90%;
+    margin-left: 1.1rem;
+  }
+
+  .candidate-task-container .approve__Task__Btn {
+    width: 9rem;
+  }
+
+  .container {
+    justify-content: center;
+  }
+
+  .title__Navigation__Bar__Container .title__Item h1 {
+    font-size: 1.2rem;
   }
 }
