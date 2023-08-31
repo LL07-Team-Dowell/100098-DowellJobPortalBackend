@@ -47,6 +47,24 @@ const TeamThread = ({ title = "Team Issues", color }) => {
     box-shadow: 0px 2.79922px 25px rgba(0, 87, 52, 0.67);
     color: #fff;
   }
+
+  @media screen and (max-width: 992px){
+    width: 69%;
+    margin: auto;
+
+    a{
+      font-size: 0.8rem;
+    }
+  }
+
+  @media screen and (max-width: 492px){
+    width: 89%;
+    margin: auto;
+
+    a{
+      font-size: 0.8rem;
+    }
+  }
 `;
 
   const [panding, setPanding] = useState(true);

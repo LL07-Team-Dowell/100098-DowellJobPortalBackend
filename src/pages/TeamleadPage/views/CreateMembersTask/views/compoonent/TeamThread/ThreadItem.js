@@ -238,6 +238,15 @@ align-items: left !important;
   cursor: pointer;
 }
 
+@media screen and (max-width:526px){
+  .team-screen-threads-card{
+    width: 100%;
+  }
+  .team-screen-threads{
+    padding: 2rem 0;
+  }
+}
+
   
 `
 
