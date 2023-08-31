@@ -426,6 +426,11 @@ const LandingPage = ({ subAdminView }) => {
                     )}
                   </>
                 )}
+                <JobsChanger
+                  groupJobsNumber={1}
+                  changeCardGroupNumber={changeCardGroupNumber}
+                  groups={4}
+                />
               </>
             )
           ) : (
@@ -439,19 +444,23 @@ const LandingPage = ({ subAdminView }) => {
 
 export default LandingPage;
 
-const JobsChanger = ({
-  cardsGroupsLegth,
-  groupJobsNumber,
-  changeCardGroupNumber,
-}) => {
+const JobsChanger = ({ groupJobsNumber, changeCardGroupNumber, groups }) => {
+  const arrayValues = () => {
+    let array = [];
+    for (let i; i < groups; i++) {
+      array.push(i);
+    }
+    return array;
+  };
+  const buttons = arrayValues();
   return (
     <div className="JobsChanger_containter">
-      {cardsGroupsLegth.map((s, index) => (
+      {buttons.map((s) => (
         <button
-          className={index + 1 === groupJobsNumber ? "active" : "desactive"}
-          onClick={() => changeCardGroupNumber(index + 1)}
+          className={s + 1 === groupJobsNumber ? "active" : "desactive"}
+          onClick={() => changeCardGroupNumber(s + 1)}
         >
-          {index + 1}
+          {s + 1}
         </button>
       ))}
     </div>
