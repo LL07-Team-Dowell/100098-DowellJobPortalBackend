@@ -10,21 +10,21 @@ import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner
 import "./index.scss";
 import { getAllTeams } from "../../../../services/createMembersTasks";
 import Navbar from "../../../TeamleadPage/views/CreateMembersTask/component/Navbar";
-import DeleteConfirmationTeam from '../../../../components/DeleteConfirmationTeam/DeleteConfirmationTeam'
+import DeleteConfirmationTeam from "../../../../components/DeleteConfirmationTeam/DeleteConfirmationTeam";
 const AdminTeam = () => {
   const { currentUser } = useCurrentUserContext();
   const { data, setdata } = useValues();
   const [response, setresponse] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [showDeletePopup, setShowDeletePopup] = useState(false)
-  const [teamId, setTeamId] = useState("")
-  const unshowDeletePopup = () =>{
-    setShowDeletePopup(false)
-  }
-  const showDeletePopupFunction = (id) =>{
-    setTeamId(id) 
-    setShowDeletePopup(true)
-  }
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [teamId, setTeamId] = useState("");
+  const unshowDeletePopup = () => {
+    setShowDeletePopup(false);
+  };
+  const showDeletePopupFunction = (id) => {
+    setTeamId(id);
+    setShowDeletePopup(true);
+  };
   const deleteTeamState = (id) => {
     setdata({
       ...data,

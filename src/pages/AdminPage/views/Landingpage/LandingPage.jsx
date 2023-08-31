@@ -56,6 +56,7 @@ const LandingPage = ({ subAdminView }) => {
   const changeCardGroupNumber = (number) => {
     setCardGroupNumber(number);
   };
+
   const ChangeCardGroupNumberAction = (cards, action) => {
     const cardsGroupLength = Number.ceil(cards.length / 4);
     if (action == "add") {
@@ -255,6 +256,15 @@ const LandingPage = ({ subAdminView }) => {
       })
     );
   };
+  function createArrayWithLength(length) {
+    return Array.from({ length }, (_, index) => index);
+  }
+  const activeJobsLength = jobs
+    .filter((job) => job.data_type === currentUser.portfolio_info[0].data_type)
+    .filter((v) => v.is_active === true).length;
+  const inactiveJobsLength = jobs
+    ?.filter((job) => job.data_type === currentUser.portfolio_info[0].data_type)
+    ?.filter((v) => v.is_active === false).length;
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -270,23 +280,46 @@ const LandingPage = ({ subAdminView }) => {
     >
       <div className="isActive-container">
         <p
-          onClick={() => setIsActive("active")}
+          onClick={() => {
+            setIsActive("active");
+            setCardGroupNumber(0);
+          }}
           className={isActive === "active" && "isActive"}
         >
           Active jobs
         </p>
         <p
-          onClick={() => setIsActive("inactive")}
+          onClick={() => {
+            setIsActive("inactive");
+            setCardGroupNumber(0);
+          }}
           className={isActive === "inactive" && "isActive"}
         >
           Inactive jobs
         </p>
         <p
-          onClick={() => setIsActive("links")}
+          onClick={() => {
+            setIsActive("links");
+            setCardGroupNumber(0);
+          }}
           className={isActive === "links" && "isActive"}
         >
           Links
         </p>
+      </div>
+      <div className="JobsChanger_containter">
+        {createArrayWithLength(
+          isActive
+            ? Math.ceil(activeJobsLength / 4)
+            : Math.ceil(inactiveJobsLength / 4)
+        ).map((s, index) => (
+          <button
+            className={s !== cardGroupNumber ? "active" : "desactive"}
+            onClick={() => changeCardGroupNumber(s + 1)}
+          >
+            {s + 1}
+          </button>
+        ))}
       </div>
       <div className="landing-page">
         {isActive === "links" && (
@@ -325,6 +358,7 @@ const LandingPage = ({ subAdminView }) => {
                     job.data_type === currentUser.portfolio_info[0].data_type
                 )
                 .filter((v) => v.is_active === true)
+                .slice(cardGroupNumber, cardGroupNumber + 4)
                 .map((job, index) => (
                   <Card
                     {...job}
@@ -346,6 +380,7 @@ const LandingPage = ({ subAdminView }) => {
                     job.data_type === currentUser.portfolio_info[0].data_type
                 )
                 ?.filter((v) => v.is_active === false)
+                .slice(cardGroupNumber, cardGroupNumber + 4)
                 ?.map((job, index) => (
                   <Card
                     {...job}
@@ -426,11 +461,6 @@ const LandingPage = ({ subAdminView }) => {
                     )}
                   </>
                 )}
-                <JobsChanger
-                  groupJobsNumber={1}
-                  changeCardGroupNumber={changeCardGroupNumber}
-                  groups={4}
-                />
               </>
             )
           ) : (
@@ -443,26 +473,3 @@ const LandingPage = ({ subAdminView }) => {
 };
 
 export default LandingPage;
-
-const JobsChanger = ({ groupJobsNumber, changeCardGroupNumber, groups }) => {
-  const arrayValues = () => {
-    let array = [];
-    for (let i; i < groups; i++) {
-      array.push(i);
-    }
-    return array;
-  };
-  const buttons = arrayValues();
-  return (
-    <div className="JobsChanger_containter">
-      {buttons.map((s) => (
-        <button
-          className={s + 1 === groupJobsNumber ? "active" : "desactive"}
-          onClick={() => changeCardGroupNumber(s + 1)}
-        >
-          {s + 1}
-        </button>
-      ))}
-    </div>
-  );
-};

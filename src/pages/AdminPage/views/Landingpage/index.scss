@@ -445,19 +445,26 @@ $red__color: #fe0000;
   }
 }
 .JobsChanger_containter {
-  background-color: red;
   position: absolute;
-  bottom: 50px;
+  bottom: 15%;
   left: 50%;
-
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  transform: translate(-50%);
+  z-index: 100;
   button {
-    background: #060608;
-    width: 22px;
-    height: 22px;
+    background-color: #060608;
+    border: none;
+    outline: transparent;
+    width: 35px;
+    height: 35px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    cursor: pointer;
     .active {
       background-color: #005734;
     }
