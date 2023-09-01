@@ -1,17 +1,19 @@
-.team-screen-member-links{
-    display: flex;
-    padding-top: 20px;
-    gap: 15px;
-    width: 80%;
-    margin: auto;
-    a{
-        color:rgba(34, 34, 34, 0.66);
-        font-size: 18px;
-        font-family: Poppins;
-        font-style: normal;
-        font-weight: 600;
-        
+.team-screen-member-links {
+  display: flex;
+  padding-top: 20px;
+  gap: 15px;
+  width: 80%;
+  margin: auto;
+  a {
+    color: rgba(34, 34, 34, 0.66);
+    font-size: 18px;
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: 600;
+    @media (max-width: 798px) {
+      font-size: 15px;
     }
+<<<<<<< HEAD
     .link-isActive{
         color: #005734;
         border-bottom: 2px solid #005734;
@@ -28,3 +30,11 @@
         font-size: 1rem;
     }
 }
+=======
+  }
+  .link-isActive {
+    color: #005734;
+    border-bottom: 2px solid #005734;
+  }
+}
+>>>>>>> 8eeb5e74174fe072e4c9fc4970d482cb38b27da8
