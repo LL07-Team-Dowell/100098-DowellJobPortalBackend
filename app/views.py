@@ -60,9 +60,10 @@ from .serializers import (
     TaskModuleSerializer,
     GetCandidateTaskSerializer,
     UpdateTaskByCandidateSerializer,
-    GetAllCandidateTaskSerializer
+    GetAllCandidateTaskSerializer,
+    settingUsersubProjectSerializer,
 )
-
+from .models import UsersubProject
 
 # Create your views here.
 
@@ -2776,7 +2777,6 @@ class SettingUserProfileInfoView(APIView):
                 status=status.HTTP_404_NOT_FOUND)
         setting.data_type ="Archived_Data"
         new_data_type="Archived_Data"
-        new_data_type
         setting.save()
         return Response({
             "success":True,
@@ -2806,8 +2806,68 @@ class SettingUserProjectView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@method_decorator(csrf_exempt,name="dispatch")
+class settingUserSubProject(APIView):
+    serializer_class = settingUsersubProjectSerializer
+
+    def get(self, request,pk=None):
+        if pk is not None:
+            try:
+                model=UsersubProject.objects.get(pk=pk)
+            except UsersubProject.DoesNotExist:
+                return Response({'success':False,"message":"user id does not exist" },status=status.HTTP_404_NOT_FOUND)   
+        else:
+            model=UsersubProject.objects.all()
+
+        serializer = self.serializer_class(model, many=True if pk is None else False)
+
+        return Response({"success":True,"data":serializer.data})
+
+
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        try:
+            my_model = UsersubProject.objects.get(pk=pk)
+        except UsersubProject.DoesNotExist:
+            return Response({
+                'success':False,
+                'message': 'The provided user id not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.serializer_class(instance=my_model, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "success":True,
+                "message":f"User Subproject has been Updated "},
+                status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-    
+
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            setting = UsersubProject.objects.get(pk=pk)
+        except UsersubProject.DoesNotExist:
+            return Response({
+                "success":False,
+                "message":"the given user _id does not match with the database"},
+                status=status.HTTP_404_NOT_FOUND)
+        setting.data_type ="Archived_Data"
+        new_data_type="Archived_Data"
+        setting.save()
+        return Response({
+            "success":True,
+            "message":f"Data_type for the user has been changed to  {new_data_type}"},status=status.HTTP_200_OK)
+
 # api for setting ends here____________________________
 
 
