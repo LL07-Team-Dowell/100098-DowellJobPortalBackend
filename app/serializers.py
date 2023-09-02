@@ -246,6 +246,13 @@ class SettingUserProjectSerializer(serializers.ModelSerializer):
             representation['project_list'] = json.loads(representation['project_list'])
         return representation
 
+class settingUsersubProjectSerializer(serializers.ModelSerializer):
+    # subproject_list=serializers.JSONField()
+
+    class Meta:
+        model=UsersubProject
+        fields='__all__'
+
 
 
 class UpdateSettingUserProjectSerializer(serializers.ModelSerializer):

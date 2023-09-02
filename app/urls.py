@@ -84,6 +84,10 @@ urlpatterns = [
     path('settinguserproject/', SettingUserProjectView.as_view()),
     path('settinguserproject/<int:pk>', SettingUserProjectView.as_view()),
     path('settinguserdatatype/<int:pk>', SettingUserProfileInfoView.as_view()),
+    path('settingusersubproject/', settingUserSubProject.as_view()),
+    path('settingusersubproject/<int:pk>/',settingUserSubProject.as_view()),
+    path('getusersubproject/', settingUserSubProject.as_view()),
+
 
 
     # discord -------------------------------------------------------
