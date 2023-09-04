@@ -12,6 +12,9 @@
     border: none;
     background: linear-gradient(to right, 60% white, 40% green);
   }
+  @media (max-width: 798px) {
+    width: 90%;
+  }
 }
 .board {
   font-family: "Dosis";
@@ -79,6 +82,9 @@
 .teams_data {
   width: 100%;
   padding: 15px;
+  @media (max-width: 798px) {
+    width: 90%;
+  }
   // max-height: calc(100vh - 6.5rem + 40px);
   overflow-y: auto;
   font-family: Poppins;
@@ -223,7 +229,19 @@
   outline: none;
   cursor: pointer;
   width: 120px;
+
   font-family: Poppins;
+  @media (max-width: 798px) {
+    border-radius: 50%;
+    width: 50px !important	;
+    height: 50px;
+    span {
+      display: none;
+    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 .create-new-team-header {
 }
