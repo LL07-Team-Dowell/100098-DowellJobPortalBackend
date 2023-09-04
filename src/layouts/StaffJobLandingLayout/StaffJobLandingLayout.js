@@ -228,26 +228,26 @@ const StaffJobLandingLayout = ({
               runExtraFunctionOnNavItemClick={runExtraFunctionOnNavItemClick}
               superUser={isSuperUser}
               defaultRole={
-                currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.Role
+                currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.Role
               }
               assignedProject={
-                currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
+                currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.project
               }
               userHasOtherRoles={
-                currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles &&
-                Array.isArray(currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles)
+                currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.other_roles &&
+                Array.isArray(currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.other_roles)
               }
               otherPermittedRoles={
-                currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles &&
-                Array.isArray(currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles) ?
-                  currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles
+                currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles &&
+                Array.isArray(currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles) ?
+                  currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles
                 :
                 []
               }
               otherPermittedProjects={
-                currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-                Array.isArray(currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects) ?
-                  currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+                currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects &&
+                Array.isArray(currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects) ?
+                  currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects
                 :
                 []
               }
