@@ -4826,4 +4826,41 @@ class task_module(APIView):
     #         updated_date, "%m/%d/%Y %H:%M:%S"
     #     )
     #     _date = task_updated_date + relativedelta(hours=12)
-    #     return str(_date)
+    #     return str(_date)        
+class Generate_project_Report(APIView):
+    def post(self, request):
+        payload = request.data
+        if payload and "project" in payload:
+            project_name = payload["project"]
+            field = {"project": project_name}
+            update_field = {}
+            response = dowellconnection(*task_management_reports, "fetch", field, update_field)    
+            if response is not None:      
+                team_projects = json.loads(response)
+                task_data = team_projects['data']
+                total_tasks_added = len(task_data)
+                users_tasks_count = {}                
+                for task in task_data:
+                    user = task["task_added_by"]
+                    if user:
+                        if user in users_tasks_count:
+                            users_tasks_count[user] += 1
+                        else:
+                            users_tasks_count[user] = 1              
+                users_that_added = [{"user": user, "tasks_added": count} for user, count in users_tasks_count.items()]
+                response_data = {
+                    "total_tasks_added": total_tasks_added,
+                    "users_that_added": users_that_added
+                }              
+                return Response({
+                    "success":True,
+                    "message":"Report Created",
+                    "data":response_data})          
+            else:
+                return Response({
+                    "success":False,
+                    "message": "fail to fetch data from dowell connection"}, status=400)
+        else:
+            return Response({
+                "success":False,
+                "message": "Invalid payload"}, status=400)
