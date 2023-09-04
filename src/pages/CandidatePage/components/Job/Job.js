@@ -324,7 +324,7 @@ function JobScreen() {
             isLoading ? <LoadingSpinner /> :
 
                 isProductUser && productUserDetails.onlySingleJobCategoryPermitted && (productUserDetails.categoryPassed !== currentCategory) ? <>
-                    <img src={dowellLogo} alt='dowell logo' className='logo__Dowell' onClick={() => window.location.replace(uxlivingLabURL)} />
+                    <img src={dowellLogo} alt='dowell logo' className='logo__Dowell' onClick={() => window.open(uxlivingLabURL, '_blank')} />
                     <TitleNavigationBar
                         title={`Category not found`}
                         showSearchBar={false}
@@ -337,7 +337,7 @@ function JobScreen() {
                     <>
                         {
                             isProductUser && productUserDetails.onlySingleJobCategoryPermitted &&
-                            <img src={dowellLogo} alt='dowell logo' className='logo__Dowell' onClick={() => window.location.replace(uxlivingLabURL)} />
+                            <img src={dowellLogo} alt='dowell logo' className='logo__Dowell' onClick={() => window.open(uxlivingLabURL, '_blank')} />
                         }
                         <TitleNavigationBar
                             title={`${changeToTitleCase(currentCategory)} Jobs`}

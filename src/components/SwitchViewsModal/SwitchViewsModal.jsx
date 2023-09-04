@@ -5,9 +5,10 @@ import { AiOutlineClose } from 'react-icons/ai';
 import { useCurrentUserContext } from '../../contexts/CurrentUserContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { rolesDict } from '../../pages/AdminPage/views/Settings/AdminSettings';
 
 
-const SwitchViewsModal = ({ handleCloseModal }) => {
+const SwitchViewsModal = ({ handleCloseModal, restrictedRoles, otherPermittedRoles, otherProjects, assignedProject }) => {
     const { currentUser, setCurrentUser } = useCurrentUserContext();
     const navigate = useNavigate();
 
@@ -52,10 +53,15 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
                     profile_title: currentUser?.userinfo?.username,
                 }
             ],
-            fakeSuperUserInfo: true,
+        }
+        if (!restrictedRoles) updatedUserDetail.settings_for_profile_info.profile_info[0].fakeSuperUserInfo = true;
+        if (restrictedRoles) {
+            updatedUserDetail.settings_for_profile_info.profile_info[0].project = assignedProject;
+            updatedUserDetail.settings_for_profile_info.profile_info[0].other_roles = otherPermittedRoles;
+            updatedUserDetail.settings_for_profile_info.profile_info[0].additional_projects = otherProjects;
         }
 
-        if (item === 'sub_admin') updatedUserDetail.fakeSubAdminRoleSet = true;
+        if (item === 'sub_admin' && !restrictedRoles) updatedUserDetail.fakeSubAdminRoleSet = true;
 
         if (
             currentUser.settings_for_profile_info &&
@@ -75,6 +81,13 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
             </div>
             <ul>
                 {
+                    restrictedRoles ?
+                    React.Children.toArray(otherPermittedRoles.map(role => {
+                        if (!rolesDict[role]) return <></>
+                        return <li onClick={() => handleItemClick(role)}>
+                            {rolesDict[role]}
+                        </li>
+                    })) :
                     React.Children.toArray(Object.keys(testingRoles).map(key => {
                         if (!testingRolesDict[key]) return <></>
                         return <li onClick={() => handleItemClick(testingRoles[key])}>
@@ -82,9 +95,15 @@ const SwitchViewsModal = ({ handleCloseModal }) => {
                         </li>
                     }))
                 }
-                <li onClick={() => handleItemClick('default')}>
-                    Default
-                </li>
+                {
+                    restrictedRoles ? <li onClick={() => handleItemClick(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.Role)}>
+                        Default
+                    </li>
+                    :
+                    <li onClick={() => handleItemClick('default')}>
+                        Default
+                    </li>
+                }
             </ul>
         </div>
     </>

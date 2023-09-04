@@ -5,7 +5,7 @@ import { FiEdit } from "react-icons/fi";
 import { FaUsersCog } from "react-icons/fa";
 import SwitchViewsModal from "../SwitchViewsModal/SwitchViewsModal";
 
-const NewSideNavigationBar = ({ className, links, runExtraFunctionOnNavItemClick, superUser }) => {
+const NewSideNavigationBar = ({ className, links, runExtraFunctionOnNavItemClick, superUser, userHasOtherRoles, otherPermittedRoles, otherPermittedProjects, assignedProject }) => {
     
     const navigate = useNavigate();
     const [ showViewsModal, setShowViewsModal ] = useState(false);
@@ -43,7 +43,7 @@ const NewSideNavigationBar = ({ className, links, runExtraFunctionOnNavItemClick
                             }))
                         }
                         {
-                            superUser && <li>
+                            (superUser || userHasOtherRoles) && <li>
                                 <Link to={'/'} onClick={handleSuperLinkItemClick}>
                                     <FaUsersCog />
                                     <span>Switch Views</span>
@@ -51,7 +51,14 @@ const NewSideNavigationBar = ({ className, links, runExtraFunctionOnNavItemClick
                             </li>
                         }
                         {
-                            showViewsModal && <SwitchViewsModal handleCloseModal={() => setShowViewsModal(false)} />
+                            showViewsModal && 
+                            <SwitchViewsModal 
+                                restrictedRoles={userHasOtherRoles ? true : false}
+                                otherPermittedRoles={otherPermittedRoles} 
+                                handleCloseModal={() => setShowViewsModal(false)} 
+                                otherProjects={otherPermittedProjects}
+                                assignedProject={assignedProject}
+                            />
                         }
                     </>
                 </ul>

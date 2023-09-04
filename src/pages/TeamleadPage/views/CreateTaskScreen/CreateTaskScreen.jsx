@@ -20,6 +20,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { approveTask } from "../../../../services/teamleadServices";
 import { toast } from "react-toastify";
 import { is } from "date-fns/locale";
+import { getCandidateTasksOfTheDayV2 } from "../../../../services/candidateServices";
 
 const CreateTaskScreen = ({
   candidateAfterSelectionScreen,
@@ -30,6 +31,7 @@ const CreateTaskScreen = ({
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const applicant = searchParams.get("applicant");
+  const projectPassed = searchParams.get("project");
   const { userTasks, setUserTasks } = useCandidateTaskContext();
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -51,24 +53,56 @@ const CreateTaskScreen = ({
   const [singleTaskLoading, setSingleTaskLoading] = useState(false);
   const [tasksForTheDay, setTasksForTheDay] = useState(null);
   const [singleTaskItem, setSingleTaskItem] = useState(null);
+  const [ allTasks, setAllTasks ] = useState([]);
 
   useEffect(() => {
     if (userTasks.length > 0) return setLoading(false);
     getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id)
-      .then((res) => {
+      .then(async (res) => {
+        const tasksToDisplay = res?.data?.response?.data
+        ?.filter(
+          (task) =>
+            task.data_type === currentUser?.portfolio_info[0]?.data_type
+        )
+        const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
+        const newTasks = tasksToDisplay.filter(task => task.user_id);
+
+        const updatedNewTasks = await Promise.all(newTasks.map(async (task) => {
+          const dataToPost = {
+            "company_id": currentUser.portfolio_info[0].org_id,
+            "data_type": currentUser.portfolio_info[0].data_type,
+            "task_created_date": task.task_created_date,
+            "user_id": task.user_id,
+          }
+          const res = (await getCandidateTasksOfTheDayV2(dataToPost)).data;
+
+          return res.task.map(foundSingleTask => {
+            return {
+              ...task,
+              "task": foundSingleTask.task,
+              "project": foundSingleTask.project,
+              "user_id": foundSingleTask.user_id,
+              "task_type": foundSingleTask.task_type,
+              "start_time": foundSingleTask.start_time,
+              "end_time": foundSingleTask.end_time,
+              "task_id": foundSingleTask.task_id,
+              "single_task_created_date": foundSingleTask.task_created_date,
+            }
+          })
+        }))
+
+        const newTasksToDisplay = [...previousTasksFormat, ...updatedNewTasks.flat()];
+        
         setLoading(false);
+        setAllTasks(newTasksToDisplay);
+        const usersWithTasks = [
+          ...new Map(
+            newTasksToDisplay.map((task) => [task._id, task])
+          ).values(),
+        ];
         setUserTasks(
-          res.data.response.data
-            .filter(
-              (currenttask) =>
-                currenttask.data_type ===
-                currentUser?.portfolio_info[0].data_type
-            )
-            .filter(
-              (task) =>
-                task.project ===
-                currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].project
-            )
+          usersWithTasks
+          .sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date))
         );
       })
       .catch((err) => {
@@ -79,10 +113,12 @@ const CreateTaskScreen = ({
   useEffect(() => {
     if (selectOption.length < 1) return;
     if (selectedProject !== "") return;
-    setSelectedProject(selectOption[0]);
+    setSelectedProject(projectPassed ? projectPassed : selectOption[0]);
   }, [selectOption]);
 
   useEffect(() => {
+    setSingleTaskItem(null);
+    setTasksForTheDay(null);
     setTasksForSelectedProject(
       currentApplicantTasks.filter(
         (d) => d.project === selectedProject && d.applicant === applicant
@@ -94,7 +130,20 @@ const CreateTaskScreen = ({
   useEffect(() => {
     const applicantTasks = userTasks.filter((d) => d.applicant === applicant);
     setCurrentApplicantTasks(applicantTasks);
-    setSelectOption(Array.from(new Set(applicantTasks.map((d) => d.project))));
+    setSelectOption(
+      currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
+      Array.isArray(
+        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+      ) ? 
+      [
+        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project,
+        ...currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+      ]
+      :
+      [
+        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project 
+      ]
+    );
   }, [userTasks, applicant]);
 
   useEffect(() => {
@@ -115,11 +164,15 @@ const CreateTaskScreen = ({
     setTasksMonth(selectedDate.toLocaleString("en-us", { month: "long" }));
 
     if (applicant) {
-
+      const foundTasks = currentApplicantTasks.filter(
+        (d) => new Date(d.task_created_date).toDateString() === new Date(selectedDate).toDateString()
+      ).filter(d => d.project === selectedProject).map(d=> {
+        const foundSingleTasks = allTasks.filter(task => task.task_id === d._id && task.single_task_created_date === d.task_created_date);
+        d.tasksAdded = foundSingleTasks;
+        return d;
+      })
       setTasksDate(
-        currentApplicantTasks.filter(
-          (d) => new Date(d.task_created_date).toDateString() === new Date(selectedDate).toDateString()
-        )
+        foundTasks
       );
 
       return
@@ -227,7 +280,7 @@ const CreateTaskScreen = ({
   }
 
   return (
-    <StaffJobLandingLayout teamleadView={true} isGrouplead={isGrouplead}>
+    <StaffJobLandingLayout teamleadView={true} isGrouplead={isGrouplead} hideSearchBar={true}>
       <>
         <TitleNavigationBar
           title={`Tasks for ${applicant}`}
@@ -253,7 +306,7 @@ const CreateTaskScreen = ({
               handleSelectionClick={(selection) =>
                 setSelectedProject(selection)
               }
-              assignedProject={selectOption[0] ? selectOption[0] : ""}
+              assignedProject={selectedProject}
             />
             <div className="all__Tasks__Container">
               <Calendar
@@ -321,6 +374,8 @@ const CreateTaskScreen = ({
                               }
                               handleApproveTask={handleApproveTask}
                               taskIsBeingApproved={tasksBeingApproved.find(task => task._id === d._id)}
+                              newTaskItem={d.user_id ? true : false}
+                              tasks={d.tasksAdded ? d.tasksAdded : []}
                             />
                           );
                         })

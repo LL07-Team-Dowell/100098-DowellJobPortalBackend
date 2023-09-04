@@ -30,6 +30,23 @@
   scrollbar-width: thin;
 }
 
+.add__New__Task__Container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.add__New__Task__Container::-webkit-scrollbar-track {
+  background: #efefef;
+}
+
+.add__New__Task__Container::-webkit-scrollbar-thumb {
+  background: #b8b8b8;
+}
+
+.add__New__Task__Container::-webkit-scrollbar-thumb:hover {
+  background: #005734;
+}
+
 .add__New__Task__Container .title__Item {
   display: flex;
   align-items: center;

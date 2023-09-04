@@ -80,7 +80,16 @@ const UserScreen = ({ isGrouplead }) => {
             </div>
             <div className="user__Intro__Item">
                 <h2>Project</h2>
-                <span>{currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project}</span>
+                <span>
+                    {currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project}
+                    {
+                        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
+                        Array.isArray(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects) ? 
+                        ', ' + currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.join(', ')
+                        :
+                        ''
+                    }
+                </span>
             </div>
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout

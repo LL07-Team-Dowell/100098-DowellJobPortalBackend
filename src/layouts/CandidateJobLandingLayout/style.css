@@ -87,6 +87,23 @@
     scrollbar-width: thin;
 }
 
+.jobs__Layout__Content__Container .jobs__Layout__Content::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.jobs__Layout__Content__Container .jobs__Layout__Content::-webkit-scrollbar-track {
+    background: #efefef;
+}
+
+.jobs__Layout__Content__Container .jobs__Layout__Content::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+}
+
+.jobs__Layout__Content__Container .jobs__Layout__Content::-webkit-scrollbar-thumb:hover {
+    background: #005734;
+}
+
 .chat__With__CS__Icon {
     position: fixed;
     right: 3%;

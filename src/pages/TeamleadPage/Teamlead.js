@@ -33,6 +33,7 @@ import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { IoMdRefresh } from "react-icons/io";
 import ClaimVouchar from "./views/ClaimVouchar/ClaimVouchar";
 import AddPage from "../GroupLeadPage/components/AddPage";
+import { getCandidateTasksOfTheDayV2 } from "../../services/candidateServices";
 
 const Teamlead = ({ isGrouplead }) => {
   const { currentUser } = useCurrentUserContext();
@@ -67,6 +68,8 @@ const Teamlead = ({ isGrouplead }) => {
   const [filteredTasks, setFilteredTasks] = useState(userTasks);
   const [showAddTaskModalForGrouplead, setShowAddTaskModalForGrouplead] = useState(false);
   const [showAddIssueModalForGrouplead, setShowAddIssueModalForGrouplead] = useState(false);
+  const [ currentSelectedProjectForLead, setCurrentSelectedProjectForLead ] = useState('');
+  const [ tasksToDisplayForLead, setTasksToDisplayForLead ] = useState([]);
 
   const handleSearch = (value) => {
     const toAnagram = (word) => {
@@ -142,33 +145,64 @@ const Teamlead = ({ isGrouplead }) => {
       company_id: currentUser?.portfolio_info[0].org_id,
     };
 
+    const initialProjectSelected = currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project;
+    setCurrentSelectedProjectForLead(initialProjectSelected);
+
     setLoading(true);
 
     if (isGrouplead) {
       getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id)
-        .then((res) => {
-          setLoading(false);
-          setCandidatesDataLoaded(true);
+        .then(async (res) => {
 
-          if (userTasks.length > 0) return;
+          if (userTasks.length > 0) {
+            setLoading(false);
+            setCandidatesDataLoaded(true);
+            return;
+          }
 
           const tasksToDisplay = res?.data?.response?.data
             ?.filter(
               (task) =>
                 task.data_type === currentUser?.portfolio_info[0]?.data_type
             )
-            .filter(
-              (task) =>
-                task.project ===
-                currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
-            );
-
+          const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
+          const newTasks = tasksToDisplay.filter(task => task.user_id);
+  
+          const updatedNewTasks = await Promise.all(newTasks.map(async (task) => {
+            const dataToPost = {
+              "company_id": currentUser.portfolio_info[0].org_id,
+              "data_type": currentUser.portfolio_info[0].data_type,
+              "task_created_date": task.task_created_date,
+              "user_id": task.user_id,
+            }
+            const res = (await getCandidateTasksOfTheDayV2(dataToPost)).data;
+  
+            return res.task.map(foundSingleTask => {
+              return {
+                ...task,
+                task: foundSingleTask.task,
+                project: foundSingleTask.project,
+              }
+            })
+          }))
+  
+          const newTasksToDisplay = [...previousTasksFormat, ...updatedNewTasks.flat()];
+          
           const usersWithTasks = [
             ...new Map(
-              tasksToDisplay.map((task) => [task.applicant, task])
+              newTasksToDisplay.map((task) => [task._id, task])
             ).values(),
           ];
-          setUserTasks(usersWithTasks.reverse());
+          setUserTasks(usersWithTasks.sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date)));
+          setTasksToDisplayForLead(
+            usersWithTasks.filter(
+              (task) =>
+                task.project ===
+                initialProjectSelected
+            )
+          )
+          setLoading(false);
+          setCandidatesDataLoaded(true);
         })
         .catch((err) => {
           console.log(err);
@@ -186,7 +220,7 @@ const Teamlead = ({ isGrouplead }) => {
       ),
       getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
     ])
-      .then((res) => {
+      .then(async (res) => {
         console.log("res", res);
         const jobsMatchingCurrentCompany = res[0].data.response.data.filter(
           (job) =>
@@ -233,31 +267,59 @@ const Teamlead = ({ isGrouplead }) => {
           },
         });
 
-        setLoading(false);
         setCandidatesDataLoaded(true);
 
-        if (userTasks.length > 0) return;
+        if (userTasks.length > 0) {
+          setLoading(false);
+          return;
+        }
 
         const tasksToDisplay = res[2].data.response.data
           .filter(
             (task) =>
               task.data_type === currentUser?.portfolio_info[0].data_type
           )
-          .filter(
-            (task) =>
-              task.project ===
-              currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].project
-          );
         console.log("tasksToDisplay", tasksToDisplay);
 
+        const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
+        const newTasks = tasksToDisplay.filter(task => task.user_id);
+
+        const updatedNewTasks = await Promise.all(newTasks.map(async (task) => {
+          const dataToPost = {
+            "company_id": currentUser.portfolio_info[0].org_id,
+            "data_type": currentUser.portfolio_info[0].data_type,
+            "task_created_date": task.task_created_date,
+            "user_id": task.user_id,
+          }
+          const res = (await getCandidateTasksOfTheDayV2(dataToPost)).data;
+
+          return res.task.map(foundSingleTask => {
+            return {
+              ...task,
+              task: foundSingleTask.task,
+              project: foundSingleTask.project,
+            }
+          })
+        }))
+
+        const newTasksToDisplay = [...previousTasksFormat, ...updatedNewTasks.flat()];
+        
         const usersWithTasks = [
           ...new Map(
-            tasksToDisplay.map((task) => [task.applicant, task])
+            newTasksToDisplay.map((task) => [task._id, task])
           ).values(),
         ];
         console.log(usersWithTasks);
         // console.log(res.data.response.data);
-        setUserTasks(usersWithTasks.reverse());
+        setUserTasks(usersWithTasks.sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date)));
+        setTasksToDisplayForLead(
+          usersWithTasks.filter(
+            (task) =>
+              task.project ===
+              initialProjectSelected
+          )
+        )
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
@@ -301,6 +363,16 @@ const Teamlead = ({ isGrouplead }) => {
       return setCurrentActiveItem("Tasks");
   }, [location]);
 
+  useEffect(() => {
+    setTasksToDisplayForLead(
+      userTasks.filter(
+        (task) =>
+          task.project ===
+          currentSelectedProjectForLead
+      )
+    )
+  }, [userTasks, currentSelectedProjectForLead])
+
   const handleEditTaskBtnClick = (currentData) => {
     setEditTaskActive(true);
     setCurrentTaskToEdit(currentData);
@@ -322,7 +394,7 @@ const Teamlead = ({ isGrouplead }) => {
   };
 
   const handleViewTaskBtnClick = (data) => {
-    navigate(`/new-task-screen?applicant=${data.applicant}`);
+    navigate(`/new-task-screen?applicant=${data.applicant}&project=${data.project}`);
     // setCurrentTeamMember(data.user);
     // setShowCandidateTask(true);
   };
@@ -383,9 +455,11 @@ const Teamlead = ({ isGrouplead }) => {
   };
 
   const handleRefreshForCandidateTask = () => {
+    if (loading) return
+
     setLoading(true);
     getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id)
-      .then((res) => {
+      .then(async (res) => {
         console.log("res", res);
 
         const tasksToDisplay = res.data.response.data
@@ -393,21 +467,46 @@ const Teamlead = ({ isGrouplead }) => {
             (task) =>
               task.data_type === currentUser?.portfolio_info[0].data_type
           )
-          .filter(
-            (task) =>
-              task.project ===
-              currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].project
-          );
         console.log("tasksToDisplay", tasksToDisplay);
 
+        const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
+        const newTasks = tasksToDisplay.filter(task => task.user_id);
+
+        const updatedNewTasks = await Promise.all(newTasks.map(async (task) => {
+          const dataToPost = {
+            "company_id": currentUser.portfolio_info[0].org_id,
+            "data_type": currentUser.portfolio_info[0].data_type,
+            "task_created_date": task.task_created_date,
+            "user_id": task.user_id,
+          }
+          const res = (await getCandidateTasksOfTheDayV2(dataToPost)).data;
+
+          return res.task.map(foundSingleTask => {
+            return {
+              ...task,
+              task: foundSingleTask.task,
+              project: foundSingleTask.project,
+            }
+          })
+        }))
+
+        const newTasksToDisplay = [...previousTasksFormat, ...updatedNewTasks.flat()];
+        console.log(newTasksToDisplay);
         const usersWithTasks = [
           ...new Map(
-            tasksToDisplay.map((task) => [task.applicant, task])
+            newTasksToDisplay.map((task) => [task._id, task])
           ).values(),
         ];
         console.log(usersWithTasks);
         // console.log(res.data.response.data);
-        setUserTasks(usersWithTasks.reverse());
+        setUserTasks(usersWithTasks.sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date)));
+        setTasksToDisplayForLead(
+          usersWithTasks.filter(
+            (task) =>
+              task.project ===
+              currentSelectedProjectForLead
+          )
+        )
         setLoading(false);
       })
       .catch((err) => {
@@ -470,7 +569,7 @@ const Teamlead = ({ isGrouplead }) => {
             <button
               className="refresh-container-teamlead desktop"
             >
-              <div className="refresh-btn refresh-btn-teamlead" onClick={handleRefreshForCandidateApplicationsForTeamlead}
+              <div className="refresh-btn refresh-btn-teamlead" onClick={section === "task" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
               >
                 <IoMdRefresh />
                 <p>Refresh</p>
@@ -732,10 +831,35 @@ const Teamlead = ({ isGrouplead }) => {
                       tasksCount={
                         searchValue.length >= 1
                           ? filteredTasks.length
-                          : userTasks.length
+                          : tasksToDisplayForLead.length
                       }
                     />
-
+                    <div className="project__Select__Wrapper">
+                      <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
+                        <option value={''} disabled>Select project</option>
+                        <option
+                          value={
+                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project 
+                          }
+                        >
+                          {
+                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project 
+                          }
+                        </option>
+                        {
+                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
+                          Array.isArray(
+                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+                          ) &&
+                          React.Children.toArray(
+                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(project => {
+                              return <option value={project}>{project}</option>
+                            })
+                          )
+                        }
+                      </select>
+                    </div>
+                    
                     <div className="tasks-container">
                       {section === "task" ? (
                         searchValue.length >= 1 ? (
@@ -766,7 +890,7 @@ const Teamlead = ({ isGrouplead }) => {
                           )
                         ) : (
                           React.Children.toArray(
-                            userTasks.map((dataitem) => {
+                            tasksToDisplayForLead.map((dataitem) => {
                               return (
                                 <JobCard
                                   buttonText={"View"}

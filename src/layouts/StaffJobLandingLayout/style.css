@@ -85,6 +85,23 @@
     scrollbar-width: thin;
 }
 
+.staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar::-webkit-scrollbar-track {
+    background: #efefef;
+}
+
+.staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+}
+
+.staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar::-webkit-scrollbar-thumb:hover {
+    background: #005734;
+}
+
 .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar.full__Height {
     height: 100%;
     display: flex;
@@ -101,6 +118,23 @@
     position: fixed;
     overflow-y: auto;
     scrollbar-width: thin;
+}
+
+.staff__Jobs__Layout__Content__Container .jobs__Layout__Content::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.staff__Jobs__Layout__Content__Container .jobs__Layout__Content::-webkit-scrollbar-track {
+    background: #efefef;
+}
+
+.staff__Jobs__Layout__Content__Container .jobs__Layout__Content::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+}
+
+.staff__Jobs__Layout__Content__Container .jobs__Layout__Content::-webkit-scrollbar-thumb:hover {
+    background: #005734;
 }
 
 /* .staff__Jobs__Layout__Content__Container .jobs__Layout__Content.full__Width {

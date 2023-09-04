@@ -33,7 +33,14 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                 <div className="detail__Item">
                     <span className="dot"></span>
                     <span className="job__Highlight__Item">Pay: </span>
-                    <span>{job.payment ? job.payment : "Not specified"}</span>
+                    <span>
+                        {
+                            job.payment ? 
+                                `${job.payment}${job.paymentInterval ? ' / ' + job.paymentInterval : ""}` 
+                                : 
+                                "Not specified"
+                            }
+                    </span>
                 </div>
             </div>
         }
@@ -120,7 +127,7 @@ const JobCard = ({ job, subtitle, candidateViewJob, disableActionBtn, buttonText
                     <span>{candidateData.task ? candidateData.task.length > 42 ? candidateData.task.slice(0, 43) + "..." : candidateData.task : ""}</span>
                 </div>
                 <div className="detail__Item">
-                    <span className="job__Highlight__Item">Given on: </span>
+                    <span className="job__Highlight__Item">Submitted on: </span>
                     <span>{formatDateAndTime(candidateData.task_created_date)}</span>
                 </div>
             </div>

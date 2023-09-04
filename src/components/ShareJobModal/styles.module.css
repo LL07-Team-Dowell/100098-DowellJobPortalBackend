@@ -126,6 +126,23 @@
     scrollbar-width: thin;
 }
 
+.select__Item::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.select__Item::-webkit-scrollbar-track {
+    background: #efefef;
+}
+
+.select__Item::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+}
+
+.select__Item::-webkit-scrollbar-thumb:hover {
+    background: #005734;
+}
+
 .select__Item option {
     cursor: pointer;
     margin: 0.4rem 0;

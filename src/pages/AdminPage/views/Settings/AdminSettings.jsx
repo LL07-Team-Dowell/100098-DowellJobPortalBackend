@@ -17,7 +17,7 @@ import TableRow from "./TableRow";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import { AiOutlineSearch } from "react-icons/ai";
 
-const rolesDict = { 
+export const rolesDict = { 
   "Dept_Lead": 'Account', 
   "Proj_Lead": 'Teamlead', 
   "Hr": "Hr", 
@@ -54,9 +54,10 @@ const AdminSettings = () => {
   const [Proj_Lead, setProj_Lead] = useState('');
   const { list, setlist } = useJobContext();
   const [ usersToDisplay, setUsersToDisplay ] = useState([]);
+  const [ rowsToDisplayPerPage, setRowsToDisplayPerPage ] = useState(5);
   const [ indexes, setIndexes ] = useState({
     start: 0,
-    end: 10,
+    end: rowsToDisplayPerPage,
   });
   const [ currentRoleFilter, setCurrentRoleFilter ] = useState('all');
   const roleFilterRef = useRef();
@@ -317,8 +318,8 @@ const AdminSettings = () => {
       if (currentIndexes.end >= options1?.length) return
 
       setIndexes({
-        start: currentIndexes.start + 10,
-        end: currentIndexes.end + 10,
+        start: currentIndexes.start + rowsToDisplayPerPage,
+        end: currentIndexes.end + rowsToDisplayPerPage,
       })
     }
 
@@ -327,8 +328,8 @@ const AdminSettings = () => {
       if (currentIndexes.start < 1) return
 
       setIndexes({
-        start: currentIndexes.start - 10,
-        end: currentIndexes.end - 10,
+        start: currentIndexes.start - rowsToDisplayPerPage,
+        end: currentIndexes.end - rowsToDisplayPerPage,
       })
     }
   }
@@ -445,43 +446,70 @@ const AdminSettings = () => {
             </div>
           </div>
 
-          <table>
-            <thead>
-            <tr>
-                  <th>S/N</th>
-                  <th>Member portfolio name</th>
-                  <th>Role Assigned</th>
-                  <th>Candidate Hired</th>
-                  <th>Project Assigned</th>
-                  <th>Update role</th>
-                </tr>
-            </thead>
-            <tbody>
-              {usersToDisplay?.map((option, index) => (
-                  <TableRow
-                    index={index}
-                    key={index}
-                    option={option}
-                    settingUserProfileInfo={settingUserProfileInfo}
-                    rolesDict={rolesDict}
-                    currentUser={currentUser}
-                    Proj_Lead={Proj_Lead}
-                    setAlert={setAlert}
-                    setLoading={setLoading}
-                    projectList={options2}
-                    hiredCandidates={hiredCandidates}
-                    currentFilter={currentRoleFilter}
-                    setTeamleadProject={setProj_Lead}
-                    availableProjects={allProjects}
-                    updateSettingsUserProfileInfo={setSettingUsetProfileInfo}
-                    updatedUsers={usersToDisplay}
-                    rolesNamesDict={rolesNamesDict}
-                    currentSearch={searchValue}
-                  />
-                ))}
+          <div className="show__Row__Filter">
+            <p>
+              <span>Showing</span>
+              <select 
+                className="role__Filter" 
+                value={rowsToDisplayPerPage} 
+                onChange={({ target }) => {
+                  const currentIndexes = {...indexes}
+                  currentIndexes.end = target.value;
+                  setIndexes(currentIndexes);
 
-            </tbody>
-          </table>
+                  setRowsToDisplayPerPage(target.value);
+                  }
+                }
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+              </select>
+              <span>rows</span>
+            </p>
+          </div>
+
+          <div className="table__Wrapper">
+            <table>
+              <thead>
+              <tr>
+                    <th>S/N</th>
+                    <th>Member portfolio name</th>
+                    <th>Role Assigned</th>
+                    <th>Additional Roles Assigned</th>
+                    <th>Candidate Hired</th>
+                    <th>Project Assigned</th>
+                    <th>Additional Projects Assigned</th>
+                    <th>Update role</th>
+                  </tr>
+              </thead>
+              <tbody>
+                {usersToDisplay?.map((option, index) => (
+                    <TableRow
+                      index={index}
+                      key={index}
+                      option={option}
+                      settingUserProfileInfo={settingUserProfileInfo}
+                      rolesDict={rolesDict}
+                      currentUser={currentUser}
+                      Proj_Lead={Proj_Lead}
+                      setAlert={setAlert}
+                      setLoading={setLoading}
+                      projectList={options2}
+                      hiredCandidates={hiredCandidates}
+                      currentFilter={currentRoleFilter}
+                      setTeamleadProject={setProj_Lead}
+                      availableProjects={allProjects}
+                      updateSettingsUserProfileInfo={setSettingUsetProfileInfo}
+                      updatedUsers={usersToDisplay}
+                      rolesNamesDict={rolesNamesDict}
+                      currentSearch={searchValue}
+                    />
+                  ))}
+
+              </tbody>
+            </table>
+          </div>
         </div>
 {/* 
         <div className="Slections">
