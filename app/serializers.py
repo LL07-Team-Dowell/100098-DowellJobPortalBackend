@@ -346,7 +346,8 @@ class GetCandidateTaskSerializer(serializers.Serializer):
 class GetAllCandidateTaskSerializer(serializers.Serializer):
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
     data_type = serializers.CharField(allow_null=False, allow_blank=False)
-    task_created_date = serializers.DateField(allow_null=True)
+    # project=serializers.CharField(allow_null=False,allow_blank=False)
+    # task_created_date = serializers.DateField(allow_null=True)
 
 class UpdateTaskByCandidateSerializer(serializers.Serializer):
     TASK_TYPE = (
