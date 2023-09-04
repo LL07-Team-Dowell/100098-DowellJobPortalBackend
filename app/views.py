@@ -4782,12 +4782,12 @@ class task_module(APIView):
         data = request.data
         company_id = data.get('company_id')
         data_type = data.get('data_type')
-        task_created_date = data.get('task_created_date')
+        project = data.get('project')
 
         field = {
             "company_id": company_id,
             "data_type": data_type,
-            "task_created_date": task_created_date
+            # "task_created_date": task_created_date
         }
         serializer = GetAllCandidateTaskSerializer(data=field)
         if serializer.is_valid():
@@ -4797,7 +4797,8 @@ class task_module(APIView):
             }
             respone = json.loads(dowellconnection(*task_management_reports,"fetch", task_details_field , update_field= None))
             task_field = {
-                "task_created_date": task_created_date
+                "project": project,
+                "company_id": company_id,
             }
             task_resonse = json.loads(dowellconnection(*task_details_module,"fetch", task_field , update_field= None))
             return Response({
