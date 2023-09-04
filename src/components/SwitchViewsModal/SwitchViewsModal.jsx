@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { rolesDict } from '../../pages/AdminPage/views/Settings/AdminSettings';
 
 
-const SwitchViewsModal = ({ handleCloseModal, restrictedRoles, otherPermittedRoles, otherProjects, assignedProject }) => {
+const SwitchViewsModal = ({ handleCloseModal, restrictedRoles, otherPermittedRoles, otherProjects, assignedProject, defaultRole }) => {
     const { currentUser, setCurrentUser } = useCurrentUserContext();
     const navigate = useNavigate();
 
@@ -57,7 +57,10 @@ const SwitchViewsModal = ({ handleCloseModal, restrictedRoles, otherPermittedRol
         if (!restrictedRoles) updatedUserDetail.settings_for_profile_info.profile_info[0].fakeSuperUserInfo = true;
         if (restrictedRoles) {
             updatedUserDetail.settings_for_profile_info.profile_info[0].project = assignedProject;
-            updatedUserDetail.settings_for_profile_info.profile_info[0].other_roles = otherPermittedRoles;
+            updatedUserDetail.settings_for_profile_info.profile_info[0].other_roles = defaultRole === item ?
+                otherPermittedRoles
+                :
+            [defaultRole, ...otherPermittedRoles.filter(role => role !== item)];
             updatedUserDetail.settings_for_profile_info.profile_info[0].additional_projects = otherProjects;
         }
 
@@ -96,8 +99,8 @@ const SwitchViewsModal = ({ handleCloseModal, restrictedRoles, otherPermittedRol
                     }))
                 }
                 {
-                    restrictedRoles ? <li onClick={() => handleItemClick(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.Role)}>
-                        Default
+                    restrictedRoles ? <li onClick={() => handleItemClick(defaultRole)}>
+                        {rolesDict[defaultRole]}
                     </li>
                     :
                     <li onClick={() => handleItemClick('default')}>

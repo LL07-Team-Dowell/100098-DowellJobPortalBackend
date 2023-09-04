@@ -579,6 +579,17 @@ const Teamlead = ({ isGrouplead }) => {
 
 
         )}
+        {
+          section !== "user" && !showCandidate && isGrouplead && <button
+            className="refresh-container-teamlead desktop"
+          >
+            <div className="refresh-btn refresh-btn-teamlead" onClick={section === "task" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
+            >
+              <IoMdRefresh />
+              <p>Refresh</p>
+            </div>
+          </button>
+        }
         {/* <ClaimVouchar /> */}
         <>
           {loading ? (

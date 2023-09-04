@@ -227,6 +227,9 @@ const StaffJobLandingLayout = ({
               }
               runExtraFunctionOnNavItemClick={runExtraFunctionOnNavItemClick}
               superUser={isSuperUser}
+              defaultRole={
+                currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.Role
+              }
               assignedProject={
                 currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
               }
