@@ -4833,7 +4833,11 @@ class Generate_project_Report(APIView):
         payload = request.data
         if payload and "project" in payload:
             project_name = payload["project"]
-            field = {"project": project_name}
+            company_id = payload["company_id"]
+            field = {
+                "company_id": company_id,
+                "project": project_name
+                }
             update_field = {}
             response = dowellconnection(*task_management_reports, "fetch", field, update_field)    
             if response is not None:      
