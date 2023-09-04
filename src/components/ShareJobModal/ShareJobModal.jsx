@@ -165,7 +165,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
           "company_data_type": linkToShareObj?.company_data_type,
         }
 
-        if (jobCategory) productDataToPost.job_category = jobCategory;
+        if (jobCategory && jobCategory !== 'none') productDataToPost.job_category = jobCategory;
 
         response = (await createNewProductLink(productDataToPost)).data
       } else {
@@ -298,7 +298,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
                           className={styles.select__Category}
                         >
                           <option value={''} selected disabled>Select job category</option>
-                          <option value={null}>None</option>
+                          <option value={'none'}>All</option>
                           {
                             React.Children.toArray(validJobCategories.map(category => {
                               return <option value={category}>{category} jobs</option>

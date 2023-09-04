@@ -92,7 +92,7 @@ const LandingPage = ({ subAdminView }) => {
 
         setJobLinks([
           ...new Map(
-            response[1]?.data?.master_link?.reverse()
+            response[1]?.data?.data?.reverse()
             .map((link) => [link.master_link, link])
           ).values()
         ])

@@ -20,6 +20,7 @@ const Add = () => {
   const [showProjectsPop, setShowProjectsPop] = useState(false)
   const [ showShareModal, setShowShareModal ] = useState(false);
   const [ isProductLink, setIsProductLink ] = useState(false);
+  const [showSubProjectsPop, setShowSubProjectsPop] = useState(false)
 
   const jobLinkToShareObj = {
     "product_url": window.location.origin + "/100098-DowellJobPortal/#/",
@@ -82,7 +83,7 @@ const Add = () => {
       showAnotherBtn={true}
       btnIcon={<MdArrowBackIos size="1.5rem" />}
       handleNavIcon={() => navigate(-1)}
-      hideSideBar={showProjectsPop}
+      hideSideBar={showProjectsPop || showSubProjectsPop}
       showShareModalForJob={showShareModal}
       jobLinkToShareObj={jobLinkToShareObj}
       handleCloseShareJobModal={() => setShowShareModal(false)}
@@ -174,11 +175,38 @@ const Add = () => {
               </p>
             </div>
           </div>
+          <div 
+            style={{ marginTop: 30, maxWidth: '18rem' }} 
+            className="Create_Team" 
+            onClick={
+              () => {
+                setShowSubProjectsPop(true);
+              }  
+            }>
+            <div>
+              <div>
+                <AiOutlinePlusCircle
+                  className="icon"
+                  style={{ fontSize: "2rem" }}
+                />
+              </div>
+              <h4>Add/Edit subprojects</h4>
+              <p style={{ fontSize: '0.8rem' }}>
+                Simplify projects in your organization by splitting each one into subprojects
+              </p>
+            </div>
+          </div>
         </div>
       </div>
      { showProjectsPop &&  <AddProjectPopup 
       unshowProjectPopup={unshowProjectPopup}
       />}
+      {
+        showSubProjectsPop && 
+        <AddSubProjectPopup 
+          unshowProjectPopup={() => setShowSubProjectsPop(false)}
+        />
+      }
     </StaffJobLandingLayout>
   )
 }
@@ -278,6 +306,171 @@ const AddProjectPopup = ({projects, unshowProjectPopup}) => {
           onClick={unshowProjectPopup}
         />
         <h2 style={{ marginBottom: 15, color: "#005734", letterSpacing: '0.03em' }}>Select Projects </h2>
+        <div className="added-members-input">
+          {
+            React.Children.toArray(inputProjects?.map((v) => (
+              <div
+                // key={v.id}
+                style={{ cursor: "pointer" }}
+                onClick={() => removeProject(v)}
+              >
+                <p>{v}</p>
+                <FaTimes fontSize={"small"} />
+              </div>
+            )))
+          }
+          <input
+            type="text"
+            placeholder="Search project"
+            value={query}
+            onChange={(e) => setquery(e.target.value)}
+          />
+        </div>
+        <br />
+        <label htmlFor="task_name">Add Projects</label>
+        <div className="members">
+          {
+            displayedProjects?.filter((f) => f?.project_name?.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase().replaceAll(' ', ''))).length > 0 ? (
+              displayedProjects
+                ?.filter((f) => f?.project_name?.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase().replaceAll(' ', '')))
+                ?.map((element) => (
+                  <div
+                    className="single-member"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => AddedProject(element?.project_name)}
+                  >
+                    <p>{element?.project_name}</p>
+                    <BsPlus />
+                  </div>
+                ))
+            ) : (
+              <>
+                <h5 className='not__Found__Header'>No project found matching {query}</h5>
+                <div className='add__Anyway__Item' onClick={() => AddedProject(query)}>
+                  <span>Add {query} anyway?</span>
+                </div>
+              </>
+            )
+          }
+        </div>
+        <button 
+          disabled={btnDisabled} 
+          className="add__Project__Btn" 
+          onClick={postSettinguserproject}
+        >
+          {
+            btnDisabled ? 
+            <LoadingSpinner color={'#fff'} width={'1.1rem'} height={'1.1rem'} />
+            :
+            projectsAdded[0] ?
+            "Update" :
+             "Add Project"
+          }
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const AddSubProjectPopup = ({projects, unshowProjectPopup}) => {
+  const { currentUser } = useCurrentUserContext();
+  const [query, setquery] = useState('')
+  const [inputProjects,setInputProjects] = useState([])
+  const [displayedProjects, setDisplayedProjects] = useState([]);
+  const { 
+    projectsAdded, 
+    setProjectsAdded, 
+  } = useJobContext();
+  const [ btnDisabled, setBtnDisabled ] = useState(false);
+  const [ showSetup, setShowSetup ] = useState(false);
+  
+  useEffect(() => {
+
+    const projectsToDisplay = dowellProjects.filter(project => !projectsAdded[0]?.project_list.includes(project.project_name));
+    setDisplayedProjects(projectsToDisplay);
+    setInputProjects(Array.isArray(projectsAdded[0]?.project_list) ? projectsAdded[0]?.project_list : []);
+  
+  }, [])
+
+  // functions
+  const removeProject = (projectName) => {
+    setInputProjects(inputProjects.filter(f => f !== projectName))
+
+    const projectExistsInBank = dowellProjects.find(p => p.project_name === projectName);
+    if (!projectExistsInBank) return
+
+    const currentDisplayedProjects = displayedProjects.slice();
+    const projectAmongDisplayedProjects = currentDisplayedProjects.find(project => project.project_name === projectName);
+    if (projectAmongDisplayedProjects) return
+
+    setDisplayedProjects([{ _id: crypto.randomUUID(), project_name: projectName }, ...displayedProjects])
+  }
+
+  const AddedProject = (projectName) => {
+    setInputProjects([...inputProjects, projectName])
+    setDisplayedProjects(displayedProjects?.filter(f => f.project_name !== projectName))
+
+    setquery('');
+  }
+
+  const postSettinguserproject = async () => {
+    if(inputProjects.length > 0){
+      setBtnDisabled(true);
+
+      const data = {
+        company_id: currentUser?.portfolio_info[0].org_id,
+        data_type: currentUser.portfolio_info[0].data_type,
+        project_list: inputProjects
+      }
+
+      if (projectsAdded[0]?.project_list) {
+        try {
+          const response = (await adminEditSettingUserProject(projectsAdded[0]?.id, data)).data;
+          // console.log(response);
+          unshowProjectPopup()
+          setProjectsAdded([{...data, id: response?.id}])
+          toast.success('Projects successfully updated')
+        } catch (error) {
+          console.log(error)
+          setBtnDisabled(false);
+          toast.error("Something went wrong while trying to update projects")
+        }
+        return
+      }
+
+
+      adminAddSettingUserProject(data)
+        .then(resp => {
+          console.log(resp)
+          unshowProjectPopup()
+          setProjectsAdded([{...data, id: resp.data.id}])
+          toast.success('Projects successfully added')
+        })
+        .catch(err => {
+          console.log(err)
+          setBtnDisabled(false);
+          toast.error("Something went wrong while trying to add projects")
+        })
+    }else{
+      toast.info('Please add a project')
+      setBtnDisabled(false);
+    }
+  }
+
+  return (
+    <div className="overlay">
+      <div className="Project_Popup">
+        <AiOutlineClose
+          fontSize={"small"}
+          style={{ display: "block", margin: "0 0 0 auto", cursor: "pointer", fontSize: "1rem" }}
+          onClick={unshowProjectPopup}
+        />
+        <h2 style={{ marginBottom: 15, color: "#005734", letterSpacing: '0.03em' }}>
+          {
+            showSetup ? "Add subprojects" : 
+            "Select Project"
+          }
+        </h2>
         <div className="added-members-input">
           {
             React.Children.toArray(inputProjects?.map((v) => (
