@@ -66,20 +66,20 @@ $slider__gray: #d9d9d9;
       font-weight: 500;
     }
     td {
-      font-size: .875rem;
+      font-size: 0.875rem;
       &:last-child {
         border-color: #fff;
       }
       select {
         background: none;
-        outline: none;  
+        outline: none;
         border: none;
         // width: 100%;
         cursor: pointer;
         border: 1px solid #005734;
         padding: 0.35rem 0.7rem;
         border-radius: 5px;
-        font-family: 'Poppins', sans-serif;
+        font-family: "Poppins", sans-serif;
         font-weight: 400;
         font-size: 0.78rem;
       }
@@ -303,15 +303,15 @@ $slider__gray: #d9d9d9;
       display: flex;
       align-items: center;
       gap: 1rem;
-  
+
       .role__Filter {
         background: #fff;
-        outline: none;  
+        outline: none;
         border: none;
         width: 100%;
         cursor: pointer;
         padding: 0.6rem 0;
-        font-family: 'Poppins', sans-serif;
+        font-family: "Poppins", sans-serif;
       }
     }
 
@@ -319,7 +319,7 @@ $slider__gray: #d9d9d9;
       background-color: white;
       border: 1px solid #b8b8b8;
       border-radius: 8px;
-      padding: 0.5rem 0.3rem; 
+      padding: 0.5rem 0.3rem;
       display: flex;
       align-items: center;
       gap: 1rem;
@@ -327,7 +327,7 @@ $slider__gray: #d9d9d9;
       min-width: 15rem;
 
       input {
-        font-family: 'Poppins', sans-serif;
+        font-family: "Poppins", sans-serif;
         outline: none;
         border: none;
         font-size: 0.75rem;
@@ -465,6 +465,23 @@ $success-color: #2ec946;
 
 main {
   padding: 0 40px;
+}
+
+@media (max-width: 767px) {
+  .table_team_roles {
+    margin: 5rem;
+    margin-top: 25px;
+
+    .role__Filter__Item {
+      gap: 1rem;
+    }
+
+    .team__Settings__Header {
+      h2 {
+        font-size: 1.4rem;
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 900px) {

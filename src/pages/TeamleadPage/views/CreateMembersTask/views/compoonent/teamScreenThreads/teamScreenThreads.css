@@ -1,22 +1,37 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: left !important;
+}
+
 .team-screen-threads {
   width: 80%;
   margin: auto;
   padding: 50px;
-  padding-bottom: 20rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
 .team-screen-thread-container {
   width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .team-screen-threads-card {
+  height: 100%;
+  width: 400px;
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
   margin-bottom: 3rem;
-  width: 50%;
-  /* display: inline-block; */
-  gap: 2rem;
 }
 
 .thread-card {
@@ -38,8 +53,7 @@
 }
 
 .team-screen-threads-container p {
-  font-size: 1rem;
-  /* font-weight: 600; */
+  font-size: 0.9rem;
   color: #000;
 }
 
@@ -51,7 +65,7 @@
 }
 
 .progress {
-  width: max-content;
+  /* width: max-content; */
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -239,4 +253,11 @@ textarea button:hover {
   background: white;
   color: #005734;
   border: 1px solid #005734;
+}
+
+@media screen and (max-width:468px) {
+  .team-screen-threads {
+    padding: 0;
+    width: 90%;
+  }
 }

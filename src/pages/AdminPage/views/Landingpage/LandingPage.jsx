@@ -272,7 +272,7 @@ const LandingPage = ({ subAdminView }) => {
                     <>
                     {
                       productLinks.length < 1 ?
-                      <div>
+                      <div style={{ margin: "auto" }}>
                         <p>You have not created any links yet</p>
                       </div>
                       :
@@ -297,7 +297,7 @@ const LandingPage = ({ subAdminView }) => {
                     <>
                     {
                       jobLinks.length < 1 ?
-                      <div>
+                      <div style={{ margin: "auto" }}>
                         <p>You have not created any links yet</p>
                       </div>
                       :

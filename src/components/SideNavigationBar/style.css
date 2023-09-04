@@ -42,6 +42,13 @@
     font-size: 0.8rem;
 }
 
+@media screen and (max-width: 767px) {
+    .new__Side__Navigation__Bar .new__Side__Navigation__Links {
+        justify-content: space-around;
+        gap: 1.6rem;
+    }
+}
+
 @media screen and (max-width: 991px) {
     .new__Side__Navigation__Bar {
         height: 4.6rem;
