@@ -446,38 +446,6 @@ function App() {
             </JobContextProvider>
           }
         />
-        <Route
-          path="/report/organization-report"
-          element={
-            <JobContextProvider>
-              <h1>Organization report</h1>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path="/report/detailed-individual-report"
-          element={
-            <JobContextProvider>
-              <h1>Detailed individual report</h1>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path="/report/task-report"
-          element={
-            <JobContextProvider>
-              <h1>Task report</h1>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path="/report/individual-task-report"
-          element={
-            <JobContextProvider>
-              <h1>Individual task report</h1>
-            </JobContextProvider>
-          }
-        />
 
         <Route
           path="*"
@@ -573,6 +541,34 @@ function App() {
             <JobContextProvider>
               <AdminReports />
             </JobContextProvider>
+          }
+        />
+        <Route
+          path="/report/organization-report"
+          element={<h1>Organization report</h1>}
+        />
+        <Route
+          path="/report/detailed-individual-report"
+          element={
+            <>
+              <h1>Detailed individual report</h1>
+            </>
+          }
+        />
+        <Route
+          path="/report/task-report"
+          element={
+            <>
+              <h1>Task report</h1>
+            </>
+          }
+        />
+        <Route
+          path="/report/individual-task-report"
+          element={
+            <>
+              <h1>Individual task report</h1>
+            </>
           }
         />
         <Route
