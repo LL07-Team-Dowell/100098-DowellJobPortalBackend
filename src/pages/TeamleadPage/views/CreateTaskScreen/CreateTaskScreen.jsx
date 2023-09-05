@@ -21,6 +21,7 @@ import { approveTask } from "../../../../services/teamleadServices";
 import { toast } from "react-toastify";
 import { is } from "date-fns/locale";
 import { getCandidateTasksOfTheDayV2 } from "../../../../services/candidateServices";
+import { extractNewTasksAndAddExtraDetail } from "../../util/extractNewTasks";
 
 const CreateTaskScreen = ({
   candidateAfterSelectionScreen,
@@ -57,42 +58,51 @@ const CreateTaskScreen = ({
 
   useEffect(() => {
     if (userTasks.length > 0) return setLoading(false);
-    getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id)
+    
+    const dataToPost = {
+      "company_id": currentUser.portfolio_info[0].org_id,
+      "data_type": currentUser.portfolio_info[0].data_type,
+      "project": currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project,
+    }
+
+    Promise.all([
+      getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
+      getCandidateTasksV2(dataToPost),
+    ])
       .then(async (res) => {
-        const tasksToDisplay = res?.data?.response?.data
+        const tasksToDisplay = res[0]?.data?.response?.data
         ?.filter(
           (task) =>
             task.data_type === currentUser?.portfolio_info[0]?.data_type
         )
         const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
-        const newTasks = tasksToDisplay.filter(task => task.user_id);
-
-        const updatedNewTasks = await Promise.all(newTasks.map(async (task) => {
-          const dataToPost = {
-            "company_id": currentUser.portfolio_info[0].org_id,
-            "data_type": currentUser.portfolio_info[0].data_type,
-            "task_created_date": task.task_created_date,
-            "user_id": task.user_id,
-          }
-          const res = (await getCandidateTasksOfTheDayV2(dataToPost)).data;
-
-          return res.task.map(foundSingleTask => {
-            return {
-              ...task,
-              "task": foundSingleTask.task,
-              "project": foundSingleTask.project,
-              "user_id": foundSingleTask.user_id,
-              "task_type": foundSingleTask.task_type,
-              "start_time": foundSingleTask.start_time,
-              "end_time": foundSingleTask.end_time,
-              "task_id": foundSingleTask.task_id,
-              "single_task_created_date": foundSingleTask.task_created_date,
-            }
-          })
-        }))
-
-        const newTasksToDisplay = [...previousTasksFormat, ...updatedNewTasks.flat()];
+        const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task, true);
         
+        let updatedTasksForOtherProjects;
+
+        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
+        Array.isArray(
+          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+        )
+
+        if (userHasOtherProjects) {
+          updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async(project) => {
+            const dataToPost2 = {
+              ...dataToPost,
+              project: project
+            }
+  
+            const res = (await getCandidateTasksV2(dataToPost2)).data;
+  
+            const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task, true);
+            return extractedTasks;
+          }))
+        }
+
+        const newTasksToDisplay = userHasOtherProjects ? 
+          [...previousTasksFormat, ...updatedTasksForMainProject, ...updatedTasksForOtherProjects.flat()]
+          :
+        [...previousTasksFormat, ...updatedTasksForMainProject];
         setLoading(false);
         setAllTasks(newTasksToDisplay);
         const usersWithTasks = [
