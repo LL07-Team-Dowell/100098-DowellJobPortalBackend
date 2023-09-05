@@ -75,7 +75,7 @@ import { PageUnderConstruction } from "./pages/UnderConstructionPage/Constructio
 import TaskScreen from "./pages/TeamleadPage/views/TaskScreen/TaskScreen";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => { };
   const {
     currentUser,
     isPublicUser,
@@ -114,7 +114,6 @@ function App() {
   useTitle("Dowell Job Portal");
 
   if (loading) return <LoadingPage />;
-
   console.log("CURRENT USER", currentUser);
 
   // NO LOGGED IN PUBLIC USER VIEW

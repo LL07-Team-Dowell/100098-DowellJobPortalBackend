@@ -1,15 +1,16 @@
-.candidate-task-container{
+.candidate-task-container {
     --black-color: #000;
     --grey-color: #838383;
     --light-grey: #E0E0E0;
     font-family: 'Inter', sans-serif;
 }
 
-.candidate-task-container{
+.candidate-task-container {
     color: var(--grey-color);
 }
 
-.candidate-task-status-container, .candidate-task-date-container{
+.candidate-task-status-container,
+.candidate-task-date-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -19,12 +20,12 @@
     width: 78%;
 }
 
-.candidate-task-status-container .candidate-task-details .edit-icon{
+.candidate-task-status-container .candidate-task-details .edit-icon {
     color: var(--grey-color);
     cursor: pointer;
 }
 
-.candidate-task-status-container .candidate-task-details span{
+.candidate-task-status-container .candidate-task-details span {
     color: var(--black-color);
     font-size: 0.875rem;
     line-height: 16.94px;
@@ -32,7 +33,7 @@
     display: block;
 }
 
-.candidate-task-status-container .candidate-task-details span.task__Description{
+.candidate-task-status-container .candidate-task-details span.task__Description {
     margin: 12% 0 4%;
     white-space: pre-line;
 }
@@ -42,21 +43,21 @@
     font-weight: 600;
 }
 
-.candidate-task-container{
+.candidate-task-container {
     margin: 8% auto 11%;
     position: relative;
 }
 
-.candidate-task-date-container{
+.candidate-task-date-container {
     font-size: 0.75rem;
     line-height: 14.52px;
 }
 
-.candidate-task-date-container span{
+.candidate-task-date-container span {
     margin-left: 0;
 }
 
-.candidate-task-container .candidate-task-status-container .task__Status__Container{
+.candidate-task-container .candidate-task-status-container .task__Status__Container {
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -65,7 +66,7 @@
     margin-left: 5%;
 }
 
-.candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn{
+.candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn {
     padding: 15% 10%;
     width: 100%;
     white-space: nowrap;
@@ -74,7 +75,7 @@
     transition: 0.35s ease-in-out;
 }
 
-.candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn.task__Active{
+.candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn.task__Active {
     background-color: #57A639;
     color: #fff;
 }
@@ -97,34 +98,52 @@
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
 }
 
+.approve__Task__Btn {
+    position: relative;
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    /* border: 1px solid #005734; */
+    background-color: #fff;
+    color: #005734;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
 .candidate-task-container .approve__Task__Btn svg {
     font-size: 1rem;
 }
 
 
 @media (min-width: 768px) and (max-width: 991.98px) {
-    .candidate-task-status-container .candidate-task-details span.task__Description{
-        margin: 14% 0 4%;   
+    .candidate-task-status-container .candidate-task-details span.task__Description {
+        margin: 14% 0 4%;
     }
-    .candidate-task-container .candidate-task-status-container .task__Status__Container{
+
+    .candidate-task-container .candidate-task-status-container .task__Status__Container {
         flex-direction: column;
         justify-content: flex-end;
     }
-    .candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn{
+
+    .candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn {
         padding: 8% 10%;
     }
+
     .candidate-task-container .candidate-task-details {
         max-width: 60%;
     }
+
     .candidate-task-container hr {
         margin: 4% 0;
     }
+
     .candidate-task-container {
         margin: 0;
     }
 }
-@media (min-width: 992px){
-    .candidate-task-container{
+
+@media (min-width: 992px) {
+    .candidate-task-container {
         margin: 0;
     }
 
@@ -135,22 +154,22 @@
     .candidate-task-container .candidate-task-details {
         max-width: 50%;
     }
-    
-    .candidate-task-status-container .candidate-task-details span.task__Description{
+
+    .candidate-task-status-container .candidate-task-details span.task__Description {
         margin-top: 7%;
     }
 
-    .candidate-task-container .candidate-task-status-container .task__Status__Container{
+    .candidate-task-container .candidate-task-status-container .task__Status__Container {
         flex-direction: row;
         width: 35%;
     }
-    
-    .candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn{
+
+    .candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn {
         padding: 6% 8%;
         width: max-content;
     }
 
-    .candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn:last-child{
+    .candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn:last-child {
         margin-left: 7%;
     }
 }

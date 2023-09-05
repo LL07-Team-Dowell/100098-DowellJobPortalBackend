@@ -17,6 +17,7 @@ import styled from "styled-components";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import Navbar from "../CreateMembersTask/component/Navbar";
 import { getSettingUserProject } from "../../../../services/hrServices";
+import Button from "../../../AdminPage/components/Button/Button";
 
 const TaskScreen = ({
   handleAddTaskBtnClick,
@@ -39,14 +40,25 @@ const TaskScreen = ({
   const [project, setproject] = useState(null);
   const [tasksofuser, settasksofuser] = useState([]);
   const [taskdetail2, settaskdetail2] = useState([]);
-  const [value, onChange] = useState(new Date());
+  const [value, setValue] = useState(new Date());
+  const [value1, setValue1] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [singleTaskLoading, setSingleTaskLoading] = useState(false);
-  const [ tasksForTheDay, setTasksForTheDay ] = useState(null);
-  const [ allProjects, setAllProjects ] = useState([]);
-  const [ params, setParams ] = useSearchParams();
+  const [tasksForTheDay, setTasksForTheDay] = useState(null);
+  const [allProjects, setAllProjects] = useState([]);
+  const [params, setParams] = useSearchParams();
 
-  console.log(assignedProject);
+
+  const currentDate = new Date();
+  console.log(currentDate);
+  const dateToCompare = new Date(value1);
+  console.log(value);
+  const isToday = (
+    dateToCompare.getDate() === currentDate.getDate() &&
+    dateToCompare.getMonth() === currentDate.getMonth() &&
+    dateToCompare.getFullYear() === currentDate.getFullYear()
+  );
+  console.log({ isToday });
   useEffect(() => {
     setLoading(true);
     setproject(assignedProject[0]);
@@ -55,15 +67,15 @@ const TaskScreen = ({
       getCandidateTask(currentUser.portfolio_info[0].org_id),
       loadProjects && getSettingUserProject(),
     ]).then(res => {
-        setUserTasks(
-          res[0]?.data?.response?.data?.filter(
-            (v) => v.applicant === currentUser.userinfo.username
-          )
-        );
-        setLoading(false);
+      setUserTasks(
+        res[0]?.data?.response?.data?.filter(
+          (v) => v.applicant === currentUser.userinfo.username
+        )
+      );
+      setLoading(false);
 
-        if (loadProjects) {
-          const list = res[1]?.data
+      if (loadProjects) {
+        const list = res[1]?.data
           ?.filter(
             (project) =>
               project?.data_type === currentUser.portfolio_info[0].data_type &&
@@ -74,14 +86,14 @@ const TaskScreen = ({
               )
           ).reverse();
 
-          setAllProjects(
-            list.length < 1  ? []
+        setAllProjects(
+          list.length < 1 ? []
             :
             list[0]?.project_list
-          )
+        )
 
-          list.length > 0 && setproject(list[0]?.project_list[0]);
-        }
+        list.length > 0 && setproject(list[0]?.project_list[0]);
+      }
     }).catch(err => {
       setLoading(false);
     })
@@ -89,7 +101,6 @@ const TaskScreen = ({
   }, []);
 
   useEffect(() => {
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     settaskdetail2(
       userTasks.filter((d) => {
         const dateTime =
@@ -119,7 +130,7 @@ const TaskScreen = ({
 
     const projectsMatching = userTasks.filter(
       (task) => task?.project === project ||
-      task?.user_id === currentUser.userinfo.userID
+        task?.user_id === currentUser.userinfo.userID
     );
     const datesUserHasTaskForProject = [
       ...new Set(
@@ -203,7 +214,7 @@ const TaskScreen = ({
 
   const handleDateChange = async (dateSelected) => {
     setDaysInMonth(getDaysInMonth(dateSelected));
-
+    setValue1(dateSelected)
     // setTasksToShow(userTasks.filter(task => new Date(task.created).toDateString() === dateSelected.toDateString()));
     settaskdetail2(
       userTasks.filter(
@@ -305,9 +316,9 @@ const TaskScreen = ({
     <>
       {
         showBackBtn && <>
-          <Navbar 
-            title={'Your tasks'} 
-            removeButton={true} 
+          <Navbar
+            title={'Your tasks'}
+            removeButton={true}
           />
         </>
       }
@@ -315,10 +326,10 @@ const TaskScreen = ({
         <NavLink
           className={`${panding ? "link-isActive" : "link-notactive"}`}
           to={
-            isGrouplead ? 
-            "/user-tasks?tab=pending"
-            :
-            "/task?tab=pending"
+            isGrouplead ?
+              "/user-tasks?tab=pending"
+              :
+              "/task?tab=pending"
           }
           onClick={clickToPandingApproval}
         >
@@ -327,10 +338,10 @@ const TaskScreen = ({
         <NavLink
           className={`${panding ? "link-notactive" : "link-isActive"}`}
           to={
-            isGrouplead ? 
-            "/user-tasks?tab=approval"
-            :
-            "/task?tab=approval"
+            isGrouplead ?
+              "/user-tasks?tab=approval"
+              :
+              "/task?tab=approval"
           }
           onClick={clickToApproved}
         >
@@ -352,19 +363,19 @@ const TaskScreen = ({
 
         <AssignedProjectDetails
           assignedProject={
-            project ? project 
-            :
-            loadProjects ?
-            allProjects[0]
-            : 
-            assignedProject[0]
+            project ? project
+              :
+              loadProjects ?
+                allProjects[0]
+                :
+                assignedProject[0]
           }
           showTask={true}
           availableProjects={
             loadProjects ?
-            allProjects
-            :
-            assignedProject
+              allProjects
+              :
+              assignedProject
           }
           removeDropDownIcon={false}
           handleSelectionClick={(e) => setproject(e)}
@@ -390,64 +401,74 @@ const TaskScreen = ({
                         gap: '0.5rem',
                       }}
                     >
-                      <LoadingSpinner 
+                      <LoadingSpinner
                         width={'16px'}
                         height={'16px'}
                       />
                       <p className="task__Title" style={{ margin: 0 }}>Loading tasks...</p>
                     </div>
-                    
+
                   </> :
-                  <>
-                    {taskdetail2.length > 0 && (
-                      <>
-                        <p className="task__Title">Tasks Added</p>
-                      </>
-                    )}
-                    <ul>
-                      {
-                        taskdetail2.length > 0 ?
-                          tasksForTheDay && Array.isArray(tasksForTheDay) ? 
-                            tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length < 1 ? <>
-                              <p className="task__Title">{!project ? "No project selected" : "No tasks found for today"}</p>
-                            </> :
-                            <>
+                    <>
+                      {taskdetail2.length > 0 && (
+                        <>
+                          <p className="task__Title">Tasks Added</p>
+                        </>
+                      )}
+                      <ul>
+                        {
+                          taskdetail2.length > 0 ?
+                            tasksForTheDay && Array.isArray(tasksForTheDay) ?
+                              tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length < 1 ? <>
+                                <p className="task__Title">{!project ? "No project selected" : "No tasks found for today"}</p>
+                              </> :
+                                <>
+                                  {
+                                    React.Children.toArray(tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).map(task => {
+                                      return <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }}>
+                                        {new Date(task.task_created_date).toLocaleString(
+                                          "default",
+                                          { month: "long" }
+                                        )}
+                                        <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(task.task_created_date).getDate()}</p>
+
+                                        <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
+                                          {task.task} <span style={{ color: "#B8B8B8" }}> from {task.start_time} to {task.end_time}</span>
+                                        </p>
+                                      </div>
+                                    }))
+                                  }
+                                </>
+                              :
+
+                              taskdetail2.map((d, i) => (
+                                <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }} key={i}>
+                                  {new Date(d.task_created_date).toLocaleString(
+                                    "default",
+                                    { month: "long" }
+                                  )}
+                                  <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(d.task_created_date).getDate()}</p>
+
+                                  <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
+                                    {d.task}
+                                  </p>
+                                </div>
+                              ))
+                            :
+                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                               {
-                                React.Children.toArray(tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).map(task => {
-                                  return <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }}>
-                                    {new Date(task.task_created_date).toLocaleString(
-                                      "default",
-                                      { month: "long" }
-                                    )}
-                                    <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(task.task_created_date).getDate()}</p>
-        
-                                    <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
-                                      {task.task} <span style={{ color: "#B8B8B8" }}> from {task.start_time} to {task.end_time}</span>
-                                    </p>
-                                  </div>
-                                }))
+                                isToday ? "" : <Button
+                                  text={"Request UpdateTask"}
+                                  className={'approve__Task__Btn'}
+                                />
                               }
-                            </>
-                          :
 
-                          taskdetail2.map((d, i) => (
-                          <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }} key={i}>
-                            {new Date(d.task_created_date).toLocaleString(
-                              "default",
-                              { month: "long" }
-                            )}
-                            <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(d.task_created_date).getDate()}</p>
+                              {console.log({ task: taskdetail2 })}
+                            </div>
 
-                            <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
-                              {d.task}
-                            </p>
-                          </div>
-                        ))
-                        : 
-                        "No Tasks Found For Today"
-                      }
-                    </ul> 
-                  </>
+                        }
+                      </ul>
+                    </>
                 }
               </div>
             </>
