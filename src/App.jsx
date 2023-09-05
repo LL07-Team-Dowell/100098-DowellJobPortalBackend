@@ -75,7 +75,7 @@ import { PageUnderConstruction } from "./pages/UnderConstructionPage/Constructio
 import TaskScreen from "./pages/TeamleadPage/views/TaskScreen/TaskScreen";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => {};
   const {
     currentUser,
     isPublicUser,
@@ -443,6 +443,38 @@ function App() {
           element={
             <JobContextProvider>
               <AdminReports subAdminView={true} />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/report"
+          element={
+            <JobContextProvider>
+              <h1>Organization report</h1>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/report"
+          element={
+            <JobContextProvider>
+              <h1>Detailed individual report</h1>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/report"
+          element={
+            <JobContextProvider>
+              <h1>Task report</h1>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/report"
+          element={
+            <JobContextProvider>
+              <h1>Individual task report</h1>
             </JobContextProvider>
           }
         />
