@@ -59,6 +59,24 @@
     display: block;
     max-height: 30rem;
     overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.dropdown-selections.active_::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.dropdown-selections.active_::-webkit-scrollbar-track {
+    background: #efefef;
+}
+
+.dropdown-selections.active_::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+}
+
+.dropdown-selections.active_::-webkit-scrollbar-thumb:hover {
+    background: #005734;
 }
 
 .dropdown-selections .dropdown-selection-item{
