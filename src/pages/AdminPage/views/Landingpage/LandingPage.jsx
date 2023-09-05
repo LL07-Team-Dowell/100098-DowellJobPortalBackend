@@ -169,9 +169,16 @@ const LandingPage = ({ subAdminView }) => {
           ]);
 
           setSubProjectsAdded(
-            response[4]?.data?.data?.filter(item => item.company_id === currentUser.portfolio_info[0].org_id)
-            .filter(item => item.data_type === currentUser.portfolio_info[0].data_type)
-            .reverse()
+            response[4]?.data?.data
+              ?.filter(
+                (item) =>
+                  item.company_id === currentUser.portfolio_info[0].org_id
+              )
+              .filter(
+                (item) =>
+                  item.data_type === currentUser.portfolio_info[0].data_type
+              )
+              .reverse()
           );
           setSubProjectsLoading(false);
           setSubProjectsLoaded(true);
@@ -329,7 +336,10 @@ const LandingPage = ({ subAdminView }) => {
         ).map((s, index) => (
           <button
             className={s !== cardGroupNumber ? "active" : "desactive"}
-            onClick={() => changeCardGroupNumber(s + 1)}
+            onClick={() => changeCardGroupNumber(s)}
+            key={`${index}_button${
+              isActive === "active" ? "_active" : "_desactive"
+            }`}
           >
             {s + 1}
           </button>
