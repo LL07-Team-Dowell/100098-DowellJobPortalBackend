@@ -447,7 +447,7 @@ function App() {
           }
         />
         <Route
-          path="/report"
+          path="/report/organization-report"
           element={
             <JobContextProvider>
               <h1>Organization report</h1>
@@ -455,7 +455,7 @@ function App() {
           }
         />
         <Route
-          path="/report"
+          path="/report/detailed-individual-report"
           element={
             <JobContextProvider>
               <h1>Detailed individual report</h1>
@@ -463,7 +463,7 @@ function App() {
           }
         />
         <Route
-          path="/report"
+          path="/report/task-report"
           element={
             <JobContextProvider>
               <h1>Task report</h1>
@@ -471,21 +471,14 @@ function App() {
           }
         />
         <Route
-          path="/report"
+          path="/report/individual-task-report"
           element={
             <JobContextProvider>
               <h1>Individual task report</h1>
             </JobContextProvider>
           }
         />
-        {/* <Route
-          path="/settings"
-          element={
-            <JobContextProvider>
-              <AdminSettings />
-            </JobContextProvider>
-          }
-        /> */}
+
         <Route
           path="*"
           element={
