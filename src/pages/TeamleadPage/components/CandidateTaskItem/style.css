@@ -97,6 +97,10 @@
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
 }
 
+.candidate-task-container .approve__Task__Btn:hover {
+    filter: brightness(0.8);
+}
+
 .candidate-task-container .approve__Task__Btn svg {
     font-size: 1rem;
 }

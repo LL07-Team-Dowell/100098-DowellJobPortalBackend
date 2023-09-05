@@ -248,12 +248,12 @@ const CreateTaskScreen = ({
         toast.success("Task approved");
       }
     } catch (err) {
-      console.log(err);
+      console.log(err.response);
       toast.error(
         err.response
           ? err.response.status === 500
             ? 'Task approval failed'
-            : err.response.data
+            : err.response.data.message
           : 'Task approval failed'
       );
       setTasksBeingApproved(copyOfTasksBeingApproved.filter(t => task._id !== t._id));
@@ -345,22 +345,32 @@ const CreateTaskScreen = ({
                     :
                     tasksDate.length === 0 ? (
                       singleTaskItem ? <>
-                        <CandidateTaskItem
-                          currentTask={singleTaskItem}
-                          candidatePage={candidateAfterSelectionScreen}
-                          handleEditBtnClick={() => { }}
-                          updateTasks={() =>
-                            setTasksForSelectedProject(
-                              userTasks.filter(
-                                (d) => d.project === selectedProject
+                        {
+                          !singleTaskItem || !(tasksForTheDay && Array.isArray(tasksForTheDay)) ?
+                          <>
+                            <p className="empty__task__Content">
+                              No task found for today
+                            </p>
+                          </>
+                          :
+                          <CandidateTaskItem
+                            currentTask={updatedTasks.find(task => task._id === singleTaskItem._id) ? updatedTasks.find(task => task._id === singleTaskItem._id) : singleTaskItem}
+                            candidatePage={candidateAfterSelectionScreen}
+                            handleEditBtnClick={() => { }}
+                            updateTasks={() =>
+                              setTasksForSelectedProject(
+                                userTasks.filter(
+                                  (d) => d.project === selectedProject
+                                )
                               )
-                            )
-                          }
-                          handleApproveTask={handleApproveTask}
-                          taskIsBeingApproved={tasksBeingApproved.find(task => task._id === singleTaskItem._id)}
-                          newTaskItem={true}
-                          tasks={tasksForTheDay && Array.isArray(tasksForTheDay) ? tasksForTheDay : []}
-                        />
+                            }
+                            handleApproveTask={handleApproveTask}
+                            taskIsBeingApproved={tasksBeingApproved.find(task => task._id === singleTaskItem._id)}
+                            newTaskItem={true}
+                            tasks={tasksForTheDay && Array.isArray(tasksForTheDay) ? tasksForTheDay : []}
+                          />
+                        }
+                        
                       </>
                         :
                         <p className="empty__task__Content">

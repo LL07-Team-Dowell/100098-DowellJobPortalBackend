@@ -17,6 +17,8 @@ import styled from "styled-components";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import Navbar from "../CreateMembersTask/component/Navbar";
 import { getSettingUserProject } from "../../../../services/hrServices";
+import { getCandidateTasksV2 } from "../../../../services/teamleadServices";
+import { extractNewTasksAndAddExtraDetail } from "../../util/extractNewTasks";
 
 const TaskScreen = ({
   handleAddTaskBtnClick,
@@ -45,6 +47,7 @@ const TaskScreen = ({
   const [ tasksForTheDay, setTasksForTheDay ] = useState(null);
   const [ allProjects, setAllProjects ] = useState([]);
   const [ params, setParams ] = useSearchParams();
+  const [ tasksForProjectLoading, setTasksForProjectLoading ] = useState(false);
 
   console.log(assignedProject);
   useEffect(() => {
@@ -115,20 +118,41 @@ const TaskScreen = ({
   }, [value, userTasks]);
 
   useEffect(() => {
-    if (!project) return;
+    if (!project || tasksForProjectLoading) return;
 
-    const projectsMatching = userTasks.filter(
-      (task) => task?.project === project ||
-      task?.user_id === currentUser.userinfo.userID
-    );
-    const datesUserHasTaskForProject = [
-      ...new Set(
-        projectsMatching.map((task) => [new Date(task.task_created_date)])
-      ).values(),
-    ].flat();
-    setDatesToStyle(datesUserHasTaskForProject);
+    const dataToPost = {
+      "company_id": currentUser.portfolio_info[0].org_id,
+      "data_type": currentUser.portfolio_info[0].data_type,
+      "project": project,
+    }
 
-    settaskdetail2(projectsMatching);
+    setTasksForProjectLoading(true);
+
+    const previousTasks = userTasks.filter(t => !t.task && !t.user_id && t.project);
+
+    getCandidateTasksV2(dataToPost).then(res => {
+      setTasksForProjectLoading(false);
+      const foundTasksForCandidate = extractNewTasksAndAddExtraDetail(res.data.task_details, res.data.task)?.filter(item => item.user_id === currentUser.userinfo.userID && item.project === project);
+      
+      const projectsMatching = [
+        ...previousTasks.filter(
+          (task) => task?.project === project
+        ),
+        ...foundTasksForCandidate
+      ]
+      console.log(projectsMatching);
+      const datesUserHasTaskForProject = [
+        ...new Set(
+          projectsMatching.map((task) => [new Date(task.task_created_date)])
+        ).values(),
+      ].flat();
+      setDatesToStyle(datesUserHasTaskForProject);
+  
+      settaskdetail2(projectsMatching.filter(item => item.task_created_date === value));
+    }).catch(err => {
+      console.log(err);
+      setTasksForProjectLoading(false);
+    })
   }, [project]);
 
   useEffect(() => {
@@ -382,6 +406,21 @@ const TaskScreen = ({
               />
               <div className="tasks__Wrapper">
                 {
+                  tasksForProjectLoading ? <>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <LoadingSpinner 
+                        width={'16px'}
+                        height={'16px'}
+                      />
+                      <p className="task__Title" style={{ margin: 0 }}>Filtering tasks...</p>
+                    </div>
+                  </> :
                   singleTaskLoading ? <>
                     <div
                       style={{

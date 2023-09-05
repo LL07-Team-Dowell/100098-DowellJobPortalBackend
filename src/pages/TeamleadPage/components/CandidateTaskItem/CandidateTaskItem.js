@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import "./style.css";
 import Button from "../../../AdminPage/components/Button/Button";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { AiOutlineCheckCircle } from "react-icons/ai";
 
 
 const CandidateTaskItem = ({ 
@@ -103,6 +104,13 @@ const CandidateTaskItem = ({
                 </span>
               }
               
+              {
+                currentTask.approved && <p style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#005734', margin: '1.2rem 0' }}>
+                  <AiOutlineCheckCircle />
+                  <span style={{ color: '#005734' }}>Task is approved</span>
+                </p>
+              }
+              
               {/*<span className="task__Description">Task Description: <br />{currentTask.description}</span>*/}
             </div>
 
@@ -117,6 +125,7 @@ const CandidateTaskItem = ({
               ) : (
                 <>
                   {
+                    !currentTask || !currentTask._id ? <></> :
                     !currentTask.approved ? <>
                       <Button
                         text={taskIsBeingApproved ? "Approving..." : "Approve Task"}
@@ -132,7 +141,7 @@ const CandidateTaskItem = ({
                         className={
                           currentTaskStatus === "Complete" && "task__Active"
                         }
-                        currentSelection={"Complete"}
+                        currentSelection={"Mark as complete"}
                         removeDropDownIcon={true}
                         handleClick={handleTaskStatusUpdate}
                         disabled={isFetchingData}
@@ -141,7 +150,7 @@ const CandidateTaskItem = ({
                         className={
                           currentTaskStatus === "Incomplete" && "task__Active"
                         }
-                        currentSelection={"Incomplete"}
+                        currentSelection={"Mark as incomplete"}
                         removeDropDownIcon={true}
                         handleClick={handleTaskStatusUpdate}
                         disabled={isFetchingData}
