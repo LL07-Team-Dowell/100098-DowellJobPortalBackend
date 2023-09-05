@@ -154,7 +154,7 @@ const LandingPage = ({ subAdminView }) => {
 
           setJobLinks([
             ...new Map(
-              response[1]?.data?.master_link
+              response[1]?.data?.data
                 ?.reverse()
                 .map((link) => [link.master_link, link])
             ).values(),
@@ -328,7 +328,7 @@ const LandingPage = ({ subAdminView }) => {
         </p>
       </div>
       {/* asd */}
-      <div className="JobsChanger_containter">
+      {/* <div className="JobsChanger_containter">
         {createArrayWithLength(
           isActive
             ? Math.ceil(activeJobsLength / 4)
@@ -344,8 +344,8 @@ const LandingPage = ({ subAdminView }) => {
             {s + 1}
           </button>
         ))}
-      </div>
-      <div className="landing-page">
+      </div> */}
+      <div className={`landing-page ${((isActive === "active") || (isActive === "inactive")) ? '' : 'linkss'}`}>
         {isActive === "links" && (
           <div className="landing_Nav_Wrapper">
             <div
@@ -492,6 +492,26 @@ const LandingPage = ({ subAdminView }) => {
           )}
         </div>
       </div>
+      {
+        ((isActive === "active") || (isActive === "inactive")) &&
+        <div className="JobsChanger_containter">
+          {createArrayWithLength(
+            isActive
+              ? Math.ceil(activeJobsLength / 4)
+              : Math.ceil(inactiveJobsLength / 4)
+          ).map((s, index) => (
+            <button
+              className={s !== cardGroupNumber ? "active" : "desactive"}
+              onClick={() => changeCardGroupNumber(s)}
+              key={`${index}_button${
+                isActive === "active" ? "_active" : "_desactive"
+              }`}
+            >
+              {s + 1}
+            </button>
+          ))}
+        </div>
+      }
     </StaffJobLandingLayout>
   );
 };

@@ -12,7 +12,7 @@ $red__color: #fe0000;
   position: relative;
   font-family: "Inter", sans-serif;
   padding: 0rem 7.75rem;
-  margin-bottom: 15rem;
+  // margin-bottom: 15rem;
   .backpage {
     position: absolute;
     top: 3.4125rem;
@@ -261,6 +261,10 @@ $red__color: #fe0000;
       }
     }
   }
+
+  &.linkss {
+    margin-bottom: 15rem;
+  }
 }
 
 .isActive-container {
@@ -434,12 +438,15 @@ $red__color: #fe0000;
 }
 
 .JobsChanger_containter {
-  position: absolute;
-  bottom: 17%;
+  // position: absolute;
+  // bottom: 17%;
   z-index: 8888;
-  right: 50%;
-  transform: translate(50%);
+  // right: 50%;
+  // transform: translate(50%);
   display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 3.5rem 0 15rem;
   button {
     background-color: #0e0e0e;
     color: white;
@@ -452,6 +459,14 @@ $red__color: #fe0000;
     transition: 0.3s;
     &:hover {
       background-color: #005734;
+    }
+    &:first-child {
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+    }
+    &:last-child {
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
     }
   }
 }
