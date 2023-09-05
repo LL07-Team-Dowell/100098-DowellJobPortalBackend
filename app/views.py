@@ -3780,40 +3780,40 @@ class Generate_admin_Report(APIView):
             res_teams = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=total_teams,key="date_created")
             data["teams"] =res_teams[1]  
 
-            res_team_tasks = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=total_tasks,key="task_created_date")
-            data["team_tasks"] =res_team_tasks[1]            
+            res_tasks = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=total_tasks,key="task_created_date")
+            data["tasks"] =res_tasks[1]            
 
-            team_tasks_completed=[]
-            for t in res_team_tasks[0]:
+            tasks_completed=[]
+            for t in res_tasks[0]:
                 try:
                     if t["status"]=="Completed" or t["status"]=="completed":
                         #print(t)
-                        team_tasks_completed.append(t)
+                        tasks_completed.append(t)
                 except Exception:
                     #print("error",e)
                     pass
-            data["team_tasks_completed"]=len(team_tasks_completed)
+            data["tasks_completed"]=len(tasks_completed)
 
             try:
-                data["percentage_team_tasks_completed"]=str((data["team_tasks_completed"]/data["team_tasks"])*100)+" %"
+                data["percentage_tasks_completed"]=str((data["tasks_completed"]/data["tasks"])*100)+" %"
             except Exception:
-                data["percentage_team_tasks_completed"]="0 %"
+                data["percentage_tasks_completed"]="0 %"
 
-            team_tasks_completed_on_time=[]
-            for t in res_team_tasks[0]:
+            tasks_completed_on_time=[]
+            for t in res_tasks[0]:
                 try:
                     due_date = datetime.datetime.strptime(set_date_format(t["due_date"]), '%m/%d/%Y %H:%M:%S')
                     task_updated_date = datetime.datetime.strptime(set_date_format(t["task_updated_date"]), '%m/%d/%Y %H:%M:%S')
                     if "due_date" in t.keys() and "task_updated_date" in t.keys() and due_date > task_updated_date:
-                        team_tasks_completed_on_time.append(t)
+                        tasks_completed_on_time.append(t)
                 except Exception as e:
                     #print("error",e)
                     pass
-            data["team_tasks_completed_on_time"]=len(team_tasks_completed_on_time)
+            data["tasks_completed_on_time"]=len(tasks_completed_on_time)
             try:
-                data["percentage_team_tasks_completed_on_time"]=str((data["team_tasks_completed_on_time"]/data["team_tasks_completed"])*100)+" %"
+                data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks_completed"])*100)+" %"
             except Exception:
-                data["percentage_team_tasks_completed_on_time"]="0 %" 
+                data["percentage_tasks_completed_on_time"]="0 %" 
             return Response({"message": "Report Generated","response":data},status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "Parameters are not valid"},status=status.HTTP_400_BAD_REQUEST)       
@@ -3896,6 +3896,62 @@ class Generate_hr_Report(APIView):
             selected = [res for res in total if "selected_on" in res.keys()]
             shortlisted = [res for res in total if "shortlisted_on" in res.keys()]
             rejected = [res for res in total if "rejected_on" in res.keys()]
+
+            response_jbs = dowellconnection(*jobs, "fetch", field, update_field)
+            
+            jbs = [res for res in json.loads(response_jbs)["data"]]
+            res_jobs = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=jbs,key="created_on")
+            data["jobs"] =res_jobs[1]
+            
+            active_jobs=[]
+            inactive_jobs=[]
+            for t in res_jobs[0]:
+                if "is_active" in t.keys():
+                    if t["is_active"] =="True" or t["is_active"] =="true" or t["is_active"] ==True:
+                        active_jobs.append([t["_id"],t["is_active"]])
+                    if t["is_active"] =="False" or t["is_active"] =="false" or t["is_active"] ==False:
+                        inactive_jobs.append([t["_id"],t["is_active"]])
+            data["no_of_active_jobs"] = len(active_jobs)
+            data["no_of_inactive_jobs"] = len(inactive_jobs)
+
+            response_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+            total_applications = [res for res in json.loads(response_applications)["data"]]
+            job_application = [res for res in total_applications if "application_submitted_on" in res.keys()]
+            try:
+                job_titles = {}
+                for t in job_application:
+                    job_titles[t["job_number"]]=t["job_title"]
+                ids = [t["job_number"] for t in job_application]
+                counter = Counter(ids)
+                most_applied_job = counter.most_common(1)[0][0]
+                least_applied_job = counter.most_common()[-1][0]
+                data["most_applied_job"]={"job_number":most_applied_job,
+                                        "job_title":job_titles[most_applied_job],
+                                        "no_job_applications":ids.count(most_applied_job)}
+                data["least_applied_job"]={"job_number":least_applied_job,
+                                        "job_title":job_titles[least_applied_job],
+                                        "no_job_applications":ids.count(least_applied_job)}
+  
+            except Exception:
+                data["most_applied_job"]={"job_number":"none"}
+                data["least_applied_job"]={"job_number":"none"}
+            
+            new_candidates = [res for res in total_applications if "application_submitted_on" in res.keys() and res["status"]=="Pending"]
+            guest_candidates = [res for res in total_applications if "application_submitted_on" in res.keys() and res["status"]=="Guest_Pending"]
+            probationary_candidates = [res for res in total_applications if "application_submitted_on" in res.keys() and res["status"]=="probationary"]
+            hired = [res for res in total_applications if "hired_on" in res.keys()]
+
+            res_job_application = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=job_application,key="application_submitted_on")
+            data["job_applications"] =res_job_application[1]
+
+            res_new_candidates = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=new_candidates,key="application_submitted_on")
+            data["new_candidates"] =res_new_candidates[1]
+
+            res_guest_candidates = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=guest_candidates,key="application_submitted_on")
+            data["guest_candidates"] =res_guest_candidates[1]
+
+            res_probationary_candidates = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=probationary_candidates,key="application_submitted_on")
+            data["probationary_candidates"] =res_probationary_candidates[1]
             
             res_selected = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=selected,key="selected_on")
             data["selected"] =res_selected[1]
@@ -3905,6 +3961,13 @@ class Generate_hr_Report(APIView):
 
             res_rejected = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=rejected,key="rejected_on")
             data["rejected"] =res_rejected[1]
+            res_hired = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=hired,key="hired_on")
+            data["hired"] =res_hired[1]
+
+            try:
+                data["hiring_rate"] = str((data["hired"]/data["job_applications"])*100)+" %"
+            except Exception:
+                data["hiring_rate"] ="0 %"
 
             return Response(
                 {"message": "Hr Report Generated","response":data},
@@ -4151,8 +4214,8 @@ class Generate_Individual_Report(APIView):
         
         if not int(year) <= datetime.date.today().year:
             return Response({"isSuccess":False,
-                         "message": f"You can get report on a future date", 
-                         "error":f'{year} if bigger than current year {datetime.date.today().year}'}, status=status.HTTP_201_CREATED)
+                         "message": "You cannot get a report on a future date", 
+                         "error":f'{year} is bigger than current year {datetime.date.today().year}'}, status=status.HTTP_201_CREATED)
         update_field = {}
         data = {}
 
@@ -4230,7 +4293,14 @@ class Generate_Individual_Report(APIView):
             for key, value in item.items():
                 item[key].update({"tasks_uncompleted":0})  
 
-        tasks_approved =[t for t in json.loads(tasks_added)['data'] if t["approval"]==True or t["approved"]==True] 
+        tasks_approved =[] 
+        for t in json.loads(tasks_added)['data']:
+            if "approved" in t.keys():
+                if t["approved"]==True:
+                    tasks_approved.append(t) 
+            if "approval" in t.keys():
+                if t["approval"]==True:
+                    tasks_approved.append(t) 
         if len(tasks_approved) != 0:
             months=[]
             for task in tasks_approved: 
@@ -4396,6 +4466,51 @@ class Generate_Individual_Report(APIView):
                 item[key].update({"team_tasks_comments_added":0})        
         data['data'].append(item)
         return Response(data, status=status.HTTP_201_CREATED)
+    
+@method_decorator(csrf_exempt,name="dispatch")
+class Generate_Individual_Task_Report(APIView):
+    def post(self, request):
+        payload = request.data
+        data =[]
+        if payload:
+            field = {
+                #"user_id":payload.get("applicant_id")
+            }
+            response = dowellconnection(*task_details_module, "fetch", field, update_field= None)
+            projects = []
+            item = {}
+            for res in json.loads(response)["data"]:
+                try:
+                    if not res["project"] in item.keys():
+                        projects.append(res["project"])
+                except KeyError:
+                    res["project"]="None"
+                    projects.append(res["project"])
+            projects= sorted(projects)
+
+            #get number of tasks
+            #from datetime import date, timedelta
+
+            #today = date.today()
+            #start = today - timedelta(days=today.weekday())
+            #end = start + timedelta(days=6)
+            #print("Today: " + str(today))
+            #print("Start: " + str(start))
+            #print("End: " + str(end))
+
+            for p in set(sorted(projects)):
+                item={"projects":p,"total_tasks":projects.count(p)}
+                data.append(item)
+                #get number of uploads this week 
+            
+
+            return Response({"response":data},status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
 @method_decorator(csrf_exempt, name="dispatch")   
 class Update_payment_status(APIView):
     def patch(self, request,document_id):
