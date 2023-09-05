@@ -435,13 +435,13 @@ $red__color: #fe0000;
 
 .JobsChanger_containter {
   position: absolute;
-  bottom: 20%;
+  bottom: 17%;
   z-index: 8888;
   right: 50%;
   transform: translate(50%);
   display: flex;
   button {
-    background-color: #283618;
+    background-color: #0e0e0e;
     color: white;
     font-family: Poppins;
     border: none;
@@ -449,5 +449,9 @@ $red__color: #fe0000;
     width: 35px;
     height: 35px;
     cursor: pointer;
+    transition: 0.3s;
+    &:hover {
+      background-color: #005734;
+    }
   }
 }
