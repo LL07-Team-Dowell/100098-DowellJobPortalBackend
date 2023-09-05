@@ -15,7 +15,10 @@ const ReportPages = () => {
       hideSideBar={showCustomTimeModal}
     >
       <div className="create_team_parent" style={{ padding: 20 }}>
-        <div className="Create_Team">
+        <div
+          className="Create_Team"
+          onClick={() => navigate("organization-report")}
+        >
           <div>
             <div>
               <AiOutlinePlusCircle className="icon" />
@@ -27,7 +30,10 @@ const ReportPages = () => {
             </p>
           </div>
         </div>
-        <div className="Create_Team">
+        <div
+          className="Create_Team"
+          onClick={() => navigate("detailed-individual-report")}
+        >
           <div>
             <div>
               <AiOutlinePlusCircle className="icon" />
@@ -39,7 +45,7 @@ const ReportPages = () => {
             </p>
           </div>
         </div>
-        <div className="Create_Team">
+        <div className="Create_Team" onClick={() => navigate("task-report")}>
           <div>
             <div>
               <AiOutlinePlusCircle className="icon" />
@@ -51,7 +57,10 @@ const ReportPages = () => {
             </p>
           </div>
         </div>
-        <div className="Create_Team">
+        <div
+          className="Create_Team"
+          onClick={() => navigate("individual-task-report")}
+        >
           <div>
             <div>
               <AiOutlinePlusCircle className="icon" />
