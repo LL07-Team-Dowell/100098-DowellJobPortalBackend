@@ -83,3 +83,19 @@ export const adminEditUserSettingProfile = async (id, data) => {
     data
   );
 };
+
+export const getSettingUserSubProject = async () => {
+  return await currentBackendAxiosInstance.get(`settingusersubproject/`)
+}
+
+export const getSingleSettingUserSubProject = async (id) => {
+  return await currentBackendAxiosInstance.get(`settingusersubproject/${id}`)
+}
+
+export const createNewSettingUserSubProject = async (data) => {
+  return await currentBackendAxiosInstance.post(`settingusersubproject/`, data)
+}
+
+export const editSettingUserSubProject = async (id, data) => {
+  return await currentBackendAxiosInstance.put(`settingusersubproject/${id}/`, data)
+}

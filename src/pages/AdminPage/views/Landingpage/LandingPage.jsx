@@ -19,6 +19,7 @@ import {
   getCreatedProductLinks,
   getJobsFromAdmin,
   getMasterLinks,
+  getSettingUserSubProject,
 } from "../../../../services/adminServices";
 import { useState } from "react";
 import { IoCopyOutline } from "react-icons/io5";
@@ -46,6 +47,9 @@ const LandingPage = ({ subAdminView }) => {
     setProjectsLoading,
     setProductLinks,
     productLinks,
+    setSubProjectsAdded,
+    setSubProjectsLoaded,
+    setSubProjectsLoading,
   } = useJobContext();
   const [showShareModal, setShowShareModal] = useState(false);
   const [jobLinkToShareObj, setJobLinkToShareObj] = useState({});
@@ -105,6 +109,7 @@ const LandingPage = ({ subAdminView }) => {
         getMasterLinks(currentUser.portfolio_info[0].org_id),
         getSettingUserProject(),
         getCreatedProductLinks(currentUser.portfolio_info[0].org_id),
+        getSettingUserSubProject(),
       ])
         .then((response) => {
           console.log(
@@ -162,6 +167,14 @@ const LandingPage = ({ subAdminView }) => {
                 .map((link) => [link.master_link, link])
             ).values(),
           ]);
+
+          setSubProjectsAdded(
+            response[4]?.data?.data?.filter(item => item.company_id === currentUser.portfolio_info[0].org_id)
+            .filter(item => item.data_type === currentUser.portfolio_info[0].data_type)
+            .reverse()
+          );
+          setSubProjectsLoading(false);
+          setSubProjectsLoaded(true);
 
           const projectsGotten = response[2]?.data
             ?.filter(

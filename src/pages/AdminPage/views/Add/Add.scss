@@ -104,6 +104,103 @@
         &::-webkit-scrollbar-thumb:hover {
             background: #005734;
         }
+
+        .select__Fr__Sub__Project {
+            font-size: 0.6rem;
+            color: #000;
+        }
+
+        .serach__Proje__Sub {
+            display: flex;
+            width: 100%;
+            margin-bottom: 0.8rem;
+            align-items: center;
+            gap: 0.4rem;
+            border: 1px solid #b8b8b8;
+            transition: 0.3s ease-in-out;
+            padding: 0.3rem 0.6rem;
+            border-radius: 5px;
+
+            input {
+                border: none;
+                outline: none;
+                width: 100%;
+                font-family: 'Poppins', sans-serif;
+            }
+
+            &:focus-within {
+                border-color: #005734;
+            }
+        }
+
+        .subProject__Select__Wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.7rem 0;
+             
+            input {
+                border: none;
+                outline: none;
+                width: 100%;
+                font-family: 'Poppins', sans-serif;
+                border: 1px solid #b8b8b8;
+                transition: 0.3s ease-in-out;
+                padding: 0.2rem 0.6rem; 
+
+                &:focus-within {
+                    border-color: #005734;
+                }
+            }
+
+            button {
+                margin: 0;
+                padding: 0.4rem;
+
+                svg {
+                    font-size: 1rem;
+                }
+            }
+        }
+
+        .project__Listing__Sub {
+            list-style: none; 
+            max-height: 12rem;
+            overflow-y: auto; 
+            font-size: 0.875rem;
+            display: flex;
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 0.7rem;
+            scrollbar-width: thin;
+
+            li {
+                cursor: pointer;
+                transition: 0.3s ease-in-out;
+
+                &:hover {
+                    color: #005734;
+                }
+            }
+
+            // SCROLLBAR STYLES FOR CHROME
+            &::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+        
+            &::-webkit-scrollbar-track {
+                background: #efefef;
+            }
+        
+            &::-webkit-scrollbar-thumb {
+                background: #b8b8b8;
+            }
+        
+            &::-webkit-scrollbar-thumb:hover {
+                background: #005734;
+            }
+        }
     }
 }
 
