@@ -338,7 +338,7 @@ const LandingPage = ({ subAdminView }) => {
             className={s !== cardGroupNumber ? "active" : "desactive"}
             onClick={() => changeCardGroupNumber(s)}
             key={`${index}_button${
-              isActive === "active" ? "active" : "desactive"
+              isActive === "active" ? "_active" : "_desactive"
             }`}
           >
             {s + 1}
