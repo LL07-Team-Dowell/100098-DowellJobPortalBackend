@@ -44,9 +44,16 @@ urlpatterns = [
     path('get_task/<str:company_id>/', get_task.as_view()),
     path('get_candidate_task/<str:document_id>/', get_candidate_task.as_view()),
     path('update_task/', update_task.as_view()),
-    path('task_request_update/<str:document_id>/', task_request_update.as_view()),
+
     path('approve_task/', approve_task.as_view()),
     path('delete_task/<str:document_id>/', delete_task.as_view()),
+
+    #update task apis
+    path('create_task_update_request/', create_task_update_request.as_view()),
+    path('get_update_task/<str:document_id>/',get_task_request_update.as_view()),
+    path('get_all_update_task/<str:company_id>/',get_all_task_request_update.as_view()),
+    path('approve_task_update_request/<str:document_id>',approve_task_request_update.as_view()),
+    path('denied_task_update_request/<str:document_id>',denied_task_request_update.as_view()),
     
     # task management v2-----------
     path('task_module/', task_module.as_view()),
