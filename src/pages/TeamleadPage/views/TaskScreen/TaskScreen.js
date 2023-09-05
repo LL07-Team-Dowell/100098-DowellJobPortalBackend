@@ -255,12 +255,14 @@ const TaskScreen = ({
     setSingleTaskLoading(true);
     setTasksForTheDay(null);
 
-    const currentDate = new Date(new Date(dateSelected).setHours(dateSelected.getHours() + 1)).toISOString().split('T')[0]
+    const date = new Date(dateSelected);
+    const [ year, month, day ] = [ date.getFullYear(), date.getMonth() + 1, date.getDate() ];
+    const dateFormattedForAPI = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
     const dataToPost = {
       "company_id": currentUser.portfolio_info[0].org_id,
       "user_id": currentUser.userinfo.userID,
       "data_type": currentUser.portfolio_info[0].data_type,
-      "task_created_date": currentDate,
+      "task_created_date": dateFormattedForAPI,
     }
 
     try {

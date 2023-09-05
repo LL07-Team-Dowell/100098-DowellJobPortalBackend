@@ -264,18 +264,20 @@ const CreateTaskScreen = ({
   const handleSelectDateChange = async (date) => {
     setSelectedDate(date);
 
-    const currentDate = new Date(new Date(date).setHours(date.getHours() + 1)).toISOString().split('T')[0]
+    const dateSelected = new Date(date);
+    const [ year, month, day ] = [ dateSelected.getFullYear(), dateSelected.getMonth() + 1, dateSelected.getDate() ];
+    const dateFormattedForAPI = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
     const dataToPost = {
       "company_id": currentUser.portfolio_info[0].org_id,
       "data_type": currentUser.portfolio_info[0].data_type,
-      "task_created_date": currentDate,
+      "task_created_date": dateFormattedForAPI,
     }
 
     setSingleTaskLoading(true);
 
     try {
       const res = (await getCandidateTasksV2(dataToPost)).data;
-      const foundApplicantTaskItem = res.task_details.find(task => task.applicant === applicant && task.task_created_date === currentDate);
+      const foundApplicantTaskItem = res.task_details.find(task => task.applicant === applicant && task.task_created_date === dateFormattedForAPI);
 
       if (foundApplicantTaskItem) {
         setSingleTaskItem(foundApplicantTaskItem);
