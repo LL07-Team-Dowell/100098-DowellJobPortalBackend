@@ -12,6 +12,7 @@ const RedirectPage = () => {
     if (sessionId) {
       setSessionId(sessionId);
     }
+    sessionStorage.clear()
   }, []);
 
   const handleRedirectClick = () => {
@@ -21,14 +22,21 @@ const RedirectPage = () => {
   };
   return (
     <>
-      <div className="redirect__page">
-        <img src={Socialmedia2} alt="Socialmedia2" className="socialmediaimg"/>
-        <p className="redirect">
-          You Don't Have a Portfolio,{" "}
-          <span onClick={handleRedirectClick} className="handle__redirect">
-            Click Here
-          </span>
-        </p>
+      <div className="redirect__overlay">
+        <div className="redirect__page">
+          <img
+            src={Socialmedia2}
+            alt="Socialmedia2"
+            className="socialmediaimg"
+          />
+          <p className="redirect">
+            You Don't Have a Portfolio,{" "}
+            <div className="redirect__overlay"></div>
+            <span onClick={handleRedirectClick} className="handle__redirect">
+              Click Here
+            </span>
+          </p>
+        </div>
       </div>
     </>
   );
