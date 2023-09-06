@@ -246,6 +246,13 @@ class SettingUserProjectSerializer(serializers.ModelSerializer):
             representation['project_list'] = json.loads(representation['project_list'])
         return representation
 
+class settingUsersubProjectSerializer(serializers.ModelSerializer):
+    # subproject_list=serializers.JSONField()
+
+    class Meta:
+        model=UsersubProject
+        fields='__all__'
+
 
 
 class UpdateSettingUserProjectSerializer(serializers.ModelSerializer):
@@ -339,7 +346,8 @@ class GetCandidateTaskSerializer(serializers.Serializer):
 class GetAllCandidateTaskSerializer(serializers.Serializer):
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
     data_type = serializers.CharField(allow_null=False, allow_blank=False)
-    task_created_date = serializers.DateField(allow_null=True)
+    # project=serializers.CharField(allow_null=False,allow_blank=False)
+    # task_created_date = serializers.DateField(allow_null=True)
 
 class UpdateTaskByCandidateSerializer(serializers.Serializer):
     TASK_TYPE = (
