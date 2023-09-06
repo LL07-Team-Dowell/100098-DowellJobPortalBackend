@@ -32,11 +32,11 @@ export const newJobApplicationDataReducer = (currentState, action) => {
     console.log(currentState);
     switch (action.type) {
         case newJobApplicationDataReducerActions.UPDATE_APPLICANT_FIRST_NAME:
-
+        case newJobApplicationDataReducerActions.UPDATE_OTHERS:
             if (!action.payload.stateToChange) return currentState;
             return {
-                ...currentState, others: {
-                    ...currentState.others,
+                ...currentState, other_info: {
+                    ...currentState.other_info,
                     [action.payload.stateToChange]: action.payload.value
                 }
             }

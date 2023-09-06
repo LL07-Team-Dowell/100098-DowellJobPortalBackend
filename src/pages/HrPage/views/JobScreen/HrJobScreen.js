@@ -826,6 +826,15 @@ function HrJobScreen() {
                 jobTitle={jobs.find(job => job.job_number === location.state.candidate.job_number)?.job_title}
                 setShowPublicAccountConfigurationModal={setShowPublicAccountConfigurationModal}
                 updateInterviewTimeSelected={(valuePassed) => handlePublicDetailChange(mutablePublicAccountStateNames.date_time, valuePassed)}
+                job={
+                  jobs.find(
+                    (job) => job.job_number === location.state.candidate.job_number
+                  ) ?
+                  jobs.find(
+                    (job) => job.job_number === location.state.candidate.job_number
+                  ) :
+                  null
+                }
               />
             </>
           </div>
@@ -842,6 +851,15 @@ function HrJobScreen() {
                 selectedCandidateData={location.state.candidate}
                 updateCandidateData={setCandidateData}
                 availableProjects={currentProjects}
+                job={
+                  jobs.find(
+                    (job) => job.job_number === location.state.candidate.job_number
+                  ) ?
+                  jobs.find(
+                    (job) => job.job_number === location.state.candidate.job_number
+                  ) :
+                  null
+                }
               />
             </>
           </div>

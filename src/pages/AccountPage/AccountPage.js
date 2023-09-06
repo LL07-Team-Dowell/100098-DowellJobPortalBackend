@@ -389,6 +389,15 @@ const AccountPage = () => {
                     handleViewApplicationBtnClick={() =>
                       setShowApplicationDetails(!showApplicationDetails)
                     }
+                    job={
+                      jobs.find(
+                        (job) => job.job_number === currentCandidate.job_number
+                      ) ?
+                      jobs.find(
+                        (job) => job.job_number === currentCandidate.job_number
+                      ) :
+                      null
+                    }
                   />
                 ) : (
                   <>

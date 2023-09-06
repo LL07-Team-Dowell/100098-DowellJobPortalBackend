@@ -15,7 +15,7 @@ const ViewAppliedJobScreen = ( { job, applicationDetails }) => {
             <TitleNavigationBar title={"Application Details"} handleBackBtnClick={() => navigate(-1)} />
             <div className="view__Job__Details">
                 <h2><b>{job.job_title}</b></h2>
-                <ApplicantDetails candidateApplicationPageActive={true} applicantData={applicationDetails} />
+                <ApplicantDetails candidateApplicationPageActive={true} applicantData={applicationDetails} job={job} />
             </div>
         </div>
         {/* <Footer /> */}
