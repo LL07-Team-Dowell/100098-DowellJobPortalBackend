@@ -19,6 +19,7 @@ const AddIssueScreen = ({
   setEditPage,
   candidateView,
   teams,
+  id,
 }) => {
   const ref = useRef(null);
   const [showIssueForm, setShowIssueForm] = useState(false);
@@ -157,6 +158,7 @@ const AddIssueScreen = ({
 
         if (response.status === 201) {
           toast.success("Issue Created Successfully");
+          navigate(`/team-screen-member/${createIssue.team_id}/team-issues`);
           setDisabled(false);
           closeIssuesScreen();
         } else {

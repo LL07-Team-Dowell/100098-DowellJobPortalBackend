@@ -1,3 +1,25 @@
+.redirect__overlay {
+  --background-blur: rgba(0, 0, 0, 0.12);
+  --white: #fff;
+  --green-color: #005734;
+  --yellow-color: #c09f2c;
+}
+
+.redirect__overlay {
+  background: var(--background-blur);
+  backdrop-filter: blur(2px);
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  animation: fadeIn 0.2s ease-in-out;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
 .redirect__page{
     display: flex;
     flex-direction: column;
