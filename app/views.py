@@ -869,11 +869,10 @@ class get_all_onboarded_candidate(APIView):
         data = company_id
         if data:
             field = {
-                "company_id":company_id
+                "company_id":company_id,
+                "status":"hired"
             }
-            update_field = {"status": "onboarded"}
-            response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
-            print(response)
+            response = dowellconnection(*candidate_management_reports, "fetch", field, update_field=None)
 
             if json.loads(response)["isSuccess"] == True:
                 if len(json.loads(response)["data"]) == 0:
