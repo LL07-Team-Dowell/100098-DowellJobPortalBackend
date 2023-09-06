@@ -868,17 +868,18 @@ class get_all_onboarded_candidate(APIView):
     def get(self, request, company_id):
         data = company_id
         if data:
-            field = {"status": "onboarded"}
+            field = {
+                "company_id":company_id
+            }
             update_field = {"status": "onboarded"}
-            response = dowellconnection(
-                *candidate_management_reports, "fetch", field, update_field
-            )
+            response = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+            print(response)
 
             if json.loads(response)["isSuccess"] == True:
                 if len(json.loads(response)["data"]) == 0:
                     return Response(
                         {
-                            "message": f"There is no {field['status']} Candidates with this company id",
+                            "message": f"There is no Onboarded Candidates with this company id",
                             "response": json.loads(response),
                         },
                         status=status.HTTP_204_NO_CONTENT,
@@ -886,7 +887,7 @@ class get_all_onboarded_candidate(APIView):
                 else:
                     return Response(
                         {
-                            "message": f"List of {field['status']} Candidates",
+                            "message": f"List of Onboarded Candidates",
                             "response": json.loads(response),
                         },
                         status=status.HTTP_200_OK,
@@ -1657,7 +1658,6 @@ class create_task_update_request(APIView):
             "update_task_date": update_task_date,
         }
         update_field = {}
-
         response = dowellconnection(
             *update_task_request_module, "fetch", field, update_field
         )
@@ -1679,7 +1679,6 @@ class create_task_update_request(APIView):
             existing_request = self.get_existing_request(
                 username, portfolio_name, update_task_date
             )
-
             if existing_request == True:
                 return Response(
                     {
@@ -1719,7 +1718,7 @@ class create_task_update_request(APIView):
                         "message": "Task update request failed to create",
                         "response": json.loads(response),
                     },
-                    status=status.HTTP_204_NO_CONTENT,
+                    status=status.HTTP_304_NOT_MODIFIED,
                 )
 
 
@@ -1761,7 +1760,9 @@ class get_task_request_update(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_task_request_update(APIView):
     def get(self, request, company_id):
-        field = {"company_id": company_id}
+        field = {
+            "company_id": company_id
+            }
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
             *update_task_request_module, "fetch", field, update_field
@@ -1771,7 +1772,7 @@ class get_all_task_request_update(APIView):
             if len(json.loads(response)["data"]) == 0:
                 return Response(
                     {
-                        "message": f"There is no task with this company id",
+                        "message": "There is no task with this company id",
                         "response": json.loads(response),
                     },
                     status=status.HTTP_204_NO_CONTENT,
@@ -1796,69 +1797,96 @@ class get_all_task_request_update(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class approve_task_request_update(APIView):
+    def check_approvable(self,id):
+        response = dowellconnection(*update_task_request_module, "fetch", {"_id":id}, {})
+        data = json.loads(response)["data"][0]
+        if data["request_denied"] is False:
+            return True
+        else:
+            return False
     def patch(self, request, document_id):
-        field = {"_id": document_id}
-        update_field = {"approved": True}
+        if self.check_approvable(document_id) is True:
+            field = {"_id": document_id}
+            update_field = {"approved": True}
+            response = dowellconnection(*update_task_request_module, "update", field, update_field)
+            response_json = json.loads(response)
+            #print(response_json)
+            isSuccess = response_json.get("isSuccess", False)
 
-        response = dowellconnection(
-            *update_task_request_module, "update", field, update_field
-        )
-
-        response_json = json.loads(response)
-        print(response_json)
-        isSuccess = response_json.get("isSuccess", False)
-
-        if isSuccess:
-            return Response(
-                {
-                    "message": "Task is approved",
-                    "response": response_json,
-                },
-                status=status.HTTP_200_OK,
-            )
+            if isSuccess:
+                return Response(
+                    {
+                        "message": "Task is approved",
+                        "response": response_json,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {
+                        "message": "Task approval failed",
+                        "response": response_json,
+                    },
+                    status=status.status.HTTP_400_BAD_REQUEST
+                )
         else:
             return Response(
                 {
-                    "message": "Task approval fail",
-                    "response": response_json,
+                    "error": "Task approval failed",
+                    "response": "Task has already been denied",
                 },
-                status=status.HTTP_204_NO_CONTENT,
+                status=status.HTTP_400_BAD_REQUEST
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class denied_task_request_update(APIView):
+    def check_deniable(self,id):
+        response = dowellconnection(*update_task_request_module, "fetch", {"_id":id}, {})
+        data = json.loads(response)["data"][0]
+        if data["approved"] is False:
+            return True
+        else:
+            return False
+
     def patch(self, request, document_id):
         data = request.data
-        field = {"_id": document_id}
-        update_field = {
-            "approved": False,
-            "request_denied": True,
-            "reason_for_denial": data.get("reason_for_denial"),
-        }
+        if self.check_deniable(document_id) is True:
+            field = {"_id": document_id}
+            update_field = {
+                "request_denied": True,
+                "reason_for_denial": data.get("reason_for_denial"),
+            }
 
-        response = dowellconnection(
-            *update_task_request_module, "update", field, update_field
-        )
-
-        response_json = json.loads(response)
-        isSuccess = response_json.get("isSuccess", False)
-
-        if isSuccess:
-            return Response(
-                {
-                    "message": "Task is denied",
-                    "response": response_json,
-                },
-                status=status.HTTP_200_OK,
+            response = dowellconnection(
+                *update_task_request_module, "update", field, update_field
             )
+
+            response_json = json.loads(response)
+            isSuccess = response_json.get("isSuccess", False)
+
+            if isSuccess:
+                return Response(
+                    {
+                        "message": "Task is denied",
+                        "response": response_json,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {
+                        "message": "Task denial failed",
+                        "response": response_json,
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
             return Response(
                 {
-                    "message": "Task denied fail",
-                    "response": response_json,
+                    "error": "Task denial failed",
+                    "response": "Task has already been approved",
                 },
-                status=status.HTTP_204_NO_CONTENT,
+                status=status.HTTP_400_BAD_REQUEST
             )
 
 
@@ -4904,75 +4932,80 @@ class Generate_Individual_Report(APIView):
 
         update_field = {}
         data = {}
-
-        info = dowellconnection(
-            *candidate_management_reports, "fetch", field, update_field
-        )
-        data["personal_info"] = json.loads(info)["data"][0]
-        username = json.loads(info)["data"][0]["username"]
-        data["data"] = []
-
-        month_list = calendar.month_name
-        # print(calendar.month_name[1:])
-
-        item = {
-            "January": {},
-            "February": {},
-            "March": {},
-            "April": {},
-            "May": {},
-            "June": {},
-            "July": {},
-            "August": {},
-            "September": {},
-            "October": {},
-            "November": {},
-            "December": {},
-        }
+        info = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+        data["personal_info"]=json.loads(info)['data'][0]
+        username = json.loads(info)['data'][0]["username"]
+        data['data']=[]
+        
+        month_list=calendar.month_name
+        #print(calendar.month_name[1:])
+        
+        item={'January':{}, 'February':{}, 'March':{}, 'April':{}, 'May':{}, 'June':{}, 'July':{}, 'August':{}, 'September':{}, 'October':{}, 'November':{}, 'December':{}}
         for key, value in item.items():
-            item[key] = {
-                "tasks_added": 0,
-                "tasks_completed": 0,
-                "tasks_uncompleted": 0,
-                "tasks_approved": 0,
-                "percentage_tasks_completed": 0,
-                "teams": 0,
-                "team_tasks": 0,
-                "team_tasks_completed": 0,
-                "team_tasks_uncompleted": 0,
-                "percentage_team_tasks_completed": 0,
-                "team_tasks_approved": 0,
-                "team_tasks_issues_raised": 0,
-                "team_tasks_issues_resolved": 0,
-                "team_tasks_comments_added": 0,
-            }
+                item[key]={"tasks_added": 0,
+                            "tasks_completed": 0,
+                            "tasks_uncompleted": 0,
+                            "tasks_approved": 0,
+                            "percentage_tasks_completed":0,
+                            "teams":0,
+                            "team_tasks":0,
+                            "team_tasks_completed":0,
+                            "team_tasks_uncompleted":0,
+                            "percentage_team_tasks_completed":0,
+                            "team_tasks_approved":0,
+                            "team_tasks_issues_raised":0,
+                            "team_tasks_issues_resolved":0,
+                            "team_tasks_comments_added":0
+                            }
+                
+        tasks_added = dowellconnection(*task_management_reports, "fetch", {"task_added_by":username}, update_field) 
+        tasks_completed =[t for t in json.loads(tasks_added)['data'] if t["status"]=="Completed"] 
+        tasks_uncompleted =[t for t in json.loads(tasks_added)['data'] if t["status"]=="Incomplete"]
+        teams = dowellconnection(*team_management_modules, "fetch", {}, update_field)
 
-        tasks_added = dowellconnection(
-            *task_management_reports, "fetch", {"task_added_by": username}, update_field
-        )
-        if len(json.loads(tasks_added)["data"]) != 0:
-            months = []
-            for task in json.loads(tasks_added)["data"]:
-                month_name = month_list[
-                    datetime.datetime.strptime(
-                        set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S"
-                    ).month
-                ]
-                # print(month_name,"=====",task["task_created_date"],"====",item.keys())
-                months.append(month_name)
-                if month_name in item.keys():
-                    if (
-                        str(
-                            datetime.datetime.strptime(
-                                set_date_format(task["task_created_date"]),
-                                "%m/%d/%Y %H:%M:%S",
-                            ).year
-                        )
-                        == year
-                    ):
-                        item[month_name].update(
-                            {"tasks_added": months.count(month_name)}
-                        )
+        if len(json.loads(tasks_added)['data']) != 0: 
+            months=[]
+            for task in json.loads(tasks_added)['data']: 
+                    month_name=month_list[datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").month]
+                    #print(month_name,"=====",task["task_created_date"],"====",item.keys())
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        if str(datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").year) == year:
+                            item[month_name].update({"tasks_added":months.count(month_name)}) 
+        else:
+            for key, value in item.items():
+                item[key].update({"tasks_added":0})  
+        
+        #tasks completed-----------------------------
+        if len(tasks_completed) != 0:
+            months=[]
+            for task in tasks_completed: 
+                    month_name=month_list[datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").month]
+                    #print(month_name,"=====",task["task_created_date"],"====",item.keys())
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        if str(datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").year) == year:
+                            item[month_name].update({"tasks_completed":months.count(month_name)}) 
+                            try:
+                                percentage_tasks_completed=(item[month_name]["tasks_completed"]/item[month_name]["tasks_added"])*100
+                                item[month_name].update({"percentage_tasks_completed":percentage_tasks_completed})   
+                            except Exception:
+                                item[month_name].update({"percentage_tasks_completed":0})  
+        else:
+            for key, value in item.items():
+                item[key].update({"tasks_completed":0})  
+                item[key].update({"percentage_tasks_completed":0})  
+
+        #tasks umcompleted---------------------
+        if len(tasks_uncompleted) != 0:
+            months=[]
+            for task in tasks_uncompleted: 
+                    month_name=month_list[datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").month]
+                    #print(month_name,"=====",task["task_created_date"],"====",item.keys())
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        if str(datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").year) == year:
+                            item[month_name].update({"tasks_uncompleted":months.count(month_name)})  
         else:
             for key, value in item.items():
                 item[key].update({"tasks_added": 0})
@@ -5050,6 +5083,7 @@ class Generate_Individual_Report(APIView):
             for key, value in item.items():
                 item[key].update({"tasks_uncompleted": 0})
 
+        #tasks approved---------------------------
         tasks_approved =[] 
         for t in json.loads(tasks_added)['data']:
             if "approved" in t.keys():
@@ -5085,10 +5119,10 @@ class Generate_Individual_Report(APIView):
             for key, value in item.items():
                 item[key].update({"tasks_approved": 0})
 
-        teams = dowellconnection(*team_management_modules, "fetch", {}, update_field)
-        if len(json.loads(teams)["data"]) != 0:
-            months = []
-            for team in json.loads(teams)["data"]:
+        #teams----------------------------------------
+        if len(json.loads(teams)['data']) != 0:
+            months=[]
+            for team in json.loads(teams)['data']: 
                 try:
                     if username in team["members"]:
                         # print(team)
@@ -5113,11 +5147,11 @@ class Generate_Individual_Report(APIView):
                     pass
         else:
             for key, value in item.items():
-                item[key].update({"teams": 0})
-
-        if len(json.loads(teams)["data"]) != 0:
-            months = []
-            for team in json.loads(teams)["data"]:
+                item[key].update({"teams":0})
+        #team tasks-------------------------------------------------
+        if len(json.loads(teams)['data']) != 0:
+            months=[]
+            for team in json.loads(teams)['data']:
                 try:
                     if username in team["members"]:
                         team_tasks = dowellconnection(
@@ -5431,22 +5465,8 @@ class Generate_Individual_Report(APIView):
                                                 ).month
                                             ]
                                             months.append(month_name)
-                                            if (
-                                                str(
-                                                    datetime.datetime.strptime(
-                                                        comment["created_date"]
-                                                    ),
-                                                    "%m/%d/%Y %H:%M:%S",
-                                                ).year
-                                                == year
-                                            ):
-                                                item[month_name].update(
-                                                    {
-                                                        "team_tasks_comments_added": months.count(
-                                                            month_name
-                                                        )
-                                                    }
-                                                )
+                                            if str(datetime.datetime.strptime(set_date_format(comment["created_date"]), "%m/%d/%Y %H:%M:%S").year) == year:
+                                                item[month_name].update({"team_tasks_comments_added":months.count(month_name)})
                 except Exception as e:
                     pass
         else:
@@ -5462,12 +5482,25 @@ class Generate_Individual_Task_Report(APIView):
         data =[]
         if payload:
             field = {
-                #"user_id":payload.get("applicant_id")
+                #"applicant_id":payload.get("applicant_id"),
+                "applicant": payload.get("username"),
+                #"portfolio_name": payload.get("portfolio_name")
             }
-            response = dowellconnection(*task_details_module, "fetch", field, update_field= None)
+            tasks = dowellconnection(*task_management_reports, "fetch", field, update_field= None) 
+            res = dowellconnection(*task_details_module, "fetch", {}, update_field= None)
+            response={}
+            d=[]
+            for task in json.loads(tasks)['data']:
+                for t in json.loads(res)["data"]:
+                    if t["task_id"] == task["_id"]:
+                        d.append(t)
+            response["data"]=d
             projects = []
             item = {}
-            for res in json.loads(response)["data"]:
+            week_details=[]
+            
+            #get number of projects or tasks
+            for res in response["data"]:
                 try:
                     if not res["project"] in item.keys():
                         projects.append(res["project"])
@@ -5476,21 +5509,24 @@ class Generate_Individual_Task_Report(APIView):
                     projects.append(res["project"])
             projects= sorted(projects)
 
-            #get number of tasks
-            #from datetime import date, timedelta
+            #get number of uploads this week 
+            today = datetime.date.today()
+            start = today - datetime.timedelta(days=today.weekday())
+            end = start + datetime.timedelta(days=6)
+            start=datetime.datetime.strptime(set_date_format(str(start)), '%m/%d/%Y %H:%M:%S')
+            end=datetime.datetime.strptime(set_date_format(str(end)), '%m/%d/%Y %H:%M:%S')
 
-            #today = date.today()
-            #start = today - timedelta(days=today.weekday())
-            #end = start + timedelta(days=6)
-            #print("Today: " + str(today))
-            #print("Start: " + str(start))
-            #print("End: " + str(end))
-
+            for res in response["data"]:
+                try:
+                    if "task_created_date" in res.keys():
+                        task_created_date=datetime.datetime.strptime(set_date_format(res["task_created_date"]), '%m/%d/%Y %H:%M:%S')
+                        if task_created_date>start and task_created_date<end:
+                            week_details.append(res["project"])
+                except KeyError:
+                    pass
             for p in set(sorted(projects)):
-                item={"projects":p,"total_tasks":projects.count(p)}
+                item={"projects":p,"total_tasks":projects.count(p),"tasks_uploaded_this_week":week_details.count(p)}
                 data.append(item)
-                #get number of uploads this week 
-            
 
             return Response({"response":data},status=status.HTTP_200_OK)
         else:
@@ -5610,6 +5646,7 @@ class task_module(APIView):
         data = request.data
         payload = {
             "project": data.get("project"),
+            "subproject":data.get("subproject"),
             "applicant": data.get("applicant"),
             "task": data.get("task"),
             "task_added_by": data.get("task_added_by"),
@@ -5650,6 +5687,7 @@ class task_module(APIView):
                 field = {
                     "task": data.get("task"),
                     "project": data.get("project"),
+                    "subproject":data.get("subproject"),
                     "user_id": data.get("user_id"),
                     "task_type": data.get("task_type"),
                     "company_id": data.get("company_id"),
@@ -5702,7 +5740,6 @@ class task_module(APIView):
         company_id = data.get("company_id")
         data_type = data.get("data_type")
         task_created_date = data.get("task_created_date")
-
         field = {
             "user_id": user_id,
             "company_id": company_id,
@@ -5751,10 +5788,10 @@ class task_module(APIView):
 
     def update_candidate_task(self, request):
         data = request.data
-
         payload = {
             "task_id": request.GET.get("task_id"),
             "project": data.get("project"),
+            "subproject":data.get("subproject"),
             "task": data.get("task"),
             "data_type": data.get("data_type"),
             "company_id": data.get("company_id"),
@@ -5764,7 +5801,6 @@ class task_module(APIView):
             "end_time": data.get("end_time"),
             "user_id": data.get("user_id"),
         }
-
         serializer = UpdateTaskByCandidateSerializer(data=payload)
         if serializer.is_valid():
             field = {
@@ -5775,6 +5811,7 @@ class task_module(APIView):
                 "end_time": data.get("end_time"),
                 "task_created_date": data.get("task_created_date"),
                 "project": data.get("project"),
+                "subproject":data.get("subproject"),
                 "task_id": request.GET.get("task_id"),
                 "task_type": data.get("task_type"),
                 "is_active": True,
@@ -5808,7 +5845,6 @@ class task_module(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def save_task(self, request):
         task_id = request.GET.get("task_id")
         field = {"_id": task_id}

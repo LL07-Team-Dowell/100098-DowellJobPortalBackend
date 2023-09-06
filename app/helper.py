@@ -307,14 +307,19 @@ def set_date_format(date):
                             return iso_format
                         except Exception:
                             try:
-                                iso_format =datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%Y %H:%M:%S')
+                                iso_format =datetime.datetime.strptime(date, '%d/%m/%Y %H:%M:%S').strftime('%m/%d/%Y %H:%M:%S')
                                 return iso_format
                             except Exception:
                                 try:
-                                    iso_format =datetime.datetime.strptime(date, '%d/%m/%Y  %H:%M:%S').strftime('%m/%d/%Y %H:%M:%S')
+                                    iso_format =datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%Y %H:%M:%S')
                                     return iso_format
-                                except Exception:
-                                    return ""
+                                except Exception as e:
+                                    print(e, date)
+                                    try:
+                                        iso_format =datetime.datetime.strptime(date, '%d/%m/%Y  %H:%M:%S').strftime('%m/%d/%Y %H:%M:%S')
+                                        return iso_format
+                                    except Exception:
+                                        return ""
     
 def targeted_population(database, collection, fields, period,column_name, start_point,end_point):
     url = 'https://100032.pythonanywhere.com/api/targeted_population/'
