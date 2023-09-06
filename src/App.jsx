@@ -73,6 +73,7 @@ import GroupLeadTask from "./pages/GroupLeadPage/components/GroupLeadTask";
 import ClaimVouchar from "./pages/TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
 import TaskScreen from "./pages/TeamleadPage/views/TaskScreen/TaskScreen";
+import ReportPages from "./pages/AdminPage/views/Reports/reportspages/ReportPages";
 
 function App() {
   console.log = () => { };
@@ -445,14 +446,7 @@ function App() {
             </JobContextProvider>
           }
         />
-        {/* <Route
-          path="/settings"
-          element={
-            <JobContextProvider>
-              <AdminSettings />
-            </JobContextProvider>
-          }
-        /> */}
+
         <Route
           path="*"
           element={
@@ -541,12 +535,37 @@ function App() {
             </JobContextProvider>
           }
         />
+        <Route path="/report" element={<ReportPages />} />
         <Route
-          path="/report"
+          path="/report/organization-report"
           element={
             <JobContextProvider>
               <AdminReports />
             </JobContextProvider>
+          }
+        />
+        <Route
+          path="/report/detailed-individual-report"
+          element={
+            <>
+              <h1>Detailed individual report</h1>
+            </>
+          }
+        />
+        <Route
+          path="/report/task-report"
+          element={
+            <>
+              <h1>Task report</h1>
+            </>
+          }
+        />
+        <Route
+          path="/report/individual-task-report"
+          element={
+            <>
+              <h1>Individual task report</h1>
+            </>
           }
         />
         <Route

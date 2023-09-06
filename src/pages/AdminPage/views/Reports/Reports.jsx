@@ -31,6 +31,7 @@ const AdminReports = ({ subAdminView }) => {
   const [firstDate, setFirstDate] = useState("");
   const [lastDate, setLastDate] = useState("");
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
+  console.log({ selectOptions, lastDate, firstDate });
   // handle functions
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
@@ -80,7 +81,7 @@ const AdminReports = ({ subAdminView }) => {
         setLoading(false);
       });
   }, []);
-  console.log(data.hiring_rate)
+  console.log(data.hiring_rate);
   if (loading)
     return (
       <StaffJobLandingLayout
@@ -109,7 +110,10 @@ const AdminReports = ({ subAdminView }) => {
               onChange={handleSelectOptionsFunction}
               defaultValue={""}
             >
-              <option value="" disabled> select time</option>
+              <option value="" disabled>
+                {" "}
+                select time
+              </option>
               <option value="last_7_days">last 7 days</option>
               <option value="custom_time">custom time</option>
             </select>
@@ -118,7 +122,28 @@ const AdminReports = ({ subAdminView }) => {
         <div className="graphs">
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>jobs</h6>
-            <div style={{ width: 400, height: 300 }}>
+            {data.number_active_jobs === 0 &&
+            data.number_inactive_jobs === 0 ? null : (
+              <div style={{ width: 400, height: 300 }}>
+                <Doughnut
+                  data={{
+                    labels: ["active jobs", "inactive jobs"],
+                    datasets: [
+                      {
+                        label: "Poll",
+                        data: [
+                          data.number_active_jobs,
+                          data.number_inactive_jobs,
+                        ],
+                        backgroundColor: ["#005734", "#D3D3D3"],
+                        borderColor: ["#005734", "#D3D3D3"],
+                      },
+                    ],
+                  }}
+                ></Doughnut>
+              </div>
+            )}
+            {/* <div style={{ width: 400, height: 300 }}>
               <Doughnut
                 data={{
                   labels: ["active jobs", "inactive jobs"],
@@ -135,7 +160,7 @@ const AdminReports = ({ subAdminView }) => {
                   ],
                 }}
               ></Doughnut>
-            </div>
+            </div> */}
           </div>
           <div className="graph__Item">
             <h6>applications</h6>
@@ -165,17 +190,11 @@ const AdminReports = ({ subAdminView }) => {
               <div style={{ width: 400, height: 300 }}>
                 <Doughnut
                   data={{
-                    labels: [
-                      "hiring rate",
-                      "hiring total",
-                    ],
+                    labels: ["hiring rate", "hiring total"],
                     datasets: [
                       {
                         label: "Poll",
-                        data: [
-                          extractNumber(data.hiring_rate),
-                          100,
-                        ],
+                        data: [extractNumber(data.hiring_rate), 100],
                         backgroundColor: ["#D3D3D3", "#005734"],
                         borderColor: ["#D3D3D3", "#005734"],
                       },
@@ -358,11 +377,19 @@ const FormDatePopup = ({
   const handleFormSubmit = () => {
     if (firstDate && lastDate) {
       if (firstDate && lastDate) {
-        handleSubmitDate(formatDateAndTime(firstDate), formatDateAndTime(lastDate));
+        handleSubmitDate(
+          formatDateAndTime(firstDate),
+          formatDateAndTime(lastDate)
+        );
         closeModal();
       } else {
         toast.error("the first or last date are not valid");
-        console.log({firstDate, lastDate,isValidDatefirstDate:isValidDate(firstDate),isValidDateLastDate:isValidDate(lastDate) })
+        console.log({
+          firstDate,
+          lastDate,
+          isValidDatefirstDate: isValidDate(firstDate),
+          isValidDateLastDate: isValidDate(lastDate),
+        });
       }
     } else {
       toast.error("there is no first date or last date in ");
@@ -410,11 +437,11 @@ function formatDateAndTime(inputDate) {
   const dateObj = new Date(inputDate);
 
   const year = dateObj.getFullYear();
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  const hours = String(dateObj.getHours()).padStart(2, '0');
-  const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-  const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const day = String(dateObj.getDate()).padStart(2, "0");
+  const hours = String(dateObj.getHours()).padStart(2, "0");
+  const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+  const seconds = String(dateObj.getSeconds()).padStart(2, "0");
 
   const formattedDateAndTime = `${month}/${day}/${year} 00:00:00`;
   return formattedDateAndTime;
@@ -442,7 +469,8 @@ function isValidDate(inputDate) {
 }
 
 function extractNumber(inputString) {
-  if(inputString === undefined) return 0
-  const cleanedString = inputString.replace('%', '').trim();
+  if (inputString === undefined) return 0;
+  const cleanedString = inputString.replace("%", "").trim();
   const number = parseFloat(cleanedString).toFixed(2);
-  return parseFloat(number);}
+  return parseFloat(number);
+}
