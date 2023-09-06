@@ -61,6 +61,7 @@ const SelectedCandidatesScreen = ({
   guestApplication,
   setShowPublicAccountConfigurationModal,
   updateInterviewTimeSelected,
+  job,
 }) => {
   const ref1 = useRef(null);
   const ref2 = useRef(null);
@@ -546,6 +547,7 @@ const SelectedCandidatesScreen = ({
               ? handleViewApplicationBtnClick()
               : () => {}
           }
+          job={job}
         />
 
         {!hrPageActive && (

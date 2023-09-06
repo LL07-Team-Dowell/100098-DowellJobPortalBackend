@@ -262,7 +262,7 @@ const JobApplicationScreen = () => {
     //     dispatchToNewApplicationData({ type: newJobApplicationDataReducerActions.UPDATE_APPLICATION_STATUS, payload: { stateToChange: mutableNewApplicationStateNames.status, value: candidateStatuses.GUEST_PENDING_SELECTION } });
     // }
 
-    Object.keys(currentJob.others || {}).forEach((item) => {
+    Object.keys(currentJob.other_info || {}).forEach((item) => {
       dispatchToNewApplicationData({
         type: newJobApplicationDataReducerActions.UPDATE_OTHERS,
         payload: { stateToChange: item, value: "" },
@@ -524,7 +524,7 @@ const JobApplicationScreen = () => {
     newApplicationData?.freelancePlatformUrl,
     newApplicationData?.feedBack,
     newApplicationData?.applicant,
-    newApplicationData?.others,
+    newApplicationData?.other_info,
     section,
     removeFreelanceOptions,
     currentUser,
@@ -554,6 +554,10 @@ const JobApplicationScreen = () => {
 
   const handleSubmitNewApplication = async (e) => {
     e.preventDefault();
+    if (newApplicationData.other_info && typeof newApplicationData.other_info === 'object') {
+      const copyOfNewApplicationDataOtherInfo = {...newApplicationData.other_info};
+      newApplicationData.other_info = Object.keys(copyOfNewApplicationDataOtherInfo).map(key => { return copyOfNewApplicationDataOtherInfo[key] })
+    }
     console.log(newApplicationData);
     // return
 
@@ -704,8 +708,8 @@ const JobApplicationScreen = () => {
               type={"text"}
               placeholder={data}
               value={
-                newApplicationData.others[key]
-                  ? newApplicationData.others[key]
+                newApplicationData.other_info[key]
+                  ? newApplicationData.other_info[key]
                   : ""
               }
               onChange={(e) =>
@@ -748,7 +752,7 @@ const JobApplicationScreen = () => {
                   {isLargeScreen && <span>{jobSaved ? "Saved" : "Save"}</span>}
                   <IoBookmarkSharp className="save__Icon" />
                 </button>
-                <button
+                {/* <button
                   className="share__Btn grey__Btn"
                   onClick={() =>
                     handleShareBtnClick(
@@ -760,7 +764,7 @@ const JobApplicationScreen = () => {
                 >
                   {isLargeScreen && <span>Share</span>}
                   <IoMdShare />
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -1172,7 +1176,7 @@ const JobApplicationScreen = () => {
                                         </label>
                                     </div> */}
 
-                    {/* {React.Children.toArray(Object.keys(currentJob.others || {}).map((key) => createInputData(key, currentJob.others[key])))} */}
+                    {currentJob.other_info && Array.isArray(currentJob.other_info) && currentJob.other_info.length > 0 && React.Children.toArray(Object.keys(currentJob.other_info || {}).map((key) => createInputData(key, currentJob.other_info[key])))}
 
                     <label
                       className="form__Label__Accept__All"
@@ -1252,7 +1256,7 @@ const JobApplicationScreen = () => {
                   {isLargeScreen && <span>{jobSaved ? "Saved" : "Save"}</span>}
                   <IoBookmarkSharp className="save__Icon" />
                 </button>
-                <button
+                {/* <button
                   className="share__Btn grey__Btn"
                   onClick={() =>
                     handleShareBtnClick(
@@ -1264,7 +1268,7 @@ const JobApplicationScreen = () => {
                 >
                   {isLargeScreen && <span>Share</span>}
                   <IoMdShare />
-                </button>
+                </button> */}
               </div>
             </div>
             <div className="job__Info__Container">

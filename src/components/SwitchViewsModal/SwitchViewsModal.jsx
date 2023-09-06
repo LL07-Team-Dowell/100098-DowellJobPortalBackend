@@ -54,7 +54,7 @@ const SwitchViewsModal = ({ handleCloseModal, restrictedRoles, otherPermittedRol
                 }
             ],
         }
-        if (!restrictedRoles) updatedUserDetail.settings_for_profile_info.profile_info[0].fakeSuperUserInfo = true;
+        if (!restrictedRoles) updatedUserDetail.settings_for_profile_info.fakeSuperUserInfo = true;
         if (restrictedRoles) {
             updatedUserDetail.settings_for_profile_info.profile_info[0].project = assignedProject;
             updatedUserDetail.settings_for_profile_info.profile_info[0].other_roles = defaultRole === item ?

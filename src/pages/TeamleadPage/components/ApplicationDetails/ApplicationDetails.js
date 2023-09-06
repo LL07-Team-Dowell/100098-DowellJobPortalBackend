@@ -6,7 +6,7 @@ import { changeToTitleCase, formatDateAndTime } from '../../../../helpers/helper
 import "./style.css";
 
 
-const ApplicantDetails = ({ hrPageActive, applicantData, candidateApplicationPageActive, showApplicationDetails, handleViewApplicationBtnClick, hideIntro }) => {
+const ApplicantDetails = ({ hrPageActive, applicantData, candidateApplicationPageActive, showApplicationDetails, handleViewApplicationBtnClick, hideIntro, job }) => {
     return <>
         { 
             !candidateApplicationPageActive && !hideIntro && <div className={`selected-applicant-details ${showApplicationDetails ? 'teamlead__Page' : ''}`} onClick={handleViewApplicationBtnClick}>
@@ -62,17 +62,18 @@ const ApplicantDetails = ({ hrPageActive, applicantData, candidateApplicationPag
                     }
 
                     {
-                        React.Children.toArray(Object.keys(applicantData.others || {}).map(key => {
+                        React.Children.toArray(Object.keys(applicantData.other_info || {}).map(key => {
 
                             if ( excludedApplicantInfo.includes(key) ) return <></>
+                            if (!job) return <></>
 
-                            if (key === mutableNewApplicationStateNames.others_property_qualification) return <span><span className="highlight__Item">Academic Qualification:</span> {applicantData.others[key]}</span>
-                            if (key === mutableNewApplicationStateNames.others_property_qualification_type) return <span><span className="highlight__Item">Qualification Type:</span> {applicantData.others[key]}</span>
-                            if (key === mutableNewApplicationStateNames.others_comments) return <span><span className="highlight__Item">Comments:</span> {applicantData.others[key]}</span>
-                            if (key === mutableNewApplicationStateNames.others_applicant_first_name) return <span><span className="highlight__Item">First Name:</span> {applicantData.others[key]}</span>
-                            if (key === mutableNewApplicationStateNames.others_applicant_email) return <span><span className="highlight__Item">Email:</span> {applicantData.others[key]}</span>
+                            // if (key === mutableNewApplicationStateNames.others_property_qualification) return <span><span className="highlight__Item">Academic Qualification:</span> {applicantData.others[key]}</span>
+                            // if (key === mutableNewApplicationStateNames.others_property_qualification_type) return <span><span className="highlight__Item">Qualification Type:</span> {applicantData.others[key]}</span>
+                            // if (key === mutableNewApplicationStateNames.others_comments) return <span><span className="highlight__Item">Comments:</span> {applicantData.others[key]}</span>
+                            // if (key === mutableNewApplicationStateNames.others_applicant_first_name) return <span><span className="highlight__Item">First Name:</span> {applicantData.others[key]}</span>
+                            // if (key === mutableNewApplicationStateNames.others_applicant_email) return <span><span className="highlight__Item">Email:</span> {applicantData.others[key]}</span>
                             
-                            return <span><span className="highlight__Item">{key}:</span> {applicantData.others[key]}</span>
+                            return <span><span className="highlight__Item">{job?.other_info[key]}:</span> {applicantData.other_info[key]}</span>
                         }))
                     }
                     </>
