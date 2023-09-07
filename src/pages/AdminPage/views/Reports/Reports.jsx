@@ -310,7 +310,7 @@ const AdminReports = ({ subAdminView }) => {
             <h6>applications</h6>
             <div>
               <div>
-                {!(data.tasks_completed_on_time && data.tasks) ? (
+                {!(data.tasks_completed_on_time || data.tasks) ? (
                   <h4>
                     there is no data between {firstDate} and {lastDate}
                   </h4>
@@ -333,7 +333,7 @@ const AdminReports = ({ subAdminView }) => {
                 )}
               </div>
               <div>
-                {!(data.tasks_completed_on_time && data.tasks) ? (
+                {!(data.tasks_completed_on_time || data.tasks) ? (
                   <h4>
                     there is no data between {firstDate} and {lastDate}
                   </h4>
