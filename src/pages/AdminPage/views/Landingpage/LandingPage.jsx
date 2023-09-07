@@ -285,6 +285,8 @@ const LandingPage = ({ subAdminView }) => {
   const inactiveJobsLength = jobs
     ?.filter((job) => job.data_type === currentUser.portfolio_info[0].data_type)
     ?.filter((v) => v.is_active === false).length;
+  console.log({ activeJobsLength, inactiveJobsLength });
+
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -345,7 +347,11 @@ const LandingPage = ({ subAdminView }) => {
           </button>
         ))}
       </div> */}
-      <div className={`landing-page ${((isActive === "active") || (isActive === "inactive")) ? '' : 'linkss'}`}>
+      <div
+        className={`landing-page ${
+          isActive === "active" || isActive === "inactive" ? "" : "linkss"
+        }`}
+      >
         {isActive === "links" && (
           <div className="landing_Nav_Wrapper">
             <div
@@ -492,26 +498,25 @@ const LandingPage = ({ subAdminView }) => {
           )}
         </div>
       </div>
-      {
-        ((isActive === "active") || (isActive === "inactive")) &&
+      {(isActive === "active" || isActive === "inactive") && (
         <div className="JobsChanger_containter">
           {createArrayWithLength(
-            isActive
+            isActive === "active"
               ? Math.ceil(activeJobsLength / 4)
               : Math.ceil(inactiveJobsLength / 4)
           ).map((s, index) => (
             <button
               className={s !== cardGroupNumber ? "active" : "desactive"}
-              onClick={() => changeCardGroupNumber(s)}
+              onClick={() => changeCardGroupNumber(index * 4)}
               key={`${index}_button${
                 isActive === "active" ? "_active" : "_desactive"
               }`}
             >
-              {s + 1}
+              {index + 1}
             </button>
           ))}
         </div>
-      }
+      )}
     </StaffJobLandingLayout>
   );
 };

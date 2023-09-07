@@ -31,16 +31,17 @@ ChartJs.register(ArcElement, Tooltip, Legend);
 ChartJs.register(ArcElement, BarElement, CategoryScale, LinearScale);
 const AdminReports = ({ subAdminView }) => {
   const navigate = useNavigate();
-  const { currentUser, setCurrentUser } = useCurrentUserContext();
-
   // states
   const [selectOptions, setSelectOptions] = useState("");
   const [data, setdata] = useState({});
   const [loading, setLoading] = useState(false);
-  const [firstDate, setFirstDate] = useState("");
-  const [lastDate, setLastDate] = useState("");
+  const [firstDate, setFirstDate] = useState(
+    formatDateFromMilliseconds(new Date().getTime())
+  );
+  const [lastDate, setLastDate] = useState(
+    formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
+  );
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
-  const [jobs, setJobs] = useState([]);
   console.log({ selectOptions, lastDate, firstDate });
   // handle functions
   const handleSelectOptionsFunction = (e) => {
@@ -76,10 +77,8 @@ const AdminReports = ({ subAdminView }) => {
   useEffect(() => {
     setLoading(true);
     const data = {
-      start_date: formatDateFromMilliseconds(new Date().getTime()),
-      end_date: formatDateFromMilliseconds(
-        new Date().getTime() - 7 * 24 * 60 * 60 * 1000
-      ),
+      start_date: firstDate,
+      end_date: lastDate,
     };
 
     generateReport(data)
@@ -137,8 +136,13 @@ const AdminReports = ({ subAdminView }) => {
         <div className="graphs">
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>jobs</h6>
-            {data.number_active_jobs === 0 &&
-            data.number_inactive_jobs === 0 ? null : (
+            {!(
+              data.number_active_jobs === 0 && data.number_inactive_jobs === 0
+            ) ? (
+              <h4>
+                there is no data between {firstDate} and {lastDate}
+              </h4>
+            ) : (
               <div style={{ width: 400, height: 300 }}>
                 <Doughnut
                   data={{
@@ -182,8 +186,14 @@ const AdminReports = ({ subAdminView }) => {
           <div className="graph__Item">
             <h6>applications</h6>
             <div className="application">
-              {data.job_applications &&
-              data.nojob_applications_from_start_date_to_end_date ? null : (
+              {!(
+                data.job_applications &&
+                data.nojob_applications_from_start_date_to_end_date
+              ) ? (
+                <h4>
+                  there is no data between {firstDate} and {lastDate}
+                </h4>
+              ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Doughnut
                     data={{
@@ -206,7 +216,11 @@ const AdminReports = ({ subAdminView }) => {
                   ></Doughnut>
                 </div>
               )}
-              {extractNumber(data.hiring_rate) ? null : (
+              {!extractNumber(data.hiring_rate) ? (
+                <h4>
+                  there is no data between {firstDate} and {lastDate}
+                </h4>
+              ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Doughnut
                     data={{
@@ -232,11 +246,17 @@ const AdminReports = ({ subAdminView }) => {
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>candidates</h6>
             <div className="candidates_graph">
-              {data.hired_candidates &&
-              data.rejected_candidates &&
-              data.probationary_candidates &&
-              data.rehire_candidates &&
-              data.selected_candidates ? null : (
+              {!(
+                data.hired_candidates &&
+                data.rejected_candidates &&
+                data.probationary_candidates &&
+                data.rehire_candidates &&
+                data.selected_candidates
+              ) ? (
+                <h4>
+                  there is no data between {firstDate} and {lastDate}
+                </h4>
+              ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Bar
                     data={{
@@ -284,7 +304,11 @@ const AdminReports = ({ subAdminView }) => {
 
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>Teams and tasks</h6>
-            {data.teams && data.team_tasks && data.tasks ? null : (
+            {!(data.teams && data.team_tasks && data.tasks) ? (
+              <h4>
+                there is no data between {firstDate} and {lastDate}
+              </h4>
+            ) : (
               <div style={{ width: 400, height: 300 }}>
                 <Bar
                   data={{
@@ -306,7 +330,11 @@ const AdminReports = ({ subAdminView }) => {
             <h6>applications</h6>
             <div>
               <div>
-                {data.tasks_completed_on_time && data.tasks ? null : (
+                {!(data.tasks_completed_on_time && data.tasks) ? (
+                  <h4>
+                    there is no data between {firstDate} and {lastDate}
+                  </h4>
+                ) : (
                   <div style={{ width: 400, height: 300 }}>
                     <Doughnut
                       data={{
@@ -325,7 +353,11 @@ const AdminReports = ({ subAdminView }) => {
                 )}
               </div>
               <div>
-                {data.tasks_completed_on_time && data.tasks ? null : (
+                {!(data.tasks_completed_on_time && data.tasks) ? (
+                  <h4>
+                    there is no data between {firstDate} and {lastDate}
+                  </h4>
+                ) : (
                   <div style={{ width: 400, height: 300 }}>
                     <Doughnut
                       data={{
