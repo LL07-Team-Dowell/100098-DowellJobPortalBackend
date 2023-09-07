@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./DetailedIndividual.scss";
 import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-import { getAllOnBoardCandidate } from "../../../../../services/adminServices";
+import {
+  getAllOnBoardCandidate,
+  generateindividualReport,
+} from "../../../../../services/adminServices";
+import { IoFilterOutline } from "react-icons/io5";
 export default function DetailedIndividual() {
-  console.log("asasdasdasdad");
+  const [candidate, setcandidate] = useState([]);
+  const [id, setId] = useState("");
+  //   useEffect(() => {generateindividualReport({id:})}, [id]);
   useEffect(() => {
     getAllOnBoardCandidate()
       .then(
@@ -12,7 +18,9 @@ export default function DetailedIndividual() {
             response: { data },
           },
         }) => {
-          console.log(data.filter((candidate) => candidate.status === "hired"));
+          setcandidate(
+            data.filter((candidate) => candidate.status === "hired")
+          );
         }
       )
       .catch((err) => console.log(err));
@@ -23,7 +31,22 @@ export default function DetailedIndividual() {
       adminAlternativePageActive={true}
       pageTitle={"Detailed individual report"}
     >
-      <div className=""></div>
+      <div className="detailed_indiv_container">
+        <div className="selction_container">
+          <p>Select Candidate</p>
+          <div className="role__Filter__Wrapper">
+            <IoFilterOutline />
+            <select defaultValue={""}>
+              <option value="" disabled>
+                select candidate
+              </option>
+              {candidate.map((person) => (
+                <option value={person._id}>{person.username}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
     </StaffJobLandingLayout>
   );
 }
