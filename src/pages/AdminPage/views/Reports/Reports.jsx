@@ -1,5 +1,7 @@
 import React from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
+import { CSVLink, CSVDownload } from "react-csv";
+
 import {
   generateReport,
   getJobsFromAdmin,
@@ -114,9 +116,15 @@ const AdminReports = ({ subAdminView }) => {
     >
       <div className="reports__container">
         <div className="reports__container_header">
-          <button className="back" onClick={() => navigate(-1)}>
-            <MdArrowBackIosNew />
-          </button>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <button className="back" onClick={() => navigate(-1)}>
+              <MdArrowBackIosNew />
+            </button>
+            <CSVLink data={[Object.keys(data), Object.values(data)]}>
+              Download Me
+            </CSVLink>
+          </div>
+
           <div>
             <p>Get insights into your organizations</p>
             <select
