@@ -7,7 +7,10 @@ import {
 } from "../../../../../services/adminServices";
 import { IoFilterOutline } from "react-icons/io5";
 import { RiH1 } from "react-icons/ri";
+import { MdArrowBackIosNew } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 export default function DetailedIndividual() {
+  const navigate = useNavigate();
   const [candidates, setcandidates] = useState([]);
   const [id, setId] = useState("");
   const [candidateData, setCandidateDate] = useState([]);
@@ -65,6 +68,9 @@ export default function DetailedIndividual() {
       pageTitle={"Detailed individual report"}
     >
       <div className="detailed_indiv_container">
+        <button className="back" onClick={() => navigate(-1)}>
+          <MdArrowBackIosNew />
+        </button>
         <div className="selction_container">
           <p>Select Candidate</p>
           <div className="role__Filter__Wrapper">
