@@ -137,7 +137,7 @@ const AdminReports = ({ subAdminView }) => {
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>jobs</h6>
             {!(
-              data.number_active_jobs === 0 && data.number_inactive_jobs === 0
+              data.no_of_active_jobs === 0 && data.no_of_inactive_jobs === 0
             ) ? (
               <h4>
                 there is no data between {firstDate} and {lastDate}
@@ -151,8 +151,8 @@ const AdminReports = ({ subAdminView }) => {
                       {
                         label: "Poll",
                         data: [
-                          data.number_active_jobs,
-                          data.number_inactive_jobs,
+                          data.no_of_active_jobs,
+                          data.no_of_inactive_jobs,
                         ],
                         backgroundColor: ["#005734", "#D3D3D3"],
                         borderColor: ["#005734", "#D3D3D3"],
