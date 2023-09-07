@@ -99,3 +99,6 @@ export const createNewSettingUserSubProject = async (data) => {
 export const editSettingUserSubProject = async (id, data) => {
   return await currentBackendAxiosInstance.put(`settingusersubproject/${id}/`, data)
 }
+export const getAllOnBoardCandidate = async (id = '6385c0f18eca0fb652c94561') => {
+  return await currentBackendAxiosInstance.get(`get_all_onboarded_candidate/${id}/`)
+}

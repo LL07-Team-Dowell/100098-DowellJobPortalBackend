@@ -74,9 +74,10 @@ import ClaimVouchar from "./pages/TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
 import TaskScreen from "./pages/TeamleadPage/views/TaskScreen/TaskScreen";
 import ReportPages from "./pages/AdminPage/views/Reports/reportspages/ReportPages";
+import DetailedIndividual from "./pages/AdminPage/views/Reports/detailedIndividual/DetailedIndividual";
 
 function App() {
-  console.log = () => { };
+  // console.log = () => { };
   const {
     currentUser,
     isPublicUser,
@@ -547,9 +548,7 @@ function App() {
         <Route
           path="/report/detailed-individual-report"
           element={
-            <>
-              <h1>Detailed individual report</h1>
-            </>
+           <DetailedIndividual />
           }
         />
         <Route
