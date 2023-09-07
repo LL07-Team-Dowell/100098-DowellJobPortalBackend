@@ -73,6 +73,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
       console.log('An error occured trying to fetch teams or projects for candidate');
     })
   }, []);
+  
 
   return (
     <>
@@ -99,6 +100,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
                 teamId={id}
                 candidateView={true}
                 teams={candidateTeams}
+                id={id}
               />
             )}
             <NewAddTaskScreen
