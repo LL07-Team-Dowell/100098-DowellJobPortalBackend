@@ -136,9 +136,7 @@ const AdminReports = ({ subAdminView }) => {
         <div className="graphs">
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>jobs</h6>
-            {!(
-              data.no_of_active_jobs === 0 && data.no_of_inactive_jobs === 0
-            ) ? (
+            {data.no_of_active_jobs === 0 && data.no_of_inactive_jobs === 0 ? (
               <h4>
                 there is no data between {firstDate} and {lastDate}
               </h4>
