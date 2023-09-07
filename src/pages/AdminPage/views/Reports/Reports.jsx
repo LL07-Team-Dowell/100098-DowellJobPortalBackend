@@ -1,6 +1,9 @@
 import React from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-import { generateReport } from "../../../../services/adminServices";
+import {
+  generateReport,
+  getJobsFromAdmin,
+} from "../../../../services/adminServices";
 import { useEffect } from "react";
 import { useState } from "react";
 import { MdArrowBackIosNew } from "react-icons/md";
@@ -21,12 +24,14 @@ import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner
 import { toast } from "react-toastify";
 import { AiOutlineClose } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 // register chart.js
 ChartJs.register(ArcElement, Tooltip, Legend);
 
 ChartJs.register(ArcElement, BarElement, CategoryScale, LinearScale);
 const AdminReports = ({ subAdminView }) => {
   const navigate = useNavigate();
+  const { currentUser, setCurrentUser } = useCurrentUserContext();
 
   // states
   const [selectOptions, setSelectOptions] = useState("");
@@ -35,6 +40,7 @@ const AdminReports = ({ subAdminView }) => {
   const [firstDate, setFirstDate] = useState("");
   const [lastDate, setLastDate] = useState("");
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
+  const [jobs, setJobs] = useState([]);
   console.log({ selectOptions, lastDate, firstDate });
   // handle functions
   const handleSelectOptionsFunction = (e) => {
@@ -66,6 +72,7 @@ const AdminReports = ({ subAdminView }) => {
       });
   };
   //   useEffect
+
   useEffect(() => {
     setLoading(true);
     const data = {
@@ -74,6 +81,7 @@ const AdminReports = ({ subAdminView }) => {
         new Date().getTime() - 7 * 24 * 60 * 60 * 1000
       ),
     };
+
     generateReport(data)
       .then((resp) => {
         setLoading(false);
@@ -150,6 +158,8 @@ const AdminReports = ({ subAdminView }) => {
                 ></Doughnut>
               </div>
             )}
+            <div>most applied job: {data.most_applied_job?.job_title}</div>
+            <div>least applied job: {data.least_applied_job?.job_title}</div>
             {/* <div style={{ width: 400, height: 300 }}>
               <Doughnut
                 data={{
