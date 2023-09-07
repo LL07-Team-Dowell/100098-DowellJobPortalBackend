@@ -120,7 +120,7 @@ const AdminReports = ({ subAdminView }) => {
             <button className="back" onClick={() => navigate(-1)}>
               <MdArrowBackIosNew />
             </button>
-            <CSVLink data={[Object.keys(data), Object.values(data)]}>
+            <CSVLink data={[...Object.keys(data), ...Object.values(data)]}>
               Download Me
             </CSVLink>
           </div>
