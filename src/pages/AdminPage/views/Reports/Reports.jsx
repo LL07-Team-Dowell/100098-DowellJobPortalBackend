@@ -167,7 +167,7 @@ const AdminReports = ({ subAdminView }) => {
             <h6>applications</h6>
             <div className="application">
               {!(
-                data.job_applications &&
+                data.job_applications ||
                 data.nojob_applications_from_start_date_to_end_date
               ) ? (
                 <h4>
@@ -227,10 +227,10 @@ const AdminReports = ({ subAdminView }) => {
             <h6>candidates</h6>
             <div className="candidates_graph">
               {!(
-                data.hired &&
-                data.rejected &&
-                data.probationary_candidates &&
-                data.rehired &&
+                data.hired ||
+                data.rejected ||
+                data.probationary_candidates ||
+                data.rehired ||
                 data.selected
               ) ? (
                 <h4>
@@ -284,7 +284,7 @@ const AdminReports = ({ subAdminView }) => {
 
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>Teams and tasks</h6>
-            {!(data.teams && data.team_tasks && data.tasks) ? (
+            {!(data.teams || data.team_tasks || data.tasks) ? (
               <h4>
                 there is no data between {firstDate} and {lastDate}
               </h4>
