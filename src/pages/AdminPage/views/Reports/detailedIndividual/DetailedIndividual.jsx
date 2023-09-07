@@ -6,10 +6,12 @@ import {
   generateindividualReport,
 } from "../../../../../services/adminServices";
 import { IoFilterOutline } from "react-icons/io5";
+import { RiH1 } from "react-icons/ri";
 export default function DetailedIndividual() {
   const [candidates, setcandidates] = useState([]);
   const [id, setId] = useState("");
   const [candidateData, setCandidateDate] = useState([]);
+  const [candidateName, setCandidateName] = useState("");
   useEffect(() => {
     if (id) {
       generateindividualReport({
@@ -18,6 +20,8 @@ export default function DetailedIndividual() {
       })
         .then((resp) => {
           console.log(resp.data);
+          setCandidateDate(resp.data.data[0]);
+          setCandidateName(resp.data.personal_info.username);
         })
         .catch((err) => console.error(err));
     }
@@ -74,15 +78,19 @@ export default function DetailedIndividual() {
               ))}
             </select>
           </div>
-          {candidateData.map((data, index) => (
+          {candidateName && <h1>candidate name : {candidateName}</h1>}
+          {Object.keys(candidateData).map((data, index) => (
             <div className="candidate_indiv_data">
-              <h1>heeloo</h1>
-              {Object.keys(data).map((key) => (
-                <div key={key}>
-                  {keyToDisplayText[key]}: {data[key]}
-                </div>
-              ))}
-              z
+              <div>
+                <span>Month</span>:{data}
+                {Object.keys(candidateData[data]).map((key) => (
+                  <div key={key}>
+                    {keyToDisplayText[key]}: {candidateData[data][key]}
+                    {keyToDisplayText[key].match(/\w+/)[0] === "Percentage" &&
+                      "%"}
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </div>
