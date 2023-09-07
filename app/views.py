@@ -5976,34 +5976,48 @@ class task_module(APIView):
 class Generate_project_Report(APIView):
     def post(self, request):
         payload = request.data
-        if payload and "project" in payload:
+        if payload:
             project_name = payload["project"]
             company_id = payload["company_id"]
-            field = {"company_id": company_id, "project": project_name}
-            update_field = {}
-            response = dowellconnection(
-                *task_management_reports, "fetch", field, update_field
-            )
-            if response is not None:
-                team_projects = json.loads(response)
-                task_data = team_projects["data"]
-                total_tasks_added = len(task_data)
-                users_tasks_count = {}
-                for task in task_data:
-                    user = task["task_added_by"]
-                    if user:
-                        if user in users_tasks_count:
-                            users_tasks_count[user] += 1
+            field1 = {"company_id": company_id, "project": project_name}
+            update_field1 = {}
+            response1 = dowellconnection(*task_details_module, "fetch", field1, update_field1)
+            field2 = {"company_id": company_id}
+            update_field2 = {}
+            response2 = dowellconnection(*task_management_reports, "fetch", field2, update_field2)
+            
+            if response1 is not None and response2 is not None:
+                team_projects1 = json.loads(response1)
+                team_projects2 = json.loads(response2) 
+                task_data1 = team_projects1['data']
+                task_data2 = team_projects2['data']
+                users_task_count = {}
+                total_tasks_added = 0 
+                
+                for task1 in task_data1:
+                    user_id1 = task1.get("user_id")
+                    if user_id1:
+                        if user_id1 in users_task_count:
+                            users_task_count[user_id1] += 1
                         else:
-                            users_tasks_count[user] = 1
-                users_that_added = [
-                    {"user": user, "tasks_added": count}
-                    for user, count in users_tasks_count.items()
-                ]
-                response_data = {
-                    "total_tasks_added": total_tasks_added,
-                    "users_that_added": users_that_added,
-                }
+                            users_task_count[user_id1] = 1
+                        total_tasks_added += 1
+                
+                user_id_to_name = {}
+                for task2 in task_data2:
+                    user_id2 = task2.get("user_id")
+                    user_name2 = task2.get("task_added_by")
+                    if user_id2 and user_name2:
+                        user_id_to_name[user_id2] = user_name2
+                output = []
+
+                for user_id, task_count in users_task_count.items():
+                    task_added_by = user_id_to_name.get(user_id, "Unknown")
+                    output.append({"user_id": user_id, "user": task_added_by, "tasks_added": task_count})
+                
+                
+                response_data = {"total_tasks_added": total_tasks_added, "users_that_added": output}
+                
                 return Response(
                     {
                         "success": True,
@@ -6015,7 +6029,7 @@ class Generate_project_Report(APIView):
                 return Response(
                     {
                         "success": False,
-                        "message": "fail to fetch data from dowell connection",
+                        "message": "Failed to fetch data from dowell connection",
                     },
                     status=400,
                 )
