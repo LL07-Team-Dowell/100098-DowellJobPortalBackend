@@ -165,189 +165,166 @@ const AdminReports = ({ subAdminView }) => {
           <div className="graph__Item">
             <h6>applications</h6>
             <div className="application">
-              <div style={{ width: 400, height: 300 }}>
-                <Doughnut
-                  data={{
-                    labels: [
-                      "job applications",
-                      "no job applications from start date to end date",
-                    ],
-                    datasets: [
-                      {
-                        label: "Poll",
-                        data: [
-                          data.job_applications,
-                          data.nojob_applications_from_start_date_to_end_date,
-                        ],
-                        backgroundColor: ["#D3D3D3", "#005734"],
-                        borderColor: ["#D3D3D3", "#005734"],
-                      },
-                    ],
-                  }}
-                ></Doughnut>
-              </div>
-              {/* <div>hiring rate:{data.hiring_rate}</div> */}
-              <div style={{ width: 400, height: 300 }}>
-                <Doughnut
-                  data={{
-                    labels: ["hiring rate", "hiring total"],
-                    datasets: [
-                      {
-                        label: "Poll",
-                        data: [extractNumber(data.hiring_rate), 100],
-                        backgroundColor: ["#D3D3D3", "#005734"],
-                        borderColor: ["#D3D3D3", "#005734"],
-                      },
-                    ],
-                  }}
-                ></Doughnut>
-              </div>
+              {data.job_applications &&
+              data.nojob_applications_from_start_date_to_end_date ? null : (
+                <div style={{ width: 400, height: 300 }}>
+                  <Doughnut
+                    data={{
+                      labels: [
+                        "job applications",
+                        "no job applications from start date to end date",
+                      ],
+                      datasets: [
+                        {
+                          label: "Poll",
+                          data: [
+                            data.job_applications,
+                            data.nojob_applications_from_start_date_to_end_date,
+                          ],
+                          backgroundColor: ["#D3D3D3", "#005734"],
+                          borderColor: ["#D3D3D3", "#005734"],
+                        },
+                      ],
+                    }}
+                  ></Doughnut>
+                </div>
+              )}
+              {extractNumber(data.hiring_rate) ? null : (
+                <div style={{ width: 400, height: 300 }}>
+                  <Doughnut
+                    data={{
+                      labels: ["hiring rate", "hiring total"],
+                      datasets: [
+                        {
+                          label: "Poll",
+                          data: [
+                            extractNumber(data.hiring_rate),
+                            100 - extractNumber(data.hiring_rate),
+                          ],
+                          backgroundColor: ["#D3D3D3", "#005734"],
+                          borderColor: ["#D3D3D3", "#005734"],
+                        },
+                      ],
+                    }}
+                  ></Doughnut>{" "}
+                </div>
+              )}
             </div>
           </div>
 
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>candidates</h6>
             <div className="candidates_graph">
-              <div style={{ width: 400, height: 300 }}>
-                <Doughnut
-                  data={{
-                    labels: [
-                      "hired candidates",
-                      "rejected candidates",
-                      "probationary candidates",
-                      "rehire andidates",
-                      "selected candidates",
-                    ],
-                    datasets: [
-                      {
-                        label: "Poll",
-                        data: [
-                          data.hired_candidates,
-                          data.rejected_candidates,
-                          data.probationary_candidates,
-                          data.rehire_candidates,
-                          data.selected_candidates,
-                        ],
-                        backgroundColor: [
-                          "#005734",
-                          "red",
-                          "black",
-                          "yellow",
-                          "pink",
-                          "blue",
-                        ],
-                        borderColor: [
-                          "#005734",
-                          "red",
-                          "black",
-                          "yellow",
-                          "pink",
-                          "blue",
-                        ],
-                      },
-                    ],
-                  }}
-                ></Doughnut>
-              </div>
-
-              <div style={{ width: 400, height: 300 }}>
-                <Bar
-                  data={{
-                    labels: [
-                      "hired candidates",
-                      "rejected candidates",
-                      "probationary candidates",
-                      "rehire andidates",
-                      "selected candidates",
-                    ],
-                    datasets: [
-                      {
-                        label: "Poll",
-                        data: [
-                          data.hired_candidates,
-                          data.rejected_candidates,
-                          data.probationary_candidates,
-                          data.rehire_candidates,
-                          data.selected_candidates,
-                        ],
-                        backgroundColor: [
-                          "#005734",
-                          "red",
-                          "black",
-                          "yellow",
-                          "pink",
-                          "blue",
-                        ],
-                        borderColor: [
-                          "#005734",
-                          "red",
-                          "black",
-                          "yellow",
-                          "pink",
-                          "blue",
-                        ],
-                      },
-                    ],
-                  }}
-                ></Bar>
-              </div>
+              {data.hired_candidates &&
+              data.rejected_candidates &&
+              data.probationary_candidates &&
+              data.rehire_candidates &&
+              data.selected_candidates ? null : (
+                <div style={{ width: 400, height: 300 }}>
+                  <Bar
+                    data={{
+                      labels: [
+                        "hired candidates",
+                        "rejected candidates",
+                        "probationary candidates",
+                        "rehire andidates",
+                        "selected candidates",
+                      ],
+                      datasets: [
+                        {
+                          label: "Poll",
+                          data: [
+                            data.hired_candidates,
+                            data.rejected_candidates,
+                            data.probationary_candidates,
+                            data.rehire_candidates,
+                            data.selected_candidates,
+                          ],
+                          backgroundColor: [
+                            "#005734",
+                            "red",
+                            "black",
+                            "yellow",
+                            "pink",
+                            "blue",
+                          ],
+                          borderColor: [
+                            "#005734",
+                            "red",
+                            "black",
+                            "yellow",
+                            "pink",
+                            "blue",
+                          ],
+                        },
+                      ],
+                    }}
+                  ></Bar>
+                </div>
+              )}
             </div>
           </div>
 
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>Teams and tasks</h6>
-            <div style={{ width: 400, height: 300 }}>
-              <Bar
-                data={{
-                  labels: ["Teams", "team tasks", "individual tasks"],
-                  datasets: [
-                    {
-                      label: ["Teams", "team tasks", "individual tasks"],
-                      data: [data.teams, data.team_tasks, data.tasks],
-                      backgroundColor: ["#D3D3D3", "#005734", "black"],
-                      borderColor: ["#D3D3D3", "#005734", "black"],
-                    },
-                  ],
-                }}
-              ></Bar>
-            </div>
+            {data.teams && data.team_tasks && data.tasks ? null : (
+              <div style={{ width: 400, height: 300 }}>
+                <Bar
+                  data={{
+                    labels: ["Teams", "team tasks", "individual tasks"],
+                    datasets: [
+                      {
+                        label: ["Teams", "team tasks", "individual tasks"],
+                        data: [data.teams, data.team_tasks, data.tasks],
+                        backgroundColor: ["#D3D3D3", "#005734", "black"],
+                        borderColor: ["#D3D3D3", "#005734", "black"],
+                      },
+                    ],
+                  }}
+                ></Bar>
+              </div>
+            )}
           </div>
           <div className="job_applications graph__Item">
             <h6>applications</h6>
             <div>
               <div>
-                <div style={{ width: 400, height: 300 }}>
-                  <Doughnut
-                    data={{
-                      labels: ["tasks completed on time", "tasks"],
-                      datasets: [
-                        {
-                          label: "Poll",
-                          data: [data.tasks_completed_on_time, data.tasks],
-                          backgroundColor: ["#D3D3D3", "#005734"],
-                          borderColor: ["#D3D3D3", "#005734"],
-                        },
-                      ],
-                    }}
-                  ></Doughnut>
-                </div>
+                {data.tasks_completed_on_time && data.tasks ? null : (
+                  <div style={{ width: 400, height: 300 }}>
+                    <Doughnut
+                      data={{
+                        labels: ["tasks completed on time", "tasks"],
+                        datasets: [
+                          {
+                            label: "Poll",
+                            data: [data.tasks_completed_on_time, data.tasks],
+                            backgroundColor: ["#D3D3D3", "#005734"],
+                            borderColor: ["#D3D3D3", "#005734"],
+                          },
+                        ],
+                      }}
+                    ></Doughnut>
+                  </div>
+                )}
               </div>
               <div>
-                <div style={{ width: 400, height: 300 }}>
-                  <Doughnut
-                    data={{
-                      labels: ["team tasks completed", "tasks"],
-                      datasets: [
-                        {
-                          label: "Poll",
-                          data: [data.team_tasks_completed, data.tasks],
-                          backgroundColor: ["#D3D3D3", "#005734"],
-                          borderColor: ["#D3D3D3", "#005734"],
-                        },
-                      ],
-                    }}
-                  ></Doughnut>
-                </div>
+                {data.tasks_completed_on_time && data.tasks ? null : (
+                  <div style={{ width: 400, height: 300 }}>
+                    <Doughnut
+                      data={{
+                        labels: ["tasks completed on time", "tasks"],
+                        datasets: [
+                          {
+                            label: "Poll",
+                            data: [data.tasks_completed_on_time, data.tasks],
+                            backgroundColor: ["#D3D3D3", "#005734"],
+                            borderColor: ["#D3D3D3", "#005734"],
+                          },
+                        ],
+                      }}
+                    ></Doughnut>
+                  </div>
+                )}
               </div>
             </div>
           </div>
