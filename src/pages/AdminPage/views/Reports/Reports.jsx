@@ -3,6 +3,7 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 import { generateReport } from "../../../../services/adminServices";
 import { useEffect } from "react";
 import { useState } from "react";
+import { MdArrowBackIosNew } from "react-icons/md";
 import "./style.scss";
 // chart.js
 import {
@@ -19,11 +20,14 @@ import { Doughnut, Bar } from "react-chartjs-2";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 import { AiOutlineClose } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 // register chart.js
 ChartJs.register(ArcElement, Tooltip, Legend);
 
 ChartJs.register(ArcElement, BarElement, CategoryScale, LinearScale);
 const AdminReports = ({ subAdminView }) => {
+  const navigate = useNavigate();
+
   // states
   const [selectOptions, setSelectOptions] = useState("");
   const [data, setdata] = useState({});
@@ -103,6 +107,9 @@ const AdminReports = ({ subAdminView }) => {
     >
       <div className="reports__container">
         <div className="reports__container_header">
+          <button className="back" onClick={() => navigate(-1)}>
+            <MdArrowBackIosNew />
+          </button>
           <div>
             <p>Get insights into your organizations</p>
             <select
