@@ -164,24 +164,6 @@ const AdminReports = ({ subAdminView }) => {
             )}
             <div>most applied job: {data.most_applied_job?.job_title}</div>
             <div>least applied job: {data.least_applied_job?.job_title}</div>
-            {/* <div style={{ width: 400, height: 300 }}>
-              <Doughnut
-                data={{
-                  labels: ["active jobs", "inactive jobs"],
-                  datasets: [
-                    {
-                      label: "Poll",
-                      data: [
-                        data.number_active_jobs,
-                        data.number_inactive_jobs,
-                      ],
-                      backgroundColor: ["#005734", "#D3D3D3"],
-                      borderColor: ["#005734", "#D3D3D3"],
-                    },
-                  ],
-                }}
-              ></Doughnut>
-            </div> */}
           </div>
           <div className="graph__Item">
             <h6>applications</h6>
@@ -247,11 +229,11 @@ const AdminReports = ({ subAdminView }) => {
             <h6>candidates</h6>
             <div className="candidates_graph">
               {!(
-                data.hired_candidates &&
-                data.rejected_candidates &&
+                data.hired &&
+                data.rejected &&
                 data.probationary_candidates &&
-                data.rehire_candidates &&
-                data.selected_candidates
+                data.rehired &&
+                data.selected
               ) ? (
                 <h4>
                   there is no data between {firstDate} and {lastDate}
@@ -271,11 +253,11 @@ const AdminReports = ({ subAdminView }) => {
                         {
                           label: "Poll",
                           data: [
-                            data.hired_candidates,
-                            data.rejected_candidates,
+                            data.hired,
+                            data.rejected,
                             data.probationary_candidates,
-                            data.rehire_candidates,
-                            data.selected_candidates,
+                            data.rehired,
+                            data.selected,
                           ],
                           backgroundColor: [
                             "#005734",
