@@ -94,6 +94,9 @@ const AdminReports = ({ subAdminView }) => {
         setLoading(false);
       });
   }, []);
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
   console.log(data.hiring_rate);
   if (loading)
     return (
@@ -145,9 +148,7 @@ const AdminReports = ({ subAdminView }) => {
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>jobs</h6>
             {data.no_of_active_jobs === 0 && data.no_of_inactive_jobs === 0 ? (
-              <h4>
-                there is no data between {firstDate} and {lastDate}
-              </h4>
+              <h4>there is no data between start and end date</h4>
             ) : (
               <div style={{ width: 400, height: 300 }}>
                 <Doughnut
@@ -178,9 +179,7 @@ const AdminReports = ({ subAdminView }) => {
                 data.job_applications ||
                 data.nojob_applications_from_start_date_to_end_date
               ) ? (
-                <h4>
-                  there is no data between {firstDate} and {lastDate}
-                </h4>
+                <h4>there is no data between start and end date</h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Doughnut
@@ -205,9 +204,7 @@ const AdminReports = ({ subAdminView }) => {
                 </div>
               )}
               {!extractNumber(data.hiring_rate) ? (
-                <h4>
-                  there is no data between {firstDate} and {lastDate}
-                </h4>
+                <h4>there is no data between start and end date</h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Doughnut
@@ -241,9 +238,7 @@ const AdminReports = ({ subAdminView }) => {
                 data.rehired ||
                 data.selected
               ) ? (
-                <h4>
-                  there is no data between {firstDate} and {lastDate}
-                </h4>
+                <h4>there is no data between start and end date</h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Bar
@@ -252,7 +247,7 @@ const AdminReports = ({ subAdminView }) => {
                         "hired candidates",
                         "rejected candidates",
                         "probationary candidates",
-                        "rehire andidates",
+                        "rehire candidates",
                         "selected candidates",
                       ],
                       datasets: [
@@ -293,9 +288,7 @@ const AdminReports = ({ subAdminView }) => {
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>Teams and tasks</h6>
             {!(data.teams || data.team_tasks || data.tasks) ? (
-              <h4>
-                there is no data between {firstDate} and {lastDate}
-              </h4>
+              <h4>there is no data between start and end date</h4>
             ) : (
               <div style={{ width: 400, height: 300 }}>
                 <Bar
@@ -319,9 +312,7 @@ const AdminReports = ({ subAdminView }) => {
             <div>
               <div>
                 {!(data.tasks_completed || data.tasks) ? (
-                  <h4>
-                    there is no data between {firstDate} and {lastDate}
-                  </h4>
+                  <h4>there is no data between start and end date</h4>
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
                     <Doughnut
@@ -342,9 +333,7 @@ const AdminReports = ({ subAdminView }) => {
               </div>
               <div>
                 {!(data.tasks_completed_on_time || data.tasks) ? (
-                  <h4>
-                    there is no data between {firstDate} and {lastDate}
-                  </h4>
+                  <h4>there is no data between start and end date</h4>
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
                     <Doughnut
