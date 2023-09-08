@@ -74,6 +74,7 @@ import ClaimVouchar from "./pages/TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
 import TaskScreen from "./pages/TeamleadPage/views/TaskScreen/TaskScreen";
 import ReportPages from "./pages/AdminPage/views/Reports/reportspages/ReportPages";
+import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
 
 function App() {
   console.log = () => { };
@@ -549,6 +550,22 @@ function App() {
           element={
             <>
               <h1>Detailed individual report</h1>
+            </>
+          }
+        />
+        <Route
+          path="/report/task-report"
+          element={
+            <JobContextProvider>
+              <TaskReports />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/report/individual-task-report"
+          element={
+            <>
+              <h1>Individual Task report</h1>
             </>
           }
         />

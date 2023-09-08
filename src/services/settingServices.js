@@ -1,9 +1,7 @@
 import { currentBackendAxiosInstance } from "./axios";
 
 export const getSettingUserProfileInfo = async () => {
-  return await currentBackendAxiosInstance.get(
-    "settinguserprofileinfo/"
-  );
+  return await currentBackendAxiosInstance.get("settinguserprofileinfo/");
 };
 
 export const configureSettingUserProfileInfo = async (dataToPost) => {
@@ -11,4 +9,4 @@ export const configureSettingUserProfileInfo = async (dataToPost) => {
     "settinguserprofileinfo/",
     dataToPost
   );
-}
+};
