@@ -9,14 +9,18 @@ import { IoFilterOutline } from "react-icons/io5";
 import { RiH1 } from "react-icons/ri";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
 export default function DetailedIndividual() {
   const navigate = useNavigate();
   const [candidates, setcandidates] = useState([]);
   const [id, setId] = useState("");
   const [candidateData, setCandidateDate] = useState([]);
   const [candidateName, setCandidateName] = useState("");
+  const [firstLoading, setFirstLoading] = useState(false);
+  const [secondLoading, setSecondLoadng] = useState(false);
   useEffect(() => {
     if (id) {
+      setSecondLoadng(true);
       generateindividualReport({
         year: new Date().getFullYear(),
         applicant_id: id,
@@ -25,11 +29,13 @@ export default function DetailedIndividual() {
           console.log(resp.data);
           setCandidateDate(resp.data.data[0]);
           setCandidateName(resp.data.personal_info.username);
+          setSecondLoadng(false);
         })
         .catch((err) => console.error(err));
     }
   }, [id]);
   useEffect(() => {
+    setFirstLoading(true);
     getAllOnBoardCandidate()
       .then(
         ({
@@ -40,6 +46,7 @@ export default function DetailedIndividual() {
           setcandidates(
             data.filter((candidate) => candidate.status === "hired")
           );
+          setFirstLoading(false);
         }
       )
       .catch((err) => console.log(err));
@@ -60,7 +67,7 @@ export default function DetailedIndividual() {
     team_tasks_uncompleted: "Team Tasks Uncompleted",
     teams: "Teams",
   };
-
+  if (firstLoading) return <LoadingSpinner />;
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -84,7 +91,11 @@ export default function DetailedIndividual() {
               ))}
             </select>
           </div>
-          {candidateName && <h1>candidate name : {candidateName}</h1>}
+          {secondLoading ? (
+            <LoadingSpinner />
+          ) : (
+            candidateName && <h1>candidate name : {candidateName}</h1>
+          )}
           {Object.keys(candidateData).map((data, index) => (
             <div className="candidate_indiv_data">
               <div>
