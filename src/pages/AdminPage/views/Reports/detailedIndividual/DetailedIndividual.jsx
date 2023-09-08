@@ -103,22 +103,24 @@ export default function DetailedIndividual() {
           {secondLoading ? (
             <LoadingSpinner />
           ) : (
-            candidateName && <h1>candidate name : {candidateName}</h1>
-          )}
-          {Object.keys(candidateData).map((data, index) => (
-            <div className="candidate_indiv_data">
-              <div>
-                <span>Month</span>:{data}
-                {Object.keys(candidateData[data]).map((key) => (
-                  <div key={key}>
-                    {keyToDisplayText[key]}: {candidateData[data][key]}
-                    {keyToDisplayText[key].match(/\w+/)[0] === "Percentage" &&
-                      "%"}
+            <>
+              {candidateName && <h1>candidate name : {candidateName}</h1>}
+              {Object.keys(candidateData).map((data, index) => (
+                <div className="candidate_indiv_data">
+                  <div>
+                    <span>Month</span>:{data}
+                    {Object.keys(candidateData[data]).map((key) => (
+                      <div key={key}>
+                        {keyToDisplayText[key]}: {candidateData[data][key]}
+                        {keyToDisplayText[key].match(/\w+/)[0] ===
+                          "Percentage" && "%"}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          ))}
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </div>
     </StaffJobLandingLayout>
