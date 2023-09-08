@@ -141,8 +141,16 @@ export default function DetailedIndividual() {
                     datasets: Object.keys(candidateData).map((key) => {
                       return {
                         label: key, // Use the key as the dataset label
-                        backgroundColor: ["red", "blue", "green"],
-                        borderColor: ["red", "blue", "green"],
+                        backgroundColor: [
+                          "#005734",
+                          "rgb(126, 126, 126)",
+                          "#121212",
+                        ],
+                        borderColor: [
+                          "#005734",
+                          "rgb(126, 126, 126)",
+                          "#121212",
+                        ],
                         data: [
                           candidateData[key].tasks_approved,
                           candidateData[key].tasks_added,
@@ -157,37 +165,48 @@ export default function DetailedIndividual() {
                 <h6>personal info</h6>
                 <div>
                   <p>
-                    <span>status:{personalInfo.status}</span>
+                    <span>status:</span>
+                    {personalInfo.status}
                   </p>
                   <p>
-                    <span>applicant:{personalInfo.applicant}</span>
+                    <span>applicant:</span>
+                    {personalInfo.applicant}
                   </p>
                   <p>
-                    <span>applicant email:{personalInfo.email}</span>
+                    <span>applicant email:</span>
+                    {personalInfo.email}
                   </p>
                   <p>
-                    <span>country:{personalInfo.country}</span>
+                    <span>country:</span>
+                    {personalInfo.country}
                   </p>
                   <p>
-                    <span>project:{personalInfo.project}</span>
+                    <span>project:</span>
+                    {personalInfo.project}
                   </p>
                   <p>
-                    <span>username:{personalInfo.username}</span>
+                    <span>username:</span>
+                    {personalInfo.username}
                   </p>
                   <p>
-                    <span>portfolio name:{personalInfo.portfolio_name}</span>
+                    <span>portfolio name:</span>
+                    {personalInfo.portfolio_name}
                   </p>
                   <p>
-                    <span>shortlisted on:{personalInfo.shortlisted_on}</span>
+                    <span>shortlisted on:</span>
+                    {formatDate(personalInfo.shortlisted_on)}
                   </p>
                   <p>
-                    <span>selected on:{personalInfo.selected_on}</span>
+                    <span>selected on:</span>
+                    {formatDate(personalInfo.selected_on)}
                   </p>
                   <p>
-                    <span>hired on:{personalInfo.hired_on}</span>
+                    <span>hired on:</span>
+                    {formatDate(personalInfo.hired_on)}
                   </p>
                   <p>
-                    <span>onboarded on:{personalInfo.onboarded_on}</span>
+                    <span>onboarded on:</span>
+                    {formatDate(personalInfo.onboarded_on)}
                   </p>
                 </div>
               </div>
@@ -212,3 +231,13 @@ export default function DetailedIndividual() {
 //     </div>
 //   </div>
 // ))}
+function formatDate(inputDate) {
+  const date = new Date(inputDate);
+  const options = {
+    weekday: "short",
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  };
+  return date.toLocaleDateString("en-IN", options);
+}

@@ -1,34 +1,49 @@
-
 .role__Filter__Wrapper {
-    width: max-content;
-    // margin: 1rem 0 1rem auto;
-    background-color: white;
-    border: 1px solid #005734;
-    border-radius: 8px;
-    padding: 0 0.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+  width: max-content;
+  // margin: 1rem 0 1rem auto;
+  background-color: white;
+  border: 1px solid #005734;
+  border-radius: 8px;
+  padding: 0 0.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 
-    .role__Filter {
-      background: #fff;
-      outline: none;
-      border: none;
-      width: 100%;
-      cursor: pointer;
-      padding: 0.6rem 0;
-      font-family: "Poppins", sans-serif;
+  .role__Filter {
+    background: #fff;
+    outline: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    padding: 0.6rem 0;
+    font-family: "Poppins", sans-serif;
+  }
+}
+.back {
+  position: relative;
+  width: 40px;
+  height: 35px;
+  border: none;
+  outline: none;
+  background-color: white;
+  box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset,
+    rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.personal_info {
+  padding-bottom: 200px;
+}
+.detailed_indiv_container {
+  padding: 20px;
+}
+.personal_info {
+  p {
+    padding-bottom: 7px;
+    span {
+      font-weight: 700;
+      padding-right: 3px;
     }
   }
-  .back{
-    position: relative;
-    width: 40px;
-    height: 35px;
-    border: none;
-    outline: none;
-    background-color: white;
-    box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+}
