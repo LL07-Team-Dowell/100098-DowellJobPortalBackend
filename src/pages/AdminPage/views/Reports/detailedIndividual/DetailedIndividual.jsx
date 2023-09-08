@@ -10,6 +10,16 @@ import { RiH1 } from "react-icons/ri";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
+import {
+  Chart as ChartJs,
+  ArcElement,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js";
+import { Doughnut, Bar } from "react-chartjs-2";
 export default function DetailedIndividual() {
   const navigate = useNavigate();
   const [candidates, setcandidates] = useState([]);
@@ -103,6 +113,7 @@ export default function DetailedIndividual() {
               ))}
             </select>
           </div>
+          {/* FIX IT */}
           {secondLoading && id !== "" ? (
             <LoadingSpinner />
           ) : (
