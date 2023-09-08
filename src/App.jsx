@@ -75,9 +75,10 @@ import { PageUnderConstruction } from "./pages/UnderConstructionPage/Constructio
 import TaskScreen from "./pages/TeamleadPage/views/TaskScreen/TaskScreen";
 import ReportPages from "./pages/AdminPage/views/Reports/reportspages/ReportPages";
 import DetailedIndividual from "./pages/AdminPage/views/Reports/detailedIndividual/DetailedIndividual";
+import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
 
 function App() {
-  // console.log = () => { };
+  console.log = () => { };
   const {
     currentUser,
     isPublicUser,
@@ -549,6 +550,22 @@ function App() {
           path="/report/detailed-individual-report"
           element={
            <DetailedIndividual />
+          }
+        />
+        <Route
+          path="/report/task-report"
+          element={
+            <JobContextProvider>
+              <TaskReports />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/report/individual-task-report"
+          element={
+            <>
+              <h1>Individual Task report</h1>
+            </>
           }
         />
         <Route
