@@ -129,89 +129,94 @@ export default function DetailedIndividual() {
             </select>
           </div>
           {/* FIX IT */}
-          {secondLoading && id !== "" ? (
-            <LoadingSpinner />
-          ) : (
+          {id !== "" ? (
             <>
-              {candidateName && <h1>candidate name : {candidateName}</h1>}
-              <div className="graph">
-                <Bar
-                  data={{
-                    labels: Object.keys(candidateData),
-                    datasets: Object.keys(candidateData).map((key) => {
-                      return {
-                        label: key, // Use the key as the dataset label
-                        backgroundColor: [
-                          "#005734",
-                          "rgb(126, 126, 126)",
-                          "#121212",
-                        ],
-                        borderColor: [
-                          "#005734",
-                          "rgb(126, 126, 126)",
-                          "#121212",
-                        ],
-                        data: [
-                          candidateData[key].tasks_approved,
-                          candidateData[key].tasks_added,
-                          candidateData[key].team_tasks,
-                        ],
-                      };
-                    }),
-                  }}
-                />
-              </div>
-              <div className="personal_info">
-                <h6>personal info</h6>
-                <div>
-                  <p>
-                    <span>status:</span>
-                    {personalInfo.status}
-                  </p>
-                  <p>
-                    <span>applicant:</span>
-                    {personalInfo.applicant}
-                  </p>
-                  <p>
-                    <span>applicant email:</span>
-                    {personalInfo.email}
-                  </p>
-                  <p>
-                    <span>country:</span>
-                    {personalInfo.country}
-                  </p>
-                  <p>
-                    <span>project:</span>
-                    {personalInfo.project}
-                  </p>
-                  <p>
-                    <span>username:</span>
-                    {personalInfo.username}
-                  </p>
-                  <p>
-                    <span>portfolio name:</span>
-                    {personalInfo.portfolio_name}
-                  </p>
-                  <p>
-                    <span>shortlisted on:</span>
-                    {formatDate(personalInfo.shortlisted_on)}
-                  </p>
-                  <p>
-                    <span>selected on:</span>
-                    {formatDate(personalInfo.selected_on)}
-                  </p>
-                  <p>
-                    <span>hired on:</span>
-                    {formatDate(personalInfo.hired_on)}
-                  </p>
-                  <p>
-                    <span>onboarded on:</span>
-                    {formatDate(personalInfo.onboarded_on)}
-                  </p>
-                </div>
-              </div>
+              {" "}
+              {secondLoading ? (
+                <LoadingSpinner />
+              ) : (
+                <>
+                  {candidateName && <h1>candidate name : {candidateName}</h1>}
+                  <div className="graph">
+                    <Bar
+                      data={{
+                        labels: Object.keys(candidateData),
+                        datasets: Object.keys(candidateData).map((key) => {
+                          return {
+                            label: key, // Use the key as the dataset label
+                            backgroundColor: [
+                              "#005734",
+                              "rgb(126, 126, 126)",
+                              "#121212",
+                            ],
+                            borderColor: [
+                              "#005734",
+                              "rgb(126, 126, 126)",
+                              "#121212",
+                            ],
+                            data: [
+                              candidateData[key].tasks_approved,
+                              candidateData[key].tasks_added,
+                              candidateData[key].team_tasks,
+                            ],
+                          };
+                        }),
+                      }}
+                    />
+                  </div>
+                  <div className="personal_info">
+                    <h6>personal info</h6>
+                    <div>
+                      <p>
+                        <span>status:</span>
+                        {personalInfo.status}
+                      </p>
+                      <p>
+                        <span>applicant:</span>
+                        {personalInfo.applicant}
+                      </p>
+                      <p>
+                        <span>applicant email:</span>
+                        {personalInfo.email}
+                      </p>
+                      <p>
+                        <span>country:</span>
+                        {personalInfo.country}
+                      </p>
+                      <p>
+                        <span>project:</span>
+                        {personalInfo.project}
+                      </p>
+                      <p>
+                        <span>username:</span>
+                        {personalInfo.username}
+                      </p>
+                      <p>
+                        <span>portfolio name:</span>
+                        {personalInfo.portfolio_name}
+                      </p>
+                      <p>
+                        <span>shortlisted on:</span>
+                        {formatDate(personalInfo.shortlisted_on)}
+                      </p>
+                      <p>
+                        <span>selected on:</span>
+                        {formatDate(personalInfo.selected_on)}
+                      </p>
+                      <p>
+                        <span>hired on:</span>
+                        {formatDate(personalInfo.hired_on)}
+                      </p>
+                      <p>
+                        <span>onboarded on:</span>
+                        {formatDate(personalInfo.onboarded_on)}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
             </>
-          )}
+          ) : null}
         </div>
       </div>
     </StaffJobLandingLayout>
