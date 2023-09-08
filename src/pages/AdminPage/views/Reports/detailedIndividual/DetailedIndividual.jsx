@@ -80,6 +80,21 @@ export default function DetailedIndividual() {
     team_tasks_uncompleted: "Team Tasks Uncompleted",
     teams: "Teams",
   };
+  console.log(
+    "objectt",
+    Object.keys(candidateData).map((key) => {
+      return {
+        label: ["tasks added", "tasks approved", "team tasks"],
+        data: [
+          candidateData[key].tasks_approved,
+          candidateData[key].tasks_added,
+          candidateData[key].team_tasks,
+        ],
+        backgroundColor: ["red", "blue", "green"],
+        borderColor: ["red", "blue", "green"],
+      };
+    })
+  );
   if (firstLoading)
     return (
       <StaffJobLandingLayout
@@ -119,6 +134,25 @@ export default function DetailedIndividual() {
           ) : (
             <>
               {candidateName && <h1>candidate name : {candidateName}</h1>}
+              <div className="graph">
+                <Bar
+                  data={{
+                    labels: Object.keys(candidateData),
+                    datasets: Object.keys(candidateData).map((key) => {
+                      return {
+                        label: key, // Use the key as the dataset label
+                        backgroundColor: ["red", "blue", "green"],
+                        borderColor: ["red", "blue", "green"],
+                        data: [
+                          candidateData[key].tasks_approved,
+                          candidateData[key].tasks_added,
+                          candidateData[key].team_tasks,
+                        ],
+                      };
+                    }),
+                  }}
+                />
+              </div>
               <div className="personal_info">
                 <h6>personal info</h6>
                 <div>
