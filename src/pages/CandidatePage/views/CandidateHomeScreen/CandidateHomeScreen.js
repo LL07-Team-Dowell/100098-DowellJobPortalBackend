@@ -178,7 +178,7 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
         </section>
         {isLargeScreen && <aside>
           <div className='side__Content'>
-            <img src={assets.map_img} alt='dowell on the map' />
+            <img src={assets.new_map_img} alt='dowell on the map' />
             <video width={'100%'} controls>
               <source src={assets.dowell_video}></source>
             </video>

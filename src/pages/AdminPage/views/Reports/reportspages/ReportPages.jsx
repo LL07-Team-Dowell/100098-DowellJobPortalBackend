@@ -3,6 +3,8 @@ import { AiOutlinePlusCircle } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { useState } from "react";
+import './index.scss';
+
 const ReportPages = () => {
   const navigate = useNavigate();
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
@@ -14,7 +16,7 @@ const ReportPages = () => {
       pageTitle={"Reports"}
       hideSideBar={showCustomTimeModal}
     >
-      <div className="create_team_parent" style={{ padding: 20 }}>
+      <div className="create_team_parent report" style={{ padding: '20px 20px 200px' }}>
         <div
           className="Create_Team"
           onClick={() => navigate("organization-report")}

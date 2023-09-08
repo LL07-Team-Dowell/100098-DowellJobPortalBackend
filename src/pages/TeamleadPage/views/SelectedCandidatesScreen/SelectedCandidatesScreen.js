@@ -471,13 +471,20 @@ const SelectedCandidatesScreen = ({
       case hrPageActions.MOVE_TO_REJECTED:
         if (!selectedCandidateData) return;
 
+        if (!guestApplication && remarks.length < 1) {
+          disableOtherBtns && setDisabled(false);
+          ref.current.classList.toggle("active");
+
+          return toast.info("Please enter reject remarks for candidate");
+        } 
+
         //Rejection Function For HR
         Promise.all([
           rejectCandidateApplicationforHr({
             document_id: selectedCandidateData._id,
             reject_remarks: guestApplication
               ? "Rejected"
-              : selectedCandidateData.hr_remarks,
+              : remarks,
             applicant: selectedCandidateData.applicant,
             username: selectedCandidateData.username,
             company_id: currentUser.portfolio_info[0].org_id,
@@ -506,13 +513,22 @@ const SelectedCandidatesScreen = ({
           .then((resp) => console.log(resp))
           .catch((error) => console.log(error));
 
-        updateCandidateData((prevCandidates) => {
-          return prevCandidates.filter(
-            (candidate) => candidate.id !== selectedCandidateData.id
+        toast.success('Successfuly rejected candidate application');
+
+        updateAppliedData((prevAppliedCandidates) => {
+          return prevAppliedCandidates.filter(
+            (application) => application._id !== selectedCandidateData._id
           );
         });
 
-        return navigate("/shortlisted");
+        updateCandidateData((prevCandidates) => {
+          return prevCandidates.filter(
+            (candidate) => candidate._id !== selectedCandidateData._id
+          );
+        });
+
+        if (guestApplication) return navigate('/guest-applications');
+        return navigate("/");
 
       case hrPageActions.MOVE_TO_PENDING:
         disableOtherBtns && setDisabled(false);

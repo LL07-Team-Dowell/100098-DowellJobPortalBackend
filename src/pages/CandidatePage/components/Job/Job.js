@@ -43,23 +43,26 @@ function JobScreen() {
         // const findJobsMatchingCategory = (category) => jobs.filter(job => console.log(category));
         const findJobsMatchingCategory = (category) => jobs.filter(job => {
 
+            if (job.job_category === category) return job
+            return null
+
             // if (job.job_category && category) {
             //     return job.job_category.toLocaleLowerCase().includes(category.toLocaleLowerCase()) || category.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase());
             // } else {
             //     return false;
             // }
 
-            return new Promise((resolve, reject) => {
-                const matchedJobs = jobs.filter(job => {
-                    if (job.job_category && category) {
-                        return job.job_category.toLocaleLowerCase().includes(category.toLocaleLowerCase()) || category.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase());
-                    } else {
-                        return false;
-                    }
-                });
-                resolve(matchedJobs);
-            });
-        });
+            // return new Promise((resolve, reject) => {
+            //     const matchedJobs = jobs.filter(job => {
+            //         if (job.job_category && category) {
+            //             return job.job_category.toLocaleLowerCase().includes(category.toLocaleLowerCase()) || category.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase());
+            //         } else {
+            //             return false;
+            //         }
+            //     });
+            //     resolve(matchedJobs);
+            // });
+        }).filter(job => job);
         const jobCategoryParam = params.get('jobCategory');
         const currentJobStream = params.get('stream');
         // console.log(jobs);
@@ -76,7 +79,7 @@ function JobScreen() {
                 setJobSelectionCategories(["Full time", "Part time"])
                 const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.type_of_job === currentJobCategory);
                 console.log(jobsToDisplayForCurrentCategory);
-                if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
+                // if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
 
@@ -84,21 +87,21 @@ function JobScreen() {
                 setJobSelectionCategories(["Full time"])
                 const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.type_of_job === currentJobCategory);
                 console.log(jobsToDisplayForCurrentCategory);
-                if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
+                // if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
 
             if (jobCategoryParam === "Research Associate") {
                 setJobSelectionCategories(["Full time", "Part time"])
                 const jobsToDisplayForCurrentCategory = matchedJobs.filter(job => job.others[jobKeys.othersResearchAssociateJobType] === currentJobCategory);
-                if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
+                // if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
 
             if (jobCategoryParam === "Freelancer") {
                 setJobSelectionCategories(["Time based", "Task based"])
                 const jobsToDisplayForCurrentCategory = matchedJobs?.filter(job => job.type_of_job === currentJobCategory);
-                if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
+                // if (jobsToDisplayForCurrentCategory.length === 0) return setJobsToDisplay(jobs.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
                 setJobsToDisplay(jobsToDisplayForCurrentCategory);
             }
 
@@ -118,23 +121,27 @@ function JobScreen() {
         if (!currentJobCategory) return
         if (currentCategory === "Internship") {
             const matchedJobs = jobsMatchingCategory.filter(job => job.type_of_job === currentJobCategory);
-            if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
+            // if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
         }
 
-        if (currentCategory === "Employee") return
+        if (currentCategory === "Employee") {
+            const matchedJobs = jobsMatchingCategory.filter(job => job.others[jobKeys.othersResearchAssociateJobType] === currentJobCategory);
+            // if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
+            setJobsToDisplay(matchedJobs);
+        }
 
         if (currentCategory === "Research Associate") {
 
             const matchedJobs = jobsMatchingCategory.filter(job => job.others[jobKeys.othersResearchAssociateJobType] === currentJobCategory);
-            if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
+            // if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.typeof.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.typeof.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
 
         }
 
         if (currentCategory === "Freelancer") {
             const matchedJobs = jobsMatchingCategory.filter(job => job.type_of_job === currentJobCategory);
-            if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
+            // if (matchedJobs.length === 0) return setJobsToDisplay(jobs?.filter(job => job.job_category.toLocaleLowerCase().includes(currentCategory.toLocaleLowerCase()) || currentCategory.toLocaleLowerCase().includes(job.job_category.toLocaleLowerCase())))
             setJobsToDisplay(matchedJobs);
         }
 
@@ -370,9 +377,9 @@ function JobScreen() {
                                         {
                                             jobsLoading ? <LoadingSpinner /> :
 
-                                                jobsToDisplay.length === 0 ? <>No '{currentCategory}' jobs currently available</> :
+                                                jobsToDisplay.length === 0 ? <>No '{currentJobCategory} {currentCategory}' jobs currently available</> :
 
-                                                    jobsToDisplay.length >= 1 && currentCategory !== "all" && jobsToDisplay.every(job => !job.is_active) ? <>No '{currentCategory}' jobs currently available</> :
+                                                    jobsToDisplay.length >= 1 && currentCategory !== "all" && jobsToDisplay.every(job => !job.is_active) ? <>No '{currentJobCategory} {currentCategory}' jobs currently available</> :
 
                                                         React.Children.toArray(jobsToDisplay.map(job => {
 

@@ -14,6 +14,7 @@ import bg_rectang from "./images/bg-rectang.png";
 import lock_screen from "./images/lock.png";
 import dev_img from "./images/developr-img.png";
 import frontendimage from "./images/frontend-image.png"
+import new_map_img from "./images/Website_3.png";
 
 export {
     users_img_1,
@@ -31,5 +32,6 @@ export {
     bg_rectang,
     lock_screen,
     dev_img,
-    frontendimage
+    frontendimage,
+    new_map_img,
 }
