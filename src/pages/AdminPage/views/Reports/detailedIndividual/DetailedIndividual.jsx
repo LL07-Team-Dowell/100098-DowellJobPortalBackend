@@ -67,7 +67,16 @@ export default function DetailedIndividual() {
     team_tasks_uncompleted: "Team Tasks Uncompleted",
     teams: "Teams",
   };
-  if (firstLoading) return <LoadingSpinner />;
+  if (firstLoading)
+    return (
+      <StaffJobLandingLayout
+        adminView={true}
+        adminAlternativePageActive={true}
+        pageTitle={"Detailed individual report"}
+      >
+        <LoadingSpinner />
+      </StaffJobLandingLayout>
+    );
   return (
     <StaffJobLandingLayout
       adminView={true}
