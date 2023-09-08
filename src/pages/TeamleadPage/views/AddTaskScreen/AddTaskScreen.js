@@ -148,7 +148,7 @@ const AddTaskScreen = ({
 
   const updateTask = async () => {
     if (inputsAreFilled) {
-      if (duration < 15) {
+      if (duration <= 15) {
         setLoading(true);
         setDisabled(true);
         
