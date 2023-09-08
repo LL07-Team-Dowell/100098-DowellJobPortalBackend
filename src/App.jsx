@@ -78,7 +78,7 @@ import DetailedIndividual from "./pages/AdminPage/views/Reports/detailedIndividu
 import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
 
 function App() {
-  console.log = () => { };
+  // console.log = () => { };
   const {
     currentUser,
     isPublicUser,
@@ -548,9 +548,7 @@ function App() {
         />
         <Route
           path="/report/detailed-individual-report"
-          element={
-           <DetailedIndividual />
-          }
+          element={<DetailedIndividual />}
         />
         <Route
           path="/report/task-report"

@@ -15,6 +15,7 @@ export default function DetailedIndividual() {
   const [candidates, setcandidates] = useState([]);
   const [id, setId] = useState("");
   const [candidateData, setCandidateDate] = useState([]);
+  const [personalInfo, setPersonalInfo] = useState({});
   const [candidateName, setCandidateName] = useState("");
   const [firstLoading, setFirstLoading] = useState(false);
   const [secondLoading, setSecondLoadng] = useState(false);
@@ -28,6 +29,8 @@ export default function DetailedIndividual() {
         .then((resp) => {
           console.log(resp.data);
           setCandidateDate(resp.data.data[0]);
+          setPersonalInfo(resp.data.personal_info);
+          console.log(resp.data.personal_info);
           setCandidateName(resp.data.personal_info.username);
           setSecondLoadng(false);
         })
@@ -100,25 +103,49 @@ export default function DetailedIndividual() {
               ))}
             </select>
           </div>
-          {secondLoading ? (
+          {secondLoading && id !== "" ? (
             <LoadingSpinner />
           ) : (
             <>
               {candidateName && <h1>candidate name : {candidateName}</h1>}
-              {Object.keys(candidateData).map((data, index) => (
-                <div className="candidate_indiv_data">
-                  <div>
-                    <span>Month</span>:{data}
-                    {Object.keys(candidateData[data]).map((key) => (
-                      <div key={key}>
-                        {keyToDisplayText[key]}: {candidateData[data][key]}
-                        {keyToDisplayText[key].match(/\w+/)[0] ===
-                          "Percentage" && "%"}
-                      </div>
-                    ))}
-                  </div>
+              <div className="personal_info">
+                <h6>personal info</h6>
+                <div>
+                  <p>
+                    <span>status:{personalInfo.status}</span>
+                  </p>
+                  <p>
+                    <span>applicant:{personalInfo.applicant}</span>
+                  </p>
+                  <p>
+                    <span>applicant email:{personalInfo.email}</span>
+                  </p>
+                  <p>
+                    <span>country:{personalInfo.country}</span>
+                  </p>
+                  <p>
+                    <span>project:{personalInfo.project}</span>
+                  </p>
+                  <p>
+                    <span>username:{personalInfo.username}</span>
+                  </p>
+                  <p>
+                    <span>portfolio name:{personalInfo.portfolio_name}</span>
+                  </p>
+                  <p>
+                    <span>shortlisted on:{personalInfo.shortlisted_on}</span>
+                  </p>
+                  <p>
+                    <span>selected on:{personalInfo.selected_on}</span>
+                  </p>
+                  <p>
+                    <span>hired on:{personalInfo.hired_on}</span>
+                  </p>
+                  <p>
+                    <span>onboarded on:{personalInfo.onboarded_on}</span>
+                  </p>
                 </div>
-              ))}
+              </div>
             </>
           )}
         </div>
@@ -126,3 +153,17 @@ export default function DetailedIndividual() {
     </StaffJobLandingLayout>
   );
 }
+// {Object.keys(candidateData).map((data, index) => (
+//   <div className="candidate_indiv_data">
+//     <div>
+//       <span>Month</span>:{data}
+//       {Object.keys(candidateData[data]).map((key) => (
+//         <div key={key}>
+//           {keyToDisplayText[key]}: {candidateData[data][key]}
+//           {keyToDisplayText[key].match(/\w+/)[0] === "Percentage" &&
+//             "%"}
+//         </div>
+//       ))}
+//     </div>
+//   </div>
+// ))}
