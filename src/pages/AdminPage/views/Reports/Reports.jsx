@@ -267,17 +267,17 @@ const AdminReports = ({ subAdminView }) => {
                           ],
                           backgroundColor: [
                             "#005734",
-                            "red",
+                            "#9146FF",
+                            "#d3d3d3",
                             "black",
-                            "yellow",
                             "pink",
                             "blue",
                           ],
                           borderColor: [
                             "#005734",
-                            "red",
+                            "#9146FF",
+                            "#d3d3d3",
                             "black",
-                            "yellow",
                             "pink",
                             "blue",
                           ],
@@ -303,7 +303,7 @@ const AdminReports = ({ subAdminView }) => {
                     labels: ["Teams", "team tasks", "individual tasks"],
                     datasets: [
                       {
-                        label: ["Teams", "team tasks", "individual tasks"],
+                        label: "Poll",
                         data: [data.teams, data.team_tasks, data.tasks],
                         backgroundColor: ["#D3D3D3", "#005734", "black"],
                         borderColor: ["#D3D3D3", "#005734", "black"],
@@ -318,7 +318,7 @@ const AdminReports = ({ subAdminView }) => {
             <h6>applications</h6>
             <div>
               <div>
-                {!(data.tasks_completed_on_time || data.tasks) ? (
+                {!(data.tasks_completed || data.tasks) ? (
                   <h4>
                     there is no data between {firstDate} and {lastDate}
                   </h4>
@@ -326,11 +326,11 @@ const AdminReports = ({ subAdminView }) => {
                   <div style={{ width: 400, height: 300 }}>
                     <Doughnut
                       data={{
-                        labels: ["tasks completed on time", "tasks"],
+                        labels: ["tasks completed", "tasks"],
                         datasets: [
                           {
                             label: "Poll",
-                            data: [data.tasks_completed_on_time, data.tasks],
+                            data: [data.tasks_completed, data.tasks],
                             backgroundColor: ["#D3D3D3", "#005734"],
                             borderColor: ["#D3D3D3", "#005734"],
                           },
