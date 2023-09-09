@@ -314,7 +314,6 @@ def set_date_format(date):
                                     iso_format =datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%m/%d/%Y %H:%M:%S')
                                     return iso_format
                                 except Exception as e:
-                                    print(e, date)
                                     try:
                                         iso_format =datetime.datetime.strptime(date, '%d/%m/%Y  %H:%M:%S').strftime('%m/%d/%Y %H:%M:%S')
                                         return iso_format

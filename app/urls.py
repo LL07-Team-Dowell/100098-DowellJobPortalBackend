@@ -120,20 +120,14 @@ urlpatterns = [
     path('update_comment/', Comment_Apis.as_view()),
 
     # Generate Report -------------------------------------
-    path('generate_admin_report/',Generate_admin_Report.as_view()),
-    path('get_all_qrcode/<str:job_company_id>/',GetQRCode.as_view()),
-    path('generate_public_report/',Generate_public_Report.as_view()),      
-    path('generate_hr_report/',Generate_hr_Report.as_view()),
-    path('generate_account_Report/',Generate_account_Report.as_view()),
-    path('generate_candidate_Report/',Generate_candidate_Report.as_view()),
-    path('generate_team_Report/',Generate_Team_Report.as_view()),
-    path('generate_lead_Report/',Generate_Lead_Report.as_view()),
-    path('generate_candidate_duplicates/<str:company_id>/',Generate_candidate_dublicates.as_view()),
-    path('generate_individual_Report/',Generate_Individual_Report.as_view()),
-    path('generate_individual_task_Report/',Generate_Individual_Task_Report.as_view()),
-    path('generate_project_Report/',Generate_project_Report.as_view()),
+    path('generate_report/',Generate_Report.as_view()),
 
     # Payment Request Status -------------------------------------
-    path('update_payment_request_status/<str:document_id>/',Update_payment_status.as_view())
+    path('update_payment_request_status/<str:document_id>/',Update_payment_status.as_view()),
+
+    # Other Apis -------------------------------------
+    path('get_all_qrcode/<str:job_company_id>/',GetQRCode.as_view()),
+    path('generate_candidate_duplicates/<str:company_id>/',Generate_candidate_dublicates.as_view())
+    
 ]
 
