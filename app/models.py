@@ -28,7 +28,5 @@ class UsersubProject(models.Model):
     sub_project_list = jsonfield.JSONField()
     company_id = models.CharField(max_length=400)
     data_type = models.CharField(max_length=100)
-    
-
     def __str__(self):
         return f"{self.parent_project}"
