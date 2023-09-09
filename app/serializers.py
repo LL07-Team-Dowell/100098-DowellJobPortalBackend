@@ -364,3 +364,8 @@ class UpdateTaskByCandidateSerializer(serializers.Serializer):
     start_time = serializers.TimeField(allow_null=False) 
     end_time = serializers.TimeField(allow_null=False)   
     user_id = serializers.CharField(allow_null=True, allow_blank=True)  
+
+
+class ProjectWiseReportSerializer(serializers.Serializer):
+    project = serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = serializers.CharField(allow_null=True, allow_blank=True)
