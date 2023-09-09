@@ -138,7 +138,7 @@ const TaskReports = ({ subAdminView }) => {
             <h2>Task Reports</h2>
           </div>
           <div className="task__report__header">
-            <p>Get insights into your organizations</p>
+            <p>Get insights into your organizations Task</p>
             <>
               {projectsLoading ? (
                 <p>Loading projects</p>
