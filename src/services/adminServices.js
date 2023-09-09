@@ -61,19 +61,16 @@ export const generateReport = async (data) => {
 };
 
 export const getUsedQrCodes = async (companyId) => {
-  return await currentBackendAxiosInstance.get(`get_all_qrcode/${companyId}/`)
+  return await currentBackendAxiosInstance.get(`get_all_qrcode/${companyId}/`);
 };
 
 export const createNewProductLink = async (data) => {
-  return await currentBackendAxiosInstance.post(
-    "public_product_url/",
-    data
-  );
+  return await currentBackendAxiosInstance.post("public_product_url/", data);
 };
 
 export const getCreatedProductLinks = async (companyId) => {
   return await currentBackendAxiosInstance.get(
-    `/fetch_public_product_url/${companyId}/`,
+    `/fetch_public_product_url/${companyId}/`
   );
 };
 
@@ -85,23 +82,40 @@ export const adminEditUserSettingProfile = async (id, data) => {
 };
 
 export const getSettingUserSubProject = async () => {
-  return await currentBackendAxiosInstance.get(`settingusersubproject/`)
-}
+  return await currentBackendAxiosInstance.get(`settingusersubproject/`);
+};
 
 export const getSingleSettingUserSubProject = async (id) => {
-  return await currentBackendAxiosInstance.get(`settingusersubproject/${id}`)
-}
+  return await currentBackendAxiosInstance.get(`settingusersubproject/${id}`);
+};
 
 export const createNewSettingUserSubProject = async (data) => {
-  return await currentBackendAxiosInstance.post(`settingusersubproject/`, data)
-}
+  return await currentBackendAxiosInstance.post(`settingusersubproject/`, data);
+};
 
 export const editSettingUserSubProject = async (id, data) => {
-  return await currentBackendAxiosInstance.put(`settingusersubproject/${id}/`, data)
-}
-export const getAllOnBoardCandidate = async (id = '6385c0f18eca0fb652c94561') => {
-  return await currentBackendAxiosInstance.get(`get_all_onboarded_candidate/${id}/`)
-}
+  return await currentBackendAxiosInstance.put(
+    `settingusersubproject/${id}/`,
+    data
+  );
+};
+export const getAllOnBoardCandidate = async (
+  id = "6385c0f18eca0fb652c94561"
+) => {
+  return await currentBackendAxiosInstance.get(
+    `get_all_onboarded_candidate/${id}/`
+  );
+};
 export const generateindividualReport = async (data) => {
-  return await currentBackendAxiosInstance.post(`generate_individual_Report/`,data)
-}
+  return await currentBackendAxiosInstance.post(
+    `generate_individual_Report/`,
+    data
+  );
+};
+
+export const generateIndividualTaskReport = async (data) => {
+  return await currentBackendAxiosInstance.post(
+    `generate_individual_task_Report/`,
+    data
+  );
+};
