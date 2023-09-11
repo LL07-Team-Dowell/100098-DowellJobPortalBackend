@@ -132,6 +132,7 @@ urlpatterns = [
     path('generate_individual_Report/',Generate_Individual_Report.as_view()),
     path('generate_individual_task_Report/',Generate_Individual_Task_Report.as_view()),
     path('generate_project_Report/',Generate_project_Report.as_view()),
+    path('generate_project_task_Report/',Generate_project_task_details_Report.as_view()),
 
     # Payment Request Status -------------------------------------
     path('update_payment_request_status/<str:document_id>/',Update_payment_status.as_view())
