@@ -362,7 +362,7 @@ const CreateTaskScreen = ({
                     <SubprojectSelectWithSearch
                       className={'task__Select__Subproject'} 
                       searchWrapperClassName={'task__Search__Sub'}
-                      subprojects={allSubProjects}
+                      subprojects={allSubProjects.filter(item => item.parent_project === selectedProject)}
                       selectedSubProject={subprojectSelected}
                       handleSelectItem={(subproject, project) => {
                         setSubprojectSelected(subproject);

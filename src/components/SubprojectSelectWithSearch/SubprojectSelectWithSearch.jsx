@@ -19,7 +19,7 @@ const SubprojectSelectWithSearch = ({
 
     useEffect(() => {
         setDisplayedItems(subprojects ? subprojects : [])
-    }, [])
+    }, [subprojects])
 
     useEffect(() => {
         const filteredList = subprojects?.map(item => {
