@@ -364,6 +364,7 @@ class UpdateTaskByCandidateSerializer(serializers.Serializer):
     start_time = serializers.TimeField(allow_null=False) 
     end_time = serializers.TimeField(allow_null=False)   
     user_id = serializers.CharField(allow_null=True, allow_blank=True)  
+    
 class ReportSerializer(serializers.Serializer):
     REPORT_TYPE = (
         ('Admin', 'Admin'),
@@ -378,3 +379,7 @@ class ReportSerializer(serializers.Serializer):
         ('Public', 'Public'),
     )
     report_type = serializers.ChoiceField(allow_null=False, allow_blank=False, choices=REPORT_TYPE)
+
+class ProjectWiseReportSerializer(serializers.Serializer):
+    project = serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = serializers.CharField(allow_null=True, allow_blank=True)

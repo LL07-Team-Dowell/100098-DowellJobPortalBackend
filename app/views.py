@@ -63,7 +63,8 @@ from .serializers import (
     UpdateTaskByCandidateSerializer,
     GetAllCandidateTaskSerializer,
     settingUsersubProjectSerializer,
-    ReportSerializer
+    ReportSerializer,
+    ProjectWiseReportSerializer
 )
 from .models import UsersubProject
 
@@ -5782,9 +5783,8 @@ class Generate_Report(APIView):
                 
 
             projects= sorted(projects)
-            
-            week_details=[]
             subprojects = {}
+            week_details=[]
             total_hours = {}
             total_mins = {}
             total_secs = {}
@@ -5830,16 +5830,16 @@ class Generate_Report(APIView):
             
             
             #subprojects------------------
+
             for res in response["data"]:
                 if "subproject" in res.keys():
                     if not res["subproject"] == None or not res["subproject"] == "None":
                         try:
-                            for sp in res["subproject"]:
-                                if type(sp.split(",")) ==list:
-                                    for s in sp.split(","):
-                                        subprojects[res["project"]].append(s)
-                                else:
+                            if type(res["subproject"]) == list:
+                                for sp in res["subproject"]:
                                     subprojects[res["project"]].append(sp)
+                            else:
+                                subprojects[res["project"]].append(res["subproject"])
 
                         except TypeError:
                             pass
@@ -5862,7 +5862,8 @@ class Generate_Report(APIView):
             )
     def generate_project_report(self, request):
         payload = request.data
-        if payload:
+        serializer = ProjectWiseReportSerializer(data=payload)
+        if serializer.is_valid():
             project_name = payload["project"]
             company_id = payload["company_id"]
             field1 = {"company_id": company_id, "project": project_name}
@@ -5871,39 +5872,89 @@ class Generate_Report(APIView):
             field2 = {"company_id": company_id}
             update_field2 = {}
             response2 = dowellconnection(*task_management_reports, "fetch", field2, update_field2)
-            
+
             if response1 is not None and response2 is not None:
                 team_projects1 = json.loads(response1)
-                team_projects2 = json.loads(response2) 
+                team_projects2 = json.loads(response2)
                 task_data1 = team_projects1['data']
                 task_data2 = team_projects2['data']
                 users_task_count = {}
-                total_tasks_added = 0 
-                
+                total_tasks_added = 0
+                user_subprojects={} 
+
+                time_formats = ["%H:%M:%S", "%H:%M"]
+
+                user_total_hours = {}
+
                 for task1 in task_data1:
                     user_id1 = task1.get("user_id")
+                    start_time_str = task1['start_time']
+                    end_time_str = task1['end_time']
+                
+                    start_time = None
+                    end_time = None
+
+                    for time_format in time_formats:
+                        try:
+                            start_time = datetime.datetime.strptime(start_time_str, time_format)
+                            end_time = datetime.datetime.strptime(end_time_str, time_format)
+                            break  
+                        except ValueError:
+                            continue  
+
+                    if start_time is not None and end_time is not None:
+                        time_difference = (end_time - start_time).total_seconds()
+                        work_hours = time_difference / 3600 
+                        user_total_hours.setdefault(user_id1, 0)
+                        user_total_hours[user_id1] += work_hours
+
                     if user_id1:
                         if user_id1 in users_task_count:
                             users_task_count[user_id1] += 1
                         else:
                             users_task_count[user_id1] = 1
                         total_tasks_added += 1
-                
+
                 user_id_to_name = {}
+                
                 for task2 in task_data2:
                     user_id2 = task2.get("user_id")
                     user_name2 = task2.get("task_added_by")
                     if user_id2 and user_name2:
                         user_id_to_name[user_id2] = user_name2
-                output = []
+                users_data = []
+
+                
+                subprojects = {}
+                for res in task_data1:
+                    subprojects[res["user_id"]]=[]
+                for res in task_data1:
+                    print(res)
+                    if "subproject" in res.keys():
+                        if not res["subproject"] == None or not res["subproject"] == "None":
+                            try:
+                                if type(res["subproject"]) == list:
+                                    for sp in res["subproject"]:
+                                        subprojects[res['user_id']].append(sp)
+                                else:
+                                    subprojects[res['user_id']].append(res["subproject"])
+
+                            except TypeError:
+                                pass
 
                 for user_id, task_count in users_task_count.items():
                     task_added_by = user_id_to_name.get(user_id, "Unknown")
-                    output.append({"user_id": user_id, "user": task_added_by, "tasks_added": task_count})
-                
-                
-                response_data = {"total_tasks_added": total_tasks_added, "users_that_added": output}
-                
+                    total_hours = user_total_hours.get(user_id, 0)
+                    """try:
+                        user_subproject = UsersubProject.objects.get(link_id=user_id)
+                        subprojects = user_subproject.sub_project_list
+                    except UsersubProject.DoesNotExist:
+                        subprojects = []"""
+                    users_data.append({"user_id": user_id, "user": task_added_by, "tasks_added": task_count, "total_hours": total_hours,"subprojects":subprojects[user_id]})
+
+
+                response_data = {"total_tasks_added": total_tasks_added, "users_that_added": users_data}
+
                 return Response(
                     {
                         "success": True,
@@ -6029,6 +6080,7 @@ class Generate_candidate_dublicates(APIView):
             status=status.HTTP_200_OK,
         )
 
+
 @method_decorator(csrf_exempt, name="dispatch")   
 class Update_payment_status(APIView):
     def patch(self, request, document_id):
@@ -6100,3 +6152,148 @@ class Update_payment_status(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+class Generate_project_task_details_Report(APIView):
+
+     def post(self, request):
+        payload = request.data
+        serializer = ProjectWiseReportSerializer(data=payload)
+        if serializer.is_valid():
+            project_name = payload["project"]
+            company_id = payload["company_id"]
+            field1 = {"company_id": company_id, "project": project_name}
+            update_field1 = {}
+            response1 = dowellconnection(*task_details_module, "fetch", field1, update_field1)
+            field2 = {"company_id": company_id}
+            update_field2 = {}
+            response2 = dowellconnection(*task_management_reports, "fetch", field2, update_field2)
+            taskdetails=self.task_details(request).data['data']
+
+            if response1 is not None and response2 is not None:
+                team_projects1 = json.loads(response1)
+                team_projects2 = json.loads(response2)
+                task_data1 = team_projects1['data']
+                task_data2 = team_projects2['data']
+                users_task_count = {}
+                total_tasks_added = 0
+                user_subprojects={} 
+
+                time_formats = ["%H:%M:%S", "%H:%M"]
+
+                user_total_hours = {}
+
+                for task1 in task_data1:
+                    user_id1 = task1.get("user_id")
+                    start_time_str = task1['start_time']
+                    end_time_str = task1['end_time']
+                
+                    start_time = None
+                    end_time = None
+
+                    for time_format in time_formats:
+                        try:
+                            start_time = datetime.datetime.strptime(start_time_str, time_format)
+                            end_time = datetime.datetime.strptime(end_time_str, time_format)
+                            break  
+                        except ValueError:
+                            continue  
+
+                    if start_time is not None and end_time is not None:
+                        time_difference = (end_time - start_time).total_seconds()
+                        work_hours = time_difference / 3600 
+                        user_total_hours.setdefault(user_id1, 0)
+                        user_total_hours[user_id1] += work_hours
+
+                    if user_id1:
+                        if user_id1 in users_task_count:
+                            users_task_count[user_id1] += 1
+                        else:
+                            users_task_count[user_id1] = 1
+                        total_tasks_added += 1
+
+                user_id_to_name = {}
+                
+                for task2 in task_data2:
+                    user_id2 = task2.get("user_id")
+                    user_name2 = task2.get("task_added_by")
+                    if user_id2 and user_name2:
+                        user_id_to_name[user_id2] = user_name2
+                users_data = []
+
+                for task2 in task_data1:
+                    user_id2 = task2.get("user_id")
+                    subprojects = task2.get("subproject", "none") 
+
+                    if user_id2 and subprojects in user_subprojects:                        
+                        user_subprojects[user_id2].extend(subprojects)
+                    else:
+                        user_subprojects[user_id1] = subprojects
+                users_data = []
+
+                for user_id, task_count in users_task_count.items():
+                    task_added_by = user_id_to_name.get(user_id, "Unknown")
+                    total_hours = user_total_hours.get(user_id, 0)
+                    try:
+                        user_subproject = UsersubProject.objects.get(link_id=user_id)
+                        subprojects = user_subproject.sub_project_list
+                    except UsersubProject.DoesNotExist:
+                        subprojects = []
+                    users_data.append({"user_id": user_id, "user": task_added_by, "tasks_added": task_count, "total_hours": total_hours,"subprojects":subprojects,"tasks":[]})
+                user_task_details_project_wise=[]
+                for user_data in users_data:
+                    user_name = user_data['user']
+                    
+                    matching_taskdetails = [task['task_detailds'] for task in taskdetails if task['user'] == user_name]
+                    
+                    user_data['tasks'].extend(matching_taskdetails)
+                response_data = {"total_tasks_added": total_tasks_added, "users_that_added": users_data}
+
+                return Response(
+                    {
+                        "success": True,
+                        "message": "Report Created",
+                        "data": users_data,
+                    }
+                )
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "Failed to fetch data from dowell connection",
+                    },
+                    status=400,
+                )
+        else:
+            return Response(
+                {"success": False, "message": serializer.errors}, status=400
+            )
+
+     def task_details(self, request):
+        payload = request.data
+        serializer = ProjectWiseReportSerializer(data=payload)
+        if serializer.is_valid():
+            project_name = payload["project"]
+            company_id = payload["company_id"]
+            field1 = {"company_id": company_id, "project": project_name}
+            update_field1 = {}
+            response1 = json.loads(dowellconnection(*task_details_module, "fetch", field1, update_field1))
+            field2 = {"company_id": company_id}
+            update_field2 = {}
+            response2 = json.loads(dowellconnection(*task_management_reports, "fetch", field2, update_field2))
+            user_task_details=[]
+            for response in response2['data']:
+                task_id=response['_id']
+                for res in response1['data']:
+                    if res["task_id"]==task_id:
+                        # print(res)
+                        user_task_details.append({
+                            'user':response['applicant'],
+                            "task_detailds":res
+                        })
+        return Response({
+            
+            'data':user_task_details
+
+        }, status=status.HTTP_201_CREATED)
+
