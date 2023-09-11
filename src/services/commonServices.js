@@ -28,7 +28,7 @@ export const getAllCompanyUserSubProject = async (companyId) => {
     return new Promise(async (resolve, reject) => {
         try {
             const res = (await currentBackendAxiosInstance.get(`settingusersubproject/`)).data;
-            const projectForCompany = res.filter(item => item.company_id === companyId);
+            const projectForCompany = res?.data?.filter(item => item.company_id === companyId);
             resolve(projectForCompany)
         } catch (error) {
             reject({ error })

@@ -21,7 +21,7 @@ import StaffJobLandingLayout from "../../layouts/StaffJobLandingLayout/StaffJobL
 import TitleNavigationBar from "../../components/TitleNavigationBar/TitleNavigationBar";
 import TogglerNavMenuBar from "../../components/TogglerNavMenuBar/TogglerNavMenuBar";
 import JobCard from "../../components/JobCard/JobCard";
-import { getJobs2 } from "../../services/commonServices";
+import { getAllCompanyUserSubProject, getJobs2 } from "../../services/commonServices";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import { useJobContext } from "../../contexts/Jobs";
 import {
@@ -72,6 +72,7 @@ const Teamlead = ({ isGrouplead }) => {
   const [showAddIssueModalForGrouplead, setShowAddIssueModalForGrouplead] = useState(false);
   const [ currentSelectedProjectForLead, setCurrentSelectedProjectForLead ] = useState('');
   const [ tasksToDisplayForLead, setTasksToDisplayForLead ] = useState([]);
+  const [ allSubProjects, setAllSubprojects ] = useState([]);
 
   const handleSearch = (value) => {
     const toAnagram = (word) => {
@@ -163,6 +164,7 @@ const Teamlead = ({ isGrouplead }) => {
       Promise.all([
         getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
         getCandidateTasksV2(requestDataToPost2),
+        getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id),
       ])
         .then(async (res) => {
 
@@ -221,6 +223,7 @@ const Teamlead = ({ isGrouplead }) => {
           )
           setLoading(false);
           setCandidatesDataLoaded(true);
+          setAllSubprojects(res[2]);
         })
         .catch((err) => {
           console.log(err);
@@ -238,6 +241,7 @@ const Teamlead = ({ isGrouplead }) => {
       ),
       getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
       getCandidateTasksV2(requestDataToPost2),
+      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id),
     ])
       .then(async (res) => {
         console.log("res", res);
@@ -349,6 +353,7 @@ const Teamlead = ({ isGrouplead }) => {
           )
         )
         setLoading(false);
+        setAllSubprojects(res[4]);
       })
       .catch((err) => {
         console.log(err);
@@ -752,6 +757,7 @@ const Teamlead = ({ isGrouplead }) => {
                           setShowAddIssueModal={setShowAddIssueModalForGrouplead}
                           showAddTaskModal={showAddTaskModalForGrouplead}
                           setShowAddTaskModal={setShowAddTaskModalForGrouplead}
+                          subprojects={allSubProjects}
                         />
                       </> :
                         <div className="jobs-container">

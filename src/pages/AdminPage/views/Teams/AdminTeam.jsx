@@ -52,7 +52,7 @@ const AdminTeam = () => {
   console.log(data.TeamsSelected.length);
   if (data.TeamsSelected.length === 0 && !response)
     return (
-      <StaffJobLandingLayout adminView={true}>
+      <StaffJobLandingLayout adminView={true} pageTitle={"All Teams"} adminAlternativePageActive={true}>
         <LoadingSpinner />
       </StaffJobLandingLayout>
     );

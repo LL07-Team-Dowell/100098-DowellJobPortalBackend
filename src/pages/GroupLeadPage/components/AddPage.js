@@ -15,6 +15,7 @@ const AddPage = ({
     setShowAddIssueModal,
     showAddTaskModal,
     setShowAddTaskModal,
+    subprojects,
 }) => {
     const { currentUser } = useCurrentUserContext();
     const { setUserTasks } = useCandidateTaskContext();
@@ -77,6 +78,7 @@ const AddPage = ({
                     closeTaskScreen={() => setShowAddTaskModal(false)}
                     updateTasks={setUserTasks}
                     assignedProject={allProjects}
+                    subprojects={subprojects}
                 />
             )}
             {showAddIssueModal && (

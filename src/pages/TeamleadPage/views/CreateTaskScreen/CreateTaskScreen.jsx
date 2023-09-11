@@ -22,6 +22,9 @@ import { toast } from "react-toastify";
 import { is } from "date-fns/locale";
 import { getCandidateTasksOfTheDayV2 } from "../../../../services/candidateServices";
 import { extractNewTasksAndAddExtraDetail } from "../../util/extractNewTasks";
+import { getAllCompanyUserSubProject } from "../../../../services/commonServices";
+import { AiOutlineClose, AiOutlineDown } from "react-icons/ai";
+import SubprojectSelectWithSearch from "../../../../components/SubprojectSelectWithSearch/SubprojectSelectWithSearch";
 
 const CreateTaskScreen = ({
   candidateAfterSelectionScreen,
@@ -55,10 +58,15 @@ const CreateTaskScreen = ({
   const [tasksForTheDay, setTasksForTheDay] = useState(null);
   const [singleTaskItem, setSingleTaskItem] = useState(null);
   const [ allTasks, setAllTasks ] = useState([]);
+  const [ allSubProjects, setAllSubprojects ] = useState([]);
+  const [ subprojectSelected, setSubprojectSelected ] = useState('');
+  const [ showSubprojectSelection, setShowSubprojectSelection ] = useState(false);
+
 
   useEffect(() => {
-    if (userTasks.length > 0) return setLoading(false);
-    
+    // if (userTasks.length > 0) return setLoading(false);
+    setLoading(true);
+
     const dataToPost = {
       "company_id": currentUser.portfolio_info[0].org_id,
       "data_type": currentUser.portfolio_info[0].data_type,
@@ -68,6 +76,7 @@ const CreateTaskScreen = ({
     Promise.all([
       getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
       getCandidateTasksV2(dataToPost),
+      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id),
     ])
       .then(async (res) => {
         const tasksToDisplay = res[0]?.data?.response?.data
@@ -114,6 +123,7 @@ const CreateTaskScreen = ({
           usersWithTasks
           .sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date))
         );
+        setAllSubprojects(res[2]);
       })
       .catch((err) => {
         console.log(err);
@@ -320,6 +330,51 @@ const CreateTaskScreen = ({
               }
               assignedProject={selectedProject}
             />
+
+            <div className="subproject__Div__Wrapper">
+              <div className="subproject__Div">
+                <span style={{ fontFamily: 'Poppins', fontSize: '0.9rem' }}>Subproject</span>
+                <div className="subproject__Custom__Select">
+                  <div 
+                    className="select" 
+                    onClick={ 
+                      subprojectSelected.length < 1  ? 
+                        () => setShowSubprojectSelection(!showSubprojectSelection)
+                      :
+                        () => {}
+                    }
+                  >
+                    <span>{subprojectSelected.length < 1 ? 'Select subproject' : subprojectSelected}</span>
+                    {
+                      (showSubprojectSelection || subprojectSelected.length > 0) ? <AiOutlineClose
+                        onClick={() => {
+                          setSubprojectSelected('');
+                          setShowSubprojectSelection(true);
+                        }}
+                      /> 
+                      : 
+                      <AiOutlineDown />
+                    }
+                  </div>
+                  
+                  { 
+                    showSubprojectSelection &&
+                    <SubprojectSelectWithSearch
+                      className={'task__Select__Subproject'} 
+                      searchWrapperClassName={'task__Search__Sub'}
+                      subprojects={allSubProjects}
+                      selectedSubProject={subprojectSelected}
+                      handleSelectItem={(subproject, project) => {
+                        setSubprojectSelected(subproject);
+                        setShowSubprojectSelection(false);
+                      }}
+                      hideSelectionsMade={true}
+                    />
+                  }
+                </div>
+              </div>
+            </div>
+
             <div className="all__Tasks__Container">
               <Calendar
                 onChange={handleSelectDateChange}
@@ -369,7 +424,15 @@ const CreateTaskScreen = ({
                             handleApproveTask={handleApproveTask}
                             taskIsBeingApproved={tasksBeingApproved.find(task => task._id === singleTaskItem._id)}
                             newTaskItem={true}
-                            tasks={tasksForTheDay && Array.isArray(tasksForTheDay) ? tasksForTheDay : []}
+                            tasks={
+                              tasksForTheDay && Array.isArray(tasksForTheDay) ?
+                                subprojectSelected.length < 1 ?
+                                  tasksForTheDay :
+                                  tasksForTheDay.filter(task => task.subproject === subprojectSelected)
+                              : 
+                              []
+                            }
+                            subproject={subprojectSelected}
                           />
                         }
                         
@@ -397,7 +460,16 @@ const CreateTaskScreen = ({
                               handleApproveTask={handleApproveTask}
                               taskIsBeingApproved={tasksBeingApproved.find(task => task._id === d._id)}
                               newTaskItem={d.user_id ? true : false}
-                              tasks={d.tasksAdded ? d.tasksAdded : []}
+                              tasks={
+                                d.tasksAdded ? 
+                                  subprojectSelected.length < 1 ?
+                                    d.tasksAdded 
+                                  :
+                                    d.tasksAdded.filter(task => task.subproject === subprojectSelected)
+                                : 
+                                []
+                              }
+                              subproject={subprojectSelected}
                             />
                           );
                         })

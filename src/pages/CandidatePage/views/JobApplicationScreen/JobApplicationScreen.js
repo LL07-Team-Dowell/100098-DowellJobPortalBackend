@@ -566,7 +566,7 @@ const JobApplicationScreen = () => {
         return toast.info("Please enter your email");
       if (!isEmailValid) return toast.info("Please enter a valid email");
       if (publicUserDetails.linkUsed)
-        if (productUserDetails?.jobsAppliedFor.includes(currentJob._id))
+        if (productUserDetails?.jobsAppliedFor?.includes(currentJob._id))
           return toast.info(
             "You have already submitted an application for this job"
           );

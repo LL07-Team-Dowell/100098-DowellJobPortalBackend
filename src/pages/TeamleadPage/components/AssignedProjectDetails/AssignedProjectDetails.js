@@ -13,7 +13,7 @@ console.log(assignedProject);
             }
             <div className={`project-info-container ${showTask ? 'flex-end' : ''}`}>
                 <p>Project</p>
-                <DropdownButton currentSelection={assignedProject ? assignedProject : 'Hr Hiring'} selections={availableProjects} handleSelectionClick={handleSelectionClick} removeDropDownIcon={removeDropDownIcon} />
+                <DropdownButton currentSelection={assignedProject ? assignedProject : 'None selected'} selections={availableProjects} handleSelectionClick={handleSelectionClick} removeDropDownIcon={removeDropDownIcon} />
             </div>
         </div>
     </>

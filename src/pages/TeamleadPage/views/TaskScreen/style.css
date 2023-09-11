@@ -130,6 +130,60 @@
     .candidate-task-screen-container  {
         padding-bottom: 250px;
     }
+
+    .candidate__After__Selection__Screen .candidate-task-screen-container .project-details-container {
+        margin-bottom: 1rem;
+    }
+
+    .candidate-task-screen-container .subproject__Div__Wrapper {
+        width: 82%;
+        margin: 0 auto 3rem;
+    }
+
+    .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div {
+        margin-left: auto;
+        width: max-content;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select {
+        padding: 0.3rem 0.5rem;
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.5rem;
+        border: none;
+        background-color: #fff;
+        border: 1px solid #005734;
+        border-radius: 6px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.8rem;
+        position: relative;
+        transition: 0.3s all ease-in-out;
+    }
+
+    .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select .select {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+    }
+
+    .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select .select svg {
+        font-size: 0.8rem;
+    }
+
+    .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select .task__Select__Subproject .task__Search__Sub {
+        box-shadow: none;
+        max-width: 12.5rem;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select .task__Select__Subproject .task__Search__Sub:focus-within {
+        border-color: #fff;
+    }
 }
 
 
@@ -161,5 +215,14 @@
 
     .candidate-task-screen-container .all__Tasks__Container .tasks__Wrapper p {
         margin-bottom: 0;
+    }
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    } to {
+        opacity: 1;
     }
 }

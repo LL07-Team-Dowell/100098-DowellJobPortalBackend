@@ -146,12 +146,12 @@
 
 .add__New__Task__Container .task__Timing__Wrapper {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   /* gap: 1rem; */
   justify-content: space-between;
   min-height: 2rem;
   width: 100%;
-  margin: 0.8rem 0;
+  margin: 1.4rem 0;
 }
 
 .add__New__Task__Container .task__Timing__Wrapper input {
@@ -206,6 +206,9 @@
   margin-top: 1.5rem;
 }
 
+.add__New__Task__Container .add__Btn__Task {
+  margin: auto 0;
+}
 
 @keyframes fadeIn {
   from {
@@ -230,8 +233,9 @@
 @media screen and (min-width: 992px) {
   .add__New__Task__Container {
     padding: 2%;
-    width: 75%;
-    max-height: 90%;
+    width: 78%;
+    height: 85%;
+    max-height: 94%;
   }
 
   .add__New__Task__Container .team__Members__Container .team__Member__Item {
@@ -252,6 +256,14 @@
   .add__New__Task__Container .add__Task__Btn {
     padding: 1.4% 2.4%;
     margin-bottom: 0;
+  }
+
+  .add__New__Task__Container .task__Item {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.5rem;
   }
 }
 #customers {

@@ -20,6 +20,10 @@ import { getSettingUserProject } from "../../../../services/hrServices";
 import { getCandidateTasksV2 } from "../../../../services/teamleadServices";
 import { extractNewTasksAndAddExtraDetail } from "../../util/extractNewTasks";
 import Button from "../../../AdminPage/components/Button/Button";
+import { toast } from "react-toastify";
+import SubprojectSelectWithSearch from "../../../../components/SubprojectSelectWithSearch/SubprojectSelectWithSearch";
+import { getAllCompanyUserSubProject } from "../../../../services/commonServices";
+import { AiOutlineClose, AiOutlineDown, AiOutlineUp } from "react-icons/ai";
 
 const TaskScreen = ({
   handleAddTaskBtnClick,
@@ -50,6 +54,9 @@ const TaskScreen = ({
   const [ allProjects, setAllProjects ] = useState([]);
   const [ params, setParams ] = useSearchParams();
   const [ tasksForProjectLoading, setTasksForProjectLoading ] = useState(false);
+  const [ allSubProjects, setAllSubprojects ] = useState([]);
+  const [ subprojectSelected, setSubprojectSelected ] = useState('');
+  const [ showSubprojectSelection, setShowSubprojectSelection ] = useState(false);
 
 
   const currentDate = new Date();
@@ -62,12 +69,22 @@ const TaskScreen = ({
     dateToCompare.getFullYear() === currentDate.getFullYear()
   );
   console.log({ isToday });
+
+  const checkIfToday = (date1, date2) => {
+    return date1.getDate() === date2.getDate() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getFullYear() === date2.getFullYear()
+  }
+
   useEffect(() => {
     setLoading(true);
     setproject(assignedProject[0]);
+    setValue1(new Date());
+    setDatesToStyle([]);
 
     Promise.all([
       getCandidateTask(currentUser.portfolio_info[0].org_id),
+      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id),
       loadProjects && getSettingUserProject(),
     ]).then(res => {
       setUserTasks(
@@ -76,9 +93,10 @@ const TaskScreen = ({
         )
       );
       setLoading(false);
+      setAllSubprojects(res[1]);
 
       if (loadProjects) {
-        const list = res[1]?.data
+        const list = res[2]?.data
           ?.filter(
             (project) =>
               project?.data_type === currentUser.portfolio_info[0].data_type &&
@@ -138,6 +156,8 @@ const TaskScreen = ({
     }
 
     setTasksForProjectLoading(true);
+    setSubprojectSelected('');
+    setValue1(new Date());
 
     const previousTasks = userTasks.filter(t => !t.task && !t.user_id && t.project);
 
@@ -166,46 +186,46 @@ const TaskScreen = ({
     })
   }, [project]);
 
-  useEffect(() => {
-    if (!currentUser) return navigate(-1);
-    if (userTasks.length > 0) return;
+  // useEffect(() => {
+  //   if (!currentUser) return navigate(-1);
+  //   if (userTasks.length > 0) return;
 
-    setproject(assignedProject[0]);
+  //   setproject(assignedProject[0]);
 
-    getCandidateTask(currentUser.portfolio_info[0].org_id)
-      .then((res) => {
-        const tasksForCurrentUser = res.data.response.data.filter(
-          (v) => v.applicant === currentUser.userinfo.username
-        );
-        setUserTasks(tasksForCurrentUser);
-        settaskdetail2(
-          userTasks.filter(
-            (d) =>
-              new Date(d.task_created_date).toDateString() ===
-              new Date().toLocaleDateString()
-          )
-        );
+  //   getCandidateTask(currentUser.portfolio_info[0].org_id)
+  //     .then((res) => {
+  //       const tasksForCurrentUser = res.data.response.data.filter(
+  //         (v) => v.applicant === currentUser.userinfo.username
+  //       );
+  //       setUserTasks(tasksForCurrentUser);
+  //       settaskdetail2(
+  //         userTasks.filter(
+  //           (d) =>
+  //             new Date(d.task_created_date).toDateString() ===
+  //             new Date().toLocaleDateString()
+  //         )
+  //       );
 
-        // setTasksToShow(tasksForCurrentUser.filter(task => new Date(task.created).toLocaleDateString() === new Date().toLocaleDateString()));
+  //       // setTasksToShow(tasksForCurrentUser.filter(task => new Date(task.created).toLocaleDateString() === new Date().toLocaleDateString()));
 
-        const datesUserHasTask = [
-          ...new Set(
-            tasksForCurrentUser.map((task) => [
-              new Date(task.task_created_date),
-            ])
-          ).values(),
-        ].flat();
-        setDatesToStyle(datesUserHasTask);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  //       const datesUserHasTask = [
+  //         ...new Set(
+  //           tasksForCurrentUser.map((task) => [
+  //             new Date(task.task_created_date),
+  //           ])
+  //         ).values(),
+  //       ].flat();
+  //       setDatesToStyle(datesUserHasTask);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
 
-    const today = new Date();
+  //   const today = new Date();
 
-    setDaysInMonth(getDaysInMonth(today));
-    setCurrentMonth(today.toLocaleDateString("en-us", { month: "long" }));
-  }, []);
+  //   setDaysInMonth(getDaysInMonth(today));
+  //   setCurrentMonth(today.toLocaleDateString("en-us", { month: "long" }));
+  // }, []);
 
   useEffect(() => {
     setTasksToShow(
@@ -339,6 +359,10 @@ const TaskScreen = ({
     setPanding(false);
   };
 
+  const handleRequestTaskUpdateBtnClick = async () => {
+    toast.info('Feature still in development')
+  }
+
   return (
     <>
       {
@@ -390,12 +414,14 @@ const TaskScreen = ({
 
         <AssignedProjectDetails
           assignedProject={
-            project ? project
-              :
-              loadProjects ?
-                allProjects[0]
-                :
-                assignedProject[0]
+            project 
+            // ? 
+            // project
+              // :
+              // loadProjects ?
+              //   allProjects[0]
+              //   :
+              //   assignedProject[0]
           }
           showTask={true}
           availableProjects={
@@ -407,6 +433,50 @@ const TaskScreen = ({
           removeDropDownIcon={false}
           handleSelectionClick={(e) => setproject(e)}
         />
+
+        <div className="subproject__Div__Wrapper">
+          <div className="subproject__Div">
+            <span style={{ fontFamily: 'Poppins', fontSize: '0.9rem' }}>Subproject</span>
+            <div className="subproject__Custom__Select">
+              <div 
+                className="select" 
+                onClick={ 
+                  subprojectSelected.length < 1  ? 
+                    () => setShowSubprojectSelection(!showSubprojectSelection)
+                  :
+                    () => {}
+                }
+              >
+                <span>{subprojectSelected.length < 1 ? 'Select subproject' : subprojectSelected}</span>
+                {
+                  (showSubprojectSelection || subprojectSelected.length > 0) ? <AiOutlineClose 
+                    onClick={() => {
+                      setSubprojectSelected('');
+                      setShowSubprojectSelection(true);
+                    }}
+                  /> 
+                  : 
+                  <AiOutlineDown />
+                }
+              </div>
+              
+              { 
+                showSubprojectSelection &&
+                <SubprojectSelectWithSearch 
+                  className={'task__Select__Subproject'} 
+                  searchWrapperClassName={'task__Search__Sub'}
+                  subprojects={allSubProjects}
+                  selectedSubProject={subprojectSelected}
+                  handleSelectItem={(subproject, project) => {
+                    setSubprojectSelected(subproject);
+                    setShowSubprojectSelection(false);
+                  }}
+                  hideSelectionsMade={true}
+                />
+              }
+            </div>
+          </div>
+        </div>
 
         <div className="all__Tasks__Container">
           {loading ? (
@@ -465,7 +535,17 @@ const TaskScreen = ({
                                 <p className="task__Title">{!project ? "No project selected" : "No tasks found for today"}</p>
 
                                 {
-                                  project && <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                                  project && value1 < new Date() && !checkIfToday(new Date(), value1) && 
+                                  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: 12 }}>
+                                    <Button
+                                      text={"Request to update"}
+                                      className={'approve__Task__Btn'}
+                                      handleClick={handleRequestTaskUpdateBtnClick}
+                                    />
+                                  </div>
+                                }
+                                {/* {
+                                  project &&  <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                                     {
                                       isToday ? "" : <Button
                                         text={"Request to update"}
@@ -473,10 +553,30 @@ const TaskScreen = ({
                                       />
                                     }
                                   </div>
-                                }
+                                } */}
                               </> :
                                 <>
                                   {
+                                    subprojectSelected.length > 0 ?
+                                    tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true).length < 1 ?
+                                    <p style={{ fontSize: '0.75rem' }}>
+                                      No tasks found matching subproject of <b>{subprojectSelected}</b> under the <b>{project}</b> project
+                                    </p>
+                                    :
+                                    React.Children.toArray(tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true).map(task => {
+                                      return <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }}>
+                                        {new Date(task.task_created_date).toLocaleString(
+                                          "default",
+                                          { month: "long" }
+                                        )}
+                                        <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(task.task_created_date).getDate()}</p>
+
+                                        <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
+                                          {task.task} <span style={{ color: "#B8B8B8" }}> from {task.start_time} to {task.end_time}</span>
+                                        </p>
+                                      </div>
+                                    }))
+                                    :
                                     React.Children.toArray(tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).map(task => {
                                       return <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }}>
                                         {new Date(task.task_created_date).toLocaleString(
@@ -509,7 +609,17 @@ const TaskScreen = ({
                               ))
                             :
                             <>
-                            {"No Tasks Found For Today"}
+                            <p className="task__Title">{!project ? "No project selected" : "No tasks found for today"}</p>
+                            {
+                              project && value1 < new Date() && !checkIfToday(new Date(), value1) && 
+                              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: 12 }}>
+                                <Button
+                                  text={"Request to update"}
+                                  className={'approve__Task__Btn'}
+                                  handleClick={handleRequestTaskUpdateBtnClick}
+                                />
+                              </div>
+                            }
                             {/* {
                               !project ? 
                               <p className="task__Title">{"No project selected"}</p>

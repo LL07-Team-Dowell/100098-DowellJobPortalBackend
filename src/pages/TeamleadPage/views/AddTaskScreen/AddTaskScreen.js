@@ -12,6 +12,7 @@ import { Tooltip } from "react-tooltip";
 import taskImg from "../../../../assets/images/tasks-done.jpg";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { IoRefresh } from "react-icons/io5";
+import SubprojectSelectWithSearch from "../../../../components/SubprojectSelectWithSearch/SubprojectSelectWithSearch";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -23,6 +24,7 @@ const AddTaskScreen = ({
   taskToEdit,
   hrPageActive,
   assignedProject,
+  subprojects,
 }) => {
   const ref = useRef(null);
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -56,7 +58,8 @@ const AddTaskScreen = ({
   const [ savingLoading, setSavingLoading ] = useState(false);
   const [ editLoading, setEditLoading ] = useState(false);
   const [ deleteLoading, setDeleteLoading ] = useState(false);
-  const [ taskType, setTaskType ] = useState("")
+  const [ taskType, setTaskType ] = useState("");
+  const [ subprojectSelected, setSubprojectSelected ] = useState(null);
   
   //   var conditions
   const inputsAreFilled = taskStartTime && taskEndTime && taskName && taskType;
@@ -72,14 +75,16 @@ const AddTaskScreen = ({
     setDetails("");
     setoptionValue("");
     setTaskType("");
+    setSubprojectSelected(null);
   };
-  const fillAllInputs = (taskStartTime, taskEndTime, taskName, details, project, taskType) => {
+  const fillAllInputs = (taskStartTime, taskEndTime, taskName, details, project, taskType, subproject) => {
     setTaskStartTime(taskStartTime);
     setTaskEndTime(taskEndTime);
     setTaskName(taskName);
     setDetails(details);
     setoptionValue(project);
     setTaskType(taskType);
+    setSubprojectSelected(subproject);
   };
 
   const addTaskCondition = () => {
@@ -92,10 +97,10 @@ const AddTaskScreen = ({
 
   const getInputsForEditing = (id) => {
     editTaskCondition();
-    const { start_time, end_time, task, details, project, task_type } = tasks.find(
+    const { start_time, end_time, task, details, project, task_type, subproject } = tasks.find(
       (task) => task._id === id
     );
-    fillAllInputs(start_time, end_time, task, details, project, task_type);
+    fillAllInputs(start_time, end_time, task, details, project, task_type, subproject);
   };
 
   // const addSingleTask = (start_time, end_time, taskName, details, _id) => {
@@ -109,13 +114,13 @@ const AddTaskScreen = ({
   //   ]);
   // };
 
-  const updateSingleTask = (start_time, end_time, taskName, details, project, taskType) => {
+  const updateSingleTask = (start_time, end_time, taskName, details, project, taskType, subproject) => {
     console.log({ taskId });
     setTasks(
       tasks.map((task) => {
         if (task._id === taskId) {
           console.log(true);
-          return { ...task, start_time, end_time, task: taskName, details, project, task_type: taskType };
+          return { ...task, start_time, end_time, task: taskName, details, project, task_type: taskType, subproject };
         }
         return task;
       })
@@ -161,6 +166,7 @@ const AddTaskScreen = ({
                 "task_type": "MEETING UPDATE",
                 "start_time": taskStartTime,
                 "end_time": taskEndTime,
+                "subproject": subprojectSelected,
               }
             },
             taskId,
@@ -170,7 +176,7 @@ const AddTaskScreen = ({
           setDisabled(false);
           setEditLoading(false);
 
-          updateSingleTask(taskStartTime, taskEndTime, taskName, details, optionValue, taskType);
+          updateSingleTask(taskStartTime, taskEndTime, taskName, details, optionValue, taskType, subprojectSelected);
           clearAllInputs();
           addTaskCondition();
           setTaskId("");
@@ -273,7 +279,9 @@ const AddTaskScreen = ({
     setTaskDetailForTodayLoading(true);
     setTaskDetailForTodayLoaded(false);
 
-    const todayDate =  new Date().toISOString().split('T')[0];
+    const today = new Date();
+    const [ year, month, day ] = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ];
+    const todayDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
 
     const dataToPost = {
       "company_id": currentUser.portfolio_info[0].org_id,
@@ -346,7 +354,9 @@ const AddTaskScreen = ({
 
   
   const addTaskForToday = async (startTime, endTime, task, details, updateTask=false) => {
-    const todayDate =  new Date().toISOString().split('T')[0];
+    const today = new Date();
+    const [ year, month, day ] = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ];
+    const todayDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
 
     const dataToPost = {
       "project": optionValue,
@@ -360,6 +370,7 @@ const AddTaskScreen = ({
       "start_time": startTime,
       "end_time": endTime,
       "user_id": currentUser.userinfo.userID,
+      "subproject": subprojectSelected
     }
 
     const dataToPost2 = {
@@ -639,7 +650,7 @@ const AddTaskScreen = ({
                 {
                   taskDetailForTodayLoading ? <></> :
                   !taskDetailForToday?.parentTask?.task_saved && <div className="task__Timing__Wrapper">
-                    <div>
+                    <div className="task__Item">
                       <span className="selectProject">Time started</span>
                       <input
                         type={"time"}
@@ -650,7 +661,7 @@ const AddTaskScreen = ({
                         readOnly={loading || !taskDetailForTodayLoaded ? true : false}
                       />
                     </div>
-                    <div>
+                    <div className="task__Item">
                       <span className="selectProject">Time finished</span>
                       <input
                         type={"time"}
@@ -689,7 +700,7 @@ const AddTaskScreen = ({
                         readOnly={loading || !taskDetailForTodayLoaded || taskStartTime.length < 1 ? true : false}
                       />
                     </div>
-                    <div>
+                    <div className="task__Item">
                       <span className="selectProject">Task</span>
                       <input
                         type={"text"}
@@ -700,7 +711,7 @@ const AddTaskScreen = ({
                         readOnly={loading || !taskDetailForTodayLoaded ? true : false}
                       />
                     </div>
-                    <div>
+                    <div className="task__Item">
                       <span className="selectProject">Task type</span>
                       <select
                         onChange={({ target }) => setTaskType(target.value)}
@@ -719,7 +730,25 @@ const AddTaskScreen = ({
                         ))}
                       </select>
                     </div>
-                    <div>
+                    <div className="task__Item">
+                      <span className="selectProject">Subproject</span>
+                      <SubprojectSelectWithSearch 
+                        subprojects={subprojects}
+                        selectedSubProject={subprojectSelected}
+                        handleSelectItem={(subproject, project) => {
+                          setSubprojectSelected(subproject);
+                          setoptionValue(project);
+                        }}
+                        handleCancelSelection={
+                          () => {
+                            setSubprojectSelected(null);
+                            setoptionValue('');
+                          }
+                        }
+                        selectedProject={optionValue}
+                      />
+                    </div>
+                    {/* <div className="task__Item">
                       <span className="selectProject">Project</span>
                       <select
                         onChange={(e) => selctChange(e)}
@@ -737,13 +766,13 @@ const AddTaskScreen = ({
                           </option>
                         ))}
                       </select>
-                    </div>
-                    <div>
+                    </div> */}
+                    <div className="add__Btn__Task">
                       <button
                         style={{
                           backgroundColor: "#005734",
-                          width: 40,
-                          height: 40,
+                          width: 30,
+                          height: 30,
                           borderRadius: "50%",
                           border: "none",
                           cursor: disabled ? "not-allowed" : "pointer",
@@ -795,6 +824,7 @@ const AddTaskScreen = ({
                         <th>Time finished</th>
                         <th>task</th>
                         <th>Task type</th>
+                        <th>sub project</th>
                         <th>project</th>
                         <th>actions</th>
                       </tr>
@@ -806,6 +836,7 @@ const AddTaskScreen = ({
                             <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
                             <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task}</td>
                             <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task_type}</td>
+                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.subproject}</td>
                             <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.project}</td>
                             <td>
                               <div className="edit__Item__Customer">

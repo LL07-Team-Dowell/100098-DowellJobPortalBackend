@@ -21,6 +21,7 @@ const CandidateTaskItem = ({
   taskIsBeingApproved,
   newTaskItem,
   tasks,
+  subproject,
 }) => {
 
     const [ currentTaskStatus, setCurrentTaskStatus ] = useState("");
@@ -176,19 +177,35 @@ const CandidateTaskItem = ({
 
           {
             newTaskItem && tasks &&
-              React.Children.toArray(tasks.map(task => {
-                return <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }}>
-                  {new Date(task.task_created_date).toLocaleString(
-                    "default",
-                    { month: "long" }
-                  )}
-                  <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(task.task_created_date).getDate()}</p>
-
-                  <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
-                    <span style={{ color: "#B8B8B8" }}>{task.start_time} to {task.end_time}:  </span> {task.task}
-                  </p>
-                </div>
-              }))
+              <>
+                {
+                  tasks.length < 1 ?
+                  <>
+                    <p style={{ fontFamily: 'Poppins', fontSize: '0.875rem' }}>
+                      No tasks found 
+                      {subproject && subproject.length > 0 && <span> matching for subproject: <b>{subproject}</b></span>}
+                    </p>
+                  </> 
+                  :
+                  <>
+                    {
+                      React.Children.toArray(tasks.map(task => {
+                        return <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }}>
+                          {new Date(task.task_created_date).toLocaleString(
+                            "default",
+                            { month: "long" }
+                          )}
+                          <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(task.task_created_date).getDate()}</p>
+        
+                          <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
+                            <span style={{ color: "#B8B8B8" }}>{task.start_time} to {task.end_time}:  </span> {task.task}
+                          </p>
+                        </div>
+                      }))
+                    }
+                  </>
+                }
+              </>
           }
 
           <CustomHr />

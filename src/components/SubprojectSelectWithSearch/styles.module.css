@@ -1,0 +1,118 @@
+.dropdown {
+    position: relative;
+}
+
+.search__Wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    padding: 0.3rem 0.2rem;
+    border: 1px solid #fff;
+    transition: 0.3s ease-in-out;
+    height: 2.3rem;
+}
+
+.search__Wrapper input {
+    background: none;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: none;
+    border-radius: 0;
+    width: 80%;
+    padding: 0 !important;
+    height: unset  !important;
+    margin: 0 !important;
+    font-size: 0.75rem;
+    outline: none;
+}
+
+.search__Wrapper:focus-within {
+    border-color: #005734;
+}
+
+.items__List {
+    position: absolute;
+    top: 100%;
+    list-style: none;
+    background-color: #fff;
+    width: 100%;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    max-height: 10.5rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 0 1rem;
+    font-family: 'Poppins', sans-serif;
+    display: none;
+    z-index: 20;
+}
+
+.dropdown .search__Wrapper:focus-within ~ .items__List,
+.items__List:hover {
+    display: block;
+}
+
+.items__List::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.items__List::-webkit-scrollbar-track {
+    background: #efefef;
+}
+
+.items__List::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+}
+
+.items__List::-webkit-scrollbar-thumb:hover {
+    background: #005734;
+}
+
+.items__List li {
+    margin: 0.5rem 0 1rem;
+    width: 100%;
+    transition: 0.3s ease-in-out;
+    padding: 0.35rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.items__List p {
+    margin: 0.5rem 0 1rem;
+    width: 100%;
+    padding: 0.35rem;
+    font-size: 0.75rem;
+}
+
+.items__List li:hover {
+    background-color: #005734;
+    color: #fff;
+}
+
+.selected__Item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #f2f2f2;
+    padding: 0.4rem;
+    border-radius: 3px;
+    width: max-content;
+}
+
+.selected__Item span,
+.selected__Item svg {
+    font-size: 0.8rem;
+}
+
+.selected__Item svg {
+    cursor: pointer;
+}
+
+.project__Indicator {
+    color: #005734;
+    font-size: 0.6rem;
+}
