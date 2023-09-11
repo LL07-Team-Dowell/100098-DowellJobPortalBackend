@@ -5534,43 +5534,6 @@ class Generate_Individual_Task_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-    def taskdetails(self, request):
-        payload = request.data
-        serializer = ProjectWiseReportSerializer(data=payload)
-        if serializer.is_valid():
-            project_name = payload["project"]
-            company_id = payload["company_id"]
-            field1 = {"company_id": company_id, "project": project_name}
-            update_field1 = {}
-            response1 = json.loads(dowellconnection(*task_details_module, "fetch", field1, update_field1))
-            field2 = {"company_id": company_id}
-            update_field2 = {}
-            response2 = json.loads(dowellconnection(*task_management_reports, "fetch", field2, update_field2))
-            user_task_details=[]
-            for response in response2['data']:
-                task_id=response['_id']
-                for res in response1['data']:
-                    if res["task_id"]==task_id:
-                        # print(res)
-                        user_task_details.append({
-                            'user':response['applicant'],
-                            "task_detailds":res
-                        })
-            # user_task_count={}
-            # for details in user_task_details:
-            #     user=details['user']
-            #     if user not in user_task_count:
-            #         user_task_count[user] = 0
-                
-            #     # Increment the user's task count
-            #     user_task_count[user] += 1
-
-        return Response({
-            "success":True,
-            "data":user_task_details
-
-        }, status=status.HTTP_201_CREATED)
-
 
 
 @method_decorator(csrf_exempt, name="dispatch")   
