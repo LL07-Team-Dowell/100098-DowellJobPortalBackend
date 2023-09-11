@@ -100,9 +100,8 @@ def update_string(string):
                 if char=="C":
                     new_str = string.replace("C", "O")
             return new_str
-
 ### calling the discord api----------------------------
-# generate discord invite link
+    # generate discord invite link
 def discord_invite(server_owner_ids,guild_id, token):
     invite_link = []
     client = commands.Bot(command_prefix="?", owner_ids=server_owner_ids, intents=Intents.default())
@@ -128,7 +127,7 @@ def discord_invite(server_owner_ids,guild_id, token):
     # token file is the token for the bot created
     client.run(token=token)
     return invite_link
-# get the channels in the server
+    # get the channels in the server
 def get_guild_channels(guildid,token):
     """with open(os.getcwd()+"/app/token", "r", encoding="utf-8") as t:
         token = t.read()"""
@@ -399,3 +398,4 @@ def update_task_status(self, current_task_id, is_active):
         }
         response = json.loads(dowellconnection(*task_details_module, "update", field, update_field))
         return response.get("isSuccess", False)
+  
