@@ -27,8 +27,8 @@ const ReportPages = () => {
             </div>
             <h4>Organization report</h4>
             <p>
-              Bring everyone together and get to work. Work together in team to
-              increase productivity
+            Unlock the power of data by gaining valuable insights with our organization report. 
+
             </p>
           </div>
         </div>
