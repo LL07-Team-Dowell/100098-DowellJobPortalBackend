@@ -19,6 +19,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 
 ChartJS.register(
   CategoryScale,
@@ -50,9 +51,9 @@ const IndividualTaskReports = ({ subAdminView }) => {
   const navigate = useNavigate();
   const [candidates, setcandidates] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
-
+  const { currentUser  } = useCurrentUserContext();
   useEffect(() => {
-    getAllOnBoardCandidate()
+    getAllOnBoardCandidate(currentUser.portfolio_info[0].org_id)
       .then(
         ({
           data: {
@@ -108,6 +109,8 @@ const IndividualTaskReports = ({ subAdminView }) => {
               {projectsLoading ? (
                 <p>Loading projects</p>
               ) : (
+                <>
+                <input type="text" placeholder="search candidate"/>
                 <select
                   className="select__task__report__project"
                   defaultValue={""}
@@ -122,6 +125,7 @@ const IndividualTaskReports = ({ subAdminView }) => {
                     })
                   )}
                 </select>
+                </>
               )}
             </>
           </div>
