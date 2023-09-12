@@ -276,6 +276,8 @@ const AddProjectPopup = ({projects, unshowProjectPopup}) => {
   }
 
   const AddedProject = (projectName) => {
+    const projectAlreadyInList = inputProjects.find(project => project.toLocaleLowerCase() === projectName.trim().toLocaleLowerCase());
+    if (projectAlreadyInList) return toast.info('You have already added this project');
     setInputProjects([...inputProjects, projectName.trim()])
     setDisplayedProjects(displayedProjects?.filter(f => f.project_name !== projectName.trim()))
 
