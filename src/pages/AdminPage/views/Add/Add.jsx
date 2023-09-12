@@ -263,21 +263,21 @@ const AddProjectPopup = ({projects, unshowProjectPopup}) => {
 
   // functions
   const removeProject = (projectName) => {
-    setInputProjects(inputProjects.filter(f => f !== projectName))
+    setInputProjects(inputProjects.filter(f => f !== projectName.trim()))
 
-    const projectExistsInBank = dowellProjects.find(p => p.project_name === projectName);
+    const projectExistsInBank = dowellProjects.find(p => p.project_name === projectName.trim());
     if (!projectExistsInBank) return
 
     const currentDisplayedProjects = displayedProjects.slice();
-    const projectAmongDisplayedProjects = currentDisplayedProjects.find(project => project.project_name === projectName);
+    const projectAmongDisplayedProjects = currentDisplayedProjects.find(project => project.project_name === projectName.trim());
     if (projectAmongDisplayedProjects) return
 
-    setDisplayedProjects([{ _id: crypto.randomUUID(), project_name: projectName }, ...displayedProjects])
+    setDisplayedProjects([{ _id: crypto.randomUUID(), project_name: projectName.trim() }, ...displayedProjects])
   }
 
   const AddedProject = (projectName) => {
     setInputProjects([...inputProjects, projectName.trim()])
-    setDisplayedProjects(displayedProjects?.filter(f => f.project_name !== projectName))
+    setDisplayedProjects(displayedProjects?.filter(f => f.project_name !== projectName.trim()))
 
     setquery('');
   }
@@ -418,12 +418,12 @@ const AddSubProjectPopup = ({projects, unshowProjectPopup}) => {
 
   // functions
   const removeProject = (projectName) => {
-    setInputProjects(inputProjects.filter(f => f !== projectName))
+    setInputProjects(inputProjects.filter(f => f !== projectName.trim()))
   }
 
   const AddedProject = (projectName) => {
     if (!projectName || projectName.length < 1) return
-    const projectAlreadyInList = inputProjects.find(project => project.toLocaleLowerCase() === projectName.toLocaleLowerCase());
+    const projectAlreadyInList = inputProjects.find(project => project.toLocaleLowerCase() === projectName.trim().toLocaleLowerCase());
     if (projectAlreadyInList) return toast.info('You have already added this sub project');
     setInputProjects([...inputProjects, projectName.trim()])
     setNewSubProject('');
