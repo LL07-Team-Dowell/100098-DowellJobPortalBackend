@@ -40,15 +40,15 @@ const AdminReports = ({ subAdminView }) => {
   const [data, setdata] = useState({});
   const [loading, setLoading] = useState(false);
   const [firstDate, setFirstDate] = useState(
-    formatDateFromMilliseconds(new Date().getTime())
-  );
-  const [lastDate, setLastDate] = useState(
     formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
   );
+  const [lastDate, setLastDate] = useState(
+    formatDateFromMilliseconds(new Date().getTime())
+  );
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
-  const [firstDateState, setFirstDateState] = useState(formatDateFromMilliseconds(new Date().getTime()))
-  const [lastDateState,setLastDateState] = useState(formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
-  )
+  const [firstDateState, setFirstDateState] = useState(formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000))
+  const [lastDateState,setLastDateState] = useState(formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000))
+  
   console.log({ selectOptions, lastDate, firstDate });
   // handle functions
   const handleSelectOptionsFunction = (e) => {
@@ -306,7 +306,7 @@ const AdminReports = ({ subAdminView }) => {
                     datasets: [
                       {
                         label: "Poll",
-                        data: [data.teams, data.team_tasks, data.tasks],
+                        data: [data.teams, data.tasks, 0],
                         backgroundColor: ["#D3D3D3", "#005734", "black"],
                         borderColor: ["#D3D3D3", "#005734", "black"],
                       },
@@ -315,10 +315,7 @@ const AdminReports = ({ subAdminView }) => {
                 ></Bar>
               </div>
             )}
-          </div>
-          <div className="job_applications graph__Item">
-            <h6>applications</h6>
-            <div>
+             <div style={{display:`${!(data.tasks_completed || data.tasks) ? 'block' : 'flex'}`,}}>
               <div>
                 {!(data.tasks_completed || data.tasks) ? (
                   <h4>there is no data between start and end date</h4>
@@ -363,6 +360,7 @@ const AdminReports = ({ subAdminView }) => {
               </div>
             </div>
           </div>
+          
         </div>
       </div>
       {showCustomTimeModal && (
