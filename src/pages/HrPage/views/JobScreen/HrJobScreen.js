@@ -446,7 +446,27 @@ function HrJobScreen() {
       setSearchValue={setJobSearchInput}
       showLoadingOverlay={trackingProgress}
       modelDurationInSec={5.69} 
-      searchPlaceHolder={section === "home" ?"received" : section === "guest-applications" ? "guests" : section === "shortlisted" ? "shortlisted" : section === "hr-training" ? "hr-training" : "received"}
+      searchPlaceHolder={
+        section === "home" ?
+          "received" 
+        : 
+          section === "guest-applications" ? 
+          "guests" 
+        : 
+          section === "shortlisted" ? 
+          "shortlisted" 
+        : 
+          section === "hr-training" ? 
+          "hr-training" 
+        :
+          section === 'attendance' ?
+          "user"
+        :
+          section === 'tasks' ?
+          "task"
+        : 
+          "received"
+      }
       showPublicAccountConfigurationModal={showPublicAccountConfigurationModal}
       handleClosePublicAccountConfigurationModal={() => setShowPublicAccountConfigurationModal(false)}
       publicAccountConfigurationBtnDisabled={newPublicConfigurationLoading}
@@ -629,7 +649,18 @@ function HrJobScreen() {
             <SelectedCandidates 
               showTasks={true} 
               sortActive={currentSortOption ? true : false}
-              tasksCount={currentSortOption ? sortResults.length : allTasks.length}
+              tasksCount={
+                currentSortOption ? 
+                  jobSearchInput.length > 0 ?
+                    sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).length
+                  :
+                  sortResults.length 
+                : 
+                  jobSearchInput.length > 0 ?
+                    allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).length
+                  :
+                allTasks.length
+              }
               className={"hr__Page"}
               title={"Attendance"}
               hrAttendancePageActive={true}
@@ -646,6 +677,28 @@ function HrJobScreen() {
                   
                   <>
                     {
+                      jobSearchInput.length > 0 ?
+                      React.Children.toArray(sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).map(result => {
+                        return <>
+                          <p className='sort__Title__Item'><b>{result.name}</b></p>
+                          <>
+                            <div className="tasks-container hr__Page sort__Active">
+                              {
+                                React.Children.toArray(result.data.map(dataitem => {
+                                  return <JobCard
+                                    buttonText={"View"}
+                                    candidateCardView={true}
+                                    candidateData={dataitem}
+                                    taskView={true}
+                                    handleBtnClick={handleAttendanceItemClick}
+                                  />
+                                }))
+                              }
+                            </div>
+                          </>
+                        </>
+                      }))
+                      :
                       React.Children.toArray(sortResults.map(result => {
                         return <>
                           <p className='sort__Title__Item'><b>{result.name}</b></p>
@@ -675,6 +728,17 @@ function HrJobScreen() {
               <>
                 <div className="tasks-container hr__Page">
                   {
+                    jobSearchInput.length > 0 ?
+                    React.Children.toArray(allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).map(dataitem => {
+                      return <JobCard
+                        buttonText={"View"}
+                        candidateCardView={true}
+                        candidateData={dataitem}
+                        taskView={true}
+                        handleBtnClick={handleAttendanceItemClick}
+                      />
+                    }))
+                    :
                     React.Children.toArray(allTasks.map(dataitem => {
                       return <JobCard
                         buttonText={"View"}
@@ -710,7 +774,18 @@ function HrJobScreen() {
                 <SelectedCandidates 
                   showTasks={true} 
                   sortActive={currentSortOption ? true : false}
-                  tasksCount={currentSortOption ? sortResults.length : allTasks.length}
+                  tasksCount={
+                    currentSortOption ? 
+                      jobSearchInput.length > 0 ?
+                        sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).length
+                      :
+                      sortResults.length 
+                    : 
+                      jobSearchInput.length > 0 ?
+                        allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).length
+                      :
+                    allTasks.length
+                  }
                   className={"hr__Page"}
                   handleSortOptionClick={(data) => setCurrentSortOption(data)}
                   handleRefresh={handleRefreshForCandidateTasks}
@@ -725,6 +800,28 @@ function HrJobScreen() {
                       
                       <>
                         {
+                          jobSearchInput.length > 0 ?
+                          React.Children.toArray(sortResults.filter(item => item.data.find(task => typeof task?.applicant === 'string' && task?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase()))).map(result => {
+                            return <>
+                              <p className='sort__Title__Item'><b>{result.name}</b></p>
+                              <>
+                                <div className="tasks-container hr__Page sort__Active">
+                                  {
+                                    React.Children.toArray(result.data.map(dataitem => {
+                                      return <JobCard
+                                        buttonText={"View"}
+                                        candidateCardView={true}
+                                        candidateData={dataitem}
+                                        taskView={true}
+                                        handleBtnClick={handleAttendanceItemClick}
+                                      />
+                                    }))
+                                  }
+                                </div>
+                              </>
+                            </>
+                          }))
+                          :
                           React.Children.toArray(sortResults.map(result => {
                             return <>
                               <p className='sort__Title__Item'><b>{result.name}</b></p>
@@ -756,6 +853,17 @@ function HrJobScreen() {
                   <>
                     <div className="tasks-container hr__Page">
                       {
+                        jobSearchInput.length > 0 ?
+                        React.Children.toArray(allTasks.filter(dataitem => typeof dataitem?.applicant === 'string' && dataitem?.applicant?.toLocaleLowerCase()?.includes(jobSearchInput.toLocaleLowerCase())).map(dataitem => {
+                          return <JobCard
+                            buttonText={"View"}
+                            candidateCardView={true}
+                            candidateData={dataitem}
+                            taskView={true}
+                            handleBtnClick={handleAttendanceItemClick}
+                          />
+                        }))
+                        :
                         React.Children.toArray(allTasks.map(dataitem => {
                           return <JobCard
                             buttonText={"View"}

@@ -47,7 +47,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
     Promise.all([
       getAllTeams(currentUser.portfolio_info[0].org_id),
       getSettingUserProject(),
-      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id),
+      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id, currentUser.portfolio_info[0].data_type),
     ]).then(res => {
       setCandidateTeams(
         res[0]?.data?.response?.data?.filter((team) =>

@@ -120,8 +120,8 @@ const Teamlead = ({ isGrouplead }) => {
       console.log("filteredJobs", filteredJobs);
     } else if (section === "task") {
       setFilteredTasks(
-        userTasks.filter((task) =>
-          task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+        tasksToDisplayForLead.filter((task) =>
+          typeof task.applicant === 'string' && task.applicant && task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
         )
       );
 
@@ -164,7 +164,7 @@ const Teamlead = ({ isGrouplead }) => {
       Promise.all([
         getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
         getCandidateTasksV2(requestDataToPost2),
-        getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id),
+        getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id, currentUser.portfolio_info[0].data_type),
       ])
         .then(async (res) => {
 
@@ -241,7 +241,7 @@ const Teamlead = ({ isGrouplead }) => {
       ),
       getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
       getCandidateTasksV2(requestDataToPost2),
-      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id),
+      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id, currentUser.portfolio_info[0].data_type),
     ])
       .then(async (res) => {
         console.log("res", res);

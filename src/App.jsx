@@ -115,7 +115,7 @@ function App() {
     setProductUserDetails
   );
 
-  useTitle("Dowell Job Portal");
+  useTitle("Team Management");
 
   if (loading) return <LoadingPage />;
   console.log("CURRENT USER", currentUser);

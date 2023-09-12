@@ -76,7 +76,7 @@ const CreateTaskScreen = ({
     Promise.all([
       getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
       getCandidateTasksV2(dataToPost),
-      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id),
+      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id, currentUser.portfolio_info[0].data_type),
     ])
       .then(async (res) => {
         const tasksToDisplay = res[0]?.data?.response?.data
