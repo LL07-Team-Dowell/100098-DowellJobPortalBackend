@@ -27,11 +27,13 @@ import { toast } from "react-toastify";
 import { AiOutlineClose } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { generateCommonAdminReport } from "../../../../services/commonServices";
 // register chart.js
 ChartJs.register(ArcElement, Tooltip, Legend);
 
 ChartJs.register(ArcElement, BarElement, CategoryScale, LinearScale);
 const AdminReports = ({ subAdminView }) => {
+
   const navigate = useNavigate();
   // states
   const [selectOptions, setSelectOptions] = useState("");
@@ -44,6 +46,9 @@ const AdminReports = ({ subAdminView }) => {
     formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
   );
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
+  const [firstDateState, setFirstDateState] = useState(formatDateFromMilliseconds(new Date().getTime()))
+  const [lastDateState,setLastDateState] = useState(formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
+  );)
   console.log({ selectOptions, lastDate, firstDate });
   // handle functions
   const handleSelectOptionsFunction = (e) => {
@@ -62,8 +67,9 @@ const AdminReports = ({ subAdminView }) => {
     const data = {
       start_date,
       end_date,
+      report_type:'Admin'
     };
-    generateReport(data)
+    generateCommonAdminReport(data)
       .then((resp) => {
         setLoading(false);
         console.log(resp.data.response);
@@ -81,9 +87,10 @@ const AdminReports = ({ subAdminView }) => {
     const data = {
       start_date: firstDate,
       end_date: lastDate,
+      report_type:'Admin'
     };
 
-    generateReport(data)
+    generateCommonAdminReport(data)
       .then((resp) => {
         setLoading(false);
         console.log(resp.data.response);
