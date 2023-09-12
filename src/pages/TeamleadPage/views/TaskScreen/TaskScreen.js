@@ -84,7 +84,7 @@ const TaskScreen = ({
 
     Promise.all([
       getCandidateTask(currentUser.portfolio_info[0].org_id),
-      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id),
+      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id, currentUser.portfolio_info[0].data_type),
       loadProjects && getSettingUserProject(),
     ]).then(res => {
       setUserTasks(

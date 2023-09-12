@@ -352,6 +352,7 @@ export default function TableRow({
                   <ul className="select__Additional__Item">
                     {
                       Object.keys(rolesDict)
+                      .filter(role => role !== rolesNamesDict.Candidate)
                       .filter(roleKey => roleAssigned !== rolesDict[roleKey])
                       .filter(roleKey => !updatedRolesAssigned.includes(roleKey)) 
                       .filter(roleKey => rolesDict[roleKey].toLocaleLowerCase().includes(additionalRoleSearch.toLocaleLowerCase())).length < 1 ?
@@ -359,6 +360,7 @@ export default function TableRow({
                       :
                       React.Children.toArray(
                         Object.keys(rolesDict)
+                        .filter(role => role !== rolesNamesDict.Candidate)
                         .filter(roleKey => roleAssigned !== rolesDict[roleKey])
                         .filter(roleKey => rolesDict[roleKey].toLocaleLowerCase().includes(additionalRoleSearch.toLocaleLowerCase()))
                         .filter(roleKey => !updatedRolesAssigned.includes(roleKey))
