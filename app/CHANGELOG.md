@@ -160,3 +160,7 @@
 ### comment apis---------
 
 -_get_ from `https://100098.pythonanywhere.com/fetch_comment/` -------->' to _get_ `https://100098.pythonanywhere.com/fetch_comment/<int:document_id>/`
+
+### report apis---------
+
+__post__ to `generate_report/`
