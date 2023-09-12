@@ -276,7 +276,7 @@ const AddProjectPopup = ({projects, unshowProjectPopup}) => {
   }
 
   const AddedProject = (projectName) => {
-    setInputProjects([...inputProjects, projectName])
+    setInputProjects([...inputProjects, projectName.trim()])
     setDisplayedProjects(displayedProjects?.filter(f => f.project_name !== projectName))
 
     setquery('');
@@ -425,7 +425,7 @@ const AddSubProjectPopup = ({projects, unshowProjectPopup}) => {
     if (!projectName || projectName.length < 1) return
     const projectAlreadyInList = inputProjects.find(project => project.toLocaleLowerCase() === projectName.toLocaleLowerCase());
     if (projectAlreadyInList) return toast.info('You have already added this sub project');
-    setInputProjects([...inputProjects, projectName])
+    setInputProjects([...inputProjects, projectName.trim()])
     setNewSubProject('');
   }
 
