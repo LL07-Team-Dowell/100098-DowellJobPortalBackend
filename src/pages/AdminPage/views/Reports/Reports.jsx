@@ -142,10 +142,9 @@ const AdminReports = ({ subAdminView }) => {
             <select
               className="select_time_tage"
               onChange={handleSelectOptionsFunction}
-              defaultValue={""}
+              defaultValue={"last_7_days"}
             >
               <option value="" disabled>
-                {" "}
                 select time
               </option>
               <option value="last_7_days">last 7 days</option>
