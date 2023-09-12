@@ -47,7 +47,7 @@ const AdminReports = ({ subAdminView }) => {
   );
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
   const [firstDateState, setFirstDateState] = useState(formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000))
-  const [lastDateState,setLastDateState] = useState(formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000))
+  const [lastDateState,setLastDateState] = useState(formatDateFromMilliseconds(new Date().getTime() ))
   
   console.log({ selectOptions, lastDate, firstDate });
   // handle functions
