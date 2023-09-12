@@ -60,11 +60,7 @@ export default function DetailedIndividual() {
   const handleSelectChange = (id) => {
     getIndividualData(id)
   }
-  useEffect(() => {
-    if (id) {
-     
-    }
-  }, [id]);
+
   useEffect(() => {
     setFirstLoading(true);
     getAllOnBoardCandidate(currentUser?.portfolio_info[0].org_id)
