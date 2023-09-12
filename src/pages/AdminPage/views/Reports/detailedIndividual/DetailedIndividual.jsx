@@ -4,6 +4,7 @@ import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/
 import {
   getAllOnBoardCandidate,
   generateindividualReport,
+  generateIndividualTaskReport,
 } from "../../../../../services/adminServices";
 import { IoFilterOutline } from "react-icons/io5";
 import { RiH1 } from "react-icons/ri";
@@ -20,36 +21,53 @@ import {
   LinearScale,
 } from "chart.js";
 import { Doughnut, Bar } from "react-chartjs-2";
+import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
+import { generateCommonAdminReport } from "../../../../../services/commonServices";
 export default function DetailedIndividual() {
+  const { currentUser, setCurrentUser } = useCurrentUserContext();
+
   const navigate = useNavigate();
   const [candidates, setcandidates] = useState([]);
+  const [candidates2, setcandidates2] = useState([]);
   const [id, setId] = useState("");
   const [candidateData, setCandidateDate] = useState([]);
   const [personalInfo, setPersonalInfo] = useState({});
   const [candidateName, setCandidateName] = useState("");
   const [firstLoading, setFirstLoading] = useState(false);
   const [secondLoading, setSecondLoadng] = useState(false);
+  const handleChange = (e) => {
+    setcandidates(candidates2.filter(v => v.username.toLowerCase().includes(e.target.value.toLowerCase())))
+  }
+  const getIndividualData = (id) => {
+    setSecondLoadng(true);
+    generateCommonAdminReport({
+      report_type:"Individual",
+      year: new Date().getFullYear().toString(),
+      applicant_id: id,
+    })
+      .then((resp) => {
+        setId(id);
+        console.log({id})
+        console.log(resp.data);
+        setCandidateDate(resp.data.data[0]);
+        setPersonalInfo(resp.data.personal_info);
+        console.log(resp.data.personal_info);
+        setCandidateName(resp.data.personal_info.username);
+        setSecondLoadng(false);
+      })
+      .catch((err) => console.error(err));
+  }
+  const handleSelectChange = (id) => {
+    getIndividualData(id)
+  }
   useEffect(() => {
     if (id) {
-      setSecondLoadng(true);
-      generateindividualReport({
-        year: new Date().getFullYear(),
-        applicant_id: id,
-      })
-        .then((resp) => {
-          console.log(resp.data);
-          setCandidateDate(resp.data.data[0]);
-          setPersonalInfo(resp.data.personal_info);
-          console.log(resp.data.personal_info);
-          setCandidateName(resp.data.personal_info.username);
-          setSecondLoadng(false);
-        })
-        .catch((err) => console.error(err));
+     
     }
   }, [id]);
   useEffect(() => {
     setFirstLoading(true);
-    getAllOnBoardCandidate()
+    getAllOnBoardCandidate(currentUser?.portfolio_info[0].org_id)
       .then(
         ({
           data: {
@@ -59,6 +77,7 @@ export default function DetailedIndividual() {
           setcandidates(
             data.filter((candidate) => candidate.status === "hired")
           );
+          setcandidates2(data.filter((candidate) => candidate.status === "hired"))
           setFirstLoading(false);
         }
       )
@@ -119,7 +138,8 @@ export default function DetailedIndividual() {
           <p>Select Candidate</p>
           <div className="role__Filter__Wrapper">
             <IoFilterOutline />
-            <select defaultValue={""} onChange={(e) => setId(e.target.value)}>
+            <input type="text" onChange={handleChange}  style={{border:'none',borderLeft:'1px solid #005734',outline:'none'}} placeholder="search candidate"/>
+            <select defaultValue={""} onChange={(e)=> handleSelectChange(e.target.value)} style={{border:'none'}}>
               <option value="" disabled>
                 select candidate
               </option>
