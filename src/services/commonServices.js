@@ -35,3 +35,7 @@ export const getAllCompanyUserSubProject = async (companyId) => {
         }    
     })
 }
+
+export const generateCommonAdminReport = async (data) => {
+    return await currentBackendAxiosInstance.post(`generate_report/`, data);
+}
