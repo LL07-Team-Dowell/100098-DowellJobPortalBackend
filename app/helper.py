@@ -279,6 +279,17 @@ def period_check(start_dt, end_dt, data_list, key):
                                             pass
     return items, len(items),items_ids,len(items_ids)
 
+def valid_period(start_dt, end_dt):
+    start_date = datetime.datetime.strptime(
+            start_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    end_date = datetime.datetime.strptime(
+            end_dt, "%m/%d/%Y %H:%M:%S"
+        )
+    if  end_date> start_date:
+        return True
+    else:
+        return False
 def set_date_format(date):
     try:
         iso_format =datetime.datetime.strptime(date, '%m/%d/%Y %H:%M:%S').strftime('%m/%d/%Y %H:%M:%S')

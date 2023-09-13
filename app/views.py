@@ -33,6 +33,7 @@ from .helper import (
     CustomValidationError,
     set_date_format,
     update_task_status,
+    valid_period
 )
 from .serializers import (
     AccountSerializer,
@@ -4468,258 +4469,274 @@ class Generate_Report(APIView):
     def generate_admin_report(self, request):
         payload = request.data
         if payload:
-            data = {}
-            # get all details firstly---------------
-            field = {}
-            update_field = {}
-            response = dowellconnection(*jobs, "fetch", field, update_field)
+            if valid_period(payload["start_date"],payload["end_date"]) ==True:
+                data = {}
+                # get all details firstly---------------
+                field = {}
+                update_field = {}
+                response = dowellconnection(*jobs, "fetch", field, update_field)
 
-            jbs = [res for res in json.loads(response)["data"]]
-            res_jobs = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=jbs,
-                key="created_on",
-            )
-            data["jobs"] = res_jobs[1]
-
-            active_jobs = []
-            inactive_jobs = []
-            for t in res_jobs[0]:
-                if "is_active" in t.keys():
-                    if (
-                        t["is_active"] == "True"
-                        or t["is_active"] == "true"
-                        or t["is_active"] == True
-                    ):
-                        active_jobs.append([t["_id"], t["is_active"]])
-                    if (
-                        t["is_active"] == "False"
-                        or t["is_active"] == "false"
-                        or t["is_active"] == False
-                    ):
-                        inactive_jobs.append([t["_id"], t["is_active"]])
-            data["no_of_active_jobs"] = len(active_jobs)
-            data["no_of_inactive_jobs"] = len(inactive_jobs)
-
-            response = dowellconnection(
-                *candidate_management_reports, "fetch", field, update_field
-            )
-            total = [res for res in json.loads(response)["data"]]
-            job_application = [
-                res for res in total if "application_submitted_on" in res.keys()
-            ]
-            try:
-                job_titles = {}
-                for t in job_application:
-                    job_titles[t["job_number"]] = t["job_title"]
-                ids = [t["job_number"] for t in job_application]
-                counter = Counter(ids)
-                most_applied_job = counter.most_common(1)[0][0]
-                least_applied_job = counter.most_common()[-1][0]
-                data["most_applied_job"] = {
-                    "job_number": most_applied_job,
-                    "job_title": job_titles[most_applied_job],
-                    "no_job_applications": ids.count(most_applied_job),
-                }
-                data["least_applied_job"] = {
-                    "job_number": least_applied_job,
-                    "job_title": job_titles[least_applied_job],
-                    "no_job_applications": ids.count(least_applied_job),
-                }
-
-            except Exception:
-                data["most_applied_job"] = {"job_number": "none"}
-                data["least_applied_job"] = {"job_number": "none"}
-
-            new_candidates = [
-                res
-                for res in total
-                if "application_submitted_on" in res.keys()
-                and res["status"] == "Pending"
-            ]
-            guest_candidates = [
-                res
-                for res in total
-                if "application_submitted_on" in res.keys()
-                and res["status"] == "Guest_Pending"
-            ]
-            probationary_candidates = [
-                res
-                for res in total
-                if "application_submitted_on" in res.keys()
-                and res["status"] == "probationary"
-            ]
-            selected = [res for res in total if "selected_on" in res.keys()]
-            shortlisted = [res for res in total if "shortlisted_on" in res.keys()]
-            hired = [res for res in total if "hired_on" in res.keys()]
-            rehired = [res for res in total if "rehired_on" in res.keys()]
-            rejected = [res for res in total if "rejected_on" in res.keys()]
-            onboarded = [res for res in total if "onboarded_on" in res.keys()]
-
-            res_job_application = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=job_application,
-                key="application_submitted_on",
-            )
-            data["job_applications"] = res_job_application[1]
-
-            res_new_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=new_candidates,
-                key="application_submitted_on",
-            )
-            data["new_candidates"] = res_new_candidates[1]
-
-            res_guest_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=guest_candidates,
-                key="application_submitted_on",
-            )
-            data["guest_candidates"] = res_guest_candidates[1]
-
-            res_probationary_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=probationary_candidates,
-                key="application_submitted_on",
-            )
-            data["probationary_candidates"] = res_probationary_candidates[1]
-
-            res_selected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=selected,
-                key="selected_on",
-            )
-            data["selected"] = res_selected[1]
-
-            res_shortlisted = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=shortlisted,
-                key="shortlisted_on",
-            )
-            data["shortlisted"] = res_shortlisted[1]
-
-            res_hired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=hired,
-                key="hired_on",
-            )
-            data["hired"] = res_hired[1]
-
-            res_rehired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rehired,
-                key="rehired_on",
-            )
-            data["rehired"] = res_rehired[1]
-
-            res_onboarded = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=onboarded,
-                key="onboarded_on",
-            )
-            data["onboarded"] = res_onboarded[1]
-
-            res_rejected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rejected,
-                key="rejected_on",
-            )
-            data["rejected"] = res_rejected[1]
-
-            try:
-                data["hiring_rate"] = (
-                    str((data["hired"] / data["job_applications"]) * 100) + " %"
+                jbs = [res for res in json.loads(response)["data"]]
+                res_jobs = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=jbs,
+                    key="created_on",
                 )
-            except Exception:
-                data["hiring_rate"] = "0 %"
-            # tasksand teams========================================================================================
-            tasks = dowellconnection(
-                *task_management_reports, "fetch", field, update_field
-            )
-            total_tasks = [res for res in json.loads(tasks)["data"]]
-            teams = dowellconnection(
-                *team_management_modules, "fetch", field, update_field
-            )
-            total_teams = [res for res in json.loads(teams)["data"]]
+                data["jobs"] = res_jobs[1]
 
-            res_teams = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=total_teams,
-                key="date_created",
-            )
-            data["teams"] = res_teams[1]
+                active_jobs = []
+                inactive_jobs = []
+                for t in res_jobs[0]:
+                    if "is_active" in t.keys():
+                        if (
+                            t["is_active"] == "True"
+                            or t["is_active"] == "true"
+                            or t["is_active"] == True
+                        ):
+                            active_jobs.append([t["_id"], t["is_active"]])
+                        if (
+                            t["is_active"] == "False"
+                            or t["is_active"] == "false"
+                            or t["is_active"] == False
+                        ):
+                            inactive_jobs.append([t["_id"], t["is_active"]])
+                data["no_of_active_jobs"] = len(active_jobs)
+                data["no_of_inactive_jobs"] = len(inactive_jobs)
 
-            res_tasks = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=total_tasks,key="task_created_date")
-            data["tasks"] =res_tasks[1]            
-
-            tasks_completed=[]
-            for t in res_tasks[0]:
+                response = dowellconnection(
+                    *candidate_management_reports, "fetch", field, update_field
+                )
+                total = [res for res in json.loads(response)["data"]]
+                job_application = [
+                    res for res in total if "application_submitted_on" in res.keys()
+                ]
                 try:
-                    if t["status"]=="Completed" or t["status"]=="completed":
-                        tasks_completed.append(t)
+                    job_titles = {}
+                    for t in job_application:
+                        job_titles[t["job_number"]] = t["job_title"]
+                    ids = [t["job_number"] for t in job_application]
+                    counter = Counter(ids)
+                    most_applied_job = counter.most_common(1)[0][0]
+                    least_applied_job = counter.most_common()[-1][0]
+                    data["most_applied_job"] = {
+                        "job_number": most_applied_job,
+                        "job_title": job_titles[most_applied_job],
+                        "no_job_applications": ids.count(most_applied_job),
+                    }
+                    data["least_applied_job"] = {
+                        "job_number": least_applied_job,
+                        "job_title": job_titles[least_applied_job],
+                        "no_job_applications": ids.count(least_applied_job),
+                    }
+
                 except Exception:
-                    pass
-            data["tasks_completed"]=len(tasks_completed)
+                    data["most_applied_job"] = {"job_number": "none"}
+                    data["least_applied_job"] = {"job_number": "none"}
 
-            try:
-                data["percentage_tasks_completed"]=str((data["tasks_completed"]/data["tasks"])*100)+" %"
-            except Exception:
-                data["percentage_tasks_completed"]="0 %"
+                new_candidates = [
+                    res
+                    for res in total
+                    if "application_submitted_on" in res.keys()
+                    and res["status"] == "Pending"
+                ]
+                guest_candidates = [
+                    res
+                    for res in total
+                    if "application_submitted_on" in res.keys()
+                    and res["status"] == "Guest_Pending"
+                ]
+                probationary_candidates = [
+                    res
+                    for res in total
+                    if "application_submitted_on" in res.keys()
+                    and res["status"] == "probationary"
+                ]
+                selected = [res for res in total if "selected_on" in res.keys()]
+                shortlisted = [res for res in total if "shortlisted_on" in res.keys()]
+                hired = [res for res in total if "hired_on" in res.keys()]
+                rehired = [res for res in total if "rehired_on" in res.keys()]
+                rejected = [res for res in total if "rejected_on" in res.keys()]
+                onboarded = [res for res in total if "onboarded_on" in res.keys()]
 
-            tasks_completed_on_time=[]
-            for t in res_tasks[0]:
+                res_job_application = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=job_application,
+                    key="application_submitted_on",
+                )
+                data["job_applications"] = res_job_application[1]
+
+                res_new_candidates = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=new_candidates,
+                    key="application_submitted_on",
+                )
+                data["new_candidates"] = res_new_candidates[1]
+
+                res_guest_candidates = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=guest_candidates,
+                    key="application_submitted_on",
+                )
+                data["guest_candidates"] = res_guest_candidates[1]
+
+                res_probationary_candidates = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=probationary_candidates,
+                    key="application_submitted_on",
+                )
+                data["probationary_candidates"] = res_probationary_candidates[1]
+
+                res_selected = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=selected,
+                    key="selected_on",
+                )
+                data["selected"] = res_selected[1]
+
+                res_shortlisted = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=shortlisted,
+                    key="shortlisted_on",
+                )
+                data["shortlisted"] = res_shortlisted[1]
+
+                res_hired = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=hired,
+                    key="hired_on",
+                )
+                data["hired"] = res_hired[1]
+
+                res_rehired = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=rehired,
+                    key="rehired_on",
+                )
+                data["rehired"] = res_rehired[1]
+
+                res_onboarded = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=onboarded,
+                    key="onboarded_on",
+                )
+                data["onboarded"] = res_onboarded[1]
+
+                res_rejected = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=rejected,
+                    key="rejected_on",
+                )
+                data["rejected"] = res_rejected[1]
+
                 try:
-                    due_date = datetime.datetime.strptime(set_date_format(t["due_date"]), '%m/%d/%Y %H:%M:%S')
-                    task_updated_date = datetime.datetime.strptime(set_date_format(t["task_updated_date"]), '%m/%d/%Y %H:%M:%S')
-                    if "due_date" in t.keys() and "task_updated_date" in t.keys() and due_date > task_updated_date:
-                        tasks_completed_on_time.append(t)
+                    data["hiring_rate"] = (
+                        str((data["hired"] / data["job_applications"]) * 100) + " %"
+                    )
                 except Exception:
-                    pass
-            data["tasks_completed_on_time"]=len(tasks_completed_on_time)
-            try:
-                data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks_completed"])*100)+" %"
-            except Exception:
-                data["percentage_tasks_completed_on_time"]="0 %" 
-            
-            res_tasks_mod = dowellconnection(*task_details_module, "fetch", {}, update_field= None)
-            res_tasks_mod_list = [res for res in json.loads(res_tasks_mod)["data"]]
+                    data["hiring_rate"] = "0 %"
+                # tasksand teams========================================================================================
+                tasks = dowellconnection(
+                    *task_management_reports, "fetch", field, update_field
+                )
+                total_tasks = [res for res in json.loads(tasks)["data"]]
+                teams = dowellconnection(
+                    *team_management_modules, "fetch", field, update_field
+                )
+                total_teams = [res for res in json.loads(teams)["data"]]
+                total_teams_ids = [res["_id"] for res in json.loads(teams)["data"]]
 
-            res_t= period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=res_tasks_mod_list ,key="task_created_date")
-            projects=[]
-            for r in res_t[0]:
+                res_teams = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=total_teams,
+                    key="date_created",
+                )
+                data["teams"] = res_teams[1]
+
+                res_tasks = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=total_tasks,key="task_created_date")
+                data["tasks"] =res_tasks[1] 
+
+                team_tasks=[]
+                for t in res_tasks[0]:
+                    try:
+                        if t["team_id"] in total_teams_ids:
+                            team_tasks.append(t)
+                    except Exception:
+                        pass
+                data["team_tasks"]=len(team_tasks)          
+
+                tasks_completed=[]
+                for t in res_tasks[0]:
+                    try:
+                        if t["status"]=="Completed" or t["status"]=="completed":
+                            tasks_completed.append(t)
+                    except Exception:
+                        pass
+                data["tasks_completed"]=len(tasks_completed)
+
                 try:
-                    projects.append(r["project"])
-                except KeyError:
-                    r["project"]="None"
-                    projects.append(r["project"])
+                    data["percentage_tasks_completed"]=str((data["tasks_completed"]/data["tasks"])*100)+" %"
+                except Exception:
+                    data["percentage_tasks_completed"]="0 %"
 
-            counter = Counter(projects)
-            try:
-                most_tasked_project = counter.most_common(1)[0][0]
-            except IndexError:
-                most_tasked_project = "None"
-            try:
+                tasks_completed_on_time=[]
+                for t in res_tasks[0]:
+                    try:
+                        due_date = datetime.datetime.strptime(set_date_format(t["due_date"]), '%m/%d/%Y %H:%M:%S')
+                        task_updated_date = datetime.datetime.strptime(set_date_format(t["task_updated_date"]), '%m/%d/%Y %H:%M:%S')
+                        if "due_date" in t.keys() and "task_updated_date" in t.keys() and due_date > task_updated_date:
+                            tasks_completed_on_time.append(t)
+                    except Exception:
+                        pass
+                data["tasks_completed_on_time"]=len(tasks_completed_on_time)
+                try:
+                    data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks_completed"])*100)+" %"
+                except Exception:
+                    data["percentage_tasks_completed_on_time"]="0 %" 
+                
+                res_tasks_mod = dowellconnection(*task_details_module, "fetch", {}, update_field= None)
+                res_tasks_mod_list = [res for res in json.loads(res_tasks_mod)["data"]]
+
+                res_t= period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=res_tasks_mod_list ,key="task_created_date")
+                projects=[]
+                for r in res_t[0]:
+                    try:
+                        projects.append(r["project"])
+                    except KeyError:
+                        r["project"]="None"
+                        projects.append(r["project"])
+
+                counter = Counter(projects)
+                try:
+                    most_tasked_project = counter.most_common(1)[0][0]
+                except IndexError:
+                    most_tasked_project = "None"
+                try:
+                    least_tasked_project = counter.most_common()[-1][0]
+                except IndexError:
+                    least_tasked_project = "None"
                 least_tasked_project = counter.most_common()[-1][0]
-            except IndexError:
-                least_tasked_project = "None"
-            least_tasked_project = counter.most_common()[-1][0]
-            data["project_with_most_tasks"]={"title":most_tasked_project,
-                                                "tasks_added":projects.count(most_tasked_project)}
-            data["project_with_least_tasks"]={"title":least_tasked_project,
-                                                "tasks_added":projects.count(least_tasked_project)}
-            return Response({"message": "Admin Report Generated","response":data},status=status.HTTP_201_CREATED)
+                data["project_with_most_tasks"]={"title":most_tasked_project,
+                                                    "tasks_added":projects.count(most_tasked_project)}
+                data["project_with_least_tasks"]={"title":least_tasked_project,
+                                                    "tasks_added":projects.count(least_tasked_project)}
+                return Response({"message": "Admin Report Generated","response":data},status=status.HTTP_201_CREATED)
+            else:
+                return Response(
+                    {"message": "Parameters are not valid, start date must be smaller that end date"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
             return Response(
                 {"message": "Parameters are not valid"},
@@ -4771,100 +4788,106 @@ class Generate_Report(APIView):
     def generate_hr_report(self, request):
         payload = request.data
         if payload:
-            data = {}
-            # get all details firstly---------------
-            field = {}
-            update_field = {}
-            response = dowellconnection(
-                *hr_management_reports, "fetch", field, update_field
-            )
-            total = [res for res in json.loads(response)["data"]]
-            selected = [res for res in total if "selected_on" in res.keys()]
-            shortlisted = [res for res in total if "shortlisted_on" in res.keys()]
-            rejected = [res for res in total if "rejected_on" in res.keys()]
-            response_jbs = dowellconnection(*jobs, "fetch", field, update_field)
-            
-            jbs = [res for res in json.loads(response_jbs)["data"]]
-            res_jobs = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=jbs,key="created_on")
-            data["jobs"] =res_jobs[1]
-            
-            active_jobs=[]
-            inactive_jobs=[]
-            for t in res_jobs[0]:
-                if "is_active" in t.keys():
-                    if t["is_active"] =="True" or t["is_active"] =="true" or t["is_active"] ==True:
-                        active_jobs.append([t["_id"],t["is_active"]])
-                    if t["is_active"] =="False" or t["is_active"] =="false" or t["is_active"] ==False:
-                        inactive_jobs.append([t["_id"],t["is_active"]])
-            data["no_of_active_jobs"] = len(active_jobs)
-            data["no_of_inactive_jobs"] = len(inactive_jobs)
+            if valid_period(payload["start_date"],payload["end_date"]) ==True:
+                data = {}
+                # get all details firstly---------------
+                field = {}
+                update_field = {}
+                response = dowellconnection(
+                    *hr_management_reports, "fetch", field, update_field
+                )
+                total = [res for res in json.loads(response)["data"]]
+                selected = [res for res in total if "selected_on" in res.keys()]
+                shortlisted = [res for res in total if "shortlisted_on" in res.keys()]
+                rejected = [res for res in total if "rejected_on" in res.keys()]
+                response_jbs = dowellconnection(*jobs, "fetch", field, update_field)
+                
+                jbs = [res for res in json.loads(response_jbs)["data"]]
+                res_jobs = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=jbs,key="created_on")
+                data["jobs"] =res_jobs[1]
+                
+                active_jobs=[]
+                inactive_jobs=[]
+                for t in res_jobs[0]:
+                    if "is_active" in t.keys():
+                        if t["is_active"] =="True" or t["is_active"] =="true" or t["is_active"] ==True:
+                            active_jobs.append([t["_id"],t["is_active"]])
+                        if t["is_active"] =="False" or t["is_active"] =="false" or t["is_active"] ==False:
+                            inactive_jobs.append([t["_id"],t["is_active"]])
+                data["no_of_active_jobs"] = len(active_jobs)
+                data["no_of_inactive_jobs"] = len(inactive_jobs)
 
-            response_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
-            total_applications = [res for res in json.loads(response_applications)["data"]]
-            job_application = [res for res in total_applications if "application_submitted_on" in res.keys()]
-            try:
-                job_titles = {}
-                for t in job_application:
-                    job_titles[t["job_number"]]=t["job_title"]
-                ids = [t["job_number"] for t in job_application]
-                counter = Counter(ids)
-                most_applied_job = counter.most_common(1)[0][0]
-                least_applied_job = counter.most_common()[-1][0]
-                data["most_applied_job"]={"job_number":most_applied_job,
-                                        "job_title":job_titles[most_applied_job],
-                                        "no_job_applications":ids.count(most_applied_job)}
-                data["least_applied_job"]={"job_number":least_applied_job,
-                                        "job_title":job_titles[least_applied_job],
-                                        "no_job_applications":ids.count(least_applied_job)}
-  
-            except Exception:
-                data["most_applied_job"]={"job_number":"none"}
-                data["least_applied_job"]={"job_number":"none"}
-            
-            new_candidates = [res for res in total_applications if "application_submitted_on" in res.keys() and res["status"]=="Pending"]
-            guest_candidates = [res for res in total_applications if "application_submitted_on" in res.keys() and res["status"]=="Guest_Pending"]
-            probationary_candidates = [res for res in total_applications if "application_submitted_on" in res.keys() and res["status"]=="probationary"]
-            hired = [res for res in total_applications if "hired_on" in res.keys()]
+                response_applications = dowellconnection(*candidate_management_reports, "fetch", field, update_field)
+                total_applications = [res for res in json.loads(response_applications)["data"]]
+                job_application = [res for res in total_applications if "application_submitted_on" in res.keys()]
+                try:
+                    job_titles = {}
+                    for t in job_application:
+                        job_titles[t["job_number"]]=t["job_title"]
+                    ids = [t["job_number"] for t in job_application]
+                    counter = Counter(ids)
+                    most_applied_job = counter.most_common(1)[0][0]
+                    least_applied_job = counter.most_common()[-1][0]
+                    data["most_applied_job"]={"job_number":most_applied_job,
+                                            "job_title":job_titles[most_applied_job],
+                                            "no_job_applications":ids.count(most_applied_job)}
+                    data["least_applied_job"]={"job_number":least_applied_job,
+                                            "job_title":job_titles[least_applied_job],
+                                            "no_job_applications":ids.count(least_applied_job)}
+    
+                except Exception:
+                    data["most_applied_job"]={"job_number":"none"}
+                    data["least_applied_job"]={"job_number":"none"}
+                
+                new_candidates = [res for res in total_applications if "application_submitted_on" in res.keys() and res["status"]=="Pending"]
+                guest_candidates = [res for res in total_applications if "application_submitted_on" in res.keys() and res["status"]=="Guest_Pending"]
+                probationary_candidates = [res for res in total_applications if "application_submitted_on" in res.keys() and res["status"]=="probationary"]
+                hired = [res for res in total_applications if "hired_on" in res.keys()]
 
-            res_job_application = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=job_application,key="application_submitted_on")
-            data["job_applications"] =res_job_application[1]
+                res_job_application = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=job_application,key="application_submitted_on")
+                data["job_applications"] =res_job_application[1]
 
-            res_new_candidates = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=new_candidates,key="application_submitted_on")
-            data["new_candidates"] =res_new_candidates[1]
+                res_new_candidates = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=new_candidates,key="application_submitted_on")
+                data["new_candidates"] =res_new_candidates[1]
 
-            res_guest_candidates = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=guest_candidates,key="application_submitted_on")
-            data["guest_candidates"] =res_guest_candidates[1]
+                res_guest_candidates = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=guest_candidates,key="application_submitted_on")
+                data["guest_candidates"] =res_guest_candidates[1]
 
-            res_probationary_candidates = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=probationary_candidates,key="application_submitted_on")
-            data["probationary_candidates"] =res_probationary_candidates[1]
-            
-            res_selected = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=selected,key="selected_on")
-            data["selected"] =res_selected[1]
-
-
-            res_selected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=selected,
-                key="selected_on",
-            )
-            data["selected"] = res_selected[1]
-
-            res_rejected = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=rejected,key="rejected_on")
-            data["rejected"] =res_rejected[1]
-            res_hired = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=hired,key="hired_on")
-            data["hired"] =res_hired[1]
-
-            try:
-                data["hiring_rate"] = str((data["hired"]/data["job_applications"])*100)+" %"
-            except Exception:
-                data["hiring_rate"] ="0 %"
+                res_probationary_candidates = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=probationary_candidates,key="application_submitted_on")
+                data["probationary_candidates"] =res_probationary_candidates[1]
+                
+                res_selected = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=selected,key="selected_on")
+                data["selected"] =res_selected[1]
 
 
-            return Response(
-                {"message": "Hr Report Generated", "response": data},
-                status=status.HTTP_201_CREATED,
-            )
+                res_selected = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=selected,
+                    key="selected_on",
+                )
+                data["selected"] = res_selected[1]
+
+                res_rejected = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=rejected,key="rejected_on")
+                data["rejected"] =res_rejected[1]
+                res_hired = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=hired,key="hired_on")
+                data["hired"] =res_hired[1]
+
+                try:
+                    data["hiring_rate"] = str((data["hired"]/data["job_applications"])*100)+" %"
+                except Exception:
+                    data["hiring_rate"] ="0 %"
+
+
+                return Response(
+                    {"message": "Hr Report Generated", "response": data},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {"message": "Parameters are not valid, start date must be smaller that end date"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
             return Response(
                 {"message": "Parameters are not valid"},
@@ -4873,46 +4896,52 @@ class Generate_Report(APIView):
     def generate_account_report(self,request):
         payload = request.data
         if payload:
-            data = {}
-            # get all details firstly---------------
-            field = {}
-            update_field = {}
-            response = dowellconnection(
-                *account_management_reports, "fetch", field, update_field
-            )
-            total = [res for res in json.loads(response)["data"]]
-            rehired = [res for res in total if "rehired_on" in res.keys()]
-            rejected = [res for res in total if "rejected_on" in res.keys()]
-            onboarded = [res for res in total if "onboarded_on" in res.keys()]
+            if valid_period(payload["start_date"],payload["end_date"]) ==True:
+                data = {}
+                # get all details firstly---------------
+                field = {}
+                update_field = {}
+                response = dowellconnection(
+                    *account_management_reports, "fetch", field, update_field
+                )
+                total = [res for res in json.loads(response)["data"]]
+                rehired = [res for res in total if "rehired_on" in res.keys()]
+                rejected = [res for res in total if "rejected_on" in res.keys()]
+                onboarded = [res for res in total if "onboarded_on" in res.keys()]
 
-            res_rehired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rehired,
-                key="rehired_on",
-            )
-            data["rehired"] = res_rehired[1]
+                res_rehired = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=rehired,
+                    key="rehired_on",
+                )
+                data["rehired"] = res_rehired[1]
 
-            res_onboarded = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=onboarded,
-                key="onboarded_on",
-            )
-            data["onboarded"] = res_onboarded[1]
+                res_onboarded = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=onboarded,
+                    key="onboarded_on",
+                )
+                data["onboarded"] = res_onboarded[1]
 
-            res_rejected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rejected,
-                key="rejected_on",
-            )
-            data["rejected"] = res_rejected[1]
+                res_rejected = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=rejected,
+                    key="rejected_on",
+                )
+                data["rejected"] = res_rejected[1]
 
-            return Response(
-                {"message": "Account Report Generated", "response": data},
-                status=status.HTTP_201_CREATED,
-            )
+                return Response(
+                    {"message": "Account Report Generated", "response": data},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {"message": "Parameters are not valid, start date must be smaller that end date"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
             return Response(
                 {"message": "Parameters are not valid"},
@@ -4921,134 +4950,140 @@ class Generate_Report(APIView):
     def generate_candidate_report(self,request):
         payload = request.data
         if payload:
-            data = {}
-            # get all details firstly---------------
-            field = {}
-            update_field = {}
-            response = dowellconnection(
-                *candidate_management_reports, "fetch", field, update_field
-            )
-
-            total = [res for res in json.loads(response)["data"]]
-            job_application = [
-                res for res in total if "application_submitted_on" in res.keys()
-            ]
-            new_candidates = [
-                res
-                for res in total
-                if "application_submitted_on" in res.keys()
-                and res["status"] == "Pending"
-            ]
-            guest_candidates = [
-                res
-                for res in total
-                if "application_submitted_on" in res.keys()
-                and res["status"] == "Guest_Pending"
-            ]
-            probationary_candidates = [
-                res
-                for res in total
-                if "application_submitted_on" in res.keys()
-                and res["status"] == "probationary"
-            ]
-            selected = [res for res in total if "selected_on" in res.keys()]
-            shortlisted = [res for res in total if "shortlisted_on" in res.keys()]
-            hired = [res for res in total if "hired_on" in res.keys()]
-            rehired = [res for res in total if "rehired_on" in res.keys()]
-            rejected = [res for res in total if "rejected_on" in res.keys()]
-            onboarded = [res for res in total if "onboarded_on" in res.keys()]
-
-            res_job_application = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=job_application,
-                key="application_submitted_on",
-            )
-            data["job_applications"] = res_job_application[1]
-
-            res_new_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=new_candidates,
-                key="application_submitted_on",
-            )
-            data["new_candidates"] = res_new_candidates[1]
-
-            res_guest_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=guest_candidates,
-                key="application_submitted_on",
-            )
-            data["guest_candidates"] = res_guest_candidates[1]
-
-            res_probationary_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=probationary_candidates,
-                key="application_submitted_on",
-            )
-            data["probationary_candidates"] = res_probationary_candidates[1]
-
-            res_selected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=selected,
-                key="selected_on",
-            )
-            data["selected"] = res_selected[1]
-
-            res_shortlisted = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=shortlisted,
-                key="shortlisted_on",
-            )
-            data["shortlisted"] = res_shortlisted[1]
-
-            res_hired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=hired,
-                key="hired_on",
-            )
-            data["hired"] = res_hired[1]
-
-            res_rehired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rehired,
-                key="rehired_on",
-            )
-            data["rehired"] = res_rehired[1]
-
-            res_onboarded = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=onboarded,
-                key="onboarded_on",
-            )
-            data["onboarded"] = res_onboarded[1]
-
-            res_rejected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rejected,
-                key="rejected_on",
-            )
-            data["rejected"] = res_rejected[1]
-
-            try:
-                data["hiring_rate"] = (
-                    str((data["hired"] / data["job_applications"]) * 100) + " %"
+            if valid_period(payload["start_date"],payload["end_date"]) ==True:
+                data = {}
+                # get all details firstly---------------
+                field = {}
+                update_field = {}
+                response = dowellconnection(
+                    *candidate_management_reports, "fetch", field, update_field
                 )
-            except Exception:
-                data["hiring_rate"] = "0 %"
 
-            return Response(
-                {"message": "Candidate Report Generated", "response": data},
-                status=status.HTTP_201_CREATED,
-            )
+                total = [res for res in json.loads(response)["data"]]
+                job_application = [
+                    res for res in total if "application_submitted_on" in res.keys()
+                ]
+                new_candidates = [
+                    res
+                    for res in total
+                    if "application_submitted_on" in res.keys()
+                    and res["status"] == "Pending"
+                ]
+                guest_candidates = [
+                    res
+                    for res in total
+                    if "application_submitted_on" in res.keys()
+                    and res["status"] == "Guest_Pending"
+                ]
+                probationary_candidates = [
+                    res
+                    for res in total
+                    if "application_submitted_on" in res.keys()
+                    and res["status"] == "probationary"
+                ]
+                selected = [res for res in total if "selected_on" in res.keys()]
+                shortlisted = [res for res in total if "shortlisted_on" in res.keys()]
+                hired = [res for res in total if "hired_on" in res.keys()]
+                rehired = [res for res in total if "rehired_on" in res.keys()]
+                rejected = [res for res in total if "rejected_on" in res.keys()]
+                onboarded = [res for res in total if "onboarded_on" in res.keys()]
+
+                res_job_application = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=job_application,
+                    key="application_submitted_on",
+                )
+                data["job_applications"] = res_job_application[1]
+
+                res_new_candidates = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=new_candidates,
+                    key="application_submitted_on",
+                )
+                data["new_candidates"] = res_new_candidates[1]
+
+                res_guest_candidates = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=guest_candidates,
+                    key="application_submitted_on",
+                )
+                data["guest_candidates"] = res_guest_candidates[1]
+
+                res_probationary_candidates = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=probationary_candidates,
+                    key="application_submitted_on",
+                )
+                data["probationary_candidates"] = res_probationary_candidates[1]
+
+                res_selected = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=selected,
+                    key="selected_on",
+                )
+                data["selected"] = res_selected[1]
+
+                res_shortlisted = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=shortlisted,
+                    key="shortlisted_on",
+                )
+                data["shortlisted"] = res_shortlisted[1]
+
+                res_hired = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=hired,
+                    key="hired_on",
+                )
+                data["hired"] = res_hired[1]
+
+                res_rehired = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=rehired,
+                    key="rehired_on",
+                )
+                data["rehired"] = res_rehired[1]
+
+                res_onboarded = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=onboarded,
+                    key="onboarded_on",
+                )
+                data["onboarded"] = res_onboarded[1]
+
+                res_rejected = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=rejected,
+                    key="rejected_on",
+                )
+                data["rejected"] = res_rejected[1]
+
+                try:
+                    data["hiring_rate"] = (
+                        str((data["hired"] / data["job_applications"]) * 100) + " %"
+                    )
+                except Exception:
+                    data["hiring_rate"] = "0 %"
+
+                return Response(
+                    {"message": "Candidate Report Generated", "response": data},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {"message": "Parameters are not valid, start date must be smaller that end date"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
             return Response(
                 {"message": "Parameters are not valid"},
@@ -5057,85 +5092,90 @@ class Generate_Report(APIView):
     def generate_team_report(self, request):
         payload = request.data
         if payload:
-            data = {}
-            # get all details firstly---------------
-            field = {"_id": payload["team_id"]}
-            update_field = {}
-            tasks = dowellconnection(
-                *task_management_reports, "fetch", field, update_field
-            )
-            total_tasks = [res for res in json.loads(tasks)["data"]]
-            teams = dowellconnection(
-                *team_management_modules, "fetch", field, update_field
-            )
-            total_teams = [res for res in json.loads(teams)["data"]]
+            if valid_period(payload["start_date"],payload["end_date"]) ==True:
+                data = {}
+                # get all details firstly---------------
+                field = {"_id": payload["team_id"]}
+                update_field = {}
+                tasks = dowellconnection(
+                    *task_management_reports, "fetch", {"team_id":payload["team_id"]}, update_field
+                )
+                total_tasks = [res for res in json.loads(tasks)["data"]]
 
-            data["teams"] = len(total_teams)
+                teams = dowellconnection(
+                    *team_management_modules, "fetch", field, update_field
+                )
+                total_teams = [res for res in json.loads(teams)["data"]]
+                data["teams"] = len(total_teams)
 
-            res_team_tasks = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=total_tasks,
-                key="task_created_date",
-            )
-            data["team_tasks"] = res_team_tasks[1]
+                res_team_tasks = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=total_tasks,
+                    key="task_created_date",
+                )
+                #print(res_team_tasks)
+                data["team_tasks"] = res_team_tasks[1]
 
-            team_tasks_completed = []
-            for t in res_team_tasks[0]:
+                team_tasks_completed = []
+                for t in res_team_tasks[0]:
+                    try:
+                        if t["status"] == "Completed" or t["status"] == "completed":
+                            team_tasks_completed.append(t)
+                    except Exception as e:
+                        try:
+                            if t["completed"]== True:
+                                team_tasks_completed.append(t)
+                        except Exception as e:
+                            pass
+                data["team_tasks_completed"] = len(team_tasks_completed)
+
                 try:
-                    if t["status"] == "Completed" or t["status"] == "completed":
-                        # print(t)
-                        team_tasks_completed.append(t)
+                    data["percentage_team_tasks_completed"] = (
+                        (data["team_tasks_completed"] / data["team_tasks"]) * 100
+                    )
                 except Exception:
-                    # print("error",e)
-                    pass
-            data["team_tasks_completed"] = len(team_tasks_completed)
+                    data["percentage_team_tasks_completed"] = 0
 
-            try:
-                data["percentage_team_tasks_completed"] = (
-                    str((data["team_tasks_completed"] / data["team_tasks"]) * 100)
-                    + " %"
-                )
-            except Exception:
-                data["percentage_team_tasks_completed"] = "0 %"
-
-            team_tasks_completed_on_time = []
-            for t in res_team_tasks[0]:
-                try:
-                    due_date = datetime.datetime.strptime(
-                        set_date_format(t["due_date"]), "%m/%d/%Y %H:%M:%S"
-                    )
-                    task_updated_date = datetime.datetime.strptime(
-                        set_date_format(t["task_updated_date"]), "%m/%d/%Y %H:%M:%S"
-                    )
-                    if (
-                        "due_date" in t.keys()
-                        and "task_updated_date" in t.keys()
-                        and due_date > task_updated_date
-                    ):
-                        team_tasks_completed_on_time.append(t)
-                except Exception as e:
-                    # print("error",e)
-                    pass
-            data["team_tasks_completed_on_time"] = len(team_tasks_completed_on_time)
-            try:
-                data["percentage_team_tasks_completed_on_time"] = (
-                    str(
-                        (
-                            data["team_tasks_completed_on_time"]
-                            / data["team_tasks_completed"]
+                team_tasks_completed_on_time = []
+                for t in res_team_tasks[0]:
+                    try:
+                        due_date = datetime.datetime.strptime(
+                            set_date_format(t["due_date"]), "%m/%d/%Y %H:%M:%S"
                         )
-                        * 100
+                        task_updated_date = datetime.datetime.strptime(
+                            set_date_format(t["task_updated_date"]), "%m/%d/%Y %H:%M:%S"
+                        )
+                        if (
+                            "due_date" in t.keys()
+                            and "task_updated_date" in t.keys()
+                            and due_date > task_updated_date
+                        ):
+                            team_tasks_completed_on_time.append(t)
+                    except Exception as e:
+                        # print("error",e)
+                        pass
+                data["team_tasks_completed_on_time"] = len(team_tasks_completed_on_time)
+                try:
+                    data["percentage_team_tasks_completed_on_time"] = (
+                        (
+                                data["team_tasks_completed_on_time"]
+                                / data["team_tasks_completed"]
+                            )
+                            * 100
                     )
-                    + " %"
-                )
-            except Exception:
-                data["percentage_team_tasks_completed_on_time"] = "0 %"
+                except Exception:
+                    data["percentage_team_tasks_completed_on_time"] = 0
 
-            return Response(
-                {"message": "Team Report Generated", "response": data},
-                status=status.HTTP_201_CREATED,
-            )
+                return Response(
+                    {"message": "Team Report Generated", "response": data},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                    return Response(
+                        {"message": "Parameters are not valid, start date must be smaller that end date"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
         else:
             return Response(
                 {"message": "Parameters are not valid"},
@@ -5144,46 +5184,52 @@ class Generate_Report(APIView):
     def generate_lead_report(self, request):
         payload = request.data
         if payload:
-            data = {}
-            # get all details firstly---------------
-            field = {}
-            update_field = {}
-            response = dowellconnection(
-                *lead_management_reports, "fetch", field, update_field
-            )
-            total = [res for res in json.loads(response)["data"]]
-            rehired = [res for res in total if "rehired_on" in res.keys()]
-            rejected = [res for res in total if "rejected_on" in res.keys()]
-            hired = [res for res in total if "hired_on" in res.keys()]
+            if valid_period(payload["start_date"],payload["end_date"]) ==True:
+                data = {}
+                # get all details firstly---------------
+                field = {}
+                update_field = {}
+                response = dowellconnection(
+                    *lead_management_reports, "fetch", field, update_field
+                )
+                total = [res for res in json.loads(response)["data"]]
+                rehired = [res for res in total if "rehired_on" in res.keys()]
+                rejected = [res for res in total if "rejected_on" in res.keys()]
+                hired = [res for res in total if "hired_on" in res.keys()]
 
-            res_rehired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rehired,
-                key="rehired_on",
-            )
-            data["rehired"] = res_rehired[1]
+                res_rehired = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=rehired,
+                    key="rehired_on",
+                )
+                data["rehired"] = res_rehired[1]
 
-            res_hired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=hired,
-                key="hired_on",
-            )
-            data["onboarded"] = res_hired[1]
+                res_hired = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=hired,
+                    key="hired_on",
+                )
+                data["onboarded"] = res_hired[1]
 
-            res_rejected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rejected,
-                key="rejected_on",
-            )
-            data["rejected"] = res_rejected[1]
+                res_rejected = period_check(
+                    start_dt=payload["start_date"],
+                    end_dt=payload["end_date"],
+                    data_list=rejected,
+                    key="rejected_on",
+                )
+                data["rejected"] = res_rejected[1]
 
-            return Response(
-                {"message": "Lead Report Generated", "response": data},
-                status=status.HTTP_201_CREATED,
-            )
+                return Response(
+                    {"message": "Lead Report Generated", "response": data},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {"message": "Parameters are not valid, start date must be smaller that end date"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         else:
             return Response(
                 {"message": "Parameters are not valid"},
@@ -5285,6 +5331,11 @@ class Generate_Report(APIView):
                         pass
                     try:
                         if task["task_added_by"]==username and task["status"]=="Completed":
+                            _tasks_completed.append(task)
+                    except KeyError :
+                        pass
+                    try:
+                        if task["task_added_by"]==username and task["status"]=="Mark as complete":
                             _tasks_completed.append(task)
                     except KeyError :
                         pass
@@ -5825,7 +5876,7 @@ class Generate_Report(APIView):
                 for res in task_data1:
                     subprojects[res["user_id"]]=[]
                 for res in task_data1:
-                    print(res)
+                    #print(res)
                     if "subproject" in res.keys():
                         if not res["subproject"] == None or not res["subproject"] == "None":
                             try:
@@ -5846,7 +5897,21 @@ class Generate_Report(APIView):
                         subprojects = user_subproject.sub_project_list
                     except UsersubProject.DoesNotExist:
                         subprojects = []"""
-                    users_data.append({"user_id": user_id, "user": task_added_by, "tasks_added": task_count, "total_hours": total_hours,"subprojects":subprojects[user_id]})
+                    sp={}
+                    for s in subprojects[user_id]:
+                        try:
+                            if "," in s:
+                                for i in s.split(","):
+                                    sp[i] = subprojects[user_id].count(s)
+                            else:
+                                sp[s]=subprojects[user_id].count(s)
+                        except TypeError:
+                            pass
+                    users_data.append({"user_id": user_id, 
+                                       "user": task_added_by, 
+                                       "tasks_added": task_count, 
+                                       "total_hours": total_hours,
+                                       "subprojects":sp})
 
 
                 response_data = {"total_tasks_added": total_tasks_added, "users_that_added": users_data}
