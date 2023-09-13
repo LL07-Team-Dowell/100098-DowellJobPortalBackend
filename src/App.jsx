@@ -79,7 +79,7 @@ import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
 import IndividualTaskReports from "./pages/AdminPage/views/Reports/individualTaskReport/individualTaskReport";
 
 function App() {
-  // console.log = () => { };
+  console.log = () => { };
   const {
     currentUser,
     isPublicUser,
