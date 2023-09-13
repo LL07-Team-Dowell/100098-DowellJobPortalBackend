@@ -177,15 +177,22 @@ const AdminReports = ({ subAdminView }) => {
                 ></Doughnut>
               </div>
             )}
-            <div>most applied job: {data.most_applied_job?.job_title}</div>
-            <div>least applied job: {data.least_applied_job?.job_title}</div>
-                  <div style={{width:400,height:300}}> <Bar data={{labels:['most applied job','least applied job'],datasets:[
+            <p style={{marginTop:10}}>most applied job: {data.most_applied_job?.job_title}</p>
+            <p>least applied job: {data.least_applied_job?.job_title}</p>
+                  <div style={{width:400,height:300}}> <Bar data={{labels:['jobs'],datasets:[
               {
-                label:[data.most_applied_job?.job_title, data.least_applied_job?.job_title],
-                data:[data.most_applied_job.no_job_applications, data.least_applied_job.no_job_applications],
-                backgroundColor: ["#005734","#D3D3D3", ],
-                borderColor: ["#005734","#D3D3D3", ],
+                label:data.most_applied_job?.job_title, 
+                data:[data.most_applied_job.no_job_applications], 
+                backgroundColor: "#005734", 
+                borderColor:"#005734", 
+              },
+              {
+                label:data.least_applied_job?.job_title, 
+                data:[data.least_applied_job.no_job_applications], 
+                backgroundColor: "#d3d3d3", 
+                borderColor:"#d3d3d3", 
               }
+
             ]}} /></div>
           </div>
           <div className="graph__Item">
