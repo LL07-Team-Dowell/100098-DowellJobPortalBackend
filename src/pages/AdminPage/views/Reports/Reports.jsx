@@ -115,6 +115,19 @@ const AdminReports = ({ subAdminView }) => {
         pageTitle={"Reports"}
         subAdminView={subAdminView}
       >
+        <div className="reports__container">
+          <div className="reports__container_header">
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <button className="back" onClick={() => navigate(-1)}>
+                <MdArrowBackIosNew />
+              </button>
+            </div>
+
+            <div>
+              <p>Get insights into your organizations</p>
+            </div>
+          </div>
+        </div>              
         <LoadingSpinner />
       </StaffJobLandingLayout>
     );
