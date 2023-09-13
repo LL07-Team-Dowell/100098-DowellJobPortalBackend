@@ -377,6 +377,7 @@ const AdminReports = ({ subAdminView }) => {
             </div>
           </div>
           <div className="graph__Item">
+            <h6>Projects</h6>
                       <p>project with most tasks: {data.project_with_most_tasks?.title}</p>
                       <p>project with least tasks: {data.project_with_least_tasks?.title}</p>
                       <div style={{width:400,height:300}}>
