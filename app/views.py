@@ -4472,7 +4472,10 @@ class Generate_Report(APIView):
             if valid_period(payload["start_date"],payload["end_date"]) ==True:
                 data = {}
                 # get all details firstly---------------
-                field = {}
+                if len(payload["company_id"]) >0:
+                    field = {"company_id":"63a2b3fb2be81449d3a30d3f"}
+                else:
+                    field = {}
                 update_field = {}
                 response = dowellconnection(*jobs, "fetch", field, update_field)
 
@@ -4484,6 +4487,7 @@ class Generate_Report(APIView):
                     key="created_on",
                 )
                 data["jobs"] = res_jobs[1]
+                #print(res_jobs[0])
 
                 active_jobs = []
                 inactive_jobs = []
@@ -4641,10 +4645,10 @@ class Generate_Report(APIView):
 
                 try:
                     data["hiring_rate"] = (
-                        str((data["hired"] / data["job_applications"]) * 100) + " %"
+                        (data["hired"] / data["job_applications"]) * 100
                     )
                 except Exception:
-                    data["hiring_rate"] = "0 %"
+                    data["hiring_rate"] = 0
                 # tasksand teams========================================================================================
                 tasks = dowellconnection(
                     *task_management_reports, "fetch", field, update_field
@@ -4682,13 +4686,17 @@ class Generate_Report(APIView):
                         if t["status"]=="Completed" or t["status"]=="completed":
                             tasks_completed.append(t)
                     except Exception:
-                        pass
+                        try:
+                            if t["completed"]==True:
+                                tasks_completed.append(t)
+                        except Exception:
+                            pass
                 data["tasks_completed"]=len(tasks_completed)
 
                 try:
-                    data["percentage_tasks_completed"]=str((data["tasks_completed"]/data["tasks"])*100)+" %"
+                    data["percentage_tasks_completed"]=(data["tasks_completed"]/data["tasks"])*100
                 except Exception:
-                    data["percentage_tasks_completed"]="0 %"
+                    data["percentage_tasks_completed"]=0
 
                 tasks_completed_on_time=[]
                 for t in res_tasks[0]:
@@ -4701,9 +4709,9 @@ class Generate_Report(APIView):
                         pass
                 data["tasks_completed_on_time"]=len(tasks_completed_on_time)
                 try:
-                    data["percentage_tasks_completed_on_time"]=str((data["tasks_completed_on_time"]/data["tasks_completed"])*100)+" %"
+                    data["percentage_tasks_completed_on_time"]=(data["tasks_completed_on_time"]/data["tasks_completed"])*100
                 except Exception:
-                    data["percentage_tasks_completed_on_time"]="0 %" 
+                    data["percentage_tasks_completed_on_time"]=0 
                 
                 res_tasks_mod = dowellconnection(*task_details_module, "fetch", {}, update_field= None)
                 res_tasks_mod_list = [res for res in json.loads(res_tasks_mod)["data"]]
