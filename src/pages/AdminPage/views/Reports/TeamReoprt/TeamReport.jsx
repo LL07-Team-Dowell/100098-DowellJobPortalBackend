@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { IoFilterOutline } from "react-icons/io5";
-import { RiH1 } from "react-icons/ri";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-
 import {
-    Chart as ChartJs,
-    ArcElement,
-    Tooltip,
-    Legend,
-    BarElement,
+    Chart as ChartJS,
     CategoryScale,
     LinearScale,
-} from "chart.js";
-import { Doughnut, Bar } from "react-chartjs-2";
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getAllOnBoardCandidate, generateindividualReport, generateReport, generateTeamReport } from "../../../../../services/adminServices";
 import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
@@ -23,18 +21,14 @@ import { toast } from "react-toastify";
 import { formatDateAndTime } from "../../../../../helpers/helpers";
 import { AiOutlineClose } from "react-icons/ai";
 import LittleLoading from "../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
+import TeamReportChart from "./TeamReportChart";
+
 
 export default function TeamReport() {
     const navigate = useNavigate();
     const [candidates, setcandidates] = useState([]);
+    const [project, setProject] = useState({})
     const [isLoading, setIsLoading] = useState(false)
-    // console.log(candidates);
-    // const [id, setId] = useState("");
-    // const [candidateData, setCandidateDate] = useState([]);
-    // const [personalInfo, setPersonalInfo] = useState({});
-    // const [candidateName, setCandidateName] = useState("");
-    // const [secondLoading, setSecondLoadng] = useState(false);
-
     const [firstLoading, setFirstLoading] = useState(false);
     const [opendate, setOpenDate] = useState(false);
     const closeModal = () => {
@@ -50,6 +44,8 @@ export default function TeamReport() {
     const { currentUser } = useCurrentUserContext();
     const company_id = currentUser.portfolio_info[0].org_id;
 
+
+
     const handleSubmitDate = (start_date, end_date) => {
         setIsLoading(true)
         const data = {
@@ -61,6 +57,7 @@ export default function TeamReport() {
         generateTeamReport(data)
             .then((resp) => {
                 console.log(resp.data.response);
+                setProject(resp.data.response)
                 setFirstDate("")
                 setLastDate("")
                 setIsLoading(false)
@@ -72,24 +69,6 @@ export default function TeamReport() {
             });
     };
 
-    // useEffect(() => {
-    //     if (id) {
-    //         setSecondLoadng(true);
-    //         generateindividualReport({
-    //             year: new Date().getFullYear(),
-    //             applicant_id: id,
-    //         })
-    //             .then((resp) => {
-    //                 console.log(resp.data);
-    //                 setCandidateDate(resp.data.data[0]);
-    //                 setPersonalInfo(resp.data.personal_info);
-    //                 console.log(resp.data.personal_info);
-    //                 setCandidateName(resp.data.personal_info.username);
-    //                 setSecondLoadng(false);
-    //             })
-    //             .catch((err) => console.error(err));
-    //     }
-    // }, [id]);
     useEffect(() => {
         setFirstLoading(true);
         getAllTeams(company_id)
@@ -149,6 +128,7 @@ export default function TeamReport() {
                     </div>
                 </div>
             </div>
+            <TeamReportChart data={project} />
             {
                 opendate && <FormDatePopup
                     firstDate={firstDate}
