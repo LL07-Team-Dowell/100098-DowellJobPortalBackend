@@ -5,9 +5,12 @@ import "./taskreports.css";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import { generateTaskReport } from "../../../../services/reportServices";
+import { generateCommonAdminReport } from "../../../../services/commonServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import Select from 'react-select';
 
-import axios from "axios";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -42,7 +45,6 @@ export const options = {
 };
 
 const TaskReports = ({ subAdminView }) => {
-  const hrCompanyId = "6385c0f18eca0fb652c94561";
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -53,6 +55,18 @@ const TaskReports = ({ subAdminView }) => {
   const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
 
+  const options = [
+    { value: "", label: "Select project" },
+    ...projects.map((project) => ({
+      value: project,
+      label: project,
+    })),
+  ];
+
+  const handleChange = (selectedOption) => {
+    setSelectedProject(selectedOption.value);
+  };
+
   useEffect(() => {
     setProjectsLoading(true);
 
@@ -61,8 +75,8 @@ const TaskReports = ({ subAdminView }) => {
         const projectsGotten = res?.data
           ?.filter(
             (project) =>
-              project?.data_type === "Real_Data" &&
-              project?.company_id === hrCompanyId &&
+              project?.data_type === currentUser.portfolio_info[0].data_type &&
+              project?.company_id === currentUser.portfolio_info[0].org_id &&
               project.project_list &&
               project.project_list.every(
                 (listing) => typeof listing === "string"
@@ -83,13 +97,14 @@ const TaskReports = ({ subAdminView }) => {
     if (reportsLoading) return;
 
     const dataToPost = {
-      company_id: hrCompanyId,
+      report_type: "Project",
       project: selectedProject,
+      company_id: currentUser.portfolio_info[0].org_id,
     };
 
     setReportsLoading(true);
 
-    generateTaskReport(dataToPost)
+    generateCommonAdminReport(dataToPost)
       .then((res) => {
         console.log(res.data);
         const labels = res.data?.data?.users_that_added.map(
@@ -105,6 +120,13 @@ const TaskReports = ({ subAdminView }) => {
                 (item) => item.tasks_added
               ),
               backgroundColor: "#005734",
+            },
+            {
+              label: "Hours",
+              data: res.data?.data?.users_that_added.map(
+                (item) => item.total_hours
+              ),
+              backgroundColor: "red",
             },
           ],
         };
@@ -138,30 +160,29 @@ const TaskReports = ({ subAdminView }) => {
             <h2>Task Reports</h2>
           </div>
           <div className="task__report__header">
-            <p>Get insights into your organizations Task</p>
+            <p>Get insights into tasks uploaded in your organization</p>
             <>
               {projectsLoading ? (
-                <p>Loading projects</p>
+                <LoadingSpinner
+                  width={"1.5rem"}
+                  height={"1.5rem"}
+                  marginLeft={"0"}
+                  marginRight={"0"}
+                />
               ) : (
-                <select
+                <Select
                   className="select__task__report__project"
-                  defaultValue={""}
-                  onChange={({ target }) => setSelectedProject(target.value)}
-                >
-                  <option value={""} disabled>
-                    Select project
-                  </option>
-                  {React.Children.toArray(
-                    projects.map((project) => {
-                      return <option value={project}>{project}</option>;
-                    })
+                  value={options.find(
+                    (option) => option.value === selectedProject
                   )}
-                </select>
+                  onChange={handleChange}
+                  options={options}
+                />
               )}
             </>
           </div>
           {reportsLoading ? (
-            <p>Loading tasks reports........</p>
+            <LoadingSpinner width={"2rem"} height={"2rem"} />
           ) : !report ? (
             <></>
           ) : (
@@ -175,6 +196,7 @@ const TaskReports = ({ subAdminView }) => {
                 }}
                 className="graph__Item"
               >
+                <h2>Bar Chart showing Task uploaded in {selectedProject}</h2>
                 <Bar options={options} data={report} />
               </div>
               <div
@@ -185,12 +207,13 @@ const TaskReports = ({ subAdminView }) => {
                 }}
                 className="graph__Item"
               >
-                <h2>Table Data</h2>
+                <h2>Table Data showing Task uploaded in {selectedProject}</h2>
                 <table>
                   <thead>
                     <tr>
                       <th>Candidate</th>
                       <th>Number of Tasks Added</th>
+                      <th>Total Hours</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -198,6 +221,7 @@ const TaskReports = ({ subAdminView }) => {
                       <tr key={index}>
                         <td>{item.user}</td>
                         <td>{item.tasks_added}</td>
+                        <td>{item.total_hours}</td>
                       </tr>
                     ))}
                   </tbody>
