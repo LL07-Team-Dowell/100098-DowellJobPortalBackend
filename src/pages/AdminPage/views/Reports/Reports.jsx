@@ -179,6 +179,14 @@ const AdminReports = ({ subAdminView }) => {
             )}
             <div>most applied job: {data.most_applied_job?.job_title}</div>
             <div>least applied job: {data.least_applied_job?.job_title}</div>
+                  <div style={{width:400,height:300}}> <Bar data={{labels:['most applied job','least applied job'],datasets:[
+              {
+                label:[data.most_applied_job?.job_title, data.least_applied_job?.job_title],
+                data:[data.most_applied_job.no_job_applications, data.least_applied_job.no_job_applications],
+                backgroundColor: ["#005734","#D3D3D3", ],
+                borderColor: ["#005734","#D3D3D3", ],
+              }
+            ]}} /></div>
           </div>
           <div className="graph__Item">
             <h6>applications</h6>
@@ -305,7 +313,7 @@ const AdminReports = ({ subAdminView }) => {
                     datasets: [
                       {
                         label: "Poll",
-                        data: [data.teams, data.tasks, 0],
+                        data: [data.teams, data.tasks, data.tasks],
                         backgroundColor: ["#D3D3D3", "#005734", "black"],
                         borderColor: ["#D3D3D3", "#005734", "black"],
                       },
