@@ -23,6 +23,7 @@ import {
 import { Doughnut, Bar } from "react-chartjs-2";
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { generateCommonAdminReport } from "../../../../../services/commonServices";
+import Select from 'react-select'
 export default function DetailedIndividual() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
 
@@ -35,6 +36,7 @@ export default function DetailedIndividual() {
   const [candidateName, setCandidateName] = useState("");
   const [firstLoading, setFirstLoading] = useState(false);
   const [secondLoading, setSecondLoadng] = useState(false);
+  const [options,setOptions] = useState([])
   const handleChange = (e) => {
     setcandidates(candidates2.filter(v => v.username.toLowerCase().includes(e.target.value.toLowerCase())))
   }
@@ -74,42 +76,14 @@ export default function DetailedIndividual() {
             data.filter((candidate) => candidate.status === "hired")
           );
           setcandidates2(data.filter((candidate) => candidate.status === "hired"))
+          setOptions(data.filter((candidate) => candidate.status === "hired").map(v => ({ value: v._id, label: v.username })))
           setFirstLoading(false);
         }
       )
       .catch((err) => console.log(err));
   }, []);
-  const keyToDisplayText = {
-    percentage_tasks_completed: "Percentage of Tasks Completed",
-    percentage_team_tasks_completed: "Percentage of Team Tasks Completed",
-    tasks_added: "Tasks Added",
-    tasks_approved: "Tasks Approved",
-    tasks_completed: "Tasks Completed",
-    tasks_uncompleted: "Tasks Uncompleted",
-    team_tasks: "Team Tasks",
-    team_tasks_approved: "Team Tasks Approved",
-    team_tasks_comments_added: "Team Tasks Comments Added",
-    team_tasks_completed: "Team Tasks Completed",
-    team_tasks_issues_raised: "Team Tasks Issues Raised",
-    team_tasks_issues_resolved: "Team Tasks Issues Resolved",
-    team_tasks_uncompleted: "Team Tasks Uncompleted",
-    teams: "Teams",
-  };
-  console.log(
-    "objectt",
-    Object.keys(candidateData).map((key) => {
-      return {
-        label: ["tasks added", "tasks approved", "team tasks"],
-        data: [
-          candidateData[key].tasks_approved,
-          candidateData[key].tasks_added,
-          candidateData[key].team_tasks,
-        ],
-        backgroundColor: ["red", "blue", "green"],
-        borderColor: ["red", "blue", "green"],
-      };
-    })
-  );
+ 
+   
   if (firstLoading)
     return (
       <StaffJobLandingLayout
@@ -132,18 +106,7 @@ export default function DetailedIndividual() {
         </button>
         <div className="selction_container">
           <p>Select Candidate</p>
-          <div className="role__Filter__Wrapper">
-            <IoFilterOutline />
-            <input type="text" onChange={handleChange}  style={{border:'none',borderLeft:'1px solid #005734',outline:'none'}} placeholder="search candidate"/>
-            <select defaultValue={""} onChange={(e)=> handleSelectChange(e.target.value)} style={{border:'none'}}>
-              <option value="" disabled>
-                select candidate
-              </option>
-              {candidates.map((person) => (
-                <option value={person._id}>{person.username}</option>
-              ))}
-            </select>
-          </div>
+          <Select options={options}  onChange={e => handleSelectChange(e?.target?.value)}/>
           {/* FIX IT */}
           {id !== "" ? (
             <>
