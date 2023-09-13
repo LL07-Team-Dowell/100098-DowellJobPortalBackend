@@ -42,13 +42,13 @@ export default function DetailedIndividual() {
   }
   const getIndividualData = (id) => {
     setSecondLoadng(true);
+    setId(id);
     generateCommonAdminReport({
       report_type:"Individual",
       year: new Date().getFullYear().toString(),
       applicant_id: id,
     })
       .then((resp) => {
-        setId(id);
         console.log({id})
         console.log(resp.data);
         setCandidateDate(resp.data.data[0]);
@@ -106,7 +106,7 @@ export default function DetailedIndividual() {
         </button>
         <div className="selction_container">
           <p>Select Candidate</p>
-          <Select options={options}  onChange={e => handleSelectChange(e?.target?.value)}/>
+          <Select options={options}  onChange={e => handleSelectChange(e?.value)}/>
           {/* FIX IT */}
           {id !== "" ? (
             <>
