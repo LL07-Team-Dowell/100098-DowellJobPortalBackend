@@ -55,6 +55,7 @@ const TaskReports = ({ subAdminView }) => {
   const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
   const [ error, setError ] = useState(false);
+  const [subProjectReport, setSubProjectReport] = useState(null);
 
   const options = [
     { value: "", label: "Select project" },
@@ -63,6 +64,20 @@ const TaskReports = ({ subAdminView }) => {
       label: project,
     })),
   ];
+
+  const colors = [
+    '#005734',
+    'red',
+    'blue',
+    'yellow',
+    'purple',
+    'pink',
+    'black',
+    'orange',
+    'green',
+    'blueviolet',
+    'brown',
+  ]
 
   const handleChange = (selectedOption) => {
     setSelectedProject(selectedOption.value);
@@ -140,6 +155,32 @@ const TaskReports = ({ subAdminView }) => {
           ],
         };
 
+        const uniqueSubprojects = [...new Set(res.data?.data?.users_that_added.map(item => Object.keys(item.subprojects || {})).flat())];
+        let currentTrack = 0
+
+        const formattedDataForSubproject = {
+          labels: labels,
+          datasets: uniqueSubprojects.map((subproject, index) => {
+            if (currentTrack > colors.length - 1) {
+              currentTrack = 0
+            } else {
+              currentTrack += 1
+            }
+
+            return {
+              label: subproject,
+              data: res.data?.data?.users_that_added.map(dataItem => {
+                if (!dataItem?.subprojects[subproject]) return 0
+                return dataItem?.subprojects[subproject]
+              }),
+              backgroundColor: index > colors.length - 1 ? 
+                colors[currentTrack] 
+                : 
+                colors[index],
+            }
+          })
+        }
+
         setTableData(res.data?.data?.users_that_added); // Set table data
 
         setReport(formattedData);
@@ -147,6 +188,7 @@ const TaskReports = ({ subAdminView }) => {
           `A total of ${res?.data?.data?.total_tasks_added} tasks have been added in ${selectedProject}`
         );
         setReportsLoading(false);
+        setSubProjectReport(formattedDataForSubproject);
       })
       .catch((err) => {
         console.log(err);
@@ -195,7 +237,7 @@ const TaskReports = ({ subAdminView }) => {
           </div>
           {reportsLoading ? (
             <LoadingSpinner width={"2rem"} height={"2rem"} />
-          ) : !report ? (
+          ) : !report || !subProjectReport ? (
             <>
               {
                 error ? 
@@ -212,15 +254,26 @@ const TaskReports = ({ subAdminView }) => {
               <div
                 style={{
                   maxWidth: "100%",
-                  padding: "20px",
+                  padding: "20px 0",
                   margin: "2rem auto",
                 }}
                 className="graph__Item"
               >
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Bar chart showing total subprojects, tasks and hours</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Bar chart showing total tasks, subprojects and hours</h2>
                 <Bar options={options} data={report} />
               </div>
               <div
+                style={{
+                  maxWidth: "100%",
+                  padding: "20px 0",
+                  margin: "2rem auto",
+                }}
+                className="graph__Item"
+              >
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Bar chart showing subprojects report</h2>
+                <Bar options={options} data={subProjectReport} />
+              </div>
+              {/* <div
                 style={{
                   maxWidth: "100%",
                   padding: "20px",
@@ -289,7 +342,7 @@ const TaskReports = ({ subAdminView }) => {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </div> */}
             </div>
           )}
         </div>
