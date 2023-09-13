@@ -183,13 +183,13 @@ const AdminReports = ({ subAdminView }) => {
               <Bar data={{labels:['jobs'],datasets:[
               {
                 label:data.most_applied_job?.job_title, 
-                data:[data.most_applied_job.no_job_applications], 
+                data:[data.most_applied_job?.no_job_applications], 
                 backgroundColor: "#005734", 
                 borderColor:"#005734", 
               },
               {
                 label:data.least_applied_job?.job_title, 
-                data:[data.least_applied_job.no_job_applications], 
+                data:[data.least_applied_job?.no_job_applications], 
                 backgroundColor: "#d3d3d3", 
                 borderColor:"#d3d3d3", 
               }
@@ -377,8 +377,8 @@ const AdminReports = ({ subAdminView }) => {
             </div>
           </div>
           <div className="graph__Item">
-                      <p>project with most tasks: {data.project_with_most_tasks.title}</p>
-                      <p>project with least tasks: {data.project_with_least_tasks.title}</p>
+                      <p>project with most tasks: {data.project_with_most_tasks?.title}</p>
+                      <p>project with least tasks: {data.project_with_least_tasks?.title}</p>
                       <div style={{width:400,height:300}}>
                       <Bar data={{labels:['projects'],datasets:[
               {
@@ -388,8 +388,8 @@ const AdminReports = ({ subAdminView }) => {
                 borderColor:"#005734", 
               },
               {
-                label:data.project_with_least_tasks.title, 
-                data:[data.project_with_least_tasks.tasks_added], 
+                label:data.project_with_least_tasks?.title, 
+                data:[data.project_with_least_tasks?.tasks_added], 
                 backgroundColor: "#d3d3d3", 
                 borderColor:"#d3d3d3", 
               }
