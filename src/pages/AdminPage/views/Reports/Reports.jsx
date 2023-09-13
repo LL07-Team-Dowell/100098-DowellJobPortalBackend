@@ -131,6 +131,7 @@ const AdminReports = ({ subAdminView }) => {
         <LoadingSpinner />
       </StaffJobLandingLayout>
     );
+
   return (
     <StaffJobLandingLayout
       adminView={true}
