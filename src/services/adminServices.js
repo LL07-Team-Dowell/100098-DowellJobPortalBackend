@@ -100,7 +100,7 @@ export const editSettingUserSubProject = async (id, data) => {
   );
 };
 export const getAllOnBoardCandidate = async (
-  id = "6385c0f18eca0fb652c94561"
+  id
 ) => {
   return await currentBackendAxiosInstance.get(
     `get_all_onboarded_candidate/${id}/`

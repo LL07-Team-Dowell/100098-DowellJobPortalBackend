@@ -27,23 +27,28 @@ import { toast } from "react-toastify";
 import { AiOutlineClose } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { generateCommonAdminReport } from "../../../../services/commonServices";
 // register chart.js
 ChartJs.register(ArcElement, Tooltip, Legend);
 
 ChartJs.register(ArcElement, BarElement, CategoryScale, LinearScale);
 const AdminReports = ({ subAdminView }) => {
+
   const navigate = useNavigate();
   // states
   const [selectOptions, setSelectOptions] = useState("");
   const [data, setdata] = useState({});
   const [loading, setLoading] = useState(false);
   const [firstDate, setFirstDate] = useState(
-    formatDateFromMilliseconds(new Date().getTime())
-  );
-  const [lastDate, setLastDate] = useState(
     formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
   );
+  const [lastDate, setLastDate] = useState(
+    formatDateFromMilliseconds(new Date().getTime())
+  );
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
+  const [firstDateState, setFirstDateState] = useState(formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000))
+  const [lastDateState,setLastDateState] = useState(formatDateFromMilliseconds(new Date().getTime() ))
+  
   console.log({ selectOptions, lastDate, firstDate });
   // handle functions
   const handleSelectOptionsFunction = (e) => {
@@ -59,11 +64,14 @@ const AdminReports = ({ subAdminView }) => {
   };
   const handleSubmitDate = (start_date, end_date) => {
     setLoading(true);
+    setFirstDateState(start_date); 
+    setLastDateState(end_date);
     const data = {
       start_date,
       end_date,
+      report_type:'Admin'
     };
-    generateReport(data)
+    generateCommonAdminReport(data)
       .then((resp) => {
         setLoading(false);
         console.log(resp.data.response);
@@ -81,9 +89,10 @@ const AdminReports = ({ subAdminView }) => {
     const data = {
       start_date: firstDate,
       end_date: lastDate,
+      report_type:'Admin'
     };
 
-    generateReport(data)
+    generateCommonAdminReport(data)
       .then((resp) => {
         setLoading(false);
         console.log(resp.data.response);
@@ -106,9 +115,23 @@ const AdminReports = ({ subAdminView }) => {
         pageTitle={"Reports"}
         subAdminView={subAdminView}
       >
+        <div className="reports__container">
+          <div className="reports__container_header">
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <button className="back" onClick={() => navigate(-1)}>
+                <MdArrowBackIosNew />
+              </button>
+            </div>
+
+            <div>
+              <p>Get insights into your organizations</p>
+            </div>
+          </div>
+        </div>              
         <LoadingSpinner />
       </StaffJobLandingLayout>
     );
+
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -133,10 +156,9 @@ const AdminReports = ({ subAdminView }) => {
             <select
               className="select_time_tage"
               onChange={handleSelectOptionsFunction}
-              defaultValue={""}
+              defaultValue={"last_7_days"}
             >
               <option value="" disabled>
-                {" "}
                 select time
               </option>
               <option value="last_7_days">last 7 days</option>
@@ -148,7 +170,7 @@ const AdminReports = ({ subAdminView }) => {
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>jobs</h6>
             {data.no_of_active_jobs === 0 && data.no_of_inactive_jobs === 0 ? (
-              <h4>there is no data between start and end date</h4>
+              <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
             ) : (
               <div style={{ width: 400, height: 300 }}>
                 <Doughnut
@@ -169,8 +191,25 @@ const AdminReports = ({ subAdminView }) => {
                 ></Doughnut>
               </div>
             )}
-            <div>most applied job: {data.most_applied_job?.job_title}</div>
-            <div>least applied job: {data.least_applied_job?.job_title}</div>
+            <p style={{marginTop:10}}>most applied job: {data.most_applied_job?.job_title}</p>
+            <p>least applied job: {data.least_applied_job?.job_title}</p>
+                  <div style={{width:400,height:300}}> 
+              <Bar data={{labels:['jobs'],datasets:[
+              {
+                label:data.most_applied_job?.job_title, 
+                data:[data.most_applied_job?.no_job_applications], 
+                backgroundColor: "#005734", 
+                borderColor:"#005734", 
+              },
+              {
+                label:data.least_applied_job?.job_title, 
+                data:[data.least_applied_job?.no_job_applications], 
+                backgroundColor: "#d3d3d3", 
+                borderColor:"#d3d3d3", 
+              }
+
+            ]}} />
+            </div>
           </div>
           <div className="graph__Item">
             <h6>applications</h6>
@@ -179,7 +218,7 @@ const AdminReports = ({ subAdminView }) => {
                 data.job_applications ||
                 data.nojob_applications_from_start_date_to_end_date
               ) ? (
-                <h4>there is no data between start and end date</h4>
+                <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]} date</h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Doughnut
@@ -204,7 +243,7 @@ const AdminReports = ({ subAdminView }) => {
                 </div>
               )}
               {!extractNumber(data.hiring_rate) ? (
-                <h4>there is no data between start and end date</h4>
+                <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Doughnut
@@ -238,7 +277,7 @@ const AdminReports = ({ subAdminView }) => {
                 data.rehired ||
                 data.selected
               ) ? (
-                <h4>there is no data between start and end date</h4>
+                <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Bar
@@ -288,7 +327,7 @@ const AdminReports = ({ subAdminView }) => {
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>Teams and tasks</h6>
             {!(data.teams || data.team_tasks || data.tasks) ? (
-              <h4>there is no data between start and end date</h4>
+              <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
             ) : (
               <div style={{ width: 400, height: 300 }}>
                 <Bar
@@ -297,7 +336,7 @@ const AdminReports = ({ subAdminView }) => {
                     datasets: [
                       {
                         label: "Poll",
-                        data: [data.teams, data.team_tasks, data.tasks],
+                        data: [data.teams, data.tasks, data.tasks],
                         backgroundColor: ["#D3D3D3", "#005734", "black"],
                         borderColor: ["#D3D3D3", "#005734", "black"],
                       },
@@ -306,13 +345,10 @@ const AdminReports = ({ subAdminView }) => {
                 ></Bar>
               </div>
             )}
-          </div>
-          <div className="job_applications graph__Item">
-            <h6>applications</h6>
-            <div>
+             <div style={{display:`${!(data.tasks_completed || data.tasks) ? 'block' : 'flex'}`,}}>
               <div>
                 {!(data.tasks_completed || data.tasks) ? (
-                  <h4>there is no data between start and end date</h4>
+                  <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
                     <Doughnut
@@ -333,7 +369,7 @@ const AdminReports = ({ subAdminView }) => {
               </div>
               <div>
                 {!(data.tasks_completed_on_time || data.tasks) ? (
-                  <h4>there is no data between start and end date</h4>
+                  <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
                     <Doughnut
@@ -353,6 +389,29 @@ const AdminReports = ({ subAdminView }) => {
                 )}
               </div>
             </div>
+          </div>
+          <div className="graph__Item">
+            <h6>Projects</h6>
+                      <p>project with most tasks: {data.project_with_most_tasks?.title}</p>
+                      <p>project with least tasks: {data.project_with_least_tasks?.title}</p>
+                      <div style={{width:400,height:300}}>
+                      <Bar data={{labels:['projects'],datasets:[
+              {
+                label:data.project_with_most_tasks?.title, 
+                data:[data.project_with_most_tasks?.tasks_added], 
+                backgroundColor: "#005734", 
+                borderColor:"#005734", 
+              },
+              {
+                label:data.project_with_least_tasks?.title, 
+                data:[data.project_with_least_tasks?.tasks_added], 
+                backgroundColor: "#d3d3d3", 
+                borderColor:"#d3d3d3", 
+              }
+
+            ]}} />
+                      </div>
+
           </div>
         </div>
       </div>

@@ -54,6 +54,8 @@ const TaskReports = ({ subAdminView }) => {
   const [tableData, setTableData] = useState([]);
   const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
+  const [ error, setError ] = useState(false);
+  const [subProjectReport, setSubProjectReport] = useState(null);
 
   const options = [
     { value: "", label: "Select project" },
@@ -62,6 +64,20 @@ const TaskReports = ({ subAdminView }) => {
       label: project,
     })),
   ];
+
+  const colors = [
+    '#005734',
+    'red',
+    'blue',
+    'yellow',
+    'purple',
+    'pink',
+    'black',
+    'orange',
+    'green',
+    'blueviolet',
+    'brown',
+  ]
 
   const handleChange = (selectedOption) => {
     setSelectedProject(selectedOption.value);
@@ -103,6 +119,7 @@ const TaskReports = ({ subAdminView }) => {
     };
 
     setReportsLoading(true);
+    setError(false);
 
     generateCommonAdminReport(dataToPost)
       .then((res) => {
@@ -114,6 +131,13 @@ const TaskReports = ({ subAdminView }) => {
         const formattedData = {
           labels,
           datasets: [
+            {
+              label: "Subprojects",
+              data: res.data?.data?.users_that_added.map(
+                (item) => Object.keys(item?.subprojects || {})?.length
+              ),
+              backgroundColor: "blue",
+            },
             {
               label: "Tasks",
               data: res.data?.data?.users_that_added.map(
@@ -131,6 +155,32 @@ const TaskReports = ({ subAdminView }) => {
           ],
         };
 
+        const uniqueSubprojects = [...new Set(res.data?.data?.users_that_added.map(item => Object.keys(item.subprojects || {})).flat())];
+        let currentTrack = 0
+
+        const formattedDataForSubproject = {
+          labels: labels,
+          datasets: uniqueSubprojects.map((subproject, index) => {
+            if (currentTrack > colors.length - 1) {
+              currentTrack = 0
+            } else {
+              currentTrack += 1
+            }
+
+            return {
+              label: subproject,
+              data: res.data?.data?.users_that_added.map(dataItem => {
+                if (!dataItem?.subprojects[subproject]) return 0
+                return dataItem?.subprojects[subproject]
+              }),
+              backgroundColor: index > colors.length - 1 ? 
+                colors[currentTrack] 
+                : 
+                colors[index],
+            }
+          })
+        }
+
         setTableData(res.data?.data?.users_that_added); // Set table data
 
         setReport(formattedData);
@@ -138,10 +188,13 @@ const TaskReports = ({ subAdminView }) => {
           `A total of ${res?.data?.data?.total_tasks_added} tasks have been added in ${selectedProject}`
         );
         setReportsLoading(false);
+        setSubProjectReport(formattedDataForSubproject);
       })
       .catch((err) => {
         console.log(err);
         setReportsLoading(false);
+        setError(true);
+        setReport(null);
       });
   }, [selectedProject]);
   return (
@@ -160,8 +213,9 @@ const TaskReports = ({ subAdminView }) => {
             <h2>Task Reports</h2>
           </div>
           <div className="task__report__header">
-            <p>Get insights into tasks uploaded in your organization</p>
-            <>
+            <p style={{ fontSize: '0.9rem' }}>Get insights into tasks uploaded per project in your organization</p>
+            <div className="task__select__Project">
+              <span>Select a project</span>
               {projectsLoading ? (
                 <LoadingSpinner
                   width={"1.5rem"}
@@ -179,41 +233,62 @@ const TaskReports = ({ subAdminView }) => {
                   options={options}
                 />
               )}
-            </>
+            </div>
           </div>
           {reportsLoading ? (
             <LoadingSpinner width={"2rem"} height={"2rem"} />
-          ) : !report ? (
-            <></>
+          ) : !report || !subProjectReport ? (
+            <>
+              {
+                error ? 
+                <p style={{ fontSize: '0.875rem', textAlign: 'center', color: 'red' }}>
+                  An error occurred while trying to generate reports for {selectedProject}
+                </p>
+                :
+                <></>
+              }
+            </>
           ) : (
             <div className="graphs" style={{ paddingBottom: "20rem" }}>
-              <p>{projecTaskInfo}</p>
+              <p style={{ textAlign: 'center', fontSize: '0.9rem' }}>{projecTaskInfo}</p>
               <div
                 style={{
-                  maxWidth: "70rem",
-                  padding: "20px",
-                  margin: "2rem 0",
+                  maxWidth: "100%",
+                  padding: "20px 0",
+                  margin: "2rem auto",
                 }}
                 className="graph__Item"
               >
-                <h2>Bar Chart showing Task uploaded in {selectedProject}</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Bar chart showing total tasks, subprojects and hours</h2>
                 <Bar options={options} data={report} />
               </div>
               <div
                 style={{
-                  maxWidth: "70rem",
-                  padding: "20px",
-                  margin: "2rem 0",
+                  maxWidth: "100%",
+                  padding: "20px 0",
+                  margin: "2rem auto",
                 }}
                 className="graph__Item"
               >
-                <h2>Table Data showing Task uploaded in {selectedProject}</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Bar chart showing subprojects report</h2>
+                <Bar options={options} data={subProjectReport} />
+              </div>
+              {/* <div
+                style={{
+                  maxWidth: "100%",
+                  padding: "20px",
+                  margin: "2rem auto",
+                }}
+                className="graph__Item"
+              >
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Table data showing total subprojects, tasks and hours</h2>
                 <table>
                   <thead>
                     <tr>
                       <th>Candidate</th>
                       <th>Number of Tasks Added</th>
                       <th>Total Hours</th>
+                      <th>Number of subprojects</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -221,12 +296,53 @@ const TaskReports = ({ subAdminView }) => {
                       <tr key={index}>
                         <td>{item.user}</td>
                         <td>{item.tasks_added}</td>
-                        <td>{item.total_hours}</td>
+                        <td>{Number(item.total_hours).toFixed(2)}</td>
+                        <td>{Object.keys(item?.subprojects || {})?.length}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+              <div
+                style={{
+                  maxWidth: "100%",
+                  padding: "20px",
+                  margin: "2rem auto",
+                }}
+                className="graph__Item"
+              >
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Table data showing tasks uploaded by candidate per subproject</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Candidate</th>
+                      {
+                        React.Children.toArray([...new Set(tableData.map(item => Object.keys(item.subprojects || {})).flat())].map(subproject => {
+                          return <th>{subproject}</th>
+                        }))
+                      }
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tableData.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.user}</td>
+                        {
+                          React.Children.toArray([...new Set(tableData.map(item => Object.keys(item.subprojects || {})).flat())].map(subproject => {
+                              return <td>
+                                {
+                                  item?.subprojects[subproject] ? 
+                                  item?.subprojects[subproject] :
+                                  0
+                                }
+                              </td>
+                            }))
+                        }
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div> */}
             </div>
           )}
         </div>
