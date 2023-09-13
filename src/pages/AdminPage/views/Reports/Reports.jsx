@@ -177,8 +177,25 @@ const AdminReports = ({ subAdminView }) => {
                 ></Doughnut>
               </div>
             )}
-            <div>most applied job: {data.most_applied_job?.job_title}</div>
-            <div>least applied job: {data.least_applied_job?.job_title}</div>
+            <p style={{marginTop:10}}>most applied job: {data.most_applied_job?.job_title}</p>
+            <p>least applied job: {data.least_applied_job?.job_title}</p>
+                  <div style={{width:400,height:300}}> 
+              <Bar data={{labels:['jobs'],datasets:[
+              {
+                label:data.most_applied_job?.job_title, 
+                data:[data.most_applied_job?.no_job_applications], 
+                backgroundColor: "#005734", 
+                borderColor:"#005734", 
+              },
+              {
+                label:data.least_applied_job?.job_title, 
+                data:[data.least_applied_job?.no_job_applications], 
+                backgroundColor: "#d3d3d3", 
+                borderColor:"#d3d3d3", 
+              }
+
+            ]}} />
+            </div>
           </div>
           <div className="graph__Item">
             <h6>applications</h6>
@@ -305,7 +322,7 @@ const AdminReports = ({ subAdminView }) => {
                     datasets: [
                       {
                         label: "Poll",
-                        data: [data.teams, data.tasks, 0],
+                        data: [data.teams, data.tasks, data.tasks],
                         backgroundColor: ["#D3D3D3", "#005734", "black"],
                         borderColor: ["#D3D3D3", "#005734", "black"],
                       },
@@ -359,7 +376,29 @@ const AdminReports = ({ subAdminView }) => {
               </div>
             </div>
           </div>
-          
+          <div className="graph__Item">
+            <h6>Projects</h6>
+                      <p>project with most tasks: {data.project_with_most_tasks?.title}</p>
+                      <p>project with least tasks: {data.project_with_least_tasks?.title}</p>
+                      <div style={{width:400,height:300}}>
+                      <Bar data={{labels:['projects'],datasets:[
+              {
+                label:data.project_with_most_tasks?.title, 
+                data:[data.project_with_most_tasks?.tasks_added], 
+                backgroundColor: "#005734", 
+                borderColor:"#005734", 
+              },
+              {
+                label:data.project_with_least_tasks?.title, 
+                data:[data.project_with_least_tasks?.tasks_added], 
+                backgroundColor: "#d3d3d3", 
+                borderColor:"#d3d3d3", 
+              }
+
+            ]}} />
+                      </div>
+
+          </div>
         </div>
       </div>
       {showCustomTimeModal && (
