@@ -6259,3 +6259,57 @@ class Generate_project_task_details_Report(APIView):
 
         }, status=status.HTTP_201_CREATED)
 
+
+class AddUserGithubInfo(APIView):
+    user_github_info = [
+        {
+            "username": "alasassiboxboy",
+            "github_id": "alasassiboxboy",
+            "github_link": "www.github.com/alasassiboxboy"
+        },
+        {
+            "username": "ram",
+            "github_id": "ram",
+            "github_link": "www.github.com/ram"
+        }
+    ]
+
+    def get(self, request):
+        user = request.data.get('user')
+        for github_info in self.user_github_info:
+            if github_info['username'] == user:
+                return Response({
+                    "success": False,
+                    "message": "The username already exists in the GitHub information database.",
+                }, status=status.HTTP_200_OK)
+
+        return Response({
+            "success": True,
+        }, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        payload = request.data
+
+        username = payload.get('username')
+        github_id = payload.get('github_id')
+        github_link = payload.get('github_link')
+
+        for github_info in self.user_github_info:
+            if github_info['username'] == username:
+                return Response({
+                    "success": False,
+                    "message": "The username already exists in the GitHub information database.",
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+
+        self.user_github_info.append({
+            "username": username,
+            "github_id": github_id,
+            "github_link": github_link
+        })
+
+        return Response({
+            "success": True,
+            "message": "GitHub info added.",
+            "data": self.user_github_info
+        }, status=status.HTTP_200_OK)
