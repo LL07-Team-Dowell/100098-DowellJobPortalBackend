@@ -6280,3 +6280,55 @@ class Generate_project_task_details_Report(APIView):
 
         }, status=status.HTTP_201_CREATED)
 
+
+class AddUserGithubInfo(APIView):
+
+    def get(self, request):
+       response1 = json.loads(dowellconnection(*github_details_module, "fetch",{}, update_field=None)) 
+       github_info=response1
+
+       return Response({
+            "success": True,
+            "data":github_info
+        }, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        payload = request.data
+        username=payload["username"]
+
+        field={
+            "username":payload['username'],
+            "github_id":payload['github_id'],
+            "github_link":payload['github_link']
+        } 
+        response1 = json.loads(dowellconnection(*github_details_module, "fetch",{}, update_field=None)) 
+        for github_info in response1['data']:
+            if github_info['username'] == username:
+                return Response({
+                    "success": False,
+                    "message": "The username already exists in the GitHub information database.",
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+        response2 = json.loads(dowellconnection(*github_details_module,"insert",field, update_field=None))
+        return Response({
+            "success": True,
+            "message": "User GitHub info added.",
+            "data":response2
+        }, status=status.HTTP_200_OK)
+    
+
+    def put(self, request):
+        payload = request.data
+
+        update_field={
+            "username":payload['username'],
+            "github_id":payload['github_id'],
+            "github_link":payload['github_link']
+        }
+            
+        response2 = json.loads(dowellconnection(*github_details_module,"update",{}, update_field))
+        return Response({
+            "success": True,
+            "message": "User GitHub info updated.",
+            "data":response2
+        }, status=status.HTTP_200_OK)

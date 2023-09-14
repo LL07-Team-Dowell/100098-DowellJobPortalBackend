@@ -131,7 +131,8 @@ urlpatterns = [
 
     # Other Apis -------------------------------------
     path('get_all_qrcode/<str:job_company_id>/',GetQRCode.as_view()),
-    path('generate_candidate_duplicates/<str:company_id>/',Generate_candidate_dublicates.as_view())
+    path('generate_candidate_duplicates/<str:company_id>/',Generate_candidate_dublicates.as_view()),
+    path("updategithubprofile/",AddUserGithubInfo.as_view())
     
 ]
 
