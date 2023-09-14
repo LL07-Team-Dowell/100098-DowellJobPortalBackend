@@ -52,6 +52,20 @@ const AdminReports = ({ subAdminView }) => {
     formatDateFromMilliseconds(new Date().getTime())
   );
   const [loadingButton, setLoadingButton] = useState(false);
+  const [datasetForApplications, setDatasetForApplications] = useState(null);
+  const colors = [
+    "#005734",
+    "red",
+    "blue",
+    "yellow",
+    "purple",
+    "pink",
+    "black",
+    "orange",
+    "green",
+    "blueviolet",
+    "brown",
+  ];
   const { currentUser } = useCurrentUserContext();
 
   console.log({ selectOptions, lastDate, firstDate });
@@ -92,6 +106,7 @@ const AdminReports = ({ subAdminView }) => {
     setLoadingButton(true);
     setFirstDateState(start_date);
     setLastDateState(end_date);
+    setDatasetForApplications(null);
     const data = {
       start_date,
       end_date,
@@ -105,6 +120,37 @@ const AdminReports = ({ subAdminView }) => {
         setSelectOptions("");
         console.log(resp.data.response);
         setdata(resp.data.response);
+        const months = Object.keys(
+          resp.data.response.job_applications.months || {}
+        );
+        let currentTrack = 0;
+        const datasetData = months
+          .map((month, index) => {
+            if (resp.data.response.job_applications.months[month] === 0)
+              return null;
+            return resp.data.response.jobapplications.months[month].map(
+              (item) => {
+                if (currentTrack > colors.length - 1) {
+                  currentTrack = 0;
+                } else {
+                  currentTrack += 1;
+                }
+
+                const dummyData = Array(months.length)
+                  .fill()
+                  .map((_, i) => 0);
+                dummyData[index] = item.no_job_applications;
+                return {
+                  label: item.job_title,
+                  data: dummyData,
+                  backgroundColor: colors[currentTrack],
+                };
+              }
+            );
+          })
+          .filter((item) => item)
+          .flat();
+        setDatasetForApplications(datasetData);
       })
       .catch((err) => {
         console.log(err);
@@ -116,17 +162,48 @@ const AdminReports = ({ subAdminView }) => {
 
   useEffect(() => {
     setLoading(true);
+    setDatasetForApplications(null);
     const data = {
       start_date: firstDate,
       end_date: lastDate,
       report_type: "Admin",
       company_id: currentUser.portfolio_info[0].org_id,
     };
-
     generateCommonAdminReport(data)
       .then((resp) => {
         setLoading(false);
         setdata(resp.data.response);
+        const months = Object.keys(
+          resp.data.response.job_applications.months || {}
+        );
+        let currentTrack = 0;
+        const datasetData = months
+          .map((month, index) => {
+            if (resp.data.response.job_applications.months[month] === 0)
+              return null;
+            return resp.data.response.jobapplications.months[month].map(
+              (item) => {
+                if (currentTrack > colors.length - 1) {
+                  currentTrack = 0;
+                } else {
+                  currentTrack += 1;
+                }
+
+                const dummyData = Array(months.length)
+                  .fill()
+                  .map((_, i) => 0);
+                dummyData[index] = item.no_job_applications;
+                return {
+                  label: item.job_title,
+                  data: dummyData,
+                  backgroundColor: colors[currentTrack],
+                };
+              }
+            );
+          })
+          .filter((item) => item)
+          .flat();
+        setDatasetForApplications(datasetData);
       })
       .catch((err) => {
         console.log(err);
