@@ -49,6 +49,8 @@ const AdminReports = ({ subAdminView }) => {
   const [firstDateState, setFirstDateState] = useState(formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000))
   const [lastDateState,setLastDateState] = useState(formatDateFromMilliseconds(new Date().getTime() ))
   const [loadingButton,setLoadingButton] = useState(false)
+  const { currentUser } = useCurrentUserContext();
+
   console.log({ selectOptions, lastDate, firstDate });
   // handle functions
   const handleSelectOptionsFunction = (e) => {
@@ -69,7 +71,8 @@ const AdminReports = ({ subAdminView }) => {
     const data = {
       start_date,
       end_date,
-      report_type:'Admin'
+      report_type:'Admin',
+      company_id: currentUser.portfolio_info[0].org_id,
     };
     generateCommonAdminReport(data)
       .then((resp) => {
@@ -90,7 +93,8 @@ const AdminReports = ({ subAdminView }) => {
     const data = {
       start_date: firstDate,
       end_date: lastDate,
-      report_type:'Admin'
+      report_type:'Admin',
+      company_id: currentUser.portfolio_info[0].org_id,
     };
 
     generateCommonAdminReport(data)
@@ -535,7 +539,8 @@ function isValidDate(inputDate) {
 
 function extractNumber(inputString) {
   if (inputString === undefined) return 0;
-  const cleanedString = inputString.replace("%", "").trim();
+  if (!isNaN(inputString)) return Number(inputString).toFixed(2);
+  const cleanedString = inputString?.replace("%", "")?.trim();
   const number = parseFloat(cleanedString).toFixed(2);
   return parseFloat(number);
 }
