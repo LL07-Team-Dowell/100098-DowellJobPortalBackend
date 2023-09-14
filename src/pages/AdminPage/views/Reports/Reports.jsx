@@ -81,6 +81,7 @@ const AdminReports = ({ subAdminView }) => {
       .then((resp) => {
         closeModal();
         setLoadingButton(false);
+        setSelectOptions("");
         console.log(resp.data.response);
         setdata(resp.data.response);
       })
@@ -104,7 +105,6 @@ const AdminReports = ({ subAdminView }) => {
     generateCommonAdminReport(data)
       .then((resp) => {
         setLoading(false);
-        console.log(resp.data.response);
         setdata(resp.data.response);
       })
       .catch((err) => {
@@ -113,8 +113,29 @@ const AdminReports = ({ subAdminView }) => {
       });
   }, []);
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    if (selectOptions !== "") {
+      if (selectOptions === "last_7_days") {
+        setLoading(true);
+        const data = {
+          start_date: formatDateFromMilliseconds(
+            new Date().getTime() - 7 * 24 * 60 * 60 * 1000
+          ),
+          end_date: formatDateFromMilliseconds(new Date().getTime()),
+          report_type: "Admin",
+          company_id: currentUser.portfolio_info[0].org_id,
+        };
+        generateCommonAdminReport(data)
+          .then((resp) => {
+            setLoading(false);
+            setdata(resp.data.response);
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+          });
+      }
+    }
+  }, [selectOptions]);
   console.log(data.hiring_rate);
   if (loading)
     return (
