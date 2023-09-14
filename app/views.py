@@ -4570,17 +4570,25 @@ class Generate_Report(APIView):
                     key="application_submitted_on",
                 )
                 
-                m={'January':0, 'February':0, 'March':0, 'April':0, 'May':0, 'June':0, 'July':0, 'August':0, 'September':0, 'October':0, 'November':0, 'December':0}
+                m={'January':[], 'February':[], 'March':[], 'April':[], 'May':[], 'June':[], 'July':[], 'August':[], 'September':[], 'October':[], 'November':[], 'December':[]}
                 months=[]
                 month_list=calendar.month_name
                 for res in res_job_application[0]:
                     date=set_date_format(res['application_submitted_on'])
                     month = month_list[datetime.datetime.strptime(date, '%m/%d/%Y %H:%M:%S').month]
-                    months.append(month)
-                    #print(d,'----',d.month, month)
+                    months.append({"job_title":res["job_title"],
+                                   "job_number":res["job_number"],
+                                   "month":month})
+
+                for item in months:
+                    if item["month"] in m.keys():
+                        i ={'job_number':item['job_number'],'job_title':item['job_title'],"no_job_applications":months.count(item)}
+                        if not i in m[item["month"]]:
+                            m[item["month"]].append(i)
                 for key in m.keys():
-                    if key in months:
-                        m[key]=months.count(key)
+                    if len(m[key])==0:
+                        m[key]=0
+                        
                 data["job_applications"] = {"total":res_job_application[1],
                                             "months":m}
 
