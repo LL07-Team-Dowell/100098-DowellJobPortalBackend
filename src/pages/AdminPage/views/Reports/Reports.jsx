@@ -48,7 +48,7 @@ const AdminReports = ({ subAdminView }) => {
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
   const [firstDateState, setFirstDateState] = useState(formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000))
   const [lastDateState,setLastDateState] = useState(formatDateFromMilliseconds(new Date().getTime() ))
-  
+  const [loadingButton,setLoadingButton] = useState(false)
   console.log({ selectOptions, lastDate, firstDate });
   // handle functions
   const handleSelectOptionsFunction = (e) => {
@@ -63,7 +63,7 @@ const AdminReports = ({ subAdminView }) => {
     setShowCustomTimeModal(false);
   };
   const handleSubmitDate = (start_date, end_date) => {
-    setLoading(true);
+    setLoadingButton(true);
     setFirstDateState(start_date); 
     setLastDateState(end_date);
     const data = {
@@ -73,7 +73,8 @@ const AdminReports = ({ subAdminView }) => {
     };
     generateCommonAdminReport(data)
       .then((resp) => {
-        setLoading(false);
+        closeModal()
+        setLoadingButton(false);
         console.log(resp.data.response);
         setdata(resp.data.response);
       })
@@ -423,6 +424,7 @@ const AdminReports = ({ subAdminView }) => {
           setLastDate={setLastDate}
           handleSubmitDate={handleSubmitDate}
           closeModal={closeModal}
+          loading={loadingButton}
         />
       )}
     </StaffJobLandingLayout>
@@ -435,6 +437,7 @@ const FormDatePopup = ({
   lastDate,
   handleSubmitDate,
   closeModal,
+  loading
 }) => {
   const handleFormSubmit = () => {
     if (firstDate && lastDate) {
@@ -443,7 +446,6 @@ const FormDatePopup = ({
           formatDateAndTime(firstDate),
           formatDateAndTime(lastDate)
         );
-        closeModal();
       } else {
         toast.error("the first or last date are not valid");
         console.log({
@@ -477,11 +479,12 @@ const FormDatePopup = ({
           placeholder="mm/dd/yy"
           onChange={(e) => setLastDate(e.target.value)}
         />
-        <button onClick={handleFormSubmit}>Get</button>
+        <button onClick={handleFormSubmit} disabled={loading}>{loading ? <LoadingSpinner color='white' height={30} width={30 } />: 'Get' }</button>
       </div>
     </div>
   );
 };
+// asd
 export default AdminReports;
 function formatDateFromMilliseconds(milliseconds) {
   const dateObj = new Date(milliseconds);
