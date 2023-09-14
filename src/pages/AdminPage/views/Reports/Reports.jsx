@@ -294,8 +294,8 @@ const AdminReports = ({ subAdminView }) => {
                 <div style={{ width: 400, height: 300 }}>
                   <p>
                     <b>
-                      Bar chart showing job most applied to and job least
-                      applied to
+                      Doughnut chart showing job applications and no job
+                      application from start date to end date
                     </b>
                   </p>
                   <Doughnut
@@ -327,6 +327,9 @@ const AdminReports = ({ subAdminView }) => {
                 </h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
+                  <p>
+                    <b>Doughnut chart showing hiring rate</b>
+                  </p>
                   <Doughnut
                     data={{
                       labels: ["hiring rate", "hiring total"],
@@ -337,8 +340,8 @@ const AdminReports = ({ subAdminView }) => {
                             extractNumber(data.hiring_rate),
                             100 - extractNumber(data.hiring_rate),
                           ],
-                          backgroundColor: ["#D3D3D3", "#005734"],
-                          borderColor: ["#D3D3D3", "#005734"],
+                          backgroundColor: ["#005734", "#9146FF"],
+                          borderColor: ["#005734", "#9146FF"],
                         },
                       ],
                     }}
@@ -365,6 +368,12 @@ const AdminReports = ({ subAdminView }) => {
                 </h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
+                  <p>
+                    <b>
+                      Bar chart showing hired, rejected, probationary, rehire
+                      and selected
+                    </b>
+                  </p>
                   <Bar
                     data={{
                       labels: [
@@ -418,6 +427,11 @@ const AdminReports = ({ subAdminView }) => {
               </h4>
             ) : (
               <div style={{ width: 400, height: 300 }}>
+                <p>
+                  <b>
+                    Bar chart showing Teams, team tasks and individual tasks
+                  </b>
+                </p>
                 <Bar
                   data={{
                     labels: ["Teams", "team tasks", "individual tasks"],
@@ -448,6 +462,11 @@ const AdminReports = ({ subAdminView }) => {
                   </h4>
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
+                    <p>
+                      <b>
+                        Doughnut chart showing tasks completed and tasks tasks
+                      </b>
+                    </p>
                     <Doughnut
                       data={{
                         labels: ["tasks completed", "tasks"],
@@ -472,6 +491,11 @@ const AdminReports = ({ subAdminView }) => {
                   </h4>
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
+                    <p>
+                      <b>
+                        Doughnut chart showing tasks completed on time and tasks
+                      </b>
+                    </p>
                     <Doughnut
                       data={{
                         labels: ["tasks completed on time", "tasks"],
