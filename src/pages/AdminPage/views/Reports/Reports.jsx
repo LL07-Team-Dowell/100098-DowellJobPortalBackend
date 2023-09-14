@@ -76,7 +76,23 @@ const AdminReports = ({ subAdminView }) => {
     if (e.target.value === "custom_time") {
       setShowCustomTimeModal(true);
     } else {
+      setLoading(true);
       setShowCustomTimeModal(false);
+      const data = {
+        start_date: formatDateFromMilliseconds(
+          new Date().getTime() - 7 * 24 * 60 * 60 * 1000
+        ),
+        end_date: formatDateFromMilliseconds(new Date().getTime()),
+        report_type: "Admin",
+        company_id: currentUser.portfolio_info[0].org_id,
+      };
+      generateCommonAdminReport(data)
+        .then((resp) => {
+          setLoading(false);
+          console.log(resp.data.response);
+          setdata(resp.data.response);
+        })
+        .catch((err) => console.log(err));
     }
   };
   const closeModal = () => {
@@ -139,6 +155,7 @@ const AdminReports = ({ subAdminView }) => {
       });
   };
   //   useEffect
+  // ...
 
   useEffect(() => {
     setLoading(true);
@@ -149,6 +166,10 @@ const AdminReports = ({ subAdminView }) => {
       company_id: currentUser.portfolio_info[0].org_id,
     };
     setDatasetForApplications(null);
+
+    // Declare and initialize currentTrack here
+    let currentTrack = 0;
+
     generateCommonAdminReport(data)
       .then((resp) => {
         setLoading(false);
@@ -158,33 +179,33 @@ const AdminReports = ({ subAdminView }) => {
         const months = Object.keys(
           resp.data.response.job_applications.months || {}
         );
-        let currentTrack = 0;
-        const datasetData = months
-          .map((month, index) => {
-            if (resp.data.response.job_applications.months[month] === 0)
-              return null;
-            return resp.data.response.job_applications.months[month].map(
-              (item) => {
-                if (currentTrack > colors.length - 1) {
-                  currentTrack = 0;
-                } else {
-                  currentTrack += 1;
-                }
 
-                const dummyData = Array(months.length)
-                  .fill()
-                  .map((_, i) => 0);
-                dummyData[index] = item.no_job_applications;
-                return {
-                  label: item.job_title,
-                  data: dummyData,
-                  backgroundColor: colors[currentTrack],
-                };
-              }
+        const datasets = months.map((month, index) => {
+          if (resp.data.response.job_applications.months[month] === 0)
+            return null;
+
+          const dataPoints = months.map((_, i) => {
+            return (
+              resp.data.response.job_applications.months[month][i]
+                ?.no_job_applications || 0
             );
-          })
-          .filter((item) => item)
-          .flat();
+          });
+
+          if (currentTrack > colors.length - 1) {
+            currentTrack = 0;
+          } else {
+            currentTrack += 1;
+          }
+
+          return {
+            label: month, // Label for the line (could be the month)
+            data: dataPoints, // An array of data points for this line
+            borderColor: colors[currentTrack], // Line color
+            fill: false, // To not fill the area under the line
+          };
+        });
+
+        const datasetData = datasets.filter((item) => item);
         setDatasetForApplications(datasetData);
       })
       .catch((err) => {
@@ -192,6 +213,7 @@ const AdminReports = ({ subAdminView }) => {
         setLoading(false);
       });
   }, []);
+
   useEffect(() => {
     console.log(data);
   }, [data]);
@@ -641,6 +663,7 @@ export const FormDatePopup = ({
           id='first_date'
           placeholder='mm/dd/yy'
           onChange={(e) => setFirstDate(e.target.value)}
+          value={formatDateString(lastDate)}
         />
         <label htmlFor='first_date'>End Date</label>
         <input
@@ -648,6 +671,7 @@ export const FormDatePopup = ({
           id='first_date'
           placeholder='mm/dd/yy'
           onChange={(e) => setLastDate(e.target.value)}
+          value={formatDateString(firstDate)}
         />
         <button onClick={handleFormSubmit} disabled={loading}>
           {loading ? (
@@ -716,3 +740,30 @@ function extractNumber(inputString) {
   const number = parseFloat(cleanedString).toFixed(2);
   return parseFloat(number);
 }
+function formatDateString(inputDate) {
+  // Parse the input date string
+  const dateParts = inputDate.split(" ")[0].split("/");
+  const timePart = inputDate.split(" ")[1];
+
+  // Create a Date object
+  const date = new Date(
+    parseInt(dateParts[2]), // Year
+    parseInt(dateParts[1]) - 1, // Month (0-based, so subtract 1)
+    parseInt(dateParts[0]) // Day
+  );
+
+  // Format the date as 'YYYY-MM-DD'
+  const formattedDate =
+    date.getFullYear() +
+    "-" +
+    String(date.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(date.getDate()).padStart(2, "0");
+
+  return formattedDate;
+}
+
+// Test the function
+const inputDate = "09/07/2023 22:35:15";
+const formattedDate = formatDateString(inputDate);
+console.log(formattedDate); // Output: '2023-07-09'
