@@ -292,6 +292,12 @@ const AdminReports = ({ subAdminView }) => {
                 </h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
+                  <p>
+                    <b>
+                      Bar chart showing job most applied to and job least
+                      applied to
+                    </b>
+                  </p>
                   <Doughnut
                     data={{
                       labels: [
@@ -487,10 +493,9 @@ const AdminReports = ({ subAdminView }) => {
           <div className='graph__Item'>
             <h6>Projects</h6>
             <p>
-              project with most tasks: {data.project_with_most_tasks?.title}
-            </p>
-            <p>
-              project with least tasks: {data.project_with_least_tasks?.title}
+              <b>
+                Bar chart showing job most applied to and job least applied to
+              </b>
             </p>
             <div style={{ width: 400, height: 300 }}>
               <Bar
