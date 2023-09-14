@@ -60,6 +60,11 @@ export const generateReport = async (data) => {
   return await currentBackendAxiosInstance.post(`generate_admin_report/`, data);
 };
 
+export const generateTeamReport = async (data) => {
+  console.log(data);
+  return await currentBackendAxiosInstance.post(`generate_report/`, data);
+};
+
 export const getUsedQrCodes = async (companyId) => {
   return await currentBackendAxiosInstance.get(`get_all_qrcode/${companyId}/`);
 };

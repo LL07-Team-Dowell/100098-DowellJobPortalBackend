@@ -40,7 +40,7 @@ const ReportPages = () => {
             <div>
               <AiOutlinePlusCircle className="icon" />
             </div>
-            <h4>Detailed individual report</h4>
+            <h4>Individual report</h4>
             <p>
             Get well-detailed actionable insights on hired individuals in your organization
             </p>
@@ -53,12 +53,11 @@ const ReportPages = () => {
             </div>
             <h4>Task report</h4>
             <p>
-              Bring everyone together and get to work. Work together in team to
-              increase productivity
+              Get insights into tasks uploaded per project in your organization
             </p>
           </div>
         </div>
-        <div
+        {/* <div
           className="Create_Team"
           onClick={() => navigate("individual-task-report")}
         >
@@ -70,6 +69,20 @@ const ReportPages = () => {
             <p>
               Bring everyone together and get to work. Work together in team to
               increase productivity
+            </p>
+          </div>
+        </div> */}
+        <div
+          className="Create_Team"
+          onClick={() => navigate("team-report")}
+        >
+          <div>
+            <div>
+              <AiOutlinePlusCircle className="icon" />
+            </div>
+            <h4>Team report</h4>
+            <p>
+              Get insights into how well teams are performing in your organization
             </p>
           </div>
         </div>

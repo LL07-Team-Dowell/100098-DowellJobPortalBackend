@@ -48,7 +48,9 @@ const AdminReports = ({ subAdminView }) => {
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
   const [firstDateState, setFirstDateState] = useState(formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000))
   const [lastDateState,setLastDateState] = useState(formatDateFromMilliseconds(new Date().getTime() ))
-  
+  const [loadingButton,setLoadingButton] = useState(false)
+  const { currentUser } = useCurrentUserContext();
+
   console.log({ selectOptions, lastDate, firstDate });
   // handle functions
   const handleSelectOptionsFunction = (e) => {
@@ -63,23 +65,26 @@ const AdminReports = ({ subAdminView }) => {
     setShowCustomTimeModal(false);
   };
   const handleSubmitDate = (start_date, end_date) => {
-    setLoading(true);
+    setLoadingButton(true);
     setFirstDateState(start_date); 
     setLastDateState(end_date);
     const data = {
       start_date,
       end_date,
-      report_type:'Admin'
+      report_type:'Admin',
+      company_id: currentUser.portfolio_info[0].org_id,
     };
     generateCommonAdminReport(data)
       .then((resp) => {
-        setLoading(false);
+        closeModal()
+        setLoadingButton(false);
         console.log(resp.data.response);
         setdata(resp.data.response);
       })
       .catch((err) => {
         console.log(err);
         setLoading(false);
+        setLoadingButton(false);
       });
   };
   //   useEffect
@@ -89,7 +94,8 @@ const AdminReports = ({ subAdminView }) => {
     const data = {
       start_date: firstDate,
       end_date: lastDate,
-      report_type:'Admin'
+      report_type:'Admin',
+      company_id: currentUser.portfolio_info[0].org_id,
     };
 
     generateCommonAdminReport(data)
@@ -118,13 +124,12 @@ const AdminReports = ({ subAdminView }) => {
         <div className="reports__container">
           <div className="reports__container_header">
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <button className="back" onClick={() => navigate(-1)}>
-                <MdArrowBackIosNew />
-              </button>
-            </div>
-
-            <div>
-              <p>Get insights into your organizations</p>
+              <div style={{ display: "flex", alignItems: 'center', gap: '1rem' }}>
+                <button className="back" onClick={() => navigate(-1)}>
+                  <MdArrowBackIosNew />
+                </button>
+                <h2>Get insights into your organization</h2>
+              </div>
             </div>
           </div>
         </div>              
@@ -143,16 +148,18 @@ const AdminReports = ({ subAdminView }) => {
       <div className="reports__container">
         <div className="reports__container_header">
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <button className="back" onClick={() => navigate(-1)}>
-              <MdArrowBackIosNew />
-            </button>
+            <div style={{ display: "flex", alignItems: 'center', gap: '1rem' }}>
+              <button className="back" onClick={() => navigate(-1)}>
+                <MdArrowBackIosNew />
+              </button>
+              <h2>Get insights into your organization</h2>
+            </div>
             <CSVLink data={[Object.keys(data), Object.values(data)]}>
               Download Me
             </CSVLink>
           </div>
-
           <div>
-            <p>Get insights into your organizations</p>
+            <p></p>
             <select
               className="select_time_tage"
               onChange={handleSelectOptionsFunction}
@@ -167,48 +174,65 @@ const AdminReports = ({ subAdminView }) => {
           </div>
         </div>
         <div className="graphs">
-          <div style={{ marginBottom: 20 }} className="graph__Item">
-            <h6>jobs</h6>
-            {data.no_of_active_jobs === 0 && data.no_of_inactive_jobs === 0 ? (
-              <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
-            ) : (
-              <div style={{ width: 400, height: 300 }}>
-                <Doughnut
-                  data={{
-                    labels: ["active jobs", "inactive jobs"],
-                    datasets: [
-                      {
-                        label: "Poll",
-                        data: [
-                          data.no_of_active_jobs,
-                          data.no_of_inactive_jobs,
-                        ],
-                        backgroundColor: ["#005734", "#D3D3D3"],
-                        borderColor: ["#005734", "#D3D3D3"],
-                      },
-                    ],
-                  }}
-                ></Doughnut>
+          <div className="graph__Item">
+            <h6 style={{ marginBottom: 20 }}>jobs</h6>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }} >
+              <div style={{ width: '45%' }}>
+                {data.no_of_active_jobs === 0 && data.no_of_inactive_jobs === 0 ? (
+                  <h4>There are no active or inactive jobs created between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
+                ) : (
+                  <>
+                    <p><b>Doughnut chart showing active and inactive jobs</b></p>
+                    <div style={{ width: '100%', height: 320 }}>
+                      <Doughnut
+                        data={{
+                          labels: ["active jobs", "inactive jobs"],
+                          datasets: [
+                            {
+                              label: "Poll",
+                              data: [
+                                data.no_of_active_jobs,
+                                data.no_of_inactive_jobs,
+                              ],
+                              backgroundColor: ["#005734", "#D3D3D3"],
+                              borderColor: ["#005734", "#D3D3D3"],
+                            },
+                          ],
+                        }}
+                      ></Doughnut>
+                    </div>
+                  </>
+                )}
               </div>
-            )}
-            <p style={{marginTop:10}}>most applied job: {data.most_applied_job?.job_title}</p>
-            <p>least applied job: {data.least_applied_job?.job_title}</p>
-                  <div style={{width:400,height:300}}> 
-              <Bar data={{labels:['jobs'],datasets:[
-              {
-                label:data.most_applied_job?.job_title, 
-                data:[data.most_applied_job?.no_job_applications], 
-                backgroundColor: "#005734", 
-                borderColor:"#005734", 
-              },
-              {
-                label:data.least_applied_job?.job_title, 
-                data:[data.least_applied_job?.no_job_applications], 
-                backgroundColor: "#d3d3d3", 
-                borderColor:"#d3d3d3", 
-              }
-
-            ]}} />
+              
+              <div style={{ width: '45%' }}>
+                <p><b>Bar chart showing job most applied to and job least applied to</b></p>
+                {/* <p style={{marginTop:10}}>most applied job: {data.most_applied_job?.job_title}</p>
+                <p>least applied job: {data.least_applied_job?.job_title}</p> */}
+                  <div style={{width:'100%',height:320}}> 
+                    <Bar 
+                      data={
+                        {
+                          labels: ['Job'],
+                          datasets:[
+                            {
+                              label:data.most_applied_job?.job_title, 
+                              data:[data.most_applied_job?.no_job_applications], 
+                              backgroundColor: "#005734", 
+                              borderColor:"#005734", 
+                            },
+                            {
+                              label:data.least_applied_job?.job_title, 
+                              data:[data.least_applied_job?.no_job_applications], 
+                              backgroundColor: "#d3d3d3", 
+                              borderColor:"#d3d3d3", 
+                            }
+                          ]
+                        }
+                      } 
+                    />
+                </div>
+              </div>
             </div>
           </div>
           <div className="graph__Item">
@@ -218,7 +242,7 @@ const AdminReports = ({ subAdminView }) => {
                 data.job_applications ||
                 data.nojob_applications_from_start_date_to_end_date
               ) ? (
-                <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]} date</h4>
+                <h4>There are no applications submitted between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Doughnut
@@ -243,7 +267,7 @@ const AdminReports = ({ subAdminView }) => {
                 </div>
               )}
               {!extractNumber(data.hiring_rate) ? (
-                <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
+                <h4>No candidates were hired between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Doughnut
@@ -277,7 +301,7 @@ const AdminReports = ({ subAdminView }) => {
                 data.rehired ||
                 data.selected
               ) ? (
-                <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
+                <h4>There is no candidate data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
               ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <Bar
@@ -327,7 +351,7 @@ const AdminReports = ({ subAdminView }) => {
           <div style={{ marginBottom: 20 }} className="graph__Item">
             <h6>Teams and tasks</h6>
             {!(data.teams || data.team_tasks || data.tasks) ? (
-              <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
+              <h4>There is no teams data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
             ) : (
               <div style={{ width: 400, height: 300 }}>
                 <Bar
@@ -348,7 +372,7 @@ const AdminReports = ({ subAdminView }) => {
              <div style={{display:`${!(data.tasks_completed || data.tasks) ? 'block' : 'flex'}`,}}>
               <div>
                 {!(data.tasks_completed || data.tasks) ? (
-                  <h4>there is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
+                  <h4>There is no data between {firstDateState.split(" ")[0]} and {lastDateState.split(" ")[0]}</h4>
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
                     <Doughnut
@@ -423,18 +447,20 @@ const AdminReports = ({ subAdminView }) => {
           setLastDate={setLastDate}
           handleSubmitDate={handleSubmitDate}
           closeModal={closeModal}
+          loading={loadingButton}
         />
       )}
     </StaffJobLandingLayout>
   );
 };
-const FormDatePopup = ({
+export const FormDatePopup = ({
   setFirstDate,
   setLastDate,
   firstDate,
   lastDate,
   handleSubmitDate,
   closeModal,
+  loading
 }) => {
   const handleFormSubmit = () => {
     if (firstDate && lastDate) {
@@ -443,7 +469,6 @@ const FormDatePopup = ({
           formatDateAndTime(firstDate),
           formatDateAndTime(lastDate)
         );
-        closeModal();
       } else {
         toast.error("the first or last date are not valid");
         console.log({
@@ -460,8 +485,8 @@ const FormDatePopup = ({
   return (
     <div className="overlay">
       <div className="form_date_popup_container">
-        <div className="closebutton" onClick={() => closeModal()}>
-          <AiOutlineClose />
+        <div className="closebutton" onClick={loading ? () => {} : () => closeModal()}>
+          {loading ? <></>  : <AiOutlineClose />}
         </div>
         <label htmlFor="first_date">Start Date</label>
         <input
@@ -477,11 +502,12 @@ const FormDatePopup = ({
           placeholder="mm/dd/yy"
           onChange={(e) => setLastDate(e.target.value)}
         />
-        <button onClick={handleFormSubmit}>Get</button>
+        <button onClick={handleFormSubmit} disabled={loading}>{loading ? <LoadingSpinner color='white' height={20} width={20 } />: 'Get' }</button>
       </div>
     </div>
   );
 };
+// asd
 export default AdminReports;
 function formatDateFromMilliseconds(milliseconds) {
   const dateObj = new Date(milliseconds);
@@ -532,7 +558,8 @@ function isValidDate(inputDate) {
 
 function extractNumber(inputString) {
   if (inputString === undefined) return 0;
-  const cleanedString = inputString.replace("%", "").trim();
+  if (!isNaN(inputString)) return Number(inputString).toFixed(2);
+  const cleanedString = inputString?.replace("%", "")?.trim();
   const number = parseFloat(cleanedString).toFixed(2);
   return parseFloat(number);
 }
