@@ -44,18 +44,30 @@ export default function DetailedIndividual() {
   const getIndividualData = (id) => {
     setSecondLoadng(true);
     setId(id);
-    generateCommonAdminReport({
-      report_type:"Individual",
-      year: new Date().getFullYear().toString(),
-      applicant_id: id,
-    })
+
+    const foundCandidate = candidates2.find(item => item._id === id);
+    console.log(foundCandidate);
+
+    Promise.all([
+      generateCommonAdminReport({
+        report_type:"Individual",
+        year: new Date().getFullYear().toString(),
+        applicant_id: id,
+      }),
+      generateCommonAdminReport({
+        report_type:"Individual Task",
+        username: foundCandidate?.username,
+      })
+    ])
       .then((resp) => {
         console.log({id})
-        console.log(resp.data);
-        setCandidateDate(resp.data.data[0]);
-        setPersonalInfo(resp.data.personal_info);
-        console.log(resp.data.personal_info);
-        setCandidateName(resp.data.personal_info.username);
+        console.log(resp[0].data);
+        setCandidateDate(resp[0].data.data[0]);
+        setPersonalInfo(resp[0].data.personal_info);
+        console.log(resp[0].data.personal_info);
+        setCandidateName(resp[0].data.personal_info.username);
+
+        console.log(resp[1].data);
         setSecondLoadng(false);
       })
       .catch((err) => console.error(err));
