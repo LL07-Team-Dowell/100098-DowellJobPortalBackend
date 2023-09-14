@@ -53,8 +53,7 @@ const ReportPages = () => {
             </div>
             <h4>Task report</h4>
             <p>
-              Bring everyone together and get to work. Work together in team to
-              increase productivity
+              Get insights into tasks uploaded per project in your organization
             </p>
           </div>
         </div>
@@ -83,8 +82,7 @@ const ReportPages = () => {
             </div>
             <h4>Team report</h4>
             <p>
-              Bring everyone together and get to work. Work together in team to
-              increase productivity
+              Get insights into how well teams are performing in your organization
             </p>
           </div>
         </div>
