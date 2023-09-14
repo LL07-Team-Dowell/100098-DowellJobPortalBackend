@@ -73,6 +73,21 @@ const ReportPages = () => {
             </p>
           </div>
         </div>
+        <div
+          className="Create_Team"
+          onClick={() => navigate("team-report")}
+        >
+          <div>
+            <div>
+              <AiOutlinePlusCircle className="icon" />
+            </div>
+            <h4>Team report</h4>
+            <p>
+              Bring everyone together and get to work. Work together in team to
+              increase productivity
+            </p>
+          </div>
+        </div>
       </div>
     </StaffJobLandingLayout>
   );

@@ -222,8 +222,8 @@ align-items: left !important;
 }
 
 .modal-content img {
-  width: 1000px;
-  height: auto;
+  max-width: 90%;
+  height: 90vh;
 }
 
 .close-btn {
@@ -262,8 +262,15 @@ const ThreadItem = ({ status }) => {
   const [completedThreads, setCompletedThreads] = useState([])
   const [resolvedThreads, setResolvedThreads] = useState([]);
   const [inProgressThreads, setInProgressThreads] = useState([]);
+
+  //For loading state
+  const [completedLoading, setCompletedLoading] = useState(false);
+  const [inprogressLoading, setInprogressLoading] = useState(false);
+  const [resolvedLoading, setResolvedLoading] = useState(false);
+
   const [reducerComment, forceUpdate] = useReducer(x => x + 1, 0)
   const [reducerStatus, forceUpdateStatus] = useReducer(x => x + 1, 0)
+
 
   console.log(threads);
   const handleImageClick = (threadId) => {
@@ -345,18 +352,29 @@ const ThreadItem = ({ status }) => {
   }, [reducerComment, reducerStatus, undefined]);
 
 
-  const [statusLoading, setStatusLoading] = useState(false)
 
   const updateStatus = (data) => {
-    setStatusLoading(true)
+    switch (data.status) {
+      case "Resolved":
+        setResolvedLoading(true);
+
+      case "Completed":
+        setCompletedLoading(true);
+
+      case "In progress":
+        setInprogressLoading(true);
+    }
+
     updateSingleThread({
       document_id: data.document_id,
       current_status: data.status
     }).then((resp) => {
       console.log(resp);
       if (resp.data.data.isSuccess) {
-        setStatusLoading(false);
         toast.success("Thread Status Update")
+        setResolvedLoading(false)
+        setCompletedLoading(false)
+        setInprogressLoading(false)
         forceUpdateStatus();
       }
     })
@@ -616,14 +634,10 @@ const ThreadItem = ({ status }) => {
                           <div className="progress">
                             <div data-tooltip-id='inprogress' className={thread.current_status == "In progress" ? "active-thread-btn" : "threads-btn"} onClick={(e) => updateStatus({ status: "In progress", document_id: thread._id })}></div>
                             {
-                              thread.current_status == "Created" ? <ReactTooltip
+                              thread.current_status == "Created" && <ReactTooltip
                                 id="inprogress"
                                 place="bottom"
                                 content="Update Status Created to inprogress"
-                              /> : <ReactTooltip
-                                id="inprogress"
-                                place="bottom"
-                                content="Current Status inprogress"
                               />
                             }
 

@@ -24,6 +24,7 @@ import { Doughnut, Bar } from "react-chartjs-2";
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { generateCommonAdminReport } from "../../../../../services/commonServices";
 import Select from 'react-select'
+
 export default function DetailedIndividual() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
 

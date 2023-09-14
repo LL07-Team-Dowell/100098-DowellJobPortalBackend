@@ -430,7 +430,7 @@ const AdminReports = ({ subAdminView }) => {
     </StaffJobLandingLayout>
   );
 };
-const FormDatePopup = ({
+export const FormDatePopup = ({
   setFirstDate,
   setLastDate,
   firstDate,

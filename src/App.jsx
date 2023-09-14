@@ -77,6 +77,7 @@ import ReportPages from "./pages/AdminPage/views/Reports/reportspages/ReportPage
 import DetailedIndividual from "./pages/AdminPage/views/Reports/detailedIndividual/DetailedIndividual";
 import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
 import IndividualTaskReports from "./pages/AdminPage/views/Reports/individualTaskReport/individualTaskReport";
+import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
 
 function App() {
   console.log = () => { };
@@ -544,6 +545,14 @@ function App() {
           element={
             <JobContextProvider>
               <AdminReports />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path="/report/team-report"
+          element={
+            <JobContextProvider>
+              <TeamReport />
             </JobContextProvider>
           }
         />
