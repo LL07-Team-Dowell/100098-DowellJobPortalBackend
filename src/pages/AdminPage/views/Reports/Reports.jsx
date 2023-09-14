@@ -57,11 +57,32 @@ const AdminReports = ({ subAdminView }) => {
   console.log({ selectOptions, lastDate, firstDate });
   // handle functions
   const handleSelectOptionsFunction = (e) => {
-    setSelectOptions(e.target.value);
     if (e.target.value === "custom_time") {
       setShowCustomTimeModal(true);
+      setSelectOptions("");
     } else {
       setShowCustomTimeModal(false);
+      if (e.target.value === "last_7_days") {
+        setLoading(true);
+        const data = {
+          start_date: formatDateFromMilliseconds(
+            new Date().getTime() - 7 * 24 * 60 * 60 * 1000
+          ),
+          end_date: formatDateFromMilliseconds(new Date().getTime()),
+          report_type: "Admin",
+          company_id: currentUser.portfolio_info[0].org_id,
+        };
+        generateCommonAdminReport(data)
+          .then((resp) => {
+            setLoading(false);
+            setdata(resp.data.response);
+            setSelectOptions("last_7_days");
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+          });
+      }
     }
   };
   const closeModal = () => {
@@ -112,30 +133,7 @@ const AdminReports = ({ subAdminView }) => {
         setLoading(false);
       });
   }, []);
-  useEffect(() => {
-    if (selectOptions !== "") {
-      if (selectOptions === "last_7_days") {
-        setLoading(true);
-        const data = {
-          start_date: formatDateFromMilliseconds(
-            new Date().getTime() - 7 * 24 * 60 * 60 * 1000
-          ),
-          end_date: formatDateFromMilliseconds(new Date().getTime()),
-          report_type: "Admin",
-          company_id: currentUser.portfolio_info[0].org_id,
-        };
-        generateCommonAdminReport(data)
-          .then((resp) => {
-            setLoading(false);
-            setdata(resp.data.response);
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoading(false);
-          });
-      }
-    }
-  }, [selectOptions]);
+
   console.log(data.hiring_rate);
   if (loading)
     return (
@@ -188,8 +186,8 @@ const AdminReports = ({ subAdminView }) => {
             <p></p>
             <select
               className='select_time_tage'
-              onChange={handleSelectOptionsFunction}
-              defaultValue={"last_7_days"}
+              onChange={(e) => handleSelectOptionsFunction(e)}
+              defaultValue={selectOptions}
             >
               <option value='' disabled>
                 select time
