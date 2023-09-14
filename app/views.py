@@ -4473,7 +4473,7 @@ class Generate_Report(APIView):
                 data = {}
                 # get all details firstly---------------
                 if len(payload["company_id"]) >0:
-                    field = {"company_id":"63a2b3fb2be81449d3a30d3f"}
+                    field = {"company_id":payload["company_id"]}
                 else:
                     field = {}
                 update_field = {}
@@ -4570,17 +4570,25 @@ class Generate_Report(APIView):
                     key="application_submitted_on",
                 )
                 
-                m={'January':0, 'February':0, 'March':0, 'April':0, 'May':0, 'June':0, 'July':0, 'August':0, 'September':0, 'October':0, 'November':0, 'December':0}
+                m={'January':[], 'February':[], 'March':[], 'April':[], 'May':[], 'June':[], 'July':[], 'August':[], 'September':[], 'October':[], 'November':[], 'December':[]}
                 months=[]
                 month_list=calendar.month_name
                 for res in res_job_application[0]:
                     date=set_date_format(res['application_submitted_on'])
                     month = month_list[datetime.datetime.strptime(date, '%m/%d/%Y %H:%M:%S').month]
-                    months.append(month)
-                    #print(d,'----',d.month, month)
+                    months.append({"job_title":res["job_title"],
+                                   "job_number":res["job_number"],
+                                   "month":month})
+
+                for item in months:
+                    if item["month"] in m.keys():
+                        i ={'job_number':item['job_number'],'job_title':item['job_title'],"no_job_applications":months.count(item)}
+                        if not i in m[item["month"]]:
+                            m[item["month"]].append(i)
                 for key in m.keys():
-                    if key in months:
-                        m[key]=months.count(key)
+                    if len(m[key])==0:
+                        m[key]=0
+                        
                 data["job_applications"] = {"total":res_job_application[1],
                                             "months":m}
 
@@ -4726,7 +4734,7 @@ class Generate_Report(APIView):
                 except Exception:
                     data["percentage_tasks_completed_on_time"]=0 
                 
-                res_tasks_mod = dowellconnection(*task_details_module, "fetch", {}, update_field= None)
+                res_tasks_mod = dowellconnection(*task_details_module, "fetch", field, update_field= None)
                 res_tasks_mod_list = [res for res in json.loads(res_tasks_mod)["data"]]
 
                 res_t= period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],data_list=res_tasks_mod_list ,key="task_created_date")
@@ -4800,7 +4808,6 @@ class Generate_Report(APIView):
         data = filtered_job_applications
         return Response(
             {
-                "isSuccess": True,
                 "message": f"Public Job Report Generated",
                 "Data": data,
             },
@@ -5822,7 +5829,7 @@ class Generate_Report(APIView):
         
         if payload:
             response = self.itr_function(payload.get("username"))
-            return Response({"response":response},status=status.HTTP_201_CREATED)
+            return Response({"message":"Individual task report generated","response":response},status=status.HTTP_201_CREATED)
         else:
             return Response(
                 {"message": "Parameters are not valid"},
@@ -5948,14 +5955,13 @@ class Generate_Report(APIView):
             else:
                 return Response(
                     {
-                        "success": False,
                         "message": "Failed to fetch data from dowell connection",
                     },
-                    status=400,
+                    status=status.HTTP_400_BAD_REQUEST
                 )
         else:
             return Response(
-                {"success": False, "message": "Invalid payload"}, status=400
+                {"message": "Parameters not valid"}, status=status.HTTP_400_BAD_REQUEST
             )
     def post(self, request):
         serializer = ReportSerializer(data=request.data)
@@ -5983,8 +5989,8 @@ class Generate_Report(APIView):
 
         else:
             return Response(
-                {"error": "Parameters not Valid. "+ str(serializer.errors['report_type'][0]),
-                 "message": "It must me one of these -> 'Admin','Hr','Account','Candidate','Team','Lead','Individual','Individual Task','Project','Public' "},
+                {"message": "Parameters not Valid. "+ str(serializer.errors['report_type'][0]),
+                 "response": "It must me one of these -> 'Admin','Hr','Account','Candidate','Team','Lead','Individual','Individual Task','Project','Public' "},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -6007,8 +6013,8 @@ class GetQRCode(APIView):
             return Response(
                 {
                     "message": f"qrcode with company_id-{job_company_id}",
-                    "number of qr_ids": f"{len(data)}",
-                    "data": data,
+                    "response": {"number_of_qr_ids":f"{len(data)}",
+                                 "data":data},
                 },
                 status=status.HTTP_200_OK,
             )
@@ -6016,8 +6022,8 @@ class GetQRCode(APIView):
             return Response(
                 {
                     "message": "Failed to fetch",
-                    "number of qr_ids": f"{len(data)}",
-                    "data": data,
+                    "response": {"number_of_qr_ids":f"{len(data)}",
+                                 "data":data},
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -6057,8 +6063,8 @@ class Generate_candidate_dublicates(APIView):
 
         return Response(
             {
-                "success": True,
-                "data": data,
+                "message": "Candidate duplicates generated",
+                "response": data,
             },
             status=status.HTTP_200_OK,
         )
@@ -6138,7 +6144,6 @@ class Update_payment_status(APIView):
 
 
 class Generate_project_task_details_Report(APIView):
-
      def post(self, request):
         payload = request.data
         serializer = ProjectWiseReportSerializer(data=payload)
