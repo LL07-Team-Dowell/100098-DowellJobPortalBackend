@@ -33,17 +33,222 @@
   cursor: pointer;
 }
 .personal_info {
-  padding-bottom: 200px;
+  padding-bottom: 70px;
+  background-color: white;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  border-radius: 5px;
+  padding: 1rem 1.5rem;
 }
 .detailed_indiv_container {
   padding: 20px;
+  width: 90%;
+  margin: 0 auto;
 }
 .personal_info {
   p {
-    padding-bottom: 7px;
+    padding-bottom: 2px;
+    font-size: 0.9rem;
+    text-transform: capitalize;
     span {
       font-weight: 700;
       padding-right: 3px;
+    }
+  }
+}
+.selction_container {
+  margin-top: 2rem;
+
+  p {
+    margin-bottom: 0.8rem;
+  }
+}
+
+.indiv__Task__Rep__info {
+  padding-bottom: 200px;
+
+  .task__Box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .task__item {
+    width: 48%;
+    background-color: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border-radius: 5px;
+    padding: 1rem 1.5rem;
+    height: min-content;
+
+    &.tasks {
+      width: 100%;
+      margin-top: 1.5rem;
+
+      p.project__Select {
+        font-size: 0.8rem;
+        margin-top: 2rem;
+      }
+
+      .date__Select__Wrap {
+        margin-left: auto;
+        width: max-content;
+        margin-top: 1.4rem;
+
+        input {
+          font-family: "Poppins", sans-serif;
+          font-size: 0.8rem;
+          padding: 0.5rem 1rem;
+          transition: 0.3s ease-in-out;
+
+          &:not(:disabled):hover {
+            border-color: #005734;
+            cursor: pointer;
+          }
+
+          &:disabled,
+          &[disabled] {
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      .cand__task__Wrap {
+        height: 24rem;
+        margin-top: 0.7rem;
+        position: relative;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        white-space: nowrap;
+        scrollbar-width: thin;
+
+        .single__task__Detail {
+          width: 22rem;
+          height: 95%;
+          max-height: 95%;
+          border-radius: 8px;
+          display: inline-flex;
+          align-items: flex-start;
+          justify-content: center;
+          gap: 0.8rem;
+          flex-direction: column;
+          margin-right: 1rem;
+          margin-left: 1rem;
+          margin-top: auto;
+          position: relative;
+          background-color: white;
+          box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+          border-radius: 5px;
+          padding: 1.5rem 1rem;
+          overflow-y: auto;
+
+          h3 {
+            color: #005734;
+            letter-spacing: 0.02em;
+            white-space: pre-line;
+          }
+
+          p {
+            font-size: 0.9rem;
+          }
+
+          // SCROLLBAR STYLES FOR CHROME
+          &::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+          }
+
+          &::-webkit-scrollbar-track {
+            background: #efefef;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background: #b8b8b8;
+          }
+
+          &::-webkit-scrollbar-thumb:hover {
+            background: #005734;
+          }
+        }
+
+        // SCROLLBAR STYLES FOR CHROME
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: #efefef;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: #b8b8b8;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+          background: #005734;
+        }
+      }
+    }
+  }
+
+  .task__item {
+    h4 {
+      font-size: 1.2rem;
+      color: #005734;
+      letter-spacing: 0.03em;
+    }
+  }
+
+  .task__Box .task__item {
+    h4 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .graph {
+      width: 100%;
+      max-width: 100%;
+      height: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .title__task__Select {
+      font-weight: normal;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+.personal__Info__Wrapper {
+  margin-top: 2rem;
+
+  .personal_info {
+    margin-top: 1rem;
+
+    h3 {
+      color: #005734;
+      letter-spacing: 0.03em;
+      font-size: 1.2rem;
+    }
+  }
+
+  .graph {
+    width: 100%;
+    max-width: 100%;
+    padding: 2rem 1rem;
+    background-color: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border-radius: 5px;
+    margin: 2.1rem 0;
+
+    h3 {
+      color: #005734;
+      letter-spacing: 0.03em;
+      font-size: 1.2rem;
     }
   }
 }

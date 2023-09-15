@@ -4,7 +4,6 @@ import { MdOutlineArrowBackIosNew } from "react-icons/md";
 import "./taskreports.css";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getSettingUserProject } from "../../../../services/hrServices";
-import { generateTaskReport } from "../../../../services/reportServices";
 import { generateCommonAdminReport } from "../../../../services/commonServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";

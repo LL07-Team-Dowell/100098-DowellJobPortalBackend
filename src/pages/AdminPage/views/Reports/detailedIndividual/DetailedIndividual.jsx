@@ -23,7 +23,16 @@ import {
 import { Doughnut, Bar } from "react-chartjs-2";
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { generateCommonAdminReport } from "../../../../../services/commonServices";
-import Select from 'react-select'
+import Select from "react-select";
+
+export const chartOptions = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: "top",
+    },
+  },
+};
 
 export default function DetailedIndividual() {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -37,30 +46,68 @@ export default function DetailedIndividual() {
   const [candidateName, setCandidateName] = useState("");
   const [firstLoading, setFirstLoading] = useState(false);
   const [secondLoading, setSecondLoadng] = useState(false);
-  const [options,setOptions] = useState([])
+  const [options, setOptions] = useState([]);
+  const [taskReportData, setTaskReportData] = useState(null);
+  const [taskProjectReportData, setTaskProjectReportData] = useState(null);
+  const [projectSelectedForSubprojectBox, setProjectSelectedForSubprojectBox] =
+    useState(null);
+  const [projectSelectedForTasksBox, setProjectSelectedForTasksBox] =
+    useState(null);
+  const date = new Date();
+  const [year, month, day] = [
+    date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+  ];
+  const dateFormattedForAPI = `${year}-${month < 10 ? "0" + month : month}-${
+    day < 10 ? "0" + day : day
+  }`;
+
+  const [dateSelectedForTasksBox, setDateSelectedForTasksBox] =
+    useState(dateFormattedForAPI);
+
+  let currentTrack = 0;
+  const colors = [
+    "#005734",
+    "red",
+    "blue",
+    "yellow",
+    "purple",
+    "pink",
+    "black",
+    "orange",
+    "green",
+    "blueviolet",
+    "brown",
+  ];
+
   const handleChange = (e) => {
-    setcandidates(candidates2.filter(v => v.username.toLowerCase().includes(e.target.value.toLowerCase())))
-  }
+    setcandidates(
+      candidates2.filter((v) =>
+        v.username.toLowerCase().includes(e.target.value.toLowerCase())
+      )
+    );
+  };
   const getIndividualData = (id) => {
     setSecondLoadng(true);
     setId(id);
 
-    const foundCandidate = candidates2.find(item => item._id === id);
+    const foundCandidate = candidates2.find((item) => item._id === id);
     console.log(foundCandidate);
 
     Promise.all([
       generateCommonAdminReport({
-        report_type:"Individual",
+        report_type: "Individual",
         year: new Date().getFullYear().toString(),
         applicant_id: id,
       }),
       generateCommonAdminReport({
-        report_type:"Individual Task",
+        report_type: "Individual Task",
         username: foundCandidate?.username,
-      })
+      }),
     ])
       .then((resp) => {
-        console.log({id})
+        console.log({ id });
         console.log(resp[0].data);
         setCandidateDate(resp[0].data.data[0]);
         setPersonalInfo(resp[0].data.personal_info);
@@ -68,13 +115,39 @@ export default function DetailedIndividual() {
         setCandidateName(resp[0].data.personal_info.username);
 
         console.log(resp[1].data);
+        setTaskReportData(resp[1].data?.response);
+        const dataForProjectGraph = {
+          labels: resp[1].data?.response.map((item) => item.project),
+          datasets: [
+            {
+              label: "Hours",
+              data: resp[1].data?.response.map((item) => item.total_hours),
+              backgroundColor: "blue",
+            },
+            {
+              label: "Tasks",
+              data: resp[1].data?.response.map((item) => item.total_tasks),
+              backgroundColor: "#005734",
+            },
+            {
+              label: "Tasks uploaded this week",
+              data: resp[1].data?.response.map(
+                (item) => item.tasks_uploaded_this_week
+              ),
+              backgroundColor: "yellow",
+            },
+          ],
+        };
+        setTaskProjectReportData(dataForProjectGraph);
+        setProjectSelectedForSubprojectBox(resp[1].data?.response[0]?.project);
+        setProjectSelectedForTasksBox(null);
         setSecondLoadng(false);
       })
       .catch((err) => console.error(err));
-  }
+  };
   const handleSelectChange = (id) => {
-    getIndividualData(id)
-  }
+    getIndividualData(id);
+  };
 
   useEffect(() => {
     setFirstLoading(true);
@@ -88,15 +161,24 @@ export default function DetailedIndividual() {
           setcandidates(
             data.filter((candidate) => candidate.status === "hired")
           );
-          setcandidates2(data.filter((candidate) => candidate.status === "hired"))
-          setOptions(data.filter((candidate) => candidate.status === "hired").map(v => ({ value: v._id, label: v.username })))
+          setcandidates2(
+            data.filter((candidate) => candidate.status === "hired")
+          );
+          setOptions(
+            data
+              .filter((candidate) => candidate.status === "hired")
+              .map((v) => ({ value: v._id, label: v.username }))
+          );
           setFirstLoading(false);
         }
       )
       .catch((err) => console.log(err));
   }, []);
- 
-   
+
+  const handleDateChange = (val) => {
+    console.log(val);
+  };
+
   if (firstLoading)
     return (
       <StaffJobLandingLayout
@@ -104,7 +186,19 @@ export default function DetailedIndividual() {
         adminAlternativePageActive={true}
         pageTitle={"Detailed individual report"}
       >
-        <LoadingSpinner />
+        <div className="detailed_indiv_container">
+          <div className="task__report__nav">
+            <button className="back" onClick={() => navigate(-1)}>
+              <MdArrowBackIosNew />
+            </button>
+            <h2>Individual Report</h2>
+          </div>
+          <p style={{ fontSize: "0.9rem" }}>
+            Get well-detailed actionable insights on hired individuals in your
+            organization
+          </p>
+          <LoadingSpinner />
+        </div>
       </StaffJobLandingLayout>
     );
   return (
@@ -114,12 +208,22 @@ export default function DetailedIndividual() {
       pageTitle={"Detailed individual report"}
     >
       <div className="detailed_indiv_container">
-        <button className="back" onClick={() => navigate(-1)}>
-          <MdArrowBackIosNew />
-        </button>
+        <div className="task__report__nav">
+          <button className="back" onClick={() => navigate(-1)}>
+            <MdArrowBackIosNew />
+          </button>
+          <h2>Individual Report</h2>
+        </div>
+        <p style={{ fontSize: "0.9rem" }}>
+          Get well-detailed actionable insights on hired individuals in your
+          organization
+        </p>
         <div className="selction_container">
           <p>Select Candidate</p>
-          <Select options={options}  onChange={e => handleSelectChange(e?.value)}/>
+          <Select
+            options={options}
+            onChange={(e) => handleSelectChange(e?.value)}
+          />
           {/* FIX IT */}
           {id !== "" ? (
             <>
@@ -127,85 +231,319 @@ export default function DetailedIndividual() {
               {secondLoading ? (
                 <LoadingSpinner />
               ) : (
-                <>
-                  {candidateName && <h1>candidate name : {candidateName}</h1>}
-                  <div className="graph">
-                    <Bar
-                      data={{
-                        labels: Object.keys(candidateData),
-                        datasets: Object.keys(candidateData).map((key) => {
-                          return {
-                            label: key, // Use the key as the dataset label
-                            backgroundColor: [
-                              "#005734",
-                              "rgb(126, 126, 126)",
-                              "#121212",
-                            ],
-                            borderColor: [
-                              "#005734",
-                              "rgb(126, 126, 126)",
-                              "#121212",
-                            ],
-                            data: [
-                              candidateData[key].tasks_approved,
-                              candidateData[key].tasks_added,
-                              candidateData[key].team_tasks,
-                            ],
-                          };
-                        }),
-                      }}
-                    />
-                  </div>
+                <div className="personal__Info__Wrapper">
+                  {/* {candidateName && <h3>Current candidate: {candidateName}</h3>} */}
                   <div className="personal_info">
-                    <h6>personal info</h6>
+                    <h3>Candidate personal info</h3>
                     <div>
                       <p>
-                        <span>status:</span>
-                        {personalInfo.status}
-                      </p>
-                      <p>
-                        <span>applicant:</span>
+                        <span>Applicant name:</span>
                         {personalInfo.applicant}
                       </p>
                       <p>
-                        <span>applicant email:</span>
-                        {personalInfo.email}
+                        <span>Current status:</span>
+                        {personalInfo.status}
                       </p>
                       <p>
-                        <span>country:</span>
+                        <span>Applicant email:</span>
+                        {personalInfo.applicant_email}
+                      </p>
+                      <p>
+                        <span>Country:</span>
                         {personalInfo.country}
                       </p>
                       <p>
-                        <span>project:</span>
+                        <span>Project hired for:</span>
                         {personalInfo.project}
                       </p>
                       <p>
-                        <span>username:</span>
+                        <span>Username:</span>
                         {personalInfo.username}
                       </p>
                       <p>
-                        <span>portfolio name:</span>
+                        <span>Portfolio name:</span>
                         {personalInfo.portfolio_name}
                       </p>
                       <p>
-                        <span>shortlisted on:</span>
+                        <span>Shortlisted on:</span>
                         {formatDate(personalInfo.shortlisted_on)}
                       </p>
                       <p>
-                        <span>selected on:</span>
+                        <span>Selected on:</span>
                         {formatDate(personalInfo.selected_on)}
                       </p>
                       <p>
-                        <span>hired on:</span>
+                        <span>Hired on:</span>
                         {formatDate(personalInfo.hired_on)}
                       </p>
                       <p>
-                        <span>onboarded on:</span>
+                        <span>Onboarded on:</span>
                         {formatDate(personalInfo.onboarded_on)}
                       </p>
                     </div>
                   </div>
-                </>
+                  <div className="graph">
+                    <h3>Tasks overview</h3>
+                    <h4 style={{ textAlign: "center", marginBottom: "2rem" }}>
+                      Bar chart showing tasks approved, added and uncompleted
+                    </h4>
+                    <Bar
+                      data={{
+                        labels: Object.keys(candidateData),
+                        datasets: [
+                          {
+                            label: "Tasks approved",
+                            backgroundColor: "blue",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_approved;
+                            }),
+                          },
+                          {
+                            label: "Tasks added",
+                            backgroundColor: "#005734",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_added;
+                            }),
+                          },
+                          {
+                            label: "Team uncompleted",
+                            backgroundColor: "red",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_uncompleted;
+                            }),
+                          },
+                        ],
+                      }}
+                    />
+                  </div>
+                  <div className="indiv__Task__Rep__info">
+                    <div className="task__Box">
+                      <div className="task__item">
+                        <h4>Projects</h4>
+                        {taskProjectReportData ? (
+                          <div className="graph">
+                            <Bar
+                              options={chartOptions}
+                              data={taskProjectReportData}
+                            />
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                      <div className="task__item">
+                        <h4>
+                          <span>Subprojects</span>
+                          <Select
+                            className="title__task__Select"
+                            value={{
+                              label: projectSelectedForSubprojectBox,
+                              value: projectSelectedForSubprojectBox,
+                            }}
+                            onChange={(val) =>
+                              setProjectSelectedForSubprojectBox(val.value)
+                            }
+                            options={[
+                              { label: "Select project", value: "" },
+                              ...taskReportData.map((item) => ({
+                                label: item.project,
+                                value: item.project,
+                              })),
+                            ]}
+                          />
+                        </h4>
+                        {projectSelectedForSubprojectBox ? (
+                          <div className="graph">
+                            <Doughnut
+                              data={{
+                                labels: taskReportData.find(
+                                  (item) =>
+                                    item.project ===
+                                    projectSelectedForSubprojectBox
+                                )
+                                  ? Object.keys(
+                                      taskReportData.find(
+                                        (item) =>
+                                          item.project ===
+                                          projectSelectedForSubprojectBox
+                                      )?.subprojects || {}
+                                    )
+                                  : [],
+                                datasets: [
+                                  {
+                                    label: "Poll",
+                                    data: taskReportData.find(
+                                      (item) =>
+                                        item.project ===
+                                        projectSelectedForSubprojectBox
+                                    )
+                                      ? Object.keys(
+                                          taskReportData.find(
+                                            (item) =>
+                                              item.project ===
+                                              projectSelectedForSubprojectBox
+                                          )?.subprojects || {}
+                                        ).map((subproject) => {
+                                          return taskReportData.find(
+                                            (item) =>
+                                              item.project ===
+                                              projectSelectedForSubprojectBox
+                                          )?.subprojects[subproject];
+                                        })
+                                      : [],
+                                    backgroundColor: taskReportData.find(
+                                      (item) =>
+                                        item.project ===
+                                        projectSelectedForSubprojectBox
+                                    )
+                                      ? Object.keys(
+                                          taskReportData.find(
+                                            (item) =>
+                                              item.project ===
+                                              projectSelectedForSubprojectBox
+                                          )?.subprojects || {}
+                                        ).map((subproject) => {
+                                          if (
+                                            currentTrack >
+                                            colors.length - 1
+                                          ) {
+                                            currentTrack = 0;
+                                          } else {
+                                            currentTrack += 1;
+                                          }
+
+                                          return colors[currentTrack];
+                                        })
+                                      : [],
+                                  },
+                                ],
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+                    <div className="task__item tasks">
+                      <h4>Task Details</h4>
+                      <p className="project__Select">Select project</p>
+                      <Select
+                        className="title__task__Select"
+                        value={{
+                          label: projectSelectedForTasksBox,
+                          value: projectSelectedForTasksBox,
+                        }}
+                        onChange={(val) =>
+                          setProjectSelectedForTasksBox(val.value)
+                        }
+                        options={[
+                          { label: "Select project", value: "" },
+                          ...taskReportData.map((item) => ({
+                            label: item.project,
+                            value: item.project,
+                          })),
+                        ]}
+                      />
+                      <div className="date__Select__Wrap">
+                        <input
+                          type="date"
+                          value={dateSelectedForTasksBox}
+                          onChange={({ target }) =>
+                            setDateSelectedForTasksBox(target.value)
+                          }
+                          disabled={!projectSelectedForTasksBox ? true : false}
+                        />
+                      </div>
+
+                      {projectSelectedForTasksBox && (
+                        <>
+                          <p className="task__Select">
+                            <b>
+                              Tasks added by {candidateName} under the{" "}
+                              {projectSelectedForTasksBox} project on{" "}
+                              {new Date(dateSelectedForTasksBox).toDateString()}
+                            </b>
+                          </p>
+
+                          <div className="cand__task__Wrap">
+                            {!taskReportData.find(
+                              (task) =>
+                                task.project === projectSelectedForTasksBox
+                            ) ||
+                            taskReportData
+                              .find(
+                                (task) =>
+                                  task.project === projectSelectedForTasksBox
+                              )
+                              ?.tasks?.filter(
+                                (task) =>
+                                  task.task_created_date ===
+                                    dateSelectedForTasksBox &&
+                                  task.project === projectSelectedForTasksBox
+                              ).length < 1 ||
+                            !Array.isArray(
+                              taskReportData
+                                .find(
+                                  (task) =>
+                                    task.project === projectSelectedForTasksBox
+                                )
+                                ?.tasks?.filter(
+                                  (task) =>
+                                    task.task_created_date ===
+                                      dateSelectedForTasksBox &&
+                                    task.project === projectSelectedForTasksBox
+                                )
+                            ) ? (
+                              <>
+                                <p
+                                  style={{
+                                    fontSize: "0.9rem",
+                                    textAlign: "center",
+                                    marginTop: 20,
+                                  }}
+                                >
+                                  No tasks were added by {candidateName} under
+                                  the {projectSelectedForTasksBox} project on{" "}
+                                  {new Date(
+                                    dateSelectedForTasksBox
+                                  ).toDateString()}
+                                </p>
+                              </>
+                            ) : (
+                              React.Children.toArray(
+                                taskReportData
+                                  .find(
+                                    (task) =>
+                                      task.project ===
+                                      projectSelectedForTasksBox
+                                  )
+                                  ?.tasks?.filter(
+                                    (task) =>
+                                      task.task_created_date ===
+                                        dateSelectedForTasksBox &&
+                                      task.project ===
+                                        projectSelectedForTasksBox
+                                  )
+                                  ?.map((task) => {
+                                    return (
+                                      <div className="single__task__Detail">
+                                        <h3>Task: {task.task}</h3>
+                                        <p>Subproject: {task.subproject}</p>
+                                        <p>Task type: {task.task_type}</p>
+                                        <p>Start time: {task.start_time}</p>
+                                        <p>End time: {task.end_time}</p>
+                                      </div>
+                                    );
+                                  })
+                              )
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
               )}
             </>
           ) : null}
