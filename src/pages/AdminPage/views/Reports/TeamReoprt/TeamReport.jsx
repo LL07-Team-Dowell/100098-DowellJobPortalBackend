@@ -82,7 +82,7 @@ export default function TeamReport() {
                     },
                 }) => {
                     setcandidates(
-                        data
+                        data.filter(team => team.company_id === currentUser.portfolio_info[0].org_id && team.data_type === currentUser.portfolio_info[0].data_type)
                     );
                     setFirstLoading(false);
                 }
@@ -103,6 +103,17 @@ export default function TeamReport() {
                 adminAlternativePageActive={true}
                 pageTitle={"Team Report"}
             >
+                <div className="detailed_indiv_container">
+                    <div className="task__report__nav">
+                        <button className="back" onClick={() => navigate(-1)}>
+                        <MdArrowBackIosNew />
+                        </button>
+                        <h2>Teams Report</h2>
+                    </div>
+                    <p style={{ fontSize: "0.9rem" }}>
+                        Get insights into how well teams are performing in your organization
+                    </p>
+                </div>
                 <LoadingSpinner />
             </StaffJobLandingLayout>
         );
@@ -113,13 +124,19 @@ export default function TeamReport() {
             pageTitle={"Team Report"}
         >
             <div className="detailed_indiv_container">
-                <button className="back" onClick={() => navigate(-1)}>
+                <div className="task__report__nav">
+                    <button className="back" onClick={() => navigate(-1)}>
                     <MdArrowBackIosNew />
-                </button>
+                    </button>
+                    <h2>Teams Report</h2>
+                </div>
+                <p style={{ fontSize: "0.9rem" }}>
+                    Get insights into how well teams are performing in your organization
+                </p>
                 <div className="selction_container">
-                    <p>Select Team</p>
-                    <div className="role__Filter__Wrapper">
-                        <IoFilterOutline />
+                    <p style={{ textAlign: 'center' }}>Select Team</p>
+                    {/* <div className="role__Filter__Wrapper">
+                        <IoFilterOutline /> */}
                         <div className="select">
                             <Select
                                 onChange={(selectedOption) => handleTeam(selectedOption.value)}
@@ -128,7 +145,7 @@ export default function TeamReport() {
                                     label: `${team.team_name} - ${team.created_by ? `(${team.created_by})` : ""}`,
                                 }))}
                             />
-                        </div>
+                        {/* </div> */}
 
 
                     </div>

@@ -11,7 +11,7 @@ const TeamReportChart = ({ data }) => {
 
     // Chart data and options
     const chartData = {
-        labels: ['Team Tasks', 'Team Tasks Completed', 'Team Task Completion On Time'],
+        labels: ['Team Tasks', 'Team Tasks Completed', 'Team Task Completed On Time'],
         datasets: [
             {
                 label: 'Team Report',
@@ -27,6 +27,7 @@ const TeamReportChart = ({ data }) => {
                     'rgba(54, 162, 235, 1)',
                 ],
                 borderWidth: 1,
+                maxBarThickness: 40,
             },
         ],
     };
@@ -40,15 +41,21 @@ const TeamReportChart = ({ data }) => {
     };
 
     const Wrapper = styled.div`
-        width: 80%;
+        width: 50%;
         margin: auto;
         height: 60%;
     `
 
     return (
         <Wrapper>
-            <h2>Team Report</h2>
-            <Bar data={chartData} options={chartOptions} />
+            {/* <h2>Team Report</h2> */}
+            {
+                Object.keys(data || {}).length < 1 ? <></> :
+                <>
+                    <p style={{ margin: '25px 0 10px', textAlign: 'center' }}><b>Bar chart showing teams tasks and team tasks completion rate</b></p>
+                    <Bar data={chartData} options={chartOptions} />            
+                </>
+            }
         </Wrapper>
     );
 };
