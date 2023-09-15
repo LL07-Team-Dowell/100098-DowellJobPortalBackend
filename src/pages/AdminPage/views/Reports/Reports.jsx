@@ -19,6 +19,9 @@ import {
   BarElement,
   CategoryScale,
   LinearScale,
+  PointElement,
+  LineElement,
+  Title,
 } from "chart.js";
 // don
 import { Doughnut, Bar, Line } from "react-chartjs-2";
@@ -31,7 +34,25 @@ import { generateCommonAdminReport } from "../../../../services/commonServices";
 // register chart.js
 ChartJs.register(ArcElement, Tooltip, Legend);
 
-ChartJs.register(ArcElement, BarElement, CategoryScale, LinearScale);
+ChartJs.register(
+  ArcElement, 
+  BarElement, 
+  CategoryScale, 
+  LinearScale, 
+  PointElement, 
+  LineElement, 
+  Title
+);
+
+export const chartOptions = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: "top",
+    },
+  },
+};
+
 const AdminReports = ({ subAdminView }) => {
   const navigate = useNavigate();
   // states
@@ -58,7 +79,6 @@ const AdminReports = ({ subAdminView }) => {
   console.log({ selectOptions, lastDate, firstDate });
   const colors = [
     "#005734",
-    "red",
     "blue",
     "yellow",
     "purple",
@@ -68,6 +88,21 @@ const AdminReports = ({ subAdminView }) => {
     "green",
     "blueviolet",
     "brown",
+    "red",
+    "d3d3d3",
+    "rgb(53, 162, 235)",
+    "indigo",
+    "bisque",
+    "burlywood",
+    "aqua",
+    "chocolate",
+    "cornflowerblue",
+    "#be6464",
+    "turquoise",
+    "teal",
+    "springgreen",
+    "skyblue",
+    "royalblue",
   ];
 
   // handle functions
@@ -140,6 +175,7 @@ const AdminReports = ({ subAdminView }) => {
                   label: item.job_title,
                   data: dummyData,
                   backgroundColor: colors[currentTrack],
+                  borderColor: colors[currentTrack],
                 };
               }
             );
@@ -180,32 +216,52 @@ const AdminReports = ({ subAdminView }) => {
           resp.data.response.job_applications.months || {}
         );
 
-        const datasets = months.map((month, index) => {
-          if (resp.data.response.job_applications.months[month] === 0)
-            return null;
+        const datasetData = months.map((month, index) => {
+          if (resp.data.response.job_applications.months[month] === 0) return null
+          return resp.data.response.job_applications.months[month].map(item => {
+            if (currentTrack > colors.length - 1) {
+              currentTrack = 0
+            } else {
+              currentTrack += 1
+            }
 
-          const dataPoints = months.map((_, i) => {
-            return (
-              resp.data.response.job_applications.months[month][i]
-                ?.no_job_applications || 0
-            );
-          });
+            const dummyData = Array(months.length).fill().map((_, i) => 0);
+            dummyData[index] = item.no_job_applications 
+            return {
+              label: item.job_title,
+              data: dummyData,
+              backgroundColor: colors[currentTrack],
+              borderColor: colors[currentTrack],
+            }
+          })
+        }).filter(item => item).flat();
 
-          if (currentTrack > colors.length - 1) {
-            currentTrack = 0;
-          } else {
-            currentTrack += 1;
-          }
+        // const datasets = months.map((month, index) => {
+        //   if (resp.data.response.job_applications.months[month] === 0)
+        //     return null;
 
-          return {
-            label: month, // Label for the line (could be the month)
-            data: dataPoints, // An array of data points for this line
-            borderColor: colors[currentTrack], // Line color
-            fill: false, // To not fill the area under the line
-          };
-        });
+        //   const dataPoints = months.map((_, i) => {
+        //     return (
+        //       resp.data.response.job_applications.months[month][i]
+        //         ?.no_job_applications || 0
+        //     );
+        //   });
 
-        const datasetData = datasets.filter((item) => item);
+        //   if (currentTrack > colors.length - 1) {
+        //     currentTrack = 0;
+        //   } else {
+        //     currentTrack += 1;
+        //   }
+
+        //   return {
+        //     label: month, // Label for the line (could be the month)
+        //     data: dataPoints, // An array of data points for this line
+        //     borderColor: colors[currentTrack], // Line color
+        //     fill: false, // To not fill the area under the line
+        //   };
+        // });
+
+        // const datasetData = datasets.filter((item) => item);
         setDatasetForApplications(datasetData);
       })
       .catch((err) => {
@@ -287,11 +343,11 @@ const AdminReports = ({ subAdminView }) => {
               style={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
+                justifyContent: "space-between",
                 gap: "1rem",
               }}
             >
-              <div style={{ width: "45%" }}>
+              <div style={{ width: "48%" }}>
                 {data.no_of_active_jobs === 0 &&
                 data.no_of_inactive_jobs === 0 ? (
                   <h4>
@@ -326,7 +382,7 @@ const AdminReports = ({ subAdminView }) => {
                 )}
               </div>
 
-              <div style={{ width: "45%" }}>
+              <div style={{ width: "48%" }}>
                 <p>
                   <b>
                     Bar chart showing job most applied to and job least applied
@@ -345,15 +401,18 @@ const AdminReports = ({ subAdminView }) => {
                           data: [data.most_applied_job?.no_job_applications],
                           backgroundColor: "#005734",
                           borderColor: "#005734",
+                          maxBarThickness: 40,
                         },
                         {
                           label: data.least_applied_job?.job_title,
                           data: [data.least_applied_job?.no_job_applications],
                           backgroundColor: "#d3d3d3",
                           borderColor: "#d3d3d3",
+                          maxBarThickness: 40,
                         },
                       ],
                     }}
+                    options={chartOptions}
                   />
                 </div>
               </div>
@@ -361,7 +420,7 @@ const AdminReports = ({ subAdminView }) => {
           </div>
           <div className='graph__Item'>
             <h6>applications</h6>
-            <div className='application'>
+            <div className='application' style={{ flexDirection: datasetForApplications?.length > 12 ? 'column' : 'row', gap: datasetForApplications?.length > 12 ? '5rem' : 'unset' }}>
               {!(
                 data.job_applications ||
                 data.nojob_applications_from_start_date_to_end_date
@@ -372,15 +431,33 @@ const AdminReports = ({ subAdminView }) => {
                   {lastDateState.split(" ")[0]}
                 </h4>
               ) : (
-                <div style={{ width: 400, height: 300 }}>
-                  {datasetForApplications && (
-                    <Bar
+                <div style={{ width: datasetForApplications?.length > 12 ? '100%' : '48%', height: datasetForApplications?.length > 12 ? 'max-content' : 400, maxWidth: '100%' }}>
+                  {datasetForApplications ? (
+                    <>
+                    <p style={{ marginBottom: 20 }}>
+                      <b>
+                        Line chart showing job applications
+                      </b>
+                    </p>
+                    <Line
                       data={{
                         labels: Object.keys(data.job_applications.months || {}),
                         datasets: datasetForApplications,
                       }}
+                      options={chartOptions}
+                      style={{ height: 'max-content', width: '100%' }}
                     />
-                  )}
+                    </>
+                    ) : (
+                      <>
+                        <h4>
+                          There are no applications submitted between{" "}
+                          {firstDateState.split(" ")[0]} and{" "}
+                          {lastDateState.split(" ")[0]}
+                        </h4>
+                      </>
+                    )
+                  }
                   {/* <Doughnut
                     data={{
                       labels: [
@@ -409,10 +486,15 @@ const AdminReports = ({ subAdminView }) => {
                   {lastDateState.split(" ")[0]}
                 </h4>
               ) : (
-                <div style={{ width: 400, height: 300 }}>
+                <div style={{ width: '48%', height: 400 }}>
+                  <p style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                    <b>
+                      Doughnut chart showing hiring rate
+                    </b>
+                  </p>
                   <Doughnut
                     data={{
-                      labels: ["hiring rate", "hiring total"],
+                      labels: ["hiring rate", "non-hiring rate"],
                       datasets: [
                         {
                           label: "Poll",
@@ -420,12 +502,14 @@ const AdminReports = ({ subAdminView }) => {
                             extractNumber(data.hiring_rate),
                             100 - extractNumber(data.hiring_rate),
                           ],
-                          backgroundColor: ["#D3D3D3", "#005734"],
-                          borderColor: ["#D3D3D3", "#005734"],
+                          backgroundColor: ["#005734", "#D3D3D3"],
+                          borderColor: ["#005734", "#D3D3D3"],
                         },
                       ],
                     }}
-                  ></Doughnut>{" "}
+                    options={chartOptions}
+                    style={{ margin: '0 auto', }}
+                  ></Doughnut>
                 </div>
               )}
             </div>
@@ -447,45 +531,99 @@ const AdminReports = ({ subAdminView }) => {
                   {lastDateState.split(" ")[0]}
                 </h4>
               ) : (
-                <div style={{ width: 400, height: 300 }}>
+                <div style={{ width: '100%', maxWidth: '100%', height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Bar
                     data={{
                       labels: [
-                        "hired candidates",
-                        "rejected candidates",
-                        "probationary candidates",
-                        "rehire candidates",
-                        "selected candidates",
+                        "candidates"
+                        // "hired candidates",
+                        // "rejected candidates",
+                        // "probationary candidates",
+                        // "rehire candidates",
+                        // "selected candidates",
+                        // "shortlisted candidates",
                       ],
                       datasets: [
                         {
-                          label: "Poll",
+                          label: "Hired candidates",
                           data: [
-                            data.hired,
-                            data.rejected,
-                            data.probationary_candidates,
-                            data.rehired,
-                            data.selected,
+                            data.onboarded,
                           ],
                           backgroundColor: [
                             "#005734",
-                            "#9146FF",
-                            "#d3d3d3",
-                            "black",
-                            "pink",
-                            "blue",
                           ],
                           borderColor: [
                             "#005734",
+                          ],
+                          maxBarThickness: 40,
+                        },
+                        {
+                          label: "Rejected candidates",
+                          data: [
+                            data.rejected,
+                          ],
+                          backgroundColor: [
                             "#9146FF",
-                            "#d3d3d3",
+                          ],
+                          borderColor: [
+                            "#9146FF",
+                          ],
+                          maxBarThickness: 40,
+                        },
+                        {
+                          label: "Probationary candidates",
+                          data: [
+                            data.probationary_candidates,
+                          ],
+                          backgroundColor: [
                             "black",
+                          ],
+                          borderColor: [
+                          ],
+                          maxBarThickness: 40,
+                        },
+                        {
+                          label: "Rehired candidates",
+                          data: [
+                            data.rehired,
+                          ],
+                          backgroundColor: [
                             "pink",
+                          ],
+                          borderColor: [
+                            "pink",
+                          ],
+                          maxBarThickness: 40,
+                        },
+                        {
+                          label: "Selected candidates",
+                          data: [
+                            data.selected,
+                          ],
+                          backgroundColor: [
                             "blue",
                           ],
+                          borderColor: [
+                            "blue",
+                          ],
+                          maxBarThickness: 40,
+                        },
+                        {
+                          label: "Shortlisted candidates",
+                          data: [
+                            data.shortlisted,
+                          ],
+                          backgroundColor: [
+                            "orange",
+                          ],
+                          borderColor: [
+                            "orange",
+                          ],
+                          maxBarThickness: 40,
                         },
                       ],
                     }}
+                    options={chartOptions}
                   ></Bar>
                 </div>
               )}
@@ -494,35 +632,36 @@ const AdminReports = ({ subAdminView }) => {
 
           <div style={{ marginBottom: 20 }} className='graph__Item'>
             <h6>Teams and tasks</h6>
-            {!(data.teams || data.team_tasks || data.tasks) ? (
-              <h4>
-                There is no teams data between {firstDateState.split(" ")[0]}{" "}
-                and {lastDateState.split(" ")[0]}
-              </h4>
-            ) : (
-              <div style={{ width: 400, height: 300 }}>
-                <Bar
-                  data={{
-                    labels: ["Teams", "team tasks", "individual tasks"],
-                    datasets: [
-                      {
-                        label: "Poll",
-                        data: [data.teams, data.tasks, data.tasks],
-                        backgroundColor: ["#D3D3D3", "#005734", "black"],
-                        borderColor: ["#D3D3D3", "#005734", "black"],
-                      },
-                    ],
-                  }}
-                ></Bar>
-              </div>
-            )}
-            <div
-              style={{
-                display: `${
-                  !(data.tasks_completed || data.tasks) ? "block" : "flex"
-                }`,
-              }}
-            >
+            <div className="teams__And_Tasks__Wrapper">
+              {!(data.teams || data.team_tasks || data.tasks) ? (
+                <h4>
+                  There is no teams data between {firstDateState.split(" ")[0]}{" "}
+                  and {lastDateState.split(" ")[0]}
+                </h4>
+              ) : (
+                <div style={{ width: 400, height: 300 }}>
+                  <p style={{ marginBottom: 20 }}>
+                    <b>
+                      Bar chart showing teams and tasks
+                    </b>
+                  </p>
+                  <Bar
+                    data={{
+                      labels: ["Teams", "team tasks", "individual tasks"],
+                      datasets: [
+                        {
+                          label: "Poll",
+                          data: [data.teams, data.tasks, data.tasks],
+                          backgroundColor: ["#D3D3D3", "#005734", "black"],
+                          borderColor: ["#D3D3D3", "#005734", "black"],
+                          maxBarThickness: 40,
+                        },
+                      ],
+                    }}
+                    options={chartOptions}
+                  ></Bar>
+                </div>
+              )}
               <div>
                 {!(data.tasks_completed || data.tasks) ? (
                   <h4>
@@ -531,13 +670,18 @@ const AdminReports = ({ subAdminView }) => {
                   </h4>
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
+                    <p style={{ marginBottom: 20 }}>
+                      <b>
+                        Doughnut chart showing tasks completed
+                      </b>
+                    </p>
                     <Doughnut
                       data={{
-                        labels: ["tasks completed", "tasks"],
+                        labels: ["tasks uncompleted", "tasks completed"],
                         datasets: [
                           {
                             label: "Poll",
-                            data: [data.tasks_completed, data.tasks],
+                            data: [data.tasks_uncompleted, data.tasks_completed],
                             backgroundColor: ["#D3D3D3", "#005734"],
                             borderColor: ["#D3D3D3", "#005734"],
                           },
@@ -555,15 +699,20 @@ const AdminReports = ({ subAdminView }) => {
                   </h4>
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
+                    <p style={{ marginBottom: 20 }}>
+                      <b>
+                        Doughnut chart showing tasks completed on time
+                      </b>
+                    </p>
                     <Doughnut
                       data={{
-                        labels: ["tasks completed on time", "tasks"],
+                        labels: ["tasks completed on time"],
                         datasets: [
                           {
                             label: "Poll",
-                            data: [data.tasks_completed_on_time, data.tasks],
-                            backgroundColor: ["#D3D3D3", "#005734"],
-                            borderColor: ["#D3D3D3", "#005734"],
+                            data: [data.tasks_completed_on_time],
+                            backgroundColor: ["#005734"],
+                            borderColor: ["#005734"],
                           },
                         ],
                       }}
@@ -575,13 +724,18 @@ const AdminReports = ({ subAdminView }) => {
           </div>
           <div className='graph__Item'>
             <h6>Projects</h6>
-            <p>
+            {/* <p>
               project with most tasks: {data.project_with_most_tasks?.title}
             </p>
             <p>
               project with least tasks: {data.project_with_least_tasks?.title}
+            </p> */}
+            <p style={{ marginBottom: 20, marginTop: 40, textAlign: 'center' }}>
+              <b>
+                Bar chart showing the project with the most tasks added and project with the least tasks added
+              </b>
             </p>
-            <div style={{ width: 400, height: 300 }}>
+            <div style={{ width: 450, height: 300, marginLeft: 'auto', marginRight: 'auto' }}>
               <Bar
                 data={{
                   labels: ["projects"],
@@ -591,15 +745,18 @@ const AdminReports = ({ subAdminView }) => {
                       data: [data.project_with_most_tasks?.tasks_added],
                       backgroundColor: "#005734",
                       borderColor: "#005734",
+                      maxBarThickness: 40,
                     },
                     {
                       label: data.project_with_least_tasks?.title,
                       data: [data.project_with_least_tasks?.tasks_added],
                       backgroundColor: "#d3d3d3",
                       borderColor: "#d3d3d3",
+                      maxBarThickness: 40,
                     },
                   ],
                 }}
+                options={chartOptions}
               />
             </div>
           </div>

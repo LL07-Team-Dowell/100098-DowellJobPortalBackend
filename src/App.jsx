@@ -80,7 +80,7 @@ import IndividualTaskReports from "./pages/AdminPage/views/Reports/individualTas
 import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
 
 function App() {
-  // console.log = () => { };
+  console.log = () => { };
   const {
     currentUser,
     isPublicUser,
