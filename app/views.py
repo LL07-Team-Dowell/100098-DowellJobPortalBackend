@@ -65,7 +65,8 @@ from .serializers import (
     GetAllCandidateTaskSerializer,
     settingUsersubProjectSerializer,
     ReportSerializer,
-    ProjectWiseReportSerializer
+    ProjectWiseReportSerializer,
+    githubinfoserializer
 )
 from .models import UsersubProject
 
@@ -4763,49 +4764,7 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-    def generate_public_report(self,request):
-        status_filter = request.data.get("status")
-        company_id = request.data.get("company_id")
-        field = {"company_id": company_id}
-        update_field = {}
-        data = []
-        job_applications = dowellconnection(
-            *candidate_management_reports, "fetch", field, update_field
-        )
-        job_applications_json = json.loads(job_applications)["data"]
-        filtered_job_applications = []
-        if status_filter:
-            for application in job_applications_json:
-                if application.get("status") == status_filter:
-                    filtered_job_applications.append(
-                        {
-                            "applicant": application.get("applicant"),
-                            "username": application.get("username"),
-                            "status": application.get("status"),
-                            "portfolio_name": application.get("portfolio_name"),
-                            "signup_mail_sent": application.get("signup_mail_sent"),
-                        }
-                    )
-        else:
-            for application in job_applications_json:
-                filtered_job_applications.append(
-                    {
-                        "applicant": application.get("applicant"),
-                        "username": application.get("username"),
-                        "status": application.get("status"),
-                        "portfolio_name": application.get("portfolio_name"),
-                        "signup_mail_sent": application.get("signup_mail_sent"),
-                    }
-                )
-        data = filtered_job_applications
-        return Response(
-            {
-                "isSuccess": True,
-                "message": f"Public Job Report Generated",
-                "Data": data,
-            },
-            status=status.HTTP_201_CREATED,
-        )
+    
     def generate_hr_report(self, request):
         payload = request.data
         if payload:
@@ -5987,7 +5946,50 @@ class Generate_Report(APIView):
                  "message": "It must me one of these -> 'Admin','Hr','Account','Candidate','Team','Lead','Individual','Individual Task','Project','Public' "},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
+class Public_report(APIView):
+    def post(self,request):
+        status_filter = request.data.get("status")
+        company_id = request.data.get("company_id")
+        field = {"company_id": company_id}
+        update_field = {}
+        data = []
+        job_applications = dowellconnection(
+            *candidate_management_reports, "fetch", field, update_field
+        )
+        job_applications_json = json.loads(job_applications)["data"]
+        filtered_job_applications = []
+        if status_filter:
+            for application in job_applications_json:
+                if application.get("status") == status_filter:
+                    filtered_job_applications.append(
+                        {
+                            "applicant": application.get("applicant"),
+                            "username": application.get("username"),
+                            "status": application.get("status"),
+                            "portfolio_name": application.get("portfolio_name"),
+                            "signup_mail_sent": application.get("signup_mail_sent"),
+                        }
+                    )
+        else:
+            for application in job_applications_json:
+                filtered_job_applications.append(
+                    {
+                        "applicant": application.get("applicant"),
+                        "username": application.get("username"),
+                        "status": application.get("status"),
+                        "portfolio_name": application.get("portfolio_name"),
+                        "signup_mail_sent": application.get("signup_mail_sent"),
+                    }
+                )
+        data = filtered_job_applications
+        return Response(
+            {
+                "isSuccess": True,
+                "message": f"Public Job Report Generated",
+                "Data": data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
 @method_decorator(csrf_exempt, name="dispatch")
 class GetQRCode(APIView):
     def get(self, request, job_company_id):
@@ -6285,36 +6287,41 @@ class AddUserGithubInfo(APIView):
 
     def get(self, request):
        response1 = json.loads(dowellconnection(*github_details_module, "fetch",{}, update_field=None)) 
-       github_info=response1
-
        return Response({
             "success": True,
-            "data":github_info
+            "data":response1
         }, status=status.HTTP_200_OK)
 
     def post(self, request):
         payload = request.data
-        username=payload["username"]
+        serializer=githubinfoserializer(data=payload)
+        if serializer.is_valid():
+            username=payload["username"]
 
-        field={
-            "username":payload['username'],
-            "github_id":payload['github_id'],
-            "github_link":payload['github_link']
-        } 
-        response1 = json.loads(dowellconnection(*github_details_module, "fetch",{}, update_field=None)) 
-        for github_info in response1['data']:
-            if github_info['username'] == username:
-                return Response({
-                    "success": False,
-                    "message": "The username already exists in the GitHub information database.",
-                }, status=status.HTTP_400_BAD_REQUEST)
-            
-        response2 = json.loads(dowellconnection(*github_details_module,"insert",field, update_field=None))
-        return Response({
-            "success": True,
-            "message": "User GitHub info added.",
-            "data":response2
-        }, status=status.HTTP_200_OK)
+            field={
+                "username":payload['username'],
+                "github_id":payload['github_id'],
+                "github_link":payload['github_link']
+            } 
+            response1 = json.loads(dowellconnection(*github_details_module, "fetch",{}, update_field=None)) 
+            for github_info in response1['data']:
+                if github_info['username'] == username:
+                    return Response({
+                        "success": False,
+                        "message": "The username already exists in the GitHub information database.",
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                
+            response2 = json.loads(dowellconnection(*github_details_module,"insert",field, update_field=None))
+            return Response({
+                "success": True,
+                "message": "User GitHub info added.",
+                "data":response2
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "success": False,
+                "message": serializer.errors,
+            }, status=status.HTTP_200_OK)
     
 
     def put(self, request):
@@ -6326,7 +6333,7 @@ class AddUserGithubInfo(APIView):
             "github_link":payload['github_link']
         }
             
-        response2 = json.loads(dowellconnection(*github_details_module,"update",{}, update_field))
+        response2 = json.loads(dowellconnection(*github_details_module,"update",{"user"}, update_field))
         return Response({
             "success": True,
             "message": "User GitHub info updated.",
