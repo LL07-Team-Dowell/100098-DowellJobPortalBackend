@@ -383,3 +383,9 @@ class ReportSerializer(serializers.Serializer):
 class ProjectWiseReportSerializer(serializers.Serializer):
     project = serializers.CharField(allow_null=False, allow_blank=False)
     company_id = serializers.CharField(allow_null=True, allow_blank=True)
+
+
+class githubinfoserializer(serializers.Serializer):
+    username=serializers.CharField(allow_null=False, allow_blank=False)
+    github_id=serializers.CharField(allow_null=False, allow_blank=False)
+    github_link=serializers.URLField(allow_null=False, allow_blank=False)

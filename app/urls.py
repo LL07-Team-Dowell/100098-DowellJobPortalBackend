@@ -124,6 +124,9 @@ urlpatterns = [
     path('get_all_qrcode/<str:job_company_id>/',GetQRCode.as_view()),
     path('generate_candidate_duplicates/<str:company_id>/',Generate_candidate_dublicates.as_view()),
     path('generate_project_task_Report/',Generate_project_task_details_Report.as_view()),
+    path('generate_public_report/',Public_report.as_view()),
+
+
 
 
     # Payment Request Status -------------------------------------
