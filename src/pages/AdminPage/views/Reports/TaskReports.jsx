@@ -130,19 +130,20 @@ const TaskReports = ({ subAdminView }) => {
         const formattedData = {
           labels,
           datasets: [
-            {
-              label: "Subprojects",
-              data: res.data?.data?.users_that_added.map(
-                (item) => Object.keys(item?.subprojects || {})?.length
-              ),
-              backgroundColor: "blue",
-            },
+            // {
+            //   label: "Subprojects",
+            //   data: res.data?.data?.users_that_added.map(
+            //     (item) => Object.keys(item?.subprojects || {})?.length
+            //   ),
+            //   backgroundColor: "blue",
+            // },
             {
               label: "Tasks",
               data: res.data?.data?.users_that_added.map(
                 (item) => item.tasks_added
               ),
               backgroundColor: "#005734",
+              maxBarThickness: 40,
             },
             {
               label: "Hours",
@@ -150,6 +151,7 @@ const TaskReports = ({ subAdminView }) => {
                 (item) => item.total_hours
               ),
               backgroundColor: "red",
+              maxBarThickness: 40,
             },
           ],
         };
@@ -176,6 +178,7 @@ const TaskReports = ({ subAdminView }) => {
                 colors[currentTrack] 
                 : 
                 colors[index],
+              maxBarThickness: 40,
             }
           })
         }
@@ -253,19 +256,23 @@ const TaskReports = ({ subAdminView }) => {
               <div
                 style={{
                   maxWidth: "100%",
-                  padding: "20px 0",
+                  padding: "20px 10px",
                   margin: "2rem auto",
+                  width: 'max-content',
+                  minWidth: report?.labels?.length < 10 ? '55%' : '100%',
                 }}
                 className="graph__Item"
               >
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Bar chart showing total tasks, subprojects and hours</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Bar chart showing total tasks and hours</h2>
                 <Bar options={options} data={report} />
               </div>
               <div
                 style={{
                   maxWidth: "100%",
-                  padding: "20px 0",
+                  padding: "20px 10px",
                   margin: "2rem auto",
+                  width: 'max-content',
+                  minWidth: subProjectReport?.labels?.length < 10 ? '55%' : '100%',
                 }}
                 className="graph__Item"
               >

@@ -285,7 +285,7 @@ export default function DetailedIndividual() {
                   <div className="graph">
                     <h3>Tasks overview</h3>
                     <h4 style={{ textAlign: "center", marginBottom: "2rem" }}>
-                      Bar chart showing tasks approved, added and uncompleted
+                      Bar chart showing task details for {candidateName} this year
                     </h4>
                     <Bar
                       data={{
@@ -306,7 +306,7 @@ export default function DetailedIndividual() {
                             }),
                           },
                           {
-                            label: "Team uncompleted",
+                            label: "Tasks uncompleted",
                             backgroundColor: "red",
                             data: Object.keys(candidateData).map((key) => {
                               return candidateData[key].tasks_uncompleted;
@@ -321,12 +321,15 @@ export default function DetailedIndividual() {
                       <div className="task__item">
                         <h4>Projects</h4>
                         {taskProjectReportData ? (
+                          <>
+                          <p style={{ margin: '25px 0 10px' }}><b>Bar chart showing hours, total tasks and tasks this week per project</b></p>
                           <div className="graph">
                             <Bar
                               options={chartOptions}
                               data={taskProjectReportData}
                             />
                           </div>
+                          </>
                         ) : (
                           <></>
                         )}
@@ -353,7 +356,9 @@ export default function DetailedIndividual() {
                           />
                         </h4>
                         {projectSelectedForSubprojectBox ? (
-                          <div className="graph">
+                            <>
+                            <p style={{ margin: '25px 0 10px' }}><b>Doughnut chart showing the distribution of subprojects added by {candidateName} under the {projectSelectedForSubprojectBox} project</b></p>
+                            <div className="graph">
                             <Doughnut
                               data={{
                                 labels: taskReportData.find(
@@ -420,6 +425,7 @@ export default function DetailedIndividual() {
                               }}
                             />
                           </div>
+                          </>
                         ) : (
                           <></>
                         )}
@@ -496,6 +502,7 @@ export default function DetailedIndividual() {
                                 )
                             ) ? (
                               <>
+                                <img src="https://img.freepik.com/free-vector/no-data-concept-illustration_114360-626.jpg?w=1480&t=st=1694763189~exp=1694763789~hmac=e4b01d8c6a162b7170700df535471c9972009c0bdf2679a1c63eefffb7401809" alt="illustration" />
                                 <p
                                   style={{
                                     fontSize: "0.9rem",
