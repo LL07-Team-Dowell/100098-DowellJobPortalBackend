@@ -222,7 +222,7 @@ export default function DetailedIndividual() {
           organization
         </p>
         <div className="selction_container">
-          <p>Select Candidate</p>
+          <p>Select username</p>
           <Select
             options={options}
             onChange={(e) => handleSelectChange(e?.value)}
@@ -468,7 +468,7 @@ export default function DetailedIndividual() {
                         />
                       </div>
 
-                      {projectSelectedForTasksBox && (
+                      {projectSelectedForTasksBox ? (
                         <>
                           <p className="task__Select">
                             <b>
@@ -553,13 +553,21 @@ export default function DetailedIndividual() {
                             )}
                           </div>
                         </>
-                      )}
+                        )
+                        :
+                        <>
+                          <p style={{ fontSize: '0.9rem', textAlign: 'center' }}>Select a project to get a detailed report on tasks added</p>
+                        </>
+                      }
                     </div>
                   </div>
                 </div>
               )}
             </>
-          ) : null}
+          ) : <>
+            <img src="https://img.freepik.com/free-vector/no-data-concept-illustration_114360-626.jpg?w=1480&t=st=1694763189~exp=1694763789~hmac=e4b01d8c6a162b7170700df535471c9972009c0bdf2679a1c63eefffb7401809" alt="illustration" />
+            <p style={{ fontSize: '0.9rem', textAlign: 'center' }}>Search for your username and get your report</p>
+          </>}
         </div>
       </div>
     </StaffJobLandingLayout>
