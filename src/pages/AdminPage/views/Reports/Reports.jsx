@@ -563,3 +563,6 @@ function extractNumber(inputString) {
   const number = parseFloat(cleanedString).toFixed(2);
   return parseFloat(number);
 }
+
+
+
