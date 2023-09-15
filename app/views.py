@@ -6287,9 +6287,10 @@ class AddUserGithubInfo(APIView):
 
     def get(self, request):
        response1 = json.loads(dowellconnection(*github_details_module, "fetch",{}, update_field=None)) 
+       github_info=response1
        return Response({
             "success": True,
-            "data":response1
+            "data":github_info
         }, status=status.HTTP_200_OK)
 
     def post(self, request):
