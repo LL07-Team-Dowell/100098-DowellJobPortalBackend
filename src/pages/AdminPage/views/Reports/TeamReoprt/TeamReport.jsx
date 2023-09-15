@@ -120,14 +120,16 @@ export default function TeamReport() {
                     <p>Select Team</p>
                     <div className="role__Filter__Wrapper">
                         <IoFilterOutline />
-                        <Select
-                            className="select"
-                            onChange={(selectedOption) => handleTeam(selectedOption.value)}
-                            options={candidates.map((team) => ({
-                                value: team._id,
-                                label: `${team.team_name} - ${team.created_by ? `(${team.created_by})` : ""}`,
-                            }))}
-                        />
+                        <div className="select">
+                            <Select
+                                onChange={(selectedOption) => handleTeam(selectedOption.value)}
+                                options={candidates.map((team) => ({
+                                    value: team._id,
+                                    label: `${team.team_name} - ${team.created_by ? `(${team.created_by})` : ""}`,
+                                }))}
+                            />
+                        </div>
+
 
                     </div>
                 </div>
