@@ -22,6 +22,9 @@ import { formatDateAndTime } from "../../../../../helpers/helpers";
 import { AiOutlineClose } from "react-icons/ai";
 import LittleLoading from "../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 import TeamReportChart from "./TeamReportChart";
+import Select from "react-select";
+import './index.scss'
+
 
 
 export default function TeamReport() {
@@ -117,14 +120,17 @@ export default function TeamReport() {
                     <p>Select Team</p>
                     <div className="role__Filter__Wrapper">
                         <IoFilterOutline />
-                        <select defaultValue={""} onChange={(e) => handleTeam(e.target.value)}>
-                            <option value="" disabled>
-                                Select Team
-                            </option>
-                            {candidates.map((team) => (
-                                <option value={team._id}>{team.team_name} - {team.created_by ? "(" + team.created_by + ")" : ""}</option>
-                            ))}
-                        </select>
+                        <div className="select">
+                            <Select
+                                onChange={(selectedOption) => handleTeam(selectedOption.value)}
+                                options={candidates.map((team) => ({
+                                    value: team._id,
+                                    label: `${team.team_name} - ${team.created_by ? `(${team.created_by})` : ""}`,
+                                }))}
+                            />
+                        </div>
+
+
                     </div>
                 </div>
             </div>
