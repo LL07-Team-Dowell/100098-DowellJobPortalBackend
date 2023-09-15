@@ -123,11 +123,13 @@ export default function DetailedIndividual() {
               label: "Hours",
               data: resp[1].data?.response.map((item) => item.total_hours),
               backgroundColor: "blue",
+              maxBarThickness: 40,
             },
             {
               label: "Tasks",
               data: resp[1].data?.response.map((item) => item.total_tasks),
               backgroundColor: "#005734",
+              maxBarThickness: 40,
             },
             {
               label: "Tasks uploaded this week",
@@ -135,6 +137,7 @@ export default function DetailedIndividual() {
                 (item) => item.tasks_uploaded_this_week
               ),
               backgroundColor: "yellow",
+              maxBarThickness: 40,
             },
           ],
         };
@@ -297,6 +300,7 @@ export default function DetailedIndividual() {
                             data: Object.keys(candidateData).map((key) => {
                               return candidateData[key].tasks_approved;
                             }),
+                            maxBarThickness: 40,
                           },
                           {
                             label: "Tasks added",
@@ -304,6 +308,7 @@ export default function DetailedIndividual() {
                             data: Object.keys(candidateData).map((key) => {
                               return candidateData[key].tasks_added;
                             }),
+                            maxBarThickness: 40,
                           },
                           {
                             label: "Tasks uncompleted",
@@ -311,6 +316,7 @@ export default function DetailedIndividual() {
                             data: Object.keys(candidateData).map((key) => {
                               return candidateData[key].tasks_uncompleted;
                             }),
+                            maxBarThickness: 40,
                           },
                         ],
                       }}
