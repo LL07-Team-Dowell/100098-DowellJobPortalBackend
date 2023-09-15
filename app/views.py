@@ -6333,7 +6333,7 @@ class AddUserGithubInfo(APIView):
             "github_link":payload['github_link']
         }
             
-        response2 = json.loads(dowellconnection(*github_details_module,"update",{"user"}, update_field))
+        response2 = json.loads(dowellconnection(*github_details_module,"update",{}, update_field))
         return Response({
             "success": True,
             "message": "User GitHub info updated.",
