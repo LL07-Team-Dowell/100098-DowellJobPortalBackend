@@ -3967,11 +3967,13 @@ class public_product(APIView):
             "job_company_id": request.data.get("job_company_id"),
             "company_data_type": request.data.get("company_data_type"),
             "job_category": request.data.get("job_category"),
+            "report_type":request.data.get("report_type")
         }
         serializer = PublicProductURLSerializer(data=request.data)
         if serializer.is_valid():
             qr_ids = field["qr_ids"]
             job_category = request.data.get("job_category")
+            report_type = request.data.get("report_type")
             if job_category:
                 # print(job_category)
                 generated_links = [
@@ -3982,6 +3984,19 @@ class public_product(APIView):
                             field["job_company_id"],
                             field["company_data_type"],
                             field["job_category"],
+                        )
+                    }
+                    for qr_id in qr_ids
+                ]
+            elif report_type:
+                generated_links = [
+                    {
+                        "link": generate_report_link.format(
+                            field["product_url"],
+                            qr_id,
+                            field["job_company_id"],
+                            field["company_data_type"],
+                            field["report_type"],
                         )
                     }
                     for qr_id in qr_ids
@@ -4015,6 +4030,8 @@ class public_product(APIView):
                 "api_key": response["qrcodes"][0]["links"][0]["response"]["api_key"],
                 "public_link_name": field["public_link_name"],
             }
+            if report_type:
+                fields["report_type"]=report_type
             update_field = {"status": "Nothing to update"}
             dowellresponse = json.loads(
                 dowellconnection(*Publiclink_reports, "insert", fields, update_field)
@@ -4032,12 +4049,12 @@ class public_product(APIView):
                 )
             else:
                 return Response(
-                    {"success": False, "message": "Failed to insert data to db"}
+                    {"message": "Failed to insert data to db"},
+                    status=status.HTTP_400_BAD_REQUEST
                 )
         else:
             return Response(
                 {
-                    "success": False,
                     "message": "Something went wrong",
                     "error": serializer.errors,
                 },
@@ -4062,8 +4079,15 @@ class public_product(APIView):
             else:
                 data = []
                 for res in dowellresponse["data"]:
+                    print(res.keys(),'========')
                     try:
-                        if "public_link_name" in res.keys():
+                        if "public_link_name" in res.keys() and 'report_type' in res.keys():
+                            item = {
+                                "master_link": res["master_link"],
+                                "link_name": res["public_link_name"],
+                                "type": "report",
+                            }
+                        elif "public_link_name" in res.keys() and not 'report_type' in res.keys():
                             item = {
                                 "master_link": res["master_link"],
                                 "link_name": res["public_link_name"],

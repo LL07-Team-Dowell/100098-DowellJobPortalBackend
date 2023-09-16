@@ -175,3 +175,5 @@ generate_public_link = "https://ll07-team-dowell.github.io/Jobportal/#?view=publ
 generate_product_link = "{}?view=product&qr_id={}&company_id={}&company_data_type={}"
 
 generate_product_link_with_category="{}?view=product&qr_id={}&company_id={}&company_data_type={}&job_category={}"
+
+generate_report_link="{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}"
