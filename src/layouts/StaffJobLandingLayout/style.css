@@ -272,6 +272,10 @@
     filter: brightness(0.7);
 }
 
+.staff__Jobs__Layout__Content__Container .jobs__Layout__Content.no__User {
+    margin-left: 0;
+}
+
 @media screen and (max-width: 991px) {
     .admin__View__Title__Container {
         width: auto !important;

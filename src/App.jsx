@@ -78,6 +78,7 @@ import DetailedIndividual from "./pages/AdminPage/views/Reports/detailedIndividu
 import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
 import IndividualTaskReports from "./pages/AdminPage/views/Reports/individualTaskReport/individualTaskReport";
 import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
+import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal";
 
 function App() {
   console.log = () => { };
@@ -93,6 +94,10 @@ function App() {
     setIsProductUser,
     setProductUserDetails,
     productUserDetails,
+    isReportsUser,
+    setIsReportsUser,
+    reportsUserDetails,
+    setReportsUserDetails,
   } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
@@ -113,7 +118,9 @@ function App() {
     setPublicUserDetails,
     setUserDetailsNotFound,
     setIsProductUser,
-    setProductUserDetails
+    setProductUserDetails,
+    setIsReportsUser,
+    setReportsUserDetails,
   );
 
   useTitle("Team Management");
@@ -325,6 +332,63 @@ function App() {
         <Route path='*' element={<ErrorPage />} />
       </Routes>
     );
+  }
+
+  // NON LOGGED IN REPORTS USER
+  if (isReportsUser) {
+    if (reportsUserDetails.reportsViewPermitted === reportOptionsPermitted.organization_report) {
+      return <Routes>
+        <Route
+          path='*'
+          element={
+            <JobContextProvider>
+              <AdminReports isPublicReportUser={true} />
+            </JobContextProvider>
+          }
+        />
+      </Routes>
+    }
+
+    if (reportsUserDetails.reportsViewPermitted === reportOptionsPermitted.individual_report) {
+      return <Routes>
+        <Route
+          path='*'
+          element={
+            <DetailedIndividual isPublicReportUser={true} />
+          }
+        />
+      </Routes>
+    }
+
+    if (reportsUserDetails.reportsViewPermitted === reportOptionsPermitted.task_report) {
+      return <Routes>
+        <Route
+          path='*'
+          element={
+            <JobContextProvider>
+              <TaskReports isPublicReportUser={true} />
+            </JobContextProvider>
+          }
+        />
+      </Routes>
+    }
+
+    if (reportsUserDetails.reportsViewPermitted === reportOptionsPermitted.team_report) {
+      return <Routes>
+        <Route
+          path='*'
+          element={
+            <JobContextProvider>
+              <TeamReport isPublicReportUser={true} />
+            </JobContextProvider>
+          }
+        />
+      </Routes>
+    }
+
+    return <Routes>
+      <Route path="*" element={<>Page not found</>} />
+    </Routes>
   }
 
   if (!currentUser || userDetailsNotFound) {

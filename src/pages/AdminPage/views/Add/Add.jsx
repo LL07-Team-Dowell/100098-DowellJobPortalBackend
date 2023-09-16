@@ -3,7 +3,7 @@ import './Add.scss'
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout'
 import { MdArrowBackIos } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
-import { AiOutlineArrowLeft, AiOutlineClose, AiOutlinePlusCircle, AiOutlineSearch } from 'react-icons/ai'
+import { AiOutlineArrowLeft, AiOutlineBarChart, AiOutlineClose, AiOutlineLink, AiOutlinePlusCircle, AiOutlineSearch, AiOutlineTeam } from 'react-icons/ai'
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext'
 import { FaTimes } from 'react-icons/fa'
 import { BsPlus } from 'react-icons/bs'
@@ -21,6 +21,7 @@ const Add = () => {
   const [ showShareModal, setShowShareModal ] = useState(false);
   const [ isProductLink, setIsProductLink ] = useState(false);
   const [showSubProjectsPop, setShowSubProjectsPop] = useState(false)
+  const [ isReportLink, setIsReportLink ] = useState(false);
 
   const jobLinkToShareObj = {
     "product_url": window.location.origin + "/100098-DowellJobPortal/#/",
@@ -110,6 +111,7 @@ const Add = () => {
       jobLinkToShareObj={jobLinkToShareObj}
       handleCloseShareJobModal={() => setShowShareModal(false)}
       isProductLink={isProductLink}
+      isReportLink={isReportLink}
     >
        <div className="new__task__container">
         {/* <h1 style={{ color: "#005734", fontSize: "1.6rem" }}>Add New Item</h1> */}
@@ -164,7 +166,7 @@ const Add = () => {
           <div style={{ marginTop: 30, maxWidth: '18rem' }} className="Create_Team" onClick={() => navigate('/teams/create-new-team/')}  >
             <div>
               <div>
-                <AiOutlinePlusCircle
+                <AiOutlineTeam
                   className="icon"
                   style={{ fontSize: "2rem" }}
                 />
@@ -186,7 +188,7 @@ const Add = () => {
             }>
             <div>
               <div>
-                <AiOutlinePlusCircle
+                <AiOutlineLink
                   className="icon"
                   style={{ fontSize: "2rem" }}
                 />
@@ -223,6 +225,28 @@ const Add = () => {
                   Simplify projects in your organization by splitting each one into subprojects
                 </p>
               }
+            </div>
+          </div>
+          <div 
+            style={{ marginTop: 30, maxWidth: '18rem' }} 
+            className="Create_Team" 
+            onClick={
+              () => {
+                setShowShareModal(true);
+                setIsReportLink(true);
+              }  
+            }>
+            <div>
+              <div>
+                <AiOutlineBarChart
+                  className="icon"
+                  style={{ fontSize: "2rem" }}
+                />
+              </div>
+              <h4>Create report link</h4>
+              <p style={{ fontSize: '0.8rem' }}>
+                Create a public report link for anyone to view specific insights about your organization.
+              </p>
             </div>
           </div>
         </div>

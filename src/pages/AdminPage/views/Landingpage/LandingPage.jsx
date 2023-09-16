@@ -50,6 +50,8 @@ const LandingPage = ({ subAdminView }) => {
     setSubProjectsAdded,
     setSubProjectsLoaded,
     setSubProjectsLoading,
+    setReportLinks,
+    reportLinks
   } = useJobContext();
   const [showShareModal, setShowShareModal] = useState(false);
   const [jobLinkToShareObj, setJobLinkToShareObj] = useState({});
@@ -164,6 +166,16 @@ const LandingPage = ({ subAdminView }) => {
             ...new Map(
               response[3]?.data?.response
                 ?.reverse()
+                .filter(link => link.type === 'product')
+                .map((link) => [link.master_link, link])
+            ).values(),
+          ]);
+
+          setReportLinks([
+            ...new Map(
+              response[3]?.data?.response
+                ?.reverse()
+                .filter(link => link.type === 'report')
                 .map((link) => [link.master_link, link])
             ).values(),
           ]);
@@ -372,6 +384,15 @@ const LandingPage = ({ subAdminView }) => {
               <p>Product links</p>
               <span></span>
             </div>
+            <div
+              className={`landing_Nav_Item ${
+                activeLinkTab === "reports" ? "active" : ""
+              }`}
+              onClick={() => setActiveLinkTab("reports")}
+            >
+              <p>Report links</p>
+              <span></span>
+            </div>
           </div>
         )}
         <div className="cards">
@@ -477,6 +498,32 @@ const LandingPage = ({ subAdminView }) => {
                                   </p>
                                 )
                               )}
+                              <div
+                                className="job__Link__Container"
+                                onClick={() => handleCopyLink(link.master_link)}
+                              >
+                                <span>{link.master_link}</span>
+                                <IoCopyOutline />
+                              </div>
+                            </div>
+                          );
+                        })
+                      )
+                    )}
+                  </>
+                )}
+                {activeLinkTab === "reports" && (
+                  <>
+                    {reportLinks.length < 1 ? (
+                      <div>
+                        <p>You have not created any links yet</p>
+                      </div>
+                    ) : (
+                      React.Children.toArray(
+                        reportLinks.map((link) => {
+                          return (
+                            <div className="job__Link__Wrapper">
+                              <p>{link.link_name}</p>
                               <div
                                 className="job__Link__Container"
                                 onClick={() => handleCopyLink(link.master_link)}

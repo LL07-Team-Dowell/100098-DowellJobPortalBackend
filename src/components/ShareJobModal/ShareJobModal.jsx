@@ -8,6 +8,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import {
   createNewProductLink,
+  createNewReportsLink,
   generatePublicJobLink,
   getUsedQrCodes,
 } from "../../services/adminServices";
@@ -17,7 +18,7 @@ import { useRef } from "react";
 import { useJobContext } from "../../contexts/Jobs";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
-const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
+const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink, isReportLink }) => {
   const [copyOptionActive, setCopyOptionActive] = useState(false);
   const [activeItemId, setActiveItemId] = useState(null);
   const [mouseOverShareLinkContainer, setMouseOverShareLinkContainer] =
@@ -31,12 +32,20 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
   const [publicIdsSelected, setPublicIdsSelected] = useState([]);
   const [qrCodeImage, setQrCodeImage] = useState("");
   const selectItemRef = useRef();
-  const { jobLinks, setJobLinks, productLinks, setProductLinks } = useJobContext();
+  const { 
+    jobLinks, 
+    setJobLinks, 
+    productLinks, 
+    setProductLinks, 
+    reportLinks, 
+    setReportLinks 
+  } = useJobContext();
   const [usedIdsLoaded, setUsedIdsLoaded] = useState(false);
   const [ customLinksNumber, setCustomLinksNumber ] = useState(null);
   const [ currentPage, setCurrentPage ] = useState(1);
   const [ customLinkName, setCustomLinkName ] = useState("");
   const [ jobCategory, setJobCategory ] = useState(null);
+  const [ reportsCategory, setReportsCategory ] = useState(null);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -139,7 +148,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
   };
 
   const handleGenerateLink = async () => {
-    if (isProductLink && currentPage === 1) return setCurrentPage(currentPage + 1);
+    if ((isProductLink || isReportLink) && currentPage === 1) return setCurrentPage(currentPage + 1);
 
     const dataToPost = {
       qr_ids: publicIdsSelected,
@@ -151,6 +160,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
 
     const currentJobLinks = jobLinks.slice();
     const currentProductLinks = productLinks.slice();
+    const currentReportLinks = reportLinks.slice();
 
     setLinkLoading(true);
 
@@ -168,6 +178,16 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
         if (jobCategory && jobCategory !== 'none') productDataToPost.job_category = jobCategory;
 
         response = (await createNewProductLink(productDataToPost)).data
+      } else if (isReportLink) {
+        const reportDataToPost = {
+          "public_link_name": customLinkName,
+          "product_url": linkToShareObj?.product_url,
+          "qr_ids": publicIdsSelected,
+          "job_company_id": linkToShareObj?.job_company_id,
+          "company_data_type": linkToShareObj?.company_data_type,
+          "report_type": reportsCategory,
+        }
+        response = (await createNewReportsLink(reportDataToPost)).data
       } else {
         response = (await generatePublicJobLink(dataToPost)).data;
       }
@@ -183,6 +203,15 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
           master_link: response.master_link
         });
         setProductLinks(currentProductLinks);
+        return
+      }
+
+      if (isReportLink) {
+        currentReportLinks.unshift({
+          link_name: response.link_name,
+          master_link: response.master_link
+        });
+        setReportLinks(currentReportLinks);
         return
       }
       
@@ -225,7 +254,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
           <div>
             {
               currentPage === 1 ? 
-              <h2>Share {isProductLink ? 'Product' : 'Job'}</h2> : 
+              <h2>Share {isProductLink ? 'Product' : isReportLink ? 'Report' : 'Job'}</h2> : 
               <h2 style={{ textTransform: 'capitalize' }}>
                 {
                   linkGenerated ? `${customLinkName} created!` : 
@@ -243,10 +272,19 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
                     :
                       "One last step, add a custom name for this link"
                   :
+                  isReportLink ?
+                    currentPage === 1 ?
+                      "Generate a report link for others to view specific insights on your organization"
+                    :
+                      "One last step, add a custom name for this link"
+                  :
                   "Generate a link for this job to share to other platforms"
                 : 
                   isProductLink ?
                   "Share this product link to other platforms"
+                  :
+                  isReportLink ?
+                  "Share this report link to other platforms"
                   :
                 "Share a link for this job to other platforms for people to apply"
               }
@@ -291,20 +329,41 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
                         />
                       </label>
                       <label>
-                        <span>Select custom job category for link</span>
-                        <select
-                          defaultValue={''}
-                          onChange={({ target }) => setJobCategory(target.value)}
-                          className={styles.select__Category}
-                        >
-                          <option value={''} selected disabled>Select job category</option>
-                          <option value={'none'}>All</option>
-                          {
-                            React.Children.toArray(validJobCategories.map(category => {
-                              return <option value={category}>{category} jobs</option>
-                            }))
-                          }
-                        </select>
+                        {
+                          isProductLink ? <>
+                            <span>Select custom job category for link</span>
+                            <select
+                              defaultValue={''}
+                              onChange={({ target }) => setJobCategory(target.value)}
+                              className={styles.select__Category}
+                            >
+                              <option value={''} selected disabled>Select job category</option>
+                              <option value={'none'}>All</option>
+                              {
+                                React.Children.toArray(validJobCategories.map(category => {
+                                  return <option value={category}>{category} jobs</option>
+                                }))
+                              }
+                            </select>
+                          </> :
+                          isReportLink ? <>
+                            <span>Select reports category for link</span>
+                            <select
+                              defaultValue={''}
+                              onChange={({ target }) => setReportsCategory(target.value)}
+                              className={styles.select__Category}
+                            >
+                              <option value={''} selected disabled>Select report category</option>
+                              {
+                                React.Children.toArray(validReportOptions.map(option => {
+                                  return <option value={option}>{option} report</option>
+                                }))
+                              }
+                            </select>
+                          </> :
+                          <>
+                          </>
+                        }
                       </label>
                     </div>
                   </>
@@ -362,7 +421,12 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
                 !linkGenerated && <button
                   className={`${styles.copy__Link__Btn} ${styles.generate__Link__Btn}`}
                   onClick={() => handleGenerateLink()}
-                  disabled={linkLoading || publicIdsSelected.length < 1 || (isProductLink && currentPage === 2 && customLinkName.length < 1)}
+                  disabled={
+                    linkLoading || 
+                    publicIdsSelected.length < 1 || 
+                    (isProductLink && currentPage === 2 && customLinkName.length < 1) || 
+                    (isReportLink && currentPage === 2 && (customLinkName.length < 1 || !reportsCategory))
+                  }
                 >
                   {linkLoading ? (
                     <LoadingSpinner
@@ -371,6 +435,9 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink }) => {
                       color={"#fff"}
                     />
                   ) : (
+                    ((isProductLink || isReportLink) && currentPage === 1) ?
+                      "Next"
+                    :
                     "Generate link"
                   )}
                 </button>
@@ -468,5 +535,19 @@ const validJobCategories = [
   'Employee',
   'Internship',
 ]
+
+const validReportOptions = [
+  'organization',
+  'individual',
+  'task',
+  'team',
+]
+
+export const reportOptionsPermitted = {
+  'organization_report': 'organization',
+  'individual_report': 'individual',
+  'task_report': 'task',
+  'team_report': 'team', 
+}
 
 export default ShareJobModal;

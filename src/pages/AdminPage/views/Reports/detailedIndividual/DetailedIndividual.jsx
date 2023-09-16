@@ -34,8 +34,8 @@ export const chartOptions = {
   },
 };
 
-export default function DetailedIndividual() {
-  const { currentUser, setCurrentUser } = useCurrentUserContext();
+export default function DetailedIndividual({ isPublicReportUser }) {
+  const { currentUser, setCurrentUser, reportsUserDetails } = useCurrentUserContext();
 
   const navigate = useNavigate();
   const [candidates, setcandidates] = useState([]);
@@ -154,7 +154,12 @@ export default function DetailedIndividual() {
 
   useEffect(() => {
     setFirstLoading(true);
-    getAllOnBoardCandidate(currentUser?.portfolio_info[0].org_id)
+    getAllOnBoardCandidate(
+      isPublicReportUser ?
+        reportsUserDetails?.company_id
+      :
+      currentUser?.portfolio_info[0].org_id
+    )
       .then(
         ({
           data: {
@@ -175,7 +180,10 @@ export default function DetailedIndividual() {
           setFirstLoading(false);
         }
       )
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err)
+        setFirstLoading(false)
+      });
   }, []);
 
   const handleDateChange = (val) => {
@@ -191,10 +199,19 @@ export default function DetailedIndividual() {
       >
         <div className="detailed_indiv_container">
           <div className="task__report__nav">
-            <button className="back" onClick={() => navigate(-1)}>
-              <MdArrowBackIosNew />
-            </button>
-            <h2>Individual Report</h2>
+            {
+              isPublicReportUser ? 
+              <>
+                <h2>Individual report</h2>
+              </>
+              :
+              <>
+                <button className="back" onClick={() => navigate(-1)}>
+                  <MdArrowBackIosNew />
+                </button>
+                <h2>Individual Report</h2>
+              </>
+            }
           </div>
           <p style={{ fontSize: "0.9rem" }}>
             Get well-detailed actionable insights on hired individuals in your
@@ -212,10 +229,19 @@ export default function DetailedIndividual() {
     >
       <div className="detailed_indiv_container">
         <div className="task__report__nav">
-          <button className="back" onClick={() => navigate(-1)}>
-            <MdArrowBackIosNew />
-          </button>
-          <h2>Individual Report</h2>
+          {
+            isPublicReportUser ? 
+            <>
+              <h2>Individual report</h2>
+            </>
+            :
+            <>
+              <button className="back" onClick={() => navigate(-1)}>
+                <MdArrowBackIosNew />
+              </button>
+              <h2>Individual Report</h2>
+            </>
+          }
         </div>
         <p style={{ fontSize: "0.9rem" }}>
           Get well-detailed actionable insights on hired individuals in your
@@ -266,6 +292,10 @@ export default function DetailedIndividual() {
                       <p>
                         <span>Portfolio name:</span>
                         {personalInfo.portfolio_name}
+                      </p>
+                      <p>
+                        <span>Application submitted on:</span>
+                        {formatDate(personalInfo.application_submitted_on)}
                       </p>
                       <p>
                         <span>Shortlisted on:</span>

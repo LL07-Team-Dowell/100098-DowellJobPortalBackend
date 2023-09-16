@@ -53,7 +53,7 @@ export const chartOptions = {
   },
 };
 
-const AdminReports = ({ subAdminView }) => {
+const AdminReports = ({ subAdminView, isPublicReportUser }) => {
   const navigate = useNavigate();
   // states
   const [selectOptions, setSelectOptions] = useState("");
@@ -73,7 +73,7 @@ const AdminReports = ({ subAdminView }) => {
     formatDateFromMilliseconds(new Date().getTime())
   );
   const [loadingButton, setLoadingButton] = useState(false);
-  const { currentUser } = useCurrentUserContext();
+  const { currentUser, reportsUserDetails } = useCurrentUserContext();
   const [datasetForApplications, setDatasetForApplications] = useState(null);
 
   console.log({ selectOptions, lastDate, firstDate });
@@ -119,7 +119,10 @@ const AdminReports = ({ subAdminView }) => {
         ),
         end_date: formatDateFromMilliseconds(new Date().getTime()),
         report_type: "Admin",
-        company_id: currentUser.portfolio_info[0].org_id,
+        company_id: isPublicReportUser ?
+          reportsUserDetails?.company_id
+        : 
+        currentUser.portfolio_info[0].org_id,
       };
       generateCommonAdminReport(data)
         .then((resp) => {
@@ -141,7 +144,10 @@ const AdminReports = ({ subAdminView }) => {
       start_date,
       end_date,
       report_type: "Admin",
-      company_id: currentUser.portfolio_info[0].org_id,
+      company_id: isPublicReportUser ?
+        reportsUserDetails?.company_id
+      : 
+      currentUser.portfolio_info[0].org_id,
     };
     setDatasetForApplications(null);
     generateCommonAdminReport(data)
@@ -199,7 +205,10 @@ const AdminReports = ({ subAdminView }) => {
       start_date: firstDate,
       end_date: lastDate,
       report_type: "Admin",
-      company_id: currentUser.portfolio_info[0].org_id,
+      company_id: isPublicReportUser ?
+        reportsUserDetails?.company_id
+      :  
+      currentUser.portfolio_info[0].org_id,
     };
     setDatasetForApplications(null);
 
@@ -296,10 +305,19 @@ const AdminReports = ({ subAdminView }) => {
               <div
                 style={{ display: "flex", alignItems: "center", gap: "1rem" }}
               >
-                <button className='back' onClick={() => navigate(-1)}>
-                  <MdArrowBackIosNew />
-                </button>
-                <h2>Get insights into your organization</h2>
+                {
+                  isPublicReportUser ? 
+                  <>
+                    <h2>Organization report</h2>
+                  </>
+                  :
+                  <>
+                    <button className='back' onClick={() => navigate(-1)}>
+                      <MdArrowBackIosNew />
+                    </button>
+                    <h2>Get insights into your organization</h2>
+                  </>
+                }
               </div>
             </div>
           </div>
@@ -320,10 +338,19 @@ const AdminReports = ({ subAdminView }) => {
         <div className='reports__container_header'>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <button className='back' onClick={() => navigate(-1)}>
-                <MdArrowBackIosNew />
-              </button>
-              <h2>Get insights into your organization</h2>
+              {
+                isPublicReportUser ? 
+                <>
+                  <h2>Organization report</h2>
+                </>
+                :
+                <>
+                  <button className='back' onClick={() => navigate(-1)}>
+                    <MdArrowBackIosNew />
+                  </button>
+                  <h2>Get insights into your organization</h2>
+                </>
+              }
             </div>
             <CSVLink data={[Object.keys(data), Object.values(data)]}>
               Download Me

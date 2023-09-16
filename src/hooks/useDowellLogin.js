@@ -15,6 +15,8 @@ export default function useDowellLogin(
   updateNoUserDetailFound,
   updateProductUserState,
   updateDetailsForProductUser,
+  updateReportsUserState,
+  updateDetailsForReportsUser,
 ) {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentLocalSessionId = sessionStorage.getItem("session_id");
@@ -24,6 +26,8 @@ export default function useDowellLogin(
   const currentPublicUserDetails = sessionStorage.getItem("public_user");
   const currentProductSession = sessionStorage.getItem("product_user_session");
   const currentProductUserDetails = sessionStorage.getItem("product_user");
+  const currentReportsSession = sessionStorage.getItem("reports_user_session");
+  const currentReportsUserDetails = sessionStorage.getItem("reports_user");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,8 +41,9 @@ export default function useDowellLogin(
     const masterLinkId = searchParams.get("link_id");
     const companyId = searchParams.get("company_id");
     const jobCategory = searchParams.get("job_category");
+    const reportsType = searchParams.get("report_type");
 
-    // FOR PUBLIC USERS
+    // FOR LOGGED IN PUBLIC USERS
     if (currentPublicSession && currentPublicUserDetails) {
       updatePageLoading(false);
       updatePublicUserState(true);
@@ -52,6 +57,15 @@ export default function useDowellLogin(
       updatePageLoading(false);
       updateProductUserState(true);
       updateDetailsForProductUser(JSON.parse(currentProductUserDetails));
+
+      return
+    }
+
+    // FOR LOGGED IN REPORT USERS
+    if (currentReportsSession && currentReportsUserDetails) {
+      updatePageLoading(false);
+      updateReportsUserState(true);
+      updateDetailsForReportsUser(JSON.parse(currentReportsUserDetails));
 
       return
     }
@@ -106,6 +120,28 @@ export default function useDowellLogin(
 
       // if (jobCategory) navigate(`c/${productUserDetails.categoryAllowed}`);
       if (jobCategory) navigate(`/jobs?jobCategory=${jobCategory}`);
+      return
+    }
+
+    // INITIAL LOAD FOR REPORTS USER
+    if (publicView && publicView === 'report' && companyId && jobCompanyDataType && reportsType) {
+      updatePageLoading(false);
+      updateReportsUserState(true);
+
+      const reportsUserDetails = {
+        company_id: companyId,
+        data_type: jobCompanyDataType,
+        qr_id: publicUserQrId,
+        masterLinkId: masterLinkId,
+        reportsViewPermitted: reportsType,
+      };
+
+      updateDetailsForReportsUser(reportsUserDetails)
+
+      sessionStorage.setItem('reports_user_session', true);
+      sessionStorage.setItem('reports_user', JSON.stringify(reportsUserDetails));
+
+      navigate('/');
       return
     }
   

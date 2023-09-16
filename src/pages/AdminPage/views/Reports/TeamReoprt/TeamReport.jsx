@@ -27,7 +27,7 @@ import './index.scss'
 
 
 
-export default function TeamReport() {
+export default function TeamReport({ isPublicReportUser }) {
     const navigate = useNavigate();
     const [candidates, setcandidates] = useState([]);
     const [project, setProject] = useState({})
@@ -44,8 +44,8 @@ export default function TeamReport() {
         formatDateFromMilliseconds(new Date().getTime() - 7 * 24 * 60 * 60 * 1000)
     );
     const [team_id, setTeamId] = useState("");
-    const { currentUser } = useCurrentUserContext();
-    const company_id = currentUser.portfolio_info[0].org_id;
+    const { currentUser, reportsUserDetails } = useCurrentUserContext();
+    const company_id = currentUser?.portfolio_info[0]?.org_id;
 
 
 
@@ -74,20 +74,33 @@ export default function TeamReport() {
 
     useEffect(() => {
         setFirstLoading(true);
-        getAllTeams(company_id)
+        getAllTeams(
+            isPublicReportUser ? 
+                reportsUserDetails?.company_id
+            :
+            company_id
+        )
             .then(
                 ({
                     data: {
                         response: { data },
                     },
                 }) => {
+                    const filteredData = isPublicReportUser ?
+                        data.filter(team => team.company_id === reportsUserDetails?.company_id && team.data_type === reportsUserDetails?.data_type)
+                    :
+                    data.filter(team => team.company_id === currentUser.portfolio_info[0].org_id && team.data_type === currentUser.portfolio_info[0].data_type)
+
                     setcandidates(
-                        data.filter(team => team.company_id === currentUser.portfolio_info[0].org_id && team.data_type === currentUser.portfolio_info[0].data_type)
+                        filteredData
                     );
                     setFirstLoading(false);
                 }
             )
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                console.log(err)
+                setFirstLoading(false)
+            });
     }, []);
 
     const handleTeam = (team_id) => {
@@ -105,10 +118,19 @@ export default function TeamReport() {
             >
                 <div className="detailed_indiv_container">
                     <div className="task__report__nav">
-                        <button className="back" onClick={() => navigate(-1)}>
-                        <MdArrowBackIosNew />
-                        </button>
-                        <h2>Teams Report</h2>
+                        {
+                            isPublicReportUser ? 
+                            <>
+                                <h2>Teams report</h2>
+                            </>
+                            :
+                            <>
+                                <button className="back" onClick={() => navigate(-1)}>
+                                    <MdArrowBackIosNew />
+                                </button>
+                                <h2>Teams Report</h2>
+                            </>
+                        }
                     </div>
                     <p style={{ fontSize: "0.9rem" }}>
                         Get insights into how well teams are performing in your organization
@@ -125,10 +147,19 @@ export default function TeamReport() {
         >
             <div className="detailed_indiv_container">
                 <div className="task__report__nav">
-                    <button className="back" onClick={() => navigate(-1)}>
-                    <MdArrowBackIosNew />
-                    </button>
-                    <h2>Teams Report</h2>
+                    {
+                        isPublicReportUser ? 
+                        <>
+                            <h2>Teams report</h2>
+                        </>
+                        :
+                        <>
+                            <button className="back" onClick={() => navigate(-1)}>
+                                <MdArrowBackIosNew />
+                            </button>
+                            <h2>Teams Report</h2>
+                        </>
+                    }
                 </div>
                 <p style={{ fontSize: "0.9rem" }}>
                     Get insights into how well teams are performing in your organization
@@ -200,9 +231,9 @@ const FormDatePopup = ({
     return (
         <div className="overlay">
             <div className="form_date_popup_container">
-                <div className="closebutton" onClick={() => closeModal()}>
+                {/* <div className="closebutton" onClick={() => closeModal()}>
                     <AiOutlineClose />
-                </div>
+                </div> */}
                 <label htmlFor="first_date">Start Date</label>
                 <input
                     type="date"

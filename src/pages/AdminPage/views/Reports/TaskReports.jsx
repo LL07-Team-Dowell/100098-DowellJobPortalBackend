@@ -43,7 +43,7 @@ export const options = {
   },
 };
 
-const TaskReports = ({ subAdminView }) => {
+const TaskReports = ({ subAdminView, isPublicReportUser }) => {
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -52,7 +52,7 @@ const TaskReports = ({ subAdminView }) => {
   const [projecTaskInfo, setProjectTaskInfo] = useState("");
   const [tableData, setTableData] = useState([]);
   const navigate = useNavigate();
-  const { currentUser } = useCurrentUserContext();
+  const { currentUser, reportsUserDetails } = useCurrentUserContext();
   const [ error, setError ] = useState(false);
   const [subProjectReport, setSubProjectReport] = useState(null);
 
@@ -87,11 +87,24 @@ const TaskReports = ({ subAdminView }) => {
 
     getSettingUserProject()
       .then((res) => {
-        const projectsGotten = res?.data
+        const projectsGotten = isPublicReportUser ?
+        res?.data
           ?.filter(
             (project) =>
-              project?.data_type === currentUser.portfolio_info[0].data_type &&
-              project?.company_id === currentUser.portfolio_info[0].org_id &&
+              project?.data_type === reportsUserDetails?.data_type &&
+              project?.company_id === reportsUserDetails?.company_id &&
+              project.project_list &&
+              project.project_list.every(
+                (listing) => typeof listing === "string"
+              )
+          )
+        ?.reverse()
+        : 
+        res?.data
+          ?.filter(
+            (project) =>
+              project?.data_type === isPublicReportUser ? reportsUserDetails?.data_type : currentUser.portfolio_info[0].data_type &&
+              project?.company_id === isPublicReportUser ? reportsUserDetails?.company_id : currentUser.portfolio_info[0].org_id &&
               project.project_list &&
               project.project_list.every(
                 (listing) => typeof listing === "string"
@@ -114,7 +127,10 @@ const TaskReports = ({ subAdminView }) => {
     const dataToPost = {
       report_type: "Project",
       project: selectedProject,
-      company_id: currentUser.portfolio_info[0].org_id,
+      company_id: isPublicReportUser ? 
+        reportsUserDetails?.company_id
+      :
+      currentUser.portfolio_info[0].org_id,
     };
 
     setReportsLoading(true);
@@ -209,10 +225,19 @@ const TaskReports = ({ subAdminView }) => {
       <div className="task__reports__container">
         <div className="task__reports__container_header">
           <div className="task__report__nav">
-            <button className="back" onClick={() => navigate(-1)}>
-              <MdOutlineArrowBackIosNew />
-            </button>
-            <h2>Task Reports</h2>
+            {
+              isPublicReportUser ? 
+              <>
+                <h2>Task Reports</h2>
+              </>
+              :
+              <>
+                <button className="back" onClick={() => navigate(-1)}>
+                  <MdOutlineArrowBackIosNew />
+                </button>
+                <h2>Task Reports</h2>
+              </>
+            }
           </div>
           <div className="task__report__header">
             <p style={{ fontSize: '0.9rem' }}>Get insights into tasks uploaded per project in your organization</p>

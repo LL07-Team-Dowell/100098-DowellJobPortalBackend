@@ -124,3 +124,7 @@ export const generateIndividualTaskReport = async (data) => {
     data
   );
 };
+
+export const createNewReportsLink = async (data) => {
+  return await currentBackendAxiosInstance.post("public_product_url/", data);
+};
