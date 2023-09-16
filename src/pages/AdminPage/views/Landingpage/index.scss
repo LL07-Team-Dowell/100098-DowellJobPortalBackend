@@ -424,6 +424,22 @@ $red__color: #fe0000;
 @media (min-width: 1400px) {
   .landing-page {
     .cards {
+      grid-template-columns: repeat(auto-fill, minmax(calc(100% / 3), 1fr));
+      .card {
+        button {
+          width: 7.5rem;
+          a {
+            font-size: 1rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 1800px) {
+  .landing-page {
+    .cards {
       grid-template-columns: repeat(auto-fill, minmax(calc(100% / 4), 1fr));
       .card {
         button {
