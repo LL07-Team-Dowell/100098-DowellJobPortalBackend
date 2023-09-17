@@ -97,6 +97,12 @@ const Add = () => {
 
   }, [])
 
+  const handleCloseShareModal = () => {
+    setShowShareModal(false)
+    setIsProductLink(false)
+    setIsReportLink(false)
+  }
+
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -109,7 +115,7 @@ const Add = () => {
       hideSideBar={showProjectsPop || showSubProjectsPop}
       showShareModalForJob={showShareModal}
       jobLinkToShareObj={jobLinkToShareObj}
-      handleCloseShareJobModal={() => setShowShareModal(false)}
+      handleCloseShareJobModal={handleCloseShareModal}
       isProductLink={isProductLink}
       isReportLink={isReportLink}
     >

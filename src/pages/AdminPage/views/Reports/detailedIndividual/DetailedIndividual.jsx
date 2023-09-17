@@ -24,6 +24,8 @@ import { Doughnut, Bar } from "react-chartjs-2";
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { generateCommonAdminReport } from "../../../../../services/commonServices";
 import Select from "react-select";
+import { getSettingUserProfileInfo } from "../../../../../services/settingServices";
+import { rolesDict } from "../../Settings/AdminSettings";
 
 export const chartOptions = {
   responsive: true,
@@ -65,6 +67,10 @@ export default function DetailedIndividual({ isPublicReportUser }) {
 
   const [dateSelectedForTasksBox, setDateSelectedForTasksBox] =
     useState(dateFormattedForAPI);
+  const [ settingsUserList, setSettingsUserList ] = 
+    useState([]);
+  const [ selectedUserRoleSetting, setSelectedUserRoleSetting ] =
+    useState(null);
 
   let currentTrack = 0;
   const colors = [
@@ -91,6 +97,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
   const getIndividualData = (id) => {
     setSecondLoadng(true);
     setId(id);
+    setSelectedUserRoleSetting(null);
 
     const foundCandidate = candidates2.find((item) => item._id === id);
     console.log(foundCandidate);
@@ -144,9 +151,24 @@ export default function DetailedIndividual({ isPublicReportUser }) {
         setTaskProjectReportData(dataForProjectGraph);
         setProjectSelectedForSubprojectBox(resp[1].data?.response[0]?.project);
         setProjectSelectedForTasksBox(null);
+
+        
+        const foundUserSettingItem = settingsUserList?.find(
+          (value) =>
+            value?.profile_info[value?.profile_info?.length - 1]?.profile_title === resp[0]?.data?.personal_info?.portfolio_name
+        );
+        
+        if (foundUserSettingItem) {
+          setSelectedUserRoleSetting(
+            foundUserSettingItem?.profile_info[foundUserSettingItem?.profile_info?.length - 1]
+          );
+        }
         setSecondLoadng(false);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err)
+        setSecondLoadng(false);
+      });
   };
   const handleSelectChange = (id) => {
     getIndividualData(id);
@@ -154,29 +176,47 @@ export default function DetailedIndividual({ isPublicReportUser }) {
 
   useEffect(() => {
     setFirstLoading(true);
-    getAllOnBoardCandidate(
-      isPublicReportUser ?
-        reportsUserDetails?.company_id
-      :
-      currentUser?.portfolio_info[0].org_id
-    )
+    Promise.all([
+      getAllOnBoardCandidate(
+        isPublicReportUser ?
+          reportsUserDetails?.company_id
+        :
+        currentUser?.portfolio_info[0].org_id
+      )
+      ,
+      getSettingUserProfileInfo(),
+    ])
       .then(
-        ({
-          data: {
-            response: { data },
-          },
-        }) => {
+        (promiseRes) => {
           setcandidates(
-            data.filter((candidate) => candidate.status === "hired")
+            promiseRes[0]?.data?.response?.data?.filter((candidate) => candidate.status === "hired")
           );
           setcandidates2(
-            data.filter((candidate) => candidate.status === "hired")
+            promiseRes[0]?.data?.response?.data?.filter((candidate) => candidate.status === "hired")
           );
           setOptions(
-            data
-              .filter((candidate) => candidate.status === "hired")
+            promiseRes[0]?.data?.response?.data
+              ?.filter((candidate) => candidate.status === "hired")
               .map((v) => ({ value: v._id, label: v.username }))
           );
+
+          const settingsInfo = isPublicReportUser ?
+            promiseRes[1]?.data
+              ?.reverse()
+              ?.filter(
+                item => item.company_id === reportsUserDetails?.company_id
+              )?.filter(
+                item => item.data_type === reportsUserDetails?.data_type
+              )
+            :
+            promiseRes[1]?.data
+              ?.reverse()
+              ?.filter(
+                item => item.company_id === currentUser.portfolio_info[0].org_id
+              )?.filter(
+                item => item.data_type === currentUser.portfolio_info[0].data_type
+            );
+          setSettingsUserList(settingsInfo);
           setFirstLoading(false);
         }
       )
@@ -282,7 +322,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                         {personalInfo.country}
                       </p>
                       <p>
-                        <span>Project hired for:</span>
+                        <span>Project assigned:</span>
                         {personalInfo.project}
                       </p>
                       <p>
@@ -293,6 +333,30 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                         <span>Portfolio name:</span>
                         {personalInfo.portfolio_name}
                       </p>
+                      {
+                        selectedUserRoleSetting && <>
+                          <p>
+                            <span>Current role:</span>  
+                            {
+                              rolesDict[selectedUserRoleSetting?.Role] ?
+                                rolesDict[selectedUserRoleSetting?.Role]
+                                :
+                              'Invalid role'
+                            }
+                          </p>
+                          {
+                            selectedUserRoleSetting.other_roles && <p>
+                              <span>Other roles:</span>  
+                              {
+                                selectedUserRoleSetting.other_roles.map(role => {
+                                  if (!rolesDict[role]) return null
+                                  return rolesDict[role]
+                                }).join(', ')
+                              }
+                            </p>
+                          }
+                        </>
+                      }
                       <p>
                         <span>Application submitted on:</span>
                         {formatDate(personalInfo.application_submitted_on)}
