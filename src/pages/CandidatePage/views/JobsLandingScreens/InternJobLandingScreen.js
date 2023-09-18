@@ -7,6 +7,7 @@ import { FaPlay, FaPause } from "react-icons/fa";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import freelancerImageItem from "../../../../assets/images/human-resource.png"
 
 
 const InternJobScreen = () => {
@@ -18,6 +19,7 @@ const InternJobScreen = () => {
     
     const handleJobCategoryCardClick = (category) => {
         console.log("stream -> ", category)
+        if (!category) return navigate(`/jobs?jobCategory=Internship`)
         navigate(`/jobs?jobCategory=Internship&stream=${encodeURIComponent(category)}`)
     }
 
@@ -43,7 +45,13 @@ const InternJobScreen = () => {
                     <div className="left__Intro__Content">
                         <h1 className="job__Screen__Title"><b>Join Dowell Team as an Intern</b></h1>
                         <div className="job__Cards__Container">
-                            {
+                            <JobCategoryCard 
+                                title={"Internship jobs"} 
+                                subtitle={"View all"}
+                                categoryImage={freelancerImageItem}
+                                handleCardClick={() => handleJobCategoryCardClick()}
+                            />
+                            {/* {
                                 React.Children.toArray(availableInternJobStreams.slice(0, 2).map(stream => {
                                     return <JobCategoryCard 
                                         title={stream.title} 
@@ -52,7 +60,7 @@ const InternJobScreen = () => {
                                         handleCardClick={() => handleJobCategoryCardClick(stream.title)}
                                     />
                                 }))
-                            }
+                            } */}
                         </div>
                     </div>
                     <div className="right__Intro__Content" onMouseOver={() => setMouseOver(!isMouseOver)}>
@@ -63,7 +71,7 @@ const InternJobScreen = () => {
                         <div className="right__Intro__Content__Bg__Shadow"></div>
                     </div>
                 </div>
-                <div className="support__Intro__Container">
+                {/* <div className="support__Intro__Container">
                     <div className="job__Cards__Container">
                         {
                             React.Children.toArray(availableInternJobStreams.slice(2).map(stream => {
@@ -76,7 +84,7 @@ const InternJobScreen = () => {
                             }))
                         }
                     </div>
-                </div>
+                </div> */}
             </div>
         </JobLandingLayout>
     </>
