@@ -103,8 +103,8 @@ const TaskReports = ({ subAdminView, isPublicReportUser }) => {
         res?.data
           ?.filter(
             (project) =>
-              project?.data_type === isPublicReportUser ? reportsUserDetails?.data_type : currentUser.portfolio_info[0].data_type &&
-              project?.company_id === isPublicReportUser ? reportsUserDetails?.company_id : currentUser.portfolio_info[0].org_id &&
+              project?.data_type === currentUser.portfolio_info[0].data_type &&
+              project?.company_id === currentUser.portfolio_info[0].org_id &&
               project.project_list &&
               project.project_list.every(
                 (listing) => typeof listing === "string"
