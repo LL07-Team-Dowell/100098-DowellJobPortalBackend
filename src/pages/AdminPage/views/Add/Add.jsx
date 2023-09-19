@@ -293,7 +293,7 @@ const AddProjectPopup = ({projects, unshowProjectPopup}) => {
 
   // functions
   const removeProject = (projectName) => {
-    setInputProjects(inputProjects.filter(f => f !== projectName.trim()))
+    setInputProjects(inputProjects.filter(f => f !== projectName.trim() && f !== projectName))
 
     const projectExistsInBank = dowellProjects.find(p => p.project_name === projectName.trim());
     if (!projectExistsInBank) return
@@ -450,7 +450,7 @@ const AddSubProjectPopup = ({projects, unshowProjectPopup}) => {
 
   // functions
   const removeProject = (projectName) => {
-    setInputProjects(inputProjects.filter(f => f !== projectName.trim()))
+    setInputProjects(inputProjects.filter(f => f !== projectName.trim() && f !== projectName))
   }
 
   const AddedProject = (projectName) => {

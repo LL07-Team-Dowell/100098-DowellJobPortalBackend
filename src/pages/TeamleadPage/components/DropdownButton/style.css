@@ -90,6 +90,12 @@
     cursor: pointer;
 }
 
+.dropdown-btn.disabled {
+    filter: opacity(0.5) !important;
+    pointer-events: none !important;
+}
+
+
 @media (min-width: 1200px){
     .dropdown-btn{
         padding: 1% 2%;

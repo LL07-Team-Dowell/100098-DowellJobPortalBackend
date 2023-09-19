@@ -162,16 +162,17 @@
         font-size: 0.8rem;
         position: relative;
         transition: 0.3s all ease-in-out;
+        width: max-content;
     }
 
-    .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select .select {
+    .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select .select_ {
         display: flex;
         align-items: center;
         gap: 1rem;
         cursor: pointer;
     }
 
-    .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select .select svg {
+    .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select .select_ svg {
         font-size: 0.8rem;
     }
 

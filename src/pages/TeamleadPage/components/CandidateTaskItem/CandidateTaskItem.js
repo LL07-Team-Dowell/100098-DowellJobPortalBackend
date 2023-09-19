@@ -35,11 +35,11 @@ const CandidateTaskItem = ({
 
     const handleTaskStatusUpdate = async (updateSelection) => {
 
-        if (isFetchingData) return;
+        if (isFetchingData || updateSelection === 'Completed' || updateSelection === 'Incomplete') return;
 
         setIsFetchingData(true);
 
-        currentTask.status = updateSelection;
+        currentTask.status = updateSelection === 'Mark as complete' ? 'Complete' : 'Incomplete';
         setCurrentTaskStatus(updateSelection)
 
         try{
@@ -142,7 +142,13 @@ const CandidateTaskItem = ({
                         className={
                           currentTaskStatus === "Complete" && "task__Active"
                         }
-                        currentSelection={"Mark as complete"}
+                        currentSelection={
+                          isFetchingData ? 'Please wait...' 
+                          : 
+                          currentTaskStatus === 'Complete' ? 'Completed' 
+                          : 
+                          "Mark as complete"
+                        }
                         removeDropDownIcon={true}
                         handleClick={handleTaskStatusUpdate}
                         disabled={isFetchingData}
@@ -151,7 +157,13 @@ const CandidateTaskItem = ({
                         className={
                           currentTaskStatus === "Incomplete" && "task__Active"
                         }
-                        currentSelection={"Mark as incomplete"}
+                        currentSelection={
+                          isFetchingData ? 'Please wait...' 
+                          : 
+                          currentTaskStatus === 'Incomplete' ? 'Incomplete' 
+                          : 
+                          "Mark as incomplete"
+                        }
                         removeDropDownIcon={true}
                         handleClick={handleTaskStatusUpdate}
                         disabled={isFetchingData}

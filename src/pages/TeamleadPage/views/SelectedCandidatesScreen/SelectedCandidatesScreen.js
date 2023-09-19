@@ -265,7 +265,7 @@ const SelectedCandidatesScreen = ({
 
         const data = {
           document_id: selectedCandidateData._id,
-          reject_remarks: remarks,
+          reject_remarks: 'Rejected',
           applicant: selectedCandidateData.applicant,
           username: selectedCandidateData.username,
           company_id: currentUser.portfolio_info[0].org_id,
@@ -471,7 +471,7 @@ const SelectedCandidatesScreen = ({
       case hrPageActions.MOVE_TO_REJECTED:
         if (!selectedCandidateData) return;
 
-        if (!guestApplication && remarks.length < 1) {
+        if (!guestApplication && remarks.length < 1 && !initialMeet) {
           disableOtherBtns && setDisabled(false);
           ref.current.classList.toggle("active");
 
@@ -482,7 +482,7 @@ const SelectedCandidatesScreen = ({
         Promise.all([
           rejectCandidateApplicationforHr({
             document_id: selectedCandidateData._id,
-            reject_remarks: guestApplication
+            reject_remarks: guestApplication || initialMeet
               ? "Rejected"
               : remarks,
             applicant: selectedCandidateData.applicant,

@@ -439,7 +439,7 @@ const TaskScreen = ({
             <span style={{ fontFamily: 'Poppins', fontSize: '0.9rem' }}>Subproject</span>
             <div className="subproject__Custom__Select">
               <div 
-                className="select" 
+                className="select_" 
                 onClick={ 
                   subprojectSelected.length < 1  ? 
                     () => setShowSubprojectSelection(!showSubprojectSelection)
