@@ -6313,7 +6313,9 @@ class Generate_Report(APIView):
                 )
             else:
                 return Response(
-                    {"message": "Parameters are not valid"},
+                    {
+                        "message": "Parameters are not valid, start date must be smaller that end date"
+                    },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
