@@ -4729,15 +4729,27 @@ class Generate_Report(APIView):
                 tasks_completed=[]
                 for t in res_tasks[0]:
                     try:
-                        if t["status"]=="Completed" or t["status"]=="completed":
+                        if t["status"]=="Complete" or t["status"]=="complete" or t["status"]=="Completed" or t["status"]=="completed":
                             tasks_completed.append(t)
                     except Exception:
                         try:
-                            if t["completed"]==True:
+                            if t["completed"]==True or t["Complete"]==True:
                                 tasks_completed.append(t)
                         except Exception:
                             pass
                 data["tasks_completed"]=len(tasks_completed)
+                tasks_uncompleted=[]
+                for t in res_tasks[0]:
+                    try:
+                        if t["status"]=="Incomplete" or t["status"]=="Incompleted":
+                            tasks_uncompleted.append(t)
+                    except Exception:
+                        try:
+                            if t["Incompleted"]==True or t["Incomplete"]==True:
+                                tasks_uncompleted.append(t)
+                        except Exception:
+                            pass
+                data["tasks_uncompleted"]=len(tasks_uncompleted)
 
                 try:
                     data["percentage_tasks_completed"]=(data["tasks_completed"]/data["tasks"])*100
@@ -5132,15 +5144,27 @@ class Generate_Report(APIView):
                 team_tasks_completed = []
                 for t in res_team_tasks[0]:
                     try:
-                        if t["status"] == "Completed" or t["status"] == "completed":
+                        if t["status"] == "Complete" or t["status"] == "Completed" or t["status"] == "complete" or t["status"] == "completed":
                             team_tasks_completed.append(t)
                     except Exception as e:
                         try:
-                            if t["completed"]== True:
+                            if t["completed"]== True or t["Completed"]== True or t["Completed"]== True:
                                 team_tasks_completed.append(t)
                         except Exception as e:
                             pass
                 data["team_tasks_completed"] = len(team_tasks_completed)
+                team_tasks_uncompleted=[]
+                for t in res_team_tasks[0]:
+                    try:
+                        if t["status"]=="Incomplete" or t["status"]=="Incompleted":
+                            team_tasks_uncompleted.append(t)
+                    except Exception:
+                        try:
+                            if t["Incompleted"]==True or t["Incomplete"]==True:
+                                team_tasks_uncompleted.append(t)
+                        except Exception:
+                            pass
+                data["team_tasks_uncompleted"]=len(team_tasks_uncompleted)
 
                 try:
                     data["percentage_team_tasks_completed"] = (
@@ -5321,6 +5345,7 @@ class Generate_Report(APIView):
             _tasks_list = []
             _tasks_completed=[]
             _tasks_uncompleted=[]
+            _tasks_approved=[]
             _teams_tasks = []
             _teams_tasks_completed=[]
             _teams_tasks_uncompleted=[]
@@ -5352,6 +5377,11 @@ class Generate_Report(APIView):
                     except KeyError :
                         pass
                     try:
+                        if  task["approved"]== True or task["approval"]== True:
+                                _tasks_approved.append(task)
+                    except Exception:
+                        pass
+                    try:
                         if task["team_id"] in _teams_ids:
                             _teams_tasks.append(task)
                     except KeyError :
@@ -5369,7 +5399,7 @@ class Generate_Report(APIView):
                     try:
                         if task["team_id"] in _teams_ids:
                             if  task["approved"]== True or task["approval"]== True:
-                                _teams_tasks_approved.apppend(task)
+                                _teams_tasks_approved.append(task)
                     except KeyError :
                         pass
 
@@ -5390,10 +5420,7 @@ class Generate_Report(APIView):
             if len(json.loads(comments_added)["data"]) != 0:
                 for comment in json.loads(comments_added)['data']:
                     if comment["thread_id"] in _teams_tasks_issues_raised_ids:
-                        _teams_tasks_comments_added.append(issue)
-
-
-
+                        _teams_tasks_comments_added.append(comment)
 
             if len(_tasks_list) != 0: 
                 months=[]
@@ -5439,6 +5466,18 @@ class Generate_Report(APIView):
             else:
                 for key, value in item.items():
                     item[key].update({"tasks_added": 0})
+            #tasks approved----------------------
+            if len(_tasks_approved) != 0:
+                months=[]
+                for task in _tasks_uncompleted: 
+                    month_name=month_list[datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").month]
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        if str(datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").year) == year:
+                            item[month_name].update({"tasks_approved":months.count(month_name)})  
+            else:
+                for key, value in item.items():
+                    item[key].update({"tasks_approved": 0})
 
             #teams----------------------------------------
             if len(_teams_list) != 0:
