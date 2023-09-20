@@ -4881,7 +4881,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_hr_report(self, request):
         payload = request.data
         if payload:
@@ -5067,7 +5066,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_account_report(self, request):
         payload = request.data
         if payload:
@@ -5124,7 +5122,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_candidate_report(self, request):
         payload = request.data
         if payload:
@@ -5269,7 +5266,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_team_report(self, request):
         payload = request.data
         if payload:
@@ -5376,7 +5372,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_lead_report(self, request):
         payload = request.data
         if payload:
@@ -5433,7 +5428,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_individual_report(self, request):
         payload = request.data
         if payload:
@@ -5989,7 +5983,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def itr_function(self, username):
         data = []
         field = {"applicant": username}
@@ -6106,7 +6099,6 @@ class Generate_Report(APIView):
             }
             data.append(item)
         return data
-
     def generate_individual_task_report(self, request):
         payload = request.data
 
@@ -6121,7 +6113,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_project_report(self, request):
         payload = request.data
         serializer = ProjectWiseReportSerializer(data=payload)
@@ -6268,6 +6259,68 @@ class Generate_Report(APIView):
             return Response(
                 {"message": "Parameters not valid"}, status=status.HTTP_400_BAD_REQUEST
             )
+    def generate_task_level_report(self, request):
+        payload = request.data
+
+        if payload:
+            if valid_period(payload["start_date"], payload["end_date"]) == True:
+                field={}
+                update_field={}
+                threshold=30
+                _tasks_added = dowellconnection(*task_management_reports, "fetch", {}, update_field)
+                _task_added_ids=[]
+                task_added={}
+                for task in json.loads(_tasks_added)['data']:
+                    _task_added_ids.append(task["_id"])
+                    try:
+                        task_added[task["_id"]]=task["task_added_by"]
+                    except KeyError:
+                        task_added[task["_id"]]="None"
+                _task_details = dowellconnection(*task_details_module, "fetch", {}, update_field)
+                
+                tasks_added_by=[]
+
+                res_tasks_added = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],
+                                            data_list=json.loads(_task_details)['data'],
+                                            key="task_created_date",
+                    )
+                
+                for t in res_tasks_added[0]:
+                    if t["task_id"] in _task_added_ids:
+                        try:
+                            tasks_added_by.append(task_added[t["task_id"]])
+                        except KeyError:
+                            tasks_added_by.append("None")
+                            pass
+                data={user:{} for user in tasks_added_by}
+                for user in tasks_added_by:
+                    data[user]={"tasks":tasks_added_by.count(user),
+                                "status":"Passed" if tasks_added_by.count(user) >threshold else "Defaulter" }
+
+                counter = Counter(tasks_added_by)
+                highest_uploader = counter.most_common(1)
+                lowest_uploader = counter.most_common()[:-5:-1]
+                response={
+                    "highest":{hu[0]:hu[1] for hu in highest_uploader} if len(highest_uploader)>1 else {highest_uploader[0][0]:highest_uploader[0][1]},
+                    "lowest":{lu[0]:lu[1] for lu in lowest_uploader} if len(lowest_uploader)>1 else {lowest_uploader[0][0]:lowest_uploader[0][1]},
+                    "threshold":threshold,
+                    "users":data
+                }
+
+                return Response(
+                    {"message": "Task Level report generated", "response": response},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {"message": "Parameters are not valid"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def post(self, request):
         serializer = ReportSerializer(data=request.data)
@@ -6292,6 +6345,8 @@ class Generate_Report(APIView):
                 return self.generate_project_report(request)
             elif request.data["report_type"] == "Public":
                 return self.generate_public_report(request)
+            elif request.data["report_type"] == "Level":
+                return self.generate_task_level_report(request)
 
         else:
             return Response(
