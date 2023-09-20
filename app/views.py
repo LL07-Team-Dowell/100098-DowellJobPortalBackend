@@ -5325,7 +5325,16 @@ class Generate_Report(APIView):
                                 "team_tasks_comments_added":0
                                 }
                     
-            tasks_added = dowellconnection(*task_management_reports, "fetch", {}, update_field)
+            _tasks_added = dowellconnection(*task_management_reports, "fetch", {"task_added_by":username}, update_field)
+            _task_details = dowellconnection(*task_details_module, "fetch", {}, update_field)
+
+            tasks_added=[]
+            for t in json.loads(_tasks_added)['data']:
+                for task in json.loads(_task_details)['data']:
+                    if t["_id"]==task["task_id"]:
+                        tasks_added.append(t)
+
+                    
             
             #tasks_completed =[t for t in json.loads(tasks_added)['data'] if t["status"]=="Completed"] 
             #tasks_uncompleted =[t for t in json.loads(tasks_added)['data'] if t["status"]=="Incomplete"]
@@ -5354,21 +5363,23 @@ class Generate_Report(APIView):
             _teams_tasks_issues_raised_ids=[]
             _teams_tasks_issues_resolved=[]
             _teams_tasks_comments_added=[]
-            if len(json.loads(tasks_added)['data']) != 0:
-                for task in json.loads(tasks_added)['data']:
+            if len(tasks_added) != 0:
+                for task in tasks_added:
                     try:
                         if task["task_added_by"]==username:
                             _tasks_list.append(task)
                     except KeyError :
                         pass
                     try:
-                        if task["task_added_by"]==username and task["status"]=="Incomplete":
-                            _tasks_uncompleted.append(task)
+                        if task["task_added_by"]==username:
+                            if task["status"]=="Incomplete" or task["status"]=="incompleted" or task["status"]=="incomplete" or task["status"]=="Incompleted":
+                                _tasks_uncompleted.append(task)
                     except KeyError :
                         pass
                     try:
-                        if task["task_added_by"]==username and task["status"]=="Completed":
-                            _tasks_completed.append(task)
+                        if task["task_added_by"]==username:
+                            if task["status"]=="Completed" or task["status"]=="Complete" or task["status"]=="completed" or task["status"]=="complete":
+                                _tasks_completed.append(task)
                     except KeyError :
                         pass
                     try:
@@ -5469,8 +5480,9 @@ class Generate_Report(APIView):
             #tasks approved----------------------
             if len(_tasks_approved) != 0:
                 months=[]
-                for task in _tasks_uncompleted: 
+                for task in _tasks_approved: 
                     month_name=month_list[datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").month]
+
                     months.append(month_name)
                     if month_name in item.keys():
                         if str(datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").year) == year:
