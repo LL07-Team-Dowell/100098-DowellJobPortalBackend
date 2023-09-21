@@ -666,21 +666,22 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   <p style={{ marginBottom: 20 }}>
                     <b>Doughnut chart showing teams and tasks</b>
                   </p>
-                  <Bar
+                  <Doughnut
                     data={{
-                      labels: ["Teams", "team tasks", "individual tasks"],
+                      labels: ["Teams", "Team Tasks", "Individual Tasks"],
                       datasets: [
                         {
-                          label: "Poll",
                           data: [data.teams, data.tasks, data.tasks],
                           backgroundColor: ["#D3D3D3", "#005734", "black"],
                           borderColor: ["#D3D3D3", "#005734", "black"],
-                          maxBarThickness: 40,
                         },
                       ],
                     }}
                     options={chartOptions}
-                  ></Bar>
+                  />
+                  Make sure to import the Doughnut component from the
+                  appropriate library, and ensure that your data and options are
+                  correctly set up for a doughnut chart.
                 </div>
               )}
               <div>
