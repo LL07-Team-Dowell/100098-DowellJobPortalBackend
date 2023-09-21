@@ -1967,7 +1967,8 @@ class approve_task(APIView):
         data = request.data
         if data:
             field = {"_id": data.get("document_id")}
-            update_field = {"status": data.get("status")}
+            update_field = {"status": data.get("status"),
+                            "task_approved_by":data.get("lead_username")}
             check_approvable = self.approvable()
 
             if check_approvable is True:
@@ -4775,16 +4776,27 @@ class Generate_Report(APIView):
                 tasks_completed = []
                 for t in res_tasks[0]:
                     try:
-                        if t["status"] == "Completed" or t["status"] == "completed":
+                        if t["status"]=="Complete" or t["status"]=="complete" or t["status"]=="Completed" or t["status"]=="completed":
                             tasks_completed.append(t)
                     except Exception:
                         try:
-                            if t["completed"] == True:
+                            if t["completed"]==True or t["Complete"]==True:
                                 tasks_completed.append(t)
                         except Exception:
                             pass
-                data["tasks_completed"] = len(tasks_completed)
-
+                data["tasks_completed"]=len(tasks_completed)
+                tasks_uncompleted=[]
+                for t in res_tasks[0]:
+                    try:
+                        if t["status"]=="Incomplete" or t["status"]=="Incompleted":
+                            tasks_uncompleted.append(t)
+                    except Exception:
+                        try:
+                            if t["Incompleted"]==True or t["Incomplete"]==True:
+                                tasks_uncompleted.append(t)
+                        except Exception:
+                            pass
+                data["tasks_uncompleted"]=len(tasks_uncompleted)
                 try:
                     data["percentage_tasks_completed"] = (
                         data["tasks_completed"] / data["tasks"]
@@ -4870,7 +4882,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_hr_report(self, request):
         payload = request.data
         if payload:
@@ -5056,7 +5067,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_account_report(self, request):
         payload = request.data
         if payload:
@@ -5113,7 +5123,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_candidate_report(self, request):
         payload = request.data
         if payload:
@@ -5258,7 +5267,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_team_report(self, request):
         payload = request.data
         if payload:
@@ -5293,15 +5301,27 @@ class Generate_Report(APIView):
                 team_tasks_completed = []
                 for t in res_team_tasks[0]:
                     try:
-                        if t["status"] == "Completed" or t["status"] == "completed":
+                        if t["status"] == "Complete" or t["status"] == "Completed" or t["status"] == "complete" or t["status"] == "completed":
                             team_tasks_completed.append(t)
                     except Exception as e:
                         try:
-                            if t["completed"] == True:
+                            if t["completed"]== True or t["Completed"]== True or t["Complete"]== True or t["complete"]== True:
                                 team_tasks_completed.append(t)
                         except Exception as e:
                             pass
                 data["team_tasks_completed"] = len(team_tasks_completed)
+                team_tasks_uncompleted=[]
+                for t in res_team_tasks[0]:
+                    try:
+                        if t["status"]=="Incomplete" or t["status"]=="Incompleted":
+                            team_tasks_uncompleted.append(t)
+                    except Exception:
+                        try:
+                            if t["Incompleted"]==True or t["Incomplete"]==True:
+                                team_tasks_uncompleted.append(t)
+                        except Exception:
+                            pass
+                data["team_tasks_uncompleted"]=len(team_tasks_uncompleted)
 
                 try:
                     data["percentage_team_tasks_completed"] = (
@@ -5353,7 +5373,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_lead_report(self, request):
         payload = request.data
         if payload:
@@ -5410,7 +5429,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_individual_report(self, request):
         payload = request.data
         if payload:
@@ -5472,39 +5490,37 @@ class Generate_Report(APIView):
                 "December": {},
             }
             for key, value in item.items():
-                item[key] = {
-                    "tasks_added": 0,
-                    "tasks_completed": 0,
-                    "tasks_uncompleted": 0,
-                    "tasks_approved": 0,
-                    "percentage_tasks_completed": 0,
-                    "teams": 0,
-                    "team_tasks": 0,
-                    "team_tasks_completed": 0,
-                    "team_tasks_uncompleted": 0,
-                    "percentage_team_tasks_completed": 0,
-                    "team_tasks_approved": 0,
-                    "team_tasks_issues_raised": 0,
-                    "team_tasks_issues_resolved": 0,
-                    "team_tasks_comments_added": 0,
-                }
+                item[key]={"tasks_added": 0,
+                            "tasks_completed": 0,
+                            "tasks_uncompleted": 0,
+                            "tasks_approved": 0,
+                            "percentage_tasks_completed":0,
+                            "teams":0,
+                            "team_tasks":0,
+                            "team_tasks_completed":0,
+                            "team_tasks_uncompleted":0,
+                            "percentage_team_tasks_completed":0,
+                            "team_tasks_approved":0,
+                            "team_tasks_issues_raised":0,
+                            "team_tasks_issues_resolved":0,
+                            "team_tasks_comments_added":0
+                            }
+                    
+            _tasks_added = dowellconnection(*task_management_reports, "fetch", {"task_added_by":username}, update_field)
+            _task_details = dowellconnection(*task_details_module, "fetch", {}, update_field)
 
-            tasks_added = dowellconnection(
-                *task_management_reports, "fetch", {}, update_field
-            )
+            tasks_added=[]
+            for t in json.loads(_tasks_added)['data']:
+                for task in json.loads(_task_details)['data']:
+                    if t["_id"]==task["task_id"]:
+                        tasks_added.append(t)
 
-            # tasks_completed =[t for t in json.loads(tasks_added)['data'] if t["status"]=="Completed"]
-            # tasks_uncompleted =[t for t in json.loads(tasks_added)['data'] if t["status"]=="Incomplete"]
-            teams = dowellconnection(
-                *team_management_modules, "fetch", {}, update_field
-            )
-            issues_raised = dowellconnection(
-                *thread_report_module, "fetch", {}, update_field
-            )
-            comments_added = dowellconnection(
-                *comment_report_module, "fetch", {}, update_field
-            )
-
+            #tasks_completed =[t for t in json.loads(tasks_added)['data'] if t["status"]=="Completed"] 
+            #tasks_uncompleted =[t for t in json.loads(tasks_added)['data'] if t["status"]=="Incomplete"]
+            teams = dowellconnection(*team_management_modules, "fetch", {}, update_field)
+            issues_raised = dowellconnection(*thread_report_module,"fetch",{},update_field)
+            comments_added = dowellconnection(*comment_report_module,"fetch",{},update_field)
+                
             _teams_list = []
             _teams_ids = []
             for team in json.loads(teams)["data"]:
@@ -5515,38 +5531,35 @@ class Generate_Report(APIView):
                 except KeyError:
                     pass
             _tasks_list = []
-            _tasks_completed = []
-            _tasks_uncompleted = []
+            _tasks_completed=[]
+            _tasks_uncompleted=[]
+            _tasks_approved=[]
             _teams_tasks = []
-            _teams_tasks_completed = []
-            _teams_tasks_uncompleted = []
-            _teams_tasks_approved = []
-            _teams_tasks_issues_raised = []
-            _teams_tasks_issues_raised_ids = []
-            _teams_tasks_issues_resolved = []
-            _teams_tasks_comments_added = []
-            if len(json.loads(tasks_added)["data"]) != 0:
-                for task in json.loads(tasks_added)["data"]:
+            _teams_tasks_completed=[]
+            _teams_tasks_uncompleted=[]
+            _teams_tasks_approved=[]
+            _teams_tasks_issues_raised=[]
+            _teams_tasks_issues_raised_ids=[]
+            _teams_tasks_issues_resolved=[]
+            _teams_tasks_comments_added=[]
+            if len(tasks_added) != 0:
+                for task in tasks_added:
                     try:
                         if task["task_added_by"] == username:
                             _tasks_list.append(task)
                     except KeyError:
                         pass
                     try:
-                        if (
-                            task["task_added_by"] == username
-                            and task["status"] == "Incomplete"
-                        ):
-                            _tasks_uncompleted.append(task)
-                    except KeyError:
+                        if task["task_added_by"]==username:
+                            if task["status"]=="Incomplete" or task["status"]=="incompleted" or task["status"]=="incomplete" or task["status"]=="Incompleted":
+                                _tasks_uncompleted.append(task)
+                    except KeyError :
                         pass
                     try:
-                        if (
-                            task["task_added_by"] == username
-                            and task["status"] == "Completed"
-                        ):
-                            _tasks_completed.append(task)
-                    except KeyError:
+                        if task["task_added_by"]==username:
+                            if task["status"]=="Completed" or task["status"]=="Complete" or task["status"]=="completed" or task["status"]=="complete":
+                                _tasks_completed.append(task)
+                    except KeyError :
                         pass
                     try:
                         if (
@@ -5555,6 +5568,11 @@ class Generate_Report(APIView):
                         ):
                             _tasks_completed.append(task)
                     except KeyError:
+                        pass
+                    try:
+                        if  task["approved"]== True or task["approval"]== True:
+                                _tasks_approved.append(task)
+                    except Exception:
                         pass
                     try:
                         if task["team_id"] in _teams_ids:
@@ -5579,9 +5597,10 @@ class Generate_Report(APIView):
                         pass
                     try:
                         if task["team_id"] in _teams_ids:
-                            if task["approved"] == True or task["approval"] == True:
-                                _teams_tasks_approved.apppend(task)
-                    except KeyError:
+                            if  task["approved"]== True or task["approval"]== True:
+                                _teams_tasks_approved.append(task)
+                    except KeyError :
+
                         pass
 
             if len(json.loads(issues_raised)["data"]) != 0:
@@ -5604,17 +5623,12 @@ class Generate_Report(APIView):
             if len(json.loads(comments_added)["data"]) != 0:
                 for comment in json.loads(comments_added)["data"]:
                     if comment["thread_id"] in _teams_tasks_issues_raised_ids:
-                        _teams_tasks_comments_added.append(issue)
+                        _teams_tasks_comments_added.append(comment)
 
-            if len(_tasks_list) != 0:
-                months = []
-                for task in _tasks_list:
-                    month_name = month_list[
-                        datetime.datetime.strptime(
-                            set_date_format(task["task_created_date"]),
-                            "%m/%d/%Y %H:%M:%S",
-                        ).month
-                    ]
+            if len(_tasks_list) != 0: 
+                months=[]
+                for task in _tasks_list: 
+                    month_name=month_list[datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").month]
                     months.append(month_name)
                     if month_name in item.keys():
                         if (
@@ -5632,6 +5646,19 @@ class Generate_Report(APIView):
             else:
                 for key, value in item.items():
                     item[key].update({"tasks_added": 0})
+            #tasks approved----------------------
+            if len(_tasks_approved) != 0:
+                months=[]
+                for task in _tasks_approved: 
+                    month_name=month_list[datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").month]
+
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        if str(datetime.datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").year) == year:
+                            item[month_name].update({"tasks_approved":months.count(month_name)})  
+            else:
+                for key, value in item.items():
+                    item[key].update({"tasks_approved": 0})
 
             # tasks completed-----------------------------
             if len(_tasks_completed) != 0:
@@ -5957,7 +5984,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def itr_function(self, username):
         data = []
         field = {"applicant": username}
@@ -6074,7 +6100,6 @@ class Generate_Report(APIView):
             }
             data.append(item)
         return data
-
     def generate_individual_task_report(self, request):
         payload = request.data
 
@@ -6089,7 +6114,6 @@ class Generate_Report(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
     def generate_project_report(self, request):
         payload = request.data
         serializer = ProjectWiseReportSerializer(data=payload)
@@ -6236,6 +6260,82 @@ class Generate_Report(APIView):
             return Response(
                 {"message": "Parameters not valid"}, status=status.HTTP_400_BAD_REQUEST
             )
+    def generate_task_level_report(self, request):
+        payload = request.data
+
+        if payload:
+            if valid_period(payload["start_date"], payload["end_date"]) == True:
+                if len(payload["company_id"])>0:
+                    field={"company_id":payload["company_id"]}
+                else:
+                    field={}
+                update_field={}
+                threshold=30
+                _tasks_added = dowellconnection(*task_management_reports, "fetch", field, update_field)
+                _task_added_ids=[]
+                task_added={}
+                for task in json.loads(_tasks_added)['data']:
+                    _task_added_ids.append(task["_id"])
+                    try:
+                        task_added[task["_id"]]=task["task_added_by"]
+                    except KeyError:
+                        task_added[task["_id"]]="None"
+                _task_details = dowellconnection(*task_details_module, "fetch", field, update_field)
+                print(_task_details)
+                
+                tasks_added_by=[]
+
+                res_tasks_added = period_check(start_dt=payload["start_date"],end_dt=payload["end_date"],
+                                            data_list=json.loads(_task_details)['data'],
+                                            key="task_created_date",
+                    )
+                
+                for t in res_tasks_added[0]:
+                    if t["task_id"] in _task_added_ids:
+                        try:
+                            tasks_added_by.append(task_added[t["task_id"]])
+                        except KeyError:
+                            tasks_added_by.append("None")
+                            pass
+                data={user:{} for user in tasks_added_by}
+                for user in tasks_added_by:
+                    data[user]={"tasks":tasks_added_by.count(user),
+                                "status":"Passed" if tasks_added_by.count(user) >threshold else "Defaulter" }
+
+                counter = Counter(tasks_added_by)
+                highest_uploader = counter.most_common(1)
+                lowest_uploader = counter.most_common()[:-5:-1]
+                if len(tasks_added_by)>0:
+                    response={
+                        "highest":{hu[0]:hu[1] for hu in highest_uploader} if len(highest_uploader)>1 else {highest_uploader[0][0]:highest_uploader[0][1]},
+                        "lowest":{lu[0]:lu[1] for lu in lowest_uploader} if len(lowest_uploader)>1 else {lowest_uploader[0][0]:lowest_uploader[0][1]},
+                        "threshold":threshold,
+                        "users":data
+                    }
+                else:
+                    response={
+                        "highest":"None",
+                        "lowest":"None",
+                        "threshold":threshold,
+                        "users":data
+                    }
+
+                return Response(
+                    {"message": f"Task Level report generated for Org-{payload['company_id']}", "response": response},
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {
+                        "message": "Parameters are not valid, start date must be smaller that end date"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def post(self, request):
         serializer = ReportSerializer(data=request.data)
@@ -6260,6 +6360,8 @@ class Generate_Report(APIView):
                 return self.generate_project_report(request)
             elif request.data["report_type"] == "Public":
                 return self.generate_public_report(request)
+            elif request.data["report_type"] == "Level":
+                return self.generate_task_level_report(request)
 
         else:
             return Response(

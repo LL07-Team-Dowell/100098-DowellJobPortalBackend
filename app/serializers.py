@@ -377,6 +377,7 @@ class ReportSerializer(serializers.Serializer):
         ('Individual Task', 'Individual Task'),
         ('Project', 'Project'),
         ('Public', 'Public'),
+        ('Level','Level'),
     )
     report_type = serializers.ChoiceField(allow_null=False, allow_blank=False, choices=REPORT_TYPE)
 
