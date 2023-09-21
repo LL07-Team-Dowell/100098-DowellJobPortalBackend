@@ -8,6 +8,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CurrentUserContextProvider } from './contexts/CurrentUserContext';
 import ViewJob from './pages/AdminPage/views/ViewJob/ViewJob';
+import 'react-circular-progressbar/dist/styles.css';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

@@ -26,6 +26,7 @@ import { generateCommonAdminReport } from "../../../../../services/commonService
 import Select from "react-select";
 import { getSettingUserProfileInfo } from "../../../../../services/settingServices";
 import { rolesDict } from "../../Settings/AdminSettings";
+import { formatDateForAPI } from "../../../../../helpers/helpers";
 
 export const chartOptions = {
   responsive: true,
@@ -58,31 +59,13 @@ export default function DetailedIndividual({ isPublicReportUser }) {
     useState(null);
   const date = new Date();
   const yesterdayDate = new Date(new Date().setDate(date.getDate() - 1));
-  const [ 
-    todayYear,
-    todayMonth,
-    todayDay,
-    yesterdayYear,
-    yesterdayMonth,
-    yesterdayDay,
-  ] = [
-    date.getFullYear(),
-    date.getMonth() + 1,
-    date.getDate(),
-    yesterdayDate.getFullYear(),
-    yesterdayDate.getMonth() + 1,
-    yesterdayDate.getDate(),
-  ]
+  
   const [
     todayDateFormattedForAPI,
     yesterdayDateFormattedForAPI,
   ] = [
-    `${todayYear}-${todayMonth < 10 ? "0" + todayMonth : todayMonth}-${
-      todayDay < 10 ? "0" + todayDay : todayDay
-    }`,
-    `${yesterdayYear}-${yesterdayMonth < 10 ? "0" + yesterdayMonth : yesterdayMonth }-${
-      yesterdayDay < 10 ? "0" + yesterdayDay : yesterdayDay
-    }`,
+    formatDateForAPI(date),
+    formatDateForAPI(yesterdayDate),
   ]
 
   const [startDateSelectedForTasksBox, setStartDateSelectedForTasksBox] =

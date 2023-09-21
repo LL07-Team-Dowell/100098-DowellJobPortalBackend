@@ -541,6 +541,7 @@ const validReportOptions = [
   'individual',
   'task',
   'team',
+  'leaderboard',
 ]
 
 export const reportOptionsPermitted = {
@@ -548,6 +549,7 @@ export const reportOptionsPermitted = {
   'individual_report': 'individual',
   'task_report': 'task',
   'team_report': 'team', 
+  'leaderboard_report': 'leaderboard',
 }
 
 export default ShareJobModal;

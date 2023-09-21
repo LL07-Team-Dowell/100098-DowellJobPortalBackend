@@ -253,6 +253,42 @@
       font-size: 0.8rem;
     }
   }
+
+  .task__item.level {
+    height: 23rem;
+    .stat__Report {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 4rem;
+      margin-top: 2rem;
+      margin-bottom: 1.5rem;
+
+      .label__Wrapper {
+        .label__Wrapper__Item {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          cursor: help;
+          margin-bottom: 1rem;
+
+          p {
+            margin-bottom: 0;
+          }
+
+          .label__Wrapper__Indicator {
+            width: 12px;
+            height: 12px;
+            background-color: #efefef;
+
+            &.active {
+              background-color: #005734;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 .personal__Info__Wrapper {
@@ -283,4 +319,176 @@
       font-size: 1.2rem;
     }
   }
+}
+
+.leaderboard__Ranking__Wrapper {
+  margin: 2rem 0;
+
+  h4 {
+    color: #005734;
+    letter-spacing: 0.03em;
+    font-size: 1.2rem;
+  }
+
+  .rankingss {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    width: 94%;
+    margin: 1rem auto;
+
+    .task__item.leaderboard {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      
+      p {
+        margin-bottom: 0;
+      }
+
+      .user__detail {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-left: 1rem;
+      }
+
+      .ranking__Stat {
+        font-size: 3rem;
+        margin-right: 1rem;
+        opacity: 0.2;
+
+        &.first {
+          color: #005734;
+        }
+
+        &.second {
+          color: orange;
+        }
+        
+        &.third {
+          color: blue;
+        }
+
+        &.fourth {
+          color: purple;
+        }
+      }
+
+      .award__Badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 1.1rem;
+        color: #fff;
+        border-top-right-radius: 10px;
+        width: 2rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &.first {
+          background-color: #005734;
+        }
+
+        &.second {
+          background-color: orange;
+        }
+        
+        &.third {
+          background-color: blue;
+        }
+
+        &.fourth {
+          background-color: purple;
+        }
+      }
+
+      .outline__Tile {
+        width: 1rem;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+
+        &.first {
+          background-color: #005734;
+        }
+
+        &.second {
+          background-color: orange;
+        }
+
+        &.third {
+          background-color: blue;
+        }
+
+        &.fourth {
+          background-color: purple;
+        }
+      }
+    }
+  }
+  
+  .ranking__Table_ {
+    max-height: 40rem;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+
+    // SCROLLBAR STYLES FOR CHROME
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #efefef;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #b8b8b8;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #005734;
+    }
+  }
+
+  .select__Status__Filter {
+    width: max-content;
+    margin-left: auto;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+
+    select {
+      background-color: #fff;
+      border-radius: 3px;
+      font-family: Poppins, sans-serif;
+      outline: none;
+      border: 1px solid #b8b8b8;
+      padding: 0.4rem 1rem;
+      cursor: pointer;
+    }
+  }
+}
+
+.generate__Level__Btn {
+  background-color: #005734;
+  color: #fff;
+  font-family: Poppins, sans-serif;
+  font-size: 16px;
+  outline: none;
+  border: none;
+  border-radius: 10px;
+  padding: 0.4rem 1rem;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  width: max-content;
+  display: block;
+  font-size: 0.875rem;
+  cursor: pointer;
 }
