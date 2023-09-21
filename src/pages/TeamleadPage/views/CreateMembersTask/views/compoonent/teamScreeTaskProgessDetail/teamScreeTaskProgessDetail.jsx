@@ -40,12 +40,14 @@ const TeamScreeTaskProgessDetail = ({
             .map((task) => (
               <SingleTask
                 key={task._id}
+                teamName={title}
                 title={task.title}
                 members={task.assignee}
                 detail={task.description}
                 image={image}
                 date={task.due_date}
                 setTasks={setTasks}
+                description={task.description}
                 taskCompleted={false}
                 taskId={task._id}
                 {...tasks}

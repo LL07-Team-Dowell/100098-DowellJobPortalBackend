@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ModelDetails from "./ModelDetails";
 import axios from "axios";
+import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
 
 const SingleTask = ({
   title,
@@ -13,6 +14,7 @@ const SingleTask = ({
   taskId,
 }) => {
   console.log(taskCompleted);
+  const { currentUser } = useCurrentUserContext();
   const pathTask = () => {
     const data = {
       title: title,
@@ -20,7 +22,7 @@ const SingleTask = ({
       assignee: members,
       team_name: "",
       completed: true,
-      task_added_by: "",
+      task_added_by: currentUser.userinfo.username,
     };
     axios
       .patch(`https://100098.pythonanywhere.com/edit_team_task/${taskId}/`)
