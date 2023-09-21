@@ -62,6 +62,7 @@ const TeamScreeTaskProgessDetail = ({
             ?.filter((task) => task.completed === true)
             .map((task) => (
               <SingleTask
+                teamName={title}
                 key={task._id}
                 title={task.title}
                 members={task.assignee}

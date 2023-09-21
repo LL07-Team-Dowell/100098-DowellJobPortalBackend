@@ -10,35 +10,37 @@ const SingleTask = ({
   date,
   detail,
   setTasks,
+  teamName,
   taskCompleted,
   taskId,
 }) => {
   console.log(taskCompleted);
   const { currentUser } = useCurrentUserContext();
-  const pathTask = () => {
-    const data = {
-      title: title,
-      description: "",
-      assignee: members,
-      team_name: "",
-      completed: true,
-      task_added_by: currentUser.userinfo.username,
-    };
-    axios
-      .patch(`https://100098.pythonanywhere.com/edit_team_task/${taskId}/`)
-      .then(({ data }) => {
-        console.log(data);
-      })
-      .catch((err) => console.log(err));
-  };
   const completeTaskFunction = () => {
     if (!taskCompleted) {
-      setTasks((tasks) =>
-        tasks.map((task) => {
-          if (task._id === taskId) return { ...task, completed: true };
-          return task;
+      const data = {
+        title: title,
+        description: detail,
+        assignee: members,
+        team_name: teamName,
+        completed: true,
+        task_added_by: currentUser.userinfo.username,
+      };
+      axios
+        .patch(
+          `https://100098.pythonanywhere.com/edit_team_task/${taskId}/`,
+          data
+        )
+        .then(({ data }) => {
+          console.log(data);
+          setTasks((tasks) =>
+            tasks.map((task) => {
+              if (task._id === taskId) return { ...task, completed: true };
+              return task;
+            })
+          );
         })
-      );
+        .catch((err) => console.log(err));
     }
   };
 
