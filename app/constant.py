@@ -159,21 +159,24 @@ task_details_module = [
     "ABCDE",
 ]
 
-github_details_module=[
+github_details_module = [
     "dowellbackup",
     "repository",
     "githubmetadata",
     "githubmetadata",
     "1239001",
-    "ABCDE"
+    "ABCDE",
 ]
-
 
 
 generate_public_link = "https://ll07-team-dowell.github.io/Jobportal/#?view=public&qr_id={}&job_company_id={}&job_id={}&company_data_type={}"
 
 generate_product_link = "{}?view=product&qr_id={}&company_id={}&company_data_type={}"
 
-generate_product_link_with_category="{}?view=product&qr_id={}&company_id={}&company_data_type={}&job_category={}"
+generate_product_link_with_category = (
+    "{}?view=product&qr_id={}&company_id={}&company_data_type={}&job_category={}"
+)
 
-generate_report_link="{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}"
+generate_report_link = (
+    "{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}"
+)
