@@ -753,7 +753,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
             </p> */}
             <p style={{ marginBottom: 20, marginTop: 40, textAlign: "center" }}>
               <b>
-                Bar chart showing the project with the most tasks added and
+                Doughnut chart showing the project with the most tasks added and
                 project with the least tasks added
               </b>
             </p>
