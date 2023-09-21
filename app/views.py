@@ -6280,7 +6280,7 @@ class Generate_Report(APIView):
                         task_added[task["_id"]]=task["task_added_by"]
                     except KeyError:
                         task_added[task["_id"]]="None"
-                _task_details = dowellconnection(*task_details_module, "fetch", {}, update_field)
+                _task_details = dowellconnection(*task_details_module, "fetch", field, update_field)
                 print(_task_details)
                 
                 tasks_added_by=[]
@@ -6321,7 +6321,7 @@ class Generate_Report(APIView):
                     }
 
                 return Response(
-                    {"message": f"Task Level report generated for {payload['company_id']}", "response": response},
+                    {"message": f"Task Level report generated for Org-{payload['company_id']}", "response": response},
                     status=status.HTTP_201_CREATED,
                 )
             else:
