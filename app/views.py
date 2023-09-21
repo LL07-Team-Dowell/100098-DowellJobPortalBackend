@@ -1967,7 +1967,8 @@ class approve_task(APIView):
         data = request.data
         if data:
             field = {"_id": data.get("document_id")}
-            update_field = {"status": data.get("status")}
+            update_field = {"status": data.get("status"),
+                            "task_approved_by":data.get("lead_username")}
             check_approvable = self.approvable()
 
             if check_approvable is True:
@@ -6264,10 +6265,13 @@ class Generate_Report(APIView):
 
         if payload:
             if valid_period(payload["start_date"], payload["end_date"]) == True:
-                field={}
+                if len(payload["company_id"])>0:
+                    field={"company_id":payload["company_id"]}
+                else:
+                    field={}
                 update_field={}
                 threshold=30
-                _tasks_added = dowellconnection(*task_management_reports, "fetch", {}, update_field)
+                _tasks_added = dowellconnection(*task_management_reports, "fetch", field, update_field)
                 _task_added_ids=[]
                 task_added={}
                 for task in json.loads(_tasks_added)['data']:
@@ -6277,6 +6281,7 @@ class Generate_Report(APIView):
                     except KeyError:
                         task_added[task["_id"]]="None"
                 _task_details = dowellconnection(*task_details_module, "fetch", {}, update_field)
+                print(_task_details)
                 
                 tasks_added_by=[]
 
@@ -6300,15 +6305,23 @@ class Generate_Report(APIView):
                 counter = Counter(tasks_added_by)
                 highest_uploader = counter.most_common(1)
                 lowest_uploader = counter.most_common()[:-5:-1]
-                response={
-                    "highest":{hu[0]:hu[1] for hu in highest_uploader} if len(highest_uploader)>1 else {highest_uploader[0][0]:highest_uploader[0][1]},
-                    "lowest":{lu[0]:lu[1] for lu in lowest_uploader} if len(lowest_uploader)>1 else {lowest_uploader[0][0]:lowest_uploader[0][1]},
-                    "threshold":threshold,
-                    "users":data
-                }
+                if len(tasks_added_by)>0:
+                    response={
+                        "highest":{hu[0]:hu[1] for hu in highest_uploader} if len(highest_uploader)>1 else {highest_uploader[0][0]:highest_uploader[0][1]},
+                        "lowest":{lu[0]:lu[1] for lu in lowest_uploader} if len(lowest_uploader)>1 else {lowest_uploader[0][0]:lowest_uploader[0][1]},
+                        "threshold":threshold,
+                        "users":data
+                    }
+                else:
+                    response={
+                        "highest":"None",
+                        "lowest":"None",
+                        "threshold":threshold,
+                        "users":data
+                    }
 
                 return Response(
-                    {"message": "Task Level report generated", "response": response},
+                    {"message": f"Task Level report generated for {payload['company_id']}", "response": response},
                     status=status.HTTP_201_CREATED,
                 )
             else:
