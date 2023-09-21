@@ -38,8 +38,14 @@
         justify-content: space-between;
         align-items: flex-start;
         padding:20px;
-        
+        @media(max-width:798px){
+            display: block;
+            padding:10px !important;
+        }
         .team-screen-task-progress-detail-content-data{
+            @media(max-width:798px){
+                display: block;
+            }
             display: flex;
             gap:15px;
             align-items: center;    
@@ -145,6 +151,12 @@
             &:hover, &:focus {
                 background-color: #005734;
                 color: #FFF;
+            }
+            @media (max-width:798px){
+                width: fit-content;
+                padding:5px;
+                background-color: red;
+                display: inline;
             }
         }
         
