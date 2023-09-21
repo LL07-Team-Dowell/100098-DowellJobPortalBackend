@@ -26,7 +26,7 @@ const [
 ] = [
     formatDateForAPI(date),
     formatDateForAPI(dateSevenDaysAgo),
-]
+];
 
 const LeaderboardReport = ({ isPublicReportUser }) => {
     const initialDatesSelection = {
