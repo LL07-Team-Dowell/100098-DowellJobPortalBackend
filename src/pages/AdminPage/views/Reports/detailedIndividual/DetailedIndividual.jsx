@@ -57,17 +57,38 @@ export default function DetailedIndividual({ isPublicReportUser }) {
   const [projectSelectedForTasksBox, setProjectSelectedForTasksBox] =
     useState(null);
   const date = new Date();
-  const [year, month, day] = [
+  const yesterdayDate = new Date(new Date().setDate(date.getDate() - 1));
+  const [ 
+    todayYear,
+    todayMonth,
+    todayDay,
+    yesterdayYear,
+    yesterdayMonth,
+    yesterdayDay,
+  ] = [
     date.getFullYear(),
     date.getMonth() + 1,
     date.getDate(),
-  ];
-  const dateFormattedForAPI = `${year}-${month < 10 ? "0" + month : month}-${
-    day < 10 ? "0" + day : day
-  }`;
+    yesterdayDate.getFullYear(),
+    yesterdayDate.getMonth() + 1,
+    yesterdayDate.getDate(),
+  ]
+  const [
+    todayDateFormattedForAPI,
+    yesterdayDateFormattedForAPI,
+  ] = [
+    `${todayYear}-${todayMonth < 10 ? "0" + todayMonth : todayMonth}-${
+      todayDay < 10 ? "0" + todayDay : todayDay
+    }`,
+    `${yesterdayYear}-${yesterdayMonth < 10 ? "0" + yesterdayMonth : yesterdayMonth }-${
+      yesterdayDay < 10 ? "0" + yesterdayDay : yesterdayDay
+    }`,
+  ]
 
-  const [dateSelectedForTasksBox, setDateSelectedForTasksBox] =
-    useState(dateFormattedForAPI);
+  const [startDateSelectedForTasksBox, setStartDateSelectedForTasksBox] =
+    useState(yesterdayDateFormattedForAPI);
+  const [endDateSelectedForTasksBox, setEndDateSelectedForTasksBox] =
+    useState(todayDateFormattedForAPI);
   const [settingsUserList, setSettingsUserList] = useState([]);
   const [selectedUserRoleSetting, setSelectedUserRoleSetting] = useState(null);
 
@@ -118,7 +139,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
         setCandidateDate(resp[0].data.data[0]);
         setPersonalInfo(resp[0].data.personal_info);
         console.log(resp[0].data.personal_info);
-        setCandidateName(resp[0].data.personal_info.username);
+        setCandidateName(resp[0].data.personal_info.applicant);
 
         console.log(resp[1].data);
         setTaskReportData(resp[1].data?.response);
@@ -563,23 +584,65 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                         ]}
                       />
                       <div className="date__Select__Wrap">
-                        <input
-                          type="date"
-                          value={dateSelectedForTasksBox}
-                          onChange={({ target }) =>
-                            setDateSelectedForTasksBox(target.value)
-                          }
-                          disabled={!projectSelectedForTasksBox ? true : false}
-                        />
+                        <div className="date__Select__Wrap__Item">
+                          <span>Start Date</span>
+                          <input
+                            type="date"
+                            value={startDateSelectedForTasksBox}
+                            onChange={({ target }) =>
+                              setStartDateSelectedForTasksBox(target.value)
+                            }
+                            disabled={!projectSelectedForTasksBox ? true : false}
+                            max={
+                              new Date(endDateSelectedForTasksBox)
+                              .toISOString()
+                              .slice(0, new Date(endDateSelectedForTasksBox).toISOString().lastIndexOf(":"))
+                              .split('T')[0]
+                            }
+                          />
+                        </div>
+                        <div className="date__Select__Wrap__Item">
+                          <span>End Date</span>
+                          <input
+                            type="date"
+                            value={endDateSelectedForTasksBox}
+                            onChange={({ target }) =>
+                              setEndDateSelectedForTasksBox(target.value)
+                            }
+                            disabled={!projectSelectedForTasksBox ? true : false}
+                            min={
+                              new Date(startDateSelectedForTasksBox)
+                              .toISOString()
+                              .slice(0, new Date(startDateSelectedForTasksBox).toISOString().lastIndexOf(":"))
+                              .split('T')[0]
+                            }
+                          />
+                        </div>
                       </div>
 
                       {projectSelectedForTasksBox ? (
                         <>
                           <p className="task__Select">
                             <b>
-                              Tasks added by {candidateName} under the{" "}
-                              {projectSelectedForTasksBox} project on{" "}
-                              {new Date(dateSelectedForTasksBox).toDateString()}
+                              {taskReportData
+                              .find(
+                                (task) =>
+                                  task.project === projectSelectedForTasksBox
+                              )
+                              ?.tasks?.filter(
+                                (task) =>
+                                  (
+                                    new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
+                                    &&
+                                      new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
+                                  ) &&
+                                  task.project === projectSelectedForTasksBox
+                                  &&
+                                  task.is_active
+                              ).length} tasks added by {candidateName} under the{" "}
+                              {projectSelectedForTasksBox} project between{" "}
+                              {new Date(startDateSelectedForTasksBox).toDateString()} and{" "}
+                              {new Date(endDateSelectedForTasksBox).toDateString()}
                             </b>
                           </p>
 
@@ -595,9 +658,14 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                               )
                               ?.tasks?.filter(
                                 (task) =>
-                                  task.task_created_date ===
-                                    dateSelectedForTasksBox &&
+                                  (
+                                    new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
+                                    &&
+                                      new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
+                                  ) &&
                                   task.project === projectSelectedForTasksBox
+                                  &&
+                                  task.is_active
                               ).length < 1 ||
                             !Array.isArray(
                               taskReportData
@@ -607,9 +675,14 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                 )
                                 ?.tasks?.filter(
                                   (task) =>
-                                    task.task_created_date ===
-                                      dateSelectedForTasksBox &&
+                                    (
+                                      new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
+                                      &&
+                                        new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
+                                    ) &&
                                     task.project === projectSelectedForTasksBox
+                                    &&
+                                    task.is_active
                                 )
                             ) ? (
                               <>
@@ -625,10 +698,9 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                   }}
                                 >
                                   No tasks were added by {candidateName} under
-                                  the {projectSelectedForTasksBox} project on{" "}
-                                  {new Date(
-                                    dateSelectedForTasksBox
-                                  ).toDateString()}
+                                  the {projectSelectedForTasksBox} project between{" "}
+                                  {new Date(startDateSelectedForTasksBox).toDateString()} and{" "}
+                                  {new Date(endDateSelectedForTasksBox).toDateString()}
                                 </p>
                               </>
                             ) : (
@@ -636,6 +708,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                 <table id="customers">
                                   <tr>
                                     <th>S/N</th>
+                                    <th>Date added</th>
                                     <th>Time started</th>
                                     <th>Time finished</th>
                                     <th>task</th>
@@ -647,9 +720,18 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                       .find((task) => task.project === projectSelectedForTasksBox)
                                       ?.tasks?.filter(
                                         (task) =>
-                                          task.task_created_date === dateSelectedForTasksBox &&
+                                          (
+                                            new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
+                                            &&
+                                              new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
+                                          ) &&
                                           task.project === projectSelectedForTasksBox
+                                          &&
+                                          task.is_active
+                                          &&
+                                          task.task_created_date
                                       )
+                                      ?.reverse()
                                       ?.map((task, index) => {
                                         return(
                                           <tbody>
@@ -662,6 +744,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                               </div>*/}
                                             <tr key={task._id}>
                                               <td>{index + 1}.</td>
+                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{new Date(task.task_created_date).toDateString()}</td>
                                               <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
                                               <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
                                               <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task}</td>
