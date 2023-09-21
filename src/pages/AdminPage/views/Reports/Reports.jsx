@@ -765,23 +765,20 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 marginRight: "auto",
               }}
             >
-              <Bar
+              <Doughnut
                 data={{
-                  labels: ["projects"],
+                  labels: [
+                    data.project_with_most_tasks?.title,
+                    data.project_with_least_tasks?.title,
+                  ],
                   datasets: [
                     {
-                      label: data.project_with_most_tasks?.title,
-                      data: [data.project_with_most_tasks?.tasks_added],
-                      backgroundColor: "#005734",
-                      borderColor: "#005734",
-                      maxBarThickness: 40,
-                    },
-                    {
-                      label: data.project_with_least_tasks?.title,
-                      data: [data.project_with_least_tasks?.tasks_added],
-                      backgroundColor: "#d3d3d3",
-                      borderColor: "#d3d3d3",
-                      maxBarThickness: 40,
+                      data: [
+                        data.project_with_most_tasks?.tasks_added,
+                        data.project_with_least_tasks?.tasks_added,
+                      ],
+                      backgroundColor: ["#005734", "#d3d3d3"],
+                      borderColor: ["#005734", "#d3d3d3"],
                     },
                   ],
                 }}
