@@ -409,18 +409,18 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                             maxBarThickness: 40,
                           },
                           {
-                            label: "Tasks completed",
-                            backgroundColor: "yellow",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_completed;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                          {
                             label: "Tasks uncompleted",
                             backgroundColor: "red",
                             data: Object.keys(candidateData).map((key) => {
                               return candidateData[key].tasks_uncompleted;
+                            }),
+                            maxBarThickness: 40,
+                          },
+                          {
+                            label: "Tasks completed",
+                            backgroundColor: "yellow",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_completed;
                             }),
                             maxBarThickness: 40,
                           },
