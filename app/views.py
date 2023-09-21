@@ -6270,7 +6270,7 @@ class Generate_Report(APIView):
                 else:
                     field={}
                 update_field={}
-                threshold=30
+                threshold=payload["threshold"]
                 _tasks_added = dowellconnection(*task_management_reports, "fetch", field, update_field)
                 _task_added_ids=[]
                 task_added={}
@@ -6281,7 +6281,7 @@ class Generate_Report(APIView):
                     except KeyError:
                         task_added[task["_id"]]="None"
                 _task_details = dowellconnection(*task_details_module, "fetch", field, update_field)
-                print(_task_details)
+                #print(_task_details)
                 
                 tasks_added_by=[]
 
