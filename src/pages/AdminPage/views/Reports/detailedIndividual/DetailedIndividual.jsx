@@ -37,7 +37,8 @@ export const chartOptions = {
 };
 
 export default function DetailedIndividual({ isPublicReportUser }) {
-  const { currentUser, setCurrentUser, reportsUserDetails } = useCurrentUserContext();
+  const { currentUser, setCurrentUser, reportsUserDetails } =
+    useCurrentUserContext();
 
   const navigate = useNavigate();
   const [candidates, setcandidates] = useState([]);
@@ -56,21 +57,40 @@ export default function DetailedIndividual({ isPublicReportUser }) {
   const [projectSelectedForTasksBox, setProjectSelectedForTasksBox] =
     useState(null);
   const date = new Date();
-  const [year, month, day] = [
+  const yesterdayDate = new Date(new Date().setDate(date.getDate() - 1));
+  const [ 
+    todayYear,
+    todayMonth,
+    todayDay,
+    yesterdayYear,
+    yesterdayMonth,
+    yesterdayDay,
+  ] = [
     date.getFullYear(),
     date.getMonth() + 1,
     date.getDate(),
-  ];
-  const dateFormattedForAPI = `${year}-${month < 10 ? "0" + month : month}-${
-    day < 10 ? "0" + day : day
-  }`;
+    yesterdayDate.getFullYear(),
+    yesterdayDate.getMonth() + 1,
+    yesterdayDate.getDate(),
+  ]
+  const [
+    todayDateFormattedForAPI,
+    yesterdayDateFormattedForAPI,
+  ] = [
+    `${todayYear}-${todayMonth < 10 ? "0" + todayMonth : todayMonth}-${
+      todayDay < 10 ? "0" + todayDay : todayDay
+    }`,
+    `${yesterdayYear}-${yesterdayMonth < 10 ? "0" + yesterdayMonth : yesterdayMonth }-${
+      yesterdayDay < 10 ? "0" + yesterdayDay : yesterdayDay
+    }`,
+  ]
 
-  const [dateSelectedForTasksBox, setDateSelectedForTasksBox] =
-    useState(dateFormattedForAPI);
-  const [ settingsUserList, setSettingsUserList ] = 
-    useState([]);
-  const [ selectedUserRoleSetting, setSelectedUserRoleSetting ] =
-    useState(null);
+  const [startDateSelectedForTasksBox, setStartDateSelectedForTasksBox] =
+    useState(yesterdayDateFormattedForAPI);
+  const [endDateSelectedForTasksBox, setEndDateSelectedForTasksBox] =
+    useState(todayDateFormattedForAPI);
+  const [settingsUserList, setSettingsUserList] = useState([]);
+  const [selectedUserRoleSetting, setSelectedUserRoleSetting] = useState(null);
 
   let currentTrack = 0;
   const colors = [
@@ -119,7 +139,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
         setCandidateDate(resp[0].data.data[0]);
         setPersonalInfo(resp[0].data.personal_info);
         console.log(resp[0].data.personal_info);
-        setCandidateName(resp[0].data.personal_info.username);
+        setCandidateName(resp[0].data.personal_info.applicant);
 
         console.log(resp[1].data);
         setTaskReportData(resp[1].data?.response);
@@ -152,21 +172,23 @@ export default function DetailedIndividual({ isPublicReportUser }) {
         setProjectSelectedForSubprojectBox(resp[1].data?.response[0]?.project);
         setProjectSelectedForTasksBox(null);
 
-        
         const foundUserSettingItem = settingsUserList?.find(
           (value) =>
-            value?.profile_info[value?.profile_info?.length - 1]?.profile_title === resp[0]?.data?.personal_info?.portfolio_name
+            value?.profile_info[value?.profile_info?.length - 1]
+              ?.profile_title === resp[0]?.data?.personal_info?.portfolio_name
         );
-        
+
         if (foundUserSettingItem) {
           setSelectedUserRoleSetting(
-            foundUserSettingItem?.profile_info[foundUserSettingItem?.profile_info?.length - 1]
+            foundUserSettingItem?.profile_info[
+              foundUserSettingItem?.profile_info?.length - 1
+            ]
           );
         }
         setSecondLoadng(false);
       })
       .catch((err) => {
-        console.error(err)
+        console.error(err);
         setSecondLoadng(false);
       });
   };
@@ -178,51 +200,54 @@ export default function DetailedIndividual({ isPublicReportUser }) {
     setFirstLoading(true);
     Promise.all([
       getAllOnBoardCandidate(
-        isPublicReportUser ?
-          reportsUserDetails?.company_id
-        :
-        currentUser?.portfolio_info[0].org_id
-      )
-      ,
+        isPublicReportUser
+          ? reportsUserDetails?.company_id
+          : currentUser?.portfolio_info[0].org_id
+      ),
       getSettingUserProfileInfo(),
     ])
-      .then(
-        (promiseRes) => {
-          setcandidates(
-            promiseRes[0]?.data?.response?.data?.filter((candidate) => candidate.status === "hired")
-          );
-          setcandidates2(
-            promiseRes[0]?.data?.response?.data?.filter((candidate) => candidate.status === "hired")
-          );
-          setOptions(
-            promiseRes[0]?.data?.response?.data
-              ?.filter((candidate) => candidate.status === "hired")
-              .map((v) => ({ value: v._id, label: v.username }))
-          );
+      .then((promiseRes) => {
+        setcandidates(
+          promiseRes[0]?.data?.response?.data?.filter(
+            (candidate) => candidate.status === "hired"
+          )
+        );
+        setcandidates2(
+          promiseRes[0]?.data?.response?.data?.filter(
+            (candidate) => candidate.status === "hired"
+          )
+        );
+        setOptions(
+          promiseRes[0]?.data?.response?.data
+            ?.filter((candidate) => candidate.status === "hired")
+            .map((v) => ({ value: v._id, label: v.applicant }))
+        );
 
-          const settingsInfo = isPublicReportUser ?
-            promiseRes[1]?.data
+        const settingsInfo = isPublicReportUser
+          ? promiseRes[1]?.data
               ?.reverse()
               ?.filter(
-                item => item.company_id === reportsUserDetails?.company_id
-              )?.filter(
-                item => item.data_type === reportsUserDetails?.data_type
+                (item) => item.company_id === reportsUserDetails?.company_id
               )
-            :
-            promiseRes[1]?.data
+              ?.filter(
+                (item) => item.data_type === reportsUserDetails?.data_type
+              )
+          : promiseRes[1]?.data
               ?.reverse()
               ?.filter(
-                item => item.company_id === currentUser.portfolio_info[0].org_id
-              )?.filter(
-                item => item.data_type === currentUser.portfolio_info[0].data_type
-            );
-          setSettingsUserList(settingsInfo);
-          setFirstLoading(false);
-        }
-      )
+                (item) =>
+                  item.company_id === currentUser.portfolio_info[0].org_id
+              )
+              ?.filter(
+                (item) =>
+                  item.data_type === currentUser.portfolio_info[0].data_type
+              );
+        setSettingsUserList(settingsInfo);
+        setFirstLoading(false);
+      })
       .catch((err) => {
-        console.log(err)
-        setFirstLoading(false)
+        console.log(err);
+        setFirstLoading(false);
       });
   }, []);
 
@@ -239,19 +264,18 @@ export default function DetailedIndividual({ isPublicReportUser }) {
       >
         <div className="detailed_indiv_container">
           <div className="task__report__nav">
-            {
-              isPublicReportUser ? 
+            {isPublicReportUser ? (
               <>
                 <h2>Individual report</h2>
               </>
-              :
+            ) : (
               <>
                 <button className="back" onClick={() => navigate(-1)}>
                   <MdArrowBackIosNew />
                 </button>
                 <h2>Individual Report</h2>
               </>
-            }
+            )}
           </div>
           <p style={{ fontSize: "0.9rem" }}>
             Get well-detailed actionable insights on hired individuals in your
@@ -269,26 +293,25 @@ export default function DetailedIndividual({ isPublicReportUser }) {
     >
       <div className="detailed_indiv_container">
         <div className="task__report__nav">
-          {
-            isPublicReportUser ? 
+          {isPublicReportUser ? (
             <>
               <h2>Individual report</h2>
             </>
-            :
+          ) : (
             <>
               <button className="back" onClick={() => navigate(-1)}>
                 <MdArrowBackIosNew />
               </button>
               <h2>Individual Report</h2>
             </>
-          }
+          )}
         </div>
         <p style={{ fontSize: "0.9rem" }}>
           Get well-detailed actionable insights on hired individuals in your
           organization
         </p>
         <div className="selction_container">
-          <p>Select username</p>
+          <p>Select name</p>
           <Select
             options={options}
             onChange={(e) => handleSelectChange(e?.value)}
@@ -333,30 +356,27 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                         <span>Portfolio name:</span>
                         {personalInfo.portfolio_name}
                       </p>
-                      {
-                        selectedUserRoleSetting && <>
+                      {selectedUserRoleSetting && (
+                        <>
                           <p>
-                            <span>Current role:</span>  
-                            {
-                              rolesDict[selectedUserRoleSetting?.Role] ?
-                                rolesDict[selectedUserRoleSetting?.Role]
-                                :
-                              'Invalid role'
-                            }
+                            <span>Current role:</span>
+                            {rolesDict[selectedUserRoleSetting?.Role]
+                              ? rolesDict[selectedUserRoleSetting?.Role]
+                              : "Invalid role"}
                           </p>
-                          {
-                            selectedUserRoleSetting.other_roles && <p>
-                              <span>Other roles:</span>  
-                              {
-                                selectedUserRoleSetting.other_roles.map(role => {
-                                  if (!rolesDict[role]) return null
-                                  return rolesDict[role]
-                                }).join(', ')
-                              }
+                          {selectedUserRoleSetting.other_roles && (
+                            <p>
+                              <span>Other roles:</span>
+                              {selectedUserRoleSetting.other_roles
+                                .map((role) => {
+                                  if (!rolesDict[role]) return null;
+                                  return rolesDict[role];
+                                })
+                                .join(", ")}
                             </p>
-                          }
+                          )}
                         </>
-                      }
+                      )}
                       <p>
                         <span>Application submitted on:</span>
                         {formatDate(personalInfo.application_submitted_on)}
@@ -382,7 +402,8 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                   <div className="graph">
                     <h3>Tasks overview</h3>
                     <h4 style={{ textAlign: "center", marginBottom: "2rem" }}>
-                      Bar chart showing task details for {candidateName} this year
+                      Bar chart showing task details for {candidateName} this
+                      year
                     </h4>
                     <Bar
                       data={{
@@ -422,13 +443,18 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                         <h4>Projects</h4>
                         {taskProjectReportData ? (
                           <>
-                          <p style={{ margin: '25px 0 10px' }}><b>Bar chart showing hours, total tasks and tasks this week per project</b></p>
-                          <div className="graph">
-                            <Bar
-                              options={chartOptions}
-                              data={taskProjectReportData}
-                            />
-                          </div>
+                            <p style={{ margin: "25px 0 10px" }}>
+                              <b>
+                                Bar chart showing hours, total tasks and tasks
+                                this week per project
+                              </b>
+                            </p>
+                            <div className="graph">
+                              <Bar
+                                options={chartOptions}
+                                data={taskProjectReportData}
+                              />
+                            </div>
                           </>
                         ) : (
                           <></>
@@ -456,75 +482,81 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                           />
                         </h4>
                         {projectSelectedForSubprojectBox ? (
-                            <>
-                            <p style={{ margin: '25px 0 10px' }}><b>Doughnut chart showing the distribution of subprojects added by {candidateName} under the {projectSelectedForSubprojectBox} project</b></p>
+                          <>
+                            <p style={{ margin: "25px 0 10px" }}>
+                              <b>
+                                Doughnut chart showing the distribution of
+                                subprojects added by {candidateName} under the{" "}
+                                {projectSelectedForSubprojectBox} project
+                              </b>
+                            </p>
                             <div className="graph">
-                            <Doughnut
-                              data={{
-                                labels: taskReportData.find(
-                                  (item) =>
-                                    item.project ===
-                                    projectSelectedForSubprojectBox
-                                )
-                                  ? Object.keys(
-                                      taskReportData.find(
+                              <Doughnut
+                                data={{
+                                  labels: taskReportData.find(
+                                    (item) =>
+                                      item.project ===
+                                      projectSelectedForSubprojectBox
+                                  )
+                                    ? Object.keys(
+                                        taskReportData.find(
+                                          (item) =>
+                                            item.project ===
+                                            projectSelectedForSubprojectBox
+                                        )?.subprojects || {}
+                                      )
+                                    : [],
+                                  datasets: [
+                                    {
+                                      label: "Poll",
+                                      data: taskReportData.find(
                                         (item) =>
                                           item.project ===
                                           projectSelectedForSubprojectBox
-                                      )?.subprojects || {}
-                                    )
-                                  : [],
-                                datasets: [
-                                  {
-                                    label: "Poll",
-                                    data: taskReportData.find(
-                                      (item) =>
-                                        item.project ===
-                                        projectSelectedForSubprojectBox
-                                    )
-                                      ? Object.keys(
-                                          taskReportData.find(
-                                            (item) =>
-                                              item.project ===
-                                              projectSelectedForSubprojectBox
-                                          )?.subprojects || {}
-                                        ).map((subproject) => {
-                                          return taskReportData.find(
-                                            (item) =>
-                                              item.project ===
-                                              projectSelectedForSubprojectBox
-                                          )?.subprojects[subproject];
-                                        })
-                                      : [],
-                                    backgroundColor: taskReportData.find(
-                                      (item) =>
-                                        item.project ===
-                                        projectSelectedForSubprojectBox
-                                    )
-                                      ? Object.keys(
-                                          taskReportData.find(
-                                            (item) =>
-                                              item.project ===
-                                              projectSelectedForSubprojectBox
-                                          )?.subprojects || {}
-                                        ).map((subproject) => {
-                                          if (
-                                            currentTrack >
-                                            colors.length - 1
-                                          ) {
-                                            currentTrack = 0;
-                                          } else {
-                                            currentTrack += 1;
-                                          }
+                                      )
+                                        ? Object.keys(
+                                            taskReportData.find(
+                                              (item) =>
+                                                item.project ===
+                                                projectSelectedForSubprojectBox
+                                            )?.subprojects || {}
+                                          ).map((subproject) => {
+                                            return taskReportData.find(
+                                              (item) =>
+                                                item.project ===
+                                                projectSelectedForSubprojectBox
+                                            )?.subprojects[subproject];
+                                          })
+                                        : [],
+                                      backgroundColor: taskReportData.find(
+                                        (item) =>
+                                          item.project ===
+                                          projectSelectedForSubprojectBox
+                                      )
+                                        ? Object.keys(
+                                            taskReportData.find(
+                                              (item) =>
+                                                item.project ===
+                                                projectSelectedForSubprojectBox
+                                            )?.subprojects || {}
+                                          ).map((subproject) => {
+                                            if (
+                                              currentTrack >
+                                              colors.length - 1
+                                            ) {
+                                              currentTrack = 0;
+                                            } else {
+                                              currentTrack += 1;
+                                            }
 
-                                          return colors[currentTrack];
-                                        })
-                                      : [],
-                                  },
-                                ],
-                              }}
-                            />
-                          </div>
+                                            return colors[currentTrack];
+                                          })
+                                        : [],
+                                    },
+                                  ],
+                                }}
+                              />
+                            </div>
                           </>
                         ) : (
                           <></>
@@ -552,23 +584,65 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                         ]}
                       />
                       <div className="date__Select__Wrap">
-                        <input
-                          type="date"
-                          value={dateSelectedForTasksBox}
-                          onChange={({ target }) =>
-                            setDateSelectedForTasksBox(target.value)
-                          }
-                          disabled={!projectSelectedForTasksBox ? true : false}
-                        />
+                        <div className="date__Select__Wrap__Item">
+                          <span>Start Date</span>
+                          <input
+                            type="date"
+                            value={startDateSelectedForTasksBox}
+                            onChange={({ target }) =>
+                              setStartDateSelectedForTasksBox(target.value)
+                            }
+                            disabled={!projectSelectedForTasksBox ? true : false}
+                            max={
+                              new Date(endDateSelectedForTasksBox)
+                              .toISOString()
+                              .slice(0, new Date(endDateSelectedForTasksBox).toISOString().lastIndexOf(":"))
+                              .split('T')[0]
+                            }
+                          />
+                        </div>
+                        <div className="date__Select__Wrap__Item">
+                          <span>End Date</span>
+                          <input
+                            type="date"
+                            value={endDateSelectedForTasksBox}
+                            onChange={({ target }) =>
+                              setEndDateSelectedForTasksBox(target.value)
+                            }
+                            disabled={!projectSelectedForTasksBox ? true : false}
+                            min={
+                              new Date(startDateSelectedForTasksBox)
+                              .toISOString()
+                              .slice(0, new Date(startDateSelectedForTasksBox).toISOString().lastIndexOf(":"))
+                              .split('T')[0]
+                            }
+                          />
+                        </div>
                       </div>
 
                       {projectSelectedForTasksBox ? (
                         <>
                           <p className="task__Select">
                             <b>
-                              Tasks added by {candidateName} under the{" "}
-                              {projectSelectedForTasksBox} project on{" "}
-                              {new Date(dateSelectedForTasksBox).toDateString()}
+                              {taskReportData
+                              .find(
+                                (task) =>
+                                  task.project === projectSelectedForTasksBox
+                              )
+                              ?.tasks?.filter(
+                                (task) =>
+                                  (
+                                    new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
+                                    &&
+                                      new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
+                                  ) &&
+                                  task.project === projectSelectedForTasksBox
+                                  &&
+                                  task.is_active
+                              ).length} tasks added by {candidateName} under the{" "}
+                              {projectSelectedForTasksBox} project between{" "}
+                              {new Date(startDateSelectedForTasksBox).toDateString()} and{" "}
+                              {new Date(endDateSelectedForTasksBox).toDateString()}
                             </b>
                           </p>
 
@@ -584,9 +658,14 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                               )
                               ?.tasks?.filter(
                                 (task) =>
-                                  task.task_created_date ===
-                                    dateSelectedForTasksBox &&
+                                  (
+                                    new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
+                                    &&
+                                      new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
+                                  ) &&
                                   task.project === projectSelectedForTasksBox
+                                  &&
+                                  task.is_active
                               ).length < 1 ||
                             !Array.isArray(
                               taskReportData
@@ -596,13 +675,21 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                 )
                                 ?.tasks?.filter(
                                   (task) =>
-                                    task.task_created_date ===
-                                      dateSelectedForTasksBox &&
+                                    (
+                                      new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
+                                      &&
+                                        new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
+                                    ) &&
                                     task.project === projectSelectedForTasksBox
+                                    &&
+                                    task.is_active
                                 )
                             ) ? (
                               <>
-                                <img src="https://img.freepik.com/free-vector/no-data-concept-illustration_114360-626.jpg?w=1480&t=st=1694763189~exp=1694763789~hmac=e4b01d8c6a162b7170700df535471c9972009c0bdf2679a1c63eefffb7401809" alt="illustration" />
+                                <img
+                                  src="https://img.freepik.com/free-vector/no-data-concept-illustration_114360-626.jpg?w=1480&t=st=1694763189~exp=1694763789~hmac=e4b01d8c6a162b7170700df535471c9972009c0bdf2679a1c63eefffb7401809"
+                                  alt="illustration"
+                                />
                                 <p
                                   style={{
                                     fontSize: "0.9rem",
@@ -611,57 +698,94 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                   }}
                                 >
                                   No tasks were added by {candidateName} under
-                                  the {projectSelectedForTasksBox} project on{" "}
-                                  {new Date(
-                                    dateSelectedForTasksBox
-                                  ).toDateString()}
+                                  the {projectSelectedForTasksBox} project between{" "}
+                                  {new Date(startDateSelectedForTasksBox).toDateString()} and{" "}
+                                  {new Date(endDateSelectedForTasksBox).toDateString()}
                                 </p>
                               </>
                             ) : (
-                              React.Children.toArray(
-                                taskReportData
-                                  .find(
-                                    (task) =>
-                                      task.project ===
-                                      projectSelectedForTasksBox
-                                  )
-                                  ?.tasks?.filter(
-                                    (task) =>
-                                      task.task_created_date ===
-                                        dateSelectedForTasksBox &&
-                                      task.project ===
-                                        projectSelectedForTasksBox
-                                  )
-                                  ?.map((task) => {
-                                    return (
-                                      <div className="single__task__Detail">
-                                        <h3>Task: {task.task}</h3>
-                                        <p>Subproject: {task.subproject}</p>
-                                        <p>Task type: {task.task_type}</p>
-                                        <p>Start time: {task.start_time}</p>
-                                        <p>End time: {task.end_time}</p>
-                                      </div>
-                                    );
-                                  })
-                              )
+                              <>
+                                <table id="customers">
+                                  <tr>
+                                    <th>S/N</th>
+                                    <th>Date added</th>
+                                    <th>Time started</th>
+                                    <th>Time finished</th>
+                                    <th>task</th>
+                                    <th>Task type</th>
+                                    <th>sub project</th>
+                                  </tr>
+                                  {React.Children.toArray (
+                                    taskReportData
+                                      .find((task) => task.project === projectSelectedForTasksBox)
+                                      ?.tasks?.filter(
+                                        (task) =>
+                                          (
+                                            new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
+                                            &&
+                                              new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
+                                          ) &&
+                                          task.project === projectSelectedForTasksBox
+                                          &&
+                                          task.is_active
+                                          &&
+                                          task.task_created_date
+                                      )
+                                      ?.reverse()
+                                      ?.map((task, index) => {
+                                        return(
+                                          <tbody>
+                                          {/*<div className="single__task__Detail">
+                                              <h3>Task: {task.task}</h3>
+                                                <p>Subproject: {task.subproject}</p>
+                                                <p>Task type: {task.task_type}</p>
+                                                <p>Start time: {task.start_time}</p>
+                                                <p>End time: {task.end_time}</p>
+                                              </div>*/}
+                                            <tr key={task._id}>
+                                              <td>{index + 1}.</td>
+                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{new Date(task.task_created_date).toDateString()}</td>
+                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
+                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
+                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task}</td>
+                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task_type}</td>
+                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.subproject}</td>
+                                            </tr>
+                                          </tbody>
+                                        )
+                                      })
+                                  )}
+                                </table>
+                              </>
                             )}
                           </div>
                         </>
-                        )
-                        :
+                      ) : (
                         <>
-                          <p style={{ fontSize: '0.9rem', textAlign: 'center' }}>Select a project to get a detailed report on tasks added</p>
+                          <p
+                            style={{ fontSize: "0.9rem", textAlign: "center" }}
+                          >
+                            Select a project to get a detailed report on tasks
+                            added
+                          </p>
                         </>
-                      }
+                      )}
                     </div>
                   </div>
                 </div>
               )}
             </>
-          ) : <>
-            <img src="https://img.freepik.com/free-vector/no-data-concept-illustration_114360-626.jpg?w=1480&t=st=1694763189~exp=1694763789~hmac=e4b01d8c6a162b7170700df535471c9972009c0bdf2679a1c63eefffb7401809" alt="illustration" />
-            <p style={{ fontSize: '0.9rem', textAlign: 'center' }}>Search for your username and get your report</p>
-          </>}
+          ) : (
+            <>
+              <img
+                src="https://img.freepik.com/free-vector/no-data-concept-illustration_114360-626.jpg?w=1480&t=st=1694763189~exp=1694763789~hmac=e4b01d8c6a162b7170700df535471c9972009c0bdf2679a1c63eefffb7401809"
+                alt="illustration"
+              />
+              <p style={{ fontSize: "0.9rem", textAlign: "center" }}>
+                Search for your username and get your report
+              </p>
+            </>
+          )}
         </div>
       </div>
     </StaffJobLandingLayout>

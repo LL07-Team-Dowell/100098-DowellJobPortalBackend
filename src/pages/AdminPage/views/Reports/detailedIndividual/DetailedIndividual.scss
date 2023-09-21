@@ -101,6 +101,22 @@
         margin-left: auto;
         width: max-content;
         margin-top: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 1.4rem;
+        margin-bottom: 1.4rem;
+
+        .date__Select__Wrap__Item {
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          flex-direction: column;
+
+          span {
+            font-size: 0.875rem;
+            color: #005734;
+          }
+        }
 
         input {
           font-family: "Poppins", sans-serif;
@@ -124,8 +140,8 @@
         height: 24rem;
         margin-top: 0.7rem;
         position: relative;
-        overflow-x: scroll;
-        overflow-y: hidden;
+        // overflow-x: scroll;
+        overflow-y: scroll;
         white-space: nowrap;
         scrollbar-width: thin;
 
