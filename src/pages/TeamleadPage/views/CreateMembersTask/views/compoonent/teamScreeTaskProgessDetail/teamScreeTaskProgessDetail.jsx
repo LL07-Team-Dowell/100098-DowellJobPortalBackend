@@ -16,6 +16,7 @@ const TeamScreeTaskProgessDetail = ({
   tasks,
   setTasks,
 }) => {
+  console.log({ tasks });
   return (
     <div className='team-screen-task-progress-detail'>
       <div className='team-screen-task-progress-detail-header'>
@@ -47,6 +48,7 @@ const TeamScreeTaskProgessDetail = ({
                 setTasks={setTasks}
                 taskCompleted={false}
                 taskId={task._id}
+                {...tasks}
               />
             ))
         ) : (
@@ -67,6 +69,7 @@ const TeamScreeTaskProgessDetail = ({
                 setTasks={setTasks}
                 taskCompleted={true}
                 taskId={task._id}
+                {...tasks}
               />
             ))
         ) : (

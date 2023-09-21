@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ModelDetails from "./ModelDetails";
+import axios from "axios";
 
 const SingleTask = ({
   title,
@@ -12,6 +13,22 @@ const SingleTask = ({
   taskId,
 }) => {
   console.log(taskCompleted);
+  const pathTask = () => {
+    const data = {
+      title: title,
+      description: "",
+      assignee: members,
+      team_name: "",
+      completed: true,
+      task_added_by: "",
+    };
+    axios
+      .patch(`https://100098.pythonanywhere.com/edit_team_task/${taskId}/`)
+      .then(({ data }) => {
+        console.log(data);
+      })
+      .catch((err) => console.log(err));
+  };
   const completeTaskFunction = () => {
     if (!taskCompleted) {
       setTasks((tasks) =>
