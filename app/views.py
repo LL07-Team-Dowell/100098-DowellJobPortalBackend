@@ -4849,24 +4849,24 @@ class Generate_Report(APIView):
                         r["project"] = "None"
                         projects.append(r["project"])
 
-                counter = Counter(projects)
-                try:
-                    most_tasked_project = counter.most_common(1)[0][0]
-                except IndexError:
-                    most_tasked_project = "None"
-                try:
-                    least_tasked_project = counter.most_common()[-1][0]
-                except IndexError:
-                    least_tasked_project = "None"
-                least_tasked_project = counter.most_common()[-1][0]
-                data["project_with_most_tasks"] = {
-                    "title": most_tasked_project,
-                    "tasks_added": projects.count(most_tasked_project),
-                }
-                data["project_with_least_tasks"] = {
-                    "title": least_tasked_project,
-                    "tasks_added": projects.count(least_tasked_project),
-                }
+
+                c = Counter(projects)
+                m = min(c.values())
+                least_taskeds = [x for x in projects if c[x] == m]
+                least_tasked_projects=[]
+                for items in set(least_taskeds):
+                    count= least_taskeds.count(items)
+                    least_tasked_projects.append({"title":items,"tasks_added":count})
+
+                m = max(c.values())
+                most_tasked = [x for x in projects if c[x] == m]
+                most_tasked_projects=[]
+                for items in set(most_tasked):
+                    count= most_tasked.count(items)
+                    most_tasked_projects.append({"title":items,"tasks_added":count})
+
+                data["project_with_most_tasks"] = most_tasked_projects
+                data["project_with_least_tasks"] = least_tasked_projects
                 return Response(
                     {"message": "Admin Report Generated", "response": data},
                     status=status.HTTP_201_CREATED,
@@ -6291,6 +6291,8 @@ class Generate_Report(APIView):
                                             key="task_created_date",
                     )
                 
+                projects = []
+
                 for t in res_tasks_added[0]:
                     if t["task_id"] in _task_added_ids:
                         try:
@@ -6298,10 +6300,32 @@ class Generate_Report(APIView):
                         except KeyError:
                             tasks_added_by.append("None")
                             pass
+                    try:
+                        projects.append(t["project"])
+                    except KeyError:
+                        t["project"] = "None"
+                        projects.append(t["project"])
                 data={user:{} for user in tasks_added_by}
                 for user in tasks_added_by:
                     data[user]={"tasks":tasks_added_by.count(user),
                                 "status":"Passed" if tasks_added_by.count(user) >threshold else "Defaulter" }
+                # getting projects tasks details------------
+                
+               
+                c = Counter(projects)
+                m = min(c.values())
+                least_taskeds = [x for x in projects if c[x] == m]
+                least_tasked_projects=[]
+                for items in set(least_taskeds):
+                    count= least_taskeds.count(items)
+                    least_tasked_projects.append({"title":items,"tasks_added":count})
+
+                m = max(c.values())
+                most_tasked = [x for x in projects if c[x] == m]
+                most_tasked_projects=[]
+                for items in set(most_tasked):
+                    count= most_tasked.count(items)
+                    most_tasked_projects.append({"title":items,"tasks_added":count})
 
                 ## get highest and lowest counts of tasks------------
                 c = Counter(tasks_added_by)
@@ -6323,6 +6347,8 @@ class Generate_Report(APIView):
                     response={
                         "highest":max_items,
                         "lowest":min_items,
+                        "project_with_most_tasks":most_tasked_projects,
+                        "project_with_least_tasks":least_tasked_projects,
                         "threshold":threshold,
                         "users":data
                     }
@@ -6330,12 +6356,15 @@ class Generate_Report(APIView):
                     response={
                         "highest":"None",
                         "lowest":"None",
+                        "project_with_most_tasks":most_tasked_projects,
+                        "project_with_least_tasks":least_tasked_projects,
                         "threshold":threshold,
                         "users":data
                     }
 
                 return Response(
-                    {"message": f"Task Level report generated for Org-{payload['company_id']}", "response": response},
+                    {"message": f"Task Level report generated for Org-{payload['company_id']}", 
+                     "response": response},
                     status=status.HTTP_201_CREATED,
                 )
             else:
