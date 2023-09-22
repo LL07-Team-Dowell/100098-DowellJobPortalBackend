@@ -79,6 +79,7 @@ import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
 import IndividualTaskReports from "./pages/AdminPage/views/Reports/individualTaskReport/individualTaskReport";
 import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
 import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal";
+import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
 
 function App() {
   // console.log = () => { };
@@ -404,6 +405,24 @@ function App() {
       );
     }
 
+    if (
+      reportsUserDetails.reportsViewPermitted ===
+      reportOptionsPermitted.leaderboard_report
+    ) {
+      return (
+        <Routes>
+          <Route
+            path='*'
+            element={
+              <JobContextProvider>
+                <LeaderboardReport isPublicReportUser={true} />
+              </JobContextProvider>
+            }
+          />
+        </Routes>
+      );
+    }
+
     return (
       <Routes>
         <Route path='*' element={<>Page not found</>} />
@@ -657,6 +676,14 @@ function App() {
           element={
             <JobContextProvider>
               <IndividualTaskReports />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/report/leaderboard-report'
+          element={
+            <JobContextProvider>
+              <LeaderboardReport />
             </JobContextProvider>
           }
         />

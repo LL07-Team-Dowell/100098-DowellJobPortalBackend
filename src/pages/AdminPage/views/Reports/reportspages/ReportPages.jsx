@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { useState } from "react";
 import './index.scss';
+import { FaRankingStar } from 'react-icons/fa6'
 
 const ReportPages = () => {
   const navigate = useNavigate();
@@ -83,6 +84,20 @@ const ReportPages = () => {
             <h4>Team report</h4>
             <p>
               Get insights into how well teams are performing in your organization
+            </p>
+          </div>
+        </div>
+        <div
+          className="Create_Team"
+          onClick={() => navigate("leaderboard-report")}
+        >
+          <div>
+            <div>
+              <FaRankingStar className="icon" />
+            </div>
+            <h4>Leaderboard report</h4>
+            <p>
+              Get insights into the top performers in your organization
             </p>
           </div>
         </div>

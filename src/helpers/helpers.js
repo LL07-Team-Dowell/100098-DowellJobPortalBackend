@@ -98,3 +98,25 @@ export const getDaysInMonth = (date) => {
 
     return new Date(validDateFormat.getFullYear(), validDateFormat.getMonth() + 1, 0).getDate();
 }
+
+export const formatDateForAPI = (date, type='normal') => {
+    const dateInProperFormat = new Date(date);
+    if (typeof dateInProperFormat == 'Invalid Date') {
+        if (type === 'report') return '01/01/1970 0:00:00'
+        return '01-01-1970'
+    }
+
+    const [ year, month, day ] = [
+        dateInProperFormat.getFullYear(),
+        dateInProperFormat.getMonth() + 1,
+        dateInProperFormat.getDate(),
+    ]
+
+    if (type === 'report') {
+        return `${month}/${day < 10 ? "0" + day : day}/${year} 0:00:00`
+    }
+
+    return `${year}-${month < 10 ? "0" + month : month}-${
+        day < 10 ? "0" + day : day
+    }`
+}
