@@ -18,6 +18,7 @@ import { useJobContext } from "../../../../../contexts/Jobs";
 import { set } from "date-fns";
 import { IoShareSocial } from "react-icons/io5";
 import { Tooltip } from "react-tooltip";
+import DeleteConfirmation from "../../../../../components/DeleteConfirmation/DeleteConfirmation";
 
 const style = {
   fontSize: "1.2rem",
@@ -37,16 +38,24 @@ const Card = ({
   setShowOverlay,
   handleShareIconClick,
   index,
-  EditActiveCardStatus
+  EditActiveCardStatus,
 }) => {
   const { list } = useJobContext();
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => {
+    setShowModal(true);
+  };
+  const clodeModal = () => {
+    setShowModal(false);
+  };
 
   const { currentUser } = useCurrentUserContext();
   // console.log(currentUser.portfolio_info[0].org_id)
   // console.log({job_number})
   const [number, setnumber] = useState(0);
-  
+
   useEffect(() => {
     setnumber(list.filter((j) => j.job_number === job_number).length);
   }, [jobs]);
@@ -104,7 +113,7 @@ const Card = ({
       .then((response) => {
         // console.log(response.data);
         setLoading(false);
-        EditActiveCardStatus(_id)
+        EditActiveCardStatus(_id);
       })
       .catch((error) => {
         // console.log(error);
@@ -133,10 +142,10 @@ const Card = ({
         (job) => job.job_number === job_number
       );
 
-      if (extraFunctionToRun && typeof extraFunctionToRun === 'function') {
+      if (extraFunctionToRun && typeof extraFunctionToRun === "function") {
         setShowOverlay(false);
         extraFunctionToRun(jobToEdit._id);
-        return 
+        return;
       }
 
       navigate(`/edit-job/${jobToEdit._id}`);
@@ -150,131 +159,154 @@ const Card = ({
   if (job_title === null) return <></>;
 
   return (
-    <div className="card">
-      { 
-        newly_created && 
-        <div className="new__Indicator">
-          <MdOutlineFiberNew className="new__Indicator__Icon" />
-        </div> 
-      }
-      <div className="card__header">
-        <h5>{job_title}</h5>
-        <div className="interact__icons">
-          {newly_created ? (
-            <Link to={`/edit-job/#`} onClick={fetchJobsAgain} data-tooltip-id={job_number} data-tooltip-content={'Edit job'}>
-              <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
-              <Tooltip
-                id={job_number}
-                style={{ fontSize: '0.7rem', fontWeight: 'normal' }}
-              />
-            </Link>
-          ) : (
-            <Link to={`/edit-job/${_id}`} data-tooltip-id={_id} data-tooltip-content={'Edit job'}>
-              <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
-              <Tooltip
-                id={_id}
-                style={{ fontSize: '0.7rem', fontWeight: "normal" }}
-              />
-            </Link>
-          )}
-          { 
-            is_active && 
-            <>
-              <IoShareSocial
-                onClick={
-                  handleShareIconClick && typeof handleShareIconClick === 'function' ?
-                    newly_created ?
-                    () => fetchJobsAgain(null, (passedId, passedName) => handleShareIconClick(passedId, passedName))
-                    :
-                    () => handleShareIconClick(_id, job_title) 
-                  :
-                  () => {}
-                }
-                style={{ 
-                  fontSize: "1.3rem", 
-                  color: "#000",
-                  cursor: "pointer",
-                }}
-                data-tooltip-id={`${_id}4s3${index}`}
-                data-tooltip-content={'Share job'}
-              />
-              <Tooltip
-                id={`${_id}4s3${index}`}
-                style={{ fontSize: '0.7rem', fontWeight: "normal" }}
-              />
-            </>
-          }
-          {deletingLoading ? (
-            <LittleLoading />
-          ) : (
-            <>
-              <MdDelete
-                style={{ fontSize: "1.3rem", color: "#000" }}
-                onClick={() => handleDeleteOfJob(_id)}
-                className="delete__icon"
-                data-tooltip-id={`${_id}4d3${index}`}
-                data-tooltip-content={'Delete job'}
-              />
-              <Tooltip
-                id={`${_id}4d3${index}`}
-                style={{ fontSize: '0.7rem', fontWeight: "normal" }}
-              />
-            </>
-          )}
-        </div>
-      </div>
-      <div className="card__skill">
-        <div>
-          <h6>Skills:</h6>{" "}
-          <span className="skills">
-            {skills.length > 20 ? skills.slice(0, 20) + " ..." : skills}
-          </span>
-        </div>
-
-        {/* <input type="checkbox" id="switch" /><label for="switch">Toggle</label> */}
-        {loading ? (
-          <LittleLoading />
-        ) : (
-          <div className="state_of_job">
-            <label htmlFor="is_active"></label>
-            <input
-              className="active_checkbox"
-              type="checkbox"
-              name={"is_active"}
-              checked={is_activee}
-              onChange={handleCheckboxChange}
-              required
-            />
+    <>
+      {showModal && (
+        <DeleteConfirmation
+          text='are you sure you wanna add this job'
+          closeModal={clodeModal}
+          deleteFunction={() => handleDeleteOfJob(_id)}
+          id={_id}
+        />
+      )}
+      <div className='card'>
+        {newly_created && (
+          <div className='new__Indicator'>
+            <MdOutlineFiberNew className='new__Indicator__Icon' />
           </div>
         )}
-      </div>
-
-      <div className="card__footer">
-        <div>
-          <p>
-            <AiOutlineClockCircle style={style} /> <span>{date()}</span>
-          </p>
-          <div className="line"></div>
-          <p>
-            <CgDanger style={style} />
-            <span>{number} candidates apply for this</span>
-          </p>
+        <div className='card__header'>
+          <h5>{job_title}</h5>
+          <div className='interact__icons'>
+            {newly_created ? (
+              <Link
+                to={`/edit-job/#`}
+                onClick={fetchJobsAgain}
+                data-tooltip-id={job_number}
+                data-tooltip-content={"Edit job"}
+              >
+                <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
+                <Tooltip
+                  id={job_number}
+                  style={{ fontSize: "0.7rem", fontWeight: "normal" }}
+                />
+              </Link>
+            ) : (
+              <Link
+                to={`/edit-job/${_id}`}
+                data-tooltip-id={_id}
+                data-tooltip-content={"Edit job"}
+              >
+                <RiEdit2Fill style={{ fontSize: "1.3rem", color: "#000" }} />
+                <Tooltip
+                  id={_id}
+                  style={{ fontSize: "0.7rem", fontWeight: "normal" }}
+                />
+              </Link>
+            )}
+            {is_active && (
+              <>
+                <IoShareSocial
+                  onClick={
+                    handleShareIconClick &&
+                    typeof handleShareIconClick === "function"
+                      ? newly_created
+                        ? () =>
+                            fetchJobsAgain(null, (passedId, passedName) =>
+                              handleShareIconClick(passedId, passedName)
+                            )
+                        : () => handleShareIconClick(_id, job_title)
+                      : () => {}
+                  }
+                  style={{
+                    fontSize: "1.3rem",
+                    color: "#000",
+                    cursor: "pointer",
+                  }}
+                  data-tooltip-id={`${_id}4s3${index}`}
+                  data-tooltip-content={"Share job"}
+                />
+                <Tooltip
+                  id={`${_id}4s3${index}`}
+                  style={{ fontSize: "0.7rem", fontWeight: "normal" }}
+                />
+              </>
+            )}
+            {deletingLoading ? (
+              <LittleLoading />
+            ) : (
+              <>
+                <MdDelete
+                  style={{ fontSize: "1.3rem", color: "#000" }}
+                  onClick={() => openModal()}
+                  className='delete__icon'
+                  data-tooltip-id={`${_id}4d3${index}`}
+                  data-tooltip-content={"Delete job"}
+                />
+                <Tooltip
+                  id={`${_id}4d3${index}`}
+                  style={{ fontSize: "0.7rem", fontWeight: "normal" }}
+                />
+              </>
+            )}
+          </div>
         </div>
-        <button>
-          {newly_created ? (
-            <Link to={`/view-job/#`} style={{ color: "white" }} onClick={fetchJobsAgain}>
-              <span>View</span>{" "}
-              <img src={arrowright} alt="" className="arrow-link" />
-            </Link>
+        <div className='card__skill'>
+          <div>
+            <h6>Skills:</h6>{" "}
+            <span className='skills'>
+              {skills.length > 20 ? skills.slice(0, 20) + " ..." : skills}
+            </span>
+          </div>
+
+          {/* <input type="checkbox" id="switch" /><label for="switch">Toggle</label> */}
+          {loading ? (
+            <LittleLoading />
           ) : (
-            <Link to={`/view-job/${_id}`} style={{ color: "white" }}>
-              <span>View</span>{" "}
-              <img src={arrowright} alt="" className="arrow-link" />
-            </Link>
+            <div className='state_of_job'>
+              <label htmlFor='is_active'></label>
+              <input
+                className='active_checkbox'
+                type='checkbox'
+                name={"is_active"}
+                checked={is_activee}
+                onChange={handleCheckboxChange}
+                required
+              />
+            </div>
           )}
-        </button>
+        </div>
+
+        <div className='card__footer'>
+          <div>
+            <p>
+              <AiOutlineClockCircle style={style} /> <span>{date()}</span>
+            </p>
+            <div className='line'></div>
+            <p>
+              <CgDanger style={style} />
+              <span>{number} candidates apply for this</span>
+            </p>
+          </div>
+          <button>
+            {newly_created ? (
+              <Link
+                to={`/view-job/#`}
+                style={{ color: "white" }}
+                onClick={fetchJobsAgain}
+              >
+                <span>View</span>{" "}
+                <img src={arrowright} alt='' className='arrow-link' />
+              </Link>
+            ) : (
+              <Link to={`/view-job/${_id}`} style={{ color: "white" }}>
+                <span>View</span>{" "}
+                <img src={arrowright} alt='' className='arrow-link' />
+              </Link>
+            )}
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
