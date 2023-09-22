@@ -119,10 +119,9 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         ),
         end_date: formatDateFromMilliseconds(new Date().getTime()),
         report_type: "Admin",
-        company_id: isPublicReportUser ?
-          reportsUserDetails?.company_id
-        : 
-        currentUser.portfolio_info[0].org_id,
+        company_id: isPublicReportUser
+          ? reportsUserDetails?.company_id
+          : currentUser.portfolio_info[0].org_id,
       };
       generateCommonAdminReport(data)
         .then((resp) => {
@@ -144,10 +143,9 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       start_date,
       end_date,
       report_type: "Admin",
-      company_id: isPublicReportUser ?
-        reportsUserDetails?.company_id
-      : 
-      currentUser.portfolio_info[0].org_id,
+      company_id: isPublicReportUser
+        ? reportsUserDetails?.company_id
+        : currentUser.portfolio_info[0].org_id,
     };
     setDatasetForApplications(null);
     generateCommonAdminReport(data)
@@ -205,10 +203,9 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       start_date: firstDate,
       end_date: lastDate,
       report_type: "Admin",
-      company_id: isPublicReportUser ?
-        reportsUserDetails?.company_id
-      :  
-      currentUser.portfolio_info[0].org_id,
+      company_id: isPublicReportUser
+        ? reportsUserDetails?.company_id
+        : currentUser.portfolio_info[0].org_id,
     };
     setDatasetForApplications(null);
 
@@ -305,19 +302,18 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               <div
                 style={{ display: "flex", alignItems: "center", gap: "1rem" }}
               >
-                {
-                  isPublicReportUser ? 
+                {isPublicReportUser ? (
                   <>
                     <h2>Organization report</h2>
                   </>
-                  :
+                ) : (
                   <>
                     <button className='back' onClick={() => navigate(-1)}>
                       <MdArrowBackIosNew />
                     </button>
                     <h2>Get insights into your organization</h2>
                   </>
-                }
+                )}
               </div>
             </div>
           </div>
@@ -338,19 +334,18 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         <div className='reports__container_header'>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              {
-                isPublicReportUser ? 
+              {isPublicReportUser ? (
                 <>
                   <h2>Organization report</h2>
                 </>
-                :
+              ) : (
                 <>
                   <button className='back' onClick={() => navigate(-1)}>
                     <MdArrowBackIosNew />
                   </button>
                   <h2>Get insights into your organization</h2>
                 </>
-              }
+              )}
             </div>
             <CSVLink data={[Object.keys(data), Object.values(data)]}>
               Download Me
@@ -669,23 +664,21 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               ) : (
                 <div style={{ width: 400, height: 300 }}>
                   <p style={{ marginBottom: 20 }}>
-                    <b>Bar chart showing teams and tasks</b>
+                    <b>Doughnut chart showing teams and tasks</b>
                   </p>
-                  <Bar
+                  <Doughnut
                     data={{
-                      labels: ["Teams", "team tasks", "individual tasks"],
+                      labels: ["Teams", "Team Tasks", "Individual Tasks"],
                       datasets: [
                         {
-                          label: "Poll",
                           data: [data.teams, data.tasks, data.tasks],
                           backgroundColor: ["#D3D3D3", "#005734", "black"],
                           borderColor: ["#D3D3D3", "#005734", "black"],
-                          maxBarThickness: 40,
                         },
                       ],
                     }}
                     options={chartOptions}
-                  ></Bar>
+                  />
                 </div>
               )}
               <div>
@@ -757,7 +750,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
             </p> */}
             <p style={{ marginBottom: 20, marginTop: 40, textAlign: "center" }}>
               <b>
-                Bar chart showing the project with the most tasks added and
+                Doughnut chart showing the project with the most tasks added and
                 project with the least tasks added
               </b>
             </p>
@@ -769,23 +762,20 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 marginRight: "auto",
               }}
             >
-              <Bar
+              <Doughnut
                 data={{
-                  labels: ["projects"],
+                  labels: [
+                    data.project_with_most_tasks?.title,
+                    data.project_with_least_tasks?.title,
+                  ],
                   datasets: [
                     {
-                      label: data.project_with_most_tasks?.title,
-                      data: [data.project_with_most_tasks?.tasks_added],
-                      backgroundColor: "#005734",
-                      borderColor: "#005734",
-                      maxBarThickness: 40,
-                    },
-                    {
-                      label: data.project_with_least_tasks?.title,
-                      data: [data.project_with_least_tasks?.tasks_added],
-                      backgroundColor: "#d3d3d3",
-                      borderColor: "#d3d3d3",
-                      maxBarThickness: 40,
+                      data: [
+                        data.project_with_most_tasks?.tasks_added,
+                        data.project_with_least_tasks?.tasks_added,
+                      ],
+                      backgroundColor: ["#005734", "#d3d3d3"],
+                      borderColor: ["#005734", "#d3d3d3"],
                     },
                   ],
                 }}
