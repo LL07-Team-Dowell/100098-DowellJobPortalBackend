@@ -67,7 +67,7 @@
     width: 35%;
     object-fit: cover;
     margin: 4rem auto;
-    display: block; 
+    display: block;
   }
 }
 
@@ -281,6 +281,44 @@
       color: #005734;
       letter-spacing: 0.03em;
       font-size: 1.2rem;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .detailed_indiv_container {
+    padding: 0.1rem;
+    width: 94%;
+  }
+
+  .indiv__Task__Rep__info {
+    .task__Box {
+      flex-direction: column;
+    }
+
+    .task__item {
+      width: 100%;
+      margin-bottom: 3rem;
+
+      &.tasks {
+        margin-top: 0;
+      }
+    }
+
+    .task__Box .task__item {
+      h4 {
+        gap: 1rem;
+      }
+      .graph {
+        height: 320px;
+      }
+    }
+  }
+
+  .personal__Info__Wrapper {
+    .graph {
+      padding: 0.5rem 0.7rem;
+      margin-bottom: 3rem;
     }
   }
 }

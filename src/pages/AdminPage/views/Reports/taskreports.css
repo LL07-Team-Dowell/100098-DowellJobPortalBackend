@@ -45,7 +45,6 @@
   margin-bottom: 2rem;
 }
 
-
 /* Style for the table */
 table {
   border-collapse: collapse;
@@ -61,8 +60,6 @@ table th {
   padding: 10px;
   text-align: center;
 }
-
-
 
 /* Style for table rows */
 table tr:nth-child(even) {
@@ -107,4 +104,14 @@ table tr:hover {
   justify-content: center;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+@media screen and (max-width: 768px) {
+  .task__reports__container {
+    padding: 0.1rem;
+    width: 94%;
+  }
+  .select__task__report__project {
+    width: 100%;
+  }
 }
