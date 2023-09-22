@@ -32,6 +32,7 @@ import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { generateCommonAdminReport } from "../../../../services/commonServices";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { formatDateForAPI } from "../../../../helpers/helpers";
 // register chart.js
 ChartJs.register(ArcElement, Tooltip, Legend);
 
@@ -193,6 +194,13 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         console.log(err);
         setLoading(false);
         setLoadingButton(false);
+        toast.info(
+          err.response
+            ? err.response.status === 500
+              ? 'Report generation failed'
+              : err.response.data.message
+            : 'Report generation failed'
+        );
       });
   };
   //   useEffect
@@ -201,8 +209,14 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
   useEffect(() => {
     setLoading(true);
     const data = {
-      start_date: firstDate,
-      end_date: lastDate,
+      start_date: isPublicReportUser ? 
+        formatDateForAPI(reportsUserDetails?.reportStartDate, 'report')
+      : 
+      firstDate,
+      end_date: isPublicReportUser ? 
+        formatDateForAPI(reportsUserDetails?.reportEndDate, 'report')
+      : 
+      lastDate,
       report_type: "Admin",
       company_id: isPublicReportUser
         ? reportsUserDetails?.company_id
@@ -352,20 +366,22 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               Download Me
             </CSVLink>
           </div>
-          <div>
-            <p></p>
-            <select
-              className='select_time_tage'
-              onChange={handleSelectOptionsFunction}
-              defaultValue={"last_7_days"}
-            >
-              <option value='' disabled>
-                select time
-              </option>
-              <option value='last_7_days'>last 7 days</option>
-              <option value='custom_time'>custom time</option>
-            </select>
-          </div>
+          {
+            !isPublicReportUser && <div>
+              <p></p>
+              <select
+                className='select_time_tage'
+                onChange={handleSelectOptionsFunction}
+                defaultValue={"last_7_days"}
+              >
+                <option value='' disabled>
+                  select time
+                </option>
+                <option value='last_7_days'>last 7 days</option>
+                <option value='custom_time'>custom time</option>
+              </select>
+            </div>
+          }
         </div>
         <div className='graphs'>
           <div className='graph__Item'>

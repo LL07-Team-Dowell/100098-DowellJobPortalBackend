@@ -66,9 +66,18 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                 reportsUserDetails?.company_id
             : 
                 currentUser?.portfolio_info[0].org_id,
-            "threshold": threshold,
-            "start_date": formatDateForAPI(initialDatesSelection.startDate, 'report'),
-            "end_date": formatDateForAPI(initialDatesSelection.endDate, 'report'),
+            "threshold": isPublicReportUser ? 
+                Number(reportsUserDetails?.reportThreshold)
+            : 
+            threshold,
+            "start_date": isPublicReportUser ? 
+                formatDateForAPI(reportsUserDetails?.reportStartDate, 'report')
+            :  
+            formatDateForAPI(initialDatesSelection.startDate, 'report'),
+            "end_date": isPublicReportUser ? 
+                formatDateForAPI(reportsUserDetails?.reportEndDate, 'report')
+            : 
+            formatDateForAPI(initialDatesSelection.endDate, 'report'),
         }
 
         Promise.all([
@@ -158,7 +167,13 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
 
         } catch (error) {
             setNewDataLoading(false);
-            toast.info('Something went wrong while trying to generate your report');
+            toast.info(
+                error.response
+                  ? error.response.status === 500
+                    ? 'Report generation failed'
+                    : error.response.data.message
+                  : 'Report generation failed'
+            );
         }
     }
 
@@ -169,7 +184,13 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
             pageTitle={"Leaderboard report"}
         >
             <LoadingSpinner />
-            <p style={{ textAlign: 'center' }}>Generating report for last 7 days...</p>
+            <p style={{ textAlign: 'center' }}>
+                {
+                    isPublicReportUser ? 'Generating report...'
+                    :
+                    'Generating report for last 7 days...'
+                }
+            </p>
         </StaffJobLandingLayout>
     </>
     
@@ -208,10 +229,12 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                     Get insights into the top performers in your organization
                 </p>
                 <div className="selction_container leaderboard">
-                    <button className="generate__Level__Btn" onClick={() => setShowPopup(true)}>
-                        Generate Report
-                    </button>
-                    <h4 style={{ marginBottom: 30 }}>
+                    {
+                        !isPublicReportUser && <button className="generate__Level__Btn" onClick={() => setShowPopup(true)}>
+                            Generate Report
+                        </button>
+                    }
+                    <h4 style={{ marginBottom: 30, marginTop: '2rem' }}>
                         Showing report data from {new Date(datesSelection.startDate).toDateString()} to {new Date(datesSelection.endDate).toDateString()}
                     </h4>
                     <div className="indiv__Task__Rep__info">

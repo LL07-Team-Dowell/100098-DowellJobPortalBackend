@@ -69,6 +69,13 @@ export default function TeamReport({ isPublicReportUser }) {
             .catch((err) => {
                 console.log(err);
                 setIsLoading(false)
+                toast.info(
+                    err.response
+                      ? err.response.status === 500
+                        ? 'Report generation failed'
+                        : err.response.data.message
+                      : 'Report generation failed'
+                );
             });
     };
 

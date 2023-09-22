@@ -17,6 +17,20 @@ import { useEffect } from "react";
 import { useRef } from "react";
 import { useJobContext } from "../../contexts/Jobs";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import { formatDateForAPI } from "../../helpers/helpers";
+
+
+const date = new Date();
+const dateSevenDaysAgo = new Date(new Date().setDate(date.getDate() - 7));
+
+const [
+  todayDateFormattedForAPI,
+  dateSevenDaysAgoFormattedForAPI,
+] = [
+  formatDateForAPI(date),
+  formatDateForAPI(dateSevenDaysAgo),
+];
+
 
 const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink, isReportLink }) => {
   const [copyOptionActive, setCopyOptionActive] = useState(false);
@@ -46,6 +60,11 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink, isRepo
   const [ customLinkName, setCustomLinkName ] = useState("");
   const [ jobCategory, setJobCategory ] = useState(null);
   const [ reportsCategory, setReportsCategory ] = useState(null);
+  const [ datesSelection, setDatesSelection ] = useState({
+    startDate: dateSevenDaysAgoFormattedForAPI,
+    endDate: todayDateFormattedForAPI,
+  });
+  const [ threshold, setThreshold ] = useState(30);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -187,6 +206,16 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink, isRepo
           "company_data_type": linkToShareObj?.company_data_type,
           "report_type": reportsCategory,
         }
+
+        if (reportsCategory === reportOptionsPermitted.organization_report || reportsCategory === reportOptionsPermitted.leaderboard_report) {
+          reportDataToPost.start_date = datesSelection.startDate;
+          reportDataToPost.end_date = datesSelection.endDate;
+        }
+
+        if (reportsCategory === reportOptionsPermitted.leaderboard_report) {
+          reportDataToPost.threshold = threshold;
+        }
+
         response = (await createNewReportsLink(reportDataToPost)).data
       } else {
         response = (await generatePublicJobLink(dataToPost)).data;
@@ -223,7 +252,13 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink, isRepo
       setJobLinks(currentJobLinks);
     } catch (error) {
       console.log(error.response ? error.response.data : error.message);
-      toast.info(error.response ? error.response.data : error.message);
+      toast.info(
+        error.response
+          ? error.response.status === 500
+            ? 'Link creation failed'
+            : error.response.data.message
+          : 'Link creation failed'
+      );
     }
 
     setLinkLoading(false);
@@ -240,6 +275,11 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink, isRepo
 
     setPublicIdsSelected(publicIdsToSelect);
   }
+
+  const handleChange = (val) => {
+    const filteredValue = val.replace(/\D/g, "");
+    setThreshold(filteredValue);
+}
 
   return (
     <>
@@ -347,7 +387,7 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink, isRepo
                             </select>
                           </> :
                           isReportLink ? <>
-                            <span>Select reports category for link</span>
+                            <span>Select reports category for link <span className={styles.required}>*</span></span>
                             <select
                               defaultValue={''}
                               onChange={({ target }) => setReportsCategory(target.value)}
@@ -365,6 +405,46 @@ const ShareJobModal = ({ linkToShareObj, handleCloseModal, isProductLink, isRepo
                           </>
                         }
                       </label>
+                      {
+                        reportsCategory === reportOptionsPermitted.leaderboard_report ?
+                          <>
+                            <label>
+                              <span>Select threshold <span className={styles.required}>*</span></span>
+                              <input
+                                type="number"
+                                onChange={(e) => handleChange(e.target.value)}
+                                value={threshold}
+                              />
+                            </label>
+                          </>
+                        :
+                          <></>
+                      }
+
+                      {
+                        reportsCategory === reportOptionsPermitted.organization_report || reportsCategory === reportOptionsPermitted.leaderboard_report ?
+                          <>
+                            <label>
+                              <span>Select start date of report <span className={styles.required}>*</span></span>
+                              <input
+                                type="date"
+                                onChange={({ target }) => setDatesSelection((prev) => { return {...prev, startDate: target.value}})}
+                                value={datesSelection.startDate}
+                              />
+                            </label>
+
+                            <label>
+                              <span>Select end date of report <span className={styles.required}>*</span></span>
+                              <input
+                                type="date"
+                                onChange={({ target }) => setDatesSelection((prev) => { return {...prev, endDate: target.value}})}
+                                value={datesSelection.endDate}
+                              />
+                            </label>
+                          </>
+                        :
+                        <></>
+                      }
                     </div>
                   </>
                 }

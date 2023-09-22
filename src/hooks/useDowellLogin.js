@@ -42,6 +42,9 @@ export default function useDowellLogin(
     const companyId = searchParams.get("company_id");
     const jobCategory = searchParams.get("job_category");
     const reportsType = searchParams.get("report_type");
+    const threshold = searchParams.get("threshold");
+    const startDate = searchParams.get("start_date");
+    const endDate = searchParams.get("end_date");
 
     // FOR LOGGED IN PUBLIC USERS
     if (currentPublicSession && currentPublicUserDetails) {
@@ -135,6 +138,12 @@ export default function useDowellLogin(
         masterLinkId: masterLinkId,
         reportsViewPermitted: reportsType,
       };
+
+      if (threshold) reportsUserDetails.reportThreshold = threshold;
+
+      if (startDate) reportsUserDetails.reportStartDate = startDate;
+
+      if (endDate) reportsUserDetails.reportEndDate = endDate;
 
       updateDetailsForReportsUser(reportsUserDetails)
 
