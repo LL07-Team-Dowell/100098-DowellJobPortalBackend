@@ -207,7 +207,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                 <p style={{ fontSize: "0.9rem" }}>
                     Get insights into the top performers in your organization
                 </p>
-                <div className="selction_container">
+                <div className="selction_container leaderboard">
                     <button className="generate__Level__Btn" onClick={() => setShowPopup(true)}>
                         Generate Report
                     </button>
@@ -215,6 +215,87 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                         Showing report data from {new Date(datesSelection.startDate).toDateString()} to {new Date(datesSelection.endDate).toDateString()}
                     </h4>
                     <div className="indiv__Task__Rep__info">
+                        <div className="leaderboard__Ranking__Wrapper top__Ranking">
+                            <h4>Tasks Leaderboard</h4>
+                            <div className="rankingss">
+                                {
+                                    reportsData[0] && <div className="task__item leaderboard" data-tooltip-id="first_rank">
+                                        <div className="outline__Tile first"></div>
+                                        <div className="user__detail">
+                                            <Avatar
+                                                name={reportsData[0].user}
+                                                size={40}
+                                                round
+                                                color="#005734"
+                                            />
+                                            <p>{reportsData[0].user}</p>
+                                        </div>
+                                        <p className="ranking__Stat first">1</p>
+                                        <div className="award__Badge first">
+                                            <BsAward />
+                                        </div>
+                                        <Tooltip id="first_rank" content={`Tasks: ${reportsData[0].tasks}`} />
+                                    </div>
+                                }
+                                {
+                                    reportsData[1] && <div className="task__item leaderboard" data-tooltip-id="second_rank">
+                                        <div className="outline__Tile second"></div>
+                                        <div className="user__detail">
+                                            <Avatar
+                                                name={reportsData[1].user}
+                                                size={40}
+                                                round
+                                                color="orange"
+                                            />
+                                            <p>{reportsData[1].user}</p>
+                                        </div>
+                                        <p className="ranking__Stat second">2</p>
+                                        <div className="award__Badge second">
+                                            <BsAward />
+                                        </div>
+                                        <Tooltip id="second_rank" content={`Tasks: ${reportsData[1].tasks}`} />
+                                    </div>
+                                }
+                                {
+                                    reportsData[2] && <div className="task__item leaderboard" data-tooltip-id="third_rank">
+                                        <div className="outline__Tile third"></div>
+                                        <div className="user__detail">
+                                            <Avatar
+                                                name={reportsData[2].user}
+                                                size={40}
+                                                round
+                                                color="blue"
+                                            />
+                                            <p>{reportsData[2].user}</p>
+                                        </div>
+                                        <p className="ranking__Stat third">3</p>
+                                        <div className="award__Badge third">
+                                            <BsAward />
+                                        </div>
+                                        <Tooltip id="third_rank" content={`Tasks: ${reportsData[2].tasks}`} />
+                                    </div>
+                                }
+                                {
+                                    reportsData[3] && <div className="task__item leaderboard" data-tooltip-id="fourth_rank">
+                                        <div className="outline__Tile fourth"></div>
+                                        <div className="user__detail">
+                                            <Avatar
+                                                name={reportsData[3].user}
+                                                size={40}
+                                                round
+                                                color="purple"
+                                            />
+                                            <p>{reportsData[3].user}</p>
+                                        </div>
+                                        <p className="ranking__Stat fourth">4</p>
+                                        <div className="award__Badge fourth">
+                                            <BsAward />
+                                        </div>
+                                        <Tooltip id="fourth_rank" content={`Tasks: ${reportsData[3].tasks}`} />
+                                    </div>
+                                }
+                            </div>
+                        </div>
                         <div className="task__Box">
                             <div className="task__item level">
                                 <h4>
@@ -311,85 +392,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                             </div>
                         </div>
                         <div className="leaderboard__Ranking__Wrapper">
-                            <h4>Tasks Leaderboard</h4>
-                            <div className="rankingss">
-                                {
-                                    reportsData[0] && <div className="task__item leaderboard" data-tooltip-id="first_rank">
-                                        <div className="outline__Tile first"></div>
-                                        <div className="user__detail">
-                                            <Avatar
-                                                name={reportsData[0].user}
-                                                size={40}
-                                                round
-                                                color="#005734"
-                                            />
-                                            <p>{reportsData[0].user}</p>
-                                        </div>
-                                        <p className="ranking__Stat first">1</p>
-                                        <div className="award__Badge first">
-                                            <BsAward />
-                                        </div>
-                                        <Tooltip id="first_rank" content={`Tasks: ${reportsData[0].tasks}`} />
-                                    </div>
-                                }
-                                {
-                                    reportsData[1] && <div className="task__item leaderboard" data-tooltip-id="second_rank">
-                                        <div className="outline__Tile second"></div>
-                                        <div className="user__detail">
-                                            <Avatar
-                                                name={reportsData[1].user}
-                                                size={40}
-                                                round
-                                                color="orange"
-                                            />
-                                            <p>{reportsData[1].user}</p>
-                                        </div>
-                                        <p className="ranking__Stat second">2</p>
-                                        <div className="award__Badge second">
-                                            <BsAward />
-                                        </div>
-                                        <Tooltip id="second_rank" content={`Tasks: ${reportsData[1].tasks}`} />
-                                    </div>
-                                }
-                                {
-                                    reportsData[2] && <div className="task__item leaderboard" data-tooltip-id="third_rank">
-                                        <div className="outline__Tile third"></div>
-                                        <div className="user__detail">
-                                            <Avatar
-                                                name={reportsData[2].user}
-                                                size={40}
-                                                round
-                                                color="blue"
-                                            />
-                                            <p>{reportsData[2].user}</p>
-                                        </div>
-                                        <p className="ranking__Stat third">3</p>
-                                        <div className="award__Badge third">
-                                            <BsAward />
-                                        </div>
-                                        <Tooltip id="third_rank" content={`Tasks: ${reportsData[2].tasks}`} />
-                                    </div>
-                                }
-                                {
-                                    reportsData[3] && <div className="task__item leaderboard" data-tooltip-id="fourth_rank">
-                                        <div className="outline__Tile fourth"></div>
-                                        <div className="user__detail">
-                                            <Avatar
-                                                name={reportsData[3].user}
-                                                size={40}
-                                                round
-                                                color="purple"
-                                            />
-                                            <p>{reportsData[3].user}</p>
-                                        </div>
-                                        <p className="ranking__Stat fourth">4</p>
-                                        <div className="award__Badge fourth">
-                                            <BsAward />
-                                        </div>
-                                        <Tooltip id="fourth_rank" content={`Tasks: ${reportsData[3].tasks}`} />
-                                    </div>
-                                }
-                            </div>
+                            <h4>Rankings</h4>
                             <div className="select__Status__Filter">
                                 <select onChange={({ target }) => setCurrentStatus(target.value)}>
                                     <option value={''} disabled selected>Select status</option>
@@ -444,6 +447,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                         () => {
                             setShowPopup(false)
                             setThreshold(30)
+                            setDatesSelection(initialDatesSelection)
                         }
                     }
                     firstDate={datesSelection.startDate}

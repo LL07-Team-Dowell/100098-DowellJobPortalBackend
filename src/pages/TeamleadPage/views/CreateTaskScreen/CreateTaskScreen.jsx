@@ -243,6 +243,7 @@ const CreateTaskScreen = ({
       const response = await approveTask({
         document_id: task._id,
         task: task.task,
+        lead_username: currentUser?.userinfo?.username,
       });
 
       const copyOfUpdatedTasks = updatedTasks.slice();

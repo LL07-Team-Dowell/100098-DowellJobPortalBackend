@@ -51,27 +51,16 @@ const LandingPage = ({ subAdminView }) => {
     setSubProjectsLoaded,
     setSubProjectsLoading,
     setReportLinks,
-    reportLinks
+    reportLinks,
   } = useJobContext();
   const [showShareModal, setShowShareModal] = useState(false);
   const [jobLinkToShareObj, setJobLinkToShareObj] = useState({});
   const [activeLinkTab, setActiveLinkTab] = useState("jobs");
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
-
+  const [cardIndex, setCardIndex] = useState(0);
   // low functions
   const changeCardGroupNumber = (number) => {
     setCardGroupNumber(number);
-  };
-
-  const ChangeCardGroupNumberAction = (cards, action) => {
-    const cardsGroupLength = Number.ceil(cards.length / 4);
-    if (action == "add") {
-      if (cardsGroupLength <= cardGroupNumber) return;
-      setCardGroupNumber((cardGroupNumber) => cardGroupNumber + 1);
-    } else if (action == "back") {
-      if (cardsGroupLength <= 0) return;
-      setCardGroupNumber((cardGroupNumber) => cardGroupNumber - 1);
-    }
   };
 
   const handleSearchChange = (value) => {
@@ -166,7 +155,7 @@ const LandingPage = ({ subAdminView }) => {
             ...new Map(
               response[3]?.data?.response
                 ?.reverse()
-                .filter(link => link.type === 'product')
+                .filter((link) => link.type === "product")
                 .map((link) => [link.master_link, link])
             ).values(),
           ]);
@@ -175,7 +164,7 @@ const LandingPage = ({ subAdminView }) => {
             ...new Map(
               response[3]?.data?.response
                 ?.reverse()
-                .filter(link => link.type === 'report')
+                .filter((link) => link.type === "report")
                 .map((link) => [link.master_link, link])
             ).values(),
           ]);
@@ -312,7 +301,7 @@ const LandingPage = ({ subAdminView }) => {
       jobLinkToShareObj={jobLinkToShareObj}
       handleCloseShareJobModal={() => setShowShareModal(false)}
     >
-      <div className="isActive-container">
+      <div className='isActive-container'>
         <p
           onClick={() => {
             setIsActive("active");
@@ -365,7 +354,7 @@ const LandingPage = ({ subAdminView }) => {
         }`}
       >
         {isActive === "links" && (
-          <div className="landing_Nav_Wrapper">
+          <div className='landing_Nav_Wrapper'>
             <div
               className={`landing_Nav_Item ${
                 activeLinkTab === "jobs" ? "active" : ""
@@ -395,7 +384,7 @@ const LandingPage = ({ subAdminView }) => {
             </div>
           </div>
         )}
-        <div className="cards">
+        <div className='cards'>
           {(jobs?.length === 0 && searchValue) ||
           (jobs?.length === 0 && resp) ? (
             <h3 style={{ textAlign: "center" }}>
@@ -458,10 +447,10 @@ const LandingPage = ({ subAdminView }) => {
                       React.Children.toArray(
                         productLinks.map((link) => {
                           return (
-                            <div className="job__Link__Wrapper">
+                            <div className='job__Link__Wrapper'>
                               <p>{link.link_name}</p>
                               <div
-                                className="job__Link__Container"
+                                className='job__Link__Container'
                                 onClick={() => handleCopyLink(link.master_link)}
                               >
                                 <span>{link.master_link}</span>
@@ -484,7 +473,7 @@ const LandingPage = ({ subAdminView }) => {
                       React.Children.toArray(
                         jobLinks.map((link) => {
                           return (
-                            <div className="job__Link__Wrapper">
+                            <div className='job__Link__Wrapper'>
                               {link.newly_created ? (
                                 <p>{link.job_name}</p>
                               ) : (
@@ -499,7 +488,7 @@ const LandingPage = ({ subAdminView }) => {
                                 )
                               )}
                               <div
-                                className="job__Link__Container"
+                                className='job__Link__Container'
                                 onClick={() => handleCopyLink(link.master_link)}
                               >
                                 <span>{link.master_link}</span>
@@ -522,10 +511,10 @@ const LandingPage = ({ subAdminView }) => {
                       React.Children.toArray(
                         reportLinks.map((link) => {
                           return (
-                            <div className="job__Link__Wrapper">
+                            <div className='job__Link__Wrapper'>
                               <p>{link.link_name}</p>
                               <div
-                                className="job__Link__Container"
+                                className='job__Link__Container'
                                 onClick={() => handleCopyLink(link.master_link)}
                               >
                                 <span>{link.master_link}</span>
@@ -546,15 +535,18 @@ const LandingPage = ({ subAdminView }) => {
         </div>
       </div>
       {(isActive === "active" || isActive === "inactive") && (
-        <div className="JobsChanger_containter">
+        <div className='JobsChanger_containter'>
           {createArrayWithLength(
             isActive === "active"
               ? Math.ceil(activeJobsLength / 4)
               : Math.ceil(inactiveJobsLength / 4)
           ).map((s, index) => (
             <button
-              className={s !== cardGroupNumber ? "active" : "desactive"}
-              onClick={() => changeCardGroupNumber(index * 4)}
+              className={s !== cardIndex ? "active" : "desactive"}
+              onClick={() => {
+                changeCardGroupNumber(index * 4);
+                setCardIndex(index);
+              }}
               key={`${index}_button${
                 isActive === "active" ? "_active" : "_desactive"
               }`}

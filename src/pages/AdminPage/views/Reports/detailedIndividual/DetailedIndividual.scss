@@ -69,6 +69,10 @@
     margin: 4rem auto;
     display: block;
   }
+
+  &.leaderboard {
+    margin-top: 1rem;
+  }
 }
 
 .indiv__Task__Rep__info {
@@ -322,7 +326,12 @@
 }
 
 .leaderboard__Ranking__Wrapper {
-  margin: 2rem 0;
+  margin: 3rem 0 2rem;
+
+  &.top__Ranking {
+    margin-bottom: 3.5rem;
+    margin-top: 2rem;
+  }
 
   h4 {
     color: #005734;
@@ -461,7 +470,7 @@
   .select__Status__Filter {
     width: max-content;
     margin-left: auto;
-    margin-top: 2rem;
+    margin-top: 1rem;
     margin-bottom: 1rem;
 
     select {
