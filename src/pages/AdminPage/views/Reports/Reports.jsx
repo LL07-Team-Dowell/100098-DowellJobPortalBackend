@@ -679,9 +679,6 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     }}
                     options={chartOptions}
                   />
-                  Make sure to import the Doughnut component from the
-                  appropriate library, and ensure that your data and options are
-                  correctly set up for a doughnut chart.
                 </div>
               )}
               <div>
