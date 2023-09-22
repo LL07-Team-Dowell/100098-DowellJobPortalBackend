@@ -404,10 +404,10 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   </h4>
                 ) : (
                   <>
-                    <p>
+                    <p style={{ textAlign: 'center' }}>
                       <b>Doughnut chart showing active and inactive jobs</b>
                     </p>
-                    <div style={{ width: "100%", height: 320 }}>
+                    <div style={{ width: "100%", height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center',  }}>
                       <Doughnut
                         data={{
                           labels: ["active jobs", "inactive jobs"],
@@ -430,7 +430,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               </div>
 
               <div style={{ width: "48%" }}>
-                <p>
+                <p style={{ textAlign: 'center' }}>
                   <b>
                     Pie chart showing job most applied to and job least applied
                     to
@@ -438,7 +438,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 </p>
                 {/* <p style={{marginTop:10}}>most applied job: {data.most_applied_job?.job_title}</p>
                 <p>least applied job: {data.least_applied_job?.job_title}</p> */}
-                <div style={{ width: "100%", height: 320 }}>
+                <div style={{ width: "100%", height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center',  }}>
                   <Pie
                     data={{
                       labels: [
@@ -710,23 +710,25 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   and {lastDateState.split(" ")[0]}
                 </h4>
               ) : (
-                <div style={{ width: 400, height: 300 }}>
-                  <p style={{ marginBottom: 20 }}>
-                    <b>Doughnut chart showing teams and tasks</b>
-                  </p>
-                  <Doughnut
-                    data={{
-                      labels: ["Teams", "Team Tasks", "Individual Tasks"],
-                      datasets: [
-                        {
-                          data: [data.teams, data.tasks, data.tasks],
-                          backgroundColor: ["#D3D3D3", "#005734", "#160291"],
-                          borderColor: ["#D3D3D3", "#005734", "#160291"],
-                        },
-                      ],
-                    }}
-                    options={chartOptions}
-                  />
+                <div style={{ marginBottom: 60}}>
+                  <div style={{ width: 400, height: 300 }}>
+                    <p style={{ marginBottom: 20 }}>
+                      <b>Doughnut chart showing teams and tasks</b>
+                    </p>
+                    <Doughnut
+                      data={{
+                        labels: ["Teams", "Team Tasks", "Individual Tasks"],
+                        datasets: [
+                          {
+                            data: [data.teams, data.tasks, data.tasks],
+                            backgroundColor: ["#D3D3D3", "#005734", "#160291"],
+                            borderColor: ["#D3D3D3", "#005734", "#160291"],
+                          },
+                        ],
+                      }}
+                      options={chartOptions}
+                    />
+                  </div>
                 </div>
               )}
               <div>
@@ -736,7 +738,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     {lastDateState.split(" ")[0]}
                   </h4>
                 ) : (
-                  <div style={{ width: 400, height: 300 }}>
+                  <div style={{ width: 450, height: 300 }}>
                     <p style={{ marginBottom: 20 }}>
                       <b>Doughnut chart showing tasks completed</b>
                     </p>
