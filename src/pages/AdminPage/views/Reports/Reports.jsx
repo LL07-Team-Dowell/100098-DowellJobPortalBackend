@@ -24,7 +24,7 @@ import {
   Title,
 } from "chart.js";
 // don
-import { Doughnut, Bar, Line } from "react-chartjs-2";
+import { Doughnut, Bar, Line, Pie } from "react-chartjs-2";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 import { AiOutlineClose } from "react-icons/ai";
@@ -298,7 +298,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         setLoading(false);
       });
   }, []);
-
+  console.log((data?.hired / data?.job_applications?.total) * 100);
   useEffect(() => {
     console.log(data);
   }, [data]);
@@ -432,34 +432,38 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               <div style={{ width: "48%" }}>
                 <p>
                   <b>
-                    Bar chart showing job most applied to and job least applied
+                    Pie chart showing job most applied to and job least applied
                     to
                   </b>
                 </p>
                 {/* <p style={{marginTop:10}}>most applied job: {data.most_applied_job?.job_title}</p>
                 <p>least applied job: {data.least_applied_job?.job_title}</p> */}
                 <div style={{ width: "100%", height: 320 }}>
-                  <Bar
+                  <Pie
                     data={{
-                      labels: ["Job"],
+                      labels: [
+                        data.most_applied_job?.job_title,
+                        data.least_applied_job?.job_title,
+                      ],
                       datasets: [
                         {
-                          label: data.most_applied_job?.job_title,
-                          data: [data.most_applied_job?.no_job_applications],
-                          backgroundColor: "#005734",
-                          borderColor: "#005734",
-                          maxBarThickness: 40,
-                        },
-                        {
-                          label: data.least_applied_job?.job_title,
-                          data: [data.least_applied_job?.no_job_applications],
-                          backgroundColor: "#d3d3d3",
-                          borderColor: "#d3d3d3",
-                          maxBarThickness: 40,
+                          data: [
+                            data.most_applied_job?.no_job_applications,
+                            data.least_applied_job?.no_job_applications,
+                          ],
+                          backgroundColor: ["#005734", "#d3d3d3"],
+                          borderColor: ["#005734", "#d3d3d3"],
                         },
                       ],
                     }}
-                    options={chartOptions}
+                    options={{
+                      plugins: {
+                        legend: {
+                          display: true, // You can set this to false if you want to hide the legend
+                        },
+                      },
+                      responsive: true,
+                    }}
                   />
                 </div>
               </div>
@@ -576,11 +580,25 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     options={chartOptions}
                     style={{ margin: "0 auto" }}
                   ></Doughnut> */}
-                  <div style={{ width: 200, height: 200, marginRight: 100 }}>
+                  <div style={{ width: 200, height: 200, margin: "auto" }}>
                     <CircularProgressbar
-                      style={{ width: "100%", height: "100%" }}
-                      value={data.hiring_rate.toFixed(2)}
-                      text={`${data.hiring_rate.toFixed(2)}%`}
+                      style={{ width: "100%", height: "100%", margin: "auto" }}
+                      value={
+                        data.job_applications.total
+                          ? (
+                              (data.hired / data.job_applications.total) *
+                              100
+                            ).toFixed(2)
+                          : "0"
+                      }
+                      text={
+                        data.job_applications.total
+                          ? `${(
+                              (data.hired / data.job_applications.total) *
+                              100
+                            ).toFixed(2)}%`
+                          : "00%"
+                      }
                       styles={buildStyles({
                         pathColor: `#005734`,
                         textColor: "#005734",
