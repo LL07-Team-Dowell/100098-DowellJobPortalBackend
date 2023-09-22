@@ -31,6 +31,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { generateCommonAdminReport } from "../../../../services/commonServices";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 // register chart.js
 ChartJs.register(ArcElement, Tooltip, Legend);
 
@@ -541,7 +542,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   >
                     <b>Doughnut chart showing hiring rate</b>
                   </p>
-                  <Doughnut
+                  {/* <Doughnut
                     data={{
                       labels: ["hiring rate", "non-hiring rate"],
                       datasets: [
@@ -558,7 +559,20 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     }}
                     options={chartOptions}
                     style={{ margin: "0 auto" }}
-                  ></Doughnut>
+                  ></Doughnut> */}
+                  <div style={{ width: 200, height: 200, marginRight: 100 }}>
+                    <CircularProgressbar
+                      style={{ width: "100%", height: "100%" }}
+                      value={data.hiring_rate.toFixed(2)}
+                      text={`${data.hiring_rate.toFixed(2)}%`}
+                      styles={buildStyles({
+                        pathColor: `#005734`,
+                        textColor: "#005734",
+                        trailColor: "#efefef",
+                        backgroundColor: "#005734",
+                      })}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -672,8 +686,8 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                       datasets: [
                         {
                           data: [data.teams, data.tasks, data.tasks],
-                          backgroundColor: ["#D3D3D3", "#005734", "black"],
-                          borderColor: ["#D3D3D3", "#005734", "black"],
+                          backgroundColor: ["#D3D3D3", "#005734", "#160291"],
+                          borderColor: ["#D3D3D3", "#005734", "#160291"],
                         },
                       ],
                     }}
@@ -707,6 +721,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                           },
                         ],
                       }}
+                      // asdsadsad
                     ></Doughnut>
                   </div>
                 )}

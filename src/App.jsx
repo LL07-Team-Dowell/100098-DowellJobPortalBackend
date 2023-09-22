@@ -82,7 +82,7 @@ import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal
 import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
 
 function App() {
-  console.log = () => { };
+  console.log = () => {};
   const {
     currentUser,
     isPublicUser,
@@ -406,24 +406,28 @@ function App() {
     }
 
     if (
-      reportsUserDetails.reportsViewPermitted === 
+      reportsUserDetails.reportsViewPermitted ===
       reportOptionsPermitted.leaderboard_report
     ) {
-      return <Routes>
-        <Route 
-          path="*"
-          element={
-            <JobContextProvider>
-              <LeaderboardReport isPublicReportUser={true} />
-            </JobContextProvider>
-          }
-        />
-      </Routes>
+      return (
+        <Routes>
+          <Route
+            path='*'
+            element={
+              <JobContextProvider>
+                <LeaderboardReport isPublicReportUser={true} />
+              </JobContextProvider>
+            }
+          />
+        </Routes>
+      );
     }
 
-    return <Routes>
-      <Route path="*" element={<>Page not found</>} />
-    </Routes>
+    return (
+      <Routes>
+        <Route path='*' element={<>Page not found</>} />
+      </Routes>
+    );
   }
 
   // NO CURRENT USER OR USER SESSION HAS EXPIRED
@@ -676,8 +680,8 @@ function App() {
             </JobContextProvider>
           }
         />
-        <Route 
-          path="/report/leaderboard-report"
+        <Route
+          path='/report/leaderboard-report'
           element={
             <JobContextProvider>
               <LeaderboardReport />

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ModelDetails from "./ModelDetails";
 import axios from "axios";
 import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
-
+import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 const SingleTask = ({
   title,
   image,
@@ -16,8 +16,10 @@ const SingleTask = ({
 }) => {
   console.log(taskCompleted);
   const { currentUser } = useCurrentUserContext();
+  const [loading, setLoading] = useState(false);
   const completeTaskFunction = () => {
     if (!taskCompleted) {
+      setLoading(true);
       const data = {
         title: title,
         description: detail,
@@ -33,6 +35,7 @@ const SingleTask = ({
         )
         .then(({ data }) => {
           console.log(data);
+          setLoading(false);
           setTasks((tasks) =>
             tasks.map((task) => {
               if (task._id === taskId) return { ...task, completed: true };
@@ -96,7 +99,13 @@ const SingleTask = ({
             className='team-screen-task-progress-detail-btn'
             onClick={completeTaskFunction}
           >
-            {taskCompleted ? "completed" : "mark as done"}
+            {loading ? (
+              <LoadingSpinner width={30} height={30} color={"white"} />
+            ) : taskCompleted ? (
+              "completed"
+            ) : (
+              "mark as done"
+            )}
           </button>
         </div>
       </div>

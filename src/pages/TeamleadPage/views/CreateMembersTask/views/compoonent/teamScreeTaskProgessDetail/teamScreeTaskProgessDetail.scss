@@ -157,12 +157,14 @@
             cursor: pointer;
             text-transform: capitalize;
             transition: 0.3s ease-in-out;
+            width: 200px !important;
+            height: 34px !important;
             &:hover, &:focus {
                 background-color: #005734;
                 color: #FFF;
             }
             @media (max-width:798px){
-                width: fit-content;
+                width: fit-content !important;
                 padding:5px;
                 display: inline;
             }
@@ -183,7 +185,7 @@
         outline: none;
         color: white;
         height: 30px;
-        width: 120px;
+        min-width: 120px;
         border-radius: 6px;
         div{
             margin: auto;
