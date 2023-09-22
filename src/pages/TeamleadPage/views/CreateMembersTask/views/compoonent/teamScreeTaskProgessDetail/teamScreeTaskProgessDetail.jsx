@@ -37,6 +37,7 @@ const TeamScreeTaskProgessDetail = ({
         (tasks?.filter((task) => task.completed === false).length > 0 ? (
           tasks
             ?.filter((task) => task.completed === false)
+            .reverse()
             .map((task) => (
               <SingleTask
                 key={task._id}
@@ -60,6 +61,7 @@ const TeamScreeTaskProgessDetail = ({
         (tasks?.filter((task) => task.completed === true).length > 0 ? (
           tasks
             ?.filter((task) => task.completed === true)
+            .reverse()
             .map((task) => (
               <SingleTask
                 teamName={title}
