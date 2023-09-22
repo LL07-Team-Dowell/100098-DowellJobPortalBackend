@@ -104,7 +104,6 @@ const Card = ({
       setDeletingLoading(false);
     }
   };
-
   const handleCheckboxChange = () => {
     setLoading(true);
     // console.log({ id: _id, is_activee });
@@ -162,7 +161,7 @@ const Card = ({
     <>
       {showModal && (
         <DeleteConfirmation
-          text='are you sure you wanna add this job'
+          text='are you sure you wanna delete this job'
           closeModal={clodeModal}
           deleteFunction={() => handleDeleteOfJob(_id)}
           id={_id}
