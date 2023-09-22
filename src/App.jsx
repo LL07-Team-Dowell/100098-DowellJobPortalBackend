@@ -426,6 +426,7 @@ function App() {
     </Routes>
   }
 
+  // NO CURRENT USER OR USER SESSION HAS EXPIRED
   if (!currentUser || userDetailsNotFound) {
     return (
       <Routes>
