@@ -1600,6 +1600,7 @@ class update_task(APIView):
                 "status": data.get("status"),
                 "task": data.get("task"),
                 "task_added_by": data.get("task_added_by"),
+                "task_updated_by": data.get("task_updated_by"),
                 "task_updated_date": str(datetime.datetime.now()),
             }
             # check if task exists---
@@ -6302,13 +6303,26 @@ class Generate_Report(APIView):
                     data[user]={"tasks":tasks_added_by.count(user),
                                 "status":"Passed" if tasks_added_by.count(user) >threshold else "Defaulter" }
 
-                counter = Counter(tasks_added_by)
-                highest_uploader = counter.most_common(1)
-                lowest_uploader = counter.most_common()[:-5:-1]
+                ## get highest and lowest counts of tasks------------
+                c = Counter(tasks_added_by)
+                m = min(c.values())
+                mins = [x for x in tasks_added_by if c[x] == m]
+                min_items={}
+                for items in set(mins):
+                    count= mins.count(items)
+                    min_items[items]=count
+
+                m = max(c.values())
+                maxs = [x for x in tasks_added_by if c[x] == m]
+                max_items={}
+                for items in set(maxs):
+                    count= maxs.count(items)
+                    max_items[items]=count
+
                 if len(tasks_added_by)>0:
                     response={
-                        "highest":{hu[0]:hu[1] for hu in highest_uploader} if len(highest_uploader)>1 else {highest_uploader[0][0]:highest_uploader[0][1]},
-                        "lowest":{lu[0]:lu[1] for lu in lowest_uploader} if len(lowest_uploader)>1 else {lowest_uploader[0][0]:lowest_uploader[0][1]},
+                        "highest":max_items,
+                        "lowest":min_items,
                         "threshold":threshold,
                         "users":data
                     }
