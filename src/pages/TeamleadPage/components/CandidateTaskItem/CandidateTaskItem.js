@@ -9,6 +9,7 @@ import "./style.css";
 import Button from "../../../AdminPage/components/Button/Button";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { AiOutlineCheckCircle } from "react-icons/ai";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 
 
 const CandidateTaskItem = ({ 
@@ -26,6 +27,7 @@ const CandidateTaskItem = ({
 
     const [ currentTaskStatus, setCurrentTaskStatus ] = useState("");
     const [isFetchingData, setIsFetchingData] = useState(false);
+    const { currentUser } = useCurrentUserContext();
 
     useEffect(() => {
         
@@ -51,6 +53,7 @@ const CandidateTaskItem = ({
               status: currentTask.status,
               task_added_by: currentTask.task_added_by,
               task_updated_date: new Date(),
+              task_updated_by: currentUser?.userinfo?.username,
             });
 
             //Notification for when task is updated with toastify
