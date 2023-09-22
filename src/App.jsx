@@ -734,7 +734,7 @@ function App() {
           path='/team-screen-member/:id/team-members'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout adminView={true} hideSearchBar={true}>
+              <StaffJobLandingLayout adminView={true} hideSearchBar={true} adminAlternativePageActive={true} pageTitle={'Teams'}>
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamScreenMembers />
@@ -749,7 +749,7 @@ function App() {
           path='/team-screen-member/:id/team-tasks'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout adminView={true} hideSearchBar={true}>
+              <StaffJobLandingLayout adminView={true} hideSearchBar={true} adminAlternativePageActive={true} pageTitle={'Teams'}>
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamScreenTasks />
@@ -763,7 +763,7 @@ function App() {
           path='/team-screen-member/:id/team-issues'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout adminView={true} hideSearchBar={true}>
+              <StaffJobLandingLayout adminView={true} hideSearchBar={true}  adminAlternativePageActive={true} pageTitle={'Teams'}>
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamThread />
