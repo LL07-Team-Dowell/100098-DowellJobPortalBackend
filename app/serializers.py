@@ -488,17 +488,17 @@ class UpdateTaskByCandidateSerializer(serializers.Serializer):
 
 class ReportSerializer(serializers.Serializer):
     REPORT_TYPE = (
-        ('Admin', 'Admin'),
-        ('Hr', 'Hr'),
-        ('Account', 'Account'),
-        ('Candidate', 'Candidate'),
-        ('Team', 'Team'),
-        ('Lead', 'Lead'),
-        ('Individual', 'Individual'),
-        ('Individual Task', 'Individual Task'),
-        ('Project', 'Project'),
-        ('Public', 'Public'),
-        ('Level','Level'),
+        ("Admin", "Admin"),
+        ("Hr", "Hr"),
+        ("Account", "Account"),
+        ("Candidate", "Candidate"),
+        ("Team", "Team"),
+        ("Lead", "Lead"),
+        ("Individual", "Individual"),
+        ("Individual Task", "Individual Task"),
+        ("Project", "Project"),
+        ("Public", "Public"),
+        ("Level", "Level"),
     )
     report_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=REPORT_TYPE

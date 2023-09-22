@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SettingUserProfileInfo,UserProject
+from .models import SettingUserProfileInfo, UserProject
 
 # Register your models here.
 
