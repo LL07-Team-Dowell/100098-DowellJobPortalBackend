@@ -560,17 +560,19 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     options={chartOptions}
                     style={{ margin: "0 auto" }}
                   ></Doughnut> */}
-                  <CircularProgressbar
-                    style={{ width: "100%", height: "100%" }}
-                    value={data.hiring_rate.toFixed(2)}
-                    text={`${data.hiring_rate.toFixed(2)}%`}
-                    styles={buildStyles({
-                      pathColor: `#005734`,
-                      textColor: "#005734",
-                      trailColor: "#efefef",
-                      backgroundColor: "#005734",
-                    })}
-                  />
+                  <div style={{ width: 200, height: 200, marginRight: 100 }}>
+                    <CircularProgressbar
+                      style={{ width: "100%", height: "100%" }}
+                      value={data.hiring_rate.toFixed(2)}
+                      text={`${data.hiring_rate.toFixed(2)}%`}
+                      styles={buildStyles({
+                        pathColor: `#005734`,
+                        textColor: "#005734",
+                        trailColor: "#efefef",
+                        backgroundColor: "#005734",
+                      })}
+                    />
+                  </div>
                 </div>
               )}
             </div>

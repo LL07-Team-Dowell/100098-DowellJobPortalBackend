@@ -85,6 +85,15 @@
   @media (max-width: 798px) {
     width: 90%;
   }
+  .team{
+    h2{
+      white-space: nowrap;       
+      overflow: hidden;          
+      text-overflow: ellipsis;  
+      max-width: 100%; 
+    }
+    
+  }
   // max-height: calc(100vh - 6.5rem + 40px);
   overflow-y: auto;
   font-family: Poppins;
