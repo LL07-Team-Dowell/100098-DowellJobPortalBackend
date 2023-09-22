@@ -1,0 +1,46 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(
+      0,
+      0,
+      0,
+      0.5
+    ); /* Black background with opacity (0.8) */
+    z-index: 1000; /* Adjust the z-index value to ensure the overlay appears on top */
+    font-family: Poppins;
+    .delete_confirmation_container {
+      z-index: 9999;
+      position: absolute;
+      background-color: white;
+      padding: 20px;
+      padding-bottom: 20px;
+      width: 450px;
+      border-radius: 10px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-height: 270px;
+      text-align: center;
+      overflow-y: auto;
+      button{
+        margin:15px 10px 0;
+        width: 70px;
+        height: 27px;
+        background-color: #fff;
+        border: 1px solid #D2122E;
+        color: #D2122E;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .delete{
+        background-color: #D2122E;
+        color: #fff;
+  
+      }
+    }
+  }
+  
