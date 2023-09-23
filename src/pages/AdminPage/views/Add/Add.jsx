@@ -13,9 +13,11 @@ import { useJobContext } from '../../../../contexts/Jobs'
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner'
 import { adminAddSettingUserProject, adminEditSettingUserProject, createNewSettingUserSubProject, editSettingUserSubProject, getSettingUserSubProject } from '../../../../services/adminServices'
 import { getSettingUserProject } from '../../../../services/hrServices'
+import { getUserInfoFromLoginAPI } from '../../../../services/authServices'
+import { testingRoles } from '../../../../utils/testingRoles'
 
 const Add = () => {
-  const { currentUser } = useCurrentUserContext();
+  const { currentUser, setCurrentUser } = useCurrentUserContext();
   const navigate = useNavigate() 
   const [showProjectsPop, setShowProjectsPop] = useState(false)
   const [ showShareModal, setShowShareModal ] = useState(false);
@@ -95,6 +97,40 @@ const Add = () => {
       })
     }
 
+    
+    if (currentUser?.userportfolio?.length > 0) return;
+
+    const currentSessionId = sessionStorage.getItem("session_id");
+
+    if (!currentSessionId) return;
+    const teamManagementProduct = currentUser?.portfolio_info.find(
+      (item) => item.product === "Team Management"
+    );
+    if (!teamManagementProduct) return;
+
+    if (
+      (currentUser.settings_for_profile_info &&
+        currentUser.settings_for_profile_info.profile_info[
+          currentUser.settings_for_profile_info.profile_info.length - 1
+        ].Role === testingRoles.superAdminRole) ||
+      currentUser.isSuperAdmin
+    )
+      return;
+
+    const dataToPost = {
+      session_id: currentSessionId,
+      product: teamManagementProduct.product,
+    };
+
+    getUserInfoFromLoginAPI(dataToPost)
+    .then((res) => {
+      setCurrentUser(res.data);
+      console.log(res.data.portfolio_info[0].data_type);
+    })
+    .catch((err) => {
+      console.log("Failed to get user details from login API");
+      console.log(err.response ? err.response.data : err.message);
+    });
   }, [])
 
   const handleCloseShareModal = () => {

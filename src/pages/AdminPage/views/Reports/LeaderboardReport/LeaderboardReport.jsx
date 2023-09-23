@@ -13,9 +13,11 @@ import { Tooltip } from "react-tooltip";
 import Avatar from "react-avatar";
 import { BsAward } from "react-icons/bs";
 import LittleLoading from "../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
-import { AiOutlineClose } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineSearch } from "react-icons/ai";
 import { toast } from "react-toastify";
 import { getAllOnBoardCandidate } from "../../../../../services/adminServices";
+import { getSettingUserProfileInfo } from "../../../../../services/settingServices";
+import { rolesDict } from "../../Settings/AdminSettings";
 
 const date = new Date();
 const dateSevenDaysAgo = new Date(new Date().setDate(date.getDate() - 7));
@@ -51,6 +53,11 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
     const [ showPopup, setShowPopup ] = useState(false);
     const [ newDataLoading, setNewDataLoading ] = useState(false);
     const [ applications, setApplications ] = useState([]);
+    const [ settingsUserList, setSettingsUserList ] = useState([]);
+    const [ projectCountData, setProjectCountData ] = useState(null);
+    const [ searchValue, setSearchValue ] = useState("");
+    const [ currentRoleFilter, setCurrentRoleFilter ] = useState('');
+    const [ dataToDisplay, setDataToDisplay ] = useState([]);
 
     const navigate = useNavigate();
     
@@ -88,6 +95,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                 currentUser?.portfolio_info[0].org_id
             ),
             generateCommonAdminReport(dataToPost),
+            getSettingUserProfileInfo(),
         ])
         .then(res => {
             console.log(res[0]?.data?.response);
@@ -97,16 +105,43 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
             console.log(res[1]?.data?.response);
 
             const response = res[1]?.data?.response;
-
-            setPageLoading(false);
+            const settingsInfo = isPublicReportUser ? 
+            res[2]?.data
+            ?.reverse()
+            ?.filter(
+                (item) => item.company_id === reportsUserDetails?.company_id
+            )
+            ?.filter(
+                (item) => item.data_type === reportsUserDetails?.data_type
+            )
+            : res[2]?.data
+            ?.reverse()
+            ?.filter(
+                (item) =>
+                item.company_id === currentUser.portfolio_info[0].org_id
+            )
+            ?.filter(
+                (item) =>
+                item.data_type === currentUser.portfolio_info[0].data_type
+            );
 
             const tasksArr = Object.keys(response?.users || {}).map(key => {
+                const foundUserApplication = applicationsRes.find(application => application.username === key);
+                const foundUserSettingItem = settingsInfo?.find(
+                    (value) =>
+                      value?.profile_info[value?.profile_info?.length - 1]
+                        ?.profile_title === foundUserApplication?.portfolio_name
+                );
+
                 return { 
-                    user: applicationsRes.find(application => application.username === key) ?
-                        applicationsRes.find(application => application.username === key)?.applicant
+                    user:  foundUserApplication ?
+                        foundUserApplication?.applicant
                     :
                     key
                     , 
+                    roleSetting: foundUserSettingItem?.profile_info[
+                        foundUserSettingItem?.profile_info?.length - 1
+                    ],
                     ...response?.users[key] 
                 }
             }).sort((a, b) => b.tasks - a.tasks);
@@ -118,12 +153,54 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
             console.log(tasksArr);
             setReportsData(tasksArr);            
             setTotalTasks(tasksArr.reduce((a, b) => a + b.tasks, 0));
+            setSettingsUserList(settingsInfo);
+            setProjectCountData({
+                project_with_most_tasks: response?.project_with_most_tasks[0],
+                project_with_least_tasks: response?.project_with_least_tasks[0],
+            })
+
+            setPageLoading(false);
         }).catch(err => {
             console.log(err);
             setPageLoading(false);
             setError(true);
         })
     }, [])
+
+    useEffect(() => {
+
+        if (!reportsData) return 
+
+        const data = reportsData.map(dataItem => {
+            
+            if (currentRoleFilter !== 'All' && currentRoleFilter !== '') {
+                const [ userRole, userOtherRoles ] = [
+                    rolesDict[dataItem?.roleSetting?.Role] ? 
+                        dataItem?.roleSetting?.Role
+                    : 
+                        "candidate"
+                    ,
+                    dataItem?.roleSetting?.other_roles ?
+                        dataItem?.roleSetting.other_roles
+                        .map((role) => {
+                            if (!rolesDict[role]) return null;
+                            return rolesDict[role];
+                        })
+                        :
+                        []
+                ]
+    
+                if (![userRole, ...userOtherRoles].includes(currentRoleFilter)) return null
+    
+                return dataItem                                        
+            }
+
+            return dataItem
+        }).filter(item => item)
+
+        setDataToDisplay(data);
+
+    }, [currentRoleFilter, reportsData])
 
     const generateNewData = async () => {
         setNewDataLoading(true);
@@ -145,12 +222,22 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
             const response = res?.response;
             
             const tasksArr = Object.keys(response?.users || {}).map(key => {
+                const foundUserApplication = applications?.find(application => application.username === key);
+                const foundUserSettingItem = settingsUserList?.find(
+                    (value) =>
+                      value?.profile_info[value?.profile_info?.length - 1]
+                        ?.profile_title === foundUserApplication?.portfolio_name
+                );
+
                 return { 
-                    user: applications.find(application => application.username === key) ?
-                        applications.find(application => application.username === key)?.applicant
+                    user: foundUserApplication ?
+                        foundUserApplication?.applicant
                     :
                     key
                     , 
+                    roleSetting: foundUserSettingItem?.profile_info[
+                        foundUserSettingItem?.profile_info?.length - 1
+                    ],
                     ...response?.users[key] 
                 }
             }).sort((a, b) => b.tasks - a.tasks);
@@ -162,6 +249,11 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
             
             setReportsData(tasksArr);            
             setTotalTasks(tasksArr.reduce((a, b) => a + b.tasks, 0));
+            setProjectCountData({
+                project_with_most_tasks: response?.project_with_most_tasks[0],
+                project_with_least_tasks: response?.project_with_least_tasks[0],
+            })
+
             setNewDataLoading(false);
             setShowPopup(false);
 
@@ -414,14 +506,136 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                 </div>
                             </div>
                         </div>
+                        <div className="task__Box" style={{ marginTop: 30 }}>
+                            <div className="task__item level">
+                                <h4>
+                                    Project with the most tasks: {
+                                        projectCountData?.project_with_most_tasks?.title
+                                    }
+                                </h4>
+                                <div className="stat__Report">
+                                    <div className="label__Wrapper">
+                                        <div className="label__Wrapper__Item">
+                                            <div className="label__Wrapper__Indicator active"></div>
+                                            <p
+                                                data-tooltip-id="highest_project_tasks"
+                                            >
+                                                Tasks uploaded in project
+                                            </p>
+                                            <Tooltip id="highest_project_tasks" content={`Count: ${projectCountData?.project_with_most_tasks?.tasks_added}`} />
+                                        </div>
+                                        <div className="label__Wrapper__Item">
+                                            <div className="label__Wrapper__Indicator"></div>   
+                                            <p
+                                                data-tooltip-id="highest_total_tasks_proj"
+                                            >
+                                                Total tasks in organization
+                                            </p>
+                                            <Tooltip id="highest_total_tasks_proj" content={`Count: ${totalTasks}`} />
+                                        </div>
+                                    </div>
+                                    <div style={{ width: 200, height: 200 }}>
+                                        <CircularProgressbar 
+                                            value={Number(projectCountData?.project_with_most_tasks?.tasks_added / totalTasks * 100).toFixed(2)} 
+                                            text={`${Number((projectCountData?.project_with_most_tasks?.tasks_added / totalTasks) * 100).toFixed(2)}%`} 
+                                            styles={
+                                                buildStyles({
+                                                    pathColor: `#005734`,
+                                                    textColor: '#005734',
+                                                    trailColor: '#efefef',
+                                                    backgroundColor: '#005734',
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="task__item level">
+                                <h4>
+                                    Project with the lowest tasks: {
+                                        projectCountData?.project_with_least_tasks?.title
+                                    }
+                                </h4>
+                                <div className="stat__Report">
+                                    <div className="label__Wrapper">
+                                        <div className="label__Wrapper__Item">
+                                            <div className="label__Wrapper__Indicator active"></div>
+                                            <p
+                                                data-tooltip-id="lowest_project_tasks"
+                                            >
+                                                Tasks uploaded in project
+                                            </p>
+                                            <Tooltip id="lowest_project_tasks" content={`Count: ${projectCountData?.project_with_least_tasks?.tasks_added}`} />
+                                        </div>
+                                        <div className="label__Wrapper__Item">
+                                            <div className="label__Wrapper__Indicator"></div>   
+                                            <p
+                                                data-tooltip-id="lowest_total_tasks_proj"
+                                            >
+                                                Total tasks in organization
+                                            </p>
+                                            <Tooltip id="lowest_total_tasks_proj" content={`Count: ${totalTasks}`} />
+                                        </div>
+                                    </div>
+                                    <div style={{ width: 200, height: 200 }}>
+                                        <CircularProgressbar 
+                                            value={Number(projectCountData?.project_with_least_tasks?.tasks_added / totalTasks * 100).toFixed(2)} 
+                                            text={`${Number((projectCountData?.project_with_least_tasks?.tasks_added / totalTasks) * 100).toFixed(2)}%`} 
+                                            styles={
+                                                buildStyles({
+                                                    pathColor: `#005734`,
+                                                    textColor: '#005734',
+                                                    trailColor: '#efefef',
+                                                    backgroundColor: '#005734',
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div className="leaderboard__Ranking__Wrapper">
-                            <h4>Rankings</h4>
-                            <div className="select__Status__Filter">
-                                <select onChange={({ target }) => setCurrentStatus(target.value)}>
-                                    <option value={''} disabled selected>Select status</option>
+                            <h4>
+                                Rankings {
+                                    currentRoleFilter !== '' && currentRoleFilter !== 'All' ?
+                                        `for ${
+                                            rolesDict[currentRoleFilter] ? 
+                                                rolesDict[currentRoleFilter]
+                                            : 
+                                            "Candidate"
+                                        }`
+                                    :
+                                    ''
+                                }
+                            </h4>
+                            <span style={{ fontSize: '0.7rem' }}>From {new Date(datesSelection.startDate).toDateString()} to {new Date(datesSelection.endDate).toDateString()}</span>
+                            <div className="heading__Actions__Wrapper">
+                                <div className="search__Wrapper">
+                                    <AiOutlineSearch />
+                                    <input 
+                                        type="text"
+                                        value={searchValue}
+                                        onChange={({ target }) => setSearchValue(target.value)}
+                                        placeholder="Search user"
+                                    />
+                                </div>
+                                <div className="select__Status__Filter">
+                                    <select onChange={({ target }) => setCurrentStatus(target.value)}>
+                                        <option value={''} disabled selected>Select status</option>
+                                        <option value={'All'}>All</option>
+                                        <option value={'Passed'}>Passed</option>
+                                        <option value={'Defaulter'}>Defaulter</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="select__Status__Filter single">
+                                <select onChange={({ target }) => setCurrentRoleFilter(target.value)}>
+                                    <option value={''} disabled selected>Filter role</option>
                                     <option value={'All'}>All</option>
-                                    <option value={'Passed'}>Passed</option>
-                                    <option value={'Defaulter'}>Defaulter</option>
+                                    <option value={'candidate'}>Candidate</option>
+                                    <option value={'Hr'}>Hr</option>
+                                    <option value={'group_lead'}>Grouplead</option>
+                                    <option value={'Proj_Lead'}>Teamlead</option>
                                 </select>
                             </div>
                             <div className="ranking__Table_">
@@ -430,25 +644,74 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                         <th>Rank</th>
                                         <th>User</th>
                                         <th>Tasks</th>
+                                        <th>Role</th>
+                                        <th>Other roles</th>
                                         <th>Status</th>
                                     </tr>
                                     <tbody>
                                         {
                                             currentStatus === 'Passed' || currentStatus === 'Defaulter' ?
-                                            React.Children.toArray(reportsData.filter(item => item.status === currentStatus).map((dataItem, index) => {
+                                            React.Children.toArray(
+                                                dataToDisplay
+                                                .filter(item => item.status === currentStatus)
+                                                .filter(item => item.user?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+                                            .map((dataItem, index) => {
                                                 return <tr>
                                                     <td>{index + 1}</td>
                                                     <td>{dataItem.user}</td>
                                                     <td>{dataItem.tasks}</td>
+                                                    <td>
+                                                        {
+                                                            rolesDict[dataItem?.roleSetting?.Role]
+                                                            ? rolesDict[dataItem?.roleSetting?.Role]
+                                                            : "Candidate"
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            dataItem?.roleSetting?.other_roles ?
+                                                                dataItem?.roleSetting.other_roles
+                                                                .map((role) => {
+                                                                if (!rolesDict[role]) return null;
+                                                                return rolesDict[role];
+                                                                })
+                                                                .join(", ")
+                                                            :
+                                                            'No other roles assigned'
+                                                        }
+                                                    </td>
                                                     <td>{dataItem.status}</td>
                                                 </tr>
                                             }))
                                             :
-                                            React.Children.toArray(reportsData.map((dataItem, index) => {
+                                            React.Children.toArray(
+                                                dataToDisplay
+                                                .filter(item => item.user?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase()))
+                                            .map((dataItem, index) => {
                                                 return <tr>
                                                     <td>{index + 1}</td>
                                                     <td>{dataItem.user}</td>
                                                     <td>{dataItem.tasks}</td>
+                                                    <td>
+                                                        {
+                                                            rolesDict[dataItem?.roleSetting?.Role]
+                                                            ? rolesDict[dataItem?.roleSetting?.Role]
+                                                            : "Candidate"
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        {
+                                                            dataItem?.roleSetting?.other_roles ?
+                                                                dataItem?.roleSetting.other_roles
+                                                                .map((role) => {
+                                                                if (!rolesDict[role]) return null;
+                                                                return rolesDict[role];
+                                                                })
+                                                                .join(", ")
+                                                            :
+                                                            'No other roles assigned'
+                                                        }
+                                                    </td>
                                                     <td>{dataItem.status}</td>
                                                 </tr>
                                             }))
