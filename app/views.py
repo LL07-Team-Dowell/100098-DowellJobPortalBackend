@@ -1600,6 +1600,7 @@ class update_task(APIView):
                 "status": data.get("status"),
                 "task": data.get("task"),
                 "task_added_by": data.get("task_added_by"),
+                "task_updated_by": data.get("task_updated_by"),
                 "task_updated_date": str(datetime.datetime.now()),
             }
             # check if task exists---
@@ -3979,12 +3980,16 @@ class public_product(APIView):
             "company_data_type": request.data.get("company_data_type"),
             "job_category": request.data.get("job_category"),
             "report_type": request.data.get("report_type"),
+            "start_date": request.data.get("start_date"),
+            "end_date":request.data.get("end_date"),
+            "threshold": request.data.get("threshold")
         }
         serializer = PublicProductURLSerializer(data=request.data)
         if serializer.is_valid():
             qr_ids = field["qr_ids"]
             job_category = request.data.get("job_category")
             report_type = request.data.get("report_type")
+            
             if job_category:
                 # print(job_category)
                 generated_links = [
@@ -4000,18 +4005,50 @@ class public_product(APIView):
                     for qr_id in qr_ids
                 ]
             elif report_type:
-                generated_links = [
-                    {
-                        "link": generate_report_link.format(
-                            field["product_url"],
-                            qr_id,
-                            field["job_company_id"],
-                            field["company_data_type"],
-                            field["report_type"],
-                        )
-                    }
-                    for qr_id in qr_ids
-                ]
+                if report_type == 'leaderboard':
+                    generated_links = [
+                        {
+                            "link": generate_report_link_leaderboard.format(
+                                field["product_url"],
+                                qr_id,
+                                field["job_company_id"],
+                                field["company_data_type"],
+                                field["report_type"],
+                                field["start_date"],
+                                field["end_date"],
+                                field["threshold"],
+                            )
+                        }
+                        for qr_id in qr_ids
+                    ]
+                elif report_type == 'organization':
+                    generated_links = [
+                        {
+                            "link": generate_report_link_org.format(
+                                field["product_url"],
+                                qr_id,
+                                field["job_company_id"],
+                                field["company_data_type"],
+                                field["report_type"],
+                                field["start_date"],
+                                field["end_date"]
+                            )
+                        }
+                        for qr_id in qr_ids
+                    ]
+                else:
+                    generated_links = [
+                        {
+                            "link": generate_report_link.format(
+                                field["product_url"],
+                                qr_id,
+                                field["job_company_id"],
+                                field["company_data_type"],
+                                field["report_type"],
+                            )
+                        }
+                        for qr_id in qr_ids
+                    ]
             else:
                 generated_links = [
                     {
@@ -4848,24 +4885,24 @@ class Generate_Report(APIView):
                         r["project"] = "None"
                         projects.append(r["project"])
 
-                counter = Counter(projects)
-                try:
-                    most_tasked_project = counter.most_common(1)[0][0]
-                except IndexError:
-                    most_tasked_project = "None"
-                try:
-                    least_tasked_project = counter.most_common()[-1][0]
-                except IndexError:
-                    least_tasked_project = "None"
-                least_tasked_project = counter.most_common()[-1][0]
-                data["project_with_most_tasks"] = {
-                    "title": most_tasked_project,
-                    "tasks_added": projects.count(most_tasked_project),
-                }
-                data["project_with_least_tasks"] = {
-                    "title": least_tasked_project,
-                    "tasks_added": projects.count(least_tasked_project),
-                }
+
+                c = Counter(projects)
+                m = min(c.values())
+                least_taskeds = [x for x in projects if c[x] == m]
+                least_tasked_projects=[]
+                for items in set(least_taskeds):
+                    count= least_taskeds.count(items)
+                    least_tasked_projects.append({"title":items,"tasks_added":count})
+
+                m = max(c.values())
+                most_tasked = [x for x in projects if c[x] == m]
+                most_tasked_projects=[]
+                for items in set(most_tasked):
+                    count= most_tasked.count(items)
+                    most_tasked_projects.append({"title":items,"tasks_added":count})
+
+                data["project_with_most_tasks"] = most_tasked_projects
+                data["project_with_least_tasks"] = least_tasked_projects
                 return Response(
                     {"message": "Admin Report Generated", "response": data},
                     status=status.HTTP_201_CREATED,
@@ -6290,6 +6327,8 @@ class Generate_Report(APIView):
                                             key="task_created_date",
                     )
                 
+                projects = []
+
                 for t in res_tasks_added[0]:
                     if t["task_id"] in _task_added_ids:
                         try:
@@ -6297,18 +6336,55 @@ class Generate_Report(APIView):
                         except KeyError:
                             tasks_added_by.append("None")
                             pass
+                    try:
+                        projects.append(t["project"])
+                    except KeyError:
+                        t["project"] = "None"
+                        projects.append(t["project"])
                 data={user:{} for user in tasks_added_by}
                 for user in tasks_added_by:
                     data[user]={"tasks":tasks_added_by.count(user),
-                                "status":"Passed" if tasks_added_by.count(user) >threshold else "Defaulter" }
+                                "status":"Passed" if tasks_added_by.count(user) >=threshold else "Defaulter" }
+                # getting projects tasks details------------
+                
+               
+                c = Counter(projects)
+                m = min(c.values())
+                least_taskeds = [x for x in projects if c[x] == m]
+                least_tasked_projects=[]
+                for items in set(least_taskeds):
+                    count= least_taskeds.count(items)
+                    least_tasked_projects.append({"title":items,"tasks_added":count})
 
-                counter = Counter(tasks_added_by)
-                highest_uploader = counter.most_common(1)
-                lowest_uploader = counter.most_common()[:-5:-1]
+                m = max(c.values())
+                most_tasked = [x for x in projects if c[x] == m]
+                most_tasked_projects=[]
+                for items in set(most_tasked):
+                    count= most_tasked.count(items)
+                    most_tasked_projects.append({"title":items,"tasks_added":count})
+
+                ## get highest and lowest counts of tasks------------
+                c = Counter(tasks_added_by)
+                m = min(c.values())
+                mins = [x for x in tasks_added_by if c[x] == m]
+                min_items={}
+                for items in set(mins):
+                    count= mins.count(items)
+                    min_items[items]=count
+
+                m = max(c.values())
+                maxs = [x for x in tasks_added_by if c[x] == m]
+                max_items={}
+                for items in set(maxs):
+                    count= maxs.count(items)
+                    max_items[items]=count
+
                 if len(tasks_added_by)>0:
                     response={
-                        "highest":{hu[0]:hu[1] for hu in highest_uploader} if len(highest_uploader)>1 else {highest_uploader[0][0]:highest_uploader[0][1]},
-                        "lowest":{lu[0]:lu[1] for lu in lowest_uploader} if len(lowest_uploader)>1 else {lowest_uploader[0][0]:lowest_uploader[0][1]},
+                        "highest":max_items,
+                        "lowest":min_items,
+                        "project_with_most_tasks":most_tasked_projects,
+                        "project_with_least_tasks":least_tasked_projects,
                         "threshold":threshold,
                         "users":data
                     }
@@ -6316,12 +6392,15 @@ class Generate_Report(APIView):
                     response={
                         "highest":"None",
                         "lowest":"None",
+                        "project_with_most_tasks":most_tasked_projects,
+                        "project_with_least_tasks":least_tasked_projects,
                         "threshold":threshold,
                         "users":data
                     }
 
                 return Response(
-                    {"message": f"Task Level report generated for Org-{payload['company_id']}", "response": response},
+                    {"message": f"Task Level report generated for Org-{payload['company_id']}", 
+                     "response": response},
                     status=status.HTTP_201_CREATED,
                 )
             else:

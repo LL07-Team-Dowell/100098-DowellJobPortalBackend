@@ -180,3 +180,9 @@ generate_product_link_with_category = (
 generate_report_link = (
     "{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}"
 )
+generate_report_link_org = (
+    "{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}&start_date={}&end_date={}"
+)
+generate_report_link_leaderboard = (
+    "{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}&start_date={}&end_date={}&threshold={}"
+)
