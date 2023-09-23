@@ -3980,12 +3980,16 @@ class public_product(APIView):
             "company_data_type": request.data.get("company_data_type"),
             "job_category": request.data.get("job_category"),
             "report_type": request.data.get("report_type"),
+            "start_date": request.data.get("start_date"),
+            "end_date":request.data.get("end_date"),
+            "threshold": request.data.get("threshold")
         }
         serializer = PublicProductURLSerializer(data=request.data)
         if serializer.is_valid():
             qr_ids = field["qr_ids"]
             job_category = request.data.get("job_category")
             report_type = request.data.get("report_type")
+            
             if job_category:
                 # print(job_category)
                 generated_links = [
@@ -4001,18 +4005,50 @@ class public_product(APIView):
                     for qr_id in qr_ids
                 ]
             elif report_type:
-                generated_links = [
-                    {
-                        "link": generate_report_link.format(
-                            field["product_url"],
-                            qr_id,
-                            field["job_company_id"],
-                            field["company_data_type"],
-                            field["report_type"],
-                        )
-                    }
-                    for qr_id in qr_ids
-                ]
+                if report_type == 'leaderboard':
+                    generated_links = [
+                        {
+                            "link": generate_report_link_leaderboard.format(
+                                field["product_url"],
+                                qr_id,
+                                field["job_company_id"],
+                                field["company_data_type"],
+                                field["report_type"],
+                                field["start_date"],
+                                field["end_date"],
+                                field["threshold"],
+                            )
+                        }
+                        for qr_id in qr_ids
+                    ]
+                elif report_type == 'organization':
+                    generated_links = [
+                        {
+                            "link": generate_report_link_org.format(
+                                field["product_url"],
+                                qr_id,
+                                field["job_company_id"],
+                                field["company_data_type"],
+                                field["report_type"],
+                                field["start_date"],
+                                field["end_date"]
+                            )
+                        }
+                        for qr_id in qr_ids
+                    ]
+                else:
+                    generated_links = [
+                        {
+                            "link": generate_report_link.format(
+                                field["product_url"],
+                                qr_id,
+                                field["job_company_id"],
+                                field["company_data_type"],
+                                field["report_type"],
+                            )
+                        }
+                        for qr_id in qr_ids
+                    ]
             else:
                 generated_links = [
                     {
@@ -6308,7 +6344,7 @@ class Generate_Report(APIView):
                 data={user:{} for user in tasks_added_by}
                 for user in tasks_added_by:
                     data[user]={"tasks":tasks_added_by.count(user),
-                                "status":"Passed" if tasks_added_by.count(user) >threshold else "Defaulter" }
+                                "status":"Passed" if tasks_added_by.count(user) >=threshold else "Defaulter" }
                 # getting projects tasks details------------
                 
                
