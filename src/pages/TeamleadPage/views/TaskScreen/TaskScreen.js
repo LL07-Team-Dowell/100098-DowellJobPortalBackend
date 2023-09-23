@@ -34,6 +34,7 @@ const TaskScreen = ({
   showBackBtn,
   loadProjects,
   isGrouplead,
+  isTeamlead,
 }) => {
   const { currentUser } = useCurrentUserContext();
   const { userTasks, setUserTasks } = useCandidateTaskContext();
@@ -373,32 +374,35 @@ const TaskScreen = ({
           />
         </>
       }
-      <Wrappen>
-        <NavLink
-          className={`${panding ? "link-isActive" : "link-notactive"}`}
-          to={
-            isGrouplead ?
-              "/user-tasks?tab=pending"
-              :
-              "/task?tab=pending"
-          }
-          onClick={clickToPandingApproval}
-        >
-          Pending Approval
-        </NavLink>
-        <NavLink
-          className={`${panding ? "link-notactive" : "link-isActive"}`}
-          to={
-            isGrouplead ?
-              "/user-tasks?tab=approval"
-              :
-              "/task?tab=approval"
-          }
-          onClick={clickToApproved}
-        >
-          Approved
-        </NavLink>
-      </Wrappen>
+      {
+        isTeamlead ? <></> :
+        <Wrappen>
+          <NavLink
+            className={`${panding ? "link-isActive" : "link-notactive"}`}
+            to={
+              isGrouplead ?
+                "/user-tasks?tab=pending"
+                :
+                "/task?tab=pending"
+            }
+            onClick={clickToPandingApproval}
+          >
+            Pending Approval
+          </NavLink>
+          <NavLink
+            className={`${panding ? "link-notactive" : "link-isActive"}`}
+            to={
+              isGrouplead ?
+                "/user-tasks?tab=approval"
+                :
+                "/task?tab=approval"
+            }
+            onClick={clickToApproved}
+          >
+            Approved
+          </NavLink>
+        </Wrappen>
+      }
 
       <div
         className={`candidate-task-screen-container ${className ? className : ""

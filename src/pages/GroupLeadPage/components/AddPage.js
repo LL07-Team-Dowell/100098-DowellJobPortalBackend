@@ -16,6 +16,9 @@ const AddPage = ({
     showAddTaskModal,
     setShowAddTaskModal,
     subprojects,
+    isTeamlead,
+    handleViewIndividualTaskBtn,
+    handleViewTeamTaskBtn,
 }) => {
     const { currentUser } = useCurrentUserContext();
     const { setUserTasks } = useCandidateTaskContext();
@@ -93,6 +96,9 @@ const AddPage = ({
             <NewAddTaskScreen
                 handleAddTaskBtnClick={() => setShowAddTaskModal(true)}
                 handleAddIssueBtnClick={() => setShowAddIssueModal(true)}
+                isTeamlead={isTeamlead}
+                handleViewIndividualTaskBtn={handleViewIndividualTaskBtn}
+                handleViewTeamTaskBtn={handleViewTeamTaskBtn}
             />
         </div>
     )
