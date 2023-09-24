@@ -369,7 +369,7 @@ const TaskScreen = ({
       {
         showBackBtn && <>
           <Navbar
-            title={'Your tasks'}
+            title={'Your work logs'}
             removeButton={true}
           />
         </>
@@ -506,7 +506,7 @@ const TaskScreen = ({
                         width={'16px'}
                         height={'16px'}
                       />
-                      <p className="task__Title" style={{ margin: 0 }}>Filtering tasks...</p>
+                      <p className="task__Title" style={{ margin: 0 }}>Filtering work logs...</p>
                     </div>
                   </> :
                   singleTaskLoading ? <>
@@ -521,14 +521,14 @@ const TaskScreen = ({
                         width={'16px'}
                         height={'16px'}
                       />
-                      <p className="task__Title" style={{ margin: 0 }}>Loading tasks...</p>
+                      <p className="task__Title" style={{ margin: 0 }}>Loading work logs...</p>
                     </div>
 
                   </> :
                     <>
                       {taskdetail2.length > 0 && (
                         <>
-                          <p className="task__Title">Tasks Added</p>
+                          <p className="task__Title">Work logs Added</p>
                         </>
                       )}
                       <ul>
@@ -536,7 +536,7 @@ const TaskScreen = ({
                           taskdetail2.length > 0 ?
                             tasksForTheDay && Array.isArray(tasksForTheDay) ?
                               tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length < 1 ? <>
-                                <p className="task__Title">{!project ? "No project selected" : "No tasks found for today"}</p>
+                                <p className="task__Title">{!project ? "No project selected" : "No work logs found for today"}</p>
 
                                 {
                                   project && value1 < new Date() && !checkIfToday(new Date(), value1) && 
@@ -564,7 +564,7 @@ const TaskScreen = ({
                                     subprojectSelected.length > 0 ?
                                     tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true).length < 1 ?
                                     <p style={{ fontSize: '0.75rem' }}>
-                                      No tasks found matching subproject of <b>{subprojectSelected}</b> under the <b>{project}</b> project
+                                      No work logs found matching subproject of <b>{subprojectSelected}</b> under the <b>{project}</b> project
                                     </p>
                                     :
                                     React.Children.toArray(tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true).map(task => {
@@ -613,7 +613,7 @@ const TaskScreen = ({
                               ))
                             :
                             <>
-                            <p className="task__Title">{!project ? "No project selected" : "No tasks found for today"}</p>
+                            <p className="task__Title">{!project ? "No project selected" : "No work logs found for today"}</p>
                             {
                               project && value1 < new Date() && !checkIfToday(new Date(), value1) && 
                               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: 12 }}>

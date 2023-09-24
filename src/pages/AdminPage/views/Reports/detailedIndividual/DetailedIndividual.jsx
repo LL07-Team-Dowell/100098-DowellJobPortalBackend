@@ -136,13 +136,13 @@ export default function DetailedIndividual({ isPublicReportUser }) {
               maxBarThickness: 40,
             },
             {
-              label: "Tasks",
+              label: "Work logs",
               data: resp[1].data?.response.map((item) => item.total_tasks),
               backgroundColor: "#005734",
               maxBarThickness: 40,
             },
             {
-              label: "Tasks uploaded this week",
+              label: "Work logs uploaded this week",
               data: resp[1].data?.response.map(
                 (item) => item.tasks_uploaded_this_week
               ),
@@ -383,9 +383,9 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                     </div>
                   </div>
                   <div className="graph">
-                    <h3>Tasks overview</h3>
+                    <h3>Work logs overview</h3>
                     <h4 style={{ textAlign: "center", marginBottom: "2rem" }}>
-                      Bar chart showing task details for {candidateName} this
+                      Bar chart showing work log details for {candidateName} this
                       year
                     </h4>
                     <Bar
@@ -393,7 +393,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                         labels: Object.keys(candidateData),
                         datasets: [
                           {
-                            label: "Tasks approved",
+                            label: "Work logs approved",
                             backgroundColor: "blue",
                             data: Object.keys(candidateData).map((key) => {
                               return candidateData[key].tasks_approved;
@@ -401,7 +401,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                             maxBarThickness: 40,
                           },
                           {
-                            label: "Tasks added",
+                            label: "Work logs added",
                             backgroundColor: "#005734",
                             data: Object.keys(candidateData).map((key) => {
                               return candidateData[key].tasks_added;
@@ -409,7 +409,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                             maxBarThickness: 40,
                           },
                           {
-                            label: "Tasks uncompleted",
+                            label: "Work logs uncompleted",
                             backgroundColor: "red",
                             data: Object.keys(candidateData).map((key) => {
                               return candidateData[key].tasks_uncompleted;
@@ -417,7 +417,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                             maxBarThickness: 40,
                           },
                           {
-                            label: "Tasks completed",
+                            label: "Work logs completed",
                             backgroundColor: "yellow",
                             data: Object.keys(candidateData).map((key) => {
                               return candidateData[key].tasks_completed;
@@ -436,7 +436,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                           <>
                             <p style={{ margin: "25px 0 10px" }}>
                               <b>
-                                Bar chart showing hours, total tasks and tasks
+                                Bar chart showing hours, total work logs and work logs
                                 this week per project
                               </b>
                             </p>
@@ -453,7 +453,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                       </div>
                       <div className="task__item">
                         <h4>
-                          <span>Subprojects</span>
+                          <span>Subprojects Distribution</span>
                           <Select
                             className="title__task__Select"
                             value={{
@@ -555,7 +555,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                       </div>
                     </div>
                     <div className="task__item tasks">
-                      <h4>Task Details</h4>
+                      <h4>Work log details</h4>
                       <p className="project__Select">Select project</p>
                       <Select
                         className="title__task__Select"
@@ -630,7 +630,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                   task.project === projectSelectedForTasksBox
                                   &&
                                   task.is_active
-                              ).length} tasks added by {candidateName} under the{" "}
+                              ).length} work logs added by {candidateName} under the{" "}
                               {projectSelectedForTasksBox} project between{" "}
                               {new Date(startDateSelectedForTasksBox).toDateString()} and{" "}
                               {new Date(endDateSelectedForTasksBox).toDateString()}
@@ -688,7 +688,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                     marginTop: 20,
                                   }}
                                 >
-                                  No tasks were added by {candidateName} under
+                                  No work logs were added by {candidateName} under
                                   the {projectSelectedForTasksBox} project between{" "}
                                   {new Date(startDateSelectedForTasksBox).toDateString()} and{" "}
                                   {new Date(endDateSelectedForTasksBox).toDateString()}
@@ -702,8 +702,8 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                     <th>Date added</th>
                                     <th>Time started</th>
                                     <th>Time finished</th>
-                                    <th>task</th>
-                                    <th>Task type</th>
+                                    <th>Work log</th>
+                                    <th>Work log type</th>
                                     <th>sub project</th>
                                   </tr>
                                   {React.Children.toArray (
@@ -756,7 +756,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                           <p
                             style={{ fontSize: "0.9rem", textAlign: "center" }}
                           >
-                            Select a project to get a detailed report on tasks
+                            Select a project to get a detailed report on work logs
                             added
                           </p>
                         </>

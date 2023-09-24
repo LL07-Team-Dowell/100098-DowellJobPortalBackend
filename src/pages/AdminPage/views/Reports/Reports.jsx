@@ -702,7 +702,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
           </div>
 
           <div style={{ marginBottom: 20 }} className='graph__Item'>
-            <h6>Teams and tasks</h6>
+            <h6>Teams and work logs</h6>
             <div className='teams__And_Tasks__Wrapper'>
               {!(data.teams || data.team_tasks || data.tasks) ? (
                 <h4>
@@ -713,11 +713,11 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 <div style={{ marginBottom: 60}}>
                   <div style={{ width: 400, height: 300 }}>
                     <p style={{ marginBottom: 20 }}>
-                      <b>Doughnut chart showing teams and tasks</b>
+                      <b>Doughnut chart showing teams and work logs</b>
                     </p>
                     <Doughnut
                       data={{
-                        labels: ["Teams", "Team Tasks", "Individual Tasks"],
+                        labels: ["Teams", "Team Tasks", "Individual Work logs"],
                         datasets: [
                           {
                             data: [data.teams, data.tasks, data.tasks],
@@ -740,11 +740,11 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 ) : (
                   <div style={{ width: 450, height: 300 }}>
                     <p style={{ marginBottom: 20 }}>
-                      <b>Doughnut chart showing tasks completed</b>
+                      <b>Doughnut chart showing work logs completed</b>
                     </p>
                     <Doughnut
                       data={{
-                        labels: ["tasks uncompleted", "tasks completed"],
+                        labels: ["work logs uncompleted", "work logs completed"],
                         datasets: [
                           {
                             label: "Poll",
@@ -771,11 +771,11 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
                     <p style={{ marginBottom: 20 }}>
-                      <b>Doughnut chart showing tasks completed on time</b>
+                      <b>Doughnut chart showing work logs completed on time</b>
                     </p>
                     <Doughnut
                       data={{
-                        labels: ["tasks completed on time"],
+                        labels: ["work logs completed on time"],
                         datasets: [
                           {
                             label: "Poll",
@@ -799,40 +799,52 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
             <p>
               project with least tasks: {data.project_with_least_tasks?.title}
             </p> */}
-            <p style={{ marginBottom: 20, marginTop: 40, textAlign: "center" }}>
-              <b>
-                Doughnut chart showing the project with the most tasks added and
-                project with the least tasks added
-              </b>
-            </p>
-            <div
-              style={{
-                width: 450,
-                height: 300,
-                marginLeft: "auto",
-                marginRight: "auto",
-              }}
-            >
-              <Doughnut
-                data={{
-                  labels: [
-                    data.project_with_most_tasks?.title,
-                    data.project_with_least_tasks?.title,
-                  ],
-                  datasets: [
-                    {
-                      data: [
-                        data.project_with_most_tasks?.tasks_added,
-                        data.project_with_least_tasks?.tasks_added,
+            {
+              (!data.project_with_most_tasks?.title || !data.project_with_most_tasks?.title) ?
+              <>
+                <h4>
+                  there is no data between {firstDateState.split(" ")[0]} and{" "}
+                  {lastDateState.split(" ")[0]}
+                </h4>
+              </> 
+              : 
+              <>
+                <p style={{ marginBottom: 20, marginTop: 40, textAlign: "center" }}>
+                  <b>
+                    Doughnut chart showing the project with the most work logs added and
+                    project with the least work logs added
+                  </b>
+                </p>
+                <div
+                  style={{
+                    width: 450,
+                    height: 300,
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                  }}
+                >
+                  <Doughnut
+                    data={{
+                      labels: [
+                        data.project_with_most_tasks?.title,
+                        data.project_with_least_tasks?.title,
                       ],
-                      backgroundColor: ["#005734", "#d3d3d3"],
-                      borderColor: ["#005734", "#d3d3d3"],
-                    },
-                  ],
-                }}
-                options={chartOptions}
-              />
-            </div>
+                      datasets: [
+                        {
+                          data: [
+                            data.project_with_most_tasks?.tasks_added,
+                            data.project_with_least_tasks?.tasks_added,
+                          ],
+                          backgroundColor: ["#005734", "#d3d3d3"],
+                          borderColor: ["#005734", "#d3d3d3"],
+                        },
+                      ],
+                    }}
+                    options={chartOptions}
+                  />
+                </div> 
+              </>
+            }
           </div>
         </div>
       </div>

@@ -11,7 +11,7 @@ export const hrNavigationLinks = [
     {
         linkAddress: "/tasks",
         icon: <ImStack />,
-        text: "Tasks"
+        text: "Work logs"
     },
     {
         linkAddress: "/attendance",

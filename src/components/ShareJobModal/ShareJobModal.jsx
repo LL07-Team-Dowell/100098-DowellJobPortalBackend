@@ -619,7 +619,7 @@ const validJobCategories = [
 const validReportOptions = [
   'organization',
   'individual',
-  'task',
+  'work log',
   'team',
   'leaderboard',
 ]
@@ -627,7 +627,7 @@ const validReportOptions = [
 export const reportOptionsPermitted = {
   'organization_report': 'organization',
   'individual_report': 'individual',
-  'task_report': 'task',
+  'task_report': 'work log',
   'team_report': 'team', 
   'leaderboard_report': 'leaderboard',
 }

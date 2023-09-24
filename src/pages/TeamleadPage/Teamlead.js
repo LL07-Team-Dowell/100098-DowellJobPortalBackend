@@ -395,7 +395,7 @@ const Teamlead = ({ isGrouplead }) => {
 
     if (!currentPath && !currentTab) return setCurrentActiveItem("Approval");
     if (currentPath && currentPath === "task")
-      return setCurrentActiveItem("Tasks");
+      return setCurrentActiveItem("Work logs");
   }, [location]);
 
   useEffect(() => {
@@ -504,7 +504,7 @@ const Teamlead = ({ isGrouplead }) => {
   const handleMenuItemClick = (item) => {
     setCurrentActiveItem(item);
 
-    if (item === "Tasks") return navigate("/task");
+    if (item === "Work logs") return navigate("/task");
 
     const passedItemInLowercase = item.toLocaleLowerCase();
     return navigate(`/?tab=${passedItemInLowercase}`);
@@ -663,7 +663,7 @@ const Teamlead = ({ isGrouplead }) => {
               "task" :
               "applicant"
             : section === "task"
-              ? "task"
+              ? "work log"
               : rehireTabActive
                 ? "rehire"
                 : "applicant"
@@ -679,7 +679,7 @@ const Teamlead = ({ isGrouplead }) => {
               title={
                 section === "task"
                   ?
-                  "Tasks"
+                  "Work Logs"
                   : section === "user"
                     ? "Profile"
                     : showCandidate
@@ -716,7 +716,7 @@ const Teamlead = ({ isGrouplead }) => {
             <TogglerNavMenuBar
               className={"teamlead"}
               menuItems={
-                ["Approval", "Tasks", "Rehire"]
+                ["Approval", "Work logs", "Rehire"]
               }
               currentActiveItem={currentActiveItem}
               handleMenuItemClick={handleMenuItemClick}

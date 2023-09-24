@@ -51,14 +51,14 @@ const SelectedCandidates = ({ showTasks, candidatesCount, tasksCount, hrPageActi
 
                 sortActive ? <>
                     <div className="selected-candidates-count-container">
-                        <h2>{hrAttendancePageActive ? title : "Task"}</h2>
+                        <h2>{hrAttendancePageActive ? title : "Work log"}</h2>
                         <p>{`Showing ${tasksCount ? tasksCount : '0'} results`}</p>
                     </div>
                 </> :
 
                 <div className="selected-candidates-count-container">
-                    <h2>{ showTasks ? hrAttendancePageActive ? title : "Task" : "Selected Candidates" }</h2>
-                    <p>{ showTasks ? `Task given to ${tasksCount ? tasksCount : '0'} candidates`: `${candidatesCount ? candidatesCount : '0'} candidates are selected for the roles` }</p>    
+                    <h2>{ showTasks ? hrAttendancePageActive ? title : "Work log" : "Selected Candidates" }</h2>
+                    <p>{ showTasks ? `Work log added by ${tasksCount ? tasksCount : '0'} candidates`: `${candidatesCount ? candidatesCount : '0'} candidates are selected for the roles` }</p>    
                 </div>
             }
  

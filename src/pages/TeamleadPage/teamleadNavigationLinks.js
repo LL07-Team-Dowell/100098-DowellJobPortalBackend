@@ -12,7 +12,7 @@ export const teamleadNavigationLinks = [
     {
         linkAddress: "/task",
         icon: <ImStack />,
-        text: "Tasks"
+        text: "Work logs"
     },
     {
         linkAddress: "/create-task",
@@ -36,7 +36,7 @@ export const groupLeadNavigationLinks = [
     {
         linkAddress: "/grouplead-tasks",
         icon: <ImStack />,
-        text: "Tasks"
+        text: "Work logs"
     },
     {
         linkAddress: "/create-task",

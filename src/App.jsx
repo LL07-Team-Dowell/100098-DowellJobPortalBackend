@@ -724,7 +724,7 @@ function App() {
                 adminAlternativePageActive={true}
               >
                 <ValuesProvider>
-                  <CreateTeam />
+                  <CreateTeam isAdmin={true} />
                 </ValuesProvider>
               </StaffJobLandingLayout>
             </CandidateTaskContextProvider>

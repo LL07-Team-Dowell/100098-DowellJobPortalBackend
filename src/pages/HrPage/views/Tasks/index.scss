@@ -1,5 +1,5 @@
 .task__Indicator{
-            background-color: limegreen;
+            background-color: #005734;
             color: white;
           }
 
@@ -8,3 +8,11 @@
               margin-top: 0%;
             }
           }
+.hr__Work__Log__Wrapper {
+  .react-calendar {
+    border-radius: 1.5rem;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    border: none;
+    max-width: 18rem;
+  }
+}

@@ -41,7 +41,7 @@ const NewAddTaskScreen = ({
                   style={{ fontSize: "2rem" }}
                 />
               </div>
-              <h4>Add Task</h4>
+              <h4>Add Work log</h4>
               <p>Keep track of tasks given and milestones completed while working on a project.</p>
             </div>
           </div>
@@ -55,9 +55,9 @@ const NewAddTaskScreen = ({
                           style={{ fontSize: "2rem" }}
                         />
                     </div>
-                    <h4>View Your Added Tasks</h4>
+                    <h4>View added work logs</h4>
                     <p>
-                        View the tasks you have added.
+                        View the work logs you have added.
                     </p>
                 </div>
               </div>
@@ -70,9 +70,9 @@ const NewAddTaskScreen = ({
                           style={{ fontSize: "2rem" }}
                         />
                     </div>
-                    <h4>View Your Team's Tasks</h4>
+                    <h4>View team's work logs</h4>
                     <p>
-                        View tasks added by your team members.
+                        View work logs added by your team members.
                     </p>
                 </div>
             </div>

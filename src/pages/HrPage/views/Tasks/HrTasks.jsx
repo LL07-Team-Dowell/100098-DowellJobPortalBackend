@@ -102,7 +102,7 @@ const HrTasks = () => {
             {/* hrAttendancePageActive */}
             <div>
               <div style={{ marginTop: 40 }}>
-                <TitleNavigationBar title={!attendance ? "Task details" : "Attendance details"} handleBackBtnClick={() => navigate(-1)} />
+                <TitleNavigationBar title={!attendance ? "Work log details" : "Attendance details"} handleBackBtnClick={() => navigate(-1)} />
                 <AssignedProjectDetails assignedProject={List[0] ? List[0] : ""} showTask={true} hrAttendancePageActive={!attendance ? false : true} availableProjects={List} removeDropDownIcon={false} handleSelectionClick={e => setproject(e)} />
 
               </div>
@@ -110,7 +110,7 @@ const HrTasks = () => {
 
             </div>
             <div style={{ display: "flex", gap: "2rem", margin: "0 auto 200px", width: "80%" }}>
-              <div style={attendance && { margin: "0 auto" }}>
+              <div className='hr__Work__Log__Wrapper' style={attendance && { margin: "0 auto" }}>
                 <Calendar onChange={onChange} value={value} tileClassName={tileClassName} />
               </div>
               {

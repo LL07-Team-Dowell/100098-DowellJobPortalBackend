@@ -9,7 +9,7 @@ console.log(assignedProject);
     return <>
         <div className="project-details-container">
             {
-                showTask ? hrAttendancePageActive ? <p>Attendance Details</p> : <p>Task Details</p> : <></>
+                showTask ? hrAttendancePageActive ? <p>Attendance Details</p> : <p>Work log Details</p> : <></>
             }
             <div className={`project-info-container ${showTask ? 'flex-end' : ''}`}>
                 <p>Project</p>

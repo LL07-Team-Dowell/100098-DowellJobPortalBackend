@@ -331,7 +331,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                     </h4>
                     <div className="indiv__Task__Rep__info">
                         <div className="leaderboard__Ranking__Wrapper top__Ranking">
-                            <h4>Tasks Leaderboard</h4>
+                            <h4>Work logs Leaderboard</h4>
                             <div className="rankingss">
                                 {
                                     reportsData[0] && <div className="task__item leaderboard" data-tooltip-id="first_rank">
@@ -349,7 +349,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                         <div className="award__Badge first">
                                             <BsAward />
                                         </div>
-                                        <Tooltip id="first_rank" content={`Tasks: ${reportsData[0].tasks}`} />
+                                        <Tooltip id="first_rank" content={`Work logs: ${reportsData[0].tasks}`} />
                                     </div>
                                 }
                                 {
@@ -368,7 +368,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                         <div className="award__Badge second">
                                             <BsAward />
                                         </div>
-                                        <Tooltip id="second_rank" content={`Tasks: ${reportsData[1].tasks}`} />
+                                        <Tooltip id="second_rank" content={`Work logs: ${reportsData[1].tasks}`} />
                                     </div>
                                 }
                                 {
@@ -387,7 +387,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                         <div className="award__Badge third">
                                             <BsAward />
                                         </div>
-                                        <Tooltip id="third_rank" content={`Tasks: ${reportsData[2].tasks}`} />
+                                        <Tooltip id="third_rank" content={`Work logs: ${reportsData[2].tasks}`} />
                                     </div>
                                 }
                                 {
@@ -406,7 +406,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                         <div className="award__Badge fourth">
                                             <BsAward />
                                         </div>
-                                        <Tooltip id="fourth_rank" content={`Tasks: ${reportsData[3].tasks}`} />
+                                        <Tooltip id="fourth_rank" content={`Work logs: ${reportsData[3].tasks}`} />
                                     </div>
                                 }
                             </div>
@@ -414,7 +414,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                         <div className="task__Box">
                             <div className="task__item level">
                                 <h4>
-                                    User with the most tasks: {
+                                    User with the most work logs: {
                                         applications.find(application => application.username === Object.keys(highestAndLowestData?.highest || {})[0]) ?
                                             applications.find(application => application.username === Object.keys(highestAndLowestData?.highest || {})[0])?.applicant
                                         :
@@ -428,7 +428,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                             <p
                                                 data-tooltip-id="highest_user_tasks"
                                             >
-                                                Tasks uploaded by user
+                                                Work logs uploaded by user
                                             </p>
                                             <Tooltip id="highest_user_tasks" content={`Count: ${highestAndLowestData?.highest[Object.keys(highestAndLowestData?.highest || {})[0]]}`} />
                                         </div>
@@ -437,7 +437,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                             <p
                                                 data-tooltip-id="highest_total_tasks"
                                             >
-                                                Total tasks in organization
+                                                Total work logs in organization
                                             </p>
                                             <Tooltip id="highest_total_tasks" content={`Count: ${totalTasks}`} />
                                         </div>
@@ -460,7 +460,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                             </div>
                             <div className="task__item level">
                                 <h4>
-                                    Users with the lowest tasks: {
+                                    Users with the lowest work logs: {
                                         Object.keys(highestAndLowestData?.lowest || {}).map(key => {
                                             const foundCandidateApplication = applications.find(application => application.username === key);
                                             if (foundCandidateApplication) return foundCandidateApplication?.applicant
@@ -475,7 +475,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                             <p
                                                 data-tooltip-id="lowest_user_tasks"
                                             >
-                                                Tasks uploaded by user
+                                                Work logs uploaded by user
                                             </p>
                                             <Tooltip id="lowest_user_tasks" content={`Count: ${highestAndLowestData?.lowest[Object.keys(highestAndLowestData?.lowest || {})[0]]}`} />
                                         </div>
@@ -484,7 +484,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                             <p
                                                 data-tooltip-id="lowest_total_tasks"
                                             >
-                                                Total tasks in organization
+                                                Total work logs in organization
                                             </p>
                                             <Tooltip id="lowest_total_tasks" content={`Count: ${totalTasks}`} />
                                         </div>
@@ -509,7 +509,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                         <div className="task__Box" style={{ marginTop: 30 }}>
                             <div className="task__item level">
                                 <h4>
-                                    Project with the most tasks: {
+                                    Project with the most work logs: {
                                         projectCountData?.project_with_most_tasks?.title
                                     }
                                 </h4>
@@ -520,7 +520,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                             <p
                                                 data-tooltip-id="highest_project_tasks"
                                             >
-                                                Tasks uploaded in project
+                                                Work logs uploaded in project
                                             </p>
                                             <Tooltip id="highest_project_tasks" content={`Count: ${projectCountData?.project_with_most_tasks?.tasks_added}`} />
                                         </div>
@@ -529,7 +529,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                             <p
                                                 data-tooltip-id="highest_total_tasks_proj"
                                             >
-                                                Total tasks in organization
+                                                Total work logs in organization
                                             </p>
                                             <Tooltip id="highest_total_tasks_proj" content={`Count: ${totalTasks}`} />
                                         </div>
@@ -552,7 +552,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                             </div>
                             <div className="task__item level">
                                 <h4>
-                                    Project with the lowest tasks: {
+                                    Project with the lowest work logs: {
                                         projectCountData?.project_with_least_tasks?.title
                                     }
                                 </h4>
@@ -563,7 +563,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                             <p
                                                 data-tooltip-id="lowest_project_tasks"
                                             >
-                                                Tasks uploaded in project
+                                                Work logs uploaded in project
                                             </p>
                                             <Tooltip id="lowest_project_tasks" content={`Count: ${projectCountData?.project_with_least_tasks?.tasks_added}`} />
                                         </div>
@@ -572,7 +572,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                             <p
                                                 data-tooltip-id="lowest_total_tasks_proj"
                                             >
-                                                Total tasks in organization
+                                                Total work logs in organization
                                             </p>
                                             <Tooltip id="lowest_total_tasks_proj" content={`Count: ${totalTasks}`} />
                                         </div>
@@ -643,7 +643,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                     <tr>
                                         <th>Rank</th>
                                         <th>User</th>
-                                        <th>Tasks</th>
+                                        <th>Work logs</th>
                                         <th>Role</th>
                                         <th>Other roles</th>
                                         <th>Status</th>
