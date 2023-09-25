@@ -744,14 +744,15 @@ const AddTaskScreen = ({
                     </div>
                     <div className="task__Item">
                       <span className="selectProject">Work log</span>
-                      <input
+                      <textarea
                         type={"text"}
-                        placeholder={"work log"}
+                        placeholder={"Work log"}
                         value={taskName}
-                        style={{ margin: 0, marginBottom: "0.8rem" }}
+                        style={{ margin: 0, marginBottom: "0rem" }}
                         onChange={({ target }) => setTaskName(target.value)}
                         readOnly={loading || !taskDetailForTodayLoaded ? true : false}
-                      />
+                        rows={3}
+                      ></textarea>
                     </div>
                     <div className="task__Item">
                       <span className="selectProject">Work log type</span>
