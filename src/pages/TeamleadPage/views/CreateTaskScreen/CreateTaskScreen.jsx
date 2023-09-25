@@ -243,6 +243,7 @@ const CreateTaskScreen = ({
       const response = await approveTask({
         document_id: task._id,
         task: task.task,
+        lead_username: currentUser?.userinfo?.username,
       });
 
       const copyOfUpdatedTasks = updatedTasks.slice();
@@ -305,7 +306,7 @@ const CreateTaskScreen = ({
     <StaffJobLandingLayout teamleadView={true} isGrouplead={isGrouplead} hideSearchBar={true}>
       <>
         <TitleNavigationBar
-          title={`Tasks for ${applicant}`}
+          title={`Work logs for ${applicant}`}
           className="task-bar teamleadView"
           handleBackBtnClick={() => navigate(-1)}
         />
@@ -397,7 +398,7 @@ const CreateTaskScreen = ({
                         width={'16px'}
                         height={'16px'}
                       />
-                      <p className="task__Title" style={{ margin: 0 }}>Loading tasks...</p>
+                      <p className="task__Title" style={{ margin: 0 }}>Loading work logs...</p>
                     </div>
                     :
                     tasksDate.length === 0 ? (
@@ -406,7 +407,7 @@ const CreateTaskScreen = ({
                           !singleTaskItem || !(tasksForTheDay && Array.isArray(tasksForTheDay)) ?
                           <>
                             <p className="empty__task__Content">
-                              No task found for today
+                              No work log found for today
                             </p>
                           </>
                           :
@@ -439,7 +440,7 @@ const CreateTaskScreen = ({
                       </>
                         :
                         <p className="empty__task__Content">
-                          No task found for today
+                          No work log found for today
                         </p>
                     ) : (
                       React.Children.toArray(

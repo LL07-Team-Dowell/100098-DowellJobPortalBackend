@@ -9,6 +9,7 @@ import "./style.css";
 import Button from "../../../AdminPage/components/Button/Button";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { AiOutlineCheckCircle } from "react-icons/ai";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 
 
 const CandidateTaskItem = ({ 
@@ -26,6 +27,7 @@ const CandidateTaskItem = ({
 
     const [ currentTaskStatus, setCurrentTaskStatus ] = useState("");
     const [isFetchingData, setIsFetchingData] = useState(false);
+    const { currentUser } = useCurrentUserContext();
 
     useEffect(() => {
         
@@ -51,6 +53,7 @@ const CandidateTaskItem = ({
               status: currentTask.status,
               task_added_by: currentTask.task_added_by,
               task_updated_date: new Date(),
+              task_updated_by: currentUser?.userinfo?.username,
             });
 
             //Notification for when task is updated with toastify
@@ -91,14 +94,14 @@ const CandidateTaskItem = ({
               {
                 newTaskItem ? <span className="task__Title">
                   {" "}
-                  Tasks added
+                  Work logs added
                   {!candidatePage && (
                     <></>
                   )}
                 </span> :
                 <span className="task__Title">
                   {" "}
-                  {taskNum}. Task: {currentTask.task}{" "}
+                  {taskNum}. Work log: {currentTask.task}{" "}
                   {!candidatePage && (
                     <></>
                   )}
@@ -108,7 +111,7 @@ const CandidateTaskItem = ({
               {
                 currentTask.approved && <p style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#005734', margin: '1.2rem 0' }}>
                   <AiOutlineCheckCircle />
-                  <span style={{ color: '#005734' }}>Task is approved</span>
+                  <span style={{ color: '#005734' }}>Work log is approved</span>
                 </p>
               }
               
@@ -180,7 +183,7 @@ const CandidateTaskItem = ({
               Added on {formatDateAndTime(currentTask.task_created_date)}
             </span>
             {currentTask.task_updated_date ? (
-              <span>Task status updated last on {formatDateAndTime(currentTask.task_updated_date)}</span>
+              <span>Work log status updated last on {formatDateAndTime(currentTask.task_updated_date)}</span>
             ) : (
               <></>
             )}
@@ -194,7 +197,7 @@ const CandidateTaskItem = ({
                   tasks.length < 1 ?
                   <>
                     <p style={{ fontFamily: 'Poppins', fontSize: '0.875rem' }}>
-                      No tasks found 
+                      No work logs found 
                       {subproject && subproject.length > 0 && <span> matching for subproject: <b>{subproject}</b></span>}
                     </p>
                   </> 

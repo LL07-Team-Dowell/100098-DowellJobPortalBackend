@@ -13,7 +13,7 @@ export const afterSelectionLinks = [
     linkAddress: "/",
   },
   {
-    text: "Tasks",
+    text: "Work logs",
     icon: <ImStack />,
     linkAddress: "/task",
   },

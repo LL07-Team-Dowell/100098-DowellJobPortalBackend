@@ -19,7 +19,7 @@ import { testingRoles } from "../../utils/testingRoles";
 const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, hideSearch }) => {
     const [ searchValue, setSearchValue ] = useState("");
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
-    const [ screenTitle, setScreenTitle ] = useState("Tasks");
+    const [ screenTitle, setScreenTitle ] = useState("Work logs");
     const location = useLocation();
     const { currentUser } = useCurrentUserContext();
     const [ isSuperUser, setIsSuperUser ] = useState(false);
@@ -29,7 +29,7 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
         if (location.pathname.includes("teams")) return setScreenTitle("Teams");
         if (location.pathname.includes("user")) return setScreenTitle("Profile");
         
-        setScreenTitle("Tasks")
+        setScreenTitle("Work logs")
 
     }, [location])
 

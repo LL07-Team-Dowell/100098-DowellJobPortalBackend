@@ -6,6 +6,15 @@
     padding:50px;
     margin-bottom: 50px;
     font-family: Poppins;
+    @media(max-width:798px){
+        .buttons{
+            display: flex;
+            align-items: center;
+            gap:5px;
+            margin:10px;
+        }
+
+    }
     .team-screen-task-progress-detail-header{
         display: flex;
         gap: 20px;
@@ -38,8 +47,14 @@
         justify-content: space-between;
         align-items: flex-start;
         padding:20px;
-        
+        @media(max-width:798px){
+            display: block;
+            padding:10px !important;
+        }
         .team-screen-task-progress-detail-content-data{
+            @media(max-width:798px){
+                display: block;
+            }
             display: flex;
             gap:15px;
             align-items: center;    
@@ -142,9 +157,16 @@
             cursor: pointer;
             text-transform: capitalize;
             transition: 0.3s ease-in-out;
+            width: 200px !important;
+            height: 34px !important;
             &:hover, &:focus {
                 background-color: #005734;
                 color: #FFF;
+            }
+            @media (max-width:798px){
+                width: fit-content !important;
+                padding:5px;
+                display: inline;
             }
         }
         
@@ -163,7 +185,7 @@
         outline: none;
         color: white;
         height: 30px;
-        width: 120px;
+        min-width: 120px;
         border-radius: 6px;
         div{
             margin: auto;

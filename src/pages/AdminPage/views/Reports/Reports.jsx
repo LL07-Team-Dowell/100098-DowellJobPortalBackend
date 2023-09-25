@@ -24,13 +24,15 @@ import {
   Title,
 } from "chart.js";
 // don
-import { Doughnut, Bar, Line } from "react-chartjs-2";
+import { Doughnut, Bar, Line, Pie } from "react-chartjs-2";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 import { AiOutlineClose } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { generateCommonAdminReport } from "../../../../services/commonServices";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { formatDateForAPI } from "../../../../helpers/helpers";
 // register chart.js
 ChartJs.register(ArcElement, Tooltip, Legend);
 
@@ -119,10 +121,9 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         ),
         end_date: formatDateFromMilliseconds(new Date().getTime()),
         report_type: "Admin",
-        company_id: isPublicReportUser ?
-          reportsUserDetails?.company_id
-        : 
-        currentUser.portfolio_info[0].org_id,
+        company_id: isPublicReportUser
+          ? reportsUserDetails?.company_id
+          : currentUser.portfolio_info[0].org_id,
       };
       generateCommonAdminReport(data)
         .then((resp) => {
@@ -144,10 +145,9 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       start_date,
       end_date,
       report_type: "Admin",
-      company_id: isPublicReportUser ?
-        reportsUserDetails?.company_id
-      : 
-      currentUser.portfolio_info[0].org_id,
+      company_id: isPublicReportUser
+        ? reportsUserDetails?.company_id
+        : currentUser.portfolio_info[0].org_id,
     };
     setDatasetForApplications(null);
     generateCommonAdminReport(data)
@@ -194,6 +194,13 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         console.log(err);
         setLoading(false);
         setLoadingButton(false);
+        toast.info(
+          err.response
+            ? err.response.status === 500
+              ? 'Report generation failed'
+              : err.response.data.message
+            : 'Report generation failed'
+        );
       });
   };
   //   useEffect
@@ -202,13 +209,18 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
   useEffect(() => {
     setLoading(true);
     const data = {
-      start_date: firstDate,
-      end_date: lastDate,
+      start_date: isPublicReportUser ? 
+        formatDateForAPI(reportsUserDetails?.reportStartDate, 'report')
+      : 
+      firstDate,
+      end_date: isPublicReportUser ? 
+        formatDateForAPI(reportsUserDetails?.reportEndDate, 'report')
+      : 
+      lastDate,
       report_type: "Admin",
-      company_id: isPublicReportUser ?
-        reportsUserDetails?.company_id
-      :  
-      currentUser.portfolio_info[0].org_id,
+      company_id: isPublicReportUser
+        ? reportsUserDetails?.company_id
+        : currentUser.portfolio_info[0].org_id,
     };
     setDatasetForApplications(null);
 
@@ -286,7 +298,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         setLoading(false);
       });
   }, []);
-
+  console.log((data?.hired / data?.job_applications?.total) * 100);
   useEffect(() => {
     console.log(data);
   }, [data]);
@@ -305,19 +317,18 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               <div
                 style={{ display: "flex", alignItems: "center", gap: "1rem" }}
               >
-                {
-                  isPublicReportUser ? 
+                {isPublicReportUser ? (
                   <>
                     <h2>Organization report</h2>
                   </>
-                  :
+                ) : (
                   <>
                     <button className='back' onClick={() => navigate(-1)}>
                       <MdArrowBackIosNew />
                     </button>
                     <h2>Get insights into your organization</h2>
                   </>
-                }
+                )}
               </div>
             </div>
           </div>
@@ -338,38 +349,39 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         <div className='reports__container_header'>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              {
-                isPublicReportUser ? 
+              {isPublicReportUser ? (
                 <>
                   <h2>Organization report</h2>
                 </>
-                :
+              ) : (
                 <>
                   <button className='back' onClick={() => navigate(-1)}>
                     <MdArrowBackIosNew />
                   </button>
                   <h2>Get insights into your organization</h2>
                 </>
-              }
+              )}
             </div>
             <CSVLink data={[Object.keys(data), Object.values(data)]}>
               Download Me
             </CSVLink>
           </div>
-          <div>
-            <p></p>
-            <select
-              className='select_time_tage'
-              onChange={handleSelectOptionsFunction}
-              defaultValue={"last_7_days"}
-            >
-              <option value='' disabled>
-                select time
-              </option>
-              <option value='last_7_days'>last 7 days</option>
-              <option value='custom_time'>custom time</option>
-            </select>
-          </div>
+          {
+            !isPublicReportUser && <div>
+              <p></p>
+              <select
+                className='select_time_tage'
+                onChange={handleSelectOptionsFunction}
+                defaultValue={"last_7_days"}
+              >
+                <option value='' disabled>
+                  select time
+                </option>
+                <option value='last_7_days'>last 7 days</option>
+                <option value='custom_time'>custom time</option>
+              </select>
+            </div>
+          }
         </div>
         <div className='graphs'>
           <div className='graph__Item'>
@@ -392,10 +404,10 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   </h4>
                 ) : (
                   <>
-                    <p>
+                    <p style={{ textAlign: 'center' }}>
                       <b>Doughnut chart showing active and inactive jobs</b>
                     </p>
-                    <div style={{ width: "100%", height: 320 }}>
+                    <div style={{ width: "100%", height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center',  }}>
                       <Doughnut
                         data={{
                           labels: ["active jobs", "inactive jobs"],
@@ -418,36 +430,40 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               </div>
 
               <div style={{ width: "48%" }}>
-                <p>
+                <p style={{ textAlign: 'center' }}>
                   <b>
-                    Bar chart showing job most applied to and job least applied
+                    Pie chart showing job most applied to and job least applied
                     to
                   </b>
                 </p>
                 {/* <p style={{marginTop:10}}>most applied job: {data.most_applied_job?.job_title}</p>
                 <p>least applied job: {data.least_applied_job?.job_title}</p> */}
-                <div style={{ width: "100%", height: 320 }}>
-                  <Bar
+                <div style={{ width: "100%", height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center',  }}>
+                  <Pie
                     data={{
-                      labels: ["Job"],
+                      labels: [
+                        data.most_applied_job?.job_title,
+                        data.least_applied_job?.job_title,
+                      ],
                       datasets: [
                         {
-                          label: data.most_applied_job?.job_title,
-                          data: [data.most_applied_job?.no_job_applications],
-                          backgroundColor: "#005734",
-                          borderColor: "#005734",
-                          maxBarThickness: 40,
-                        },
-                        {
-                          label: data.least_applied_job?.job_title,
-                          data: [data.least_applied_job?.no_job_applications],
-                          backgroundColor: "#d3d3d3",
-                          borderColor: "#d3d3d3",
-                          maxBarThickness: 40,
+                          data: [
+                            data.most_applied_job?.no_job_applications,
+                            data.least_applied_job?.no_job_applications,
+                          ],
+                          backgroundColor: ["#005734", "#d3d3d3"],
+                          borderColor: ["#005734", "#d3d3d3"],
                         },
                       ],
                     }}
-                    options={chartOptions}
+                    options={{
+                      plugins: {
+                        legend: {
+                          display: true, // You can set this to false if you want to hide the legend
+                        },
+                      },
+                      responsive: true,
+                    }}
                   />
                 </div>
               </div>
@@ -546,7 +562,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   >
                     <b>Doughnut chart showing hiring rate</b>
                   </p>
-                  <Doughnut
+                  {/* <Doughnut
                     data={{
                       labels: ["hiring rate", "non-hiring rate"],
                       datasets: [
@@ -563,7 +579,34 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     }}
                     options={chartOptions}
                     style={{ margin: "0 auto" }}
-                  ></Doughnut>
+                  ></Doughnut> */}
+                  <div style={{ width: 200, height: 200, margin: "auto" }}>
+                    <CircularProgressbar
+                      style={{ width: "100%", height: "100%", margin: "auto" }}
+                      value={
+                        data.job_applications.total
+                          ? (
+                              (data.hired / data.job_applications.total) *
+                              100
+                            ).toFixed(2)
+                          : "0"
+                      }
+                      text={
+                        data.job_applications.total
+                          ? `${(
+                              (data.hired / data.job_applications.total) *
+                              100
+                            ).toFixed(2)}%`
+                          : "00%"
+                      }
+                      styles={buildStyles({
+                        pathColor: `#005734`,
+                        textColor: "#005734",
+                        trailColor: "#efefef",
+                        backgroundColor: "#005734",
+                      })}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -659,7 +702,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
           </div>
 
           <div style={{ marginBottom: 20 }} className='graph__Item'>
-            <h6>Teams and tasks</h6>
+            <h6>Teams and work logs</h6>
             <div className='teams__And_Tasks__Wrapper'>
               {!(data.teams || data.team_tasks || data.tasks) ? (
                 <h4>
@@ -667,25 +710,25 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   and {lastDateState.split(" ")[0]}
                 </h4>
               ) : (
-                <div style={{ width: 400, height: 300 }}>
-                  <p style={{ marginBottom: 20 }}>
-                    <b>Bar chart showing teams and tasks</b>
-                  </p>
-                  <Bar
-                    data={{
-                      labels: ["Teams", "team tasks", "individual tasks"],
-                      datasets: [
-                        {
-                          label: "Poll",
-                          data: [data.teams, data.tasks, data.tasks],
-                          backgroundColor: ["#D3D3D3", "#005734", "black"],
-                          borderColor: ["#D3D3D3", "#005734", "black"],
-                          maxBarThickness: 40,
-                        },
-                      ],
-                    }}
-                    options={chartOptions}
-                  ></Bar>
+                <div style={{ marginBottom: 60}}>
+                  <div style={{ width: 400, height: 300 }}>
+                    <p style={{ marginBottom: 20 }}>
+                      <b>Doughnut chart showing teams and work logs</b>
+                    </p>
+                    <Doughnut
+                      data={{
+                        labels: ["Teams", "Team Tasks", "Individual Work logs"],
+                        datasets: [
+                          {
+                            data: [data.teams, data.tasks, data.tasks],
+                            backgroundColor: ["#D3D3D3", "#005734", "#160291"],
+                            borderColor: ["#D3D3D3", "#005734", "#160291"],
+                          },
+                        ],
+                      }}
+                      options={chartOptions}
+                    />
+                  </div>
                 </div>
               )}
               <div>
@@ -695,13 +738,13 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     {lastDateState.split(" ")[0]}
                   </h4>
                 ) : (
-                  <div style={{ width: 400, height: 300 }}>
+                  <div style={{ width: 450, height: 300 }}>
                     <p style={{ marginBottom: 20 }}>
-                      <b>Doughnut chart showing tasks completed</b>
+                      <b>Doughnut chart showing work logs completed</b>
                     </p>
                     <Doughnut
                       data={{
-                        labels: ["tasks uncompleted", "tasks completed"],
+                        labels: ["work logs uncompleted", "work logs completed"],
                         datasets: [
                           {
                             label: "Poll",
@@ -714,6 +757,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                           },
                         ],
                       }}
+                      // asdsadsad
                     ></Doughnut>
                   </div>
                 )}
@@ -727,11 +771,11 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 ) : (
                   <div style={{ width: 400, height: 300 }}>
                     <p style={{ marginBottom: 20 }}>
-                      <b>Doughnut chart showing tasks completed on time</b>
+                      <b>Doughnut chart showing work logs completed on time</b>
                     </p>
                     <Doughnut
                       data={{
-                        labels: ["tasks completed on time"],
+                        labels: ["work logs completed on time"],
                         datasets: [
                           {
                             label: "Poll",
@@ -755,43 +799,52 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
             <p>
               project with least tasks: {data.project_with_least_tasks?.title}
             </p> */}
-            <p style={{ marginBottom: 20, marginTop: 40, textAlign: "center" }}>
-              <b>
-                Bar chart showing the project with the most tasks added and
-                project with the least tasks added
-              </b>
-            </p>
-            <div
-              style={{
-                width: 450,
-                height: 300,
-                marginLeft: "auto",
-                marginRight: "auto",
-              }}
-            >
-              <Bar
-                data={{
-                  labels: ["projects"],
-                  datasets: [
-                    {
-                      label: data.project_with_most_tasks?.title,
-                      data: [data.project_with_most_tasks?.tasks_added],
-                      backgroundColor: "#005734",
-                      borderColor: "#005734",
-                      maxBarThickness: 40,
-                    },
-                    {
-                      label: data.project_with_least_tasks?.title,
-                      data: [data.project_with_least_tasks?.tasks_added],
-                      backgroundColor: "#d3d3d3",
-                      borderColor: "#d3d3d3",
-                      maxBarThickness: 40,
-                    },
-                  ],
-                }}
-                options={chartOptions}
-              />
-            </div>
+            {
+              (!data.project_with_most_tasks?.title || !data.project_with_most_tasks?.title) ?
+              <>
+                <h4>
+                  there is no data between {firstDateState.split(" ")[0]} and{" "}
+                  {lastDateState.split(" ")[0]}
+                </h4>
+              </> 
+              : 
+              <>
+                <p style={{ marginBottom: 20, marginTop: 40, textAlign: "center" }}>
+                  <b>
+                    Doughnut chart showing the project with the most work logs added and
+                    project with the least work logs added
+                  </b>
+                </p>
+                <div
+                  style={{
+                    width: 450,
+                    height: 300,
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                  }}
+                >
+                  <Doughnut
+                    data={{
+                      labels: [
+                        data.project_with_most_tasks?.title,
+                        data.project_with_least_tasks?.title,
+                      ],
+                      datasets: [
+                        {
+                          data: [
+                            data.project_with_most_tasks?.tasks_added,
+                            data.project_with_least_tasks?.tasks_added,
+                          ],
+                          backgroundColor: ["#005734", "#d3d3d3"],
+                          borderColor: ["#005734", "#d3d3d3"],
+                        },
+                      ],
+                    }}
+                    options={chartOptions}
+                  />
+                </div> 
+              </>
+            }
           </div>
         </div>
       </div>

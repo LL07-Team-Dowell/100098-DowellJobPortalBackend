@@ -154,7 +154,7 @@ const TaskReports = ({ subAdminView, isPublicReportUser }) => {
             //   backgroundColor: "blue",
             // },
             {
-              label: "Tasks",
+              label: "Work logs",
               data: res.data?.data?.users_that_added.map(
                 (item) => item.tasks_added
               ),
@@ -203,7 +203,7 @@ const TaskReports = ({ subAdminView, isPublicReportUser }) => {
 
         setReport(formattedData);
         setProjectTaskInfo(
-          `A total of ${res?.data?.data?.total_tasks_added} tasks have been added in ${selectedProject}`
+          `A total of ${res?.data?.data?.total_tasks_added} work logs have been added in ${selectedProject}`
         );
         setReportsLoading(false);
         setSubProjectReport(formattedDataForSubproject);
@@ -228,19 +228,19 @@ const TaskReports = ({ subAdminView, isPublicReportUser }) => {
             {
               isPublicReportUser ? 
               <>
-                <h2>Task Reports</h2>
+                <h2>Work log Reports</h2>
               </>
               :
               <>
                 <button className="back" onClick={() => navigate(-1)}>
                   <MdOutlineArrowBackIosNew />
                 </button>
-                <h2>Task Reports</h2>
+                <h2>Work log Reports</h2>
               </>
             }
           </div>
           <div className="task__report__header">
-            <p style={{ fontSize: '0.9rem' }}>Get insights into tasks uploaded per project in your organization</p>
+            <p style={{ fontSize: '0.9rem' }}>Get insights into work logs uploaded per project in your organization</p>
             <div className="task__select__Project">
               <span>Select a project</span>
               {projectsLoading ? (
@@ -288,7 +288,7 @@ const TaskReports = ({ subAdminView, isPublicReportUser }) => {
                 }}
                 className="graph__Item"
               >
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Bar chart showing total tasks and hours</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Bar chart showing total work logs and hours</h2>
                 <Bar options={options} data={report} />
               </div>
               <div

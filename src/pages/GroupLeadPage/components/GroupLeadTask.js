@@ -41,7 +41,7 @@ const GroupLeadTask = () => {
 
         <StaffJobLandingLayout teamleadView={true} hideSearchBar={true} isGrouplead={true}>
             <br />
-            <Navbar title={"View Tasks"} color={'#005734'} noButtonBack={true} removeButton={true} />
+            <Navbar title={"View Work logs"} color={'#005734'} noButtonBack={true} removeButton={true} />
             <div className="container">
                 <div style={{ marginTop: 30 }} className="Create_Team" onClick={() => nevigate(`/user-tasks`)}>
                     <div>
@@ -51,9 +51,9 @@ const GroupLeadTask = () => {
                                 style={{ fontSize: "2rem" }}
                             />
                         </div>
-                        <h4>View Your Added Tasks</h4>
+                        <h4>View Your Added Work logs</h4>
                         <p>
-                            View the tasks you have added.
+                            View the work logs you have added.
                         </p>
                     </div>
                 </div>
@@ -66,9 +66,9 @@ const GroupLeadTask = () => {
                                 style={{ fontSize: "2rem" }}
                             />
                         </div>
-                        <h4>View Your Team's Tasks</h4>
+                        <h4>View Your Team's Work logs</h4>
                         <p>
-                            View tasks added by your team members.
+                            View work logs added by your team members.
                         </p>
                     </div>
                 </div>

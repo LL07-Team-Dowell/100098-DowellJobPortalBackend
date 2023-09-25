@@ -13,15 +13,18 @@ import { useJobContext } from '../../../../contexts/Jobs'
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner'
 import { adminAddSettingUserProject, adminEditSettingUserProject, createNewSettingUserSubProject, editSettingUserSubProject, getSettingUserSubProject } from '../../../../services/adminServices'
 import { getSettingUserProject } from '../../../../services/hrServices'
+import { getUserInfoFromLoginAPI } from '../../../../services/authServices'
+import { testingRoles } from '../../../../utils/testingRoles'
 
 const Add = () => {
-  const { currentUser } = useCurrentUserContext();
+  const { currentUser, setCurrentUser } = useCurrentUserContext();
   const navigate = useNavigate() 
   const [showProjectsPop, setShowProjectsPop] = useState(false)
   const [ showShareModal, setShowShareModal ] = useState(false);
   const [ isProductLink, setIsProductLink ] = useState(false);
   const [showSubProjectsPop, setShowSubProjectsPop] = useState(false)
   const [ isReportLink, setIsReportLink ] = useState(false);
+  const [ updatedUserDataLoading, setUpdatedUserDataLoading ] = useState(false);
 
   const jobLinkToShareObj = {
     "product_url": window.location.origin + "/100098-DowellJobPortal/#/",
@@ -95,6 +98,44 @@ const Add = () => {
       })
     }
 
+    
+    if (currentUser?.userportfolio?.length > 0) return;
+
+    const currentSessionId = sessionStorage.getItem("session_id");
+
+    if (!currentSessionId) return;
+    const teamManagementProduct = currentUser?.portfolio_info.find(
+      (item) => item.product === "Team Management"
+    );
+    if (!teamManagementProduct) return;
+
+    if (
+      (currentUser.settings_for_profile_info &&
+        currentUser.settings_for_profile_info.profile_info[
+          currentUser.settings_for_profile_info.profile_info.length - 1
+        ].Role === testingRoles.superAdminRole) ||
+      currentUser.isSuperAdmin
+    )
+      return;
+
+    const dataToPost = {
+      session_id: currentSessionId,
+      product: teamManagementProduct.product,
+    };
+
+    setUpdatedUserDataLoading(true);
+
+    getUserInfoFromLoginAPI(dataToPost)
+    .then((res) => {
+      setCurrentUser(res.data);
+      console.log(res.data.portfolio_info[0].data_type);
+      setUpdatedUserDataLoading(false);
+    })
+    .catch((err) => {
+      console.log("Failed to get user details from login API");
+      console.log(err.response ? err.response.data : err.message);
+      setUpdatedUserDataLoading(false);
+    });
   }, [])
 
   const handleCloseShareModal = () => {
@@ -237,6 +278,8 @@ const Add = () => {
             style={{ marginTop: 30, maxWidth: '18rem' }} 
             className="Create_Team" 
             onClick={
+              updatedUserDataLoading ? () => {}
+              :
               () => {
                 setShowShareModal(true);
                 setIsReportLink(true);
@@ -250,9 +293,16 @@ const Add = () => {
                 />
               </div>
               <h4>Create report link</h4>
-              <p style={{ fontSize: '0.8rem' }}>
+              {
+                updatedUserDataLoading ?
+                <div style={{ margin: '1rem auto', width: 'max-content', backgroundColor: '#fff' }}>
+                  <LoadingSpinner />
+                </div>
+                :
+                <p style={{ fontSize: '0.8rem' }}>
                 Create a public report link for anyone to view specific insights about your organization.
               </p>
+              }
             </div>
           </div>
         </div>

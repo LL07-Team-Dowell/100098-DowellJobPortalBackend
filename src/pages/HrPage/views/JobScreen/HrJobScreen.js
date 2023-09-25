@@ -463,7 +463,7 @@ function HrJobScreen() {
           "user"
         :
           section === 'tasks' ?
-          "task"
+          "work logs"
         : 
           "received"
       }
@@ -483,7 +483,7 @@ function HrJobScreen() {
         path === undefined ? 
           section === "user" ? "Profile" 
           : 
-          section === "tasks" ? "Tasks" 
+          section === "tasks" ? "Work logs" 
           :
           section === "hr-training" ? "HR Training"
           :
@@ -673,7 +673,7 @@ function HrJobScreen() {
 
               <>
                 {
-                  sortResults.length === 0 ? <p className='sort__Title__Item'> No tasks found matching '{currentSortOption}' sort selection </p>  :
+                  sortResults.length === 0 ? <p className='sort__Title__Item'> No work logs found matching '{currentSortOption}' sort selection </p>  :
                   
                   <>
                     {
@@ -796,7 +796,7 @@ function HrJobScreen() {
 
                   <>
                     {
-                      sortResults.length === 0 ? <p className='sort__Title__Item'> No tasks found matching '{currentSortOption}' sort selection </p>  :
+                      sortResults.length === 0 ? <p className='sort__Title__Item'> No work logs found matching '{currentSortOption}' sort selection </p>  :
                       
                       <>
                         {

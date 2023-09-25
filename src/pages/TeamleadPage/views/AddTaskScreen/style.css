@@ -210,6 +210,21 @@
   margin: auto 0;
 }
 
+.add__New__Task__Container .info__Work__Log {
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.add__New__Task__Container .example__info__Work__Log {
+  font-size: 0.875rem;
+  padding-left: 2rem;
+  margin-top: 0.4rem;
+}
+
+.add__New__Task__Container .example__info__Work__Log li {
+  margin-bottom: 0.4rem;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -234,7 +249,7 @@
   .add__New__Task__Container {
     padding: 2%;
     width: 78%;
-    height: 85%;
+    /* height: 85%; */
     max-height: 94%;
   }
 

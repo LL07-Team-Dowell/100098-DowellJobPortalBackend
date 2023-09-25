@@ -89,6 +89,15 @@
   overflow-y: auto;
   font-family: Poppins;
   padding-bottom: 90px;
+  .team{
+    h2{
+      white-space: nowrap;       
+      overflow: hidden;          /* Hide the overflowing text */
+      text-overflow: ellipsis;  /* Display ellipsis (...) for the overflow */
+      max-width: 100%; 
+    }
+    
+  }
   &::-webkit-scrollbar {
     width: 8px;
     height: 8px;

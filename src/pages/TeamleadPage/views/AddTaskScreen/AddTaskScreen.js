@@ -60,6 +60,11 @@ const AddTaskScreen = ({
   const [ deleteLoading, setDeleteLoading ] = useState(false);
   const [ taskType, setTaskType ] = useState("");
   const [ subprojectSelected, setSubprojectSelected ] = useState(null);
+  const [ showInfoModal, setShowInfoModal ] = useState(
+    localStorage.getItem('log_info_shown') ? false 
+    : 
+    true
+  );
   
   //   var conditions
   const inputsAreFilled = taskStartTime && taskEndTime && taskName && taskType;
@@ -142,7 +147,7 @@ const AddTaskScreen = ({
         updateTasksForToday(taskStartTime, taskEndTime, taskName, details);
       } else {
         toast.info(
-          "The time you finished your task must be within 15 minutes of its starting time"
+          "The time you finished your work log must be within 15 minutes of its starting time"
         );
         console.log({ taskStartTime, taskEndTime, duration });
       }
@@ -192,7 +197,7 @@ const AddTaskScreen = ({
         
       } else {
         toast.info(
-          "The time you finished your task must be within 15 minutes of its starting time"
+          "The time you finished your work log must be within 15 minutes of its starting time"
         );
         console.log({ taskStartTime, taskEndTime, duration });
       }
@@ -444,7 +449,7 @@ const AddTaskScreen = ({
 
     } catch (error) {
       console.log(error);
-      toast.error('Something went wrong while trying to add your task. Please try again later')
+      toast.error('Something went wrong while trying to add your work log. Please try again later')
       setLoading(false);
       setDisabled(false);
     }
@@ -469,7 +474,7 @@ const AddTaskScreen = ({
 
     } catch (error) {
       console.log(error);
-      toast.error('Something went wrong while trying to submit your tasks. Please try again later')
+      toast.error('Something went wrong while trying to submit your work logs. Please try again later')
       setSavingLoading(false);
     }
   }
@@ -529,16 +534,16 @@ const AddTaskScreen = ({
             <h1 className="title__Item">
               {"Submit task for today"}
             </h1>
-            <p>Done uploading tasks for today?</p>
+            <p>Done uploading work logs for today?</p>
 
             <div className="task__Today__Submit__Wrapper">
               <img src={taskImg} alt="task illustration" />
-              <p>You can submit all your tasks for today now or later if you would like to continue on updating later today.<br /><br />Please read and note the following:</p>
+              <p>You can submit all your work logs for today now or later if you would like to continue on updating later today.<br /><br />Please read and note the following:</p>
               <ul>
                 <li>If you choose <b>Submit later</b>, you can always come back anytime <b>today</b> and make changes</li>
                 <li>If you choose <b>Submit now</b>, you will <b>not</b> be able to make <b>any more updates today</b></li>
-                <li><b>Do not click</b> on <b>Submit now</b> if you still have other tasks to submit for today</li>
-                <li>If you forget to submit your task for the day, do not worry, all your tasks are saved </li>
+                <li><b>Do not click</b> on <b>Submit now</b> if you still have other work logs to submit for today</li>
+                <li>If you forget to submit your task for the day, do not worry, all your work logs are saved </li>
               </ul>
             </div>
             <div className="buttons__Wrapper">
@@ -574,7 +579,10 @@ const AddTaskScreen = ({
           </> : 
           <>
             <h1 className="title__Item">
-              {showTaskForm ? (
+              {
+              showInfoModal ? <>Quick note</> 
+              :
+              showTaskForm ? (
                 <>
                   {!afterSelectionScreen && (
                     <IoIosArrowBack
@@ -591,17 +599,17 @@ const AddTaskScreen = ({
                   )}
                   {
                     editPage ? 
-                    "Edit Task" 
+                    "Edit Work log" 
                     :
                     taskDetailForTodayLoading ? "Loading" :
                     taskDetailForToday?.parentTask?.task_saved ?
-                    "View Task Details"
+                    "View Work log Details"
                     : 
-                    "New Task Details"
+                    "New Work log Details"
                   }
                 </>
               ) : (
-                <>Add new task</>
+                <>Add new work log</>
               )}
 
               <AiOutlineClose
@@ -624,7 +632,41 @@ const AddTaskScreen = ({
                 <span>Please wait...</span>
               </p>
             }
-            {showTaskForm ? (
+            {
+            showInfoModal ?
+            (
+              taskDetailForTodayLoading ? <></> :
+              <>
+                <p className="info__Work__Log">
+                  <span>You are to enter <b>80/160 work logs</b> per week according to your role/designation</span>
+                </p>
+                <p className="info__Work__Log">
+                  The maximum duration of one work log is <b>15 minutes</b>, You can add work logs spanning between <b>1</b> to <b>15</b> minutes, and your total should be <b>20/40 hours</b> in a week
+                </p>
+                <br />
+                <p className="info__Work__Log"><b>These are some examples of work logs:</b></p>
+                <ol className="example__info__Work__Log">
+                  <li>Attending meeting and discussed xxxxxxx</li>
+                  <li>Attending meeting and presented topic xxxxxx</li>
+                  <li>Conducted discussions on xxxx</li>
+                  <li>Coding for task xxxx</li>
+                  <li>Testing product xxxxx for xxxxx</li>
+                </ol>
+                <button
+                  type={"button"}
+                  className="add__Task__Btn"
+                  onClick={() =>
+                    {
+                      setShowInfoModal(false)
+                      localStorage.setItem('log_info_shown', true)
+                    }
+                  }
+                >
+                  {"Proceed"}
+                </button>
+              </>
+            ) :
+            showTaskForm ? (
               <>
                 {
                   taskDetailForTodayLoading ? <></> :
@@ -701,10 +743,10 @@ const AddTaskScreen = ({
                       />
                     </div>
                     <div className="task__Item">
-                      <span className="selectProject">Task</span>
+                      <span className="selectProject">Work log</span>
                       <input
                         type={"text"}
-                        placeholder={"task"}
+                        placeholder={"work log"}
                         value={taskName}
                         style={{ margin: 0, marginBottom: "0.8rem" }}
                         onChange={({ target }) => setTaskName(target.value)}
@@ -712,7 +754,7 @@ const AddTaskScreen = ({
                       />
                     </div>
                     <div className="task__Item">
-                      <span className="selectProject">Task type</span>
+                      <span className="selectProject">Work log type</span>
                       <select
                         onChange={({ target }) => setTaskType(target.value)}
                         className="addTaskDropDown new__Task"
@@ -814,7 +856,7 @@ const AddTaskScreen = ({
                     {
                       taskDetailForToday?.parentTask?.task_saved && <p className="task__Saved__Indicatore">
                         <span><AiOutlineFileDone /></span>
-                        <span>Tasks have been submitted for today!</span>
+                        <span>Work logs have been submitted for today!</span>
                       </p>
                     }
                     <table id="customers">
@@ -822,8 +864,8 @@ const AddTaskScreen = ({
                         <th>S/N</th>
                         <th>Time started</th>
                         <th>Time finished</th>
-                        <th>task</th>
-                        <th>Task type</th>
+                        <th>Work log</th>
+                        <th>Work log type</th>
                         <th>sub project</th>
                         <th>project</th>
                         <th>actions</th>

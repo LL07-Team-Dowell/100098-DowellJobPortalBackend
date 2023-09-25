@@ -17,7 +17,7 @@ import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpin
 import { getUserInfoFromLoginAPI } from "../../../../../services/authServices";
 import { testingRoles } from "../../../../../utils/testingRoles";
 
-const CreateTeam = () => {
+const CreateTeam = ({ isAdmin }) => {
   // USER
   const {
     currentUser,
@@ -195,7 +195,7 @@ const CreateTeam = () => {
           members: inputMembers.map((v) => v.member),
           created_by: currentUser.userinfo.username,
           data_type: currentUser.portfolio_info[0].data_type,
-          admin_team: true,
+          admin_team: isAdmin ? true : false,
         })
           .then((resp) => {
             navigate(

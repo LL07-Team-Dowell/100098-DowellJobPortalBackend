@@ -69,6 +69,10 @@
     margin: 4rem auto;
     display: block;
   }
+
+  &.leaderboard {
+    margin-top: 1rem;
+  }
 }
 
 .indiv__Task__Rep__info {
@@ -322,7 +326,12 @@
 }
 
 .leaderboard__Ranking__Wrapper {
-  margin: 2rem 0;
+  margin: 3rem 0 2rem;
+
+  &.top__Ranking {
+    margin-bottom: 3.5rem;
+    margin-top: 2rem;
+  }
 
   h4 {
     color: #005734;
@@ -458,10 +467,53 @@
     }
   }
 
-  .select__Status__Filter {
+  .heading__Actions__Wrapper {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    .select__Status__Filter {
+      width: max-content;
+  
+      select {
+        background-color: #fff;
+        border-radius: 3px;
+        font-family: Poppins, sans-serif;
+        outline: none;
+        border: 1px solid #b8b8b8;
+        padding: 0.4rem 1rem;
+        cursor: pointer;
+      }
+    }
+
+    .search__Wrapper {
+      border: 1px solid #b8b8b8;
+      padding: 0.4rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-radius: 10px;
+      transition: 0.3s ease-in-out;
+
+      input {
+        outline: none;
+        border: none;
+        font-family: Poppins, sans-serif;
+      }
+
+      &:focus-within {
+        border-color: #005734;
+      }
+    }
+  }
+
+  .select__Status__Filter.single {
     width: max-content;
     margin-left: auto;
-    margin-top: 2rem;
+    margin-top: 1rem;
     margin-bottom: 1rem;
 
     select {

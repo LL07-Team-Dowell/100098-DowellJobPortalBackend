@@ -52,7 +52,7 @@ const ReportPages = () => {
             <div>
               <AiOutlinePlusCircle className="icon" />
             </div>
-            <h4>Task report</h4>
+            <h4>Work log report</h4>
             <p>
               Get insights into tasks uploaded per project in your organization
             </p>

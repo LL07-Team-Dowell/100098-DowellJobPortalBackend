@@ -428,31 +428,6 @@ const TaskScreen = ({
         </>
       }
       {showModal ? <Wrappen>
-        {/* <form className="main">
-          <h3>Request to update task</h3>
-          <label htmlFor="#">Date you want to request to update for</label>
-          <br />
-          <input value={updatetaskdate} disabled />
-          <br />
-          <label htmlFor="#">Select project</label>
-          <br />
-          <input value={project} disabled />
-          <br />
-          <label htmlFor="description">Enter reason why you failed to update on this day</label>
-          <br />
-          <textarea
-            id="description"
-            name="description"
-            defaultValue={formData.description}
-            onChange={handleChange}
-          />
-
-          <br />
-          <div className="buttons">
-            <button>Submit</button>
-            <button onClick={() => setShowModal(false)}>Cancel</button>
-          </div>
-        </form> */}
         <RequestTask project={project} updatetaskdate={updatetaskdate} setShowModal={setShowModal} />
       </Wrappen > : <>
         <Wrappen>
@@ -734,16 +709,3 @@ const TaskScreen = ({
 };
 
 export default TaskScreen;
-
-{
-  /* <div className="task__Details__Item">
-    <h3 className="month__Title">{currentMonth}</h3>
-    {
-        tasksToShow.length === 0 ? <p className="empty__Task__Content">No tasks found for today</p> :
-
-        React.Children.toArray(tasksToShow.map((task, index) => {
-            return <CandidateTaskItem currentTask={task} taskNum={index + 1} candidatePage={candidateAfterSelectionScreen} handleEditBtnClick={() => handleEditBtnClick(task)} updateTasks={setUserTasks} />
-        }))
-    }
-</div> */
-}
