@@ -9,6 +9,7 @@ import { adminEditUserSettingProfile } from "../../../../services/adminServices"
 import './index.scss';
 import useClickOutside from "../../../../hooks/useClickOutside";
 import useClickInside from "../../../../hooks/useClickInside";
+import { teamManagementProductName } from "../../../../utils/utils";
 
 export default function TableRow({
   index,
@@ -118,7 +119,7 @@ export default function TableRow({
   
   const submit2 = () => {
     const teamManagementProduct = currentUser.portfolio_info.find(
-      (item) => item.product === "Team Management"
+      (item) => item.product === teamManagementProductName
     );
     if (!teamManagementProduct) return;
 

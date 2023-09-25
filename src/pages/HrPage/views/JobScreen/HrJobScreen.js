@@ -33,6 +33,9 @@ import { set } from 'date-fns';
 import { toast } from 'react-toastify';
 import { getUserInfoFromLoginAPI } from '../../../../services/authServices';
 import { teamManagementProductName } from '../../../../utils/utils';
+import { getCandidateTasksV2 } from '../../../../services/teamleadServices';
+import { extractNewTasksAndAddExtraDetail } from '../../../TeamleadPage/util/extractNewTasks';
+import HrTasks from '../Tasks/HrTasks';
 
 function fuzzySearch(query, text) {
   const searchRegex = new RegExp(query.split('').join('.*'), 'i');
@@ -53,7 +56,11 @@ function HrJobScreen() {
   const { candidateData, setCandidateData } = useHrCandidateContext();
   const [ isLoading, setLoading ] = useState(true);
   const [ currentProjects, setCurrentProjects ] = useState([]);
-  const { allTasks, setAllTasks } = useHrJobScreenAllTasksContext();
+  const { 
+    allTasks, 
+    setAllTasks,
+    setLoadedTasks,
+  } = useHrJobScreenAllTasksContext();
   const [ showAddTaskModal, setShowAddTaskModal ] = useState(false);
   const [ hiredCandidates, setHiredCandidates ] = useState([]);
   const [ showCurrentCandidateTask, setShowCurrentCandidateTask ] = useState(false);
@@ -99,6 +106,11 @@ function HrJobScreen() {
 
   useEffect(() => {
 
+    const projectDataToPost = {
+      "company_id": currentUser.portfolio_info[0].org_id,
+      "data_type": currentUser.portfolio_info[0].data_type,
+    }
+
     if (!userRolesLoaded) {
       getUserInfoFromLoginAPI({ session_id: sessionStorage.getItem('session_id'), product: teamManagementProductName }).then(res => {
         // console.log(res.data.roles);
@@ -111,24 +123,11 @@ function HrJobScreen() {
       })
     }
 
-    Promise.all([
-      getCandidateApplicationsForHr(currentUser.portfolio_info[0].org_id),
-      getJobs2({company_id: currentUser.portfolio_info[0].org_id}),
-      getSettingUserProject(),
-      getCandidateTask(currentUser.portfolio_info[0].org_id),
-      getTrainingManagementQuestions(currentUser.portfolio_info[0].org_id),
-      getTrainingManagementResponses(currentUser.portfolio_info[0].org_id),
-    ])
-    .then((res) => {
-      const filteredData = res[0]?.data?.response?.data?.filter(application => application.data_type === currentUser.portfolio_info[0].data_type)?.reverse();
-      setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
-      setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION && !application.signup_mail_sent));
-      setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
-      setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
+    console.log(allTasks);
+    if (currentProjects.length > 0 && allTasks.length > 0 && jobs.length > 0) return
 
-      setJobs(res[1]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type && job.is_active));
-      
-      const list = res[2]?.data
+    getSettingUserProject().then(projectRes => {
+      const list = projectRes?.data
       ?.filter(
         (project) =>
           project?.data_type === currentUser.portfolio_info[0].data_type &&
@@ -145,26 +144,75 @@ function HrJobScreen() {
         list[0]?.project_list
       );
 
-      const usersWithTasks = [...new Map(res[3]?.data?.response?.data?.filter(j => currentUser.portfolio_info[0].data_type === j.data_type).map(task => [task.applicant, task])).values()];
-      setAllTasks(usersWithTasks.reverse());
+      Promise.all([
+        getCandidateApplicationsForHr(currentUser.portfolio_info[0].org_id),
+        getJobs2({company_id: currentUser.portfolio_info[0].org_id}),
+        getCandidateTask(currentUser?.portfolio_info[0]?.org_id),
+        getCandidateTasksV2({ ...projectDataToPost, project: list[0]?.project_list[0] }),
+        getTrainingManagementQuestions(currentUser.portfolio_info[0].org_id),
+        getTrainingManagementResponses(currentUser.portfolio_info[0].org_id),
+      ])
+      .then(async (res) => {
+        const filteredData = res[0]?.data?.response?.data?.filter(application => application.data_type === currentUser.portfolio_info[0].data_type)?.reverse();
+        setAppliedJobs(filteredData.filter(application => application.status === candidateStatuses.PENDING_SELECTION));
+        setGuestApplications(filteredData.filter(application => application.status === candidateStatuses.GUEST_PENDING_SELECTION && !application.signup_mail_sent));
+        setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
+        setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
+  
+        setJobs(res[1]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type && job.is_active));
+  
 
-      setQuestions(
-        res[4]?.data?.response?.data?.filter(
-          (question) =>
-            question.data_type === currentUser.portfolio_info[0].data_type
+        const olderTasks = res[2]?.data?.response?.data
+        ?.filter(
+          (task) =>
+            task.data_type === currentUser?.portfolio_info[0]?.data_type
         )
-      );
-      
-      setCandidateResponses(
-        res[5]?.data?.response?.data
-        ?.filter(response => 
-          response.data_type === currentUser.portfolio_info[0].data_type && 
-          response.submitted_on
-        )
-        ?.reverse()
-      );
-      setLoading(false);
-      
+        const previousTasksFormat = olderTasks.filter(task => !task.user_id && task.task);
+        
+        const updatedTasksForFirstProjectInListing = extractNewTasksAndAddExtraDetail(res[3]?.data?.task_details, res[3]?.data?.task);
+        const updatedTasksForOtherProjectsInListing = await Promise.all(list[0]?.project_list.slice(1).map(async (project) => {
+          const dataToPost = {
+            ...projectDataToPost,
+            project: project
+          }
+
+          const res = (await getCandidateTasksV2(dataToPost)).data;
+
+          const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task);
+          return extractedTasks;
+        }))
+
+        const tasksToDisplay = [...previousTasksFormat, ...updatedTasksForFirstProjectInListing, ...updatedTasksForOtherProjectsInListing.flat()];
+
+        const usersWithTasks = [
+          ...new Map(
+            tasksToDisplay?.filter(j => currentUser.portfolio_info[0].data_type === j.data_type)
+            .map(task => [task.applicant, task])
+          ).values()
+        ];
+        setLoadedTasks(tasksToDisplay);
+        setAllTasks(usersWithTasks.reverse());
+  
+        setQuestions(
+          res[4]?.data?.response?.data?.filter(
+            (question) =>
+              question.data_type === currentUser.portfolio_info[0].data_type
+          )
+        );
+        
+        setCandidateResponses(
+          res[5]?.data?.response?.data
+          ?.filter(response => 
+            response.data_type === currentUser.portfolio_info[0].data_type && 
+            response.submitted_on
+          )
+          ?.reverse()
+        );
+        setLoading(false);
+      }).catch(err => {
+        console.log(err);
+        setLoading(false);
+      })  
     })
     .catch(err => {
       console.log(err)
@@ -216,10 +264,10 @@ function HrJobScreen() {
 
     const categories = {};
     const newArray = [];
-    const tasksWithProjectAdded = allTasks.map(task => ( {...task, project: hiredCandidates.find(data => data.username === task.applicant) && hiredCandidates.find(data => data.username === task.applicant).project }));
+    // const tasksWithProjectAdded = allTasks.map(task => ( {...task, project: hiredCandidates.find(data => data.username === task.applicant) && hiredCandidates.find(data => data.username === task.applicant).project }));
     const getCategoryArray = (propertyName, date) => {
 
-      tasksWithProjectAdded.forEach(task => {
+      allTasks.forEach(task => {
         if (date) {
 
           if (categories.hasOwnProperty(new Date(task[`${propertyName}`]).toDateString())) return
@@ -241,7 +289,7 @@ function HrJobScreen() {
         if (key === "undefined") return;
         
         if (date) {
-          const matchingTasks = tasksWithProjectAdded.filter(task => new Date(task[`${propertyName}`]).toDateString() === key);
+          const matchingTasks = allTasks.filter(task => new Date(task[`${propertyName}`]).toDateString() === key);
           categoryObj.name = key;
           categoryObj.data = matchingTasks;
           newArray.push(categoryObj);
@@ -249,7 +297,7 @@ function HrJobScreen() {
           return
         }
         
-        const matchingTasks = tasksWithProjectAdded.filter(task => task[`${propertyName}`] === key);
+        const matchingTasks = allTasks.filter(task => task[`${propertyName}`] === key);
         categoryObj.name = key;
         categoryObj.data = matchingTasks;
         newArray.push(categoryObj);
@@ -475,35 +523,38 @@ function HrJobScreen() {
       handleChangeInPublicAccountState={handlePublicDetailChange}
     >
     <div className="hr__Page__Container">
-    <TitleNavigationBar 
-      className={
-        path === undefined ? "" : "view__Application__Navbar"
-      } 
-      title={
-        path === undefined ? 
-          section === "user" ? "Profile" 
-          : 
-          section === "tasks" ? "Work logs" 
-          :
-          section === "hr-training" ? "HR Training"
-          :
-          section === "guest-applications" ? "Guest Applications"
-          :
-          section === "shortlisted" ? "Shortlisted Applications"
-          :
-          sub_section !== undefined && section === "hr-training" ? 
-            sub_section ? sub_section : `${trainingCards.module}` 
-          : section === "attendance" ? "Attendance" 
-          : "Applications" : 
-          "Application Details" 
-      } 
-      hideBackBtn={
-        path === undefined && sub_section === undefined ? true : false
-      } 
-      handleBackBtnClick={() => navigate(-1)} 
-    />
+    {
+      section !== 'new-task-screen' && 
+      <TitleNavigationBar 
+        className={
+          path === undefined ? "" : "view__Application__Navbar"
+        } 
+        title={
+          path === undefined ? 
+            section === "user" ? "Profile" 
+            : 
+            section === "tasks" ? "Work logs" 
+            :
+            section === "hr-training" ? "HR Training"
+            :
+            section === "guest-applications" ? "Guest Applications"
+            :
+            section === "shortlisted" ? "Shortlisted Applications"
+            :
+            sub_section !== undefined && section === "hr-training" ? 
+              sub_section ? sub_section : `${trainingCards.module}` 
+            : section === "attendance" ? "Attendance" 
+            : "Applications" : 
+            "Application Details" 
+        } 
+        hideBackBtn={
+          path === undefined && sub_section === undefined ? true : false
+        } 
+        handleBackBtnClick={() => navigate(-1)} 
+      />
+    }
     { 
-      section !== "user" && section !== "attendance" && section !== "tasks" && path === undefined && sub_section === undefined && 
+      section !== "user" && section !== "attendance" && section !== "tasks" && section !== 'new-task-screen' && path === undefined && sub_section === undefined && 
       <TogglerNavMenuBar 
         menuItems={["Received", "Guests", "Shortlisted" , "Hr Training"]} 
         // menuItems={["Received", "Shortlisted" , "Hr Training"]} 
@@ -886,6 +937,12 @@ function HrJobScreen() {
 
           sub_section === undefined && section === "user" ? <UserScreen /> :
 
+          sub_section === undefined && section === "new-task-screen" ? <>
+            <HrTasks />
+          </> 
+          
+          :
+          
           sub_section === undefined &&
           <><ErrorPage disableNav={true} /></>
 

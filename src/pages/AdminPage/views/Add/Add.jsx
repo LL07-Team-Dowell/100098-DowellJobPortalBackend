@@ -8,7 +8,7 @@ import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext'
 import { FaTimes } from 'react-icons/fa'
 import { BsPlus } from 'react-icons/bs'
 import { toast } from 'react-toastify'
-import { dowellProjects } from '../../../../utils/utils'
+import { dowellProjects, teamManagementProductName } from '../../../../utils/utils'
 import { useJobContext } from '../../../../contexts/Jobs'
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner'
 import { adminAddSettingUserProject, adminEditSettingUserProject, createNewSettingUserSubProject, editSettingUserSubProject, getSettingUserSubProject } from '../../../../services/adminServices'
@@ -105,7 +105,7 @@ const Add = () => {
 
     if (!currentSessionId) return;
     const teamManagementProduct = currentUser?.portfolio_info.find(
-      (item) => item.product === "Team Management"
+      (item) => item.product === teamManagementProductName
     );
     if (!teamManagementProduct) return;
 

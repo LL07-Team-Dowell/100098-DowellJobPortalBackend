@@ -119,7 +119,7 @@ const CreateTeam = ({ isAdmin }) => {
 
     const teamManagementProduct = currentUser?.portfolio_info.find(
       (item) =>
-        item.product === "Team Management" && item.member_type === "owner"
+        item.product === teamManagementProductName && item.member_type === "owner"
     );
 
     if (
