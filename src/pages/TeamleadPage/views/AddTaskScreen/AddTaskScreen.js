@@ -755,6 +755,7 @@ const AddTaskScreen = ({
                         onChange={({ target }) => setTaskName(target.value)}
                         readOnly={loading || !taskDetailForTodayLoaded ? true : false}
                         rows={3}
+                        className="log__textarea"
                       ></textarea>
                     </div>
                     <div className="task__Item">

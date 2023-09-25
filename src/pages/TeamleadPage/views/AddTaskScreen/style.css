@@ -263,11 +263,12 @@
     margin: 3% 0;
   }
 
-  .add__New__Task__Container input {
+  .add__New__Task__Container input,
+  .add__New__Task__Container textarea {
     padding: 2%;
   }
 
-  .add__New__Task__Container textarea {
+  .add__New__Task__Container textarea.log__textarea {
     padding: 6% 4%;
   }
 
