@@ -82,7 +82,7 @@ import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal
 import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
 
 function App() {
-  console.log = () => { };
+  // console.log = () => { };
   const {
     currentUser,
     isPublicUser,
@@ -389,7 +389,7 @@ function App() {
 
     if (reportsUserDetails.reportsViewPermitted === reportOptionsPermitted.leaderboard_report) {
       return <Routes>
-        <Route 
+        <Route
           path="*"
           element={
             <JobContextProvider>
@@ -654,7 +654,7 @@ function App() {
             </JobContextProvider>
           }
         />
-        <Route 
+        <Route
           path="/report/leaderboard-report"
           element={
             <JobContextProvider>
