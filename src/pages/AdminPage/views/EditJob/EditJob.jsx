@@ -614,7 +614,6 @@ function EditJob({ subAdminView }) {
                   <textarea
                     id="description"
                     name="description"
-                    // placeholder='1. Setting goals and developing plans for business and revenue growth. Researching, planning, and implementing new target market initiatives.'
                     defaultValue={description}
                     onChange={handleInputChange}
                   />

@@ -23,6 +23,10 @@ export const createCandidateTask = async (data) => {
   return await currentBackendAxiosInstance.post("create_task/", data);
 };
 
+export const requestToUpdateTask = async (data) => {
+  return await currentBackendAxiosInstance.post("create_task_update_request/", data);
+};
+
 export const candidateSubmitResponse = async (data) => {
   return await currentBackendAxiosInstance.patch("submit_response/", data);
 };
