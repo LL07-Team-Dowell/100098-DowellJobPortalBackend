@@ -82,7 +82,7 @@ import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal
 import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
 
 function App() {
-  console.log = () => { };
+  // console.log = () => { };
 
   const {
     currentUser,
@@ -406,7 +406,6 @@ function App() {
       );
     }
 
-
     if (
       reportsUserDetails.reportsViewPermitted ===
       reportOptionsPermitted.leaderboard_report
@@ -683,7 +682,7 @@ function App() {
           }
         />
         <Route
-          path="/report/leaderboard-report"
+          path='/report/leaderboard-report'
           element={
             <JobContextProvider>
               <LeaderboardReport />
@@ -736,7 +735,12 @@ function App() {
           path='/team-screen-member/:id/team-members'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout adminView={true} hideSearchBar={true} adminAlternativePageActive={true} pageTitle={'Teams'}>
+              <StaffJobLandingLayout
+                adminView={true}
+                hideSearchBar={true}
+                adminAlternativePageActive={true}
+                pageTitle={"Teams"}
+              >
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamScreenMembers />
@@ -751,7 +755,12 @@ function App() {
           path='/team-screen-member/:id/team-tasks'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout adminView={true} hideSearchBar={true} adminAlternativePageActive={true} pageTitle={'Teams'}>
+              <StaffJobLandingLayout
+                adminView={true}
+                hideSearchBar={true}
+                adminAlternativePageActive={true}
+                pageTitle={"Teams"}
+              >
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamScreenTasks />
@@ -765,7 +774,12 @@ function App() {
           path='/team-screen-member/:id/team-issues'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout adminView={true} hideSearchBar={true}  adminAlternativePageActive={true} pageTitle={'Teams'}>
+              <StaffJobLandingLayout
+                adminView={true}
+                hideSearchBar={true}
+                adminAlternativePageActive={true}
+                pageTitle={"Teams"}
+              >
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamThread />
