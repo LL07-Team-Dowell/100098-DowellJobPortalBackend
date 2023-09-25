@@ -143,6 +143,7 @@ const AddTaskScreen = ({
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
       if (duration <= 15) {
+        if (taskStartTime > taskEndTime) return toast.info('Task start time must be less than start end time');
         if (!taskDetailForToday) return addTaskForToday(taskStartTime, taskEndTime, taskName, details);
         updateTasksForToday(taskStartTime, taskEndTime, taskName, details);
       } else {
@@ -159,6 +160,8 @@ const AddTaskScreen = ({
   const updateTask = async () => {
     if (inputsAreFilled) {
       if (duration <= 15) {
+        if (taskStartTime > taskEndTime) return toast.info('Task start time must be less than start end time');
+
         setLoading(true);
         setDisabled(true);
         
