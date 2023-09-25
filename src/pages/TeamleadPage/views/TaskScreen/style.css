@@ -45,7 +45,7 @@
 
 .candidate-task-screen-container .all__Tasks__Container .tasks__Wrapper {
     margin-left: 5rem;
-    width: 60%;
+    max-width: 60%;
 }
 
 .candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {

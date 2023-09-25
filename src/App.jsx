@@ -82,7 +82,7 @@ import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal
 import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
 
 function App() {
-  // console.log = () => { };
+  console.log = () => { };
 
   const {
     currentUser,
