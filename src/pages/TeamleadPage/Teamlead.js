@@ -36,6 +36,7 @@ import ClaimVouchar from "./views/ClaimVouchar/ClaimVouchar";
 import AddPage from "../GroupLeadPage/components/AddPage";
 import { getCandidateTasksOfTheDayV2 } from "../../services/candidateServices";
 import { extractNewTasksAndAddExtraDetail } from "./util/extractNewTasks";
+import { createArrayWithLength } from "../AdminPage/views/Landingpage/LandingPage";
 
 const Teamlead = ({ isGrouplead }) => {
   const { currentUser } = useCurrentUserContext();
@@ -74,7 +75,8 @@ const Teamlead = ({ isGrouplead }) => {
   const [tasksToDisplayForLead, setTasksToDisplayForLead] = useState([]);
   const [allSubProjects, setAllSubprojects] = useState([]);
   const [showTaskLandingPage, setShowTaskLandingPage] = useState(true);
-
+  const [cardGroupNumber, setCardGroupNumber] = useState(0);
+  const [cardIndex, setCardIndex] = useState(0);
   const handleSearch = (value) => {
     const toAnagram = (word) => {
       return word.toLowerCase().split("").reverse().join("");
@@ -1186,29 +1188,32 @@ const Teamlead = ({ isGrouplead }) => {
                               )
                             ) : (
                               React.Children.toArray(
-                                tasksToDisplayForLead.map((dataitem) => {
-                                  return (
-                                    <JobCard
-                                      buttonText={"View"}
-                                      candidateCardView={true}
-                                      candidateData={dataitem}
-                                      jobAppliedFor={
-                                        jobs.find(
-                                          (job) =>
-                                            job.job_number === dataitem.job_number
-                                        )
-                                          ? jobs.find(
+                                // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
+                                tasksToDisplayForLead
+                                  .slice(cardIndex, cardIndex + 6)
+                                  .map((dataitem) => {
+                                    return (
+                                      <JobCard
+                                        buttonText={"View"}
+                                        candidateCardView={true}
+                                        candidateData={dataitem}
+                                        jobAppliedFor={
+                                          jobs.find(
                                             (job) =>
-                                              job.job_number ===
-                                              dataitem.job_number
-                                          ).job_title
-                                          : ""
-                                      }
-                                      handleBtnClick={handleViewTaskBtnClick}
-                                      taskView={true}
-                                    />
-                                  );
-                                })
+                                              job.job_number === dataitem.job_number
+                                          )
+                                            ? jobs.find(
+                                              (job) =>
+                                                job.job_number ===
+                                                dataitem.job_number
+                                            ).job_title
+                                            : ""
+                                        }
+                                        handleBtnClick={handleViewTaskBtnClick}
+                                        taskView={true}
+                                      />
+                                    );
+                                  })
                               )
                             )
                           ) : (
