@@ -4,6 +4,7 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import "./style.css";
 import { getUserLiveStatus, postUserLiveStatus } from "../../../../services/commonServices";
 import { teamManagementProductName } from "../../../../utils/utils";
+import ClaimVouchar from "../../../TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 
 
 const UserScreen = () => {
@@ -30,7 +31,9 @@ const UserScreen = () => {
 
     return <>
         <div className="user__Page__Container account">
-
+            {
+                <ClaimVouchar />
+            }
             <div className="user__Intro__Item__Container">
                 <div className="user__Intro__Item">
                     <h2>User Name</h2>
