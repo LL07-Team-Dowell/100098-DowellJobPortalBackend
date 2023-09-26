@@ -514,3 +514,7 @@ class githubinfoserializer(serializers.Serializer):
     username = serializers.CharField(allow_null=False, allow_blank=False)
     github_id = serializers.CharField(allow_null=False, allow_blank=False)
     github_link = serializers.URLField(allow_null=False, allow_blank=False)
+
+
+class TaskApprovedBySerializer(serializers.Serializer):
+    task_approved_by = serializers.CharField(allow_null=False, allow_blank=False)
