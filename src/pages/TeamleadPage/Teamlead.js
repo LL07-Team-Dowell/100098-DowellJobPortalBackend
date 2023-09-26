@@ -843,6 +843,7 @@ const Teamlead = ({ isGrouplead }) => {
                                 ? candidatesData.candidatesToRehire.length
                                 : 0
                           }
+                          availableSortOptions={sortOptionsForLead}
                         />
 
                         <button
@@ -1007,6 +1008,7 @@ const Teamlead = ({ isGrouplead }) => {
                             ? filteredTasks.length
                             : tasksToDisplayForLead.length
                         }
+                        availableSortOptions={sortOptionsForLead}
                       />
                       <div className="project__Select__Wrapper">
                         <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
@@ -1126,6 +1128,7 @@ const Teamlead = ({ isGrouplead }) => {
                               ? filteredTasks.length
                               : tasksToDisplayForLead.length
                           }
+                          availableSortOptions={sortOptionsForLead}
                         />
                         <div className="project__Select__Wrapper">
                           <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
@@ -1249,5 +1252,10 @@ const Teamlead = ({ isGrouplead }) => {
     </>
   );
 };
+
+const sortOptionsForLead = [
+  'date',
+  'applicant',
+]
 
 export default Teamlead;
