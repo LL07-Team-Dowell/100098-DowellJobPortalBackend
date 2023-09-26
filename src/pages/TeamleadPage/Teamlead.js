@@ -1186,36 +1186,59 @@ const Teamlead = ({ isGrouplead }) => {
                                   );
                                 })
                               )
-                            ) : (
-                              React.Children.toArray(
-                                // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
-                                tasksToDisplayForLead
-                                  .slice(cardIndex, cardIndex + 6)
-                                  .map((dataitem) => {
-                                    return (
-                                      <JobCard
-                                        buttonText={"View"}
-                                        candidateCardView={true}
-                                        candidateData={dataitem}
-                                        jobAppliedFor={
-                                          jobs.find(
-                                            (job) =>
-                                              job.job_number === dataitem.job_number
-                                          )
-                                            ? jobs.find(
-                                              (job) =>
-                                                job.job_number ===
-                                                dataitem.job_number
-                                            ).job_title
-                                            : ""
-                                        }
-                                        handleBtnClick={handleViewTaskBtnClick}
-                                        taskView={true}
-                                      />
-                                    );
-                                  })
+                            ) :
+
+                              (
+                                <>
+                                  {React.Children.toArray(
+                                    // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
+                                    tasksToDisplayForLead
+                                      .slice(cardIndex, cardIndex + 6)
+                                      .map((dataitem) => {
+                                        return (
+                                          <JobCard
+                                            buttonText={"View"}
+                                            candidateCardView={true}
+                                            candidateData={dataitem}
+                                            jobAppliedFor={
+                                              jobs.find(
+                                                (job) =>
+                                                  job.job_number === dataitem.job_number
+                                              )
+                                                ? jobs.find(
+                                                  (job) =>
+                                                    job.job_number ===
+                                                    dataitem.job_number
+                                                ).job_title
+                                                : ""
+                                            }
+                                            handleBtnClick={handleViewTaskBtnClick}
+                                            taskView={true}
+                                          />
+                                        );
+
+                                      })
+                                  )}
+                                  <div className='JobsChanger_containter' style={{ margin: 'auto', display: 'block' }}>
+                                    {createArrayWithLength(
+                                      Math.ceil(tasksToDisplayForLead.length / 6)
+                                    ).map((s, index) => (
+                                      <button
+                                        className={s !== cardIndex ? "active" : "desactive"}
+                                        onClick={() => {
+                                          setCardGroupNumber(index * 4);
+                                          setCardIndex(index);
+                                        }}
+                                        key={`${index}_button`}
+                                      >
+                                        {index + 1}
+                                      </button>
+                                    ))}
+                                  </div>
+
+                                </>
                               )
-                            )
+
                           ) : (
                             <></>
                           )}
@@ -1253,7 +1276,7 @@ const Teamlead = ({ isGrouplead }) => {
             </>
           )}
         </>
-      </StaffJobLandingLayout>
+      </StaffJobLandingLayout >
     </>
   );
 };
