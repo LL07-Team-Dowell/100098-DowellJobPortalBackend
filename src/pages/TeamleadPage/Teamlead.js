@@ -36,6 +36,7 @@ import ClaimVouchar from "./views/ClaimVouchar/ClaimVouchar";
 import AddPage from "../GroupLeadPage/components/AddPage";
 import { getCandidateTasksOfTheDayV2 } from "../../services/candidateServices";
 import { extractNewTasksAndAddExtraDetail } from "./util/extractNewTasks";
+import { createArrayWithLength } from "../AdminPage/views/Landingpage/LandingPage";
 
 const Teamlead = ({ isGrouplead }) => {
   const { currentUser } = useCurrentUserContext();
@@ -70,11 +71,12 @@ const Teamlead = ({ isGrouplead }) => {
   const [filteredTasks, setFilteredTasks] = useState(userTasks);
   const [showAddTaskModalForGrouplead, setShowAddTaskModalForGrouplead] = useState(false);
   const [showAddIssueModalForGrouplead, setShowAddIssueModalForGrouplead] = useState(false);
-  const [ currentSelectedProjectForLead, setCurrentSelectedProjectForLead ] = useState('');
-  const [ tasksToDisplayForLead, setTasksToDisplayForLead ] = useState([]);
-  const [ allSubProjects, setAllSubprojects ] = useState([]);
-  const [ showTaskLandingPage, setShowTaskLandingPage ] = useState(true);
-
+  const [currentSelectedProjectForLead, setCurrentSelectedProjectForLead] = useState('');
+  const [tasksToDisplayForLead, setTasksToDisplayForLead] = useState([]);
+  const [allSubProjects, setAllSubprojects] = useState([]);
+  const [showTaskLandingPage, setShowTaskLandingPage] = useState(true);
+  const [cardGroupNumber, setCardGroupNumber] = useState(0);
+  const [cardIndex, setCardIndex] = useState(0);
   const handleSearch = (value) => {
     const toAnagram = (word) => {
       return word.toLowerCase().split("").reverse().join("");
@@ -182,33 +184,33 @@ const Teamlead = ({ isGrouplead }) => {
             )
           const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
           const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task);
-        
+
           let updatedTasksForOtherProjects;
 
-          const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
-          Array.isArray(
-            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-          )
+          const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+            Array.isArray(
+              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+            )
 
           if (userHasOtherProjects) {
-            updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async(project) => {
+            updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async (project) => {
               const dataToPost = {
                 ...requestDataToPost2,
                 project: project
               }
-    
+
               const res = (await getCandidateTasksV2(dataToPost)).data;
-    
+
               const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task);
               return extractedTasks;
             }))
           }
 
-          const newTasksToDisplay = userHasOtherProjects ? 
+          const newTasksToDisplay = userHasOtherProjects ?
             [...previousTasksFormat, ...updatedTasksForMainProject, ...updatedTasksForOtherProjects.flat()]
             :
-          [...previousTasksFormat, ...updatedTasksForMainProject];
-          
+            [...previousTasksFormat, ...updatedTasksForMainProject];
+
           const usersWithTasks = [
             ...new Map(
               newTasksToDisplay.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
@@ -307,23 +309,23 @@ const Teamlead = ({ isGrouplead }) => {
 
         const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
         const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[3]?.data?.task_details, res[3]?.data?.task);
-        
+
         let updatedTasksForOtherProjects;
 
-        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
-        Array.isArray(
-          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-        )
+        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+          Array.isArray(
+            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+          )
 
         if (userHasOtherProjects) {
-          updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async(project) => {
+          updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async (project) => {
             const dataToPost = {
               ...requestDataToPost2,
               project: project
             }
-  
+
             const res = (await getCandidateTasksV2(dataToPost)).data;
-  
+
             const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task);
             return extractedTasks;
           }))
@@ -333,11 +335,11 @@ const Teamlead = ({ isGrouplead }) => {
         console.log('updated new tasks 1: ', updatedTasksForMainProject);
         userHasOtherProjects && console.log('updated new tasks 2: ', updatedTasksForOtherProjects.flat());
 
-        const newTasksToDisplay = userHasOtherProjects ? 
+        const newTasksToDisplay = userHasOtherProjects ?
           [...previousTasksFormat, ...updatedTasksForMainProject, ...updatedTasksForOtherProjects.flat()]
           :
-        [...previousTasksFormat, ...updatedTasksForMainProject];
-        
+          [...previousTasksFormat, ...updatedTasksForMainProject];
+
         const usersWithTasks = [
           ...new Map(
             newTasksToDisplay.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
@@ -409,74 +411,74 @@ const Teamlead = ({ isGrouplead }) => {
         "data_type": currentUser.portfolio_info[0].data_type,
         "project": initialProjectSelected,
       }
-  
+
       setLoading(true);
 
       Promise.all([
         getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
         getCandidateTasksV2(dataToPost),
       ])
-      .then(async (res) => {
-        console.log("res", res);
+        .then(async (res) => {
+          console.log("res", res);
 
-        const tasksToDisplay = res[0]?.data?.response?.data
-          ?.filter(
-            (task) =>
-              task.data_type === currentUser?.portfolio_info[0].data_type
+          const tasksToDisplay = res[0]?.data?.response?.data
+            ?.filter(
+              (task) =>
+                task.data_type === currentUser?.portfolio_info[0].data_type
+            )
+          console.log("tasksToDisplay", tasksToDisplay);
+
+          const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
+          const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task);
+
+          let updatedTasksForOtherProjects;
+
+          const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+            Array.isArray(
+              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+            )
+
+          if (userHasOtherProjects) {
+            updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async (project) => {
+              const dataToPost2 = {
+                ...dataToPost,
+                project: project
+              }
+
+              const res = (await getCandidateTasksV2(dataToPost2)).data;
+
+              const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task);
+              return extractedTasks;
+            }))
+          }
+
+          const newTasksToDisplay = userHasOtherProjects ?
+            [...previousTasksFormat, ...updatedTasksForMainProject, ...updatedTasksForOtherProjects.flat()]
+            :
+            [...previousTasksFormat, ...updatedTasksForMainProject];
+          console.log(newTasksToDisplay);
+          const usersWithTasks = [
+            ...new Map(
+              newTasksToDisplay.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
+            ).values(),
+          ];
+          console.log(usersWithTasks);
+          // console.log(res.data.response.data);
+          setUserTasks(usersWithTasks.sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date)));
+          setTasksToDisplayForLead(
+            usersWithTasks.filter(
+              (task) =>
+                task.project ===
+                currentSelectedProjectForLead
+            )
           )
-        console.log("tasksToDisplay", tasksToDisplay);
-
-        const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
-        const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task);
-        
-        let updatedTasksForOtherProjects;
-
-        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
-        Array.isArray(
-          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-        )
-
-        if (userHasOtherProjects) {
-          updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async(project) => {
-            const dataToPost2 = {
-              ...dataToPost,
-              project: project
-            }
-  
-            const res = (await getCandidateTasksV2(dataToPost2)).data;
-  
-            const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task);
-            return extractedTasks;
-          }))
-        }
-
-        const newTasksToDisplay = userHasOtherProjects ? 
-          [...previousTasksFormat, ...updatedTasksForMainProject, ...updatedTasksForOtherProjects.flat()]
-          :
-        [...previousTasksFormat, ...updatedTasksForMainProject];
-        console.log(newTasksToDisplay);
-        const usersWithTasks = [
-          ...new Map(
-            newTasksToDisplay.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
-          ).values(),
-        ];
-        console.log(usersWithTasks);
-        // console.log(res.data.response.data);
-        setUserTasks(usersWithTasks.sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date)));
-        setTasksToDisplayForLead(
-          usersWithTasks.filter(
-            (task) =>
-              task.project ===
-              currentSelectedProjectForLead
-          )
-        )
-        setLoading(false);
-        setCurrentSelectedProjectForLead(initialProjectSelected);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
+          setLoading(false);
+          setCurrentSelectedProjectForLead(initialProjectSelected);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
     }
   }, [section, showTaskLandingPage])
 
@@ -599,32 +601,32 @@ const Teamlead = ({ isGrouplead }) => {
 
         const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
         const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task);
-        
+
         let updatedTasksForOtherProjects;
 
-        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
-        Array.isArray(
-          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-        )
+        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+          Array.isArray(
+            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+          )
 
         if (userHasOtherProjects) {
-          updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async(project) => {
+          updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async (project) => {
             const dataToPost2 = {
               ...dataToPost,
               project: project
             }
-  
+
             const res = (await getCandidateTasksV2(dataToPost2)).data;
-  
+
             const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task);
             return extractedTasks;
           }))
         }
 
-        const newTasksToDisplay = userHasOtherProjects ? 
+        const newTasksToDisplay = userHasOtherProjects ?
           [...previousTasksFormat, ...updatedTasksForMainProject, ...updatedTasksForOtherProjects.flat()]
           :
-        [...previousTasksFormat, ...updatedTasksForMainProject];
+          [...previousTasksFormat, ...updatedTasksForMainProject];
         console.log(newTasksToDisplay);
         const usersWithTasks = [
           ...new Map(
@@ -673,70 +675,70 @@ const Teamlead = ({ isGrouplead }) => {
       >
         {
           !(isGrouplead && (section === "home" || section === undefined)) && <>
-          {
-            section === 'user-tasks' ? <></> :
-            <TitleNavigationBar
-              title={
-                section === "task"
-                  ?
-                  "Work Logs"
-                  : section === "user"
-                    ? "Profile"
-                    : showCandidate
-                      ? "Application Details"
+            {
+              section === 'user-tasks' ? <></> :
+                <TitleNavigationBar
+                  title={
+                    section === "task"
+                      ?
+                      "Work Logs"
+                      : section === "user"
+                        ? "Profile"
+                        : showCandidate
+                          ? "Application Details"
+                          :
+                          isGrouplead ?
+                            " "
+                            : "Applications"
+                  }
+                  hideBackBtn={
+                    showCandidate || showCandidateTask || (section === "task" && isGrouplead) ? false
                       :
-                      isGrouplead ?
-                        " "
-                        : "Applications"
-              }
-              hideBackBtn={
-                showCandidate || showCandidateTask || (section === "task" && isGrouplead) ? false 
-                :
-                section === 'task' && !showTaskLandingPage ? false 
-                : 
-                true
-              }
-              handleBackBtnClick={
-                (section === "task" && isGrouplead) ? 
-                  () => navigate(-1) 
-                  : 
-                (section === 'task') ?
-                  () => setShowTaskLandingPage(true)
-                :
-                  () => handleBackBtnClick()
-              }
-            />
-          }
+                      section === 'task' && !showTaskLandingPage ? false
+                        :
+                        true
+                  }
+                  handleBackBtnClick={
+                    (section === "task" && isGrouplead) ?
+                      () => navigate(-1)
+                      :
+                      (section === 'task') ?
+                        () => setShowTaskLandingPage(true)
+                        :
+                        () => handleBackBtnClick()
+                  }
+                />
+            }
           </>
         }
         {section !== "user" && !showCandidate && !isGrouplead && (
-          section === 'user-tasks' ? <></> 
-          :
-          <>
-            <TogglerNavMenuBar
-              className={"teamlead"}
-              menuItems={
-                ["Approval", "Work logs", "Rehire"]
-              }
-              currentActiveItem={currentActiveItem}
-              handleMenuItemClick={handleMenuItemClick}
-            />
+          section === 'user-tasks' ? <></>
+            :
+            <>
+              <TogglerNavMenuBar
+                className={"teamlead"}
+                menuItems={
+                  ["Approval", "Work logs", "Rehire"]
+                }
+                currentActiveItem={currentActiveItem}
+                handleMenuItemClick={handleMenuItemClick}
+              />
 
-            {
-              showTaskLandingPage && section === 'task' ? <></>
-              :
-              <button
-                className="refresh-container-teamlead desktop"
-              >
-                <div className="refresh-btn refresh-btn-teamlead" onClick={section === "task" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
-                >
-                  <IoMdRefresh />
-                  <p>Refresh</p>
-                </div>
-              </button>
-            }
-            
-          </>
+              {
+                showTaskLandingPage && section === 'task' ? <></>
+                  :
+                  <button
+                    className="refresh-container-teamlead desktop"
+                  >
+                    <div className="refresh-btn refresh-btn-teamlead" onClick={section === "task" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
+                    >
+                      <IoMdRefresh />
+                      <p>Refresh</p>
+                    </div>
+                  </button>
+              }
+
+            </>
 
 
         )}
@@ -803,10 +805,10 @@ const Teamlead = ({ isGrouplead }) => {
                         jobs.find(
                           (job) => job.job_number === currentCandidate.job_number
                         ) ?
-                        jobs.find(
-                          (job) => job.job_number === currentCandidate.job_number
-                        ) :
-                        null
+                          jobs.find(
+                            (job) => job.job_number === currentCandidate.job_number
+                          ) :
+                          null
                       }
                     />
 
@@ -1000,119 +1002,119 @@ const Teamlead = ({ isGrouplead }) => {
                   </>
                 ) : (
                   isGrouplead ?
-                  <>
-                    <SelectedCandidates
-                      showTasks={true}
-                      tasksCount={
-                        searchValue.length >= 1
-                          ? filteredTasks.length
-                          : tasksToDisplayForLead.length
-                      }
-                      availableSortOptions={sortOptionsForLead}
-                    />
-                    <div className="project__Select__Wrapper">
-                      <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
-                        <option value={''} disabled>Select project</option>
-                        <option
-                          value={
-                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project 
-                          }
-                        >
-                          {
-                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project 
-                          }
-                        </option>
-                        {
-                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
-                          Array.isArray(
-                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-                          ) &&
-                          React.Children.toArray(
-                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(project => {
-                              return <option value={project}>{project}</option>
-                            })
-                          )
+                    <>
+                      <SelectedCandidates
+                        showTasks={true}
+                        tasksCount={
+                          searchValue.length >= 1
+                            ? filteredTasks.length
+                            : tasksToDisplayForLead.length
                         }
-                      </select>
-                    </div>
-                    
-                    <div className="tasks-container">
-                      {section === "task" ? (
-                        searchValue.length >= 1 ? (
-                          React.Children.toArray(
-                            filteredTasks.map((dataitem) => {
-                              return (
-                                <JobCard
-                                  buttonText={"View"}
-                                  candidateCardView={true}
-                                  candidateData={dataitem}
-                                  jobAppliedFor={
-                                    jobs.find(
-                                      (job) =>
-                                        job.job_number === dataitem.job_number
-                                    )
-                                      ? jobs.find(
+                        availableSortOptions={sortOptionsForLead}
+                      />
+                      <div className="project__Select__Wrapper">
+                        <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
+                          <option value={''} disabled>Select project</option>
+                          <option
+                            value={
+                              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
+                            }
+                          >
+                            {
+                              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
+                            }
+                          </option>
+                          {
+                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+                            Array.isArray(
+                              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+                            ) &&
+                            React.Children.toArray(
+                              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(project => {
+                                return <option value={project}>{project}</option>
+                              })
+                            )
+                          }
+                        </select>
+                      </div>
+
+                      <div className="tasks-container">
+                        {section === "task" ? (
+                          searchValue.length >= 1 ? (
+                            React.Children.toArray(
+                              filteredTasks.map((dataitem) => {
+                                return (
+                                  <JobCard
+                                    buttonText={"View"}
+                                    candidateCardView={true}
+                                    candidateData={dataitem}
+                                    jobAppliedFor={
+                                      jobs.find(
                                         (job) =>
-                                          job.job_number ===
-                                          dataitem.job_number
-                                      ).job_title
-                                      : ""
-                                  }
-                                  handleBtnClick={handleViewTaskBtnClick}
-                                  taskView={true}
-                                />
-                              );
-                            })
+                                          job.job_number === dataitem.job_number
+                                      )
+                                        ? jobs.find(
+                                          (job) =>
+                                            job.job_number ===
+                                            dataitem.job_number
+                                        ).job_title
+                                        : ""
+                                    }
+                                    handleBtnClick={handleViewTaskBtnClick}
+                                    taskView={true}
+                                  />
+                                );
+                              })
+                            )
+                          ) : (
+                            React.Children.toArray(
+                              tasksToDisplayForLead.map((dataitem) => {
+                                return (
+                                  <JobCard
+                                    buttonText={"View"}
+                                    candidateCardView={true}
+                                    candidateData={dataitem}
+                                    jobAppliedFor={
+                                      jobs.find(
+                                        (job) =>
+                                          job.job_number === dataitem.job_number
+                                      )
+                                        ? jobs.find(
+                                          (job) =>
+                                            job.job_number ===
+                                            dataitem.job_number
+                                        ).job_title
+                                        : ""
+                                    }
+                                    handleBtnClick={handleViewTaskBtnClick}
+                                    taskView={true}
+                                  />
+                                );
+                              })
+                            )
                           )
                         ) : (
-                          React.Children.toArray(
-                            tasksToDisplayForLead.map((dataitem) => {
-                              return (
-                                <JobCard
-                                  buttonText={"View"}
-                                  candidateCardView={true}
-                                  candidateData={dataitem}
-                                  jobAppliedFor={
-                                    jobs.find(
-                                      (job) =>
-                                        job.job_number === dataitem.job_number
-                                    )
-                                      ? jobs.find(
-                                        (job) =>
-                                          job.job_number ===
-                                          dataitem.job_number
-                                      ).job_title
-                                      : ""
-                                  }
-                                  handleBtnClick={handleViewTaskBtnClick}
-                                  taskView={true}
-                                />
-                              );
-                            })
-                          )
-                        )
-                      ) : (
-                        <></>
-                      )}
-                    </div>
-                  </>
-                  :
-                  showTaskLandingPage ?
-                  <>
-                    <AddPage
-                      showAddIssueModal={showAddIssueModalForGrouplead}
-                      setShowAddIssueModal={setShowAddIssueModalForGrouplead}
-                      showAddTaskModal={showAddTaskModalForGrouplead}
-                      setShowAddTaskModal={setShowAddTaskModalForGrouplead}
-                      subprojects={allSubProjects}
-                      isTeamlead={true}
-                      handleViewIndividualTaskBtn={() => navigate('/user-tasks')}
-                      handleViewTeamTaskBtn={() => setShowTaskLandingPage(false)}
-                    />
-                  </>
-                  :
-                  <>
-                    {/* <button
+                          <></>
+                        )}
+                      </div>
+                    </>
+                    :
+                    showTaskLandingPage ?
+                      <>
+                        <AddPage
+                          showAddIssueModal={showAddIssueModalForGrouplead}
+                          setShowAddIssueModal={setShowAddIssueModalForGrouplead}
+                          showAddTaskModal={showAddTaskModalForGrouplead}
+                          setShowAddTaskModal={setShowAddTaskModalForGrouplead}
+                          subprojects={allSubProjects}
+                          isTeamlead={true}
+                          handleViewIndividualTaskBtn={() => navigate('/user-tasks')}
+                          handleViewTeamTaskBtn={() => setShowTaskLandingPage(false)}
+                        />
+                      </>
+                      :
+                      <>
+                        {/* <button
                       className="refresh-container"
                       onClick={handleRefreshForCandidateTask}
                     >
@@ -1121,101 +1123,127 @@ const Teamlead = ({ isGrouplead }) => {
                         <p>Refresh</p>
                       </div>
                     </button> */}
-                    <SelectedCandidates
-                      showTasks={true}
-                      tasksCount={
-                        searchValue.length >= 1
-                          ? filteredTasks.length
-                          : tasksToDisplayForLead.length
-                      }
-                      availableSortOptions={sortOptionsForLead}
-                    />
-                    <div className="project__Select__Wrapper">
-                      <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
-                        <option value={''} disabled>Select project</option>
-                        <option
-                          value={
-                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project 
+                        <SelectedCandidates
+                          showTasks={true}
+                          tasksCount={
+                            searchValue.length >= 1
+                              ? filteredTasks.length
+                              : tasksToDisplayForLead.length
                           }
-                        >
-                          {
-                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project 
-                          }
-                        </option>
-                        {
-                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
-                          Array.isArray(
-                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-                          ) &&
-                          React.Children.toArray(
-                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(project => {
-                              return <option value={project}>{project}</option>
-                            })
-                          )
-                        }
-                      </select>
-                    </div>
-                    
-                    <div className="tasks-container">
-                      {section === "task" ? (
-                        searchValue.length >= 1 ? (
-                          React.Children.toArray(
-                            filteredTasks.map((dataitem) => {
-                              return (
-                                <JobCard
-                                  buttonText={"View"}
-                                  candidateCardView={true}
-                                  candidateData={dataitem}
-                                  jobAppliedFor={
-                                    jobs.find(
-                                      (job) =>
-                                        job.job_number === dataitem.job_number
-                                    )
-                                      ? jobs.find(
-                                        (job) =>
-                                          job.job_number ===
-                                          dataitem.job_number
-                                      ).job_title
-                                      : ""
-                                  }
-                                  handleBtnClick={handleViewTaskBtnClick}
-                                  taskView={true}
-                                />
-                              );
-                            })
-                          )
-                        ) : (
-                          React.Children.toArray(
-                            tasksToDisplayForLead.map((dataitem) => {
-                              return (
-                                <JobCard
-                                  buttonText={"View"}
-                                  candidateCardView={true}
-                                  candidateData={dataitem}
-                                  jobAppliedFor={
-                                    jobs.find(
-                                      (job) =>
-                                        job.job_number === dataitem.job_number
-                                    )
-                                      ? jobs.find(
-                                        (job) =>
-                                          job.job_number ===
-                                          dataitem.job_number
-                                      ).job_title
-                                      : ""
-                                  }
-                                  handleBtnClick={handleViewTaskBtnClick}
-                                  taskView={true}
-                                />
-                              );
-                            })
-                          )
-                        )
-                      ) : (
-                        <></>
-                      )}
-                    </div>
-                  </>
+                          availableSortOptions={sortOptionsForLead}
+                        />
+                        <div className="project__Select__Wrapper">
+                          <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
+                            <option value={''} disabled>Select project</option>
+                            <option
+                              value={
+                                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
+                              }
+                            >
+                              {
+                                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
+                              }
+                            </option>
+                            {
+                              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+                              Array.isArray(
+                                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+                              ) &&
+                              React.Children.toArray(
+                                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(project => {
+                                  return <option value={project}>{project}</option>
+                                })
+                              )
+                            }
+                          </select>
+                        </div>
+
+                        <div className="tasks-container">
+                          {section === "task" ? (
+                            searchValue.length >= 1 ? (
+                              React.Children.toArray(
+                                filteredTasks.map((dataitem) => {
+                                  return (
+                                    <JobCard
+                                      buttonText={"View"}
+                                      candidateCardView={true}
+                                      candidateData={dataitem}
+                                      jobAppliedFor={
+                                        jobs.find(
+                                          (job) =>
+                                            job.job_number === dataitem.job_number
+                                        )
+                                          ? jobs.find(
+                                            (job) =>
+                                              job.job_number ===
+                                              dataitem.job_number
+                                          ).job_title
+                                          : ""
+                                      }
+                                      handleBtnClick={handleViewTaskBtnClick}
+                                      taskView={true}
+                                    />
+                                  );
+                                })
+                              )
+                            ) :
+
+                              (
+                                <>
+                                  {React.Children.toArray(
+                                    // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
+                                    tasksToDisplayForLead
+                                      .slice(cardIndex, cardIndex + 6)
+                                      .map((dataitem) => {
+                                        return (
+                                          <JobCard
+                                            buttonText={"View"}
+                                            candidateCardView={true}
+                                            candidateData={dataitem}
+                                            jobAppliedFor={
+                                              jobs.find(
+                                                (job) =>
+                                                  job.job_number === dataitem.job_number
+                                              )
+                                                ? jobs.find(
+                                                  (job) =>
+                                                    job.job_number ===
+                                                    dataitem.job_number
+                                                ).job_title
+                                                : ""
+                                            }
+                                            handleBtnClick={handleViewTaskBtnClick}
+                                            taskView={true}
+                                          />
+                                        );
+
+                                      })
+                                  )}
+                                  <div className='JobsChanger_containter' style={{ margin: 'auto', display: 'block' }}>
+                                    {createArrayWithLength(
+                                      Math.ceil(tasksToDisplayForLead.length / 6)
+                                    ).map((s, index) => (
+                                      <button
+                                        className={s !== cardIndex ? "active" : "desactive"}
+                                        onClick={() => {
+                                          setCardGroupNumber(index * 4);
+                                          setCardIndex(index);
+                                        }}
+                                        key={`${index}_button`}
+                                      >
+                                        {index + 1}
+                                      </button>
+                                    ))}
+                                  </div>
+
+                                </>
+                              )
+
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                      </>
                 )
               ) : section === "user" ? (
                 <UserScreen isGrouplead={isGrouplead} />
@@ -1223,18 +1251,18 @@ const Teamlead = ({ isGrouplead }) => {
                 <TaskScreen
                   candidateAfterSelectionScreen={true}
                   assignedProject={
-                    currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
-                    Array.isArray(
-                      currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-                    ) ?
+                    currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+                      Array.isArray(
+                        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+                      ) ?
                       [
                         currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project,
                         ...currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
                       ]
-                    :
-                    [
-                      currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
-                    ]
+                      :
+                      [
+                        currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
+                      ]
                   }
                   showBackBtn={true}
                   loadProjects={true}
@@ -1248,7 +1276,7 @@ const Teamlead = ({ isGrouplead }) => {
             </>
           )}
         </>
-      </StaffJobLandingLayout>
+      </StaffJobLandingLayout >
     </>
   );
 };

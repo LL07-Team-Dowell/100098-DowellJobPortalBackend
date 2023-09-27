@@ -562,3 +562,6 @@ const LandingPage = ({ subAdminView }) => {
 };
 
 export default LandingPage;
+export function createArrayWithLength(length) {
+  return Array.from({ length }, (_, index) => index);
+}
