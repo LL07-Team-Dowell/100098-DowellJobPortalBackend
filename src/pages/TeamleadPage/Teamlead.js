@@ -1195,13 +1195,12 @@ const Teamlead = ({ isGrouplead }) => {
                                 }
                                 <div className='JobsChanger_containter' style={{ margin: 'auto', display: 'block' }}>
                                   {createArrayWithLength(
-                                    Math.ceil(tasksToDisplayForLead.length / 6)
+                                    Math.ceil(filteredTasks.length / 6)
                                   ).map((s, index) => (
                                     <button
-                                      className={s !== cardIndex ? "active" : "desactive"}
+                                      className={s !== cardIndex2 ? "active" : "desactive"}
                                       onClick={() => {
-                                        setCardGroupNumber(index * 4);
-                                        setCardIndex(index);
+                                        setCardIndex2(index);
                                       }}
                                       key={`${index}_button`}
                                     >
