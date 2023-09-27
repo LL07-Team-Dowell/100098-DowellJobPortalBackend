@@ -74,12 +74,12 @@ const AddTaskScreen = ({
   );
   //   lest important functions
   const clearAllInputs = () => {
-    setTaskStartTime("");
+    // setTaskStartTime("");
     setTaskEndTime("");
-    setTaskName("");
-    setDetails("");
+    // setTaskName("");
+    // setDetails("");
     setoptionValue("");
-    setTaskType("");
+    // setTaskType("");
     setSubprojectSelected(null);
   };
   const fillAllInputs = (taskStartTime, taskEndTime, taskName, details, project, taskType, subproject) => {
@@ -399,6 +399,8 @@ const AddTaskScreen = ({
       if (updateTask) {
         res = (await updateNewCandidateTaskV2(dataToPost, taskDetailForToday?.parentTask?._id)).data;
 
+        toast.success(res?.message);
+
         const copyOfTasksForToday = structuredClone(taskDetailForToday);
         copyOfTasksForToday.tasks.push({...res.response, _id: res.current_task_id});
 
@@ -431,6 +433,8 @@ const AddTaskScreen = ({
           ,
           taskRes.task
         ]
+
+        toast.success(res?.message);
 
         setTaskDetailForToday({
           parentTask: parentTaskAddedForToday,

@@ -116,7 +116,8 @@
   font-weight: 500;
 }
 
-.add__New__Task__Container input:read-only {
+.add__New__Task__Container input:read-only,
+.add__New__Task__Container textarea:read-only {
   filter: brightness(0.92);
 }
 

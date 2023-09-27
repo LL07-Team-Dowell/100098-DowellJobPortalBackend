@@ -46,7 +46,7 @@
   }
 
   .jobs-container > *,
-  .tasks-container > *:not(.add__Btn) {
+  .tasks-container > *:not(.add__Btn, .JobsChanger_containter) {
     width: calc(94% / 2);
     display: inline-block;
     margin-right: 4%;
@@ -54,12 +54,12 @@
   }
 
   .jobs-container > *:nth-child(2n + 2),
-  .tasks-container > *:nth-child(2n + 2):not(.add__Btn) {
+  .tasks-container > *:nth-child(2n + 2):not(.add__Btn, .JobsChanger_containter) {
     margin-right: 0;
   }
 
   .jobs-container > *:last-child,
-  .tasks-container > *:last-child:not(.add__Btn) {
+  .tasks-container > *:last-child:not(.add__Btn, .JobsChanger_containter) {
     margin-bottom: 15%;
     /* background-color: rebeccapurple; */
   }
@@ -172,7 +172,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 3.5rem 0 15rem;
+  margin: 3.5rem auto 5rem;
+  position: relative;
 }
 
 .JobsChanger_containter button {

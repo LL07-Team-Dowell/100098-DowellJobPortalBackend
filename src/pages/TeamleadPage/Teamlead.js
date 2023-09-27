@@ -1161,31 +1161,51 @@ const Teamlead = ({ isGrouplead }) => {
                         <div className="tasks-container">
                           {section === "task" ? (
                             searchValue.length >= 1 ? (
-                              React.Children.toArray(
-                                filteredTasks.map((dataitem) => {
-                                  return (
-                                    <JobCard
-                                      buttonText={"View"}
-                                      candidateCardView={true}
-                                      candidateData={dataitem}
-                                      jobAppliedFor={
-                                        jobs.find(
-                                          (job) =>
-                                            job.job_number === dataitem.job_number
-                                        )
-                                          ? jobs.find(
+                              <>
+                                {React.Children.toArray(
+                                  filteredTasks
+                                  .slice(cardIndex, cardIndex + 6)
+                                  .map((dataitem) => {
+                                    return (
+                                      <JobCard
+                                        buttonText={"View"}
+                                        candidateCardView={true}
+                                        candidateData={dataitem}
+                                        jobAppliedFor={
+                                          jobs.find(
                                             (job) =>
-                                              job.job_number ===
-                                              dataitem.job_number
-                                          ).job_title
-                                          : ""
-                                      }
-                                      handleBtnClick={handleViewTaskBtnClick}
-                                      taskView={true}
-                                    />
-                                  );
-                                })
-                              )
+                                              job.job_number === dataitem.job_number
+                                          )
+                                            ? jobs.find(
+                                              (job) =>
+                                                job.job_number ===
+                                                dataitem.job_number
+                                            ).job_title
+                                            : ""
+                                        }
+                                        handleBtnClick={handleViewTaskBtnClick}
+                                        taskView={true}
+                                      />
+                                    );
+                                  })
+                                )}
+                                <div className='JobsChanger_containter'>
+                                  {createArrayWithLength(
+                                    Math.ceil(filteredTasks.length / 6)
+                                  ).map((s, index) => (
+                                    <button
+                                      className={s !== cardIndex ? "active" : "desactive"}
+                                      onClick={() => {
+                                        setCardGroupNumber(index * 4);
+                                        setCardIndex(index);
+                                      }}
+                                      key={`${index}_button`}
+                                    >
+                                      {index + 1}
+                                    </button>
+                                  ))}
+                                </div>
+                              </>
                             ) :
 
                               (
@@ -1219,7 +1239,7 @@ const Teamlead = ({ isGrouplead }) => {
 
                                       })
                                   )}
-                                  <div className='JobsChanger_containter' style={{ margin: 'auto', display: 'block' }}>
+                                  <div className='JobsChanger_containter'>
                                     {createArrayWithLength(
                                       Math.ceil(tasksToDisplayForLead.length / 6)
                                     ).map((s, index) => (
