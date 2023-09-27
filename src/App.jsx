@@ -83,7 +83,7 @@ import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport
 import { teamManagementProductName } from "./utils/utils";
 
 function App() {
-  // console.log = () => { };
+  console.log = () => { };
 
   const {
     currentUser,
