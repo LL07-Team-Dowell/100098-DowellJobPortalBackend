@@ -394,7 +394,8 @@ class ThreadsSerializer(serializers.Serializer):
         ("Completed", "Completed"),
         ("Resolved", "Resolved"),
     )
-
+    
+    thread_title = serializers.CharField(allow_null=False, allow_blank=False)
     thread = serializers.CharField(allow_null=False, allow_blank=False)
     image = serializers.URLField(allow_null=False, allow_blank=True)
     created_by = serializers.CharField(allow_null=False, allow_blank=False)
