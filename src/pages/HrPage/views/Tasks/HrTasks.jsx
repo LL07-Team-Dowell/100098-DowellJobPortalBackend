@@ -12,6 +12,7 @@ import { differenceInCalendarDays } from 'date-fns';
 import { getCandidateTask } from '../../../../services/candidateServices';
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
+import { useHrJobScreenAllTasksContext } from '../../../../contexts/HrJobScreenAllTasks';
 
 const HrTasks = () => {
   // searchParams
@@ -30,27 +31,48 @@ const HrTasks = () => {
   const [datesToStyle, setDatesToStyle] = useState([]);
   const [noApplicant, setnoApplicant] = useState(false);
   const navigate = useNavigate();
+  const {
+    loadedTasks,
+    setLoadedTasks,
+  } = useHrJobScreenAllTasksContext()
+  const [List, setList] = useState([]);
+
   useEffect(() => {
+    if (loadedTasks && Array.isArray(loadedTasks) && loadedTasks.length > 0) {
+      const tasksForUser = loadedTasks.filter(v => v.applicant === applicant);
+      setdata(tasksForUser);
+      setList(Array.from(new Set(loadedTasks.map(d => Array.isArray(d.project) ? d.project[0] : d.project))));
+      setloading(false);
+
+      return
+    }
+
     setloading(true)
     getCandidateTask(currentUser.portfolio_info[0].org_id)
-      .then(resp => { setdata(resp.data.response.data.filter(v => v.applicant === applicant)); setloading(false); console.log(resp.data.response.data) })
+      .then(resp => { 
+        setdata(resp.data.response.data.filter(v => v.applicant === applicant)); 
+        setloading(false); 
+        console.log(resp.data.response.data) 
+        setLoadedTasks(resp.data.response.data);
+        setList(Array.from(new Set(resp.data.response.data.filter(v => v.applicant === applicant).map(d => Array.isArray(d.project) ? d.project[0] : d.project))));
+      })
       .catch(err => {
         console.log(err)
         setloading(false)
       });
   }, []);
-  // List 
-  const List = Array.from(new Set(data.map(d => d.project)));
+
+
   useEffect(() => {
     if (data.length < 1) {
       setnoApplicant(true);
     } else {
       setnoApplicant(false);
     }
-  }, [applicant, data]);
+  }, [applicant, data, loadedTasks]);
 
   useEffect(() => {
-    setdata(testTasksToWorkWithForNow.filter(s => s.applicant === applicant))
+    setdata(loadedTasks.filter(s => s.applicant === applicant))
   }, [applicant])
 
   useEffect(() => {
@@ -94,7 +116,7 @@ const HrTasks = () => {
   }
   if (loading) return <LoadingSpinner />
   return (
-    <StaffJobLandingLayout hrView={true}>
+    <>
       {
         noApplicant ? <>NO Applicant</>
           :
@@ -123,7 +145,7 @@ const HrTasks = () => {
             </div>
           </>
       }
-    </StaffJobLandingLayout>
+    </>
   )
 }
 

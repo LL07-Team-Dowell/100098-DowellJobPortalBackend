@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import Avatar from "react-avatar";
 import styled from "styled-components";
 import { fetchThread, postComment, updateSingleComment } from "../../../../../../../services/teamleadServices";
@@ -85,14 +85,13 @@ textarea {
 
 `
 
-const ThreadComment = ({ comments, commentInput, user, threadId, forceUpdate, loading }) => {
-  console.log(forceUpdate);
+const ThreadComment = ({ comments, commentInput, user, threadId, loading }) => {
   const userName = user.trim();
   const initials = userName.charAt(0).toUpperCase();
   const [text, setText] = useState("");
   const { currentUser } = useCurrentUserContext();
   const [loadingcmnt, setLoadingcmnt] = useState(false);
-  const [updateComment, setUpdateComment] = useState(false);
+  const [updateComment, setUpdateComment] = useState([]);
   const [editIndex, setEditIndex] = useState();
   const [updateCommentInput, setUpdateCommentInput] = useState("")
 
@@ -100,24 +99,36 @@ const ThreadComment = ({ comments, commentInput, user, threadId, forceUpdate, lo
   const handleChange = (e) => {
     setText(e.target.value);
   };
+  useEffect(() => {
+    setUpdateComment([...comments].reverse());
+  }, []);
+
+
+  console.log({ "updatecomment": updateComment });
   //Handle Comment
   const handleComment = async () => {
-    setLoadingcmnt(true)
+    setLoadingcmnt(true);
     try {
       const commentData = {
         created_by: user,
         comment: text,
-        thread_id: threadId
+        thread_id: threadId,
       };
       const response = await postComment(commentData);
-      console.log('Comment created successfully:', response.data);
-      setText('')
-      setLoadingcmnt(false)
+      console.log(response);
+      // Update the state with the new comment
+      if (response.status == 201) {
+        setUpdateComment((prevComments) => [commentData, ...prevComments].reverse());
+        setText("")
+      }
+      // Clear the input field and reset loading
+      setText('');
+      setLoadingcmnt(false);
     } catch (error) {
       console.error('Failed to create comment:', error.message);
     }
-    forceUpdate()
   };
+
 
   const handleUpdate = (comment) => {
     const document_id = comment._id;
@@ -151,38 +162,60 @@ const ThreadComment = ({ comments, commentInput, user, threadId, forceUpdate, lo
 
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", widows: "100%" }}>
-        {
-          comments.map((comment, index) => {
-            return <div className="comment-container">
+      <div style={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
+        {updateComment.reverse().map((comment, index) => {
+          return (
+            <div className="comment-container" key={comment._id}>
               <div className="avatar-container">
                 <Avatar name={initials} size={40} round />
               </div>
               <div className="comment-content">
                 <div className="comment-details">
                   <p className="user-name">{comment.created_by}</p>
-                  {
-                    editIndex === index ? <input className="comment-text" style={{ paddingLeft: "5px", border: "1px solid black" }} defaultValue={comment.comment} onChange={(e) => setUpdateCommentInput(e.target.value)} /> : <input className="comment-text" defaultValue={comment.comment} disabled />
-                  }
-
+                  {editIndex === index ? (
+                    <input
+                      className="comment-text"
+                      style={{ paddingLeft: "5px", border: "1px solid black" }}
+                      defaultValue={comment.comment}
+                      onChange={(e) => setUpdateCommentInput(e.target.value)}
+                    />
+                  ) : (
+                    <input className="comment-text" defaultValue={comment.comment} disabled />
+                  )}
                 </div>
-                {
-                  editIndex === index ? <>
+                {editIndex === index ? (
+                  <>
                     <div className="button">
-                      {currentUser.portfolio_info[0].username == comment.created_by && <button style={{ padding: "5px 10px", cursor: "pointer", backgroundColor: "#005734", border: "none", color: "white" }} onClick={() => handleUpdate(comment)}>Update</button>}
-                    </div>
-                  </> : <>
-                    <div className="button">
-                      {currentUser.portfolio_info[0].username == comment.created_by && <button style={{ padding: "5px 10px", cursor: "pointer", backgroundColor: "#005734", border: "none", color: "white" }} onClick={() => setEditIndex(index)}>Edit</button>}
+                      {currentUser.portfolio_info[0].username === comment.created_by && (
+                        <button
+                          style={{ padding: "5px 10px", cursor: "pointer", backgroundColor: "#005734", border: "none", color: "white" }}
+                          onClick={() => handleUpdate(comment)}
+                        >
+                          Update
+                        </button>
+                      )}
                     </div>
                   </>
-                }
-
+                ) : (
+                  <>
+                    <div className="button">
+                      {currentUser.portfolio_info[0].username === comment.created_by && (
+                        <button
+                          style={{ padding: "5px 10px", cursor: "pointer", backgroundColor: "#005734", border: "none", color: "white" }}
+                          onClick={() => setEditIndex(index)}
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
-          })
-        }
+          );
+        })}
       </div>
+
 
     </Wrapper>
 
