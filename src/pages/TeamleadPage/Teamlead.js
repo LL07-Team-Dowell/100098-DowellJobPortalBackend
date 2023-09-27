@@ -1163,30 +1163,33 @@ const Teamlead = ({ isGrouplead }) => {
                           {section === "task" ? (
                             searchValue.length >= 1 ? (
                               React.Children.toArray(
-                                filteredTasks.map((dataitem) => {
-                                  return (
-                                    <JobCard
-                                      buttonText={"View"}
-                                      candidateCardView={true}
-                                      candidateData={dataitem}
-                                      jobAppliedFor={
-                                        jobs.find(
-                                          (job) =>
-                                            job.job_number === dataitem.job_number
-                                        )
-                                          ? jobs.find(
+                                filteredTasks
+                                  .slice(cardIndex2, cardIndex2 + 4)
+                                  .map((dataitem) => {
+                                    return (
+                                      <JobCard
+                                        buttonText={"View"}
+                                        candidateCardView={true}
+                                        candidateData={dataitem}
+                                        jobAppliedFor={
+                                          jobs.find(
                                             (job) =>
-                                              job.job_number ===
-                                              dataitem.job_number
-                                          ).job_title
-                                          : ""
-                                      }
-                                      handleBtnClick={handleViewTaskBtnClick}
-                                      taskView={true}
-                                    />
-                                  );
-                                })
+                                              job.job_number === dataitem.job_number
+                                          )
+                                            ? jobs.find(
+                                              (job) =>
+                                                job.job_number ===
+                                                dataitem.job_number
+                                            ).job_title
+                                            : ""
+                                        }
+                                        handleBtnClick={handleViewTaskBtnClick}
+                                        taskView={true}
+                                      />
+                                    );
+                                  })
                               )
+
                             ) :
 
                               (
