@@ -1605,9 +1605,7 @@ class update_task(APIView):
                 "task_updated_date": str(datetime.datetime.now()),
             }
             # check if task exists---
-            check = dowellconnection(
-                *task_details_module, "fetch", field, update_field
-            )
+            check = dowellconnection(*task_details_module, "fetch", field, update_field)
             if json.loads(check)["isSuccess"] is True:
                 if len(json.loads(check)["data"]) == 0:
                     return Response(
@@ -1915,9 +1913,7 @@ class approve_task(APIView):
         data = self.request.data
         field = {"_id": data.get("document_id")}
         update_field = {}
-        response = dowellconnection(
-            *task_details_module, "fetch", field, update_field
-        )
+        response = dowellconnection(*task_details_module, "fetch", field, update_field)
         if response is not None:
             for item in json.loads(response)["data"]:
                 if "max_updated_date" not in item:
@@ -2009,11 +2005,11 @@ class approve_task(APIView):
                     )
             else:
                 return Response(
-                        {
-                            "message": "Task approval unsuccessful. task_approved_by is required"
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+                    {
+                        "message": "Task approval unsuccessful. task_approved_by is required"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         else:
             return Response(
