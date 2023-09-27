@@ -77,7 +77,6 @@ const Teamlead = ({ isGrouplead }) => {
   const [showTaskLandingPage, setShowTaskLandingPage] = useState(true);
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
-  const [cardIndex2, setCardIndex2] = useState(0);
   const handleSearch = (value) => {
     const toAnagram = (word) => {
       return word.toLowerCase().split("").reverse().join("");
@@ -1229,7 +1228,7 @@ const Teamlead = ({ isGrouplead }) => {
                                                 ? jobs.find(
                                                   (job) =>
                                                     job.job_number ===
-                                                    dataitem.job_numberr
+                                                    dataitem.job_number
                                                 ).job_title
                                                 : ""
                                             }
