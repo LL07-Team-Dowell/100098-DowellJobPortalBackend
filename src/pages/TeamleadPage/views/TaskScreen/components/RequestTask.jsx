@@ -87,14 +87,16 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
                         name="update_reason"
                         value={formData.update_reason}
                         onChange={handleChange}
-                    ></textarea>
+                        style={{ resize: 'none', padding: "0.2rem 0.5rem" }}
+                    >
+                    </textarea>
                 </div>
                 <div className="buttons">
                     <button>Submit</button>
                     <button onClick={() => setShowModal(false)}>Cancel</button>
                 </div>
-            </form>
-        </div>
+            </form >
+        </div >
         // </Wrappen>
     );
 }
