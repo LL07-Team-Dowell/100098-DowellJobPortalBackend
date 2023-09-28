@@ -4193,7 +4193,7 @@ class Thread_Apis(APIView):
         data = request.data
 
         serializer_data = {
-            "thread_title":data.get("thread_title"),
+            "thread_title": data.get("thread_title"),
             "thread": data.get("thread"),
             "image": request.data["image"],
             "created_by": data.get("created_by"),
@@ -4205,7 +4205,7 @@ class Thread_Apis(APIView):
 
         field = {
             "event_id": get_event_id()["event_id"],
-            "thread_title":data.get("thread_title"),
+            "thread_title": data.get("thread_title"),
             "thread": data.get("thread"),
             "image": request.data["image"],
             "created_by": data.get("created_by"),
