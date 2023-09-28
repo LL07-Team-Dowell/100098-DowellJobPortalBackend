@@ -46,7 +46,7 @@
   }
 
   .jobs-container > *,
-  .tasks-container > *:not(.add__Btn, .JobsChanger_containter) {
+  .tasks-container > .job__Card__Container {
     width: calc(94% / 2);
     display: inline-block;
     margin-right: 4%;
@@ -54,12 +54,12 @@
   }
 
   .jobs-container > *:nth-child(2n + 2),
-  .tasks-container > *:nth-child(2n + 2):not(.add__Btn, .JobsChanger_containter) {
+  .tasks-container > .job__Card__Container.remove__mar {
     margin-right: 0;
   }
 
   .jobs-container > *:last-child,
-  .tasks-container > *:last-child:not(.add__Btn, .JobsChanger_containter) {
+  .tasks-container > .job__Card__Container:last-child {
     margin-bottom: 15%;
     /* background-color: rebeccapurple; */
   }
@@ -204,4 +204,8 @@
 
 .JobsChanger_containter .desactive {
   background-color: #005734;
+}
+
+.tasks-container .lead__sort__Title__Item {
+  margin-bottom: 2rem;
 }
