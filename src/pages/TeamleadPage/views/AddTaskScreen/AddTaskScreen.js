@@ -13,6 +13,7 @@ import taskImg from "../../../../assets/images/tasks-done.jpg";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { IoRefresh } from "react-icons/io5";
 import SubprojectSelectWithSearch from "../../../../components/SubprojectSelectWithSearch/SubprojectSelectWithSearch";
+import useListenToKeyStrokeInElement from "../../../../hooks/useListenToKeyStrokeInElement";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -316,7 +317,7 @@ const AddTaskScreen = ({
           parentTask: parentTaskAddedForToday,
           tasks: listsOfTasksForToday,
         })
-        setTasks(listsOfTasksForToday);  
+        setTasks(listsOfTasksForToday?.reverse());  
       }
       
       setTaskDetailForTodayLoaded(true);
@@ -360,6 +361,29 @@ const AddTaskScreen = ({
     }
   }, [editPage]);
 
+  useListenToKeyStrokeInElement(
+    ref,
+    'Enter',
+    () => {
+      if (
+        loading || 
+        disabled ||
+        taskStartTime.length < 1 ||
+        taskEndTime.length < 1 ||
+        taskName.length < 1 ||
+        optionValue.length < 1 ||
+        !subprojectSelected
+      ) return
+
+      if (isCreatingTask) {
+        addNewTask()
+        return
+      }
+      
+      updateTask()
+    }
+  )
+
   
   const addTaskForToday = async (startTime, endTime, task, details, updateTask=false) => {
     const today = new Date();
@@ -402,7 +426,7 @@ const AddTaskScreen = ({
         toast.success(res?.message);
 
         const copyOfTasksForToday = structuredClone(taskDetailForToday);
-        copyOfTasksForToday.tasks.push({...res.response, _id: res.current_task_id});
+        copyOfTasksForToday.tasks.unshift({...res.response, _id: res.current_task_id});
 
         setTaskDetailForToday(copyOfTasksForToday);
 
@@ -444,7 +468,7 @@ const AddTaskScreen = ({
         setLoading(false);
         setDisabled(false);
         
-        setTasks(listsOfTasksForToday);
+        setTasks(listsOfTasksForToday?.reverse());
         clearAllInputs();
         setTaskId("");
         
