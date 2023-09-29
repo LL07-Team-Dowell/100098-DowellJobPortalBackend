@@ -277,7 +277,15 @@ const AddTaskScreen = ({
   //     setDisabled(false)
 
   // }, [newTaskDetails])
-
+  useEffect(() => {
+    if (startTime) {
+      const [hours, minutes] = startTime.split(':').map(Number);
+      const newMinutes = (minutes + 15) % 60;
+      const newHours = hours + Math.floor((minutes + 15) / 60);
+      const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+      setEndTime(newEndTime);
+    }
+  }, [startTime])
   useEffect(() => {
     if (taskDetailForToday) {
       setTaskDetailForTodayLoading(false);
