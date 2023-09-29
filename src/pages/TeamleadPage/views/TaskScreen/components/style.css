@@ -20,7 +20,7 @@
     flex-direction: row;
 }
 
-button {
+/* button {
     border: none;
     padding: 0.6rem 1.2rem !important;
     border-radius: 0.2rem;
@@ -37,4 +37,4 @@ button:hover {
     border: 1px solid rgb(2, 68, 2);
     background-color: white;
     color: black;
-}
+} */

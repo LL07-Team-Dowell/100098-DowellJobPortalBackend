@@ -17,7 +17,8 @@ import { getAllTeams } from "../../../../../../../services/createMembersTasks";
 import Avatar from "react-avatar";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import axios from "axios"
+import axios from "axios";
+import { formatDateForAPI } from "../../../../../../../helpers/helpers";
 
 const TeamScreenThreads = ({ status, id }) => {
   const { currentUser } = useCurrentUserContext();
@@ -38,6 +39,8 @@ const TeamScreenThreads = ({ status, id }) => {
   const [reducerComment, forceUpdate] = useReducer((x) => x + 1, 0);
   const [reducerStatus, forceUpdateStatus] = useReducer((x) => x + 1, 0);
   const [statusLoading, setStatusLoading] = useState(false);
+  const [updateCommentInput, setUpdateCommentInput] = useState("");
+  const [updateComment, setUpdateComment] = useState([]);
 
   const handleChange = (e) => {
     setText(e.target.value);
@@ -87,8 +90,7 @@ const TeamScreenThreads = ({ status, id }) => {
         const inProgressThreads = sortedThreads.filter(
           (thread) =>
             thread.current_status === "In progress" ||
-            thread.current_status === "Created" ||
-            thread.current_status === undefined
+            thread.current_status === "Created"
         );
 
         setCompletedThreads(completedThreads);
@@ -99,27 +101,45 @@ const TeamScreenThreads = ({ status, id }) => {
       .catch((error) => {
         setLoading(false);
       });
-  }, [reducerComment, reducerStatus, undefined]);
+  }, [reducerComment, reducerStatus]);
 
   const addComment = async (text, id) => {
     console.log("addComment", text, id);
     setLoadingcmnt(true);
+
+    const newComment = {
+      created_by: currentUser.userinfo.username,
+      comment: text,
+      thread_id: id,
+    };
+
+    const updatedThreads = threads.slice();
+    const foundThreadBeingUpadted = updatedThreads.find(
+      (thread) => thread._id === id
+    );
+
     try {
-      const updatedThreads = await postComment({
-        created_by: currentUser.userinfo.username,
-        comment: text,
-        thread_id: id,
-        _id: crypto.randomUUID(),
-      });
-      console.log(updatedThreads);
-      setThreads(updatedThreads);
+      const newCommentRes = (await postComment(newComment)).data;
+      console.log(newCommentRes);
+      // setThreads(updatedThreads);
       toast.success("Comment added successfully");
       setLoadingcmnt(false);
+      setText("")
+
+      if (foundThreadBeingUpadted) {
+        foundThreadBeingUpadted.comments.data.push({
+          ...newComment,
+          created_date: formatDateForAPI(new Date(), "report"),
+          _id: newCommentRes.info.inserted_id
+        });
+        setThreads(updatedThreads);
+      }
     } catch (error) {
       console.log(error);
+      setLoadingcmnt(false);
+      toast.error('Dont like Ayoola')
     }
   };
-
 
   const editComment = (text, commentId, threadId) => {
     const updatedThreads = threads.map((thread) => {
@@ -163,10 +183,11 @@ const TeamScreenThreads = ({ status, id }) => {
     }));
   };
 
-  const onSubmit = (e, id) => {
+  const onSubmit = (e, id, submitBtnPressed = false) => {
     e.preventDefault();
+
+    if (submitBtnPressed) return addComment(text, id);
     addComment(text, id);
-    setText("");
   };
 
   const [teamdata, setTeamData] = useState([]);
@@ -755,14 +776,14 @@ const TeamScreenThreads = ({ status, id }) => {
                               <button
                                 disabled={isTextareaDisabled}
                                 className="action-btn"
-                                onClick={addComment}
+                                onClick={(e) => onSubmit(e, thread._id, true)}
                               >
                                 Comment
                               </button>
                             </form>
                           )}
                           {commentsVisibility[thread._id] && (
-                            <div>
+                            <div className="new__comments">
                               <h3
                                 style={{
                                   fontSize: "0.8rem",
@@ -804,17 +825,6 @@ const TeamScreenThreads = ({ status, id }) => {
                                             }
                                             className="comment-input"
                                           />
-                                          <button
-                                            onClick={() =>
-                                              saveEditedComment(
-                                                comment._id,
-                                                thread._id
-                                              )
-                                            }
-                                            className="action-btn"
-                                          >
-                                            Save
-                                          </button>
                                         </div>
                                       ) : (
                                         <div>

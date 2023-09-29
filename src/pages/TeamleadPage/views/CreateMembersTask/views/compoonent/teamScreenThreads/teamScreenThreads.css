@@ -256,6 +256,11 @@ textarea button:hover {
   border: 1px solid #005734;
 }
 
+.new__comments {
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
 @media screen and (max-width:468px) {
   .team-screen-threads {
     padding: 0;
