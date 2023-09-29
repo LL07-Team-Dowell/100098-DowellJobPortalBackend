@@ -27,6 +27,7 @@ const AddIssueScreen = ({
   const { currentUser } = useCurrentUserContext();
   const [selectedTeam, setSelectedTeam] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [issueTitle, setIssueTitle] = useState('');
   const navigate = useNavigate();
 
   // console.log(teams);
@@ -191,6 +192,13 @@ const AddIssueScreen = ({
             />
           </h1>
           <span>Enter Issue Title</span>
+          <input
+            type="text"
+            placeholder="Add title"
+            onChange={(e) => setIssueTitle(e.target.value)}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+
+          />
           <span className="selectProject">Enter Issue Details</span>
           <textarea
             placeholder="Enter Issue"
