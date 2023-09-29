@@ -34,16 +34,20 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const resp = await requestToUpdateTask(formData);
-            console.log("Response Data:", resp);
-            setFormData({
-                update_reason: ""
-            })
-            toast.success("Task request update created successfully!")
-            setShowModal(false);
-        } catch (error) {
-            toast.warning("Failed to update task");
+        if (!formData.update_reason) {
+            toast.warning("Please enter a reason!")
+        } else if (formData.update_reason) {
+            try {
+                const resp = await requestToUpdateTask(formData);
+                console.log("Response Data:", resp);
+                setFormData({
+                    update_reason: ""
+                })
+                toast.success("Task request update created successfully!")
+                setShowModal(false);
+            } catch (error) {
+                toast.warning("Failed to update task");
+            }
         }
     };
 
@@ -84,7 +88,7 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
                     >
                     </textarea>
                 </div>
-                <div className="buttons">
+                <div className="request-buttons">
                     <button>Submit</button>
                     <button onClick={() => setShowModal(false)}>Cancel</button>
                 </div>
