@@ -30,7 +30,7 @@ const AddIssueScreenB = ({
   const [selectedFile, setSelectedFile] = useState(null);
   console.log(teamId);
   const [createIssue, setCreateIssue] = useState({
-    thread: "",
+    thread_title: "",
     image: "",
     team_alerted_id: "",
     created_by: currentUser.userinfo.username,
@@ -174,7 +174,7 @@ const AddIssueScreenB = ({
           <span className="selectProject">Enter Issue Details</span>
           <textarea
             placeholder="Enter Issue"
-            name={"thread"}
+            name={"thread_title"}
             value={createIssue.thread}
             style={{ margin: 0, marginBottom: "0.8rem" }}
             onChange={(e) => handleChange(e.target.value, e.target.name)}
