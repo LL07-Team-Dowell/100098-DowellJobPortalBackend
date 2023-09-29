@@ -190,6 +190,7 @@ const AddIssueScreen = ({
               fontSize={"1.2rem"}
             />
           </h1>
+          <span>Enter Issue Title</span>
           <span className="selectProject">Enter Issue Details</span>
           <textarea
             placeholder="Enter Issue"
