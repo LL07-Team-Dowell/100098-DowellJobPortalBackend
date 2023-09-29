@@ -382,7 +382,7 @@ const AddTaskScreen = ({
       updateTask()
     }
   )
-
+  console.log({ taskStartTime });
 
   const addTaskForToday = async (startTime, endTime, task, details, updateTask = false) => {
     const today = new Date();
@@ -747,19 +747,19 @@ const AddTaskScreen = ({
                                       15 * 60000
                                     ).getHours()
                                   ) < 10
-                                      ? "0" +
+                                    ? "0" +
+                                    new Date(
                                       new Date(
-                                        new Date(
-                                          `${new Date().toDateString()} ${taskStartTime}`
-                                        ).getTime() +
-                                        15 * 60000
-                                      ).getHours()
-                                      : new Date(
-                                        new Date(
-                                          `${new Date().toDateString()} ${taskStartTime}`
-                                        ).getTime() +
-                                        15 * 60000
-                                      ).getHours()
+                                        `${new Date().toDateString()} ${taskStartTime}`
+                                      ).getTime() +
+                                      15 * 60000
+                                    ).getHours()
+                                    : new Date(
+                                      new Date(
+                                        `${new Date().toDateString()} ${taskStartTime}`
+                                      ).getTime() +
+                                      15 * 60000
+                                    ).getHours()
                                     }:${new Date(
                                       new Date(
                                         `${new Date().toDateString()} ${taskStartTime}`
