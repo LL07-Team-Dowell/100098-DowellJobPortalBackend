@@ -155,6 +155,7 @@ const AddIssueScreen = ({
         const response = await createThread({
           ...createIssue,
           image: imageUrl,
+          thread_title: issueTitle
         });
 
         if (response.status === 201) {
