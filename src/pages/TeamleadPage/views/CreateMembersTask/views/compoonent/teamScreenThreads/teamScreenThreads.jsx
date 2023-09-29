@@ -17,6 +17,7 @@ import { getAllTeams } from "../../../../../../../services/createMembersTasks";
 import Avatar from "react-avatar";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import axios from "axios"
 
 const TeamScreenThreads = ({ status, id }) => {
   const { currentUser } = useCurrentUserContext();
@@ -26,13 +27,6 @@ const TeamScreenThreads = ({ status, id }) => {
   const [threads, setThreads] = useState([]);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentText, setEditingCommentText] = useState("");
-  // const [deletingCommentId, setDeletingCommentId] = useState(null);
-  const [replyingCommentId, setReplyingCommentId] = useState(null);
-  const [replyingComment, setReplyingComment] = useState({
-    commentId: null,
-    threadId: null,
-    text: "",
-  });
   const [formVisibility, setFormVisibility] = useState({});
   const [commentsVisibility, setCommentsVisibility] = useState({});
   const [showModalStates, setShowModalStates] = useState({});
@@ -47,15 +41,6 @@ const TeamScreenThreads = ({ status, id }) => {
 
   const handleChange = (e) => {
     setText(e.target.value);
-  };
-
-  // handle reply input change
-  const handleReplyChange = (e) => {
-    const { name, value } = e.target;
-    setReplyingComment((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
   };
 
   useEffect(() => {
@@ -127,28 +112,16 @@ const TeamScreenThreads = ({ status, id }) => {
         _id: crypto.randomUUID(),
       });
       console.log(updatedThreads);
+      setThreads(updatedThreads);
       toast.success("Comment added successfully");
-      setText("");
       setLoadingcmnt(false);
     } catch (error) {
-      toast.error("Failed to add comment");
+      console.log(error);
     }
   };
 
+
   const editComment = (text, commentId, threadId) => {
-    // const updatedThreads = threads.slice();
-
-    // const threadToUpdate = updatedThreads.find(thread => thread._id === threadId);
-    // if (!threadToUpdate) return
-
-    // const updatedComments = threadToUpdate.comments.slice();
-    // const commentToEdit = updatedComments.find(comment => comment._id === commentId);
-    // if (!commentToEdit) return
-
-    // commentToEdit.comment = text;
-
-    // threadToUpdate.comments = updatedComments;
-
     const updatedThreads = threads.map((thread) => {
       if (thread._id === threadId) {
         const updatedComments = thread.comments.map((comment) =>

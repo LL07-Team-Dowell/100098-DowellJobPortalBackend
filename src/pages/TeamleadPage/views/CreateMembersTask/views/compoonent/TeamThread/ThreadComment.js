@@ -101,7 +101,7 @@ const ThreadComment = ({ comments, commentInput, user, threadId, loading }) => {
   };
   useEffect(() => {
     setUpdateComment([...comments].reverse());
-  }, []);
+  }, [comments]);
 
 
   console.log({ "updatecomment": updateComment });
@@ -118,7 +118,7 @@ const ThreadComment = ({ comments, commentInput, user, threadId, loading }) => {
       console.log(response);
       // Update the state with the new comment
       if (response.status == 201) {
-        setUpdateComment((prevComments) => [commentData, ...prevComments].reverse());
+        setUpdateComment((prevComments) => [commentData, ...prevComments]);
         setText("")
       }
       // Clear the input field and reset loading
@@ -133,13 +133,29 @@ const ThreadComment = ({ comments, commentInput, user, threadId, loading }) => {
   const handleUpdate = (comment) => {
     const document_id = comment._id;
     const created_by = comment.created_by;
+
+    // Make an API request to update the comment
     updateSingleComment({
       comment: updateCommentInput,
       document_id: document_id,
-      created_by: created_by
-    }).then(resp => console.log(resp))
-    setEditIndex(null)
-  }
+      created_by: created_by,
+    })
+      .then((resp) => {
+        console.log(resp);
+        if (resp.status === 200) {
+          // Update the state with the edited comment
+          setUpdateComment((prevComments) =>
+            prevComments.map((c) =>
+              c._id === comment._id ? { ...c, comment: updateCommentInput } : c
+            )
+          );
+          setEditIndex(null);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to update comment:", error.message);
+      });
+  };
 
 
   return (
