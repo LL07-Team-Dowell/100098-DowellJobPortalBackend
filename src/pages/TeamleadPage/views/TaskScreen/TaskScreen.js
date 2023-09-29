@@ -597,7 +597,7 @@ const TaskScreen = ({
                                         <Button
                                           text={"Request to update"}
                                           className={'approve__Task__Btn'}
-                                          handleClick={handleRequestTaskUpdateBtnClick}
+                                          handleClick={() => handleRequestTaskUpdateBtnClick(value1)}
                                         />
                                       </div>
                                     }

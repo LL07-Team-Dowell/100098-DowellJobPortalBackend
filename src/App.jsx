@@ -80,9 +80,10 @@ import IndividualTaskReports from "./pages/AdminPage/views/Reports/individualTas
 import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
 import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal";
 import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
+import { teamManagementProductName } from "./utils/utils";
 
 function App() {
-  // console.log = () => { };
+  console.log = () => { };
 
   const {
     currentUser,
@@ -125,7 +126,7 @@ function App() {
     setReportsUserDetails
   );
 
-  useTitle("Team Management");
+  useTitle(teamManagementProductName);
 
   if (loading) return <LoadingPage />;
   console.log("CURRENT USER", currentUser);
@@ -406,7 +407,6 @@ function App() {
       );
     }
 
-
     if (
       reportsUserDetails.reportsViewPermitted ===
       reportOptionsPermitted.leaderboard_report
@@ -446,7 +446,7 @@ function App() {
     !currentUser.portfolio_info ||
     currentUser.portfolio_info.length < 1 ||
     !currentUser.portfolio_info.find(
-      (item) => item.product === "Team Management"
+      (item) => item.product === teamManagementProductName
     )
   ) {
     return (
@@ -574,10 +574,10 @@ function App() {
     (currentUser.portfolio_info &&
       currentUser.portfolio_info.length > 0 &&
       currentUser.portfolio_info.find(
-        (item) => item.product === "Team Management"
+        (item) => item.product === teamManagementProductName
       ) &&
       currentUser.portfolio_info.find(
-        (item) => item.product === "Team Management"
+        (item) => item.product === teamManagementProductName
       ).member_type === "owner" &&
       !currentUser.settings_for_profile_info?.fakeSuperUserInfo) ||
     (currentUser.settings_for_profile_info &&
@@ -683,7 +683,7 @@ function App() {
           }
         />
         <Route
-          path="/report/leaderboard-report"
+          path='/report/leaderboard-report'
           element={
             <JobContextProvider>
               <LeaderboardReport />
@@ -736,7 +736,12 @@ function App() {
           path='/team-screen-member/:id/team-members'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout adminView={true} hideSearchBar={true} adminAlternativePageActive={true} pageTitle={'Teams'}>
+              <StaffJobLandingLayout
+                adminView={true}
+                hideSearchBar={true}
+                adminAlternativePageActive={true}
+                pageTitle={"Teams"}
+              >
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamScreenMembers />
@@ -751,7 +756,12 @@ function App() {
           path='/team-screen-member/:id/team-tasks'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout adminView={true} hideSearchBar={true} adminAlternativePageActive={true} pageTitle={'Teams'}>
+              <StaffJobLandingLayout
+                adminView={true}
+                hideSearchBar={true}
+                adminAlternativePageActive={true}
+                pageTitle={"Teams"}
+              >
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamScreenTasks />
@@ -765,7 +775,12 @@ function App() {
           path='/team-screen-member/:id/team-issues'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout adminView={true} hideSearchBar={true}  adminAlternativePageActive={true} pageTitle={'Teams'}>
+              <StaffJobLandingLayout
+                adminView={true}
+                hideSearchBar={true}
+                adminAlternativePageActive={true}
+                pageTitle={"Teams"}
+              >
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamThread />
@@ -855,16 +870,6 @@ function App() {
         </Route>
 
         <Route path='*' element={<ErrorPage />} />
-        <Route
-          path='/new-task-screen'
-          element={
-            <>
-              <HrJobScreenAllTasksContextProvider>
-                <HrTasks />
-              </HrJobScreenAllTasksContextProvider>
-            </>
-          }
-        />
       </Routes>
     );
   }

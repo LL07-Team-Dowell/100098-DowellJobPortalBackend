@@ -26,6 +26,7 @@ import { IoCopyOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import { testingRoles } from "../../../../utils/testingRoles";
+import { teamManagementProductName } from "../../../../utils/utils";
 
 const LandingPage = ({ subAdminView }) => {
   const [stateTrackingProgress, setstateTrackingProgress] = useState(false);
@@ -215,7 +216,7 @@ const LandingPage = ({ subAdminView }) => {
 
     if (!currentSessionId) return;
     const teamManagementProduct = currentUser?.portfolio_info.find(
-      (item) => item.product === "Team Management"
+      (item) => item.product === teamManagementProductName
     );
     if (!teamManagementProduct) return;
 
@@ -561,3 +562,6 @@ const LandingPage = ({ subAdminView }) => {
 };
 
 export default LandingPage;
+export function createArrayWithLength(length) {
+  return Array.from({ length }, (_, index) => index);
+}

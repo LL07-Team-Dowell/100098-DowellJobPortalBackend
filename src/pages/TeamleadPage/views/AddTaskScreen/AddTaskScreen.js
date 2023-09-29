@@ -13,6 +13,7 @@ import taskImg from "../../../../assets/images/tasks-done.jpg";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { IoRefresh } from "react-icons/io5";
 import SubprojectSelectWithSearch from "../../../../components/SubprojectSelectWithSearch/SubprojectSelectWithSearch";
+import useListenToKeyStrokeInElement from "../../../../hooks/useListenToKeyStrokeInElement";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -74,12 +75,12 @@ const AddTaskScreen = ({
   );
   //   lest important functions
   const clearAllInputs = () => {
-    setTaskStartTime("");
+    // setTaskStartTime("");
     setTaskEndTime("");
-    setTaskName("");
-    setDetails("");
+    // setTaskName("");
+    // setDetails("");
     setoptionValue("");
-    setTaskType("");
+    // setTaskType("");
     setSubprojectSelected(null);
   };
   const fillAllInputs = (taskStartTime, taskEndTime, taskName, details, project, taskType, subproject) => {
@@ -143,6 +144,7 @@ const AddTaskScreen = ({
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
       if (duration <= 15) {
+        if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
         if (!taskDetailForToday) return addTaskForToday(taskStartTime, taskEndTime, taskName, details);
         updateTasksForToday(taskStartTime, taskEndTime, taskName, details);
       } else {
@@ -159,6 +161,8 @@ const AddTaskScreen = ({
   const updateTask = async () => {
     if (inputsAreFilled) {
       if (duration <= 15) {
+        if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
+
         setLoading(true);
         setDisabled(true);
         
@@ -313,7 +317,7 @@ const AddTaskScreen = ({
           parentTask: parentTaskAddedForToday,
           tasks: listsOfTasksForToday,
         })
-        setTasks(listsOfTasksForToday);  
+        setTasks(listsOfTasksForToday?.reverse());  
       }
       
       setTaskDetailForTodayLoaded(true);
@@ -357,6 +361,29 @@ const AddTaskScreen = ({
     }
   }, [editPage]);
 
+  useListenToKeyStrokeInElement(
+    ref,
+    'Enter',
+    () => {
+      if (
+        loading || 
+        disabled ||
+        taskStartTime.length < 1 ||
+        taskEndTime.length < 1 ||
+        taskName.length < 1 ||
+        optionValue.length < 1 ||
+        !subprojectSelected
+      ) return
+
+      if (isCreatingTask) {
+        addNewTask()
+        return
+      }
+      
+      updateTask()
+    }
+  )
+
   
   const addTaskForToday = async (startTime, endTime, task, details, updateTask=false) => {
     const today = new Date();
@@ -396,8 +423,10 @@ const AddTaskScreen = ({
       if (updateTask) {
         res = (await updateNewCandidateTaskV2(dataToPost, taskDetailForToday?.parentTask?._id)).data;
 
+        toast.success(res?.message);
+
         const copyOfTasksForToday = structuredClone(taskDetailForToday);
-        copyOfTasksForToday.tasks.push({...res.response, _id: res.current_task_id});
+        copyOfTasksForToday.tasks.unshift({...res.response, _id: res.current_task_id});
 
         setTaskDetailForToday(copyOfTasksForToday);
 
@@ -429,6 +458,8 @@ const AddTaskScreen = ({
           taskRes.task
         ]
 
+        toast.success(res?.message);
+
         setTaskDetailForToday({
           parentTask: parentTaskAddedForToday,
           tasks: listsOfTasksForToday,
@@ -437,7 +468,7 @@ const AddTaskScreen = ({
         setLoading(false);
         setDisabled(false);
         
-        setTasks(listsOfTasksForToday);
+        setTasks(listsOfTasksForToday?.reverse());
         clearAllInputs();
         setTaskId("");
         
@@ -744,14 +775,16 @@ const AddTaskScreen = ({
                     </div>
                     <div className="task__Item">
                       <span className="selectProject">Work log</span>
-                      <input
+                      <textarea
                         type={"text"}
-                        placeholder={"work log"}
+                        placeholder={"Work log"}
                         value={taskName}
-                        style={{ margin: 0, marginBottom: "0.8rem" }}
+                        style={{ margin: 0, marginBottom: "0rem" }}
                         onChange={({ target }) => setTaskName(target.value)}
                         readOnly={loading || !taskDetailForTodayLoaded ? true : false}
-                      />
+                        rows={3}
+                        className="log__textarea"
+                      ></textarea>
                     </div>
                     <div className="task__Item">
                       <span className="selectProject">Work log type</span>

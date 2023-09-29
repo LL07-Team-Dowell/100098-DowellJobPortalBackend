@@ -116,7 +116,8 @@
   font-weight: 500;
 }
 
-.add__New__Task__Container input:read-only {
+.add__New__Task__Container input:read-only,
+.add__New__Task__Container textarea:read-only {
   filter: brightness(0.92);
 }
 
@@ -266,6 +267,10 @@
   .add__New__Task__Container input,
   .add__New__Task__Container textarea {
     padding: 2%;
+  }
+
+  .add__New__Task__Container textarea.log__textarea {
+    padding: 6% 4%;
   }
 
   .add__New__Task__Container .add__Task__Btn {

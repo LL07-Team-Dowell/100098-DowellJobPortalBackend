@@ -51,7 +51,7 @@
     }
 
     .add__New__Task__Container {
-        width: 85%;
+        width: 95%;
         padding: 4% 5%;
     }
 
@@ -65,12 +65,12 @@
     }
 
     .add__New__Task__Container h1.title__Item {
-        margin-bottom: 0;
+        margin-bottom: 1rem;
     }
 
     .add__New__Task__Container .add__Task__Btn {
         padding: 5%;
-        margin-top: 0;
+        margin-top: 2rem;
         margin-bottom: 1rem;
     }
 
@@ -85,6 +85,13 @@
         flex-direction: column;
     }
 
+    .add__New__Task__Container .task__Timing__Wrapper .task__Item {
+        margin: 0.3rem 0;
+    }
+
+    .add__New__Task__Container .add__Btn__Task {
+        margin-top: 0.8rem;
+    }
 }
 
 @media screen and (max-width:500px) {

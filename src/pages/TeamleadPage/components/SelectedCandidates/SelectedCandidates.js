@@ -5,11 +5,26 @@ import { IoMdRefresh } from "react-icons/io";
 
 import "./style.css";
 import { MdOutlineWorkOutline, MdHourglassDisabled } from "react-icons/md";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useClickOutside from "../../../../hooks/useClickOutside";
+import { changeToTitleCase } from "../../../../helpers/helpers";
+import { AiOutlineFilter } from "react-icons/ai";
 
 
-const SelectedCandidates = ({ showTasks, candidatesCount, tasksCount, hrPageActive, title, className, sortActive, handleSortOptionClick, hrAttendancePageActive, handleRefresh }) => {
+const SelectedCandidates = ({ 
+    showTasks, 
+    candidatesCount, 
+    tasksCount, 
+    hrPageActive, 
+    title, 
+    className, 
+    sortActive, 
+    handleSortOptionClick, 
+    hrAttendancePageActive, 
+    handleRefresh,
+    availableSortOptions,
+    hideSortOptions,
+}) => {
     const [showSortOptions, setShowSortOptions] = useState(false);
     const sortOptionsRef = useRef(null);
 
@@ -61,11 +76,14 @@ const SelectedCandidates = ({ showTasks, candidatesCount, tasksCount, hrPageActi
                     <p>{ showTasks ? `Work log added by ${tasksCount ? tasksCount : '0'} candidates`: `${candidatesCount ? candidatesCount : '0'} candidates are selected for the roles` }</p>    
                 </div>
             }
- 
+            {
+                hideSortOptions ? <div className="sort-candidates-container"></div>
+                :
                 <div className="sort-candidates-container" onClick={() => {setShowSortOptions(true)}}>
                     <FilterIcon />
                     <p>Sort</p>
                 </div>
+            }
 
 
             {
@@ -77,18 +95,30 @@ const SelectedCandidates = ({ showTasks, candidatesCount, tasksCount, hrPageActi
                             <p>Sort By</p>
                             <div className="vertical-line"></div>
                             <ul>
-                                <li onClick={() => handleOptionClick("project")}>
-                                    <span>Project</span>
-                                    <MdOutlineWorkOutline />
-                                </li>
-                                <li onClick={() => handleOptionClick("date")}>
-                                    <span>Date</span>
-                                    <IoCalendarClearOutline />
-                                </li>
+                                {
+                                    availableSortOptions && Array.isArray(availableSortOptions) ?
+                                    React.Children.toArray(availableSortOptions.map(option => {
+                                        return <li onClick={() => handleOptionClick(option)}>
+                                            <span>{changeToTitleCase(option)}</span>
+                                            <AiOutlineFilter />
+                                        </li>
+                                    }))
+                                    :
+                                    <>
+                                        <li onClick={() => handleOptionClick("project")}>
+                                            <span>Project</span>
+                                            <MdOutlineWorkOutline />
+                                        </li>
+                                        <li onClick={() => handleOptionClick("date")}>
+                                            <span>Date</span>
+                                            <IoCalendarClearOutline />
+                                        </li>     
+                                    </>
+                                }
                                 <li onClick={() => handleOptionClick(null)}>
                                     <span>Reset</span>
                                     <MdHourglassDisabled />
-                                </li>
+                                </li>  
                             </ul>
                         </div>
                     </div>

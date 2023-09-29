@@ -48,6 +48,7 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
             } catch (error) {
                 toast.warning("Failed to update task");
             }
+
         }
     };
 
@@ -78,7 +79,7 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
                     />
                 </div>
                 <div>
-                    <label htmlFor="description">Reason why you faild to update:</label>
+                    <label htmlFor="description">Reason why you failed to update:</label>
                     <textarea
                         id="description"
                         name="update_reason"

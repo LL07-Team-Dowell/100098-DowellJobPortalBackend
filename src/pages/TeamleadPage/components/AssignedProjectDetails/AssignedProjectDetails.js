@@ -5,7 +5,7 @@ import "./style.css";
 
 
 const AssignedProjectDetails = ({ showTask, assignedProject, availableProjects, handleSelectionClick, removeDropDownIcon, hrAttendancePageActive }) => {
-console.log(assignedProject);
+    
     return <>
         <div className="project-details-container">
             {
@@ -13,7 +13,17 @@ console.log(assignedProject);
             }
             <div className={`project-info-container ${showTask ? 'flex-end' : ''}`}>
                 <p>Project</p>
-                <DropdownButton currentSelection={assignedProject ? assignedProject : 'None selected'} selections={availableProjects} handleSelectionClick={handleSelectionClick} removeDropDownIcon={removeDropDownIcon} />
+                <DropdownButton 
+                    currentSelection={assignedProject ? assignedProject : 'None selected'} 
+                    selections={
+                        availableProjects && Array.isArray(availableProjects) ?
+                            availableProjects.sort((a, b) => a.localeCompare(b))
+                        :
+                        []
+                    } 
+                    handleSelectionClick={handleSelectionClick} 
+                    removeDropDownIcon={removeDropDownIcon} 
+                />
             </div>
         </div>
     </>

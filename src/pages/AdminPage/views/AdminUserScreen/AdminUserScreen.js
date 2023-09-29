@@ -5,6 +5,7 @@ import "./style.css";
 import { getUserLiveStatus, postUserLiveStatus } from "../../../../services/commonServices";
 import React from "react";
 import { teamManagementProductName } from "../../../../utils/utils"; 
+import ClaimVouchar from "../../../TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 
 const AdminUserScreen = ({subAdminView}) => {
     const [success ,setsuccsess] = React.useState(false) ;  
@@ -28,7 +29,9 @@ const AdminUserScreen = ({subAdminView}) => {
     return <>
         <StaffJobLandingLayout adminView={true} handleNavIconClick={() => navigate("/add-job")} adminAlternativePageActive={true} pageTitle={"User"} subAdminView={subAdminView}>
         <div className="user__Page__Container admin">
-
+            {
+                <ClaimVouchar />
+            }
             <div className="user__Intro__Item__Container">
                 <div className="user__Intro__Item">
                     <h2>User Name</h2>
