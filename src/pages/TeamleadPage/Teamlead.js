@@ -34,7 +34,7 @@ import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { IoMdRefresh } from "react-icons/io";
 import ClaimVouchar from "./views/ClaimVouchar/ClaimVouchar";
 import AddPage from "../GroupLeadPage/components/AddPage";
-import { getAllOnBoardedCandidate, getCandidateTasksOfTheDayV2 } from "../../services/candidateServices";
+import { getCandidateTasksOfTheDayV2 } from "../../services/candidateServices";
 import { extractNewTasksAndAddExtraDetail } from "./util/extractNewTasks";
 import { createArrayWithLength } from "../AdminPage/views/Landingpage/LandingPage";
 
@@ -77,9 +77,6 @@ const Teamlead = ({ isGrouplead }) => {
   const [showTaskLandingPage, setShowTaskLandingPage] = useState(true);
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
-  const [ currentSortOption, setCurrentSortOption ] = useState(null);
-  const [ sortResults, setSortResults ] = useState([]);
-
   const handleSearch = (value) => {
     const toAnagram = (word) => {
       return word.toLowerCase().split("").reverse().join("");
@@ -127,8 +124,7 @@ const Teamlead = ({ isGrouplead }) => {
     } else if (section === "task") {
       setFilteredTasks(
         tasksToDisplayForLead.filter((task) =>
-          (typeof task.applicant === 'string' && task.applicant && task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())) ||
-          (typeof task.applicantName === 'string' && task.applicantName && task.applicantName.toLocaleLowerCase().includes(value.toLocaleLowerCase()))
+          typeof task.applicant === 'string' && task.applicant && task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
         )
       );
 
@@ -172,7 +168,6 @@ const Teamlead = ({ isGrouplead }) => {
         getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
         getCandidateTasksV2(requestDataToPost2),
         getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id, currentUser.portfolio_info[0].data_type),
-        getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id),
       ])
         .then(async (res) => {
 
@@ -181,20 +176,6 @@ const Teamlead = ({ isGrouplead }) => {
             setCandidatesDataLoaded(true);
             return;
           }
-          
-          const onboardingCandidates = res[3]?.data?.response?.data
-          .filter(
-            (application) =>
-              application.data_type === currentUser?.portfolio_info[0].data_type
-          );
-          
-          dispatchToCandidatesData({
-            type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES,
-            payload: {
-              stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
-              value: onboardingCandidates,
-            },
-          });
 
           const tasksToDisplay = res[0]?.data?.response?.data
             ?.filter(
@@ -202,7 +183,7 @@ const Teamlead = ({ isGrouplead }) => {
                 task.data_type === currentUser?.portfolio_info[0]?.data_type
             )
           const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
-          const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task, false, onboardingCandidates);
+          const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task);
 
           let updatedTasksForOtherProjects;
 
@@ -220,7 +201,7 @@ const Teamlead = ({ isGrouplead }) => {
 
               const res = (await getCandidateTasksV2(dataToPost)).data;
 
-              const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task, false, onboardingCandidates);
+              const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task);
               return extractedTasks;
             }))
           }
@@ -327,7 +308,7 @@ const Teamlead = ({ isGrouplead }) => {
         console.log("tasksToDisplay", tasksToDisplay);
 
         const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
-        const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[3]?.data?.task_details, res[3]?.data?.task, false, onboardingCandidates);
+        const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[3]?.data?.task_details, res[3]?.data?.task);
 
         let updatedTasksForOtherProjects;
 
@@ -345,7 +326,7 @@ const Teamlead = ({ isGrouplead }) => {
 
             const res = (await getCandidateTasksV2(dataToPost)).data;
 
-            const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task, false, onboardingCandidates);
+            const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task);
             return extractedTasks;
           }))
         }
@@ -436,16 +417,9 @@ const Teamlead = ({ isGrouplead }) => {
       Promise.all([
         getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
         getCandidateTasksV2(dataToPost),
-        getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id),
       ])
         .then(async (res) => {
           console.log("res", res);
-
-          const onboardingCandidates = res[2]?.data?.response?.data
-          ?.filter(
-            (application) =>
-              application.data_type === currentUser?.portfolio_info[0].data_type
-          );
 
           const tasksToDisplay = res[0]?.data?.response?.data
             ?.filter(
@@ -455,7 +429,7 @@ const Teamlead = ({ isGrouplead }) => {
           console.log("tasksToDisplay", tasksToDisplay);
 
           const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
-          const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task, false, onboardingCandidates);
+          const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task);
 
           let updatedTasksForOtherProjects;
 
@@ -473,7 +447,7 @@ const Teamlead = ({ isGrouplead }) => {
 
               const res = (await getCandidateTasksV2(dataToPost2)).data;
 
-              const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task, false, onboardingCandidates);
+              const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task);
               return extractedTasks;
             }))
           }
@@ -517,71 +491,6 @@ const Teamlead = ({ isGrouplead }) => {
       )
     )
   }, [userTasks, currentSelectedProjectForLead])
-
-  useEffect(() => {
-
-    if (!currentSortOption) return;
-
-    const categories = {};
-    const newArray = [];
-
-    const getCategoryArray = (propertyName, date) => {
-
-      tasksToDisplayForLead.forEach(task => {
-        if (date) {
-
-          if (categories.hasOwnProperty(new Date(task[`${propertyName}`]).toDateString())) return
-
-          categories[`${new Date(task[propertyName]).toDateString()}`] = new Date(task[`${propertyName}`]).toDateString();
-          return
-
-        }
-
-        if (!categories.hasOwnProperty(task[`${propertyName}`])){
-          categories[`${task[propertyName]}`] = task[`${propertyName}`]
-        }
-      })
-
-      let categoryObj = {};
-
-      Object.keys(categories || {}).forEach(key => {
-
-        if (key === "undefined") return;
-        
-        if (date) {
-          const matchingTasks = tasksToDisplayForLead.filter(task => new Date(task[`${propertyName}`]).toDateString() === key);
-          categoryObj.name = key;
-          categoryObj.data = matchingTasks;
-          newArray.push(categoryObj);
-          categoryObj = {};    
-          return
-        }
-        
-        const matchingTasks = tasksToDisplayForLead.filter(task => task[`${propertyName}`] === key);
-        categoryObj.name = key;
-        categoryObj.data = matchingTasks;
-        newArray.push(categoryObj);
-        categoryObj = {};
-      })
-
-      return newArray;
-    }
-
-    switch (currentSortOption) {
-      case "applicant":
-          const applicantCategoryData = getCategoryArray('applicantName');
-          setSortResults(applicantCategoryData);
-          break;
-      case "date":
-        const dateCategoryData = getCategoryArray("task_created_date", true);
-        setSortResults(dateCategoryData.sort((a, b) => new Date(b.name) - new Date(a.name)));
-        break;
-      default:
-        setSortResults([]);
-        break;
-    }
-
-  }, [currentSortOption])
 
   const handleEditTaskBtnClick = (currentData) => {
     setEditTaskActive(true);
@@ -676,9 +585,6 @@ const Teamlead = ({ isGrouplead }) => {
     }
 
     setLoading(true);
-    setCurrentSortOption(null);
-    setSortResults([]);
-
     Promise.all([
       getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
       getCandidateTasksV2(dataToPost),
@@ -694,7 +600,7 @@ const Teamlead = ({ isGrouplead }) => {
         console.log("tasksToDisplay", tasksToDisplay);
 
         const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
-        const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task, false, candidatesData.onboardingCandidates);
+        const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task);
 
         let updatedTasksForOtherProjects;
 
@@ -712,7 +618,7 @@ const Teamlead = ({ isGrouplead }) => {
 
             const res = (await getCandidateTasksV2(dataToPost2)).data;
 
-            const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task, false, candidatesData.onboardingCandidates);
+            const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task);
             return extractedTasks;
           }))
         }
@@ -759,18 +665,12 @@ const Teamlead = ({ isGrouplead }) => {
               "task" :
               "applicant"
             : section === "task"
-              ? showTaskLandingPage ?
-                isGrouplead ? 
-                  'applicant'
-                  :
-                  "" 
-                :
-                "applicant"
+              ? "work log"
               : rehireTabActive
                 ? "rehire"
                 : "applicant"
         }
-        hideSearchBar={((isGrouplead && (section === "home" || section === undefined)) || section === "user") ? true : showTaskLandingPage && !isGrouplead ? true : false}
+        hideSearchBar={((isGrouplead && (section === "home" || section === undefined)) || section === "user") ? true : false}
         isGrouplead={isGrouplead}
       >
         {
@@ -946,7 +846,6 @@ const Teamlead = ({ isGrouplead }) => {
                                 : 0
                           }
                           availableSortOptions={sortOptionsForLead}
-                          hideSortOptions={true}
                         />
 
                         <button
@@ -1107,23 +1006,11 @@ const Teamlead = ({ isGrouplead }) => {
                       <SelectedCandidates
                         showTasks={true}
                         tasksCount={
-                          currentSortOption ? 
-                            searchValue.length > 0 ?
-                              sortResults.filter(
-                                item => 
-                                  item.data.find(
-                                    task => typeof task?.applicantName === 'string' && task?.applicantName?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
-                              ).length
-                            :
-                            sortResults.length 
-                          : 
                           searchValue.length >= 1
                             ? filteredTasks.length
                             : tasksToDisplayForLead.length
                         }
                         availableSortOptions={sortOptionsForLead}
-                        sortActive={currentSortOption ? true : false}
-                        handleSortOptionClick={(data) => setCurrentSortOption(data)}
                       />
                       <div className="project__Select__Wrapper">
                         <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
@@ -1155,7 +1042,7 @@ const Teamlead = ({ isGrouplead }) => {
                         {section === "task" ? (
                           searchValue.length >= 1 ? (
                             React.Children.toArray(
-                              filteredTasks.map((dataitem, index) => {
+                              filteredTasks.map((dataitem) => {
                                 return (
                                   <JobCard
                                     buttonText={"View"}
@@ -1175,58 +1062,13 @@ const Teamlead = ({ isGrouplead }) => {
                                     }
                                     handleBtnClick={handleViewTaskBtnClick}
                                     taskView={true}
-                                    className={index % 2 !== 0 ? 'remove__mar' : ''}
                                   />
                                 );
                               })
                             )
                           ) : (
-                            currentSortOption ? (
-                              <>
-                                {
-                                  React.Children.toArray(
-                                    sortResults
-                                    .slice(cardIndex, cardIndex + 6)
-                                    .map(result => {
-                                    return <>
-                                      <p className='lead__sort__Title__Item'><b>{result.name}</b></p>
-                                      <>
-                                        {
-                                          React.Children.toArray(result.data.map((dataitem, index) => {
-                                            return <JobCard
-                                              buttonText={"View"}
-                                              candidateCardView={true}
-                                              candidateData={dataitem}
-                                              jobAppliedFor={
-                                                jobs.find(
-                                                  (job) =>
-                                                    job.job_number === dataitem.job_number
-                                                )
-                                                  ? jobs.find(
-                                                    (job) =>
-                                                      job.job_number ===
-                                                      dataitem.job_number
-                                                  ).job_title
-                                                  : ""
-                                              }
-                                              handleBtnClick={handleViewTaskBtnClick}
-                                              taskView={true}
-                                              className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                            />
-                                          }))
-                                        }
-                                      </>
-                                      <br />
-                                    </>
-                                  }))
-                                }
-                              </>
-                            )
-                            :
                             React.Children.toArray(
-                              tasksToDisplayForLead
-                              .slice(cardIndex, cardIndex + 6)
-                              .map((dataitem, index) => {
+                              tasksToDisplayForLead.map((dataitem) => {
                                 return (
                                   <JobCard
                                     buttonText={"View"}
@@ -1246,7 +1088,6 @@ const Teamlead = ({ isGrouplead }) => {
                                     }
                                     handleBtnClick={handleViewTaskBtnClick}
                                     taskView={true}
-                                    className={index % 2 !== 0 ? 'remove__mar' : ''}
                                   />
                                 );
                               })
@@ -1255,30 +1096,6 @@ const Teamlead = ({ isGrouplead }) => {
                         ) : (
                           <></>
                         )}
-                        {
-                          section === 'task' ? <div className='JobsChanger_containter'>
-                            {createArrayWithLength(
-                              currentSortOption ?
-                                Math.ceil(sortResults.length / 6)
-                              :
-                              searchValue.length >= 1 ?
-                                Math.ceil(filteredTasks.length / 6)
-                              :
-                              Math.ceil(tasksToDisplayForLead.length / 6)
-                            ).map((s, index) => (
-                              <button
-                                className={s !== cardIndex ? "active" : "desactive"}
-                                onClick={() => {
-                                  setCardGroupNumber(index * 4);
-                                  setCardIndex(index);
-                                }}
-                                key={`${index}_button`}
-                              >
-                                {index + 1}
-                              </button>
-                            ))}
-                          </div> : <></>
-                        }
                       </div>
                     </>
                     :
@@ -1309,23 +1126,11 @@ const Teamlead = ({ isGrouplead }) => {
                         <SelectedCandidates
                           showTasks={true}
                           tasksCount={
-                            currentSortOption ? 
-                              searchValue.length > 0 ?
-                                sortResults.filter(
-                                  item => 
-                                    item.data.find(
-                                      task => typeof task?.applicantName === 'string' && task?.applicantName?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
-                                ).length
-                              :
-                              sortResults.length 
-                            : 
                             searchValue.length >= 1
                               ? filteredTasks.length
                               : tasksToDisplayForLead.length
                           }
                           availableSortOptions={sortOptionsForLead}
-                          sortActive={currentSortOption ? true : false}
-                          handleSortOptionClick={(data) => setCurrentSortOption(data)}
                         />
                         <div className="project__Select__Wrapper">
                           <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
@@ -1360,7 +1165,7 @@ const Teamlead = ({ isGrouplead }) => {
                                 {React.Children.toArray(
                                   filteredTasks
                                     .slice(cardIndex, cardIndex + 6)
-                                    .map((dataitem, index) => {
+                                    .map((dataitem) => {
                                       return (
                                         <JobCard
                                           buttonText={"View"}
@@ -1380,7 +1185,6 @@ const Teamlead = ({ isGrouplead }) => {
                                           }
                                           handleBtnClick={handleViewTaskBtnClick}
                                           taskView={true}
-                                          className={index % 2 !== 0 ? 'remove__mar' : ''}
                                         />
                                       );
                                     })
@@ -1406,52 +1210,11 @@ const Teamlead = ({ isGrouplead }) => {
 
                               (
                                 <>
-                                  {
-                                  currentSortOption ? <>
-                                    {
-                                      React.Children.toArray(
-                                        sortResults
-                                        .slice(cardIndex, cardIndex + 6)
-                                        .map(result => {
-                                        return <>
-                                          <p className='lead__sort__Title__Item'><b>{result.name}</b></p>
-                                          <>
-                                            {
-                                              React.Children.toArray(result.data.map((dataitem, index) => {
-                                                return <JobCard
-                                                  buttonText={"View"}
-                                                  candidateCardView={true}
-                                                  candidateData={dataitem}
-                                                  jobAppliedFor={
-                                                    jobs.find(
-                                                      (job) =>
-                                                        job.job_number === dataitem.job_number
-                                                    )
-                                                      ? jobs.find(
-                                                        (job) =>
-                                                          job.job_number ===
-                                                          dataitem.job_number
-                                                      ).job_title
-                                                      : ""
-                                                  }
-                                                  handleBtnClick={handleViewTaskBtnClick}
-                                                  taskView={true}
-                                                  className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                                />
-                                              }))
-                                            }
-                                          </>
-                                          <br />
-                                        </>
-                                      }))
-                                    }
-                                  </> 
-                                  :
-                                  React.Children.toArray(
+                                  {React.Children.toArray(
                                     // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
                                     tasksToDisplayForLead
                                       .slice(cardIndex, cardIndex + 6)
-                                      .map((dataitem, index) => {
+                                      .map((dataitem) => {
                                         return (
                                           <JobCard
                                             buttonText={"View"}
@@ -1471,7 +1234,6 @@ const Teamlead = ({ isGrouplead }) => {
                                             }
                                             handleBtnClick={handleViewTaskBtnClick}
                                             taskView={true}
-                                            className={index % 2 !== 0 ? 'remove__mar' : ''}
                                           />
                                         );
 
@@ -1479,9 +1241,6 @@ const Teamlead = ({ isGrouplead }) => {
                                   )}
                                   <div className='JobsChanger_containter'>
                                     {createArrayWithLength(
-                                      currentSortOption ?
-                                        Math.ceil(sortResults.length / 6)
-                                      :
                                       Math.ceil(tasksToDisplayForLead.length / 6)
                                     ).map((s, index) => (
                                       <button
