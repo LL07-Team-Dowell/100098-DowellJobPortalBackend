@@ -6435,8 +6435,13 @@ class Generate_Report(APIView):
                     except KeyError:
                         t["project"] = "None"
                         projects.append(t["project"])
-                data = {user: {} for user in tasks_added_by}
-                for user in tasks_added_by:
+                response = dowellconnection(
+                    *candidate_management_reports, "fetch", field, update_field
+                )
+                total = [res for res in json.loads(response)["data"]]
+                hired = [res for res in total if res["status"]=="hired"]
+                data = {user["username"]: {} for user in hired}
+                for user in data:
                     data[user] = {
                         "tasks": tasks_added_by.count(user),
                         "status": "Passed"
