@@ -23,6 +23,7 @@ const SelectedCandidates = ({
     hrAttendancePageActive, 
     handleRefresh,
     availableSortOptions,
+    hideSortOptions,
 }) => {
     const [showSortOptions, setShowSortOptions] = useState(false);
     const sortOptionsRef = useRef(null);
@@ -75,11 +76,14 @@ const SelectedCandidates = ({
                     <p>{ showTasks ? `Work log added by ${tasksCount ? tasksCount : '0'} candidates`: `${candidatesCount ? candidatesCount : '0'} candidates are selected for the roles` }</p>    
                 </div>
             }
- 
+            {
+                hideSortOptions ? <div className="sort-candidates-container"></div>
+                :
                 <div className="sort-candidates-container" onClick={() => {setShowSortOptions(true)}}>
                     <FilterIcon />
                     <p>Sort</p>
                 </div>
+            }
 
 
             {
