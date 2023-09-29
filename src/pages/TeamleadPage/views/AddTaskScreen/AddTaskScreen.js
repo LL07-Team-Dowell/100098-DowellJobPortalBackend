@@ -107,7 +107,7 @@ const AddTaskScreen = ({
     );
     fillAllInputs(start_time, end_time, task, details, project, task_type, subproject);
   };
-
+  console.log({ taskStartTime })
   // const addSingleTask = (start_time, end_time, taskName, details, _id) => {
   //   setTasks([
   //     ...tasks,
