@@ -66,16 +66,17 @@
     margin-left: 5%;
 }
 
-.candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn {
-    padding: 15% 10%;
+.candidate-task-container .single__Task__Itemm .single__Task__Itemm__action .dropdown-btn {
+    padding: 0.8rem 1rem;
     width: 100%;
     white-space: nowrap;
-    margin: 5% 0;
+    /* margin: 5% 0; */
     justify-content: center;
     transition: 0.35s ease-in-out;
+    margin-left: 0;
 }
 
-.candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn.task__Active {
+.candidate-task-container .single__Task__Itemm .single__Task__Itemm__action .dropdown-btn.task__Active {
     background-color: #005734;
     color: #fff;
 }
@@ -114,6 +115,49 @@
     font-size: 1rem;
 }
 
+.candidate-task-container .user__Tasks__Wrapper {
+    max-height: 18rem;
+    overflow-y: auto;
+    padding-right: 1rem;
+    scrollbar-width: thin;
+}
+
+.candidate-task-container .user__Tasks__Wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.candidate-task-container .user__Tasks__Wrapper::-webkit-scrollbar-track {
+    background: #efefef;
+}
+
+.candidate-task-container .user__Tasks__Wrapper::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+}
+
+.candidate-task-container .user__Tasks__Wrapper::-webkit-scrollbar-thumb:hover {
+    background: #005734;
+}
+
+.candidate-task-container .single__Task__Itemm {
+    margin-bottom: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.candidate-task-container .single__Task__Itemm .single__Task__Itemm__action {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.candidate-task-container .single__Task__Itemm .single__Task__Itemm__action .add__Btn {
+    bottom: 0;
+    right: 0;
+    margin-bottom: 0.4rem;
+}
+
 
 @media (min-width: 768px) and (max-width: 991.98px) {
     .candidate-task-status-container .candidate-task-details span.task__Description {
@@ -125,9 +169,9 @@
         justify-content: flex-end;
     }
 
-    .candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn {
+    /* .candidate-task-container .single__Task__Itemm .single__Task__Itemm__action .dropdown-btn {
         padding: 8% 10%;
-    }
+    } */
 
     .candidate-task-container .candidate-task-details {
         max-width: 60%;
@@ -164,12 +208,12 @@
         width: 35%;
     }
 
-    .candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn {
-        padding: 6% 8%;
+    .candidate-task-container .single__Task__Itemm .single__Task__Itemm__action .dropdown-btn {
+        /* padding: 6% 8%; */
         width: max-content;
     }
 
-    .candidate-task-container .candidate-task-status-container .task__Status__Container .dropdown-btn:last-child {
+    /* .candidate-task-container .single__Task__Itemm .single__Task__Itemm__action .dropdown-btn:last-child {
         margin-left: 7%;
-    }
+    } */
 }

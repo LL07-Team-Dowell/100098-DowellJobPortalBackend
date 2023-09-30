@@ -51,8 +51,6 @@ const CreateTaskScreen = ({
   const [selectOption, setSelectOption] = useState([]);
   const [loading, setLoading] = useState(true);
   const { currentUser } = useCurrentUserContext();
-  const [isApproved, setIsApproved] = useState(false);
-  const [updatedTasks, setUpdatedTasks] = useState([]);
   const [tasksBeingApproved, setTasksBeingApproved] = useState([]);
   const [singleTaskLoading, setSingleTaskLoading] = useState(false);
   const [tasksForTheDay, setTasksForTheDay] = useState(null);
@@ -241,17 +239,42 @@ const CreateTaskScreen = ({
 
     try {
       const response = await approveTask({
-        document_id: task._id,
-        task: task.task,
+        document_id: task.single_task_id,
+        // task: task.task,
         lead_username: currentUser?.userinfo?.username,
       });
 
-      const copyOfUpdatedTasks = updatedTasks.slice();
-      copyOfUpdatedTasks.push({ ...task, approved: true, status: null });
-      setUpdatedTasks(copyOfUpdatedTasks);
+      const copyOfTasks = tasksForTheDay && Array.isArray(tasksForTheDay) ? 
+        tasksForTheDay.slice() 
+        : 
+      null
+      const foundIndexOfUpdatedTask = copyOfTasks?.findIndex(t => t.single_task_id === task.single_task_id);
+
+      if (copyOfTasks && foundIndexOfUpdatedTask !== -1) {
+        const taskAtIndex = copyOfTasks[foundIndexOfUpdatedTask];
+        copyOfTasks[foundIndexOfUpdatedTask] = { ...taskAtIndex, approved: true };
+        setTasksForTheDay(copyOfTasks);
+      }
+
+      const copyOfTasksDate = tasksDate.slice();
+      const copyOfTasksDateObjIndex = copyOfTasksDate.findIndex(i => i.tasksAdded.find(t => t.single_task_id === task.single_task_id))
+      if (copyOfTasksDateObjIndex !== -1) {
+        const updatedTasksAddedForDate = copyOfTasksDate[copyOfTasksDateObjIndex]?.tasksAdded?.map(t => {
+          if (t.single_task_id === task.single_task_id) {
+            return {
+              ...t,
+              approved: true,
+            }
+          }
+          return t
+        });
+        copyOfTasksDate[copyOfTasksDateObjIndex].tasksAdded = updatedTasksAddedForDate;
+        setTasksDate(copyOfTasksDate);
+      }
+      
 
       const copyOfTasksBeingApproved = tasksBeingApproved.slice();
-      copyOfTasksBeingApproved.filter(t => t._id !== task._id);
+      copyOfTasksBeingApproved.filter(t => t.single_task_id !== task.single_task_id);
       setTasksBeingApproved(copyOfTasksBeingApproved);
 
       console.log(response.data);
@@ -267,7 +290,7 @@ const CreateTaskScreen = ({
             : err.response.data.message
           : 'Task approval failed'
       );
-      setTasksBeingApproved(copyOfTasksBeingApproved.filter(t => task._id !== t._id));
+      setTasksBeingApproved(copyOfTasksBeingApproved.filter(t => task.single_task_id !== t.single_task_id));
 
     }
   };
@@ -281,7 +304,7 @@ const CreateTaskScreen = ({
     const dataToPost = {
       "company_id": currentUser.portfolio_info[0].org_id,
       "data_type": currentUser.portfolio_info[0].data_type,
-      "task_created_date": dateFormattedForAPI,
+      "project": projectPassed,
     }
 
     setSingleTaskLoading(true);
@@ -412,18 +435,12 @@ const CreateTaskScreen = ({
                           </>
                           :
                           <CandidateTaskItem
-                            currentTask={updatedTasks.find(task => task._id === singleTaskItem._id) ? updatedTasks.find(task => task._id === singleTaskItem._id) : singleTaskItem}
+                            currentTask={singleTaskItem}
                             candidatePage={candidateAfterSelectionScreen}
                             handleEditBtnClick={() => { }}
-                            updateTasks={() =>
-                              setTasksForSelectedProject(
-                                userTasks.filter(
-                                  (d) => d.project === selectedProject
-                                )
-                              )
-                            }
+                            updateTasks={setTasksForTheDay}
                             handleApproveTask={handleApproveTask}
-                            taskIsBeingApproved={tasksBeingApproved.find(task => task._id === singleTaskItem._id)}
+                            tasksBeingApproved={tasksBeingApproved}
                             newTaskItem={true}
                             tasks={
                               tasksForTheDay && Array.isArray(tasksForTheDay) ?
@@ -447,19 +464,13 @@ const CreateTaskScreen = ({
                         tasksDate.map((d, i) => {
                           return (
                             <CandidateTaskItem
-                              currentTask={updatedTasks.find(task => task._id === d._id) ? updatedTasks.find(task => task._id === d._id) : d}
+                              currentTask={d}
                               taskNum={i + 1}
                               candidatePage={candidateAfterSelectionScreen}
                               handleEditBtnClick={() => { }}
-                              updateTasks={() =>
-                                setTasksForSelectedProject(
-                                  userTasks.filter(
-                                    (d) => d.project === selectedProject
-                                  )
-                                )
-                              }
+                              updateTasks={setTasksDate}
                               handleApproveTask={handleApproveTask}
-                              taskIsBeingApproved={tasksBeingApproved.find(task => task._id === d._id)}
+                              tasksBeingApproved={tasksBeingApproved}
                               newTaskItem={d.user_id ? true : false}
                               tasks={
                                 d.tasksAdded ? 
