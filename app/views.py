@@ -6439,7 +6439,7 @@ class Generate_Report(APIView):
                     *candidate_management_reports, "fetch", field, update_field
                 )
                 total = [res for res in json.loads(response)["data"]]
-                hired = [res for res in total if res["status"]=="hired"]
+                hired = [res for res in total if res["status"] == "hired"]
                 data = {user["username"]: {} for user in hired}
                 for user in data:
                     data[user] = {
