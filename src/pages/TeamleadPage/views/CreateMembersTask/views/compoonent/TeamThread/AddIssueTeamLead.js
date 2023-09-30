@@ -641,6 +641,7 @@ const AddIssueTeamLead = ({
             disabled={disabled}
             onClick={(e) => handleCreateIssue(e)}
           >
+            {/*  */}
             {editPage ? "Update Issue" : "Add Issue"}
           </button>
         </div>
