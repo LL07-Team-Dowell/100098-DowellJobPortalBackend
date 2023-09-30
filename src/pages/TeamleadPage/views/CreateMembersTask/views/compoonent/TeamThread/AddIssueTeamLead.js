@@ -351,6 +351,7 @@ const AddIssueTeamLead = ({
   console.log(teamId);
   const [createIssue, setCreateIssue] = useState({
     thread: "",
+    thread_title: "",
     image: "",
     team_alerted_id: "",
     created_by: currentUser.userinfo.username,
@@ -559,6 +560,14 @@ const AddIssueTeamLead = ({
               fontSize={"1.2rem"}
             />
           </h1>
+          <span className="selectProject">Enter Issue Title</span>
+          <input
+            placeholder="Enter Issue"
+            name={"thread_title"}
+            value={createIssue.thread_title}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+          ></input>
           <span className="selectProject">Enter Issue Details</span>
           <textarea
             placeholder="Enter Issue"
@@ -632,6 +641,7 @@ const AddIssueTeamLead = ({
             disabled={disabled}
             onClick={(e) => handleCreateIssue(e)}
           >
+            {/*  */}
             {editPage ? "Update Issue" : "Add Issue"}
           </button>
         </div>
