@@ -38,3 +38,8 @@
     background-color: white;
     color: black;
 }
+
+.request-buttons button.cancel {
+    background-color: transparent;
+    color: black;
+}
