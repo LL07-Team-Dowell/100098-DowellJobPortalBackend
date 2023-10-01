@@ -144,6 +144,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 0.75rem;
 }
 
 .candidate-task-container .single__Task__Itemm .single__Task__Itemm__action {
@@ -156,6 +157,7 @@
     bottom: 0;
     right: 0;
     margin-bottom: 0.4rem;
+    width: max-content;
 }
 
 
