@@ -5510,21 +5510,34 @@ class Generate_Report(APIView):
     def generate_individual_report(self, request):
         payload = request.data
         if payload:
-            field = {
-                # "applicant_email":payload.get("applicant_email"),
-                # "username":payload.get("username"),
-                "_id": payload.get("applicant_id")
-            }
+            if payload.get("role") =="Teamlead":
+                field = {
+                "username":payload.get("applicant_username"),
+                "_id": payload.get("applicant_id"),
+                "status":"hired"
+                }
+            else:
+                field={
+                    "_id": payload.get("applicant_id"),
+                }
+            
             year = payload.get("year")
 
             if not int(year) <= datetime.date.today().year:
                 return Response(
                     {
-                        "isSuccess": False,
                         "message": "You cannot get a report on a future date",
                         "error": f"{year} is bigger than current year {datetime.date.today().year}",
                     },
-                    status=status.HTTP_201_CREATED,
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if payload.get("applicant_username") and not payload.get("applicant_username") in Team_Leads:
+                return Response(
+                    {
+                        "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
+                        "error": f"The Username->{payload.get('applicant_username')} is not a team lead",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
             update_field = {}
@@ -5532,6 +5545,7 @@ class Generate_Report(APIView):
             info = dowellconnection(
                 *candidate_management_reports, "fetch", field, update_field
             )
+            #print(len(json.loads(info)["data"]),"==========")
             if len(json.loads(info)["data"]) > 0:
                 data["personal_info"] = json.loads(info)["data"][0]
                 username = json.loads(info)["data"][0]["username"]
