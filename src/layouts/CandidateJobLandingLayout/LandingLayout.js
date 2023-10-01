@@ -28,6 +28,7 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
         
         if (location.pathname.includes("teams")) return setScreenTitle("Teams");
         if (location.pathname.includes("user")) return setScreenTitle("Profile");
+        if (location.pathname.includes("team-screen-member")) return setScreenTitle("");
         
         setScreenTitle("Work logs")
 

@@ -181,13 +181,13 @@ const Teamlead = ({ isGrouplead }) => {
             setCandidatesDataLoaded(true);
             return;
           }
-          
+
           const onboardingCandidates = res[3]?.data?.response?.data
           .filter(
             (application) =>
               application.data_type === currentUser?.portfolio_info[0].data_type
           );
-          
+
           dispatchToCandidatesData({
             type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES,
             payload: {
@@ -547,7 +547,7 @@ const Teamlead = ({ isGrouplead }) => {
       Object.keys(categories || {}).forEach(key => {
 
         if (key === "undefined") return;
-        
+
         if (date) {
           const matchingTasks = tasksToDisplayForLead.filter(task => new Date(task[`${propertyName}`]).toDateString() === key);
           categoryObj.name = key;
@@ -556,7 +556,7 @@ const Teamlead = ({ isGrouplead }) => {
           categoryObj = {};    
           return
         }
-        
+
         const matchingTasks = tasksToDisplayForLead.filter(task => task[`${propertyName}`] === key);
         categoryObj.name = key;
         categoryObj.data = matchingTasks;
@@ -569,9 +569,9 @@ const Teamlead = ({ isGrouplead }) => {
 
     switch (currentSortOption) {
       case "applicant":
-          const applicantCategoryData = getCategoryArray('applicantName');
-          setSortResults(applicantCategoryData);
-          break;
+        const applicantCategoryData = getCategoryArray('applicantName');
+        setSortResults(applicantCategoryData);
+        break;
       case "date":
         const dateCategoryData = getCategoryArray("task_created_date", true);
         setSortResults(dateCategoryData.sort((a, b) => new Date(b.name) - new Date(a.name)));

@@ -14,6 +14,7 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
         project: project,
         update_reason: ""
     });
+    const [ loading, setLoading ] = useState(false);
 
     useEffect(() => {
         setFormData({
@@ -34,23 +35,25 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const resp = await requestToUpdateTask(formData);
-            console.log("Response Data:", resp);
-            setFormData({
-                update_reason: ""
-            })
-            toast.success("Task request update created successfully!")
-            setShowModal(false);
-        } catch (error) {
-            toast.warning(
-                error.response ? 
-                    error.response.status === 500 ? 
-                        "Failed to update task"
-                    : error.response.data.message
-                : 
-                "Failed to update task"
-            );
+        if (!formData.update_reason) {
+            toast.warning("Please enter a reason!")
+        } else if (formData.update_reason) {
+            setLoading(true);
+
+            try {
+                const resp = await requestToUpdateTask(formData);
+                console.log("Response Data:", resp);
+                setFormData({
+                    update_reason: ""
+                })
+                toast.success("Task request update created successfully!")
+                setShowModal(false);
+                setLoading(false);
+            } catch (error) {
+                toast.warning("Failed to add task request");
+                setLoading(false);
+            }
+
         }
     };
 
@@ -91,9 +94,19 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
                     >
                     </textarea>
                 </div>
-                <div className="buttons">
-                    <button>Submit</button>
-                    <button onClick={() => setShowModal(false)}>Cancel</button>
+                <div className="request-buttons">
+                    <button 
+                        disabled={loading ? true : false}
+                    >
+                        Submit
+                    </button>
+                    <button 
+                        className="cancel" 
+                        onClick={() => setShowModal(false)} 
+                        disabled={loading ? true : false}
+                    >
+                        Cancel
+                    </button>
                 </div>
             </form >
         </div >

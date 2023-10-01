@@ -25,6 +25,9 @@ export const extractNewTasksAndAddExtraDetail = (taskDetailsArr, tasksArr, extra
               "single_task_created_date": foundSingleTask.task_created_date,
               "subproject": foundSingleTask.subproject,
               "applicantName": foundApplicationForUser?.applicant,
+              "single_task_id": foundSingleTask._id,
+              "approved": foundSingleTask.approved,
+              "status": foundSingleTask.status,
             }
 
             return {
@@ -38,6 +41,9 @@ export const extractNewTasksAndAddExtraDetail = (taskDetailsArr, tasksArr, extra
               "task_id": foundSingleTask.task_id,
               "single_task_created_date": foundSingleTask.task_created_date,
               "subproject": foundSingleTask.subproject,
+              "single_task_id": foundSingleTask._id,
+              "approved": foundSingleTask.approved,
+              "status": foundSingleTask.status,
             }
           }
 
@@ -47,6 +53,7 @@ export const extractNewTasksAndAddExtraDetail = (taskDetailsArr, tasksArr, extra
             project: foundSingleTask.project,
             subproject: foundSingleTask.subproject,
             applicantName: foundApplicationForUser?.applicant,
+            single_task_id: foundSingleTask._id,
           }
 
           return {
@@ -54,6 +61,7 @@ export const extractNewTasksAndAddExtraDetail = (taskDetailsArr, tasksArr, extra
             task: foundSingleTask.task,
             project: foundSingleTask.project,
             subproject: foundSingleTask.subproject,
+            single_task_id: foundSingleTask._id,
           }
         }).filter(task => task)
     }).flat().filter(item => item)

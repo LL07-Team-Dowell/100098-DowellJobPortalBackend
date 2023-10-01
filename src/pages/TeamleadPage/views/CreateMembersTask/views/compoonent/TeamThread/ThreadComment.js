@@ -118,7 +118,7 @@ const ThreadComment = ({ comments, commentInput, user, threadId, loading }) => {
       console.log(response);
       // Update the state with the new comment
       if (response.status == 201) {
-        setUpdateComment((prevComments) => [commentData, ...prevComments]);
+        setUpdateComment((prevComments) => [...prevComments].reverse(), commentData);
         setText("")
       }
       // Clear the input field and reset loading

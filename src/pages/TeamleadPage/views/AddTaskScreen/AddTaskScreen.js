@@ -39,9 +39,8 @@ const AddTaskScreen = ({
   const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
   const [time, settime] = useState(new Date().toString());
-  const TimeValue = `${time.split(" ")[0]} ${time.split(" ")[1]} ${
-    time.split(" ")[2]
-  } ${time.split(" ")[3]}`;
+  const TimeValue = `${time.split(" ")[0]} ${time.split(" ")[1]} ${time.split(" ")[2]
+    } ${time.split(" ")[3]}`;
   const [optionValue, setoptionValue] = useState("");
   const [taskStartTime, setTaskStartTime] = useState("");
   const [taskEndTime, setTaskEndTime] = useState("");
@@ -52,21 +51,21 @@ const AddTaskScreen = ({
   console.log({ tasks });
   const [taskId, setTaskId] = useState("");
   const [isCreatingTask, setIsCreatingTask] = useState(true);
-  const [ showSubmitTaskInfo, setShowSubmitTaskInfo ] = useState(false);
-  const [ taskDetailForToday, setTaskDetailForToday ] = useState(null);
-  const [ taskDetailForTodayLoaded, setTaskDetailForTodayLoaded ] = useState(false);
-  const [ taskDetailForTodayLoading, setTaskDetailForTodayLoading ] = useState(true);
-  const [ savingLoading, setSavingLoading ] = useState(false);
-  const [ editLoading, setEditLoading ] = useState(false);
-  const [ deleteLoading, setDeleteLoading ] = useState(false);
-  const [ taskType, setTaskType ] = useState("");
-  const [ subprojectSelected, setSubprojectSelected ] = useState(null);
-  const [ showInfoModal, setShowInfoModal ] = useState(
-    localStorage.getItem('log_info_shown') ? false 
-    : 
-    true
+  const [showSubmitTaskInfo, setShowSubmitTaskInfo] = useState(false);
+  const [taskDetailForToday, setTaskDetailForToday] = useState(null);
+  const [taskDetailForTodayLoaded, setTaskDetailForTodayLoaded] = useState(false);
+  const [taskDetailForTodayLoading, setTaskDetailForTodayLoading] = useState(true);
+  const [savingLoading, setSavingLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [taskType, setTaskType] = useState("");
+  const [subprojectSelected, setSubprojectSelected] = useState(null);
+  const [showInfoModal, setShowInfoModal] = useState(
+    localStorage.getItem('log_info_shown') ? false
+      :
+      true
   );
-  
+
   //   var conditions
   const inputsAreFilled = taskStartTime && taskEndTime && taskName && taskType;
   const duration = getDifferenceInMinutes(
@@ -143,6 +142,7 @@ const AddTaskScreen = ({
   const addNewTask = () => {
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
+      if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
       if (duration <= 15) {
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
         if (!taskDetailForToday) return addTaskForToday(taskStartTime, taskEndTime, taskName, details);
@@ -161,11 +161,12 @@ const AddTaskScreen = ({
   const updateTask = async () => {
     if (inputsAreFilled) {
       if (duration <= 15) {
+        if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
 
         setLoading(true);
         setDisabled(true);
-        
+
         try {
           const res = (await updateSingleCandidateTaskV2(
             {
@@ -191,14 +192,14 @@ const AddTaskScreen = ({
           setTaskId("");
 
         } catch (error) {
-          
+
           console.log(error);
           toast.error('An error occured while trying to edit your task');
           setLoading(false);
           setDisabled(false);
           setEditLoading(false);
         }
-        
+
       } else {
         toast.info(
           "The time you finished your work log must be within 15 minutes of its starting time"
@@ -225,7 +226,7 @@ const AddTaskScreen = ({
       toast.success(res.message);
 
       copyOfTasks[foundTaskIndex].is_active = updatedStatus;
-      setTasks(copyOfTasks); 
+      setTasks(copyOfTasks);
       setDeleteLoading(false);
       setTaskId("");
 
@@ -277,7 +278,15 @@ const AddTaskScreen = ({
   //     setDisabled(false)
 
   // }, [newTaskDetails])
-
+  useEffect(() => {
+    if (taskStartTime) {
+      const [hours, minutes] = taskStartTime.split(':').map(Number);
+      const newMinutes = (minutes + 15) % 60;
+      const newHours = hours + Math.floor((minutes + 15) / 60);
+      const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+      setTaskEndTime(newEndTime);
+    }
+  }, [taskStartTime])
   useEffect(() => {
     if (taskDetailForToday) {
       setTaskDetailForTodayLoading(false);
@@ -289,7 +298,7 @@ const AddTaskScreen = ({
     setTaskDetailForTodayLoaded(false);
 
     const today = new Date();
-    const [ year, month, day ] = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ];
+    const [year, month, day] = [today.getFullYear(), today.getMonth() + 1, today.getDate()];
     const todayDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
 
     const dataToPost = {
@@ -300,7 +309,7 @@ const AddTaskScreen = ({
     }
 
     getCandidateTasksOfTheDayV2(dataToPost).then(res => {
-      const [ parentTaskAddedForToday, listsOfTasksForToday ] = [
+      const [parentTaskAddedForToday, listsOfTasksForToday] = [
         res.data.task_details.find(task =>
           task.task_created_date === todayDate &&
           task.applicant === currentUser.userinfo.username &&
@@ -317,9 +326,9 @@ const AddTaskScreen = ({
           parentTask: parentTaskAddedForToday,
           tasks: listsOfTasksForToday,
         })
-        setTasks(listsOfTasksForToday?.reverse());  
+        setTasks(listsOfTasksForToday?.reverse());
       }
-      
+
       setTaskDetailForTodayLoaded(true);
       setTaskDetailForTodayLoading(false);
 
@@ -366,7 +375,7 @@ const AddTaskScreen = ({
     'Enter',
     () => {
       if (
-        loading || 
+        loading ||
         disabled ||
         taskStartTime.length < 1 ||
         taskEndTime.length < 1 ||
@@ -379,15 +388,15 @@ const AddTaskScreen = ({
         addNewTask()
         return
       }
-      
+
       updateTask()
     }
   )
+  console.log({ taskStartTime });
 
-  
-  const addTaskForToday = async (startTime, endTime, task, details, updateTask=false) => {
+  const addTaskForToday = async (startTime, endTime, task, details, updateTask = false) => {
     const today = new Date();
-    const [ year, month, day ] = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ];
+    const [year, month, day] = [today.getFullYear(), today.getMonth() + 1, today.getDate()];
     const todayDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
 
     const dataToPost = {
@@ -416,7 +425,7 @@ const AddTaskScreen = ({
     setDisabled(true);
 
     try {
-      
+
       let res;
 
       // UPDATE TASKS FOR TODAY
@@ -426,27 +435,27 @@ const AddTaskScreen = ({
         toast.success(res?.message);
 
         const copyOfTasksForToday = structuredClone(taskDetailForToday);
-        copyOfTasksForToday.tasks.unshift({...res.response, _id: res.current_task_id});
+        copyOfTasksForToday.tasks.unshift({ ...res.response, _id: res.current_task_id });
 
         setTaskDetailForToday(copyOfTasksForToday);
 
         setLoading(false);
         setDisabled(false);
-        
+
         setTasks(copyOfTasksForToday.tasks);
         clearAllInputs();
         setTaskId("");
 
         return
       }
-      
+
       res = (await addNewCandidateTaskV2(dataToPost)).data;
       console.log(res);
 
       try {
         const taskRes = (await getCandidateTasksOfTheDayV2(dataToPost2)).data;
 
-        const [ parentTaskAddedForToday, listsOfTasksForToday ] = [
+        const [parentTaskAddedForToday, listsOfTasksForToday] = [
           taskRes.task_details.find(task =>
             task.task_created_date === todayDate &&
             task.applicant === currentUser.userinfo.username &&
@@ -467,11 +476,11 @@ const AddTaskScreen = ({
 
         setLoading(false);
         setDisabled(false);
-        
+
         setTasks(listsOfTasksForToday?.reverse());
         clearAllInputs();
         setTaskId("");
-        
+
       } catch (error) {
         console.log(error);
         setLoading(false);
@@ -509,7 +518,7 @@ const AddTaskScreen = ({
       setSavingLoading(false);
     }
   }
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewTaskDetails((prevValue) => {
@@ -551,279 +560,276 @@ const AddTaskScreen = ({
     <>
       <div className="add__New__Task__Overlay">
         <div className="add__New__Task__Container" ref={ref}>
-        {
-          showSubmitTaskInfo ? <>
-            <IoIosArrowBack
-              onClick={
-                () => setShowSubmitTaskInfo(false)
-              }
-              style={{ 
-                cursor: "pointer",
-                fontSize: '18px',
-              }}
-            />
-            <h1 className="title__Item">
-              {"Submit task for today"}
-            </h1>
-            <p>Done uploading work logs for today?</p>
+          {
+            showSubmitTaskInfo ? <>
+              <IoIosArrowBack
+                onClick={
+                  () => setShowSubmitTaskInfo(false)
+                }
+                style={{
+                  cursor: "pointer",
+                  fontSize: '18px',
+                }}
+              />
+              <h1 className="title__Item">
+                {"Submit task for today"}
+              </h1>
+              <p>Done uploading work logs for today?</p>
 
-            <div className="task__Today__Submit__Wrapper">
-              <img src={taskImg} alt="task illustration" />
-              <p>You can submit all your work logs for today now or later if you would like to continue on updating later today.<br /><br />Please read and note the following:</p>
-              <ul>
-                <li>If you choose <b>Submit later</b>, you can always come back anytime <b>today</b> and make changes</li>
-                <li>If you choose <b>Submit now</b>, you will <b>not</b> be able to make <b>any more updates today</b></li>
-                <li><b>Do not click</b> on <b>Submit now</b> if you still have other work logs to submit for today</li>
-                <li>If you forget to submit your task for the day, do not worry, all your work logs are saved </li>
-              </ul>
-            </div>
-            <div className="buttons__Wrapper">
-              <button
-                type={"button"}
-                className="add__Task__Btn cancel__Btn"
-                disabled={savingLoading}
-                onClick={() =>
-                  {
+              <div className="task__Today__Submit__Wrapper">
+                <img src={taskImg} alt="task illustration" />
+                <p>You can submit all your work logs for today now or later if you would like to continue on updating later today.<br /><br />Please read and note the following:</p>
+                <ul>
+                  <li>If you choose <b>Submit later</b>, you can always come back anytime <b>today</b> and make changes</li>
+                  <li>If you choose <b>Submit now</b>, you will <b>not</b> be able to make <b>any more updates today</b></li>
+                  <li><b>Do not click</b> on <b>Submit now</b> if you still have other work logs to submit for today</li>
+                  <li>If you forget to submit your task for the day, do not worry, all your work logs are saved </li>
+                </ul>
+              </div>
+              <div className="buttons__Wrapper">
+                <button
+                  type={"button"}
+                  className="add__Task__Btn cancel__Btn"
+                  disabled={savingLoading}
+                  onClick={() => {
                     setShowSubmitTaskInfo(false);
                     closeTaskScreen();
                   }
-                }
-              >
-                {"Submit later"}
-              </button>
-              <button
-                type={"button"}
-                className="add__Task__Btn"
-                disabled={savingLoading}
-                onClick={
-                  () => handleSaveTasksForTheDay()
-                }
-              >
-                {
-                  savingLoading ? 
-                    "Submitting"
-                    :
-                    "Submit now"
-                }
-              </button>
-            </div>
-          </> : 
-          <>
-            <h1 className="title__Item">
-              {
-              showInfoModal ? <>Quick note</> 
-              :
-              showTaskForm ? (
-                <>
-                  {!afterSelectionScreen && (
-                    <IoIosArrowBack
-                      onClick={
-                        editPage
-                          ? () => {
-                              closeTaskScreen();
-                              setEditPage(false);
-                            }
-                          : () => setShowTaskForm(false)
-                      }
-                      style={{ cursor: "pointer" }}
-                    />
-                  )}
-                  {
-                    editPage ? 
-                    "Edit Work log" 
-                    :
-                    taskDetailForTodayLoading ? "Loading" :
-                    taskDetailForToday?.parentTask?.task_saved ?
-                    "View Work log Details"
-                    : 
-                    "New Work log Details"
                   }
-                </>
-              ) : (
-                <>Add new work log</>
-              )}
-
-              <AiOutlineClose
-                onClick={() => {
-                  closeTaskScreen();
-                  !afterSelectionScreen && setEditPage(false);
-                }}
-                style={{ cursor: "pointer" }}
-                fontSize={"1.2rem"}
-              />
-            </h1>
-            {
-              taskDetailForTodayLoading && <p className="task__Today__Detail__Loading">
-                <span>
-                  <LoadingSpinner 
-                    width={'14px'}
-                    height={'14px'}
-                  />
-                </span>
-                <span>Please wait...</span>
-              </p>
-            }
-            {
-            showInfoModal ?
-            (
-              taskDetailForTodayLoading ? <></> :
-              <>
-                <p className="info__Work__Log">
-                  <span>You are to enter <b>80/160 work logs</b> per week according to your role/designation</span>
-                </p>
-                <p className="info__Work__Log">
-                  The maximum duration of one work log is <b>15 minutes</b>, You can add work logs spanning between <b>1</b> to <b>15</b> minutes, and your total should be <b>20/40 hours</b> in a week
-                </p>
-                <br />
-                <p className="info__Work__Log"><b>These are some examples of work logs:</b></p>
-                <ol className="example__info__Work__Log">
-                  <li>Attending meeting and discussed xxxxxxx</li>
-                  <li>Attending meeting and presented topic xxxxxx</li>
-                  <li>Conducted discussions on xxxx</li>
-                  <li>Coding for task xxxx</li>
-                  <li>Testing product xxxxx for xxxxx</li>
-                </ol>
+                >
+                  {"Submit later"}
+                </button>
                 <button
                   type={"button"}
                   className="add__Task__Btn"
-                  onClick={() =>
-                    {
-                      setShowInfoModal(false)
-                      localStorage.setItem('log_info_shown', true)
-                    }
+                  disabled={savingLoading}
+                  onClick={
+                    () => handleSaveTasksForTheDay()
                   }
                 >
-                  {"Proceed"}
+                  {
+                    savingLoading ?
+                      "Submitting"
+                      :
+                      "Submit now"
+                  }
                 </button>
-              </>
-            ) :
-            showTaskForm ? (
+              </div>
+            </> :
               <>
+                <h1 className="title__Item">
+                  {
+                    showInfoModal ? <>Quick note</>
+                      :
+                      showTaskForm ? (
+                        <>
+                          {!afterSelectionScreen && (
+                            <IoIosArrowBack
+                              onClick={
+                                editPage
+                                  ? () => {
+                                    closeTaskScreen();
+                                    setEditPage(false);
+                                  }
+                                  : () => setShowTaskForm(false)
+                              }
+                              style={{ cursor: "pointer" }}
+                            />
+                          )}
+                          {
+                            editPage ?
+                              "Edit Work log"
+                              :
+                              taskDetailForTodayLoading ? "Loading" :
+                                taskDetailForToday?.parentTask?.task_saved ?
+                                  "View Work log Details"
+                                  :
+                                  "New Work log Details"
+                          }
+                        </>
+                      ) : (
+                        <>Add new work log</>
+                      )}
+
+                  <AiOutlineClose
+                    onClick={() => {
+                      closeTaskScreen();
+                      !afterSelectionScreen && setEditPage(false);
+                    }}
+                    style={{ cursor: "pointer" }}
+                    fontSize={"1.2rem"}
+                  />
+                </h1>
                 {
-                  taskDetailForTodayLoading ? <></> :
-                  !taskDetailForToday?.parentTask?.task_saved && <>
-                    <span className="selectProject">Username</span>
-                    <input
-                      type={"text"}
-                      placeholder={"Task Assignee"}
-                      value={newTaskDetails.username}
-                      style={{ margin: 0, marginBottom: "0.8rem" }}
-                      readOnly={true}
-                    />
-                    <span className="selectProject">Date of Submission</span>
-                    <input
-                      type={"text"}
-                      placeholder={"today time"}
-                      value={TimeValue}
-                      style={{ margin: 0, marginBottom: "0.8rem" }}
-                      readOnly={true}
-                    />
-                  </>
+                  taskDetailForTodayLoading && <p className="task__Today__Detail__Loading">
+                    <span>
+                      <LoadingSpinner
+                        width={'14px'}
+                        height={'14px'}
+                      />
+                    </span>
+                    <span>Please wait...</span>
+                  </p>
                 }
                 {
-                  taskDetailForTodayLoading ? <></> :
-                  !taskDetailForToday?.parentTask?.task_saved && <div className="task__Timing__Wrapper">
-                    <div className="task__Item">
-                      <span className="selectProject">Time started</span>
-                      <input
-                        type={"time"}
-                        placeholder={"start time of task"}
-                        value={taskStartTime}
-                        style={{ margin: 0, marginBottom: "0.8rem" }}
-                        onChange={({ target }) => setTaskStartTime(target.value)}
-                        readOnly={loading || !taskDetailForTodayLoaded ? true : false}
-                      />
-                    </div>
-                    <div className="task__Item">
-                      <span className="selectProject">Time finished</span>
-                      <input
-                        type={"time"}
-                        placeholder={"end time of task"}
-                        value={taskEndTime}
-                        style={{ margin: 0, marginBottom: "0.8rem" }}
-                        onChange={({ target }) => setTaskEndTime(target.value)}
-                        max={`${
-                          Number(
-                            new Date(
-                              new Date(
-                                `${new Date().toDateString()} ${taskStartTime}`
-                              ).getTime() +
-                                15 * 60000
-                            ).getHours()
-                          ) < 10
-                            ? "0" +
-                              new Date(
-                                new Date(
-                                  `${new Date().toDateString()} ${taskStartTime}`
-                                ).getTime() +
-                                  15 * 60000
-                              ).getHours()
-                            : new Date(
-                                new Date(
-                                  `${new Date().toDateString()} ${taskStartTime}`
-                                ).getTime() +
-                                  15 * 60000
-                              ).getHours()
-                        }:${new Date(
-                          new Date(
-                            `${new Date().toDateString()} ${taskStartTime}`
-                          ).getTime() +
-                            15 * 60000
-                        ).getMinutes()}`}
-                        readOnly={loading || !taskDetailForTodayLoaded || taskStartTime.length < 1 ? true : false}
-                      />
-                    </div>
-                    <div className="task__Item">
-                      <span className="selectProject">Work log</span>
-                      <textarea
-                        type={"text"}
-                        placeholder={"Work log"}
-                        value={taskName}
-                        style={{ margin: 0, marginBottom: "0rem" }}
-                        onChange={({ target }) => setTaskName(target.value)}
-                        readOnly={loading || !taskDetailForTodayLoaded ? true : false}
-                        rows={3}
-                        className="log__textarea"
-                      ></textarea>
-                    </div>
-                    <div className="task__Item">
-                      <span className="selectProject">Work log type</span>
-                      <select
-                        onChange={({ target }) => setTaskType(target.value)}
-                        className="addTaskDropDown new__Task"
-                        style={{ 
-                          margin: 0, 
-                          marginBottom: "0.8rem",
-                        }}
-                        value={taskType}
-                      >
-                        <option value={""}>Select</option>
-                        {taskTypes.map((v, i) => (
-                          <option key={i} value={v}>
-                            {v}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="task__Item">
-                      <span className="selectProject">Subproject</span>
-                      <SubprojectSelectWithSearch 
-                        subprojects={subprojects}
-                        selectedSubProject={subprojectSelected}
-                        handleSelectItem={(subproject, project) => {
-                          setSubprojectSelected(subproject);
-                          setoptionValue(project);
-                        }}
-                        handleCancelSelection={
-                          () => {
-                            setSubprojectSelected(null);
-                            setoptionValue('');
-                          }
+                  showInfoModal ?
+                    (
+                      taskDetailForTodayLoading ? <></> :
+                        <>
+                          <p className="info__Work__Log">
+                            <span>You are to enter <b>80/160 work logs</b> per week according to your role/designation</span>
+                          </p>
+                          <p className="info__Work__Log">
+                            The maximum duration of one work log is <b>15 minutes</b>, You can add work logs spanning between <b>1</b> to <b>15</b> minutes, and your total should be <b>20/40 hours</b> in a week
+                          </p>
+                          <br />
+                          <p className="info__Work__Log"><b>These are some examples of work logs:</b></p>
+                          <ol className="example__info__Work__Log">
+                            <li>Attending meeting and discussed xxxxxxx</li>
+                            <li>Attending meeting and presented topic xxxxxx</li>
+                            <li>Conducted discussions on xxxx</li>
+                            <li>Coding for task xxxx</li>
+                            <li>Testing product xxxxx for xxxxx</li>
+                          </ol>
+                          <button
+                            type={"button"}
+                            className="add__Task__Btn"
+                            onClick={() => {
+                              setShowInfoModal(false)
+                              localStorage.setItem('log_info_shown', true)
+                            }
+                            }
+                          >
+                            {"Proceed"}
+                          </button>
+                        </>
+                    ) :
+                    showTaskForm ? (
+                      <>
+                        {
+                          taskDetailForTodayLoading ? <></> :
+                            !taskDetailForToday?.parentTask?.task_saved && <>
+                              <span className="selectProject">Username</span>
+                              <input
+                                type={"text"}
+                                placeholder={"Task Assignee"}
+                                value={newTaskDetails.username}
+                                style={{ margin: 0, marginBottom: "0.8rem" }}
+                                readOnly={true}
+                              />
+                              <span className="selectProject">Date of Submission</span>
+                              <input
+                                type={"text"}
+                                placeholder={"today time"}
+                                value={TimeValue}
+                                style={{ margin: 0, marginBottom: "0.8rem" }}
+                                readOnly={true}
+                              />
+                            </>
                         }
-                        selectedProject={optionValue}
-                      />
-                    </div>
-                    {/* <div className="task__Item">
+                        {
+                          taskDetailForTodayLoading ? <></> :
+                            !taskDetailForToday?.parentTask?.task_saved && <div className="task__Timing__Wrapper">
+                              <div className="task__Item">
+                                <span className="selectProject">Time started</span>
+                                <input
+                                  type={"time"}
+                                  placeholder={"start time of task"}
+                                  value={taskStartTime}
+                                  style={{ margin: 0, marginBottom: "0.8rem" }}
+                                  onChange={({ target }) => setTaskStartTime(target.value)}
+                                  readOnly={loading || !taskDetailForTodayLoaded ? true : false}
+                                />
+                              </div>
+                              <div className="task__Item">
+                                <span className="selectProject">Time finished</span>
+                                <input
+                                  type={"time"}
+                                  placeholder={"end time of task"}
+                                  value={taskEndTime}
+                                  style={{ margin: 0, marginBottom: "0.8rem" }}
+                                  onChange={({ target }) => setTaskEndTime(target.value)}
+                                  max={`${Number(
+                                    new Date(
+                                      new Date(
+                                        `${new Date().toDateString()} ${taskStartTime}`
+                                      ).getTime() +
+                                      15 * 60000
+                                    ).getHours()
+                                  ) < 10
+                                    ? "0" +
+                                    new Date(
+                                      new Date(
+                                        `${new Date().toDateString()} ${taskStartTime}`
+                                      ).getTime() +
+                                      15 * 60000
+                                    ).getHours()
+                                    : new Date(
+                                      new Date(
+                                        `${new Date().toDateString()} ${taskStartTime}`
+                                      ).getTime() +
+                                      15 * 60000
+                                    ).getHours()
+                                    }:${new Date(
+                                      new Date(
+                                        `${new Date().toDateString()} ${taskStartTime}`
+                                      ).getTime() +
+                                      15 * 60000
+                                    ).getMinutes()}`}
+                                  readOnly={loading || !taskDetailForTodayLoaded || taskStartTime.length < 1 ? true : false}
+                                />
+                              </div>
+                              <div className="task__Item">
+                                <span className="selectProject">Work log</span>
+                                <textarea
+                                  type={"text"}
+                                  placeholder={"Work log"}
+                                  value={taskName}
+                                  style={{ margin: 0, marginBottom: "0rem" }}
+                                  onChange={({ target }) => setTaskName(target.value)}
+                                  readOnly={loading || !taskDetailForTodayLoaded ? true : false}
+                                  rows={3}
+                                  className="log__textarea"
+                                ></textarea>
+                              </div>
+                              <div className="task__Item">
+                                <span className="selectProject">Work log type</span>
+                                <select
+                                  onChange={({ target }) => setTaskType(target.value)}
+                                  className="addTaskDropDown new__Task"
+                                  style={{
+                                    margin: 0,
+                                    marginBottom: "0.8rem",
+                                  }}
+                                  value={taskType}
+                                >
+                                  <option value={""}>Select</option>
+                                  {taskTypes.map((v, i) => (
+                                    <option key={i} value={v}>
+                                      {v}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="task__Item">
+                                <span className="selectProject">Subproject</span>
+                                <SubprojectSelectWithSearch
+                                  subprojects={subprojects}
+                                  selectedSubProject={subprojectSelected}
+                                  handleSelectItem={(subproject, project) => {
+                                    setSubprojectSelected(subproject);
+                                    setoptionValue(project);
+                                  }}
+                                  handleCancelSelection={
+                                    () => {
+                                      setSubprojectSelected(null);
+                                      setoptionValue('');
+                                    }
+                                  }
+                                  selectedProject={optionValue}
+                                />
+                              </div>
+                              {/* <div className="task__Item">
                       <span className="selectProject">Project</span>
                       <select
                         onChange={(e) => selctChange(e)}
@@ -842,187 +848,187 @@ const AddTaskScreen = ({
                         ))}
                       </select>
                     </div> */}
-                    <div className="add__Btn__Task">
-                      <button
-                        style={{
-                          backgroundColor: "#005734",
-                          width: 30,
-                          height: 30,
-                          borderRadius: "50%",
-                          border: "none",
-                          cursor: disabled ? "not-allowed" : "pointer",
-                        }}
-                        onClick={isCreatingTask ? addNewTask : updateTask}
-                        disabled={disabled}
-                      >
-                        {loading ? (
-                          <LoadingSpinner 
-                            color={'#fff'}
-                            width={'18px'}
-                            height={'18px'}
-                          />
-                        ) :
-                        isCreatingTask ? (
-                          <AiOutlinePlus
-                            style={{
-                              color: "white",
-                              fontWeight: "600",
-                              fontSize: 20,
-                            }}
-                          />
-                        ) : (
-                          <AiFillEdit
-                            style={{
-                              color: "white",
-                              fontWeight: "600",
-                              fontSize: 20,
-                            }}
-                          />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                }
-
-                {tasks.length > 0 ? (
-                  <>
-                    {
-                      taskDetailForToday?.parentTask?.task_saved && <p className="task__Saved__Indicatore">
-                        <span><AiOutlineFileDone /></span>
-                        <span>Work logs have been submitted for today!</span>
-                      </p>
-                    }
-                    <table id="customers">
-                      <tr>
-                        <th>S/N</th>
-                        <th>Time started</th>
-                        <th>Time finished</th>
-                        <th>Work log</th>
-                        <th>Work log type</th>
-                        <th>sub project</th>
-                        <th>project</th>
-                        <th>actions</th>
-                      </tr>
-                      <tbody>
-                        {tasks.map((task, index) => (
-                          <tr key={task._id}>
-                            <td>{index + 1}.</td>
-                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
-                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
-                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task}</td>
-                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task_type}</td>
-                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.subproject}</td>
-                            <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.project}</td>
-                            <td>
-                              <div className="edit__Item__Customer">
-                                {
-                                  task.is_active &&  task.is_active === true && <button 
-                                    onClick={(taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? () => {} : () => getTaskId(task._id)}
-                                    data-tooltip-id={task._id}
-                                    data-tooltip-content={'Edit task'}
-                                    style={{
-                                      cursor: (taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? "not-allowed" : "pointer"
-                                    }}
-                                  >
-                                    <AiFillEdit />
-                                  </button>
-                                }
+                              <div className="add__Btn__Task">
                                 <button
-                                  onClick={(taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? () => {} : () => deleteTask(task._id)}
-                                  className="delete"
-                                  data-tooltip-id={task._id + "1"}
-                                  data-tooltip-content={task.is_active &&  task.is_active === true ? 'Delete task' : 'Retrieve task'}
                                   style={{
-                                    cursor: (taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? "not-allowed" : "pointer"
+                                    backgroundColor: "#005734",
+                                    width: 30,
+                                    height: 30,
+                                    borderRadius: "50%",
+                                    border: "none",
+                                    cursor: disabled ? "not-allowed" : "pointer",
                                   }}
+                                  onClick={isCreatingTask ? addNewTask : updateTask}
+                                  disabled={disabled}
                                 >
-                                  {
-                                    deleteLoading && taskId === task._id ? 
-                                    <LoadingSpinner 
-                                      width={'0.7rem'}
-                                      height={'0.7rem'}
+                                  {loading ? (
+                                    <LoadingSpinner
+                                      color={'#fff'}
+                                      width={'18px'}
+                                      height={'18px'}
                                     />
-                                    :
-                                    task.is_active &&  task.is_active === true ? 
-                                      <AiOutlineClose />
-                                    :
-                                    <IoRefresh />
-                                  }
+                                  ) :
+                                    isCreatingTask ? (
+                                      <AiOutlinePlus
+                                        style={{
+                                          color: "white",
+                                          fontWeight: "600",
+                                          fontSize: 20,
+                                        }}
+                                      />
+                                    ) : (
+                                      <AiFillEdit
+                                        style={{
+                                          color: "white",
+                                          fontWeight: "600",
+                                          fontSize: 20,
+                                        }}
+                                      />
+                                    )}
                                 </button>
-                                <Tooltip id={task._id} />
-                                <Tooltip id={task._id + "1"} />
                               </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </>
-                ) : null}
-                
-                {
-                  taskDetailForTodayLoading ? <></> : 
-                  <div className="buttons__Wrapper">
-                    <button
-                      type={"button"}
-                      className="add__Task__Btn cancel__Btn"
-                      disabled={editLoading || deleteLoading ? true : false}
-                      onClick={() =>
-                        closeTaskScreen()
-                      }
-                    >
-                      {taskDetailForToday?.parentTask?.task_saved ? "Close" : "Cancel"}
-                    </button>
-                    {
-                      !taskDetailForToday?.parentTask?.task_saved && <button
-                        type={"button"}
-                        className="add__Task__Btn"
-                        disabled={tasks.length < 1 || editLoading || deleteLoading ? true : false}
-                        onClick={
-                          editPage
-                            ? () => handleUpdateTaskBtnClick()
-                            : () => setShowSubmitTaskInfo(true)
+                            </div>
                         }
-                      >
-                        {editPage
-                          ? "Update Task"
-                          : "Done"}
-                      </button>
-                    }
-                  </div>
-                }
-              </>
-            ) : (
-              <>
-                {teamMembers.length < 1 ? (
-                  <>
-                    <h4>Your team members will appear here</h4>
-                  </>
-                ) : (
-                  <>
-                    <h4>Your team members ({teamMembers.length})</h4>
-                    <div className="team__Members__Container">
-                      {React.Children.toArray(
-                        teamMembers.map((member) => {
-                          return (
-                            <p
-                              className="team__Member__Item"
-                              onClick={() =>
-                                handleMemberItemClick(member.applicant)
+
+                        {tasks.length > 0 ? (
+                          <>
+                            {
+                              taskDetailForToday?.parentTask?.task_saved && <p className="task__Saved__Indicatore">
+                                <span><AiOutlineFileDone /></span>
+                                <span>Work logs have been submitted for today!</span>
+                              </p>
+                            }
+                            <table id="customers">
+                              <tr>
+                                <th>S/N</th>
+                                <th>Time started</th>
+                                <th>Time finished</th>
+                                <th>Work log</th>
+                                <th>Work log type</th>
+                                <th>sub project</th>
+                                <th>project</th>
+                                <th>actions</th>
+                              </tr>
+                              <tbody>
+                                {tasks.map((task, index) => (
+                                  <tr key={task._id}>
+                                    <td>{index + 1}.</td>
+                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
+                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
+                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task}</td>
+                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task_type}</td>
+                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.subproject}</td>
+                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.project}</td>
+                                    <td>
+                                      <div className="edit__Item__Customer">
+                                        {
+                                          task.is_active && task.is_active === true && <button
+                                            onClick={(taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? () => { } : () => getTaskId(task._id)}
+                                            data-tooltip-id={task._id}
+                                            data-tooltip-content={'Edit task'}
+                                            style={{
+                                              cursor: (taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? "not-allowed" : "pointer"
+                                            }}
+                                          >
+                                            <AiFillEdit />
+                                          </button>
+                                        }
+                                        <button
+                                          onClick={(taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? () => { } : () => deleteTask(task._id)}
+                                          className="delete"
+                                          data-tooltip-id={task._id + "1"}
+                                          data-tooltip-content={task.is_active && task.is_active === true ? 'Delete task' : 'Retrieve task'}
+                                          style={{
+                                            cursor: (taskDetailForToday?.parentTask?.task_saved || editLoading || deleteLoading) ? "not-allowed" : "pointer"
+                                          }}
+                                        >
+                                          {
+                                            deleteLoading && taskId === task._id ?
+                                              <LoadingSpinner
+                                                width={'0.7rem'}
+                                                height={'0.7rem'}
+                                              />
+                                              :
+                                              task.is_active && task.is_active === true ?
+                                                <AiOutlineClose />
+                                                :
+                                                <IoRefresh />
+                                          }
+                                        </button>
+                                        <Tooltip id={task._id} />
+                                        <Tooltip id={task._id + "1"} />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </>
+                        ) : null}
+
+                        {
+                          taskDetailForTodayLoading ? <></> :
+                            <div className="buttons__Wrapper">
+                              <button
+                                type={"button"}
+                                className="add__Task__Btn cancel__Btn"
+                                disabled={editLoading || deleteLoading ? true : false}
+                                onClick={() =>
+                                  closeTaskScreen()
+                                }
+                              >
+                                {taskDetailForToday?.parentTask?.task_saved ? "Close" : "Cancel"}
+                              </button>
+                              {
+                                !taskDetailForToday?.parentTask?.task_saved && <button
+                                  type={"button"}
+                                  className="add__Task__Btn"
+                                  disabled={tasks.length < 1 || editLoading || deleteLoading ? true : false}
+                                  onClick={
+                                    editPage
+                                      ? () => handleUpdateTaskBtnClick()
+                                      : () => setShowSubmitTaskInfo(true)
+                                  }
+                                >
+                                  {editPage
+                                    ? "Update Task"
+                                    : "Done"}
+                                </button>
                               }
-                            >
-                              {member.applicant}
-                            </p>
-                          );
-                        })
-                      )}
-                    </div>
-                  </>
-                )}
+                            </div>
+                        }
+                      </>
+                    ) : (
+                      <>
+                        {teamMembers.length < 1 ? (
+                          <>
+                            <h4>Your team members will appear here</h4>
+                          </>
+                        ) : (
+                          <>
+                            <h4>Your team members ({teamMembers.length})</h4>
+                            <div className="team__Members__Container">
+                              {React.Children.toArray(
+                                teamMembers.map((member) => {
+                                  return (
+                                    <p
+                                      className="team__Member__Item"
+                                      onClick={() =>
+                                        handleMemberItemClick(member.applicant)
+                                      }
+                                    >
+                                      {member.applicant}
+                                    </p>
+                                  );
+                                })
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </>
+                    )}
               </>
-            )}
-          </>
-        }
+          }
         </div>
       </div>
     </>
@@ -1043,20 +1049,20 @@ const Table = ({ tasks, deleteTask, getTaskId }) => {
 
 
 // const handleNewTaskBtnClick = async () => {
-  // setDisabled(true);
-  // const dataToSend = { ...newTaskDetails };
-  // dataToSend.user = newTaskDetails.username;
-  // delete dataToSend["username"];
-  // try{
-  //     const response = await addNewTask(dataToSend);
-  //     if (!afterSelectionScreen) updateTasks(prevTasks => { return [ ...prevTasks.filter(task => task.user !== dataToSend.user) ] });
-  //     updateTasks(prevTasks => { return [ response.data, ...prevTasks ] } );
-  //     closeTaskScreen();
-  //     (afterSelectionScreen || hrPageActive) ? navigate("/tasks") : navigate("/task");
-  // } catch (err) {
-  //     console.log(err);
-  //     setDisabled(false);
-  // }
+// setDisabled(true);
+// const dataToSend = { ...newTaskDetails };
+// dataToSend.user = newTaskDetails.username;
+// delete dataToSend["username"];
+// try{
+//     const response = await addNewTask(dataToSend);
+//     if (!afterSelectionScreen) updateTasks(prevTasks => { return [ ...prevTasks.filter(task => task.user !== dataToSend.user) ] });
+//     updateTasks(prevTasks => { return [ response.data, ...prevTasks ] } );
+//     closeTaskScreen();
+//     (afterSelectionScreen || hrPageActive) ? navigate("/tasks") : navigate("/task");
+// } catch (err) {
+//     console.log(err);
+//     setDisabled(false);
+// }
 // };
 
 
