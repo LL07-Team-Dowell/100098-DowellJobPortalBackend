@@ -178,7 +178,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                     rolesDict[dataItem?.roleSetting?.Role] ? 
                         dataItem?.roleSetting?.Role
                     : 
-                        "candidate"
+                        "No role assigned"
                     ,
                     dataItem?.roleSetting?.other_roles ?
                         dataItem?.roleSetting.other_roles
@@ -602,7 +602,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                             rolesDict[currentRoleFilter] ? 
                                                 rolesDict[currentRoleFilter]
                                             : 
-                                            "Candidate"
+                                            "No role assigned"
                                         }`
                                     :
                                     ''
@@ -664,7 +664,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                                         {
                                                             rolesDict[dataItem?.roleSetting?.Role]
                                                             ? rolesDict[dataItem?.roleSetting?.Role]
-                                                            : "Candidate"
+                                                            : "No role assigned"
                                                         }
                                                     </td>
                                                     <td>
@@ -696,7 +696,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                                         {
                                                             rolesDict[dataItem?.roleSetting?.Role]
                                                             ? rolesDict[dataItem?.roleSetting?.Role]
-                                                            : "Candidate"
+                                                            : "No role assigned"
                                                         }
                                                     </td>
                                                     <td>

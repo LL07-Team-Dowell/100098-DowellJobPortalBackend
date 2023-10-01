@@ -26,6 +26,7 @@ export const rolesDict = {
   "group_lead": "Group Lead", 
   "super_admin": "Super Admin",
   "candidate": "Candidate",
+  'Viewer': 'Viewer',
 };
 
 const rolesNamesDict = {
@@ -36,6 +37,7 @@ const rolesNamesDict = {
   "Group Lead": "group_lead", 
   "Super Admin": "super_admin",
   "Candidate": "candidate",
+  "Viewer": "Viewer",
 }
 
 const AdminSettings = () => {
