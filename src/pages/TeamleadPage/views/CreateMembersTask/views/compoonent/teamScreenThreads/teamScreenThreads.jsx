@@ -17,6 +17,8 @@ import { getAllTeams } from "../../../../../../../services/createMembersTasks";
 import Avatar from "react-avatar";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import axios from "axios";
+import { formatDateForAPI } from "../../../../../../../helpers/helpers";
 
 const TeamScreenThreads = ({ status, id }) => {
   const { currentUser } = useCurrentUserContext();
@@ -26,13 +28,6 @@ const TeamScreenThreads = ({ status, id }) => {
   const [threads, setThreads] = useState([]);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentText, setEditingCommentText] = useState("");
-  // const [deletingCommentId, setDeletingCommentId] = useState(null);
-  const [replyingCommentId, setReplyingCommentId] = useState(null);
-  const [replyingComment, setReplyingComment] = useState({
-    commentId: null,
-    threadId: null,
-    text: "",
-  });
   const [formVisibility, setFormVisibility] = useState({});
   const [commentsVisibility, setCommentsVisibility] = useState({});
   const [showModalStates, setShowModalStates] = useState({});
@@ -44,18 +39,11 @@ const TeamScreenThreads = ({ status, id }) => {
   const [reducerComment, forceUpdate] = useReducer((x) => x + 1, 0);
   const [reducerStatus, forceUpdateStatus] = useReducer((x) => x + 1, 0);
   const [statusLoading, setStatusLoading] = useState(false);
+  const [updateCommentInput, setUpdateCommentInput] = useState("");
+  const [updateComment, setUpdateComment] = useState([]);
 
   const handleChange = (e) => {
     setText(e.target.value);
-  };
-
-  // handle reply input change
-  const handleReplyChange = (e) => {
-    const { name, value } = e.target;
-    setReplyingComment((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
   };
 
   useEffect(() => {
@@ -102,8 +90,7 @@ const TeamScreenThreads = ({ status, id }) => {
         const inProgressThreads = sortedThreads.filter(
           (thread) =>
             thread.current_status === "In progress" ||
-            thread.current_status === "Created" ||
-            thread.current_status === undefined
+            thread.current_status === "Created"
         );
 
         setCompletedThreads(completedThreads);
@@ -114,41 +101,47 @@ const TeamScreenThreads = ({ status, id }) => {
       .catch((error) => {
         setLoading(false);
       });
-  }, [reducerComment, reducerStatus, undefined]);
+  }, [reducerComment, reducerStatus]);
 
   const addComment = async (text, id) => {
     console.log("addComment", text, id);
     setLoadingcmnt(true);
+
+    const newComment = {
+      created_by: currentUser.userinfo.username,
+      comment: text,
+      thread_id: id,
+    };
+
+    const updatedThreads = threads.slice();
+    const foundThreadBeingUpadted = updatedThreads.find(
+      (thread) => thread._id === id
+    );
+
     try {
-      const updatedThreads = await postComment({
-        created_by: currentUser.userinfo.username,
-        comment: text,
-        thread_id: id,
-        _id: crypto.randomUUID(),
-      });
-      console.log(updatedThreads);
+      const newCommentRes = (await postComment(newComment)).data;
+      console.log(newCommentRes);
+      // setThreads(updatedThreads);
       toast.success("Comment added successfully");
-      setText("");
       setLoadingcmnt(false);
+      setText("")
+
+      if (foundThreadBeingUpadted) {
+        foundThreadBeingUpadted.comments.data.push({
+          ...newComment,
+          created_date: formatDateForAPI(new Date(), "report"),
+          _id: newCommentRes.info.inserted_id
+        });
+        setThreads(updatedThreads);
+      }
     } catch (error) {
-      toast.error("Failed to add comment");
+      console.log(error);
+      setLoadingcmnt(false);
+      toast.error('Dont like Ayoola')
     }
   };
 
   const editComment = (text, commentId, threadId) => {
-    // const updatedThreads = threads.slice();
-
-    // const threadToUpdate = updatedThreads.find(thread => thread._id === threadId);
-    // if (!threadToUpdate) return
-
-    // const updatedComments = threadToUpdate.comments.slice();
-    // const commentToEdit = updatedComments.find(comment => comment._id === commentId);
-    // if (!commentToEdit) return
-
-    // commentToEdit.comment = text;
-
-    // threadToUpdate.comments = updatedComments;
-
     const updatedThreads = threads.map((thread) => {
       if (thread._id === threadId) {
         const updatedComments = thread.comments.map((comment) =>
@@ -190,10 +183,11 @@ const TeamScreenThreads = ({ status, id }) => {
     }));
   };
 
-  const onSubmit = (e, id) => {
+  const onSubmit = (e, id, submitBtnPressed = false) => {
     e.preventDefault();
+
+    if (submitBtnPressed) return addComment(text, id);
     addComment(text, id);
-    setText("");
   };
 
   const [teamdata, setTeamData] = useState([]);
@@ -782,14 +776,14 @@ const TeamScreenThreads = ({ status, id }) => {
                               <button
                                 disabled={isTextareaDisabled}
                                 className="action-btn"
-                                onClick={addComment}
+                                onClick={(e) => onSubmit(e, thread._id, true)}
                               >
                                 Comment
                               </button>
                             </form>
                           )}
                           {commentsVisibility[thread._id] && (
-                            <div>
+                            <div className="new__comments">
                               <h3
                                 style={{
                                   fontSize: "0.8rem",
@@ -831,17 +825,6 @@ const TeamScreenThreads = ({ status, id }) => {
                                             }
                                             className="comment-input"
                                           />
-                                          <button
-                                            onClick={() =>
-                                              saveEditedComment(
-                                                comment._id,
-                                                thread._id
-                                              )
-                                            }
-                                            className="action-btn"
-                                          >
-                                            Save
-                                          </button>
                                         </div>
                                       ) : (
                                         <div>

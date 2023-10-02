@@ -17,7 +17,7 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .team-screen-threads-card {
@@ -254,6 +254,11 @@ textarea button:hover {
   background: white;
   color: #005734;
   border: 1px solid #005734;
+}
+
+.new__comments {
+  max-height: 300px;
+  overflow-y: scroll;
 }
 
 @media screen and (max-width:468px) {
