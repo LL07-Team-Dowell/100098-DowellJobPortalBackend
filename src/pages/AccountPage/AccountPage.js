@@ -41,56 +41,50 @@ const AccountPage = () => {
   const navigate = useNavigate();
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const [searchValue, setSearchValue] = useState("");
-  const [filteredJobs, setFilteredJobs] = useState(jobs);
+  const [filteredCandidates, setFilteredCandidates] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleSearch = (value) => {
     console.log("value", value);
     setSearchValue(value);
     console.log("value", candidatesData.selectedCandidates);
-    if ((section === "home" || section == undefined) && hireTabActive) {
-      setFilteredJobs(
-        candidatesData.candidatesToHire.filter(
-          (job) =>
-            job.job_title
-              .toLocaleLowerCase()
-              .includes(value.toLocaleLowerCase()) ||
-            job.applicant
-              .toLocaleLowerCase()
-              .includes(value.toLocaleLowerCase())
-        )
-      );
-
-      console.log("filteredJobs", filteredJobs);
-    } else if (section === "onboarding" && showOnboarding) {
-      setFilteredJobs(
-        candidatesData.onboardingCandidates.filter(
-          (job) =>
-            job.job_title
-              .toLocaleLowerCase()
-              .includes(value.toLocaleLowerCase()) ||
-            job.applicant
-              .toLocaleLowerCase()
-              .includes(value.toLocaleLowerCase())
-        )
-      );
-    } else if (section === "rehire" && rehireTabActive) {
-      setFilteredJobs(
-        candidatesData.candidatesToRehire.filter(
-          (job) =>
-            job.job_title
-              .toLocaleLowerCase()
-              .includes(value.toLocaleLowerCase()) ||
-            job.applicant
-              .toLocaleLowerCase()
-              .includes(value.toLocaleLowerCase())
-        )
-      );
-    } else if (section === "rejected") {
-      setFilteredJobs(
-        candidatesData.rejectedCandidates.filter((job) =>
-          job.job_title.toLocaleLowerCase().includes(value.toLocaleLowerCase()) ||
-          job.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+    if ((section === "home" || section == undefined)) {
+      if (hireTabActive) {
+        setFilteredCandidates(
+          candidatesData.candidatesToHire.filter(
+            (application) =>
+              application.applicant
+                .toLocaleLowerCase()
+                .includes(value.toLocaleLowerCase())
+          )
+        );
+      }
+      if (showOnboarding) {
+        setFilteredCandidates(
+          candidatesData.onboardingCandidates.filter(
+            (application) =>
+              application.applicant
+                .toLocaleLowerCase()
+                .includes(value.toLocaleLowerCase())
+          )
+        );
+      }
+      if (rehireTabActive) {
+        setFilteredCandidates(
+          candidatesData.candidatesToRehire.filter(
+            (application) =>
+              application.applicant
+                .toLocaleLowerCase()
+                .includes(value.toLocaleLowerCase())
+          )
+        );
+      }
+    }
+    
+    if (section === "rejected") {
+      setFilteredCandidates(
+        candidatesData.rejectedCandidates.filter((application) =>
+          application.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
         )
       );
     }
@@ -405,15 +399,19 @@ const AccountPage = () => {
 
                     <SelectedCandidates
                       candidatesCount={
-                        hireTabActive
-                          ? searchValue.length >= 1
-                            ? filteredJobs.length
-                            : candidatesData.candidatesToHire.length
-                          : showOnboarding
-                            ? candidatesData.onboardingCandidates.length
-                            : rehireTabActive
-                              ? candidatesData.candidatesToRehire.length
-                              : 0
+                        searchValue.length >= 1 ? 
+                          filteredCandidates.length
+                        :
+                        hireTabActive ? 
+                          candidatesData.candidatesToHire.length
+                        : 
+                        showOnboarding ? 
+                          candidatesData.onboardingCandidates.length
+                        : 
+                          rehireTabActive ? 
+                          candidatesData.candidatesToRehire.length
+                        : 
+                        0
                       }
                     />
 
@@ -432,7 +430,7 @@ const AccountPage = () => {
                       {hireTabActive ? (
                         searchValue.length >= 1 ? (
                           React.Children.toArray(
-                            filteredJobs.map((dataitem) => {
+                            filteredCandidates.map((dataitem) => {
                               return (
                                 <JobCard
                                   buttonText={"View"}
@@ -484,7 +482,7 @@ const AccountPage = () => {
                       ) : showOnboarding ? (
                         searchValue.length >= 1 ? (
                           React.Children.toArray(
-                            filteredJobs.map((dataitem) => {
+                            filteredCandidates.map((dataitem) => {
                               return (
                                 <JobCard
                                   buttonText={"View"}
@@ -538,7 +536,7 @@ const AccountPage = () => {
                       ) : rehireTabActive ? (
                         searchValue.length >= 1 ? (
                           React.Children.toArray(
-                            filteredJobs.map((dataitem) => {
+                            filteredCandidates.map((dataitem) => {
                               return (
                                 <JobCard
                                   buttonText={"View"}
@@ -610,7 +608,7 @@ const AccountPage = () => {
                   <RejectedCandidates
                     candidatesCount={
                       searchValue.length >= 1
-                        ? filteredJobs.length
+                        ? filteredCandidates.length
                         : candidatesData.rejectedCandidates.length
                     }
                   />
