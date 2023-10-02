@@ -327,7 +327,9 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                         </button>
                     }
                     <h4 style={{ marginBottom: 30, marginTop: '2rem' }}>
-                        Showing report data from {new Date(datesSelection.startDate).toDateString()} to {new Date(datesSelection.endDate).toDateString()}
+                        Showing report data from 
+                        {isPublicReportUser ? new Date(reportsUserDetails?.reportStartDate).toDateString() : new Date(datesSelection.startDate).toDateString()} to 
+                        {isPublicReportUser ? new Date(reportsUserDetails?.reportEndDate).toDateString() :  new Date(datesSelection.endDate).toDateString()}
                     </h4>
                     <div className="indiv__Task__Rep__info">
                         <div className="leaderboard__Ranking__Wrapper top__Ranking">
@@ -608,7 +610,10 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                     ''
                                 }
                             </h4>
-                            <span style={{ fontSize: '0.7rem' }}>From {new Date(datesSelection.startDate).toDateString()} to {new Date(datesSelection.endDate).toDateString()}</span>
+                            <span style={{ fontSize: '0.7rem' }}>
+                                From {isPublicReportUser ? new Date(reportsUserDetails?.reportStartDate).toDateString() : new Date(datesSelection.startDate).toDateString()} to 
+                                {isPublicReportUser ? new Date(reportsUserDetails?.reportEndDate).toDateString() :  new Date(datesSelection.endDate).toDateString()}
+                            </span>
                             <div className="heading__Actions__Wrapper">
                                 <div className="search__Wrapper">
                                     <AiOutlineSearch />
