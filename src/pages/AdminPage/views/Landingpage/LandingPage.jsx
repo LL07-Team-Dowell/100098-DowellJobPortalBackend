@@ -27,6 +27,7 @@ import { toast } from "react-toastify";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import { testingRoles } from "../../../../utils/testingRoles";
 import { teamManagementProductName } from "../../../../utils/utils";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 const LandingPage = ({ subAdminView }) => {
   const [stateTrackingProgress, setstateTrackingProgress] = useState(false);
@@ -566,6 +567,9 @@ const LandingPage = ({ subAdminView }) => {
       </div>
       {(isActive === "active" || isActive === "inactive") && (
         <div className='JobsChanger_containter'>
+          <button>
+            <IoIosArrowBack />
+          </button>
           {createArrayWithLength(
             isActive === "active"
               ? Math.ceil(activeJobsLength / 4)
@@ -584,6 +588,9 @@ const LandingPage = ({ subAdminView }) => {
               {s + 1}
             </button>
           ))}
+          <button>
+            <IoIosArrowForward />
+          </button>
         </div>
       )}
     </StaffJobLandingLayout>
