@@ -186,23 +186,3 @@ generate_report_link_org = (
 generate_report_link_leaderboard = (
     "{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}&start_date={}&end_date={}&threshold={}"
 )
-
-Team_Leads = [
-'wilfex',
-'George_Kibe',
-'WorkflowAiedwin',
-'workfloweric11',
-'PhilipDomician',
-'jaya2401',
-'uxliveadmin',
-'Jude',
-'Charu_Dowell',
-'netalpareek',
-'jerrydowell',
-'Nagarajuvuliki',
-'rahultadola',
-'Anchal',
-'Jacob1996',
-'ayoolaa_',
-'HeenaK',
-]
