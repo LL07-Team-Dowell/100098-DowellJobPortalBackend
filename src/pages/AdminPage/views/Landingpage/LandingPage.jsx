@@ -61,7 +61,7 @@ const LandingPage = ({ subAdminView }) => {
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
   const [cardActivePagination, setCardActivePagination] = useState(0);
-
+  const [cardInactivePagination, setCardInactivePagination] = useState(0);
   // low functions
   const changeCardGroupNumber = (number) => {
     setCardGroupNumber(number);
