@@ -60,6 +60,8 @@ const LandingPage = ({ subAdminView }) => {
   const [activeLinkTab, setActiveLinkTab] = useState("jobs");
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
+  const [cardActivePagination, setCardActivePagination] = useState(0);
+
   // low functions
   const changeCardGroupNumber = (number) => {
     setCardGroupNumber(number);
