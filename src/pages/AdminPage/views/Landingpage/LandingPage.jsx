@@ -574,20 +574,29 @@ const LandingPage = ({ subAdminView }) => {
             isActive === "active"
               ? Math.ceil(activeJobsLength / 4)
               : Math.ceil(inactiveJobsLength / 4)
-          ).map((s, index) => (
-            <button
-              className={s !== cardIndex ? "active" : "desactive"}
-              onClick={() => {
-                changeCardGroupNumber(s * 4);
-                setCardIndex(s);
-              }}
-              key={`${index}_button${
-                isActive === "active" ? "_active" : "_desactive"
-              }`}
-            >
-              {s + 1}
-            </button>
-          ))}
+          )
+            .slice(
+              isActive === "active"
+                ? cardActivePagination
+                : cardInactivePagination,
+              isActive === "active"
+                ? cardActivePagination + 6
+                : cardInactivePagination + 6
+            )
+            .map((s, index) => (
+              <button
+                className={s !== cardIndex ? "active" : "desactive"}
+                onClick={() => {
+                  changeCardGroupNumber(s * 4);
+                  setCardIndex(s);
+                }}
+                key={`${index}_button${
+                  isActive === "active" ? "_active" : "_desactive"
+                }`}
+              >
+                {s + 1}
+              </button>
+            ))}
           <button>
             <IoIosArrowForward />
           </button>
