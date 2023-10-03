@@ -71,8 +71,15 @@ const LandingPage = ({ subAdminView }) => {
       }
     }
   };
-  const decrementStepPagination = (steps, length, activeCard) => {
-    if (steps - 1 < steps) {
+  const decrementStepPagination = (activeCard) => {
+    if (activeCard) {
+      if (cardActivePagination !== 0) {
+        setCardActivePagination(cardActivePagination - 1);
+      }
+    } else {
+      if (cardInactivePagination !== 0) {
+        setCardInactivePagination(cardInactivePagination - 1);
+      }
     }
   };
   // low functions
