@@ -70,11 +70,11 @@ const LandingPage = ({ subAdminView }) => {
   const incrementStepPagination = (steps, length, activeCard) => {
     if (steps + 1 <= length) {
       if (activeCard) {
-        if (steps + cardActivePagination < length) {
+        if (steps + cardActivePagination !== length) {
           setCardActivePagination(cardActivePagination + 1);
         }
       } else {
-        if (steps + cardInactivePagination < length) {
+        if (steps + cardInactivePagination !== length) {
           setCardInactivePagination(cardInactivePagination + 1);
         }
       }
@@ -609,7 +609,9 @@ const LandingPage = ({ subAdminView }) => {
             onClick={() =>
               incrementStepPagination(
                 6,
-                isActive === "active" ? activeJobsLength : inactiveJobsLength,
+                isActive === "active"
+                  ? Math.ceil(activeJobsLength / 4)
+                  : Math.ceil(inactiveJobsLength / 4),
                 isActive === "active" ? true : false
               )
             }
