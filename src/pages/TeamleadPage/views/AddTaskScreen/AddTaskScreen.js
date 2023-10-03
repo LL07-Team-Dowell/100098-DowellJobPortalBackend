@@ -142,7 +142,7 @@ const AddTaskScreen = ({
   const addNewTask = () => {
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
-      if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
+      if (taskEndTime === '12:00') return toast.info("You can only update tasks for today")
       if (duration <= 15) {
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
         if (!taskDetailForToday) return addTaskForToday(taskStartTime, taskEndTime, taskName, details);
@@ -161,7 +161,6 @@ const AddTaskScreen = ({
   const updateTask = async () => {
     if (inputsAreFilled) {
       if (duration <= 15) {
-        if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
 
         setLoading(true);
@@ -445,7 +444,12 @@ const AddTaskScreen = ({
         setTasks(copyOfTasksForToday.tasks);
         clearAllInputs();
         setTaskId("");
-
+        setTaskStartTime(endTime);
+        const [hours, minutes] = endTime.split(':').map(Number);
+        const newMinutes = (minutes + 15) % 60;
+        const newHours = hours + Math.floor((minutes + 15) / 60);
+        const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+        setTaskEndTime(newEndTime);
         return
       }
 
@@ -476,7 +480,6 @@ const AddTaskScreen = ({
 
         setLoading(false);
         setDisabled(false);
-
         setTasks(listsOfTasksForToday?.reverse());
         clearAllInputs();
         setTaskId("");
