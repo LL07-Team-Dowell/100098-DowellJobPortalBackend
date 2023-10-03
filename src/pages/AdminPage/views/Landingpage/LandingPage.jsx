@@ -62,7 +62,19 @@ const LandingPage = ({ subAdminView }) => {
   const [cardIndex, setCardIndex] = useState(0);
   const [cardActivePagination, setCardActivePagination] = useState(0);
   const [cardInactivePagination, setCardInactivePagination] = useState(0);
-
+  const incrementStepPagination = (steps, length, activeCard) => {
+    if (steps + 1 <= length) {
+      if (activeCard) {
+        setCardActivePagination(cardActivePagination + 1);
+      } else {
+        setCardInactivePagination(cardInactivePagination + 1);
+      }
+    }
+  };
+  const decrementStepPagination = (steps, length, activeCard) => {
+    if (steps - 1 < steps) {
+    }
+  };
   // low functions
   const changeCardGroupNumber = (number) => {
     setCardGroupNumber(number);
