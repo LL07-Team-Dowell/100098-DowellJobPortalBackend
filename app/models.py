@@ -12,7 +12,7 @@ class SettingUserProfileInfo(models.Model):
     profile_info = jsonfield.JSONField()
 
     def __str__(self):
-        return f"{self.company_id}"
+        return f"{self.id}, {self.company_id}"
 
 
 class UserProject(models.Model):
@@ -21,7 +21,7 @@ class UserProject(models.Model):
     project_list = jsonfield.JSONField()
 
     def __str__(self):
-        return f"{self.company_id}"
+        return f"{self.id}, {self.company_id}"
 
 
 class UsersubProject(models.Model):
@@ -32,4 +32,4 @@ class UsersubProject(models.Model):
     link_id = models.CharField(max_length=100, default="test")
 
     def __str__(self):
-        return f"{self.parent_project}"
+        return f"{self.id}, {self.company_id}"
