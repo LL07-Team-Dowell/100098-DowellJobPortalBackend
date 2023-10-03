@@ -31,6 +31,7 @@ import { teamManagementProductName } from "../../../../utils/utils";
 const LandingPage = ({ subAdminView }) => {
   const [stateTrackingProgress, setstateTrackingProgress] = useState(false);
   const [isActive, setIsActive] = useState("active");
+
   const {
     jobs,
     setJobs,
@@ -545,14 +546,14 @@ const LandingPage = ({ subAdminView }) => {
             <button
               className={s !== cardIndex ? "active" : "desactive"}
               onClick={() => {
-                changeCardGroupNumber(index * 4);
-                setCardIndex(index);
+                changeCardGroupNumber(s * 4);
+                setCardIndex(s);
               }}
               key={`${index}_button${
                 isActive === "active" ? "_active" : "_desactive"
               }`}
             >
-              {index + 1}
+              {s + 1}
             </button>
           ))}
         </div>
