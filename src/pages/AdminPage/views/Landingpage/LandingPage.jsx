@@ -62,6 +62,10 @@ const LandingPage = ({ subAdminView }) => {
   const [cardIndex, setCardIndex] = useState(0);
   const [cardActivePagination, setCardActivePagination] = useState(0);
   const [cardInactivePagination, setCardInactivePagination] = useState(0);
+  const initializePagination = () => {
+    setCardActivePagination(0);
+    setCardInactivePagination(0);
+  };
   const incrementStepPagination = (steps, length, activeCard) => {
     if (steps + 1 <= length) {
       if (activeCard) {
@@ -330,6 +334,7 @@ const LandingPage = ({ subAdminView }) => {
           onClick={() => {
             setIsActive("active");
             setCardGroupNumber(0);
+            initializePagination();
           }}
           className={isActive === "active" && "isActive"}
         >
@@ -339,6 +344,7 @@ const LandingPage = ({ subAdminView }) => {
           onClick={() => {
             setIsActive("inactive");
             setCardGroupNumber(0);
+            initializePagination();
           }}
           className={isActive === "inactive" && "isActive"}
         >
