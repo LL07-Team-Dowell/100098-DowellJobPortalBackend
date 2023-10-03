@@ -567,7 +567,11 @@ const LandingPage = ({ subAdminView }) => {
       </div>
       {(isActive === "active" || isActive === "inactive") && (
         <div className='JobsChanger_containter'>
-          <button>
+          <button
+            onClick={() =>
+              decrementStepPagination(isActive === "active" ? true : false)
+            }
+          >
             <IoIosArrowBack />
           </button>
           {createArrayWithLength(
@@ -597,7 +601,15 @@ const LandingPage = ({ subAdminView }) => {
                 {s + 1}
               </button>
             ))}
-          <button>
+          <button
+            onClick={() =>
+              incrementStepPagination(
+                6,
+                isActive === "active" ? activeJobsLength : inactiveJobsLength,
+                isActive === "active" ? true : false
+              )
+            }
+          >
             <IoIosArrowForward />
           </button>
         </div>
