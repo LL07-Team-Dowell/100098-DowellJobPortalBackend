@@ -124,7 +124,7 @@ const Teamlead = ({ isGrouplead }) => {
       );
 
       console.log("filteredJobs", filteredJobs);
-    } else if (section === "task") {
+    } else if (section === "task" || section === 'all-tasks') {
       setFilteredTasks(
         tasksToDisplayForLead.filter((task) =>
           (typeof task.applicant === 'string' && task.applicant && task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())) ||
@@ -759,18 +759,17 @@ const Teamlead = ({ isGrouplead }) => {
               "task" :
               "applicant"
             : section === "task"
-              ? showTaskLandingPage ?
-                isGrouplead ? 
-                  'applicant'
-                  :
-                  "" 
-                :
-                "applicant"
+              ? 
+                ""
               : rehireTabActive
                 ? "rehire"
-                : "applicant"
+              :
+              section === 'all-tasks' ?
+                'user'
+              : 
+              "applicant"
         }
-        hideSearchBar={((isGrouplead && (section === "home" || section === undefined)) || section === "user") ? true : showTaskLandingPage && !isGrouplead ? true : false}
+        hideSearchBar={((isGrouplead && (section === "home" || section === undefined)) || section === "user") ? true : section === 'task' ? true : false}
         isGrouplead={isGrouplead}
       >
         {
@@ -779,7 +778,7 @@ const Teamlead = ({ isGrouplead }) => {
               section === 'user-tasks' ? <></> :
                 <TitleNavigationBar
                   title={
-                    section === "task"
+                    (section === "task" || section === 'all-tasks')
                       ?
                       "Work Logs"
                       : section === "user"
@@ -794,7 +793,11 @@ const Teamlead = ({ isGrouplead }) => {
                   hideBackBtn={
                     showCandidate || showCandidateTask || (section === "task" && isGrouplead) ? false
                       :
-                      section === 'task' && !showTaskLandingPage ? false
+                      section === 'task' ? 
+                        true
+                        :
+                      section === 'all-tasks' ? 
+                        false
                         :
                         true
                   }
@@ -802,8 +805,8 @@ const Teamlead = ({ isGrouplead }) => {
                     (section === "task" && isGrouplead) ?
                       () => navigate(-1)
                       :
-                      (section === 'task') ?
-                        () => setShowTaskLandingPage(true)
+                      (section === 'all-tasks') ?
+                        () => navigate(-1)
                         :
                         () => handleBackBtnClick()
                   }
@@ -812,7 +815,8 @@ const Teamlead = ({ isGrouplead }) => {
           </>
         }
         {section !== "user" && !showCandidate && !isGrouplead && (
-          section === 'user-tasks' ? <></>
+          section === 'user-tasks' ? <></> :
+          section === 'all-tasks' ? <></> 
             :
             <>
               <TogglerNavMenuBar
@@ -825,17 +829,17 @@ const Teamlead = ({ isGrouplead }) => {
               />
 
               {
-                showTaskLandingPage && section === 'task' ? <></>
-                  :
-                  <button
-                    className="refresh-container-teamlead desktop"
+                section === 'task' ? <></>
+                :
+                <button
+                  className="refresh-container-teamlead desktop"
+                >
+                  <div className="refresh-btn refresh-btn-teamlead" onClick={section === "all-tasks" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
                   >
-                    <div className="refresh-btn refresh-btn-teamlead" onClick={section === "task" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
-                    >
-                      <IoMdRefresh />
-                      <p>Refresh</p>
-                    </div>
-                  </button>
+                    <IoMdRefresh />
+                    <p>Refresh</p>
+                  </div>
+                </button>
               }
 
             </>
@@ -1282,229 +1286,16 @@ const Teamlead = ({ isGrouplead }) => {
                       </div>
                     </>
                     :
-                    showTaskLandingPage ?
-                      <>
-                        <AddPage
-                          showAddIssueModal={showAddIssueModalForGrouplead}
-                          setShowAddIssueModal={setShowAddIssueModalForGrouplead}
-                          showAddTaskModal={showAddTaskModalForGrouplead}
-                          setShowAddTaskModal={setShowAddTaskModalForGrouplead}
-                          subprojects={allSubProjects}
-                          isTeamlead={true}
-                          handleViewIndividualTaskBtn={() => navigate('/user-tasks')}
-                          handleViewTeamTaskBtn={() => setShowTaskLandingPage(false)}
-                        />
-                      </>
-                      :
-                      <>
-                        {/* <button
-                      className="refresh-container"
-                      onClick={handleRefreshForCandidateTask}
-                    >
-                      <div className="refresh-btn">
-                        <IoMdRefresh />
-                        <p>Refresh</p>
-                      </div>
-                    </button> */}
-                        <SelectedCandidates
-                          showTasks={true}
-                          tasksCount={
-                            currentSortOption ? 
-                              searchValue.length > 0 ?
-                                sortResults.filter(
-                                  item => 
-                                    item.data.find(
-                                      task => typeof task?.applicantName === 'string' && task?.applicantName?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
-                                ).length
-                              :
-                              sortResults.length 
-                            : 
-                            searchValue.length >= 1
-                              ? filteredTasks.length
-                              : tasksToDisplayForLead.length
-                          }
-                          availableSortOptions={sortOptionsForLead}
-                          sortActive={currentSortOption ? true : false}
-                          handleSortOptionClick={(data) => setCurrentSortOption(data)}
-                        />
-                        <div className="project__Select__Wrapper">
-                          <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
-                            <option value={''} disabled>Select project</option>
-                            <option
-                              value={
-                                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
-                              }
-                            >
-                              {
-                                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
-                              }
-                            </option>
-                            {
-                              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-                              Array.isArray(
-                                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-                              ) &&
-                              React.Children.toArray(
-                                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(project => {
-                                  return <option value={project}>{project}</option>
-                                })
-                              )
-                            }
-                          </select>
-                        </div>
-
-                        <div className="tasks-container">
-                          {section === "task" ? (
-                            searchValue.length >= 1 ? (
-                              <>
-                                {React.Children.toArray(
-                                  filteredTasks
-                                    .slice(cardIndex, cardIndex + 6)
-                                    .map((dataitem, index) => {
-                                      return (
-                                        <JobCard
-                                          buttonText={"View"}
-                                          candidateCardView={true}
-                                          candidateData={dataitem}
-                                          jobAppliedFor={
-                                            jobs.find(
-                                              (job) =>
-                                                job.job_number === dataitem.job_number
-                                            )
-                                              ? jobs.find(
-                                                (job) =>
-                                                  job.job_number ===
-                                                  dataitem.job_number
-                                              ).job_title
-                                              : ""
-                                          }
-                                          handleBtnClick={handleViewTaskBtnClick}
-                                          taskView={true}
-                                          className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                        />
-                                      );
-                                    })
-                                )}
-                                <div className='JobsChanger_containter'>
-                                  {createArrayWithLength(
-                                    Math.ceil(filteredTasks.length / 6)
-                                  ).map((s, index) => (
-                                    <button
-                                      className={s !== cardIndex ? "active" : "desactive"}
-                                      onClick={() => {
-                                        setCardGroupNumber(index * 4);
-                                        setCardIndex(index);
-                                      }}
-                                      key={`${index}_button`}
-                                    >
-                                      {index + 1}
-                                    </button>
-                                  ))}
-                                </div>
-                              </>
-                            ) :
-
-                              (
-                                <>
-                                  {
-                                  currentSortOption ? <>
-                                    {
-                                      React.Children.toArray(
-                                        sortResults
-                                        .slice(cardIndex, cardIndex + 6)
-                                        .map(result => {
-                                        return <>
-                                          <p className='lead__sort__Title__Item'><b>{result.name}</b></p>
-                                          <>
-                                            {
-                                              React.Children.toArray(result.data.map((dataitem, index) => {
-                                                return <JobCard
-                                                  buttonText={"View"}
-                                                  candidateCardView={true}
-                                                  candidateData={dataitem}
-                                                  jobAppliedFor={
-                                                    jobs.find(
-                                                      (job) =>
-                                                        job.job_number === dataitem.job_number
-                                                    )
-                                                      ? jobs.find(
-                                                        (job) =>
-                                                          job.job_number ===
-                                                          dataitem.job_number
-                                                      ).job_title
-                                                      : ""
-                                                  }
-                                                  handleBtnClick={handleViewTaskBtnClick}
-                                                  taskView={true}
-                                                  className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                                />
-                                              }))
-                                            }
-                                          </>
-                                          <br />
-                                        </>
-                                      }))
-                                    }
-                                  </> 
-                                  :
-                                  React.Children.toArray(
-                                    // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
-                                    tasksToDisplayForLead
-                                      .slice(cardIndex, cardIndex + 6)
-                                      .map((dataitem, index) => {
-                                        return (
-                                          <JobCard
-                                            buttonText={"View"}
-                                            candidateCardView={true}
-                                            candidateData={dataitem}
-                                            jobAppliedFor={
-                                              jobs.find(
-                                                (job) =>
-                                                  job.job_number === dataitem.job_number
-                                              )
-                                                ? jobs.find(
-                                                  (job) =>
-                                                    job.job_number ===
-                                                    dataitem.job_number
-                                                ).job_title
-                                                : ""
-                                            }
-                                            handleBtnClick={handleViewTaskBtnClick}
-                                            taskView={true}
-                                            className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                          />
-                                        );
-
-                                      })
-                                  )}
-                                  <div className='JobsChanger_containter'>
-                                    {createArrayWithLength(
-                                      currentSortOption ?
-                                        Math.ceil(sortResults.length / 6)
-                                      :
-                                      Math.ceil(tasksToDisplayForLead.length / 6)
-                                    ).map((s, index) => (
-                                      <button
-                                        className={s !== cardIndex ? "active" : "desactive"}
-                                        onClick={() => {
-                                          setCardGroupNumber(index * 4);
-                                          setCardIndex(index);
-                                        }}
-                                        key={`${index}_button`}
-                                      >
-                                        {index + 1}
-                                      </button>
-                                    ))}
-                                  </div>
-
-                                </>
-                              )
-
-                          ) : (
-                            <></>
-                          )}
-                        </div>
-                      </>
+                    <AddPage
+                      showAddIssueModal={showAddIssueModalForGrouplead}
+                      setShowAddIssueModal={setShowAddIssueModalForGrouplead}
+                      showAddTaskModal={showAddTaskModalForGrouplead}
+                      setShowAddTaskModal={setShowAddTaskModalForGrouplead}
+                      subprojects={allSubProjects}
+                      isTeamlead={true}
+                      handleViewIndividualTaskBtn={() => navigate('/user-tasks')}
+                      handleViewTeamTaskBtn={() => navigate('/all-tasks')}
+                    />
                 )
               ) : section === "user" ? (
                 <UserScreen isGrouplead={isGrouplead} />
@@ -1529,6 +1320,204 @@ const Teamlead = ({ isGrouplead }) => {
                   loadProjects={true}
                   isTeamlead={true}
                 />
+              ) :
+                !isGrouplead && section === 'all-tasks' ? (
+                <>
+                  <SelectedCandidates
+                    showTasks={true}
+                    tasksCount={
+                      currentSortOption ? 
+                        searchValue.length > 0 ?
+                          sortResults.filter(
+                            item => 
+                              item.data.find(
+                                task => typeof task?.applicantName === 'string' && task?.applicantName?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
+                          ).length
+                        :
+                        sortResults.length 
+                      : 
+                      searchValue.length >= 1
+                        ? filteredTasks.length
+                        : tasksToDisplayForLead.length
+                    }
+                    availableSortOptions={sortOptionsForLead}
+                    sortActive={currentSortOption ? true : false}
+                    handleSortOptionClick={(data) => setCurrentSortOption(data)}
+                  />
+                  <div className="project__Select__Wrapper">
+                    <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
+                      <option value={''} disabled>Select project</option>
+                      <option
+                        value={
+                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
+                        }
+                      >
+                        {
+                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
+                        }
+                      </option>
+                      {
+                        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+                        Array.isArray(
+                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+                        ) &&
+                        React.Children.toArray(
+                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(project => {
+                            return <option value={project}>{project}</option>
+                          })
+                        )
+                      }
+                    </select>
+                  </div>
+
+                  <div className="tasks-container">
+                    {
+                      searchValue.length >= 1 ? (
+                        <>
+                          {React.Children.toArray(
+                            filteredTasks
+                              .slice(cardIndex, cardIndex + 6)
+                              .map((dataitem, index) => {
+                                return (
+                                  <JobCard
+                                    buttonText={"View"}
+                                    candidateCardView={true}
+                                    candidateData={dataitem}
+                                    jobAppliedFor={
+                                      jobs.find(
+                                        (job) =>
+                                          job.job_number === dataitem.job_number
+                                      )
+                                        ? jobs.find(
+                                          (job) =>
+                                            job.job_number ===
+                                            dataitem.job_number
+                                        ).job_title
+                                        : ""
+                                    }
+                                    handleBtnClick={handleViewTaskBtnClick}
+                                    taskView={true}
+                                    className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                  />
+                                );
+                              })
+                          )}
+                          <div className='JobsChanger_containter'>
+                            {createArrayWithLength(
+                              Math.ceil(filteredTasks.length / 6)
+                            ).map((s, index) => (
+                              <button
+                                className={s !== cardIndex ? "active" : "desactive"}
+                                onClick={() => {
+                                  setCardGroupNumber(index * 4);
+                                  setCardIndex(index);
+                                }}
+                                key={`${index}_button`}
+                              >
+                                {index + 1}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      ) :
+                      (
+                        <>
+                          {
+                          currentSortOption ? <>
+                            {
+                              React.Children.toArray(
+                                sortResults
+                                .slice(cardIndex, cardIndex + 6)
+                                .map(result => {
+                                return <>
+                                  <p className='lead__sort__Title__Item'><b>{result.name}</b></p>
+                                  <>
+                                    {
+                                      React.Children.toArray(result.data.map((dataitem, index) => {
+                                        return <JobCard
+                                          buttonText={"View"}
+                                          candidateCardView={true}
+                                          candidateData={dataitem}
+                                          jobAppliedFor={
+                                            jobs.find(
+                                              (job) =>
+                                                job.job_number === dataitem.job_number
+                                            )
+                                              ? jobs.find(
+                                                (job) =>
+                                                  job.job_number ===
+                                                  dataitem.job_number
+                                              ).job_title
+                                              : ""
+                                          }
+                                          handleBtnClick={handleViewTaskBtnClick}
+                                          taskView={true}
+                                          className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                        />
+                                      }))
+                                    }
+                                  </>
+                                  <br />
+                                </>
+                              }))
+                            }
+                          </> 
+                          :
+                          React.Children.toArray(
+                            // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
+                            tasksToDisplayForLead
+                              .slice(cardIndex, cardIndex + 6)
+                              .map((dataitem, index) => {
+                                return (
+                                  <JobCard
+                                    buttonText={"View"}
+                                    candidateCardView={true}
+                                    candidateData={dataitem}
+                                    jobAppliedFor={
+                                      jobs.find(
+                                        (job) =>
+                                          job.job_number === dataitem.job_number
+                                      )
+                                        ? jobs.find(
+                                          (job) =>
+                                            job.job_number ===
+                                            dataitem.job_number
+                                        ).job_title
+                                        : ""
+                                    }
+                                    handleBtnClick={handleViewTaskBtnClick}
+                                    taskView={true}
+                                    className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                  />
+                                );
+
+                              })
+                          )}
+                          <div className='JobsChanger_containter'>
+                            {createArrayWithLength(
+                              currentSortOption ?
+                                Math.ceil(sortResults.length / 6)
+                              :
+                              Math.ceil(tasksToDisplayForLead.length / 6)
+                            ).map((s, index) => (
+                              <button
+                                className={s !== cardIndex ? "active" : "desactive"}
+                                onClick={() => {
+                                  setCardGroupNumber(index * 4);
+                                  setCardIndex(index);
+                                }}
+                                key={`${index}_button`}
+                              >
+                                {index + 1}
+                              </button>
+                            ))}
+                          </div>
+
+                        </>
+                      )
+                    }
+                  </div>
+                </>
               ) : (
                 <>
                   <ErrorPage disableNav={true} />
