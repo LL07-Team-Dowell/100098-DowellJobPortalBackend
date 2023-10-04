@@ -4434,19 +4434,33 @@ class GetAllThreads(APIView):
                 *thread_report_module, "fetch", field, update_field
             )
             threads_response = json.loads(get_response)
+            # print(threads_response)
             threads = []
+            commentfield={}
             if threads_response["isSuccess"]:
+                
                 threads_data = threads_response["data"]
-                if threads_data:
-                    for thread in threads_data:
-                        get_comment = dowellconnection(
+                get_comment = dowellconnection(
                             *comment_report_module,
                             "fetch",
-                            {"thread_id": thread["_id"]},
+                            commentfield,
                             update_field,
                         )
-                        thread["comments"] = json.loads(get_comment)
+                # print(get_comment)
+                if threads_data:
+                    # print(threads_data)
+                    
+                    for thread in threads_data:
+                        thread["comments"] = []
+                        
+                        for comment in json.loads(get_comment)['data']:
+                            
+                            if comment["thread_id"]==thread["_id"]:
+                           
+                                thread["comments"].append(comment)
                         threads.append(thread)
+                                
+                                
                 return Response(
                     {"isSuccess": True, "message": "List of Threads", "data": threads},
                     status=status.HTTP_200_OK,
