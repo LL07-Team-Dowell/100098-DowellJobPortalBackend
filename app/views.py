@@ -5776,7 +5776,6 @@ class Generate_Report(APIView):
                     except Exception:
                         pass
                     try:
-                        print(task, "------------------")
                         if task["task_approved_by"] == username and (
                             task["approved"] == True or task["approval"] == True
                         ):
@@ -5784,7 +5783,6 @@ class Generate_Report(APIView):
                     except KeyError:
                         pass
                     try:
-                        print(task, "------------------")
                         if task["task_approved_by"] == username and (
                                 task["status"] == "Completed"
                                 or task["status"] == "Complete"
@@ -5795,7 +5793,6 @@ class Generate_Report(APIView):
                     except KeyError:
                         pass
                     try:
-                        print(task, "------------------")
                         if task["task_approved_by"] == username and (task["status"] == "Incomplete"
                                 or task["status"] == "incompleted"
                                 or task["status"] == "incomplete"
@@ -6566,6 +6563,7 @@ class Generate_Report(APIView):
                     *candidate_management_reports, "fetch", field, update_field
                 )
                 total = [res for res in json.loads(response)["data"]]
+                
                 hired = [res for res in total if res["status"] == "hired"]
                 data = {user["username"]: {} for user in hired}
                 for user in data:
