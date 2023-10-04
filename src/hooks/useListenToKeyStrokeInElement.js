@@ -7,7 +7,7 @@ export default function useListenToKeyStrokeInElement (elemRef, keyToListenTo, c
         const handleClick = (e) => {
             if (!elemRef.current) return;
 
-            if (e.key !== keyToListenTo) return;
+            if ((e.key !== keyToListenTo) || (!elemRef.current.contains(e.target))) return;
 
             callbackFunction();
         }
