@@ -161,7 +161,7 @@ const JobCard = ({
             <div className="job__Details__Info task__View">
                 <div className="detail__Item">
                     <span className="job__Highlight__Item">Description: </span>
-                    <span>{candidateData.task ? candidateData.task.length > 42 ? candidateData.task.slice(0, 43) + "..." : candidateData.task : ""}</span>
+                    <span>{candidateData.task ? candidateData.task.length > 42 ? candidateData.task.slice(0, 43) + "..." : candidateData.task : "Log"}</span>
                 </div>
                 <div className="detail__Item">
                     <span className="job__Highlight__Item">Submitted on: </span>
