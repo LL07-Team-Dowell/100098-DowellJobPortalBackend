@@ -704,6 +704,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                     <th>Time finished</th>
                                     <th>Work log</th>
                                     <th>Work log type</th>
+                                    <th>Work log approved</th>
                                     <th>sub project</th>
                                   </tr>
                                   {React.Children.toArray (
@@ -740,6 +741,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                                               <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
                                               <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task}</td>
                                               <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task_type}</td>
+                                              <td className={task.is_active &&  task.is_active === true ? task.approved ? "approved" : "not__Approved" : "deleted"}>{task.approved ? 'Yes' : 'No'}</td>
                                               <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.subproject}</td>
                                             </tr>
                                           </tbody>
