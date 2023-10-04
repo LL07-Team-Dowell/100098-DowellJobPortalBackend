@@ -142,7 +142,7 @@ const AddTaskScreen = ({
   const addNewTask = () => {
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
-      if (taskEndTime === '12:00') return toast.info("You can only update tasks for today")
+      if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
       if (duration <= 15) {
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
         if (!taskDetailForToday) return addTaskForToday(taskStartTime, taskEndTime, taskName, details);
@@ -160,6 +160,7 @@ const AddTaskScreen = ({
 
   const updateTask = async () => {
     if (inputsAreFilled) {
+      if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
       if (duration <= 15) {
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
 
