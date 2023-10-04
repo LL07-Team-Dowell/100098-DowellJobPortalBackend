@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import useListenToKeyStrokeInElement from "../../hooks/useListenToKeyStrokeInElement";
 import { useRef } from "react";
+import useClickOutside from "../../hooks/useClickOutside";
 
 const SubprojectSelectWithSearch = ({ 
     subprojects, 
@@ -20,10 +21,14 @@ const SubprojectSelectWithSearch = ({
     const [ displayedItems, setDisplayedItems ] = useState([]);
     const inputRef = useRef();
     const listRef = useRef();
+    const wrapperRef = useRef();
     const [ currentListItemIndex, setCurrentListItemIndex ] = useState(0);
 
     const removeFocusClassFromAllListItems = (listElemRef) => {
         const allListElements = Array.from(listElemRef?.current?.childNodes);
+
+        const classesOfParentElement = Array.from(listElemRef?.current?.classList);
+        if (classesOfParentElement.includes(styles.active)) listElemRef?.current?.classList?.remove(styles.active)
 
         allListElements.forEach(element => {
             const classesOfElement = Array.from(element?.classList);
@@ -86,6 +91,9 @@ const SubprojectSelectWithSearch = ({
             
             currentElementOfList?.focus()
             setCurrentListItemIndex(updatedIndex);
+
+            const classesOfParentElement = Array.from(listRef?.current?.classList);
+            if (!classesOfParentElement.includes(styles.active)) listRef?.current?.classList?.add(styles.active)
         }
     )
 
@@ -114,6 +122,10 @@ const SubprojectSelectWithSearch = ({
 
             previousElementOfList?.focus();
             setCurrentListItemIndex(updatedIndex);
+
+            
+            const classesOfParentElement = Array.from(listRef?.current?.classList);
+            if (!classesOfParentElement.includes(styles.active)) listRef?.current?.classList?.add(styles.active)
         }
     )
 
@@ -139,6 +151,11 @@ const SubprojectSelectWithSearch = ({
         }
     )
 
+    useClickOutside(wrapperRef, () => {
+        setCurrentListItemIndex(0);
+        removeFocusClassFromAllListItems(listRef);
+    })
+
     const selectItemFromListing = (subprojectSelected, projectSelected) => {
         handleSelectItem(subprojectSelected, projectSelected);
         setCurrentListItemIndex(0);
@@ -146,7 +163,7 @@ const SubprojectSelectWithSearch = ({
     }
 
     return <>
-        <div className={`${styles.dropdown} ${className ? className : ''}`} tabIndex={-1}>
+        <div className={`${styles.dropdown} ${className ? className : ''}`} tabIndex={0} ref={wrapperRef}>
             {
                 selectedSubProject && selectedSubProject.length > 0 ? <>
                     {
@@ -180,14 +197,16 @@ const SubprojectSelectWithSearch = ({
                             ref={inputRef}
                         />
                     </div>
-                    <ul className={styles.items__List} ref={listRef} tabIndex={-1}>
+                    <div className={styles.items__List} ref={listRef} tabIndex={0}>
                         {
                             displayedItems?.length < 1 ?
                             <p>No items found</p>
                             :
                             React.Children.toArray(displayedItems?.map(item => {
                                 return item.sub_project_list.map(project => {
-                                    return <li onClick={
+                                    return <div 
+                                        className={styles.subproject__Item}
+                                        onClick={
                                             handleSelectItem && typeof handleSelectItem === 'function' ? 
                                                 () => {
                                                     selectItemFromListing(project, item.parent_project)
@@ -195,16 +214,16 @@ const SubprojectSelectWithSearch = ({
                                             :
                                             () => {}
                                         }
-                                        tabIndex={-1}
+                                        tabIndex={0}
                                     >
                                         {project} - ({item.parent_project})
                                         <span className={`${styles.hidden} subproject`}>{project}</span>
                                         <span className={`${styles.hidden} project`}>{item.parent_project}</span>
-                                    </li>
+                                    </div>
                                 })
                             }))
                         }
-                    </ul>     
+                    </div>     
                 </>
             }
            

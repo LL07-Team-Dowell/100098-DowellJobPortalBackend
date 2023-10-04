@@ -49,12 +49,16 @@
     z-index: 20;
 }
 
+.items__List.active {
+    display: block;
+}
+
 .dropdown .search__Wrapper:focus-within ~ .items__List,
 .items__List:hover {
     display: block;
 }
 
-.items__List:has(li.focused) {
+.items__List :has(.subproject__Item.focused) {
     display: block;
 }
 
@@ -75,7 +79,7 @@
     background: #005734;
 }
 
-.items__List li {
+.items__List .subproject__Item {
     margin: 0.5rem 0 1rem;
     width: 100%;
     transition: 0.3s ease-in-out;
@@ -92,8 +96,8 @@
     font-size: 0.75rem;
 }
 
-.items__List li:hover,
-.items__List li.focused {
+.items__List .subproject__Item:hover,
+.items__List .subproject__Item.focused {
     background-color: #005734;
     color: #fff;
 }
@@ -122,6 +126,6 @@
     font-size: 0.6rem;
 }
 
-.items__List li > span.hidden {
+.items__List .subproject__Item > span.hidden {
     display: none;
 }
