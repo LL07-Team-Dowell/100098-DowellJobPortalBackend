@@ -5784,6 +5784,26 @@ class Generate_Report(APIView):
                     except KeyError:
                         pass
                     try:
+                        print(task, "------------------")
+                        if task["task_approved_by"] == username and (
+                                task["status"] == "Completed"
+                                or task["status"] == "Complete"
+                                or task["status"] == "completed"
+                                or task["status"] == "complete"
+                            ):
+                            _tasks_you_marked_as_complete.append(task)
+                    except KeyError:
+                        pass
+                    try:
+                        print(task, "------------------")
+                        if task["task_approved_by"] == username and (task["status"] == "Incomplete"
+                                or task["status"] == "incompleted"
+                                or task["status"] == "incomplete"
+                                or task["status"] == "Incompleted"):
+                            _tasks_you_marked_as_incomplete.append(task)
+                    except KeyError:
+                        pass
+                    try:
                         if task["team_id"] in _teams_ids:
                             _teams_tasks.append(task)
                     except KeyError:
