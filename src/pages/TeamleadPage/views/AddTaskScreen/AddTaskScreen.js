@@ -916,7 +916,7 @@ const AddTaskScreen = ({
                               <tbody>
                                 {tasks.map((task, index) => (
                                   <tr key={task._id}>
-                                    <td>{index + 1}.</td>
+                                    <td>{tasks.length - (index)}.</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task}</td>
