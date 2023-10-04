@@ -27,10 +27,12 @@ import { toast } from "react-toastify";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import { testingRoles } from "../../../../utils/testingRoles";
 import { teamManagementProductName } from "../../../../utils/utils";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 const LandingPage = ({ subAdminView }) => {
   const [stateTrackingProgress, setstateTrackingProgress] = useState(false);
   const [isActive, setIsActive] = useState("active");
+
   const {
     jobs,
     setJobs,
@@ -59,6 +61,36 @@ const LandingPage = ({ subAdminView }) => {
   const [activeLinkTab, setActiveLinkTab] = useState("jobs");
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
+  const [cardActivePagination, setCardActivePagination] = useState(0);
+  const [cardInactivePagination, setCardInactivePagination] = useState(0);
+  const initializePagination = () => {
+    setCardActivePagination(0);
+    setCardInactivePagination(0);
+  };
+  const incrementStepPagination = (steps, length, activeCard) => {
+    if (steps + 1 <= length) {
+      if (activeCard) {
+        if (steps + cardActivePagination !== length) {
+          setCardActivePagination(cardActivePagination + 1);
+        }
+      } else {
+        if (steps + cardInactivePagination !== length) {
+          setCardInactivePagination(cardInactivePagination + 1);
+        }
+      }
+    }
+  };
+  const decrementStepPagination = (activeCard) => {
+    if (activeCard) {
+      if (cardActivePagination !== 0) {
+        setCardActivePagination(cardActivePagination - 1);
+      }
+    } else {
+      if (cardInactivePagination !== 0) {
+        setCardInactivePagination(cardInactivePagination - 1);
+      }
+    }
+  };
   // low functions
   const changeCardGroupNumber = (number) => {
     setCardGroupNumber(number);
@@ -307,6 +339,7 @@ const LandingPage = ({ subAdminView }) => {
           onClick={() => {
             setIsActive("active");
             setCardGroupNumber(0);
+            initializePagination();
           }}
           className={isActive === "active" && "isActive"}
         >
@@ -316,6 +349,7 @@ const LandingPage = ({ subAdminView }) => {
           onClick={() => {
             setIsActive("inactive");
             setCardGroupNumber(0);
+            initializePagination();
           }}
           className={isActive === "inactive" && "isActive"}
         >
@@ -535,28 +569,58 @@ const LandingPage = ({ subAdminView }) => {
           )}
         </div>
       </div>
-      {(isActive === "active" || isActive === "inactive") && (
-        <div className='JobsChanger_containter'>
-          {createArrayWithLength(
-            isActive === "active"
-              ? Math.ceil(activeJobsLength / 4)
-              : Math.ceil(inactiveJobsLength / 4)
-          ).map((s, index) => (
+      {(isActive === "active" || isActive === "inactive") &&
+        (activeJobsLength !== 0 || inactiveJobsLength !== 0) && (
+          <div className='JobsChanger_containter'>
             <button
-              className={s !== cardIndex ? "active" : "desactive"}
-              onClick={() => {
-                changeCardGroupNumber(index * 4);
-                setCardIndex(index);
-              }}
-              key={`${index}_button${
-                isActive === "active" ? "_active" : "_desactive"
-              }`}
+              onClick={() =>
+                decrementStepPagination(isActive === "active" ? true : false)
+              }
             >
-              {index + 1}
+              <IoIosArrowBack />
             </button>
-          ))}
-        </div>
-      )}
+            {createArrayWithLength(
+              isActive === "active"
+                ? Math.ceil(activeJobsLength / 4)
+                : Math.ceil(inactiveJobsLength / 4)
+            )
+              .slice(
+                isActive === "active"
+                  ? cardActivePagination
+                  : cardInactivePagination,
+                isActive === "active"
+                  ? cardActivePagination + 6
+                  : cardInactivePagination + 6
+              )
+              .map((s, index) => (
+                <button
+                  className={s !== cardIndex ? "active" : "desactive"}
+                  onClick={() => {
+                    changeCardGroupNumber(s * 4);
+                    setCardIndex(s);
+                  }}
+                  key={`${index}_button${
+                    isActive === "active" ? "_active" : "_desactive"
+                  }`}
+                >
+                  {s + 1}
+                </button>
+              ))}
+            <button
+              onClick={() =>
+                incrementStepPagination(
+                  6,
+                  isActive === "active"
+                    ? Math.ceil(activeJobsLength / 4)
+                    : Math.ceil(inactiveJobsLength / 4),
+                  isActive === "active" ? true : false
+                )
+              }
+            >
+              <IoIosArrowForward />
+            </button>
+          </div>
+        )}
     </StaffJobLandingLayout>
   );
 };
