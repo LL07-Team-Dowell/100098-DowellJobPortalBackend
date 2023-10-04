@@ -445,7 +445,12 @@ const AddTaskScreen = ({
         setTasks(copyOfTasksForToday.tasks);
         clearAllInputs();
         setTaskId("");
-
+        setTaskStartTime(endTime);
+        const [hours, minutes] = endTime.split(':').map(Number);
+        const newMinutes = (minutes + 15) % 60;
+        const newHours = hours + Math.floor((minutes + 15) / 60);
+        const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+        setTaskEndTime(newEndTime);
         return
       }
 
@@ -476,7 +481,6 @@ const AddTaskScreen = ({
 
         setLoading(false);
         setDisabled(false);
-
         setTasks(listsOfTasksForToday?.reverse());
         clearAllInputs();
         setTaskId("");
