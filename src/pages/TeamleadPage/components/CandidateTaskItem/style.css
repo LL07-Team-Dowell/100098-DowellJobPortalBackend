@@ -116,7 +116,7 @@
 }
 
 .candidate-task-container .user__Tasks__Wrapper {
-    max-height: 18rem;
+    max-height: 22rem;
     overflow-y: auto;
     padding-right: 1rem;
     scrollbar-width: thin;

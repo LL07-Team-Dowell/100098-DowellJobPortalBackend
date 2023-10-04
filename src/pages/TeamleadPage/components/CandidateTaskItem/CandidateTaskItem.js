@@ -95,12 +95,12 @@ const CandidateTaskItem = ({
                 </span>
               }
               
-              {
+              {/* {
                 currentTask.approved && <p style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#005734', margin: '1.2rem 0' }}>
                   <AiOutlineCheckCircle />
                   <span style={{ color: '#005734' }}>Work log is approved</span>
                 </p>
-              }
+              } */}
               
               {/*<span className="task__Description">Task Description: <br />{currentTask.description}</span>*/}
             </div>

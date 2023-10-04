@@ -312,10 +312,11 @@ const CreateTaskScreen = ({
     try {
       const res = (await getCandidateTasksV2(dataToPost)).data;
       const foundApplicantTaskItem = res.task_details.find(task => task.applicant === applicant && task.task_created_date === dateFormattedForAPI);
+      const tasksFetched = extractNewTasksAndAddExtraDetail(res.task_details, res.task, true);
 
       if (foundApplicantTaskItem) {
         setSingleTaskItem(foundApplicantTaskItem);
-        const foundApplicantTasks = res.task.filter(task => task.task_id === foundApplicantTaskItem._id);
+        const foundApplicantTasks = tasksFetched.filter(task => task._id === foundApplicantTaskItem._id);
         setTasksForTheDay(foundApplicantTasks)
       }
       setSingleTaskLoading(false);

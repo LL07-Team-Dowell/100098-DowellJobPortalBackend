@@ -353,3 +353,11 @@
   text-decoration: line-through;
   color: #ff0000;
 }
+
+#customers tbody td.approved {
+  color: #005734;
+}
+
+#customers tbody td.not__Approved {
+  color: #ff0000;
+}
