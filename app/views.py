@@ -1908,20 +1908,24 @@ class approve_task(APIView):
         _date = _date.strftime("%m/%d/%Y %H:%M:%S")
 
         return str(_date)
-    def valid_teamlead(self,portfolio_name):
+
+    def valid_teamlead(self, portfolio_name):
         profiles = SettingUserProfileInfo.objects.all()
         serializer = SettingUserProfileInfoSerializer(profiles, many=True)
-        #print(serializer.data,"----")
-        valid_profiles =[]
+        # print(serializer.data,"----")
+        valid_profiles = []
         for data in serializer.data:
             for d in data["profile_info"]:
-                if 'profile_title' in d.keys():
-                    if d["profile_title"] ==portfolio_name and d['Role']=='Proj_Lead':
+                if "profile_title" in d.keys():
+                    if (
+                        d["profile_title"] == portfolio_name
+                        and d["Role"] == "Proj_Lead"
+                    ):
                         valid_profiles.append(d)
 
-        if portfolio_name==valid_profiles[-1]['profile_title']:
+        if portfolio_name == valid_profiles[-1]["profile_title"]:
             return True
-        else: 
+        else:
             return False
 
     def approvable(self):
@@ -1990,7 +1994,7 @@ class approve_task(APIView):
                 check_approvable = self.approvable()
 
                 if check_approvable is True:
-                    validate_teamlead= self.valid_teamlead(data.get("portfolio_name"))
+                    validate_teamlead = self.valid_teamlead(data.get("portfolio_name"))
                     if validate_teamlead is False:
                         return Response(
                             {
@@ -4459,31 +4463,27 @@ class GetAllThreads(APIView):
             threads_response = json.loads(get_response)
             # print(threads_response)
             threads = []
-            commentfield={}
+            commentfield = {}
             if threads_response["isSuccess"]:
-                
                 threads_data = threads_response["data"]
                 get_comment = dowellconnection(
-                            *comment_report_module,
-                            "fetch",
-                            commentfield,
-                            update_field,
-                        )
+                    *comment_report_module,
+                    "fetch",
+                    commentfield,
+                    update_field,
+                )
                 # print(get_comment)
                 if threads_data:
                     # print(threads_data)
-                    
+
                     for thread in threads_data:
                         thread["comments"] = []
-                        
-                        for comment in json.loads(get_comment)['data']:
-                            
-                            if comment["thread_id"]==thread["_id"]:
-                           
+
+                        for comment in json.loads(get_comment)["data"]:
+                            if comment["thread_id"] == thread["_id"]:
                                 thread["comments"].append(comment)
                         threads.append(thread)
-                                
-                                
+
                 return Response(
                     {"isSuccess": True, "message": "List of Threads", "data": threads},
                     status=status.HTTP_200_OK,
@@ -5547,17 +5547,17 @@ class Generate_Report(APIView):
     def generate_individual_report(self, request):
         payload = request.data
         if payload:
-            if payload.get("role") and payload.get("role") =="Teamlead":
+            if payload.get("role") and payload.get("role") == "Teamlead":
                 field = {
-                "username":payload.get("applicant_username"),
-                "_id": payload.get("applicant_id"),
-                "status":"hired"
+                    "username": payload.get("applicant_username"),
+                    "_id": payload.get("applicant_id"),
+                    "status": "hired",
                 }
             else:
-                field={
+                field = {
                     "_id": payload.get("applicant_id"),
                 }
-            
+
             year = payload.get("year")
 
             if not int(year) <= datetime.date.today().year:
@@ -5568,7 +5568,10 @@ class Generate_Report(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            if payload.get("applicant_username") and not payload.get("applicant_username") in Team_Leads:
+            if (
+                payload.get("applicant_username")
+                and not payload.get("applicant_username") in Team_Leads
+            ):
                 return Response(
                     {
                         "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
@@ -5582,7 +5585,7 @@ class Generate_Report(APIView):
             info = dowellconnection(
                 *candidate_management_reports, "fetch", field, update_field
             )
-            #print(len(json.loads(info)["data"]),"==========")
+            # print(len(json.loads(info)["data"]),"==========")
             if len(json.loads(info)["data"]) > 0:
                 data["personal_info"] = json.loads(info)["data"][0]
                 username = json.loads(info)["data"][0]["username"]
@@ -5619,16 +5622,16 @@ class Generate_Report(APIView):
                 "December": {},
             }
             for key, value in item.items():
-                if payload.get("role") =="Teamlead":
-                    item[key]={
+                if payload.get("role") == "Teamlead":
+                    item[key] = {
                         "tasks_added": 0,
                         "tasks_completed": 0,
                         "tasks_uncompleted": 0,
                         "tasks_approved": 0,
                         "percentage_tasks_completed": 0,
-                        "tasks_you_approved":0,
-                        "tasks_you_marked_as_complete":0,
-                        "tasks_you_marked_as_incomplete":0,
+                        "tasks_you_approved": 0,
+                        "tasks_you_marked_as_complete": 0,
+                        "tasks_you_marked_as_incomplete": 0,
                         "teams": 0,
                         "team_tasks": 0,
                         "team_tasks_completed": 0,
@@ -5752,9 +5755,10 @@ class Generate_Report(APIView):
                     except Exception:
                         pass
                     try:
-                        print(task,"------------------")
+                        print(task, "------------------")
                         if task["task_approved_by"] == username and (
-                            task["approved"] == True or task["approval"] == True ):
+                            task["approved"] == True or task["approval"] == True
+                        ):
                             _tasks_you_approved.append(task)
                     except KeyError:
                         pass
