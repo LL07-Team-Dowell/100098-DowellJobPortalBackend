@@ -23,6 +23,6 @@ export const featchAllComment = async (data) => {
   return await currentBackendAxiosInstance.get("fetch_comment/", data);
 };
 
-export const updateComment = async (data) => {
+export const updateSingleComment = async (data) => {
   return await currentBackendAxiosInstance.patch("update_comment/", data);
 };

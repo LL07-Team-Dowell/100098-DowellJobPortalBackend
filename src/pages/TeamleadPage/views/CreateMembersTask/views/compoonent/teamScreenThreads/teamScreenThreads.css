@@ -136,6 +136,41 @@
   font-size: 0.8rem;
 }
 
+.text-area {
+  display: flex;
+  margin: 0.5rem;
+  align-items: center;
+}
+
+.text-area .button-comment {
+  padding: 0px 1rem;
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+  background: #005734;
+  font-weight: 400;
+  height: 2.5rem;
+  color: white;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  border: 1px solid white;
+}
+
+.text-area .button-comment:hover {
+  background: white;
+  color: #005734;
+  border: 1px solid #005734;
+}
+
+textarea {
+  width: 100%;
+  resize: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  font-family: poppins;
+}
+
 .comments span {
   font-size: 0.8rem;
   font-weight: 600;
@@ -145,6 +180,28 @@
 .comments-section svg {
   font-size: 1.8rem;
 }
+
+.user-candidate{
+  font-weight: 600;
+}
+
+.candidate-comments-section{
+  width: 90%;
+}
+
+.comment-area {
+ width: 100%;
+ margin: 0.5rem 0;
+ font-family: poppins;
+ border: none;
+ color: #000;
+ background: none;
+ font-size: 0.8rem;
+}
+
+/* .comment-area:hover{
+  background-color: #ccc;
+} */
 
 /* Styling for the image hover effect */
 .image-container {
@@ -261,7 +318,7 @@ textarea button:hover {
   overflow-y: scroll;
 }
 
-@media screen and (max-width:468px) {
+@media screen and (max-width: 468px) {
   .team-screen-threads {
     padding: 0;
     width: 90%;
