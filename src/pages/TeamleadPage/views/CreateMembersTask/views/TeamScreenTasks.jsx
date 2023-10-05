@@ -25,6 +25,7 @@ const TeamScreenTasks = () => {
   const [showCreatTask, setShowCreateTask] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [addedNewTask, setAddedNewTask] = useState(true);
+  const [progessPercentage, setProgressPercentage] = useState(null);
   // useEffect
   useEffect(() => {
     if (team?.members === undefined) {
@@ -45,7 +46,14 @@ const TeamScreenTasks = () => {
         .catch((err) => console.log(err));
     }
   }, []);
-
+  useEffect(() => {
+    if (tasks.length > 0) {
+      const tasksCompletedNumber = tasks.filter(
+        (task) => task.completed === true
+      ).length;
+      const tasksNumber = tasks.length;
+    }
+  }, [tasks]);
   useEffect(() => {
     if (addedNewTask) {
       getTeamTask(id)
