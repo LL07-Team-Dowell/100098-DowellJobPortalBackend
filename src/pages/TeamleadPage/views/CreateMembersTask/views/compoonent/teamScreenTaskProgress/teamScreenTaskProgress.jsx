@@ -18,7 +18,7 @@ const TeamScreenTaskProgress = ({ progessPercentage }) => {
       </div>
       <div className='team-screen-task-progress-data'>
         <div className='team-screen-task-progress-data-circle'>
-          <span>00%</span>
+          <span>{progessPercentage}%</span>
         </div>
         <p>your progress</p>
       </div>

@@ -52,7 +52,9 @@ const TeamScreenTasks = () => {
         (task) => task.completed === true
       ).length;
       const tasksNumber = tasks.length;
-      setProgressPercentage((tasksCompletedNumber / tasksNumber).toFixed(2));
+      setProgressPercentage(
+        ((tasksCompletedNumber / tasksNumber) * 100).toFixed(2)
+      );
     }
   }, [tasks]);
   useEffect(() => {
