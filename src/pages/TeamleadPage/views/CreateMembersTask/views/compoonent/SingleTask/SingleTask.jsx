@@ -95,18 +95,18 @@ const SingleTask = ({
           >
             {"View details"}
           </button>
-          <button
-            className='team-screen-task-progress-detail-btn'
-            onClick={completeTaskFunction}
-          >
-            {loading ? (
-              <LoadingSpinner width={30} height={30} color={"white"} />
-            ) : taskCompleted ? (
-              "completed"
-            ) : (
-              "mark as done"
-            )}
-          </button>
+          {taskCompleted ? null : (
+            <button
+              className='team-screen-task-progress-detail-btn'
+              onClick={completeTaskFunction}
+            >
+              {loading ? (
+                <LoadingSpinner width={30} height={30} color={"white"} />
+              ) : (
+                "mark as done"
+              )}
+            </button>
+          )}
         </div>
       </div>
       <hr />
