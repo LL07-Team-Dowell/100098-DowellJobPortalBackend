@@ -52,6 +52,7 @@ const TeamScreenTasks = () => {
         (task) => task.completed === true
       ).length;
       const tasksNumber = tasks.length;
+      setProgressPercentage((tasksCompletedNumber / tasksNumber).toFixed(2));
     }
   }, [tasks]);
   useEffect(() => {
@@ -83,7 +84,7 @@ const TeamScreenTasks = () => {
         />
       ) : null}
       <TeamScreenLinks id={id} />
-      <TeamScreenTaskProgress />
+      <TeamScreenTaskProgress progessPercentage={progessPercentage} />
       <TeamScreeTaskProgessDetail
         detail={detail}
         setdetail={setdetail}
