@@ -64,6 +64,7 @@ const SingleTask = ({
             taskname={title}
             status={taskCompleted}
             memberassign={members}
+            description={detail}
             onClose={handleViewDetails}
           />
         )}
