@@ -129,7 +129,7 @@ const TeamScreenThreads = ({ status, id }) => {
       setText("");
 
       if (foundThreadBeingUpadted) {
-        foundThreadBeingUpadted.comments.data.push({
+        foundThreadBeingUpadted.comments.data.reverse().push({
           ...newComment,
           created_date: formatDateForAPI(new Date(), "report"),
           _id: newCommentRes.info.inserted_id,
@@ -146,6 +146,7 @@ const TeamScreenThreads = ({ status, id }) => {
   const handleUpdate = (comment) => {
     const document_id = comment._id;
     const created_by = comment.created_by;
+    setLoadingcmnt(true)
 
 
     // Make an API request to update the comment
@@ -164,6 +165,7 @@ const TeamScreenThreads = ({ status, id }) => {
             )
           );
           setEditIndex(null);
+          setLoadingcmnt(false)
         }
       })
       .catch((error) => {
@@ -344,12 +346,23 @@ const TeamScreenThreads = ({ status, id }) => {
                               textTransform: "capitalize",
                             }}
                           >
-                            {thread.thread}
+                            {thread.thread_title}
                           </p>
                           <div>
                             <p>Assigned to : {assignedTeamName}</p>
                             <p>Raised by : {thread.created_by}</p>
                           </div>
+                          <p
+                            style={{
+                              color: "#005734",
+                              fontSize: "1rem",
+                              fontWeight: "500",
+                              marginBottom: "0",
+                              textTransform: "capitalize",
+                            }}
+                          >
+                            {thread.thread}
+                          </p>
                           <div>
                             <div
                               style={{
@@ -553,23 +566,26 @@ const TeamScreenThreads = ({ status, id }) => {
                                           <div className="button">
                                             {currentUser.portfolio_info[0]
                                               .username ===
-                                              comment.created_by && (
-                                              <button
-                                                style={{
-                                                  padding: "0.3rem 0.5rem",
-                                                  cursor: "pointer",
-                                                  backgroundColor: "#005734",
-                                                  border: "none",
-                                                  color: "white",
-                                                  borderRadius: "5px",
-                                                }}
-                                                onClick={() =>
-                                                  handleUpdate(comment)
-                                                }
-                                              >
-                                                Update
-                                              </button>
-                                            )}
+                                              comment.created_by &&
+                                              (loadingcmnt ? (
+                                                <LittleLoading />
+                                              ) : (
+                                                <button
+                                                  style={{
+                                                    padding: "0.3rem 0.5rem",
+                                                    cursor: "pointer",
+                                                    backgroundColor: "#005734",
+                                                    border: "none",
+                                                    color: "white",
+                                                    borderRadius: "5px",
+                                                  }}
+                                                  onClick={() =>
+                                                    handleUpdate(comment)
+                                                  }
+                                                >
+                                                  Update
+                                                </button>
+                                              ))}
                                           </div>
                                         </>
                                       ) : (
@@ -671,12 +687,23 @@ const TeamScreenThreads = ({ status, id }) => {
                               textTransform: "capitalize",
                             }}
                           >
-                            {thread.thread}
+                            {thread.thread_title}
                           </p>
                           <div>
                             <p>Assigned to : {assignedTeamName}</p>
                             <p>Raised by : {thread.created_by}</p>
                           </div>
+                          <p
+                            style={{
+                              color: "#005734",
+                              fontSize: "1rem",
+                              fontWeight: "500",
+                              marginBottom: "0",
+                              textTransform: "capitalize",
+                            }}
+                          >
+                            {thread.thread}
+                          </p>
                           <div>
                             <div
                               style={{
@@ -895,7 +922,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                 Comments
                               </h3>
                               {React.Children.toArray(
-                                thread.comments.data.map((comment, index) => {
+                                thread.comments.data.reverse().map((comment, index) => {
                                   return (
                                     <div
                                       style={{
@@ -945,6 +972,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                               {currentUser.portfolio_info[0]
                                                 .username ===
                                                 comment.created_by && (
+                                                  loadingcmnt ? <LittleLoading/> :
                                                 <button
                                                   style={{
                                                     padding: "0.3rem 0.5rem",
@@ -1063,12 +1091,23 @@ const TeamScreenThreads = ({ status, id }) => {
                               textTransform: "capitalize",
                             }}
                           >
-                            {thread.thread}
+                            {thread.thread_title}
                           </p>
                           <div>
                             <p>Assigned to : {assignedTeamName}</p>
                             <p>Raised by : {thread.created_by}</p>
                           </div>
+                          <p
+                            style={{
+                              color: "#005734",
+                              fontSize: "1rem",
+                              fontWeight: "500",
+                              marginBottom: "0",
+                              textTransform: "capitalize",
+                            }}
+                          >
+                            {thread.thread}
+                          </p>
                           <div>
                             <div
                               style={{
@@ -1267,23 +1306,26 @@ const TeamScreenThreads = ({ status, id }) => {
                                           <div className="button">
                                             {currentUser.portfolio_info[0]
                                               .username ===
-                                              comment.created_by && (
-                                              <button
-                                                style={{
-                                                  padding: "0.3rem 0.5rem",
-                                                  cursor: "pointer",
-                                                  backgroundColor: "#005734",
-                                                  border: "none",
-                                                  color: "white",
-                                                  borderRadius: "5px",
-                                                }}
-                                                onClick={() =>
-                                                  handleUpdate(comment)
-                                                }
-                                              >
-                                                Update
-                                              </button>
-                                            )}
+                                              comment.created_by &&
+                                              (loadingcmnt ? (
+                                                <LittleLoading />
+                                              ) : (
+                                                <button
+                                                  style={{
+                                                    padding: "0.3rem 0.5rem",
+                                                    cursor: "pointer",
+                                                    backgroundColor: "#005734",
+                                                    border: "none",
+                                                    color: "white",
+                                                    borderRadius: "5px",
+                                                  }}
+                                                  onClick={() =>
+                                                    handleUpdate(comment)
+                                                  }
+                                                >
+                                                  Update
+                                                </button>
+                                              ))}
                                           </div>
                                         </>
                                       ) : (
