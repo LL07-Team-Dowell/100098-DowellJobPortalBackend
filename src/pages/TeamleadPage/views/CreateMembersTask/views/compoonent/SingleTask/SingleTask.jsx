@@ -14,7 +14,7 @@ const SingleTask = ({
   taskCompleted,
   taskId,
 }) => {
-  console.log(taskCompleted);
+  console.log({ taskCompleted });
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
   const completeTaskFunction = () => {
@@ -84,7 +84,7 @@ const SingleTask = ({
                 ))}
               </div>
               <div className='team-screen-task-progress-data-circle'>
-                <span>00%</span>
+                <span>{taskCompleted ? "100" : "00"}%</span>
               </div>
             </div>
           </div>
