@@ -102,62 +102,6 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
     setText(e.target.value);
   };
 
-
-  // console.log({ "updatecomment": updateComment });
-  //Handle Comment
-  // const handleComment = async () => {
-  //   setLoadingcmnt(true);
-  //   try {
-  //     const commentData = {
-  //       created_by: user,
-  //       comment: text,
-  //       thread_id: threadId,
-  //     };
-  //     const response = await postComment(commentData);
-  //     console.log(response);
-  //     // Update the state with the new comment
-  //     if (response.status == 201) {
-  //       setUpdateComment((prevComments) => [...prevComments].reverse(), commentData);
-  //     }
-  //     // Clear the input field and reset loading
-  //     setText('');
-  //     setLoadingcmnt(false);
-  //   } catch (error) {
-  //     console.error('Failed to create comment:', error.message);
-  //   }
-  // };
-
-
-  // useEffect(() => {
-  //   const documentId = threadId;
-  //   fetchThread(documentId)
-  //     .then((resp) => {
-  //       const threads = resp.data.data;
-  //       const sortedThreads = threads.reverse();
-  //       setThreads(sortedThreads);
-  //     })
-  //     .catch((error) => {
-  //     });
-  // }, []);
-
-  // const handleComment = async () => {
-  //   setLoadingcmnt(true);
-  //   try {
-  //     const updatedThreads = await postComment({
-  //       created_by: user,
-  //       comment: text,
-  //       thread_id: threadId,
-  //       _id: crypto.randomUUID(),
-  //     });
-  //     console.log(updatedThreads);
-  //     toast.success("Comment added successfully");
-  //     setText("");
-  //     setLoadingcmnt(false);
-  //   } catch (error) {
-  //     toast.error("Failed to add comment");
-  //   }
-  // };
-
   const handleComment = async () => {
     // setLoadingcmnt(true);
     const newComment = {
@@ -165,15 +109,6 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
       comment: text,
       thread_id: threadId,
     };
-
-    // const updatedThreads = threads.slice();
-    // const foundThreadBeingUpadted = updatedThreads.find(
-    //   (thread) => thread._id === threadId
-    // );
-
-    // console.log(foundThreadBeingUpadted);
-    // console.log(threadId);
-    // return
     try {
       const newCommentRes = (await postComment(newComment)).data;
       console.log(newCommentRes);
