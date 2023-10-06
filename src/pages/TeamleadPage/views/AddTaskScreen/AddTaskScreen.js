@@ -147,11 +147,16 @@ const AddTaskScreen = ({
   }
   //   importand fuction
   const addNewTask = () => {
+    function isStringValid(inputString) {
+      const trimmedString = inputString.trim();
+      const words = trimmedString.split(/\s+/);
+      return trimmedString.length >= 25 && words.length >= 5;
+    }
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
       console.log({ TASKSS: tasks.find(task => task.task === taskName) })
-      if (tasks.find(task => task.task === taskName) !== undefined) return toast.info('You cannot add the same task')
-      if (removeSpaces(taskName).length > 25 || removeSpaces(taskName).length < 5) return toast.info('the task should be between 5 and 25 letters')
+      if (tasks.find(task => task.task === taskName && task.is_active) !== undefined) return toast.info('You cannot add the same task')
+      if (!isStringValid(taskName)) return toast.info('the task should be more than 25 characters and more than 5 words.')
       if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
       if (duration <= 15) {
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
