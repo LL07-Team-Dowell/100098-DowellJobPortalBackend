@@ -80,6 +80,7 @@ import IndividualTaskReports from "./pages/AdminPage/views/Reports/individualTas
 import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
 import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal";
 import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
+import WorkLogRequest from "./pages/TeamleadPage/views/WorkLogRequest/WorkLogRequest";
 import { teamManagementProductName } from "./utils/utils";
 
 function App() {
@@ -921,6 +922,17 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
+        <Route
+          path='/request'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <WorkLogRequest />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+
         <Route
           path='/create-task'
           element={
