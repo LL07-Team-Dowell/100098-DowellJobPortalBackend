@@ -83,7 +83,7 @@ align-items: left !important;
   }
   
   .team-screen-threads-container .title {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 500;
     color: #005734;
     text-transform: capitalize;
@@ -380,6 +380,27 @@ const ThreadItem = ({ status }) => {
     })
   }
 
+  const handleUpdateCommentState = (comment, threadId) => {
+    const updatedThreads = threads.slice();
+    const foundThreadBeingUpadted = updatedThreads.find(
+      (thread) => thread._id === threadId
+    );
+    console.log(threads);
+
+    if (foundThreadBeingUpadted) {
+      foundThreadBeingUpadted.comments.data.unshift(comment);
+      setThreads(updatedThreads);
+
+      const completedThreads = updatedThreads.filter((thread) => thread.current_status == "Completed");
+      const resolvedThreads = updatedThreads.filter((thread) => thread.current_status == "Resolved");
+      const inProgressThreads = updatedThreads.filter((thread) => thread.current_status == "In progress" || thread.current_status === "Created" || thread.current_status === undefined);
+
+      setCompletedThreads(completedThreads);
+      setResolvedThreads(resolvedThreads);
+      setInProgressThreads(inProgressThreads);
+    }
+  }
+
 
   const handleSubmit = () => { };
   if (loading) return <LoadingSpinner />
@@ -413,11 +434,12 @@ const ThreadItem = ({ status }) => {
                     </div>
 
                     <div className="team-screen-threads-container">
-                      <p className='title'>{thread.thread}</p>
+                      <p className='title'>{thread.thread_title}</p>
                       <div>
                         <p>Assigned to: {assignedTeamName}</p>
                         <p>Raised by : {thread.created_by}</p>
                       </div>
+                      <p className='thread-subtitle'>{thread.thread}</p>
                       <div className="team-screen-threads-progress">
                         <div className="progress">
                           <div data-tooltio-id='created' className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"}></div>
@@ -477,6 +499,19 @@ const ThreadItem = ({ status }) => {
                           commentInput="comment-input"
                           forceUpdate={forceUpdate}
                           loading={loading}
+                          // updateComments={(newComment) => {
+                          //   const updatedThreads = threads.slice();
+                          //   const foundThreadBeingUpadted = updatedThreads.find(
+                          //     (thread) => thread._id === thread._id
+                          //   );
+                          //   if (foundThreadBeingUpadted) {
+                          //     foundThreadBeingUpadted.comments.data.push(newComment);
+                          //     setThreads(updatedThreads);
+                          //   }
+                          // }}
+
+                          updateComments={(newComment) => handleUpdateCommentState(newComment, thread._id)}
+
                         />
                       )
                     }
@@ -512,11 +547,13 @@ const ThreadItem = ({ status }) => {
                       </div>
 
                       <div className="team-screen-threads-container">
-                        <p className='title'>{thread.thread}</p>
+                        <p className='title'>{thread.thread_title}</p>
                         <div>
                           <p>Assigned to: {assignedTeamName}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
+                        <p className='thread-subtitle'>{thread.thread}</p>
+
                         <div className="team-screen-threads-progress">
                           <div className="progress">
                             <div className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"} data-tooltip-id="created"></div>
@@ -578,6 +615,19 @@ const ThreadItem = ({ status }) => {
                             commentInput="comment-input"
                             forceUpdate={forceUpdate}
                             loading={loading}
+                            // updateComments={(newComment) => {
+                            //   const updatedThreads = threads.slice();
+                            //   const foundThreadBeingUpadted = updatedThreads.find(
+                            //     (thread) => thread._id === thread._id
+                            //   );
+                            //   if (foundThreadBeingUpadted) {
+                            //     foundThreadBeingUpadted.comments.data.push(newComment);
+                            //     setThreads(updatedThreads);
+                            //   }
+                            // }}
+
+                            updateComments={(newComment) => handleUpdateCommentState(newComment, thread._id)}
+
                           />
                         )
                       }
@@ -617,11 +667,12 @@ const ThreadItem = ({ status }) => {
                       </div>
 
                       <div className="team-screen-threads-container">
-                        <p className='title'>{thread.thread}</p>
+                        <p className='title'>{thread.thread_title}</p>
                         <div>
                           <p>Assigned to: {assignedTeamName}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
+                        <p className='thread-subtitle'>{thread.thread}</p>
                         <div className="team-screen-threads-progress">
                           <div className="progress">
                             <div className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"} data-tooltip-id="created"></div>
@@ -680,6 +731,18 @@ const ThreadItem = ({ status }) => {
                             commentInput="comment-input"
                             forceUpdate={forceUpdate}
                             loading={loading}
+                            // updateComments={(newComment) => {
+                            //   const updatedThreads = threads.slice();
+                            //   const foundThreadBeingUpadted = updatedThreads.find(
+                            //     (thread) => thread._id === thread._id
+                            //   );
+                            //   if (foundThreadBeingUpadted) {
+                            //     foundThreadBeingUpadted.comments.data.push(newComment);
+                            //     setThreads(updatedThreads);
+                            //   }
+                            // }}
+                            updateComments={(newComment) => handleUpdateCommentState(newComment, thread._id)}
+
                           />
                         )
                       }
@@ -718,11 +781,12 @@ const ThreadItem = ({ status }) => {
                     </div>
 
                     <div className="team-screen-threads-container">
-                      <p className='title'>{thread.thread}</p>
+                      <p className='title'>{thread.thread_title}</p>
                       <div>
                         <p>Assigned to: {assignedTeamName}</p>
                         <p>Raised by : {thread.created_by}</p>
                       </div>
+                      <p className='thread-subtitle'>{thread.thread}</p>
                       <div className="team-screen-threads-progress">
                         <div className="progress">
                           <div data-tooltip-id='created' className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"}></div>
@@ -776,6 +840,19 @@ const ThreadItem = ({ status }) => {
                           commentInput="comment-input"
                           forceUpdate={forceUpdate}
                           loading={loading}
+                          // updateComments={(newComment) => {
+                          //   const updatedThreads = threads.slice();
+                          //   const foundThreadBeingUpadted = updatedThreads.find(
+                          //     (thread) => thread._id === thread._id
+                          //   );
+                          //   if (foundThreadBeingUpadted) {
+                          //     foundThreadBeingUpadted.comments.data.push(newComment);
+                          //     setThreads(updatedThreads);
+                          //   }
+                          // }}
+
+                          updateComments={(newComment) => handleUpdateCommentState(newComment, thread._id)}
+
                         />
                       )
                     }

@@ -5,6 +5,8 @@ import { fetchThread, postComment, updateSingleComment } from "../../../../../..
 import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import LittleLoading from "../../../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
+import { toast } from "react-toastify";
+import { formatDateForAPI } from "../../../../../../../helpers/helpers";
 
 
 const Wrapper = styled.div`
@@ -85,49 +87,112 @@ textarea {
 
 `
 
-const ThreadComment = ({ comments, commentInput, user, threadId, loading }) => {
+const ThreadComment = ({ comments, commentInput, user, updateComments, threadId, loading }) => {
   const userName = user.trim();
   const initials = userName.charAt(0).toUpperCase();
   const [text, setText] = useState("");
   const { currentUser } = useCurrentUserContext();
   const [loadingcmnt, setLoadingcmnt] = useState(false);
-  const [updateComment, setUpdateComment] = useState([]);
+  // const [updateComment, setUpdateComment] = useState([]);
   const [editIndex, setEditIndex] = useState();
   const [updateCommentInput, setUpdateCommentInput] = useState("")
-
+  // const [threads, setThreads] = useState([])
   console.log(currentUser.portfolio_info[0].username);
   const handleChange = (e) => {
     setText(e.target.value);
   };
-  useEffect(() => {
-    setUpdateComment([...comments].reverse());
-  }, [comments]);
 
 
-  console.log({ "updatecomment": updateComment });
+  // console.log({ "updatecomment": updateComment });
   //Handle Comment
+  // const handleComment = async () => {
+  //   setLoadingcmnt(true);
+  //   try {
+  //     const commentData = {
+  //       created_by: user,
+  //       comment: text,
+  //       thread_id: threadId,
+  //     };
+  //     const response = await postComment(commentData);
+  //     console.log(response);
+  //     // Update the state with the new comment
+  //     if (response.status == 201) {
+  //       setUpdateComment((prevComments) => [...prevComments].reverse(), commentData);
+  //     }
+  //     // Clear the input field and reset loading
+  //     setText('');
+  //     setLoadingcmnt(false);
+  //   } catch (error) {
+  //     console.error('Failed to create comment:', error.message);
+  //   }
+  // };
+
+
+  // useEffect(() => {
+  //   const documentId = threadId;
+  //   fetchThread(documentId)
+  //     .then((resp) => {
+  //       const threads = resp.data.data;
+  //       const sortedThreads = threads.reverse();
+  //       setThreads(sortedThreads);
+  //     })
+  //     .catch((error) => {
+  //     });
+  // }, []);
+
+  // const handleComment = async () => {
+  //   setLoadingcmnt(true);
+  //   try {
+  //     const updatedThreads = await postComment({
+  //       created_by: user,
+  //       comment: text,
+  //       thread_id: threadId,
+  //       _id: crypto.randomUUID(),
+  //     });
+  //     console.log(updatedThreads);
+  //     toast.success("Comment added successfully");
+  //     setText("");
+  //     setLoadingcmnt(false);
+  //   } catch (error) {
+  //     toast.error("Failed to add comment");
+  //   }
+  // };
+
   const handleComment = async () => {
-    setLoadingcmnt(true);
+    // setLoadingcmnt(true);
+    const newComment = {
+      created_by: currentUser.userinfo.username,
+      comment: text,
+      thread_id: threadId,
+    };
+
+    // const updatedThreads = threads.slice();
+    // const foundThreadBeingUpadted = updatedThreads.find(
+    //   (thread) => thread._id === threadId
+    // );
+
+    // console.log(foundThreadBeingUpadted);
+    // console.log(threadId);
+    // return
     try {
-      const commentData = {
-        created_by: user,
-        comment: text,
-        thread_id: threadId,
-      };
-      const response = await postComment(commentData);
-      console.log(response);
-      // Update the state with the new comment
-      if (response.status == 201) {
-        setUpdateComment((prevComments) => [...prevComments].reverse(), commentData);
-        setText("")
-      }
-      // Clear the input field and reset loading
-      setText('');
+      const newCommentRes = (await postComment(newComment)).data;
+      console.log(newCommentRes);
+      // setThreads(updatedThreads);
+      toast.success("Comment added successfully");
       setLoadingcmnt(false);
+      setText("")
+      updateComments({
+        ...newComment,
+        created_date: formatDateForAPI(new Date(), "report"),
+        _id: newCommentRes.info.inserted_id
+      })
     } catch (error) {
-      console.error('Failed to create comment:', error.message);
+      console.log(error);
+      setLoadingcmnt(false);
+      toast.error('Dont like Ayoola')
     }
   };
+
 
 
   const handleUpdate = (comment) => {
@@ -179,7 +244,7 @@ const ThreadComment = ({ comments, commentInput, user, threadId, loading }) => {
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
-        {updateComment.reverse().map((comment, index) => {
+        {comments.reverse().map((comment, index) => {
           return (
             <div className="comment-container" key={comment._id}>
               <div className="avatar-container">
