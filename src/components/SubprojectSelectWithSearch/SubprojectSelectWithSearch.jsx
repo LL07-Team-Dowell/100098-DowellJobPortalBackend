@@ -28,7 +28,7 @@ const SubprojectSelectWithSearch = ({
     const [ currentListItemIndex, setCurrentListItemIndex ] = useState(0);
 
     const removeFocusClassFromAllListItems = (listElemRef) => {
-        if (!listElemRef) return
+        if (!listElemRef?.current) return
         const allListElements = Array.from(listElemRef?.current?.childNodes);
 
         const classesOfParentElement = Array.from(listElemRef?.current?.classList);
