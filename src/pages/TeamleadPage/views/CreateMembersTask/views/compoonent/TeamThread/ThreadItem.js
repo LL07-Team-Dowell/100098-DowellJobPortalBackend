@@ -726,7 +726,23 @@ const ThreadItem = ({ status }) => {
                           <p>Assigned to: {assignedTeamName}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
-                        <p className='thread-subtitle'>{thread.thread}</p>
+                        {thread.thread.length > maxLength && !isExpanded ? (
+                          <p className="thread-subtitle">
+                            {thread.thread.slice(0, maxLength)}
+                            <span onClick={toggleExpansion} className="see-more">
+                              ...
+                            </span>
+                          </p>
+                        ) : (
+                          <div>
+                            <p className="thread-subtitle">{thread.thread}</p>
+                            {isExpanded && (
+                              <span onClick={toggleExpansion} className="see-less">
+                                See less
+                              </span>
+                            )}
+                          </div>
+                        )}
                         <div className="team-screen-threads-progress">
                           <div className="progress">
                             <div className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"} data-tooltip-id="created"></div>
