@@ -35,7 +35,7 @@ export const CloseButton = styled.button`
   color: black;
 `;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose }) => {
+const ModalDetails = ({ taskname, status, memberassign, onClose, description }) => {
     console.log(memberassign);
     return (
         <ModalContainer>
@@ -45,6 +45,10 @@ const ModalDetails = ({ taskname, status, memberassign, onClose }) => {
                 <div>
                     <h4>Task</h4>
                     <p>{taskname}</p>
+                </div>
+                <div>
+                    <h4>Description</h4>
+                    <p>{description}</p>
                 </div>
                 <br />
                 <div>

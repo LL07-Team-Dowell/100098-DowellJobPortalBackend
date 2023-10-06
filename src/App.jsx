@@ -84,7 +84,7 @@ import WorkLogRequest from "./pages/TeamleadPage/views/WorkLogRequest/WorkLogReq
 import { teamManagementProductName } from "./utils/utils";
 
 function App() {
-  console.log = () => { };
+  // console.log = () => { };
 
   const {
     currentUser,

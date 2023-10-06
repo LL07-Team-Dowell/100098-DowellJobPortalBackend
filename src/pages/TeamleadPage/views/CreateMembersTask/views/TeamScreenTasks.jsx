@@ -1,74 +1,109 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { useTeam } from '../context/Team';
-import Navbar from '../component/Navbar';
-import TeamScreenLinks from './compoonent/teamScreenLinks/teamScreenLinks';
-import TeamScreenTaskProgress from './compoonent/teamScreenTaskProgress/teamScreenTaskProgress';
-import TeamScreeTaskProgessDetail from './compoonent/teamScreeTaskProgessDetail/teamScreeTaskProgessDetail';
-import { getAllTeams, getSingleTeam, getTeamTask } from '../../../../../services/createMembersTasks';
-import { useCurrentUserContext } from '../../../../../contexts/CurrentUserContext';
-import CreateTask from './compoonent/createTask/createTask';
-import LoadingSpinner from '../../../../../components/LoadingSpinner/LoadingSpinner';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useTeam } from "../context/Team";
+import Navbar from "../component/Navbar";
+import TeamScreenLinks from "./compoonent/teamScreenLinks/teamScreenLinks";
+import TeamScreenTaskProgress from "./compoonent/teamScreenTaskProgress/teamScreenTaskProgress";
+import TeamScreeTaskProgessDetail from "./compoonent/teamScreeTaskProgessDetail/teamScreeTaskProgessDetail";
+import {
+  getAllTeams,
+  getSingleTeam,
+  getTeamTask,
+} from "../../../../../services/createMembersTasks";
+import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
+import CreateTask from "./compoonent/createTask/createTask";
+import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
+import axios from "axios";
 
 const TeamScreenTasks = () => {
   // states
-  const { currentUser } = useCurrentUserContext()
-  const { id } = useParams()
-  const { team, setteam } = useTeam()
-  const [loading, setloading] = useState(false)
-  const [detail, setdetail] = useState('in progress')
-  const [showCreatTask, setShowCreateTask] = useState(false)
-  const [tasks, setTasks] = useState([])
-  const [addedNewTask, setAddedNewTask] = useState(true)
+  const { currentUser } = useCurrentUserContext();
+  const { id } = useParams();
+  const { team, setteam } = useTeam();
+  const [loading, setloading] = useState(false);
+  const [detail, setdetail] = useState("in progress");
+  const [showCreatTask, setShowCreateTask] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [addedNewTask, setAddedNewTask] = useState(true);
+  const [progessPercentage, setProgressPercentage] = useState(null);
   // useEffect
   useEffect(() => {
     if (team?.members === undefined) {
-      setloading(true)
+      setloading(true);
 
       //   getAllTeams(currentUser.portfolio_info[0].org_id)
-      //     .then(resp =>{ 
+      //     .then(resp =>{
       //     setteam(resp.data.response.data.find(team => team["_id"] === id))
       //     setloading(false)})
       // .catch(err => console.log(err))
 
       // GET A SINGLE TEAM INSTEAD
       getSingleTeam(id)
-        .then(resp => {
-          setteam(resp.data.response.data[0])
-          setloading(false)
+        .then((resp) => {
+          setteam(resp.data.response.data[0]);
+          setloading(false);
         })
-        .catch(err => console.log(err))
+        .catch((err) => console.log(err));
     }
-  }, [])
-
+  }, []);
+  useEffect(() => {
+    if (tasks.length > 0) {
+      const tasksCompletedNumber = tasks.filter(
+        (task) => task.completed === true
+      ).length;
+      const tasksNumber = tasks.length;
+      setProgressPercentage(
+        ((tasksCompletedNumber / tasksNumber) * 100).toFixed(2)
+      );
+    }
+  }, [tasks]);
   useEffect(() => {
     if (addedNewTask) {
       getTeamTask(id)
-        .then(resp => {
+        .then((resp) => {
           // get all tasks and put it in tasks state
-          setTasks(resp.data.response.data)
-          console.log('response', resp.data.response.data)
-          setAddedNewTask(false)
+          setTasks(resp.data.response.data);
+          console.log("response", resp.data.response.data);
+          setAddedNewTask(false);
         })
-        .catch(err => {
-          console.log(err)
-          setAddedNewTask(false)
-        })
+        .catch((err) => {
+          console.log(err);
+          setAddedNewTask(false);
+        });
     }
-  }, [addedNewTask])
-  console.log({ team })
-  if (loading) return <LoadingSpinner />
+  }, [addedNewTask]);
+  console.log({ tasks });
+  if (loading) return <LoadingSpinner />;
   return (
-    <div style={{ height: '130%' }}>
-      {team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true} addTeamTask={true} handleAddTeamTaskFunction={() => setShowCreateTask(true)} addTeamTaskTitle='Add Task' /> : null}
+    <div style={{ height: "130%" }}>
+      {team?.team_name !== undefined ? (
+        <Navbar
+          title={team?.team_name.toString()}
+          removeButton={true}
+          addTeamTask={true}
+          handleAddTeamTaskFunction={() => setShowCreateTask(true)}
+          addTeamTaskTitle='Add Task'
+        />
+      ) : null}
       <TeamScreenLinks id={id} />
-      <TeamScreenTaskProgress />
-      <TeamScreeTaskProgessDetail detail={detail} setdetail={setdetail} tasks={tasks} setTasks={setTasks} />
-      {showCreatTask && <CreateTask id={id} setTasks={setTasks} members={team.members} team={team} unShowCreateTask={() => setShowCreateTask(false)} />}
+      <TeamScreenTaskProgress progessPercentage={progessPercentage} />
+      <TeamScreeTaskProgessDetail
+        detail={detail}
+        setdetail={setdetail}
+        tasks={tasks}
+        setTasks={setTasks}
+      />
+      {showCreatTask && (
+        <CreateTask
+          id={id}
+          setTasks={setTasks}
+          members={team.members}
+          team={team}
+          unShowCreateTask={() => setShowCreateTask(false)}
+        />
+      )}
     </div>
-  )
+  );
+};
 
-}
-
-export default TeamScreenTasks
+export default TeamScreenTasks;
