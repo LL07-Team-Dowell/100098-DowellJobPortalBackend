@@ -81,6 +81,7 @@ const Teamlead = ({ isGrouplead }) => {
   const [sortResults, setSortResults] = useState([]);
   const [cardPagination, setCardPagination] = useState(0);
   const [cardPagination2, setCardPagination2] = useState(0);
+  const [cardPagination3, setCardPagination3] = useState(0);
 
   const initializePagination = () => {
     setCardPagination(0);
@@ -88,6 +89,10 @@ const Teamlead = ({ isGrouplead }) => {
   const initializePagination2 = () => {
     setCardPagination2(0);
   };
+  const initializePagination3 = () => {
+    setCardPagination2(0);
+  };
+
   const incrementStepPagination = (steps, length) => {
     if (steps + 1 <= length) {
       if (steps + cardPagination !== length) {
@@ -102,6 +107,13 @@ const Teamlead = ({ isGrouplead }) => {
       }
     }
   };
+  const incrementStepPagination3 = (steps, length) => {
+    if (steps + 1 <= length) {
+      if (steps + cardPagination3 !== length) {
+        setCardPagination2(cardPagination3 + 1);
+      }
+    }
+  };
   const decrementStepPagination = () => {
     if (cardPagination !== 0) {
       setCardPagination(cardPagination - 1);
@@ -109,10 +121,14 @@ const Teamlead = ({ isGrouplead }) => {
   }
   const decrementStepPagination2 = () => {
     if (cardPagination !== 0) {
-      setCardPagination2(cardPagination - 1);
+      setCardPagination2(cardPagination2 - 1);
     }
   }
-
+  const decrementStepPagination3 = () => {
+    if (cardPagination !== 0) {
+      setCardPagination3(cardPagination3 - 1);
+    }
+  }
 
   const handleSearch = (value) => {
     const toAnagram = (word) => {
@@ -1470,7 +1486,7 @@ const Teamlead = ({ isGrouplead }) => {
                             <div className='JobsChanger_containter'>
                               <button
                                 onClick={() =>
-                                  decrementStepPagination()
+                                  decrementStepPagination2()
                                 }
                               >
                                 <IoIosArrowBack />
@@ -1491,6 +1507,17 @@ const Teamlead = ({ isGrouplead }) => {
                                     {index + 1}
                                   </button>
                                 ))}
+
+                              <button
+                                onClick={() =>
+                                  incrementStepPagination2(
+                                    6,
+                                    Math.ceil(filteredTasks.length / 6)
+                                  )
+                                }
+                              >
+                                <IoIosArrowForward />
+                              </button>
                             </div>
                           </>
                         ) :
@@ -1568,23 +1595,45 @@ const Teamlead = ({ isGrouplead }) => {
                                       })
                                   )}
                               <div className='JobsChanger_containter'>
+                                <button
+                                  onClick={() =>
+                                    decrementStepPagination3()
+                                  }
+                                >
+                                  <IoIosArrowBack />
+                                </button>
                                 {createArrayWithLength(
                                   currentSortOption ?
                                     Math.ceil(sortResults.length / 6)
                                     :
                                     Math.ceil(tasksToDisplayForLead.length / 6)
-                                ).map((s, index) => (
-                                  <button
-                                    className={s !== cardIndex ? "active" : "desactive"}
-                                    onClick={() => {
-                                      setCardGroupNumber(index * 4);
-                                      setCardIndex(index);
-                                    }}
-                                    key={`${index}_button`}
-                                  >
-                                    {index + 1}
-                                  </button>
-                                ))}
+                                )
+                                  .slice(cardPagination3, cardPagination2 + 6)
+                                  .map((s, index) => (
+                                    <button
+                                      className={s !== cardIndex ? "active" : "desactive"}
+                                      onClick={() => {
+                                        setCardGroupNumber(index * 4);
+                                        setCardIndex(index);
+                                      }}
+                                      key={`${index}_button`}
+                                    >
+                                      {index + 1}
+                                    </button>
+                                  ))}
+                                <button
+                                  onClick={() =>
+                                    incrementStepPagination3(
+                                      6,
+                                      currentSortOption ?
+                                        Math.ceil(sortResults.length / 6)
+                                        :
+                                        Math.ceil(tasksToDisplayForLead.length / 6)
+                                    )
+                                  }
+                                >
+                                  <IoIosArrowForward />
+                                </button>
                               </div>
 
                             </>
