@@ -138,10 +138,17 @@ const AddTaskScreen = ({
     setEditLoading(true);
   };
 
+  function removeSpaces(inputString) {
+    // Use a regular expression to replace all spaces with an empty string
+    return inputString.replace(/\s/g, '');
+  }
   //   importand fuction
   const addNewTask = () => {
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
+      console.log({ TASKSS: tasks.find(task => task.task === taskName) })
+      if (tasks.find(task => task.task === taskName) !== undefined) return toast.info('You cannot add the same task')
+      if (removeSpaces(taskName).length > 25 || removeSpaces(taskName).length < 5) return toast.info('the task should be between 5 and 25 letters')
       if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
       if (duration <= 15) {
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
