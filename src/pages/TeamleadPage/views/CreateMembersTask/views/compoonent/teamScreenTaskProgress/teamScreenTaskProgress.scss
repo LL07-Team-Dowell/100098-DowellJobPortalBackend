@@ -32,6 +32,12 @@
         background-color: #ccc;
       }
     }
+    .team-screen-task-progress-data-circle-complete{
+      &::before{
+         content: "";
+         background-color: #005734;
+      }
+    }
     > p {
       margin-top: 15px;
       font-weight: 600;
