@@ -33,9 +33,26 @@
       }
     }
     .team-screen-task-progress-data-circle-complete{
+      text-align: center;
+      width: 82px;
+      height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      border-radius: 50%;
+      background-color: white;
+      position: relative;
+      margin-left: 25px;
       &::before{
-         content: "";
-         background-color: #005734;
+        content: "";
+        background-color: #005734;
+         width: 130%;
+         height: 130%;
+         border-radius: 50%;
+         position: absolute;
+         z-index: -1;
       }
     }
     > p {

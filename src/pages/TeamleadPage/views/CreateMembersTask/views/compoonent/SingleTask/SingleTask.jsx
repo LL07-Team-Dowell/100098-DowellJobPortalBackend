@@ -83,7 +83,12 @@ const SingleTask = ({
                   <span>{e[0].toUpperCase()}</span>
                 ))}
               </div>
-              <div className='team-screen-task-progress-data-circle'>
+              <div
+                className={`team-screen-task-progress-data-circle ${
+                  taskCompleted &&
+                  "team-screen-task-progress-data-circle-complete"
+                }`}
+              >
                 <span>{taskCompleted ? "100" : "00"}%</span>
               </div>
             </div>
