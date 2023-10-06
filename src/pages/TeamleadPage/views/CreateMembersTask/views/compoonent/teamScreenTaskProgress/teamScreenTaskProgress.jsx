@@ -1,4 +1,5 @@
 // styles
+import { CircularProgressbar } from "react-circular-progressbar";
 import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
 import "./teamScreenTaskProgress.scss";
 
@@ -19,6 +20,10 @@ const TeamScreenTaskProgress = ({ progessPercentage }) => {
       <div className='team-screen-task-progress-data'>
         <div className='team-screen-task-progress-data-circle'>
           <span>{progessPercentage}%</span>
+          <CircularProgressbar
+            value={progessPercentage}
+            text={`${progessPercentage}%`}
+          />
         </div>
         <p>team progress</p>
       </div>
