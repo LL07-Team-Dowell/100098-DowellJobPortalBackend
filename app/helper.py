@@ -46,7 +46,6 @@ def dowellconnection(
 
     return res
 
-
 def get_event_id():
     url = "https://uxlivinglab.pythonanywhere.com/create_event"
 
@@ -83,7 +82,6 @@ def get_event_id():
     else:
         # print("r---->", r.text,json.loads(r.text))
         return json.loads(r.text)["error"]
-
 
 ### for notification api----------------------------
 def call_notification(url, request_type, data):  ## calling  notification api

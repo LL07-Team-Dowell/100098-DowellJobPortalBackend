@@ -4263,7 +4263,34 @@ class Thread_Apis(APIView):
                 *thread_report_module, "insert", field, update_field
             )
             # print(insert_response)
+            
             if json.loads(insert_response)["isSuccess"] == True:
+                get_team = dowellconnection(
+                    *team_management_modules, "fetch", {"_id":data.get("team_id")}, update_field
+                )
+                info = dowellconnection(
+                    *candidate_management_reports, "fetch", {}, update_field
+                )
+                users={}
+                send_to_emails={}
+                for user in json.loads(info)["data"]:
+                    if "applicant_email" in user.keys():
+                        users[user["username"]]=user["applicant_email"]
+                for member in json.loads(get_team)["data"][0]["members"]:
+                    if member in users.keys():
+                        send_to_emails[member]=users[member]
+                #print(send_to_emails)
+                def send_mail(*args):
+                    d = interview_email(*args)
+                for name, email in send_to_emails:
+                    send_mail_thread = threading.Thread(
+                        target=send_mail,
+                        args=(name,email,
+                              "Notification for Issue created.",
+                              f"{data.get('created_by')} has just created and issue. login into your client page to check"),
+                    )
+                    send_mail_thread.start()
+                    send_mail_thread.join()
                 return Response(
                     {
                         "message": "Thread created successfully",
