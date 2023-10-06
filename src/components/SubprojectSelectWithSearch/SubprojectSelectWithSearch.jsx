@@ -16,7 +16,9 @@ const SubprojectSelectWithSearch = ({
     className,
     searchWrapperClassName,
     hideSelectionsMade,
-    hideSearchElementInput,
+    alwaysOnDisplay,
+    passedInputVal,
+    passedInputRef,
 }) => {
     const [ inputVal, setInputVal ] = useState('');
     const [ displayedItems, setDisplayedItems ] = useState([]);
@@ -26,6 +28,7 @@ const SubprojectSelectWithSearch = ({
     const [ currentListItemIndex, setCurrentListItemIndex ] = useState(0);
 
     const removeFocusClassFromAllListItems = (listElemRef) => {
+        if (!listElemRef) return
         const allListElements = Array.from(listElemRef?.current?.childNodes);
 
         const classesOfParentElement = Array.from(listElemRef?.current?.classList);
@@ -49,18 +52,32 @@ const SubprojectSelectWithSearch = ({
     }, [subprojects])
 
     useEffect(() => {
-        const filteredList = subprojects?.map(item => {
-            const itemInList = item.sub_project_list.filter(i => i.toLocaleLowerCase().replaceAll(" ", "").includes(inputVal.toLocaleLowerCase().replaceAll(" ", "")));
-            if (itemInList.length < 1) return null
-            
-            return {
-                ...item,
-                sub_project_list: itemInList,
-            }
-        }).filter(item => item); 
+        let filteredList;
+
+        if (passedInputVal) {
+            filteredList = subprojects?.map(item => {
+                const itemInList = item.sub_project_list.filter(i => i.toLocaleLowerCase().replaceAll(" ", "").includes(passedInputVal.toLocaleLowerCase().replaceAll(" ", "")));
+                if (itemInList.length < 1) return null
+                
+                return {
+                    ...item,
+                    sub_project_list: itemInList,
+                }
+            }).filter(item => item); 
+        } else {
+            filteredList = subprojects?.map(item => {
+                const itemInList = item.sub_project_list.filter(i => i.toLocaleLowerCase().replaceAll(" ", "").includes(inputVal.toLocaleLowerCase().replaceAll(" ", "")));
+                if (itemInList.length < 1) return null
+                
+                return {
+                    ...item,
+                    sub_project_list: itemInList,
+                }
+            }).filter(item => item); 
+        }
 
         setDisplayedItems(filteredList);
-    }, [inputVal])
+    }, [inputVal, passedInputVal, subprojects])
 
     useListenToKeyStrokeInElement(
         inputRef,
@@ -163,9 +180,11 @@ const SubprojectSelectWithSearch = ({
         removeFocusClassFromAllListItems(listRef);
     }
 
-    if (hideSearchElementInput) {
+    console.log(passedInputRef, passedInputVal);
+
+    if (alwaysOnDisplay) {
         return <>
-            <div className={`${styles.dropdown} ${className ? className : ''}`} tabIndex={0} ref={wrapperRef}>
+            <div className={`${styles.dropdown} ${styles.always__On__Display} ${className ? className : ''}`} tabIndex={0} ref={wrapperRef}>
                 {
                     selectedSubProject && selectedSubProject.length > 0 ? <>
                         {
@@ -190,14 +209,6 @@ const SubprojectSelectWithSearch = ({
                         }
                     </> :
                     <>
-                        <div className={`${styles.search__Wrapper} ${searchWrapperClassName ? searchWrapperClassName : ''}`}>
-                            <input 
-                                placeholder="Search for subproject"
-                                value={inputVal}
-                                onChange={({ target }) => setInputVal(target.value)}
-                                ref={inputRef}
-                            />
-                        </div>
                         <div className={styles.items__List} ref={listRef} tabIndex={0}>
                             {
                                 displayedItems?.length < 1 ?
