@@ -4242,6 +4242,10 @@ class Thread_Apis(APIView):
             "team_alerted_id": data.get("team_alerted_id"),
             "current_status": "Created",
             "previous_status": [],
+            "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"), 
+            "expected_product_behavior": data.get("expected_product_behavior"), 
+            "actual_product_behavior": data.get("actual_product_behavior"),
+            "thread_type": data.get("thread_type")
         }
 
         field = {
@@ -4255,6 +4259,10 @@ class Thread_Apis(APIView):
             "created_date": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
             "current_status": serializer_data["current_status"],
             "previous_status": [],
+            "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"), 
+            "expected_product_behavior": data.get("expected_product_behavior"), 
+            "actual_product_behavior": data.get("actual_product_behavior"),
+            "thread_type": data.get("thread_type")
         }
         update_field = {}
         serializer = ThreadsSerializer(data=serializer_data)
