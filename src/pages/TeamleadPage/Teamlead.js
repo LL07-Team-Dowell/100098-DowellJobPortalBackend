@@ -1294,28 +1294,29 @@ const Teamlead = ({ isGrouplead }) => {
                           <></>
                         )}
                         {
-                          section === 'task' ? <div className='JobsChanger_containter'>
-                            {createArrayWithLength(
-                              currentSortOption ?
-                                Math.ceil(sortResults.length / 6)
-                                :
-                                searchValue.length >= 1 ?
-                                  Math.ceil(filteredTasks.length / 6)
+                          section === 'task' ?
+                            <div className='JobsChanger_containter'>
+                              {createArrayWithLength(
+                                currentSortOption ?
+                                  Math.ceil(sortResults.length / 6)
                                   :
-                                  Math.ceil(tasksToDisplayForLead.length / 6)
-                            ).map((s, index) => (
-                              <button
-                                className={s !== cardIndex ? "active" : "desactive"}
-                                onClick={() => {
-                                  setCardGroupNumber(index * 4);
-                                  setCardIndex(index);
-                                }}
-                                key={`${index}_button`}
-                              >
-                                {index + 1}
-                              </button>
-                            ))}
-                          </div> : <></>
+                                  searchValue.length >= 1 ?
+                                    Math.ceil(filteredTasks.length / 6)
+                                    :
+                                    Math.ceil(tasksToDisplayForLead.length / 6)
+                              ).map((s, index) => (
+                                <button
+                                  className={s !== cardIndex ? "active" : "desactive"}
+                                  onClick={() => {
+                                    setCardGroupNumber(index * 4);
+                                    setCardIndex(index);
+                                  }}
+                                  key={`${index}_button`}
+                                >
+                                  {index + 1}
+                                </button>
+                              ))}
+                            </div> : <></>
                         }
                       </div>
                     </>
