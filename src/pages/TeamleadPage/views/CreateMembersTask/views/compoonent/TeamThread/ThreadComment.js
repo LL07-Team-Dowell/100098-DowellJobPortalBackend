@@ -10,6 +10,9 @@ import { formatDateForAPI } from "../../../../../../../helpers/helpers";
 
 
 const Wrapper = styled.div`
+max-height: 300px;
+overflow-y: scroll;
+
 .comment-container {
   display: flex;
   gap: 1rem;
@@ -144,11 +147,11 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
         console.log(resp);
         if (resp.status === 200) {
           // Update the state with the edited comment
-          setUpdateComment((prevComments) =>
-            prevComments.map((c) =>
-              c._id === comment._id ? { ...c, comment: updateCommentInput } : c
-            )
-          );
+          // setUpdateComment((prevComments) =>
+          //   prevComments.map((c) =>
+          //     c._id === comment._id ? { ...c, comment: updateCommentInput } : c
+          //   )
+          // );
           setEditIndex(null);
         }
       })
@@ -193,7 +196,7 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
                       className="comment-text"
                       style={{ paddingLeft: "5px", border: "1px solid black" }}
                       defaultValue={comment.comment}
-                      onChange={(e) => setUpdateCommentInput(e.target.value)}
+                    // onChange={(e) => setUpdateCommentInput(e.target.value)}
                     />
                   ) : (
                     <input className="comment-text" defaultValue={comment.comment} disabled />

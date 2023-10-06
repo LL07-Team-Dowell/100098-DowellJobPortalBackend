@@ -31,6 +31,12 @@ align-items: left !important;
     margin-top: 1rem;
 }
 
+.thread-subtitle {
+  font-size: 0.8rem;
+  color: #005734 !important;
+  text-align: justify;
+}
+
 .team-screen-threads {
     width: 80%;
     margin: auto;
@@ -40,6 +46,7 @@ align-items: left !important;
     justify-content: space-between;
   }
   
+
   .team-screen-threads-card {
     height: 100%;
     width: 400px;
@@ -401,6 +408,15 @@ const ThreadItem = ({ status }) => {
     }
   }
 
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Define the maximum length for thread.thread before truncating
+  const maxLength = 70;
+
+  // Function to toggle the expansion state
+  const toggleExpansion = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   const handleSubmit = () => { };
   if (loading) return <LoadingSpinner />
@@ -439,7 +455,29 @@ const ThreadItem = ({ status }) => {
                         <p>Assigned to: {assignedTeamName}</p>
                         <p>Raised by : {thread.created_by}</p>
                       </div>
-                      <p className='thread-subtitle'>{thread.thread}</p>
+                      <h4>Details</h4>
+                      {/* <p className='thread-subtitle'>{thread.thread}</p> */}
+
+                      {thread.thread.length > maxLength && !isExpanded ? (
+                        <div>
+                          <p className="thread-subtitle">
+                            {thread.thread.slice(0, maxLength)}...
+                            <span onClick={toggleExpansion} className="see-more">
+                              See more
+                            </span>
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="thread-subtitle">{thread.thread}</p>
+                          {isExpanded && (
+                            <span onClick={toggleExpansion} className="see-less">
+                              See less
+                            </span>
+                          )}
+                        </div>
+                      )}
+
                       <div className="team-screen-threads-progress">
                         <div className="progress">
                           <div data-tooltio-id='created' className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"}></div>
@@ -552,8 +590,24 @@ const ThreadItem = ({ status }) => {
                           <p>Assigned to: {assignedTeamName}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
-                        <p className='thread-subtitle'>{thread.thread}</p>
-
+                        <h5>Details</h5>
+                        {thread.thread.length > maxLength && !isExpanded ? (
+                          <p className="thread-subtitle">
+                            {thread.thread.slice(0, maxLength)}
+                            <span onClick={toggleExpansion} className="see-more">
+                              ...
+                            </span>
+                          </p>
+                        ) : (
+                          <div>
+                            <p className="thread-subtitle">{thread.thread}</p>
+                            {isExpanded && (
+                              <span onClick={toggleExpansion} className="see-less">
+                                See less
+                              </span>
+                            )}
+                          </div>
+                        )}
                         <div className="team-screen-threads-progress">
                           <div className="progress">
                             <div className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"} data-tooltip-id="created"></div>
