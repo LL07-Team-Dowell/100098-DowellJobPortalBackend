@@ -31,7 +31,7 @@ import {
 } from "../../services/teamleadServices";
 import { useCandidateTaskContext } from "../../contexts/CandidateTasksContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { IoMdRefresh } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from "react-icons/io";
 import ClaimVouchar from "./views/ClaimVouchar/ClaimVouchar";
 import AddPage from "../GroupLeadPage/components/AddPage";
 import { getAllOnBoardedCandidate, getCandidateTasksOfTheDayV2 } from "../../services/candidateServices";
@@ -102,12 +102,12 @@ const Teamlead = ({ isGrouplead }) => {
       }
     }
   };
-  const decrementStepPagination = (activeCard) => {
+  const decrementStepPagination = () => {
     if (cardPagination !== 0) {
       setCardPagination(cardPagination - 1);
     }
   }
-  const decrementStepPagination2 = (activeCard) => {
+  const decrementStepPagination2 = () => {
     if (cardPagination !== 0) {
       setCardPagination2(cardPagination - 1);
     }
@@ -1296,6 +1296,14 @@ const Teamlead = ({ isGrouplead }) => {
                         {
                           section === 'task' ?
                             <div className='JobsChanger_containter'>
+                              <button
+                                onClick={() =>
+                                  decrementStepPagination()
+                                }
+                              >
+                                <IoIosArrowBack />
+                              </button>
+
                               {createArrayWithLength(
                                 currentSortOption ?
                                   Math.ceil(sortResults.length / 6)
@@ -1304,18 +1312,40 @@ const Teamlead = ({ isGrouplead }) => {
                                     Math.ceil(filteredTasks.length / 6)
                                     :
                                     Math.ceil(tasksToDisplayForLead.length / 6)
-                              ).map((s, index) => (
-                                <button
-                                  className={s !== cardIndex ? "active" : "desactive"}
-                                  onClick={() => {
-                                    setCardGroupNumber(index * 4);
-                                    setCardIndex(index);
-                                  }}
-                                  key={`${index}_button`}
-                                >
-                                  {index + 1}
-                                </button>
-                              ))}
+                              )
+                                .slice(
+                                  cardPagination,
+                                  cardPagination + 6
+                                )
+                                .map((s, index) => (
+                                  <button
+                                    className={s !== cardIndex ? "active" : "desactive"}
+                                    onClick={() => {
+                                      setCardGroupNumber(index * 4);
+                                      setCardIndex(index);
+                                    }}
+                                    key={`${index}_button`}
+                                  >
+                                    {index + 1}
+                                  </button>
+                                ))}
+
+                              <button
+                                onClick={() =>
+                                  incrementStepPagination(
+                                    6,
+                                    currentSortOption ?
+                                      Math.ceil(sortResults.length / 6)
+                                      :
+                                      searchValue.length >= 1 ?
+                                        Math.ceil(filteredTasks.length / 6)
+                                        :
+                                        Math.ceil(tasksToDisplayForLead.length / 6)
+                                  )
+                                }
+                              >
+                                <IoIosArrowForward />
+                              </button>
                             </div> : <></>
                         }
                       </div>
@@ -1438,20 +1468,29 @@ const Teamlead = ({ isGrouplead }) => {
                                 })
                             )}
                             <div className='JobsChanger_containter'>
+                              <button
+                                onClick={() =>
+                                  decrementStepPagination()
+                                }
+                              >
+                                <IoIosArrowBack />
+                              </button>
                               {createArrayWithLength(
                                 Math.ceil(filteredTasks.length / 6)
-                              ).map((s, index) => (
-                                <button
-                                  className={s !== cardIndex ? "active" : "desactive"}
-                                  onClick={() => {
-                                    setCardGroupNumber(index * 4);
-                                    setCardIndex(index);
-                                  }}
-                                  key={`${index}_button`}
-                                >
-                                  {index + 1}
-                                </button>
-                              ))}
+                              )
+                                .slice(cardPagination2, cardPagination2 + 6)
+                                .map((s, index) => (
+                                  <button
+                                    className={s !== cardIndex ? "active" : "desactive"}
+                                    onClick={() => {
+                                      setCardGroupNumber(index * 4);
+                                      setCardIndex(index);
+                                    }}
+                                    key={`${index}_button`}
+                                  >
+                                    {index + 1}
+                                  </button>
+                                ))}
                             </div>
                           </>
                         ) :
