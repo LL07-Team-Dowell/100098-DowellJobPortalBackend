@@ -129,7 +129,7 @@ const TeamScreenThreads = ({ status, id }) => {
       setText("");
 
       if (foundThreadBeingUpadted) {
-        foundThreadBeingUpadted.comments.data.reverse().push({
+        foundThreadBeingUpadted.comments.data.unshift({
           ...newComment,
           created_date: formatDateForAPI(new Date(), "report"),
           _id: newCommentRes.info.inserted_id,
@@ -146,8 +146,7 @@ const TeamScreenThreads = ({ status, id }) => {
   const handleUpdate = (comment) => {
     const document_id = comment._id;
     const created_by = comment.created_by;
-    setLoadingcmnt(true)
-
+    setLoadingcmnt(true);
 
     // Make an API request to update the comment
     updateSingleComment({
@@ -165,7 +164,7 @@ const TeamScreenThreads = ({ status, id }) => {
             )
           );
           setEditIndex(null);
-          setLoadingcmnt(false)
+          setLoadingcmnt(false);
         }
       })
       .catch((error) => {
@@ -174,19 +173,16 @@ const TeamScreenThreads = ({ status, id }) => {
   };
 
   const editComment = async (text, commentId, id) => {
-
     const editComments = {
       comment: text,
       document_id: commentId,
     };
 
-    try{
+    try {
       const editedComment = (await updateComment(editComments)).data;
-      console.log(editedComment)
-
-      
+      console.log(editedComment);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
 
     // const updatedThreads = threads.map((thread) => {
@@ -922,104 +918,112 @@ const TeamScreenThreads = ({ status, id }) => {
                                 Comments
                               </h3>
                               {React.Children.toArray(
-                                thread.comments.data.reverse().map((comment, index) => {
-                                  return (
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        gap: "1rem",
-                                        marginBottom: "0.7rem",
-                                        marginLeft: comment.parentId
-                                          ? "2rem"
-                                          : "0",
-                                      }}
-                                    >
-                                      <div className="avatar-container">
-                                        <Avatar
-                                          name={thread.created_by}
-                                          size={40}
-                                          round
-                                        />
-                                      </div>
-                                      <div className="candidate-comments-section">
-                                        <p className="user-candidate">
-                                          {comment.created_by}
-                                        </p>
-                                        {editIndex === index ? (
-                                          <input
-                                            className="comment-area"
-                                            style={{
-                                              paddingLeft: "5px",
-                                              border: "1px solid black",
-                                            }}
-                                            defaultValue={comment.comment}
-                                            onChange={(e) =>
-                                              setUpdateCommentInput(
-                                                e.target.value
-                                              )
-                                            }
+                                thread.comments.data
+                                  .reverse()
+                                  .map((comment, index) => {
+                                    return (
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          gap: "1rem",
+                                          marginBottom: "0.7rem",
+                                          marginLeft: comment.parentId
+                                            ? "2rem"
+                                            : "0",
+                                        }}
+                                      >
+                                        <div className="avatar-container">
+                                          <Avatar
+                                            name={thread.created_by}
+                                            size={40}
+                                            round
                                           />
-                                        ) : (
-                                          <input
-                                            className="comment-area"
-                                            defaultValue={comment.comment}
-                                            disabled
-                                          />
-                                        )}
-                                        {editIndex === index ? (
-                                          <>
-                                            <div className="button">
-                                              {currentUser.portfolio_info[0]
-                                                .username ===
-                                                comment.created_by && (
-                                                  loadingcmnt ? <LittleLoading/> :
-                                                <button
-                                                  style={{
-                                                    padding: "0.3rem 0.5rem",
-                                                    cursor: "pointer",
-                                                    backgroundColor: "#005734",
-                                                    border: "none",
-                                                    color: "white",
-                                                    borderRadius: "5px",
-                                                  }}
-                                                  onClick={() =>
-                                                    handleUpdate(comment)
-                                                  }
-                                                >
-                                                  Update
-                                                </button>
-                                              )}
-                                            </div>
-                                          </>
-                                        ) : (
-                                          <>
-                                            <div className="button">
-                                              {currentUser.portfolio_info[0]
-                                                .username ===
-                                                comment.created_by && (
-                                                <button
-                                                  style={{
-                                                    padding: "0.3rem 0.5rem",
-                                                    cursor: "pointer",
-                                                    backgroundColor: "#005734",
-                                                    border: "none",
-                                                    color: "white",
-                                                    borderRadius: "5px",
-                                                  }}
-                                                  onClick={() =>
-                                                    setEditIndex(index)
-                                                  }
-                                                >
-                                                  Edit
-                                                </button>
-                                              )}
-                                            </div>
-                                          </>
-                                        )}
+                                        </div>
+                                        <div className="candidate-comments-section">
+                                          <p className="user-candidate">
+                                            {comment.created_by}
+                                            <p>{comment.created_date}</p>
+                                          </p>
+                                          {editIndex === index ? (
+                                            <input
+                                              className="comment-area"
+                                              style={{
+                                                paddingLeft: "5px",
+                                                border: "1px solid black",
+                                              }}
+                                              defaultValue={comment.comment}
+                                              onChange={(e) =>
+                                                setUpdateCommentInput(
+                                                  e.target.value
+                                                )
+                                              }
+                                            />
+                                          ) : (
+                                            <input
+                                              className="comment-area"
+                                              defaultValue={comment.comment}
+                                              disabled
+                                            />
+                                          )}
+                                          {editIndex === index ? (
+                                            <>
+                                              <div className="button">
+                                                {currentUser.portfolio_info[0]
+                                                  .username ===
+                                                  comment.created_by &&
+                                                  (loadingcmnt ? (
+                                                    <LittleLoading />
+                                                  ) : (
+                                                    <button
+                                                      style={{
+                                                        padding:
+                                                          "0.3rem 0.5rem",
+                                                        cursor: "pointer",
+                                                        backgroundColor:
+                                                          "#005734",
+                                                        border: "none",
+                                                        color: "white",
+                                                        borderRadius: "5px",
+                                                      }}
+                                                      onClick={() =>
+                                                        handleUpdate(comment)
+                                                      }
+                                                    >
+                                                      Update
+                                                    </button>
+                                                  ))}
+                                              </div>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <div className="button">
+                                                {currentUser.portfolio_info[0]
+                                                  .username ===
+                                                  comment.created_by && (
+                                                  <button
+                                                    style={{
+                                                      padding: "0.3rem 0.5rem",
+                                                      cursor: "pointer",
+                                                      backgroundColor:
+                                                        "#005734",
+                                                      border: "none",
+                                                      color: "white",
+                                                      borderRadius: "5px",
+                                                    }}
+                                                    onClick={() =>
+                                                      setEditIndex(index)
+                                                    }
+                                                  >
+                                                    Edit
+                                                  </button>
+                                                )}
+                                              </div>
+                                            </>
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
-                                  );
-                                })
+                                    );
+                                  })
                               )}
                             </div>
                           )}
