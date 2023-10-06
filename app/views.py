@@ -1908,26 +1908,37 @@ class approve_task(APIView):
         _date = _date.strftime("%m/%d/%Y %H:%M:%S")
 
         return str(_date)
-    def valid_teamlead(self,portfolio_name):
+
+    def valid_teamlead(self, portfolio_name):
         profiles = SettingUserProfileInfo.objects.all()
         serializer = SettingUserProfileInfoSerializer(profiles, many=True)
-        #print(serializer.data,"----")
-        info = dowellconnection(*candidate_management_reports, "fetch", {"username":username}, update_field=None)
-            #print(len(json.loads(info)["data"]),"==========")
+        # print(serializer.data,"----")
+        info = dowellconnection(
+            *candidate_management_reports,
+            "fetch",
+            {"username": username},
+            update_field=None,
+        )
+        # print(len(json.loads(info)["data"]),"==========")
         if len(json.loads(info)["data"]) > 0:
             username = json.loads(info)["data"][0]["username"]
-            portfolio_name = [names["portfolio_name"] for names in json.loads(info)["data"]]
-            
-            valid_profiles =[]
+            portfolio_name = [
+                names["portfolio_name"] for names in json.loads(info)["data"]
+            ]
+
+            valid_profiles = []
             for data in serializer.data:
                 for d in data["profile_info"]:
-                    if 'profile_title' in d.keys():
-                        if d["profile_title"] in portfolio_name and d['Role']=='Proj_Lead':
-                                valid_profiles.append(d["profile_title"])
-            if len(valid_profiles)>0:
+                    if "profile_title" in d.keys():
+                        if (
+                            d["profile_title"] in portfolio_name
+                            and d["Role"] == "Proj_Lead"
+                        ):
+                            valid_profiles.append(d["profile_title"])
+            if len(valid_profiles) > 0:
                 if valid_profiles[-1] in portfolio_name:
                     return True
-                else: 
+                else:
                     return False
         return False
 
@@ -1997,7 +2008,7 @@ class approve_task(APIView):
                 check_approvable = self.approvable()
 
                 if check_approvable is True:
-                    validate_teamlead= self.valid_teamlead(data.get("portfolio_name"))
+                    validate_teamlead = self.valid_teamlead(data.get("portfolio_name"))
                     if validate_teamlead is False:
                         return Response(
                             {
@@ -5571,7 +5582,10 @@ class Generate_Report(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            if payload.get("applicant_username") and not payload.get("applicant_username") in Team_Leads:
+            if (
+                payload.get("applicant_username")
+                and not payload.get("applicant_username") in Team_Leads
+            ):
                 return Response(
                     {
                         "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
@@ -5602,19 +5616,22 @@ class Generate_Report(APIView):
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
-            
+
             ##checking if the user is a team lead-----
             profiles = SettingUserProfileInfo.objects.all()
             serializer = SettingUserProfileInfoSerializer(profiles, many=True)
-            #print(serializer.data,"----")
-            valid_portfolio_names =[]
+            # print(serializer.data,"----")
+            valid_portfolio_names = []
             for data in serializer.data:
                 for d in data["profile_info"]:
-                    if 'profile_title' in d.keys():
-                        if d['Role']=='Proj_Lead':
-                            #print(d,"----")
+                    if "profile_title" in d.keys():
+                        if d["Role"] == "Proj_Lead":
+                            # print(d,"----")
                             valid_portfolio_names.append(d["profile_title"])
-            if payload.get("applicant_username") and not portfolio_name in valid_portfolio_names:
+            if (
+                payload.get("applicant_username")
+                and not portfolio_name in valid_portfolio_names
+            ):
                 return Response(
                     {
                         "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
@@ -5784,19 +5801,22 @@ class Generate_Report(APIView):
                         pass
                     try:
                         if task["task_approved_by"] == username and (
-                                task["status"] == "Completed"
-                                or task["status"] == "Complete"
-                                or task["status"] == "completed"
-                                or task["status"] == "complete"
-                            ):
+                            task["status"] == "Completed"
+                            or task["status"] == "Complete"
+                            or task["status"] == "completed"
+                            or task["status"] == "complete"
+                        ):
                             _tasks_you_marked_as_complete.append(task)
                     except KeyError:
                         pass
                     try:
-                        if task["task_approved_by"] == username and (task["status"] == "Incomplete"
-                                or task["status"] == "incompleted"
-                                or task["status"] == "incomplete"
-                                or task["status"] == "Incompleted"):
+                        print(task, "------------------")
+                        if task["task_approved_by"] == username and (
+                            task["status"] == "Incomplete"
+                            or task["status"] == "incompleted"
+                            or task["status"] == "incomplete"
+                            or task["status"] == "Incompleted"
+                        ):
                             _tasks_you_marked_as_incomplete.append(task)
                     except KeyError:
                         pass
@@ -6575,24 +6595,28 @@ class Generate_Report(APIView):
                     }
                 # getting projects tasks details------------
 
-                if len(projects)>0:
+                if len(projects) > 0:
                     c = Counter(projects)
                     m = min(c.values())
                     least_taskeds = [x for x in projects if c[x] == m]
                     least_tasked_projects = []
                     for items in set(least_taskeds):
                         count = least_taskeds.count(items)
-                        least_tasked_projects.append({"title": items, "tasks_added": count})
+                        least_tasked_projects.append(
+                            {"title": items, "tasks_added": count}
+                        )
 
                     m = max(c.values())
                     most_tasked = [x for x in projects if c[x] == m]
                     most_tasked_projects = []
                     for items in set(most_tasked):
                         count = most_tasked.count(items)
-                        most_tasked_projects.append({"title": items, "tasks_added": count})
+                        most_tasked_projects.append(
+                            {"title": items, "tasks_added": count}
+                        )
 
                 ## get highest and lowest counts of tasks------------
-                if len(tasks_added_by)>0:
+                if len(tasks_added_by) > 0:
                     c = Counter(tasks_added_by)
                     m = min(c.values())
                     mins = [x for x in tasks_added_by if c[x] == m]
@@ -6612,8 +6636,12 @@ class Generate_Report(APIView):
                     response = {
                         "highest": max_items,
                         "lowest": min_items,
-                        "project_with_most_tasks": most_tasked_projects if len(projects)>0 else "None",
-                        "project_with_least_tasks": least_tasked_projects if len(projects)>0 else "None",
+                        "project_with_most_tasks": most_tasked_projects
+                        if len(projects) > 0
+                        else "None",
+                        "project_with_least_tasks": least_tasked_projects
+                        if len(projects) > 0
+                        else "None",
                         "threshold": threshold,
                         "users": data,
                     }
@@ -6621,8 +6649,12 @@ class Generate_Report(APIView):
                     response = {
                         "highest": "None",
                         "lowest": "None",
-                        "project_with_most_tasks": most_tasked_projects if len(projects)>0 else "None",
-                        "project_with_least_tasks": least_tasked_projects if len(projects)>0 else "None",
+                        "project_with_most_tasks": most_tasked_projects
+                        if len(projects) > 0
+                        else "None",
+                        "project_with_least_tasks": least_tasked_projects
+                        if len(projects) > 0
+                        else "None",
                         "threshold": threshold,
                         "users": data,
                     }
