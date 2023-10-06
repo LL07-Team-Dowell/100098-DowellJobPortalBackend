@@ -16,6 +16,7 @@ const SubprojectSelectWithSearch = ({
     className,
     searchWrapperClassName,
     hideSelectionsMade,
+    hideSearchElementInput,
 }) => {
     const [ inputVal, setInputVal ] = useState('');
     const [ displayedItems, setDisplayedItems ] = useState([]);
@@ -160,6 +161,75 @@ const SubprojectSelectWithSearch = ({
         handleSelectItem(subprojectSelected, projectSelected);
         setCurrentListItemIndex(0);
         removeFocusClassFromAllListItems(listRef);
+    }
+
+    if (hideSearchElementInput) {
+        return <>
+            <div className={`${styles.dropdown} ${className ? className : ''}`} tabIndex={0} ref={wrapperRef}>
+                {
+                    selectedSubProject && selectedSubProject.length > 0 ? <>
+                        {
+                            hideSelectionsMade ? <></> :
+                            <>
+                                <div className={styles.selected__Item}>
+                                    <span>{selectedSubProject}</span>
+                                    <AiOutlineClose 
+                                        onClick={
+                                            handleCancelSelection && typeof handleCancelSelection === 'function' ? 
+                                                () => handleCancelSelection() 
+                                            : 
+                                            () => {}
+                                        } 
+                                    />
+                                </div>
+                                {
+                                    selectedProject && selectedProject.length > 0 &&
+                                    <p className={styles.project__Indicator}>Project: {selectedProject}</p>
+                                }
+                            </>
+                        }
+                    </> :
+                    <>
+                        <div className={`${styles.search__Wrapper} ${searchWrapperClassName ? searchWrapperClassName : ''}`}>
+                            <input 
+                                placeholder="Search for subproject"
+                                value={inputVal}
+                                onChange={({ target }) => setInputVal(target.value)}
+                                ref={inputRef}
+                            />
+                        </div>
+                        <div className={styles.items__List} ref={listRef} tabIndex={0}>
+                            {
+                                displayedItems?.length < 1 ?
+                                <p>No items found</p>
+                                :
+                                React.Children.toArray(displayedItems?.map(item => {
+                                    return item.sub_project_list.map(project => {
+                                        return <div 
+                                            className={styles.subproject__Item}
+                                            onClick={
+                                                handleSelectItem && typeof handleSelectItem === 'function' ? 
+                                                    () => {
+                                                        selectItemFromListing(project, item.parent_project)
+                                                    }
+                                                :
+                                                () => {}
+                                            }
+                                            tabIndex={0}
+                                        >
+                                            {project} - ({item.parent_project})
+                                            <span className={`${styles.hidden} subproject`}>{project}</span>
+                                            <span className={`${styles.hidden} project`}>{item.parent_project}</span>
+                                        </div>
+                                    })
+                                }))
+                            }
+                        </div>     
+                    </>
+                }
+            
+            </div>
+        </>
     }
 
     return <>

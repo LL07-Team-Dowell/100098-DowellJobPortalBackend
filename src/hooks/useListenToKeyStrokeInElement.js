@@ -9,7 +9,7 @@ export default function useListenToKeyStrokeInElement (elemRef, keyToListenTo, c
 
             if ((e.key !== keyToListenTo) || (!elemRef.current.contains(e.target))) return;
 
-            callbackFunction();
+            callbackFunction(e);
         }
 
         document.addEventListener("keydown", handleClick, true);

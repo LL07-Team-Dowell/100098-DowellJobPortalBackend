@@ -100,7 +100,7 @@
   border: 1px solid var(--yellow-color);
   width: 100%;
   font-size: 0.875rem;
-  padding: 2%;
+  padding: 1.5% 2%;
   border-radius: 10px;
   display: block;
   background-color: #fff;
@@ -226,6 +226,16 @@
   margin-bottom: 0.4rem;
 }
 
+.add__New__Task__Container .log__Add__New__Wrapper {
+  position: relative;
+}
+
+.add__New__Task__Container .log__Add__New__Wrapper .log__Add__Subproject {
+  position: absolute;
+  /* top: 0;
+  right: 0; */
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -266,11 +276,11 @@
 
   .add__New__Task__Container input,
   .add__New__Task__Container textarea {
-    padding: 2%;
+    padding: 1.5% 2%;
   }
 
   .add__New__Task__Container textarea.log__textarea {
-    padding: 6% 4%;
+    padding: 4%;
   }
 
   .add__New__Task__Container .add__Task__Btn {
