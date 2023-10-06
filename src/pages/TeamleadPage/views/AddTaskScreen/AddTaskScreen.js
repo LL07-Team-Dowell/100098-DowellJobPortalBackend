@@ -48,7 +48,7 @@ const AddTaskScreen = ({
   const [taskName, setTaskName] = useState("");
   const [details, setDetails] = useState("");
   const [tasks, setTasks] = useState([]);
-  console.log({ tasks });
+  // console.log({ tasks });
   const [taskId, setTaskId] = useState("");
   const [isCreatingTask, setIsCreatingTask] = useState(true);
   const [showSubmitTaskInfo, setShowSubmitTaskInfo] = useState(false);
@@ -65,6 +65,9 @@ const AddTaskScreen = ({
       :
       true
   );
+  const textareaRef = useRef();
+  const subprojectRef = useRef();
+
 
   //   var conditions
   const inputsAreFilled = taskStartTime && taskEndTime && taskName && taskType;
@@ -261,7 +264,7 @@ const AddTaskScreen = ({
     const seconds = dateObj.getSeconds();
 
     const formattedDate = `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
-    console.log(formattedDate);
+    // console.log(formattedDate);
     return formattedDate;
   }
 
@@ -271,7 +274,7 @@ const AddTaskScreen = ({
   }
 
   const formattedDate = convertDateFormat(time);
-  console.log(formattedDate);
+  // console.log(formattedDate);
 
   // console.log(time);
   // useClickOutside(ref, () => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) });
@@ -399,7 +402,31 @@ const AddTaskScreen = ({
       updateTask()
     }
   )
-  console.log({ taskStartTime });
+
+  // TO COME BACK AND COMPLETE
+  // useListenToKeyStrokeInElement(
+  //   textareaRef,
+  //   'a',
+  //   (e) => {
+  //     const { 
+  //       target: { 
+  //         selectionEnd, 
+  //         selectionStart,
+  //         scrollTop,
+  //         clientWidth,
+  //       } 
+  //     } = e;
+
+  //     console.log('targ', e.target);
+
+  //     subprojectRef.current.style.top = scrollTop;
+  //     console.log(Number(clientWidth) - Number(selectionEnd));
+  //     console.log(scrollTop);
+  //     subprojectRef.current.style.right = `${Number(selectionEnd) }px`;
+  //   }
+  // )
+
+  // console.log({ taskStartTime });
 
   const addTaskForToday = async (startTime, endTime, task, details, updateTask = false) => {
     const today = new Date();
@@ -792,16 +819,42 @@ const AddTaskScreen = ({
                               </div>
                               <div className="task__Item">
                                 <span className="selectProject">Work log</span>
-                                <textarea
-                                  type={"text"}
-                                  placeholder={"Work log"}
-                                  value={taskName}
-                                  style={{ margin: 0, marginBottom: "0rem" }}
-                                  onChange={({ target }) => setTaskName(target.value)}
-                                  readOnly={loading || !taskDetailForTodayLoaded ? true : false}
-                                  rows={3}
-                                  className="log__textarea"
-                                ></textarea>
+                                <div className="log__Add__New__Wrapper">
+                                  <textarea
+                                    type={"text"}
+                                    placeholder={"Work log"}
+                                    value={taskName}
+                                    style={{ margin: 0, marginBottom: "0rem" }}
+                                    onChange={({ target }) => setTaskName(target.value)}
+                                    readOnly={loading || !taskDetailForTodayLoaded ? true : false}
+                                    rows={3}
+                                    className="log__textarea"
+                                  // cols={40}
+                                  // ref={textareaRef}
+                                  >
+                                  </textarea>
+                                  {/* <div
+                                    className={'log__Add__Subproject'}
+                                    ref={subprojectRef}
+                                  >
+                                    <SubprojectSelectWithSearch
+                                      subprojects={subprojects}
+                                      selectedSubProject={subprojectSelected}
+                                      handleSelectItem={(subproject, project) => {
+                                        setSubprojectSelected(subproject);
+                                        setoptionValue(project);
+                                      }}
+                                      handleCancelSelection={
+                                        () => {
+                                          setSubprojectSelected(null);
+                                          setoptionValue('');
+                                        }
+                                      }
+                                      selectedProject={optionValue}
+                                      hideSearchElementInput={true}
+                                    />
+                                  </div> */}
+                                </div>
                               </div>
                               <div className="task__Item">
                                 <span className="selectProject">Work log type</span>

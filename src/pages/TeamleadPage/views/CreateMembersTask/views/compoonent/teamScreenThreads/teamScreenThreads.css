@@ -184,6 +184,8 @@ textarea {
 
 .user-candidate{
   font-weight: 600;
+  display: flex;
+  gap: 0.6rem;
 }
 
 .candidate-comments-section{
