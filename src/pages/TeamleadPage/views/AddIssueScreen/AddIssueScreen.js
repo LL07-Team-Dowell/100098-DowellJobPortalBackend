@@ -27,7 +27,8 @@ const AddIssueScreen = ({
   const { currentUser } = useCurrentUserContext();
   const [selectedTeam, setSelectedTeam] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [issueTitle, setIssueTitle] = useState('');
+  const [issueTitle, setIssueTitle] = useState("");
+  const [selectedOption, setSelectedOption] = useState("");
   const navigate = useNavigate();
 
   // console.log(teams);
@@ -40,6 +41,10 @@ const AddIssueScreen = ({
     created_by: currentUser.userinfo.username,
     team_id: teamId,
     previous_status: "",
+    steps_to_reproduce_thread: "",
+    expected_product_behavior: "",
+    actual_product_behavior: "",
+    thread_type: "",
   });
 
   // useClickOutside(ref, () => {
@@ -78,6 +83,17 @@ const AddIssueScreen = ({
       return newCreateIssue;
     });
   };
+
+  const handleSecondOptionChange = (e) => {
+    setSelectedOption(e.target.value)
+    setCreateIssue((prev) => {
+      const newCreateIssue = { ...prev };
+      newCreateIssue["thread_type"] = e.target.value;
+      return newCreateIssue;
+    });
+  };
+
+  
 
   const handleOptionChange = (e) => {
     const selectedTeamName = e.target.value;
@@ -129,6 +145,22 @@ const AddIssueScreen = ({
       formData.append("image", selectedFile);
     }
 
+    const fields = [
+      "thread_type"
+    ];
+
+    if (createIssue.thread_type === "") {
+      toast.info("Please select an issue type");
+      return;
+    } else if (fields.find((field) => createIssue[field] === "")) {
+      toast.info(
+        `Please select ${fields.find(
+          (field) => createIssue[field] === ""
+        )} field`
+      );
+      return;
+    }
+
     try {
       // Send a POST request to the upload URL
       let imageUrl = "";
@@ -155,7 +187,7 @@ const AddIssueScreen = ({
         const response = await createThread({
           ...createIssue,
           image: imageUrl,
-          thread_title: issueTitle
+          thread_title: issueTitle,
         });
 
         if (response.status === 201) {
@@ -198,7 +230,6 @@ const AddIssueScreen = ({
             placeholder="Add title"
             onChange={(e) => setIssueTitle(e.target.value)}
             style={{ margin: 0, marginBottom: "0.8rem" }}
-
           />
           <span className="selectProject">Enter Issue Details</span>
           <textarea
@@ -209,6 +240,63 @@ const AddIssueScreen = ({
             onChange={(e) => handleChange(e.target.value, e.target.name)}
             rows={5}
           ></textarea>
+          <span className="selectProject">Steps to Reproduce</span>
+          <textarea
+            placeholder="Enter Steps to reproduce issue"
+            name={"steps_to_reproduce_thread"}
+            value={createIssue.steps_to_reproduce_thread}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+            rows={3}
+          ></textarea>
+          <span className="selectProject">Expected Behavior</span>
+          <textarea
+            placeholder="Enter the Expected Behavior of the issue"
+            name={"expected_product_behavior"}
+            value={createIssue.expected_product_behavior}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+            rows={3}
+          ></textarea>
+          <span className="selectProject">Actual Behavior</span>
+          <textarea
+            placeholder="Enter the Actual behavior of the issue"
+            name={"actual_product_behavior"}
+            value={createIssue.actual_product_behavior}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+            rows={3}
+          ></textarea>
+          <span className="selectProject">Choose Issue Type</span>
+          <div>
+            <label htmlFor="bug" className="radio">
+              <input
+                className="radio_input"
+                type={"radio"}
+                id={"bug"}
+                name="options"
+                value={"Bug"}
+                checked={selectedOption === "Bug"}
+                onChange={handleSecondOptionChange}
+              />
+              <div className="radio__radio"></div>
+              <p>Bug</p>
+            </label>
+            <label htmlFor="suggestion" className="radio">
+              <input
+                className="radio_input"
+                type={"radio"}
+                id={"suggestion"}
+                name="options"
+                value={"Suggestion"}
+                checked={selectedOption === "Suggestion"}
+                onChange={handleSecondOptionChange}
+              />
+              <div className="radio__radio"></div>
+              <p>Suggestion</p>
+            </label>
+          </div>
+
           <span className="selectProject">
             Add an Image to help explain your issue better (OPTIONAL)
           </span>

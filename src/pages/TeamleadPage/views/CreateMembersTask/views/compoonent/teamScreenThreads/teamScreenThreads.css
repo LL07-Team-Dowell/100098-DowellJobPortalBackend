@@ -182,24 +182,29 @@ textarea {
   font-size: 1.8rem;
 }
 
-.user-candidate{
-  font-weight: 600;
-  display: flex;
-  gap: 0.6rem;
-}
-
-.candidate-comments-section{
+.candidate-comments-section {
   width: 90%;
 }
 
+.user-candidate {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.user-candidate .date {
+  font-size: 0.6rem;
+  color: #838383;
+}
 .comment-area {
- width: 100%;
- margin: 0.5rem 0;
- font-family: poppins;
- border: none;
- color: #000;
- background: none;
- font-size: 0.8rem;
+  width: 100%;
+  margin: 0.5rem 0;
+  font-family: poppins;
+  border: none;
+  color: #000;
+  background: none;
+  font-size: 0.8rem;
 }
 
 /* .comment-area:hover{
