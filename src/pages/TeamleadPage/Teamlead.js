@@ -827,25 +827,27 @@ const Teamlead = ({ isGrouplead }) => {
                 currentActiveItem={currentActiveItem}
                 handleMenuItemClick={handleMenuItemClick}
               />
-
-              {
-                section === 'task' ? <></>
-                :
-                <button
-                  className="refresh-container-teamlead desktop"
-                >
-                  <div className="refresh-btn refresh-btn-teamlead" onClick={section === "all-tasks" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
-                  >
-                    <IoMdRefresh />
-                    <p>Refresh</p>
-                  </div>
-                </button>
-              }
-
             </>
-
-
         )}
+        {
+          (
+            section === 'task' ||
+            section === 'user' ||
+            isGrouplead ||
+            section === 'user-tasks'
+          ) ? <></>
+          :
+          <button
+            className="refresh-container-teamlead desktop"
+          >
+            <div className="refresh-btn refresh-btn-teamlead" onClick={section === "all-tasks" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
+            >
+              <IoMdRefresh />
+              <p>Refresh</p>
+            </div>
+          </button>
+        }
+
         {
           section !== "user" && !showCandidate && isGrouplead && section === 'task' && <button
             className="refresh-container-teamlead desktop"

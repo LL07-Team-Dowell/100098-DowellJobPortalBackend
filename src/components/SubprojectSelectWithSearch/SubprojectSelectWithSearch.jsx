@@ -16,6 +16,9 @@ const SubprojectSelectWithSearch = ({
     className,
     searchWrapperClassName,
     hideSelectionsMade,
+    alwaysOnDisplay,
+    passedInputVal,
+    passedInputRef,
 }) => {
     const [ inputVal, setInputVal ] = useState('');
     const [ displayedItems, setDisplayedItems ] = useState([]);
@@ -25,6 +28,7 @@ const SubprojectSelectWithSearch = ({
     const [ currentListItemIndex, setCurrentListItemIndex ] = useState(0);
 
     const removeFocusClassFromAllListItems = (listElemRef) => {
+        if (!listElemRef?.current) return
         const allListElements = Array.from(listElemRef?.current?.childNodes);
 
         const classesOfParentElement = Array.from(listElemRef?.current?.classList);
@@ -48,18 +52,32 @@ const SubprojectSelectWithSearch = ({
     }, [subprojects])
 
     useEffect(() => {
-        const filteredList = subprojects?.map(item => {
-            const itemInList = item.sub_project_list.filter(i => i.toLocaleLowerCase().replaceAll(" ", "").includes(inputVal.toLocaleLowerCase().replaceAll(" ", "")));
-            if (itemInList.length < 1) return null
-            
-            return {
-                ...item,
-                sub_project_list: itemInList,
-            }
-        }).filter(item => item); 
+        let filteredList;
+
+        if (passedInputVal) {
+            filteredList = subprojects?.map(item => {
+                const itemInList = item.sub_project_list.filter(i => i.toLocaleLowerCase().replaceAll(" ", "").includes(passedInputVal.toLocaleLowerCase().replaceAll(" ", "")));
+                if (itemInList.length < 1) return null
+                
+                return {
+                    ...item,
+                    sub_project_list: itemInList,
+                }
+            }).filter(item => item); 
+        } else {
+            filteredList = subprojects?.map(item => {
+                const itemInList = item.sub_project_list.filter(i => i.toLocaleLowerCase().replaceAll(" ", "").includes(inputVal.toLocaleLowerCase().replaceAll(" ", "")));
+                if (itemInList.length < 1) return null
+                
+                return {
+                    ...item,
+                    sub_project_list: itemInList,
+                }
+            }).filter(item => item); 
+        }
 
         setDisplayedItems(filteredList);
-    }, [inputVal])
+    }, [inputVal, passedInputVal, subprojects])
 
     useListenToKeyStrokeInElement(
         inputRef,
@@ -160,6 +178,69 @@ const SubprojectSelectWithSearch = ({
         handleSelectItem(subprojectSelected, projectSelected);
         setCurrentListItemIndex(0);
         removeFocusClassFromAllListItems(listRef);
+    }
+
+    console.log(passedInputRef, passedInputVal);
+
+    if (alwaysOnDisplay) {
+        return <>
+            <div className={`${styles.dropdown} ${styles.always__On__Display} ${className ? className : ''}`} tabIndex={0} ref={wrapperRef}>
+                {
+                    selectedSubProject && selectedSubProject.length > 0 ? <>
+                        {
+                            hideSelectionsMade ? <></> :
+                            <>
+                                <div className={styles.selected__Item}>
+                                    <span>{selectedSubProject}</span>
+                                    <AiOutlineClose 
+                                        onClick={
+                                            handleCancelSelection && typeof handleCancelSelection === 'function' ? 
+                                                () => handleCancelSelection() 
+                                            : 
+                                            () => {}
+                                        } 
+                                    />
+                                </div>
+                                {
+                                    selectedProject && selectedProject.length > 0 &&
+                                    <p className={styles.project__Indicator}>Project: {selectedProject}</p>
+                                }
+                            </>
+                        }
+                    </> :
+                    <>
+                        <div className={styles.items__List} ref={listRef} tabIndex={0}>
+                            {
+                                displayedItems?.length < 1 ?
+                                <p>No items found</p>
+                                :
+                                React.Children.toArray(displayedItems?.map(item => {
+                                    return item.sub_project_list.map(project => {
+                                        return <div 
+                                            className={styles.subproject__Item}
+                                            onClick={
+                                                handleSelectItem && typeof handleSelectItem === 'function' ? 
+                                                    () => {
+                                                        selectItemFromListing(project, item.parent_project)
+                                                    }
+                                                :
+                                                () => {}
+                                            }
+                                            tabIndex={0}
+                                        >
+                                            {project} - ({item.parent_project})
+                                            <span className={`${styles.hidden} subproject`}>{project}</span>
+                                            <span className={`${styles.hidden} project`}>{item.parent_project}</span>
+                                        </div>
+                                    })
+                                }))
+                            }
+                        </div>     
+                    </>
+                }
+            
+            </div>
+        </>
     }
 
     return <>
