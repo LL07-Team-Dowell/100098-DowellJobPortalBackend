@@ -145,11 +145,25 @@ const AddTaskScreen = ({
     setEditLoading(true);
   };
 
+  function removeSpaces(inputString) {
+    // Use a regular expression to replace all spaces with an empty string
+    return inputString.replace(/\s/g, '');
+  }
+  
+  function isStringValid(inputString) {
+    const trimmedString = inputString.trim();
+    const words = trimmedString.split(/\s+/);
+    return trimmedString.length >= 25 && words.length >= 5;
+  }
+
   //   importand fuction
   const addNewTask = () => {
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
-      if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
+      console.log({ TASKSS: tasks.find(task => task.task === taskName) })
+      if (tasks.find(task => task?.task?.toLocaleLowerCase().trim() === taskName.toLocaleLowerCase().trim() && task.is_active) !== undefined) return toast.info('You cannot add the same log')
+      if (!isStringValid(taskName)) return toast.info('The log entered should be more than 25 characters and more than 5 words.')
+      if (taskEndTime === '00:00') return toast.info("You can only update work logs for today")
       if (duration <= 15) {
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
         if (!taskDetailForToday) return addTaskForToday(taskStartTime, taskEndTime, taskName, details);
@@ -168,7 +182,9 @@ const AddTaskScreen = ({
   const updateTask = async () => {
     if (inputsAreFilled) {
       if (duration <= 15) {
-        if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
+        if (tasks.find(task => task?.task?.toLocaleLowerCase().trim() === taskName.toLocaleLowerCase().trim() && task.is_active) !== undefined) return toast.info('You cannot add the same log')
+        if (!isStringValid(taskName)) return toast.info('The log entered should be more than 25 characters and more than 5 words.')
+        if (taskEndTime === '00:00') return toast.info("You can only update work logs for today")
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
 
         setLoading(true);
@@ -856,8 +872,8 @@ const AddTaskScreen = ({
                                     readOnly={loading || !taskDetailForTodayLoaded ? true : false}
                                     rows={3}
                                     className="log__textarea"
-                                    // cols={40}
-                                    // ref={textareaRef}
+                                  // cols={40}
+                                  // ref={textareaRef}
                                   >
                                   </textarea>
 

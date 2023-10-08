@@ -31,7 +31,7 @@ import {
 } from "../../services/teamleadServices";
 import { useCandidateTaskContext } from "../../contexts/CandidateTasksContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { IoMdRefresh } from "react-icons/io";
+import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from "react-icons/io";
 import ClaimVouchar from "./views/ClaimVouchar/ClaimVouchar";
 import AddPage from "../GroupLeadPage/components/AddPage";
 import { getAllOnBoardedCandidate, getCandidateTasksOfTheDayV2 } from "../../services/candidateServices";
@@ -77,8 +77,58 @@ const Teamlead = ({ isGrouplead }) => {
   const [showTaskLandingPage, setShowTaskLandingPage] = useState(true);
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
-  const [ currentSortOption, setCurrentSortOption ] = useState(null);
-  const [ sortResults, setSortResults ] = useState([]);
+  const [currentSortOption, setCurrentSortOption] = useState(null);
+  const [sortResults, setSortResults] = useState([]);
+  const [cardPagination, setCardPagination] = useState(0);
+  const [cardPagination2, setCardPagination2] = useState(0);
+  const [cardPagination3, setCardPagination3] = useState(0);
+
+  const initializePagination = () => {
+    setCardPagination(0);
+  };
+  const initializePagination2 = () => {
+    setCardPagination2(0);
+  };
+  const initializePagination3 = () => {
+    setCardPagination2(0);
+  };
+
+  const incrementStepPagination = (steps, length) => {
+    if (steps + 1 <= length) {
+      if (steps + cardPagination !== length) {
+        setCardPagination(cardPagination + 1);
+      }
+    }
+  };
+  const incrementStepPagination2 = (steps, length) => {
+    if (steps + 1 <= length) {
+      if (steps + cardPagination2 !== length) {
+        setCardPagination2(cardPagination2 + 1);
+      }
+    }
+  };
+  const incrementStepPagination3 = (steps, length) => {
+    if (steps + 1 <= length) {
+      if (steps + cardPagination3 !== length) {
+        setCardPagination2(cardPagination3 + 1);
+      }
+    }
+  };
+  const decrementStepPagination = () => {
+    if (cardPagination !== 0) {
+      setCardPagination(cardPagination - 1);
+    }
+  }
+  const decrementStepPagination2 = () => {
+    if (cardPagination !== 0) {
+      setCardPagination2(cardPagination2 - 1);
+    }
+  }
+  const decrementStepPagination3 = () => {
+    if (cardPagination !== 0) {
+      setCardPagination3(cardPagination3 - 1);
+    }
+  }
 
   const handleSearch = (value) => {
     const toAnagram = (word) => {
@@ -183,10 +233,10 @@ const Teamlead = ({ isGrouplead }) => {
           }
 
           const onboardingCandidates = res[3]?.data?.response?.data
-          .filter(
-            (application) =>
-              application.data_type === currentUser?.portfolio_info[0].data_type
-          );
+            .filter(
+              (application) =>
+                application.data_type === currentUser?.portfolio_info[0].data_type
+            );
 
           dispatchToCandidatesData({
             type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES,
@@ -442,10 +492,10 @@ const Teamlead = ({ isGrouplead }) => {
           console.log("res", res);
 
           const onboardingCandidates = res[2]?.data?.response?.data
-          ?.filter(
-            (application) =>
-              application.data_type === currentUser?.portfolio_info[0].data_type
-          );
+            ?.filter(
+              (application) =>
+                application.data_type === currentUser?.portfolio_info[0].data_type
+            );
 
           const tasksToDisplay = res[0]?.data?.response?.data
             ?.filter(
@@ -537,7 +587,7 @@ const Teamlead = ({ isGrouplead }) => {
 
         }
 
-        if (!categories.hasOwnProperty(task[`${propertyName}`])){
+        if (!categories.hasOwnProperty(task[`${propertyName}`])) {
           categories[`${task[propertyName]}`] = task[`${propertyName}`]
         }
       })
@@ -553,7 +603,7 @@ const Teamlead = ({ isGrouplead }) => {
           categoryObj.name = key;
           categoryObj.data = matchingTasks;
           newArray.push(categoryObj);
-          categoryObj = {};    
+          categoryObj = {};
           return
         }
 
@@ -759,15 +809,15 @@ const Teamlead = ({ isGrouplead }) => {
               "task" :
               "applicant"
             : section === "task"
-              ? 
-                ""
+              ?
+              ""
               : rehireTabActive
                 ? "rehire"
-              :
-              section === 'all-tasks' ?
-                'user'
-              : 
-              "applicant"
+                :
+                section === 'all-tasks' ?
+                  'user'
+                  :
+                  "applicant"
         }
         hideSearchBar={((isGrouplead && (section === "home" || section === undefined)) || section === "user") ? true : section === 'task' ? true : false}
         isGrouplead={isGrouplead}
@@ -793,13 +843,13 @@ const Teamlead = ({ isGrouplead }) => {
                   hideBackBtn={
                     showCandidate || showCandidateTask || (section === "task" && isGrouplead) ? false
                       :
-                      section === 'task' ? 
+                      section === 'task' ?
                         true
                         :
-                      section === 'all-tasks' ? 
-                        false
-                        :
-                        true
+                        section === 'all-tasks' ?
+                          false
+                          :
+                          true
                   }
                   handleBackBtnClick={
                     (section === "task" && isGrouplead) ?
@@ -816,18 +866,35 @@ const Teamlead = ({ isGrouplead }) => {
         }
         {section !== "user" && !showCandidate && !isGrouplead && (
           section === 'user-tasks' ? <></> :
-          section === 'all-tasks' ? <></> 
-            :
-            <>
-              <TogglerNavMenuBar
-                className={"teamlead"}
-                menuItems={
-                  ["Approval", "Work logs", "Rehire"]
+            section === 'all-tasks' ? <></>
+              :
+              <>
+                <TogglerNavMenuBar
+                  className={"teamlead"}
+                  menuItems={
+                    ["Approval", "Work logs", "Rehire"]
+                  }
+                  currentActiveItem={currentActiveItem}
+                  handleMenuItemClick={handleMenuItemClick}
+                />
+
+                {
+                  section === 'task' ? <></>
+                    :
+                    <button
+                      className="refresh-container-teamlead desktop"
+                    >
+                      <div className="refresh-btn refresh-btn-teamlead" onClick={section === "all-tasks" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
+                      >
+                        <IoMdRefresh />
+                        <p>Refresh</p>
+                      </div>
+                    </button>
                 }
-                currentActiveItem={currentActiveItem}
-                handleMenuItemClick={handleMenuItemClick}
-              />
-            </>
+
+              </>
+
+
         )}
         {
           (
@@ -836,16 +903,16 @@ const Teamlead = ({ isGrouplead }) => {
             isGrouplead ||
             section === 'user-tasks'
           ) ? <></>
-          :
-          <button
-            className="refresh-container-teamlead desktop"
-          >
-            <div className="refresh-btn refresh-btn-teamlead" onClick={section === "all-tasks" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
+            :
+            <button
+              className="refresh-container-teamlead desktop"
             >
-              <IoMdRefresh />
-              <p>Refresh</p>
-            </div>
-          </button>
+              <div className="refresh-btn refresh-btn-teamlead" onClick={section === "all-tasks" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
+              >
+                <IoMdRefresh />
+                <p>Refresh</p>
+              </div>
+            </button>
         }
 
         {
@@ -1113,19 +1180,19 @@ const Teamlead = ({ isGrouplead }) => {
                       <SelectedCandidates
                         showTasks={true}
                         tasksCount={
-                          currentSortOption ? 
+                          currentSortOption ?
                             searchValue.length > 0 ?
                               sortResults.filter(
-                                item => 
+                                item =>
                                   item.data.find(
                                     task => typeof task?.applicantName === 'string' && task?.applicantName?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
                               ).length
+                              :
+                              sortResults.length
                             :
-                            sortResults.length 
-                          : 
-                          searchValue.length >= 1
-                            ? filteredTasks.length
-                            : tasksToDisplayForLead.length
+                            searchValue.length >= 1
+                              ? filteredTasks.length
+                              : tasksToDisplayForLead.length
                         }
                         availableSortOptions={sortOptionsForLead}
                         sortActive={currentSortOption ? true : false}
@@ -1192,98 +1259,129 @@ const Teamlead = ({ isGrouplead }) => {
                                 {
                                   React.Children.toArray(
                                     sortResults
-                                    .slice(cardIndex, cardIndex + 6)
-                                    .map(result => {
-                                    return <>
-                                      <p className='lead__sort__Title__Item'><b>{result.name}</b></p>
-                                      <>
-                                        {
-                                          React.Children.toArray(result.data.map((dataitem, index) => {
-                                            return <JobCard
-                                              buttonText={"View"}
-                                              candidateCardView={true}
-                                              candidateData={dataitem}
-                                              jobAppliedFor={
-                                                jobs.find(
-                                                  (job) =>
-                                                    job.job_number === dataitem.job_number
-                                                )
-                                                  ? jobs.find(
-                                                    (job) =>
-                                                      job.job_number ===
-                                                      dataitem.job_number
-                                                  ).job_title
-                                                  : ""
-                                              }
-                                              handleBtnClick={handleViewTaskBtnClick}
-                                              taskView={true}
-                                              className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                            />
-                                          }))
-                                        }
-                                      </>
-                                      <br />
-                                    </>
-                                  }))
+                                      .slice(cardIndex, cardIndex + 6)
+                                      .map(result => {
+                                        return <>
+                                          <p className='lead__sort__Title__Item'><b>{result.name}</b></p>
+                                          <>
+                                            {
+                                              React.Children.toArray(result.data.map((dataitem, index) => {
+                                                return <JobCard
+                                                  buttonText={"View"}
+                                                  candidateCardView={true}
+                                                  candidateData={dataitem}
+                                                  jobAppliedFor={
+                                                    jobs.find(
+                                                      (job) =>
+                                                        job.job_number === dataitem.job_number
+                                                    )
+                                                      ? jobs.find(
+                                                        (job) =>
+                                                          job.job_number ===
+                                                          dataitem.job_number
+                                                      ).job_title
+                                                      : ""
+                                                  }
+                                                  handleBtnClick={handleViewTaskBtnClick}
+                                                  taskView={true}
+                                                  className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                                />
+                                              }))
+                                            }
+                                          </>
+                                          <br />
+                                        </>
+                                      }))
                                 }
                               </>
                             )
-                            :
-                            React.Children.toArray(
-                              tasksToDisplayForLead
-                              .slice(cardIndex, cardIndex + 6)
-                              .map((dataitem, index) => {
-                                return (
-                                  <JobCard
-                                    buttonText={"View"}
-                                    candidateCardView={true}
-                                    candidateData={dataitem}
-                                    jobAppliedFor={
-                                      jobs.find(
-                                        (job) =>
-                                          job.job_number === dataitem.job_number
-                                      )
-                                        ? jobs.find(
-                                          (job) =>
-                                            job.job_number ===
-                                            dataitem.job_number
-                                        ).job_title
-                                        : ""
-                                    }
-                                    handleBtnClick={handleViewTaskBtnClick}
-                                    taskView={true}
-                                    className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                  />
-                                );
-                              })
-                            )
+                              :
+                              React.Children.toArray(
+                                tasksToDisplayForLead
+                                  .slice(cardIndex, cardIndex + 6)
+                                  .map((dataitem, index) => {
+                                    return (
+                                      <JobCard
+                                        buttonText={"View"}
+                                        candidateCardView={true}
+                                        candidateData={dataitem}
+                                        jobAppliedFor={
+                                          jobs.find(
+                                            (job) =>
+                                              job.job_number === dataitem.job_number
+                                          )
+                                            ? jobs.find(
+                                              (job) =>
+                                                job.job_number ===
+                                                dataitem.job_number
+                                            ).job_title
+                                            : ""
+                                        }
+                                        handleBtnClick={handleViewTaskBtnClick}
+                                        taskView={true}
+                                        className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                      />
+                                    );
+                                  })
+                              )
                           )
                         ) : (
                           <></>
                         )}
                         {
-                          section === 'task' ? <div className='JobsChanger_containter'>
-                            {createArrayWithLength(
-                              currentSortOption ?
-                                Math.ceil(sortResults.length / 6)
-                              :
-                              searchValue.length >= 1 ?
-                                Math.ceil(filteredTasks.length / 6)
-                              :
-                              Math.ceil(tasksToDisplayForLead.length / 6)
-                            ).map((s, index) => (
+                          section === 'task' ?
+                            <div className='JobsChanger_containter'>
                               <button
-                                className={s !== cardIndex ? "active" : "desactive"}
-                                onClick={() => {
-                                  setCardGroupNumber(index * 4);
-                                  setCardIndex(index);
-                                }}
-                                key={`${index}_button`}
+                                onClick={() =>
+                                  decrementStepPagination()
+                                }
                               >
-                                {index + 1}
+                                <IoIosArrowBack />
                               </button>
-                            ))}
-                          </div> : <></>
+
+                              {createArrayWithLength(
+                                currentSortOption ?
+                                  Math.ceil(sortResults.length / 6)
+                                  :
+                                  searchValue.length >= 1 ?
+                                    Math.ceil(filteredTasks.length / 6)
+                                    :
+                                    Math.ceil(tasksToDisplayForLead.length / 6)
+                              )
+                                .slice(
+                                  cardPagination,
+                                  cardPagination + 6
+                                )
+                                .map((s, index) => (
+                                  <button
+                                    className={s !== cardIndex ? "active" : "desactive"}
+                                    onClick={() => {
+                                      setCardGroupNumber(index * 4);
+                                      setCardIndex(index);
+                                    }}
+                                    key={`${index}_button`}
+                                  >
+                                    {index + 1}
+                                  </button>
+                                ))}
+
+                              <button
+                                onClick={() =>
+                                  incrementStepPagination(
+                                    6,
+                                    currentSortOption ?
+                                      Math.ceil(sortResults.length / 6)
+                                      :
+                                      searchValue.length >= 1 ?
+                                        Math.ceil(filteredTasks.length / 6)
+                                        :
+                                        Math.ceil(tasksToDisplayForLead.length / 6)
+                                  )
+                                }
+                              >
+                                <IoIosArrowForward />
+                              </button>
+                            </div> : <></>
                         }
                       </div>
                     </>
@@ -1324,207 +1422,249 @@ const Teamlead = ({ isGrouplead }) => {
                 />
               ) :
                 !isGrouplead && section === 'all-tasks' ? (
-                <>
-                  <SelectedCandidates
-                    showTasks={true}
-                    tasksCount={
-                      currentSortOption ? 
-                        searchValue.length > 0 ?
-                          sortResults.filter(
-                            item => 
-                              item.data.find(
-                                task => typeof task?.applicantName === 'string' && task?.applicantName?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
-                          ).length
-                        :
-                        sortResults.length 
-                      : 
-                      searchValue.length >= 1
-                        ? filteredTasks.length
-                        : tasksToDisplayForLead.length
-                    }
-                    availableSortOptions={sortOptionsForLead}
-                    sortActive={currentSortOption ? true : false}
-                    handleSortOptionClick={(data) => setCurrentSortOption(data)}
-                  />
-                  <div className="project__Select__Wrapper">
-                    <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
-                      <option value={''} disabled>Select project</option>
-                      <option
-                        value={
-                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
-                        }
-                      >
-                        {
-                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
-                        }
-                      </option>
-                      {
-                        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-                        Array.isArray(
-                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-                        ) &&
-                        React.Children.toArray(
-                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(project => {
-                            return <option value={project}>{project}</option>
-                          })
-                        )
-                      }
-                    </select>
-                  </div>
-
-                  <div className="tasks-container">
-                    {
-                      searchValue.length >= 1 ? (
-                        <>
-                          {React.Children.toArray(
-                            filteredTasks
-                              .slice(cardIndex, cardIndex + 6)
-                              .map((dataitem, index) => {
-                                return (
-                                  <JobCard
-                                    buttonText={"View"}
-                                    candidateCardView={true}
-                                    candidateData={dataitem}
-                                    jobAppliedFor={
-                                      jobs.find(
-                                        (job) =>
-                                          job.job_number === dataitem.job_number
-                                      )
-                                        ? jobs.find(
-                                          (job) =>
-                                            job.job_number ===
-                                            dataitem.job_number
-                                        ).job_title
-                                        : ""
-                                    }
-                                    handleBtnClick={handleViewTaskBtnClick}
-                                    taskView={true}
-                                    className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                  />
-                                );
-                              })
-                          )}
-                          <div className='JobsChanger_containter'>
-                            {createArrayWithLength(
-                              Math.ceil(filteredTasks.length / 6)
-                            ).map((s, index) => (
-                              <button
-                                className={s !== cardIndex ? "active" : "desactive"}
-                                onClick={() => {
-                                  setCardGroupNumber(index * 4);
-                                  setCardIndex(index);
-                                }}
-                                key={`${index}_button`}
-                              >
-                                {index + 1}
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      ) :
-                      (
-                        <>
-                          {
-                          currentSortOption ? <>
-                            {
-                              React.Children.toArray(
-                                sortResults
-                                .slice(cardIndex, cardIndex + 6)
-                                .map(result => {
-                                return <>
-                                  <p className='lead__sort__Title__Item'><b>{result.name}</b></p>
-                                  <>
-                                    {
-                                      React.Children.toArray(result.data.map((dataitem, index) => {
-                                        return <JobCard
-                                          buttonText={"View"}
-                                          candidateCardView={true}
-                                          candidateData={dataitem}
-                                          jobAppliedFor={
-                                            jobs.find(
-                                              (job) =>
-                                                job.job_number === dataitem.job_number
-                                            )
-                                              ? jobs.find(
-                                                (job) =>
-                                                  job.job_number ===
-                                                  dataitem.job_number
-                                              ).job_title
-                                              : ""
-                                          }
-                                          handleBtnClick={handleViewTaskBtnClick}
-                                          taskView={true}
-                                          className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                        />
-                                      }))
-                                    }
-                                  </>
-                                  <br />
-                                </>
-                              }))
-                            }
-                          </> 
+                  <>
+                    <SelectedCandidates
+                      showTasks={true}
+                      tasksCount={
+                        currentSortOption ?
+                          searchValue.length > 0 ?
+                            sortResults.filter(
+                              item =>
+                                item.data.find(
+                                  task => typeof task?.applicantName === 'string' && task?.applicantName?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
+                            ).length
+                            :
+                            sortResults.length
                           :
+                          searchValue.length >= 1
+                            ? filteredTasks.length
+                            : tasksToDisplayForLead.length
+                      }
+                      availableSortOptions={sortOptionsForLead}
+                      sortActive={currentSortOption ? true : false}
+                      handleSortOptionClick={(data) => setCurrentSortOption(data)}
+                    />
+                    <div className="project__Select__Wrapper">
+                      <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
+                        <option value={''} disabled>Select project</option>
+                        <option
+                          value={
+                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
+                          }
+                        >
+                          {
+                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
+                          }
+                        </option>
+                        {
+                          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+                          Array.isArray(
+                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+                          ) &&
                           React.Children.toArray(
-                            // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
-                            tasksToDisplayForLead
-                              .slice(cardIndex, cardIndex + 6)
-                              .map((dataitem, index) => {
-                                return (
-                                  <JobCard
-                                    buttonText={"View"}
-                                    candidateCardView={true}
-                                    candidateData={dataitem}
-                                    jobAppliedFor={
-                                      jobs.find(
-                                        (job) =>
-                                          job.job_number === dataitem.job_number
-                                      )
-                                        ? jobs.find(
+                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(project => {
+                              return <option value={project}>{project}</option>
+                            })
+                          )
+                        }
+                      </select>
+                    </div>
+
+                    <div className="tasks-container">
+                      {
+                        searchValue.length >= 1 ? (
+                          <>
+                            {React.Children.toArray(
+                              filteredTasks
+                                .slice(cardIndex, cardIndex + 6)
+                                .map((dataitem, index) => {
+                                  return (
+                                    <JobCard
+                                      buttonText={"View"}
+                                      candidateCardView={true}
+                                      candidateData={dataitem}
+                                      jobAppliedFor={
+                                        jobs.find(
                                           (job) =>
-                                            job.job_number ===
-                                            dataitem.job_number
-                                        ).job_title
-                                        : ""
-                                    }
-                                    handleBtnClick={handleViewTaskBtnClick}
-                                    taskView={true}
-                                    className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                  />
-                                );
-
-                              })
-                          )}
-                          <div className='JobsChanger_containter'>
-                            {createArrayWithLength(
-                              currentSortOption ?
-                                Math.ceil(sortResults.length / 6)
-                              :
-                              Math.ceil(tasksToDisplayForLead.length / 6)
-                            ).map((s, index) => (
+                                            job.job_number === dataitem.job_number
+                                        )
+                                          ? jobs.find(
+                                            (job) =>
+                                              job.job_number ===
+                                              dataitem.job_number
+                                          ).job_title
+                                          : ""
+                                      }
+                                      handleBtnClick={handleViewTaskBtnClick}
+                                      taskView={true}
+                                      className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                    />
+                                  );
+                                })
+                            )}
+                            <div className='JobsChanger_containter'>
                               <button
-                                className={s !== cardIndex ? "active" : "desactive"}
-                                onClick={() => {
-                                  setCardGroupNumber(index * 4);
-                                  setCardIndex(index);
-                                }}
-                                key={`${index}_button`}
+                                onClick={() =>
+                                  decrementStepPagination2()
+                                }
                               >
-                                {index + 1}
+                                <IoIosArrowBack />
                               </button>
-                            ))}
-                          </div>
+                              {createArrayWithLength(
+                                Math.ceil(filteredTasks.length / 6)
+                              )
+                                .slice(cardPagination2, cardPagination2 + 6)
+                                .map((s, index) => (
+                                  <button
+                                    className={s !== cardIndex ? "active" : "desactive"}
+                                    onClick={() => {
+                                      setCardGroupNumber(index * 4);
+                                      setCardIndex(index);
+                                    }}
+                                    key={`${index}_button`}
+                                  >
+                                    {index + 1}
+                                  </button>
+                                ))}
 
-                        </>
-                      )
-                    }
-                  </div>
-                </>
-              ) : (
-                <>
-                  <ErrorPage disableNav={true} />
-                </>
-              )}
+                              <button
+                                onClick={() =>
+                                  incrementStepPagination2(
+                                    6,
+                                    Math.ceil(filteredTasks.length / 6)
+                                  )
+                                }
+                              >
+                                <IoIosArrowForward />
+                              </button>
+                            </div>
+                          </>
+                        ) :
+                          (
+                            <>
+                              {
+                                currentSortOption ? <>
+                                  {
+                                    React.Children.toArray(
+                                      sortResults
+                                        .slice(cardIndex, cardIndex + 6)
+                                        .map(result => {
+                                          return <>
+                                            <p className='lead__sort__Title__Item'><b>{result.name}</b></p>
+                                            <>
+                                              {
+                                                React.Children.toArray(result.data.map((dataitem, index) => {
+                                                  return <JobCard
+                                                    buttonText={"View"}
+                                                    candidateCardView={true}
+                                                    candidateData={dataitem}
+                                                    jobAppliedFor={
+                                                      jobs.find(
+                                                        (job) =>
+                                                          job.job_number === dataitem.job_number
+                                                      )
+                                                        ? jobs.find(
+                                                          (job) =>
+                                                            job.job_number ===
+                                                            dataitem.job_number
+                                                        ).job_title
+                                                        : ""
+                                                    }
+                                                    handleBtnClick={handleViewTaskBtnClick}
+                                                    taskView={true}
+                                                    className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                                  />
+                                                }))
+                                              }
+                                            </>
+                                            <br />
+                                          </>
+                                        }))
+                                  }
+                                </>
+                                  :
+                                  React.Children.toArray(
+                                    // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
+                                    tasksToDisplayForLead
+                                      .slice(cardIndex, cardIndex + 6)
+                                      .map((dataitem, index) => {
+                                        return (
+                                          <JobCard
+                                            buttonText={"View"}
+                                            candidateCardView={true}
+                                            candidateData={dataitem}
+                                            jobAppliedFor={
+                                              jobs.find(
+                                                (job) =>
+                                                  job.job_number === dataitem.job_number
+                                              )
+                                                ? jobs.find(
+                                                  (job) =>
+                                                    job.job_number ===
+                                                    dataitem.job_number
+                                                ).job_title
+                                                : ""
+                                            }
+                                            handleBtnClick={handleViewTaskBtnClick}
+                                            taskView={true}
+                                            className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                          />
+                                        );
+
+                                      })
+                                  )}
+                              <div className='JobsChanger_containter'>
+                                <button
+                                  onClick={() =>
+                                    decrementStepPagination3()
+                                  }
+                                >
+                                  <IoIosArrowBack />
+                                </button>
+                                {createArrayWithLength(
+                                  currentSortOption ?
+                                    Math.ceil(sortResults.length / 6)
+                                    :
+                                    Math.ceil(tasksToDisplayForLead.length / 6)
+                                )
+                                  .slice(cardPagination3, cardPagination2 + 6)
+                                  .map((s, index) => (
+                                    <button
+                                      className={s !== cardIndex ? "active" : "desactive"}
+                                      onClick={() => {
+                                        setCardGroupNumber(index * 4);
+                                        setCardIndex(index);
+                                      }}
+                                      key={`${index}_button`}
+                                    >
+                                      {index + 1}
+                                    </button>
+                                  ))}
+                                <button
+                                  onClick={() =>
+                                    incrementStepPagination3(
+                                      6,
+                                      currentSortOption ?
+                                        Math.ceil(sortResults.length / 6)
+                                        :
+                                        Math.ceil(tasksToDisplayForLead.length / 6)
+                                    )
+                                  }
+                                >
+                                  <IoIosArrowForward />
+                                </button>
+                              </div>
+
+                            </>
+                          )
+                      }
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <ErrorPage disableNav={true} />
+                  </>
+                )}
             </>
           )}
         </>
