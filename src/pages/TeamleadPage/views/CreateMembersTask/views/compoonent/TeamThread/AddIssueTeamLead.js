@@ -343,6 +343,7 @@ const AddIssueTeamLead = ({
   const [disabled, setDisabled] = useState(false);
   const { currentUser } = useCurrentUserContext();
   const [selectedTeam, setSelectedTeam] = useState("");
+  const [selectedThreadType, setSelectedThreadType] = useState('bug');
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams()
@@ -352,10 +353,14 @@ const AddIssueTeamLead = ({
   const [createIssue, setCreateIssue] = useState({
     thread: "",
     thread_title: "",
+    steps_to_reproduce_thread: "",
+    expected_product_behavior: "",
+    actual_product_behavior: "",
     image: "",
     team_alerted_id: "",
     created_by: currentUser.userinfo.username,
     team_id: teamId,
+    thread_type: "",
     previous_status: "",
   });
 
@@ -414,6 +419,11 @@ const AddIssueTeamLead = ({
       team_alerted_id: selectedTeamId,
     }));
   };
+
+  const handleType = (e) => {
+    const selectThreadType = e.target.value
+    setSelectedThreadType(selectThreadType)
+  }
 
   const handleCandidateTeamChange = (e) => {
     setCreateIssue((prevIssue) => {
@@ -568,6 +578,7 @@ const AddIssueTeamLead = ({
             style={{ margin: 0, marginBottom: "0.8rem" }}
             onChange={(e) => handleChange(e.target.value, e.target.name)}
           ></input>
+
           <span className="selectProject">Enter Issue Details</span>
           <textarea
             placeholder="Enter Issue"
@@ -577,6 +588,47 @@ const AddIssueTeamLead = ({
             onChange={(e) => handleChange(e.target.value, e.target.name)}
             rows={5}
           ></textarea>
+
+          <span className="selectProject">Step to Reproduce Thread</span>
+          <input
+            placeholder="Enter steps to reproduce thread"
+            name={"steps_to_reproduce_thread"}
+            value={createIssue.steps_to_reproduce_thread}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+          ></input>
+
+          <span className="selectProject">Expected Product Behavior</span>
+          <input
+            placeholder="Enter steps to reproduce thread"
+            name={"expected_product_behavior"}
+            value={createIssue.expected_product_behavior}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+          ></input>
+
+          <span className="selectProject">Actual product behavior</span>
+          <input
+            placeholder="Enter steps to reproduce thread"
+            name={"actual_product_behavior"}
+            value={createIssue.actual_product_behavior}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+          ></input>
+
+          <span className="selectProject">Select Thread Type</span>
+          <br />
+          <select
+            className="addTaskDropDown"
+            style={{ margin: 0, marginBottom: '0.8rem' }}
+            onChange={handleType}
+            value={selectedThreadType} // Use the state variable as the value
+            name="thread_type"
+          >
+            <option value="bug">Bug</option>
+            <option value="suggestion">Suggestion</option>
+          </select>
+
           <span className="selectProject">
             Add an Image to help explain your issue better (OPTIONAL)
           </span>
