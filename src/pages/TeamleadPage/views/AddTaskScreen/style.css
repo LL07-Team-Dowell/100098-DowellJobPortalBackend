@@ -232,8 +232,82 @@
 
 .add__New__Task__Container .log__Add__New__Wrapper .log__Add__Subproject {
   position: absolute;
-  /* top: 0;
-  right: 0; */
+  width: 100%;
+  top: 100%;
+}
+
+#new__Log__Textarea {
+  outline: none;
+  border: none;
+  display: block;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px var(--background-blur);
+  border: 1px solid var(--yellow-color);
+  font-size: 0.875rem;
+  padding: 3%;
+  min-height: 5rem;
+  max-height: 6rem;
+  width: 24rem;
+  max-width: 24rem;
+  margin: 0;
+  overflow-y: auto;
+}
+
+#new__Log__Textarea p {
+  word-wrap: break-word;
+  font-family: 'Poppins', sans-serif;
+  display: inline-block;
+}
+
+#new__Log__Textarea p span.sub__At__Selection {
+  color: #005734;
+  background-color: #BFF1C1;
+  padding: 4px;
+  position: relative;
+}
+
+#new__Log__Textarea p span.sub__At__Selection span.project__Tooltip {
+  display: none;
+  width: max-content;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 10px;
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 0.75rem;
+}
+
+#new__Log__Textarea p span.sub__At__Selection:hover span.project__Tooltip {
+  opacity: 1 !important;
+  display: block !important;
+}
+
+#new__Log__Textarea p span.sub__At__Selection span.listing__Id {
+  display: none;
+}
+
+#new__Log__Textarea::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+#new__Log__Textarea::-webkit-scrollbar-track {
+  background: #efefef;
+}
+
+#new__Log__Textarea::-webkit-scrollbar-thumb {
+  background: #b8b8b8;
+}
+
+#new__Log__Textarea::-webkit-scrollbar-thumb:hover {
+  background: #005734;
 }
 
 @keyframes fadeIn {

@@ -49,6 +49,11 @@
     z-index: 20;
 }
 
+.dropdown.always__On__Display .items__List {
+    display: block !important;
+    max-height: 10rem;
+}
+
 .items__List.active {
     display: block;
 }
