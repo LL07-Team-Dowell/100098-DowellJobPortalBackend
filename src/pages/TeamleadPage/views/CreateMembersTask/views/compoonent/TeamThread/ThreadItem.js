@@ -448,37 +448,86 @@ const ThreadItem = ({ status }) => {
                         </div>
                       )}
                     </div>
-
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "end",
+                        width: "100%",
+                        marginBottom: "0.5rem",
+                      }}
+                    >
+                      <p
+                        style={{
+                          backgroundColor:
+                            thread.thread_type === "BUG"
+                              ? "red"
+                              : thread.thread_type === "SUGGESTION"
+                                ? "green"
+                                : null,
+                          color: "#fff",
+                          fontSize: "0.8rem",
+                          fontWeight: "600",
+                          padding: "0.3rem 0.5rem",
+                          borderRadius: "1.5rem",
+                        }}
+                      >
+                        {thread.thread_type}
+                      </p>
+                    </div>
                     <div className="team-screen-threads-container">
-                      <p className='title'>{thread.thread_title}</p>
+                      <p
+                        style={{
+                          color: "#005734",
+                          fontSize: "1.2rem",
+                          fontWeight: "500",
+                          marginBottom: "0",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {thread.thread_title}
+                      </p>
                       <div>
-                        <p>Assigned to: {assignedTeamName}</p>
+                        <p>Assigned to : {assignedTeamName}</p>
                         <p>Raised by : {thread.created_by}</p>
                       </div>
-                      <h4>Details</h4>
-                      {/* <p className='thread-subtitle'>{thread.thread}</p> */}
-
-                      {thread.thread.length > maxLength && !isExpanded ? (
-                        <div>
-                          <p className="thread-subtitle">
-                            {thread.thread.slice(0, maxLength)}...
-                            <span onClick={toggleExpansion} className="see-more">
-                              See more
-                            </span>
-                          </p>
-                        </div>
-                      ) : (
-                        <div>
-                          <p className="thread-subtitle">{thread.thread}</p>
-                          {isExpanded && (
-                            <span onClick={toggleExpansion} className="see-less">
-                              See less
-                            </span>
-                          )}
-                        </div>
-                      )}
-
+                      <p
+                        style={{
+                          color: "#005734",
+                          fontSize: "1rem",
+                          fontWeight: "500",
+                          marginBottom: "0",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        <p>Details:</p>
+                        <p style={{ color: "#005734" }}>{thread.thread}</p>
+                        <br></br>
+                        <p>Steps to Reproduce:</p>
+                        <p style={{ color: "#005734" }}>
+                          {thread.steps_to_reproduce_thread}
+                        </p>
+                        <br></br>
+                        <p>Expected Behavior:</p>
+                        <p style={{ color: "#005734" }}>
+                          {thread.expected_product_behavior}
+                        </p>
+                        <br></br>
+                        <p>Actual Behavior:</p>
+                        <p style={{ color: "#005734" }}>
+                          {thread.actual_product_behavior}
+                        </p>
+                        <br></br>
+                      </p>
+                      <div
+                        style={{
+                          fontSize: "0.9rem",
+                          fontWeight: "600",
+                        }}
+                      >
+                        Status
+                      </div>
                       <div className="team-screen-threads-progress">
+
                         <div className="progress">
                           <div data-tooltio-id='created' className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"}></div>
                           <ReactTooltip
@@ -583,31 +632,84 @@ const ThreadItem = ({ status }) => {
                           </div>
                         )}
                       </div>
-
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "end",
+                          width: "100%",
+                          marginBottom: "0.5rem",
+                        }}
+                      >
+                        <p
+                          style={{
+                            backgroundColor:
+                              thread.thread_type === "BUG"
+                                ? "red"
+                                : thread.thread_type === "SUGGESTION"
+                                  ? "green"
+                                  : null,
+                            color: "#fff",
+                            fontSize: "0.8rem",
+                            fontWeight: "600",
+                            padding: "0.3rem 0.5rem",
+                            borderRadius: "1.5rem",
+                          }}
+                        >
+                          {thread.thread_type}
+                        </p>
+                      </div>
                       <div className="team-screen-threads-container">
-                        <p className='title'>{thread.thread_title}</p>
+                        <p
+                          style={{
+                            color: "#005734",
+                            fontSize: "1.2rem",
+                            fontWeight: "500",
+                            marginBottom: "0",
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          {thread.thread_title}
+                        </p>
                         <div>
-                          <p>Assigned to: {assignedTeamName}</p>
+                          <p>Assigned to : {assignedTeamName}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
-                        <h5>Details</h5>
-                        {thread.thread.length > maxLength && !isExpanded ? (
-                          <p className="thread-subtitle">
-                            {thread.thread.slice(0, maxLength)}
-                            <span onClick={toggleExpansion} className="see-more">
-                              ...
-                            </span>
+                        <p
+                          style={{
+                            color: "#005734",
+                            fontSize: "1rem",
+                            fontWeight: "500",
+                            marginBottom: "0",
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          <p>Details:</p>
+                          <p style={{ color: "#005734" }}>{thread.thread}</p>
+                          <br></br>
+                          <p>Steps to Reproduce:</p>
+                          <p style={{ color: "#005734" }}>
+                            {thread.steps_to_reproduce_thread}
                           </p>
-                        ) : (
-                          <div>
-                            <p className="thread-subtitle">{thread.thread}</p>
-                            {isExpanded && (
-                              <span onClick={toggleExpansion} className="see-less">
-                                See less
-                              </span>
-                            )}
-                          </div>
-                        )}
+                          <br></br>
+                          <p>Expected Behavior:</p>
+                          <p style={{ color: "#005734" }}>
+                            {thread.expected_product_behavior}
+                          </p>
+                          <br></br>
+                          <p>Actual Behavior:</p>
+                          <p style={{ color: "#005734" }}>
+                            {thread.actual_product_behavior}
+                          </p>
+                          <br></br>
+                        </p>
+                        <div
+                          style={{
+                            fontSize: "0.9rem",
+                            fontWeight: "600",
+                          }}
+                        >
+                          Status
+                        </div>
                         <div className="team-screen-threads-progress">
                           <div className="progress">
                             <div className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"} data-tooltip-id="created"></div>
@@ -719,30 +821,84 @@ const ThreadItem = ({ status }) => {
                           </div>
                         )}
                       </div>
-
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "end",
+                          width: "100%",
+                          marginBottom: "0.5rem",
+                        }}
+                      >
+                        <p
+                          style={{
+                            backgroundColor:
+                              thread.thread_type === "BUG"
+                                ? "red"
+                                : thread.thread_type === "SUGGESTION"
+                                  ? "green"
+                                  : null,
+                            color: "#fff",
+                            fontSize: "0.8rem",
+                            fontWeight: "600",
+                            padding: "0.3rem 0.5rem",
+                            borderRadius: "1.5rem",
+                          }}
+                        >
+                          {thread.thread_type}
+                        </p>
+                      </div>
                       <div className="team-screen-threads-container">
-                        <p className='title'>{thread.thread_title}</p>
+                        <p
+                          style={{
+                            color: "#005734",
+                            fontSize: "1.2rem",
+                            fontWeight: "500",
+                            marginBottom: "0",
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          {thread.thread_title}
+                        </p>
                         <div>
-                          <p>Assigned to: {assignedTeamName}</p>
+                          <p>Assigned to : {assignedTeamName}</p>
                           <p>Raised by : {thread.created_by}</p>
                         </div>
-                        {thread.thread.length > maxLength && !isExpanded ? (
-                          <p className="thread-subtitle">
-                            {thread.thread.slice(0, maxLength)}
-                            <span onClick={toggleExpansion} className="see-more">
-                              ...
-                            </span>
+                        <p
+                          style={{
+                            color: "#005734",
+                            fontSize: "1rem",
+                            fontWeight: "500",
+                            marginBottom: "0",
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          <p>Details:</p>
+                          <p style={{ color: "#005734" }}>{thread.thread}</p>
+                          <br></br>
+                          <p>Steps to Reproduce:</p>
+                          <p style={{ color: "#005734" }}>
+                            {thread.steps_to_reproduce_thread}
                           </p>
-                        ) : (
-                          <div>
-                            <p className="thread-subtitle">{thread.thread}</p>
-                            {isExpanded && (
-                              <span onClick={toggleExpansion} className="see-less">
-                                See less
-                              </span>
-                            )}
-                          </div>
-                        )}
+                          <br></br>
+                          <p>Expected Behavior:</p>
+                          <p style={{ color: "#005734" }}>
+                            {thread.expected_product_behavior}
+                          </p>
+                          <br></br>
+                          <p>Actual Behavior:</p>
+                          <p style={{ color: "#005734" }}>
+                            {thread.actual_product_behavior}
+                          </p>
+                          <br></br>
+                        </p>
+                        <div
+                          style={{
+                            fontSize: "0.9rem",
+                            fontWeight: "600",
+                          }}
+                        >
+                          Status
+                        </div>
                         <div className="team-screen-threads-progress">
                           <div className="progress">
                             <div className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"} data-tooltip-id="created"></div>
@@ -849,14 +1005,84 @@ const ThreadItem = ({ status }) => {
                         </div>
                       )}
                     </div>
-
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "end",
+                        width: "100%",
+                        marginBottom: "0.5rem",
+                      }}
+                    >
+                      <p
+                        style={{
+                          backgroundColor:
+                            thread.thread_type === "BUG"
+                              ? "red"
+                              : thread.thread_type === "SUGGESTION"
+                                ? "green"
+                                : null,
+                          color: "#fff",
+                          fontSize: "0.8rem",
+                          fontWeight: "600",
+                          padding: "0.3rem 0.5rem",
+                          borderRadius: "1.5rem",
+                        }}
+                      >
+                        {thread.thread_type}
+                      </p>
+                    </div>
                     <div className="team-screen-threads-container">
-                      <p className='title'>{thread.thread_title}</p>
+                      <p
+                        style={{
+                          color: "#005734",
+                          fontSize: "1.2rem",
+                          fontWeight: "500",
+                          marginBottom: "0",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {thread.thread_title}
+                      </p>
                       <div>
-                        <p>Assigned to: {assignedTeamName}</p>
+                        <p>Assigned to : {assignedTeamName}</p>
                         <p>Raised by : {thread.created_by}</p>
                       </div>
-                      <p className='thread-subtitle'>{thread.thread}</p>
+                      <p
+                        style={{
+                          color: "#005734",
+                          fontSize: "1rem",
+                          fontWeight: "500",
+                          marginBottom: "0",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        <p>Details:</p>
+                        <p style={{ color: "#005734" }}>{thread.thread}</p>
+                        <br></br>
+                        <p>Steps to Reproduce:</p>
+                        <p style={{ color: "#005734" }}>
+                          {thread.steps_to_reproduce_thread}
+                        </p>
+                        <br></br>
+                        <p>Expected Behavior:</p>
+                        <p style={{ color: "#005734" }}>
+                          {thread.expected_product_behavior}
+                        </p>
+                        <br></br>
+                        <p>Actual Behavior:</p>
+                        <p style={{ color: "#005734" }}>
+                          {thread.actual_product_behavior}
+                        </p>
+                        <br></br>
+                      </p>
+                      <div
+                        style={{
+                          fontSize: "0.9rem",
+                          fontWeight: "600",
+                        }}
+                      >
+                        Status
+                      </div>
                       <div className="team-screen-threads-progress">
                         <div className="progress">
                           <div data-tooltip-id='created' className={thread.current_status == "Created" || "In progress" ? "active-thread-btn" : "threads-btn"}></div>

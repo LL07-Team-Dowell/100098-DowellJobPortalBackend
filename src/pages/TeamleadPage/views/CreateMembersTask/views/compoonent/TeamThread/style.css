@@ -83,7 +83,7 @@
   display: block;
   font-family: "Inter", sans-serif;
   border-radius: 10px;
-  margin: 6% 0;
+  margin: 3% 0;
 }
 
 .add__New__Task__Container input,
@@ -93,6 +93,21 @@
   width: 100%;
   font-size: 0.875rem;
   padding: 3%;
+}
+
+.addTaskRadioGroup {
+  display: flex;
+  padding: 1rem 0;
+  width: 200px;
+  justify-content: space-between;
+  background-color: #fff;
+}
+
+.addTaskRadioGroup label {
+  display: flex;
+  gap: 0.5rem;
+  box-shadow: none;
+
 }
 
 .add__New__Task__Container .addTaskDropDown {

@@ -343,7 +343,7 @@ const AddIssueTeamLead = ({
   const [disabled, setDisabled] = useState(false);
   const { currentUser } = useCurrentUserContext();
   const [selectedTeam, setSelectedTeam] = useState("");
-  const [selectedThreadType, setSelectedThreadType] = useState('bug');
+  const [selectedOption, setSelectedOption] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams()
@@ -420,11 +420,14 @@ const AddIssueTeamLead = ({
     }));
   };
 
-  const handleType = (e) => {
-    const selectThreadType = e.target.value
-    setSelectedThreadType(selectThreadType)
-  }
-
+  const handleSecondOptionChange = (e) => {
+    setSelectedOption(e.target.value);
+    setCreateIssue((prev) => {
+      const newCreateIssue = { ...prev };
+      newCreateIssue["thread_type"] = e.target.value;
+      return newCreateIssue;
+    });
+  };
   const handleCandidateTeamChange = (e) => {
     setCreateIssue((prevIssue) => {
       const newCreateIssue = { ...prevIssue };
@@ -616,28 +619,33 @@ const AddIssueTeamLead = ({
             onChange={(e) => handleChange(e.target.value, e.target.name)}
           ></input>
 
-          <span className="selectProject">Select Thread Type</span>
-          <br />
-          <div className="addTaskRadioGroup">
-            <label>
+          <span className="selectProject">Choose Issue Type</span>
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <label htmlFor="BUG" className="radio">
               <input
-                type="radio"
-                value="BUG"
-                checked={selectedThreadType === "BUG"} // Use the state variable for checked
-                onChange={handleType}
-                name="thread_type"
+                className="radio_input dio"
+                type={"radio"}
+                id={"BUG"}
+                name="options"
+                value={"BUG"}
+                checked={selectedOption === "BUG"}
+                onChange={handleSecondOptionChange}
               />
-              Bug
+              <div className="radio__radio"></div>
+              <p>Bug</p>
             </label>
-            <label>
+            <label htmlFor="SUGGESTION" className="radio">
               <input
-                type="radio"
-                value="SUGGESTION"
-                checked={selectedThreadType === "SUGGESTION"} // Use the state variable for checked
-                onChange={handleType}
-                name="thread_type"
+                className="radio_input"
+                type={"radio"}
+                id={"SUGGESTION"}
+                name="options"
+                value={"SUGGESTION"}
+                checked={selectedOption === "SUGGESTION"}
+                onChange={handleSecondOptionChange}
               />
-              Suggestion
+              <div className="radio__radio"></div>
+              <p>Suggestion</p>
             </label>
           </div>
 

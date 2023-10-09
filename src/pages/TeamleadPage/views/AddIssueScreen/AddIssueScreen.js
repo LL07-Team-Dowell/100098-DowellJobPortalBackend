@@ -265,7 +265,7 @@ const AddIssueScreen = ({
             rows={3}
           ></textarea>
           <span className="selectProject">Choose Issue Type</span>
-          <div style={{ display: "flex", gap: "1rem"}}>
+          <div style={{ display: "flex", gap: "1rem" }}>
             <label htmlFor="BUG" className="radio">
               <input
                 className="radio_input dio"
