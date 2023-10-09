@@ -30,7 +30,7 @@ export const rolesDict = {
   'Project_Lead': 'Project Lead',
 };
 
-const rolesNamesDict = {
+export const rolesNamesDict = {
   'Account': "Dept_Lead", 
   'Teamlead': "Proj_Lead", 
   "Hr": "Hr", 
