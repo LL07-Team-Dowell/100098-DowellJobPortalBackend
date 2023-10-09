@@ -289,8 +289,9 @@ const TaskScreen = ({
     try {
       const res = (await getCandidateTasksOfTheDayV2(dataToPost)).data;
 
-      if (res.task.length > 0) {
-        setTasksForTheDay(res.task)
+      const foundApplicantTaskItemForTheDay = res.task_details.find(task => task.applicant === currentUser.userinfo.username && task.task_created_date === dateFormattedForAPI);
+      if (foundApplicantTaskItemForTheDay && res.task.length > 0) {
+        setTasksForTheDay(res.task.filter(task => task.task_id === foundApplicantTaskItemForTheDay?._id));
       }
       setSingleTaskLoading(false);
     } catch (error) {

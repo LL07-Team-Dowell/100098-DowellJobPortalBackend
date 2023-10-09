@@ -758,8 +758,7 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                           <p
                             style={{ fontSize: "0.9rem", textAlign: "center" }}
                           >
-                            Select a project to get a detailed report on work logs
-                            added
+                            Select a project to get a detailed report on work logs added
                           </p>
                         </>
                       )}

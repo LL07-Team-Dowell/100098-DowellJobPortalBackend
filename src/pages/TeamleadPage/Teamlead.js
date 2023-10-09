@@ -896,7 +896,7 @@ const Teamlead = ({ isGrouplead }) => {
 
 
         )}
-        {
+        {/* {
           (
             section === 'task' ||
             section === 'user' ||
@@ -913,7 +913,7 @@ const Teamlead = ({ isGrouplead }) => {
                 <p>Refresh</p>
               </div>
             </button>
-        }
+        } */}
 
         {
           section !== "user" && !showCandidate && isGrouplead && section === 'task' && <button

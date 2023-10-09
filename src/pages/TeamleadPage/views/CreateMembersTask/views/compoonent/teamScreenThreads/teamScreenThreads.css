@@ -55,6 +55,7 @@
 .team-screen-threads-container p {
   font-size: 0.9rem;
   color: #000;
+  white-space: pre-line;
 }
 
 .team-screen-threads-progress {
