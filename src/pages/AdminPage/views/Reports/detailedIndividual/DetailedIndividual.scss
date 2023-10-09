@@ -291,6 +291,15 @@
           }
         }
       }
+
+      @media screen and (max-width: 767px) {
+        flex-direction: column-reverse;
+        gap: 1rem;
+      }
+    }
+
+    @media screen and (max-width: 767px) {
+      height: max-content;
     }
   }
 }
@@ -441,6 +450,15 @@
         }
       }
     }
+
+    @media screen and (max-width: 767px) {
+      flex-direction: column;
+      gap: 1.3rem;
+
+      .task__item.leaderboard {
+        margin-bottom: 0;
+      }
+    }
   }
   
   .ranking__Table_ {
@@ -506,6 +524,19 @@
 
       &:focus-within {
         border-color: #005734;
+      }
+    }
+
+    @media screen and (max-width: 767px) {
+      flex-direction: column;
+      gap: 1rem;
+
+      .select__Status__Filter {
+        margin-left: auto;
+      }
+
+      .search__Wrapper {
+        width: 100%;
       }
     }
   }

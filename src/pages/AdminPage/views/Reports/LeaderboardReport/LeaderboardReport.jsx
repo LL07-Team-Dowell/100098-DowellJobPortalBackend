@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { getAllOnBoardCandidate } from "../../../../../services/adminServices";
 import { getSettingUserProfileInfo } from "../../../../../services/settingServices";
 import { rolesDict } from "../../Settings/AdminSettings";
+import { useMediaQuery } from "@mui/material";
 
 const date = new Date();
 const dateSevenDaysAgo = new Date(new Date().setDate(date.getDate() - 7));
@@ -58,6 +59,7 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
     const [ searchValue, setSearchValue ] = useState("");
     const [ currentRoleFilter, setCurrentRoleFilter ] = useState('');
     const [ dataToDisplay, setDataToDisplay ] = useState([]);
+    const isSmallScreen = useMediaQuery('(max-width: 767px)');
 
     const navigate = useNavigate();
     
@@ -429,6 +431,9 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                                 data-tooltip-id="highest_user_tasks"
                                             >
                                                 Work logs uploaded by user
+                                                {
+                                                    isSmallScreen && `: ${highestAndLowestData?.highest[Object.keys(highestAndLowestData?.highest || {})[0]]}`
+                                                }
                                             </p>
                                             <Tooltip id="highest_user_tasks" content={`Count: ${highestAndLowestData?.highest[Object.keys(highestAndLowestData?.highest || {})[0]]}`} />
                                         </div>
@@ -438,6 +443,9 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                                 data-tooltip-id="highest_total_tasks"
                                             >
                                                 Total work logs in organization
+                                                {
+                                                    isSmallScreen && `: ${totalTasks}`
+                                                }
                                             </p>
                                             <Tooltip id="highest_total_tasks" content={`Count: ${totalTasks}`} />
                                         </div>
@@ -476,6 +484,9 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                                 data-tooltip-id="lowest_user_tasks"
                                             >
                                                 Work logs uploaded by user
+                                                {
+                                                    isSmallScreen && `: ${highestAndLowestData?.lowest[Object.keys(highestAndLowestData?.lowest || {})[0]]}`
+                                                }
                                             </p>
                                             <Tooltip id="lowest_user_tasks" content={`Count: ${highestAndLowestData?.lowest[Object.keys(highestAndLowestData?.lowest || {})[0]]}`} />
                                         </div>
@@ -485,6 +496,10 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                                 data-tooltip-id="lowest_total_tasks"
                                             >
                                                 Total work logs in organization
+                                                
+                                                {
+                                                    isSmallScreen && `: ${totalTasks}`
+                                                }
                                             </p>
                                             <Tooltip id="lowest_total_tasks" content={`Count: ${totalTasks}`} />
                                         </div>
@@ -521,6 +536,9 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                                 data-tooltip-id="highest_project_tasks"
                                             >
                                                 Work logs uploaded in project
+                                                {
+                                                    isSmallScreen && `: ${projectCountData?.project_with_most_tasks?.tasks_added}`
+                                                }
                                             </p>
                                             <Tooltip id="highest_project_tasks" content={`Count: ${projectCountData?.project_with_most_tasks?.tasks_added}`} />
                                         </div>
@@ -530,6 +548,9 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                                 data-tooltip-id="highest_total_tasks_proj"
                                             >
                                                 Total work logs in organization
+                                                {
+                                                    isSmallScreen && `: ${totalTasks}`
+                                                }
                                             </p>
                                             <Tooltip id="highest_total_tasks_proj" content={`Count: ${totalTasks}`} />
                                         </div>
@@ -564,6 +585,9 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                                 data-tooltip-id="lowest_project_tasks"
                                             >
                                                 Work logs uploaded in project
+                                                {
+                                                    isSmallScreen && `: ${projectCountData?.project_with_least_tasks?.tasks_added}`
+                                                }
                                             </p>
                                             <Tooltip id="lowest_project_tasks" content={`Count: ${projectCountData?.project_with_least_tasks?.tasks_added}`} />
                                         </div>
@@ -573,6 +597,9 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
                                                 data-tooltip-id="lowest_total_tasks_proj"
                                             >
                                                 Total work logs in organization
+                                                {
+                                                    isSmallScreen && `: ${totalTasks}`
+                                                }
                                             </p>
                                             <Tooltip id="lowest_total_tasks_proj" content={`Count: ${totalTasks}`} />
                                         </div>

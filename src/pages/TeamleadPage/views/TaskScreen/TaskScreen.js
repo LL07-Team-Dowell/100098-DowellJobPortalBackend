@@ -9,7 +9,7 @@ import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { useCandidateTaskContext } from "../../../../contexts/CandidateTasksContext";
 import { Calendar } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { formatDateAndTime, getDaysInMonth } from "../../../../helpers/helpers";
+import { formatDateAndTime, formatDateForAPI, getDaysInMonth } from "../../../../helpers/helpers";
 import { differenceInCalendarDays } from "date-fns";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getCandidateTask, getCandidateTasksOfTheDayV2 } from "../../../../services/candidateServices";
@@ -232,8 +232,8 @@ const TaskScreen = ({
     setTasksToShow(
       userTasks.filter(
         (task) =>
-          new Date(task.task_created_date).toDateString() ===
-          new Date().toDateString()
+          formatDateForAPI(task.task_created_date) ===
+          formatDateForAPI(new Date())
       )
     );
   }, [userTasks]);
@@ -252,7 +252,7 @@ const TaskScreen = ({
     if (view === "month") {
       // Check if a date React-Calendar wants to check is on the list of dates to add class to
       if (tasksForProjectLoading) return ''
-      if (datesToStyle.find((dDate) => isSameDay(dDate, date))) {
+      if (datesToStyle.find((dDate) => formatDateForAPI(dDate) === formatDateForAPI(date))) {
         return "task__Indicator";
       }
     }
@@ -260,25 +260,27 @@ const TaskScreen = ({
 
   const handleDateChange = async (dateSelected) => {
     setDaysInMonth(getDaysInMonth(dateSelected));
-    setValue1(dateSelected)
+    setValue1(new Date(dateSelected))
     // setTasksToShow(userTasks.filter(task => new Date(task.created).toDateString() === dateSelected.toDateString()));
     settaskdetail2(
       userTasks.filter(
         (d) =>
-          new Date(d.task_created_date).toDateString() ===
-          dateSelected.toDateString()
+          formatDateForAPI(d.task_created_date) ===
+          formatDateForAPI(new Date(dateSelected))
       )
     );
     setCurrentMonth(
-      dateSelected.toLocaleDateString("en-us", { month: "long" })
+      new Date(dateSelected).toLocaleDateString("en-us", { month: "long" })
     );
 
     setSingleTaskLoading(true);
     setTasksForTheDay(null);
 
-    const date = new Date(dateSelected);
-    const [year, month, day] = [date.getFullYear(), date.getMonth() + 1, date.getDate()];
-    const dateFormattedForAPI = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+    // const date = new Date(dateSelected);
+    // const [year, month, day] = [date.getFullYear(), date.getMonth() + 1, date.getDate()];
+    // const dateFormattedForAPI = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+    
+    const dateFormattedForAPI = formatDateForAPI(dateSelected);
     const dataToPost = {
       "company_id": currentUser.portfolio_info[0].org_id,
       "user_id": currentUser.userinfo.userID,
@@ -289,8 +291,9 @@ const TaskScreen = ({
     try {
       const res = (await getCandidateTasksOfTheDayV2(dataToPost)).data;
 
-      if (res.task.length > 0) {
-        setTasksForTheDay(res.task)
+      const foundApplicantTaskItemForTheDay = res.task_details.find(task => task.applicant === currentUser.userinfo.username && task.task_created_date === dateFormattedForAPI);
+      if (foundApplicantTaskItemForTheDay && res.task.length > 0) {
+        setTasksForTheDay(res.task.filter(task => task.task_id === foundApplicantTaskItemForTheDay?._id));
       }
       setSingleTaskLoading(false);
     } catch (error) {
@@ -626,7 +629,7 @@ const TaskScreen = ({
                                                   "default",
                                                   { month: "long" }
                                                 )}
-                                                <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(task.task_created_date).getDate()}</p>
+                                                <p style={{ display: "inline", marginLeft: "0.2rem" }}>{formatDateForAPI(task.task_created_date, 'day-only')}</p>
 
                                                 <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
                                                   {task.task} <span style={{ color: "#B8B8B8" }}> from {task.start_time} to {task.end_time}</span>
@@ -640,7 +643,7 @@ const TaskScreen = ({
                                                 "default",
                                                 { month: "long" }
                                               )}
-                                              <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(task.task_created_date).getDate()}</p>
+                                              <p style={{ display: "inline", marginLeft: "0.2rem" }}>{formatDateForAPI(task.task_created_date, 'day-only')}</p>
 
                                               <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
                                                 {task.task} <span style={{ color: "#B8B8B8" }}> from {task.start_time} to {task.end_time}</span>
@@ -657,7 +660,7 @@ const TaskScreen = ({
                                         "default",
                                         { month: "long" }
                                       )}
-                                      <p style={{ display: "inline", marginLeft: "0.2rem" }}>{new Date(d.task_created_date).getDate()}</p>
+                                      <p style={{ display: "inline", marginLeft: "0.2rem" }}>{formatDateForAPI(d.task_created_date, 'day-only')}</p>
 
                                       <p style={{ display: "inline", marginLeft: "0.7rem", fontSize: "0.9rem" }}>
                                         {d.task}

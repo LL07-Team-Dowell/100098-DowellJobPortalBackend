@@ -18,7 +18,6 @@ const SubprojectSelectWithSearch = ({
     hideSelectionsMade,
     alwaysOnDisplay,
     passedInputVal,
-    passedInputRef,
 }) => {
     const [ inputVal, setInputVal ] = useState('');
     const [ displayedItems, setDisplayedItems ] = useState([]);
@@ -56,7 +55,7 @@ const SubprojectSelectWithSearch = ({
 
         if (passedInputVal) {
             filteredList = subprojects?.map(item => {
-                const itemInList = item.sub_project_list.filter(i => i.toLocaleLowerCase().replaceAll(" ", "").includes(passedInputVal.toLocaleLowerCase().replaceAll(" ", "")));
+                const itemInList = item.sub_project_list.filter(i => i.toLocaleLowerCase().replaceAll(" ", "").includes(passedInputVal.toLocaleLowerCase().replaceAll(" ", "").replaceAll("<br>", "")));
                 if (itemInList.length < 1) return null
                 
                 return {
@@ -174,13 +173,11 @@ const SubprojectSelectWithSearch = ({
         removeFocusClassFromAllListItems(listRef);
     })
 
-    const selectItemFromListing = (subprojectSelected, projectSelected) => {
-        handleSelectItem(subprojectSelected, projectSelected);
+    const selectItemFromListing = (subprojectSelected, projectSelected, idSelected) => {
+        handleSelectItem(subprojectSelected, projectSelected, idSelected);
         setCurrentListItemIndex(0);
         removeFocusClassFromAllListItems(listRef);
     }
-
-    console.log(passedInputRef, passedInputVal);
 
     if (alwaysOnDisplay) {
         return <>
@@ -221,7 +218,7 @@ const SubprojectSelectWithSearch = ({
                                             onClick={
                                                 handleSelectItem && typeof handleSelectItem === 'function' ? 
                                                     () => {
-                                                        selectItemFromListing(project, item.parent_project)
+                                                        selectItemFromListing(project, item.parent_project, item.id)
                                                     }
                                                 :
                                                 () => {}
@@ -290,7 +287,7 @@ const SubprojectSelectWithSearch = ({
                                         onClick={
                                             handleSelectItem && typeof handleSelectItem === 'function' ? 
                                                 () => {
-                                                    selectItemFromListing(project, item.parent_project)
+                                                    selectItemFromListing(project, item.parent_project, item.id)
                                                 }
                                             :
                                             () => {}

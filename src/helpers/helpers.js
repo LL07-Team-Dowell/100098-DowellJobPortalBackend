@@ -112,6 +112,12 @@ export const formatDateForAPI = (date, type='normal') => {
         dateInProperFormat.getDate(),
     ]
 
+    if (type === 'day-only') {
+        return `${
+            day < 10 ? "0" + day : day
+        }`
+    }
+
     if (type === 'report') {
         return `${month}/${day < 10 ? "0" + day : day}/${year} 0:00:00`
     }

@@ -14,6 +14,8 @@ import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner
 import { IoRefresh } from "react-icons/io5";
 import SubprojectSelectWithSearch from "../../../../components/SubprojectSelectWithSearch/SubprojectSelectWithSearch";
 import useListenToKeyStrokeInElement from "../../../../hooks/useListenToKeyStrokeInElement";
+import { formatSubprojectStringItemToHTML } from "../../util/formatSubprojectStringItemToHTML";
+import ContentEditable from "react-contenteditable";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -67,6 +69,8 @@ const AddTaskScreen = ({
   );
   const textareaRef = useRef();
   const subprojectRef = useRef();
+  const [ showSubprojectSelections, setShowSubprojectSelections ] = useState(false);
+  const [ formattedTaskName, setFormattedTaskName ] = useState('');
   
 
   //   var conditions
@@ -141,11 +145,25 @@ const AddTaskScreen = ({
     setEditLoading(true);
   };
 
+  function removeSpaces(inputString) {
+    // Use a regular expression to replace all spaces with an empty string
+    return inputString.replace(/\s/g, '');
+  }
+  
+  function isStringValid(inputString) {
+    const trimmedString = inputString.trim();
+    const words = trimmedString.split(/\s+/);
+    return trimmedString.length >= 25 && words.length >= 5;
+  }
+
   //   importand fuction
   const addNewTask = () => {
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
-      if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
+      console.log({ TASKSS: tasks.find(task => task.task === taskName) })
+      if (tasks.find(task => task?.task?.toLocaleLowerCase().trim() === taskName.toLocaleLowerCase().trim() && task.is_active) !== undefined) return toast.info('You cannot add the same log')
+      if (!isStringValid(taskName)) return toast.info('The log entered should be more than 25 characters and more than 5 words.')
+      if (taskEndTime === '00:00') return toast.info("You can only update work logs for today")
       if (duration <= 15) {
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
         if (!taskDetailForToday) return addTaskForToday(taskStartTime, taskEndTime, taskName, details);
@@ -164,7 +182,9 @@ const AddTaskScreen = ({
   const updateTask = async () => {
     if (inputsAreFilled) {
       if (duration <= 15) {
-        if (taskEndTime === '00:00') return toast.info("You can only update tasks for today")
+        if (tasks.find(task => task?.task?.toLocaleLowerCase().trim() === taskName.toLocaleLowerCase().trim() && task.is_active) !== undefined) return toast.info('You cannot add the same log')
+        if (!isStringValid(taskName)) return toast.info('The log entered should be more than 25 characters and more than 5 words.')
+        if (taskEndTime === '00:00') return toast.info("You can only update work logs for today")
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
 
         setLoading(true);
@@ -290,6 +310,7 @@ const AddTaskScreen = ({
       setTaskEndTime(newEndTime);
     }
   }, [taskStartTime])
+
   useEffect(() => {
     if (taskDetailForToday) {
       setTaskDetailForTodayLoading(false);
@@ -354,6 +375,10 @@ const AddTaskScreen = ({
   }, [taskName, optionValue, taskStartTime, taskEndTime, taskType]);
 
   useEffect(() => {
+    setFormattedTaskName(formatSubprojectStringItemToHTML(taskName));
+  }, [taskName])
+
+  useEffect(() => {
     if (afterSelectionScreen) {
       setNewTaskDetails((prevValue) => {
         return { ...prevValue, username: currentUser.userinfo.username };
@@ -396,28 +421,36 @@ const AddTaskScreen = ({
     }
   )
 
-  // TO COME BACK AND COMPLETE
-  // useListenToKeyStrokeInElement(
-  //   textareaRef,
-  //   'a',
-  //   (e) => {
-  //     const { 
-  //       target: { 
-  //         selectionEnd, 
-  //         selectionStart,
-  //         scrollTop,
-  //         clientWidth,
-  //       } 
-  //     } = e;
+  useListenToKeyStrokeInElement(
+    textareaRef,
+    '@',
+    () => {
+      if (subprojectSelected) return
 
-  //     console.log('targ', e.target);
+      setShowSubprojectSelections(true);
+    },
+    true
+  )
 
-  //     subprojectRef.current.style.top = scrollTop;
-  //     console.log(Number(clientWidth) - Number(selectionEnd));
-  //     console.log(scrollTop);
-  //     subprojectRef.current.style.right = `${Number(selectionEnd) }px`;
-  //   }
-  // )
+  useListenToKeyStrokeInElement(
+    textareaRef,
+    'Backspace',
+    () => {
+      const currentTaskName = taskName.slice(-4) === '<br>' ?
+        taskName.slice(0, -5)
+      :
+      taskName.slice(0, -1);
+
+      const userIsDeletingSubproject = currentTaskName.slice(-3) === '</p';
+
+      if (userIsDeletingSubproject) {
+        handleCancelSubprojectSelection();
+        setShowSubprojectSelections(true);
+        return
+      }
+    },
+    true
+  )
 
   // console.log({ taskStartTime });
 
@@ -548,6 +581,23 @@ const AddTaskScreen = ({
       toast.error('Something went wrong while trying to submit your work logs. Please try again later')
       setSavingLoading(false);
     }
+  }
+
+  const handleSelectSubprojectFromListing = (subprojectPassed, projectPassed, idPassed) => {
+    setSubprojectSelected(subprojectPassed);
+    setoptionValue(projectPassed);
+    
+    const taskNamewithAtCharStripped = taskName.split('@')[0];
+    setTaskName(taskNamewithAtCharStripped.concat(`<@${subprojectPassed}~${projectPassed}~${idPassed}!> `));
+
+    textareaRef?.current?.el?.current?.focus();
+  }
+
+  const handleCancelSubprojectSelection = () => {
+    const [ startIndex, endIndex ] = [ taskName.indexOf('<p><span'), taskName.indexOf('</span></p>')];
+    setSubprojectSelected(null);
+    setoptionValue('');
+    setTaskName(taskName.replace(`${taskName.substring(startIndex, endIndex + 11)}`, '@'))
   }
 
   const handleChange = (e) => {
@@ -822,31 +872,42 @@ const AddTaskScreen = ({
                                     readOnly={loading || !taskDetailForTodayLoaded ? true : false}
                                     rows={3}
                                     className="log__textarea"
-                                    // cols={40}
-                                    // ref={textareaRef}
+                                  // cols={40}
+                                  // ref={textareaRef}
                                   >
                                   </textarea>
-                                  {/* <div
-                                    className={'log__Add__Subproject'}
-                                    ref={subprojectRef}
-                                  >
-                                    <SubprojectSelectWithSearch
-                                      subprojects={subprojects}
-                                      selectedSubProject={subprojectSelected}
-                                      handleSelectItem={(subproject, project) => {
-                                        setSubprojectSelected(subproject);
-                                        setoptionValue(project);
-                                      }}
-                                      handleCancelSelection={
-                                        () => {
-                                          setSubprojectSelected(null);
-                                          setoptionValue('');
+
+                                  {/* <ContentEditable 
+                                    html={formattedTaskName}
+                                    onChange={({ target }) => setTaskName(target.value)}
+                                    id="new__Log__Textarea"
+                                    ref={textareaRef}
+                                    disabled={loading || !taskDetailForTodayLoaded ? true : false}
+                                  />
+                                  {
+                                    showSubprojectSelections && <div
+                                      className={'log__Add__Subproject'}
+                                      ref={subprojectRef}
+                                    >
+                                      <SubprojectSelectWithSearch
+                                        subprojects={subprojects}
+                                        selectedSubProject={subprojectSelected}
+                                        handleSelectItem={
+                                          (subproject, project, id) => handleSelectSubprojectFromListing(subproject, project, id)
                                         }
-                                      }
-                                      selectedProject={optionValue}
-                                      hideSearchElementInput={true}
-                                    />
-                                  </div> */}
+                                        handleCancelSelection={handleCancelSubprojectSelection}
+                                        selectedProject={optionValue}
+                                        alwaysOnDisplay={true}
+                                        passedInputVal={
+                                          taskName.split('@')[1] ? 
+                                            taskName.split('@')[1]
+                                          :
+                                          ''
+                                        }
+                                        hideSelectionsMade={true}
+                                      />
+                                    </div>
+                                  } */}
                                 </div>
                               </div>
                               <div className="task__Item">

@@ -27,9 +27,10 @@ export const rolesDict = {
   "super_admin": "Super Admin",
   "candidate": "Candidate",
   'Viewer': 'Viewer',
+  'Project_Lead': 'Project Lead',
 };
 
-const rolesNamesDict = {
+export const rolesNamesDict = {
   'Account': "Dept_Lead", 
   'Teamlead': "Proj_Lead", 
   "Hr": "Hr", 
@@ -38,6 +39,7 @@ const rolesNamesDict = {
   "Super Admin": "super_admin",
   "Candidate": "candidate",
   "Viewer": "Viewer",
+  "Project Lead": "Project_Lead",
 }
 
 const AdminSettings = () => {
