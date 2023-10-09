@@ -318,7 +318,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { IoIosArrowBack } from "react-icons/io";
 
-import "../../../../AddTaskScreen/style.css";
+import "./style.css";
 import { useNavigate, useParams } from "react-router-dom";
 // import { createCandidateTask } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
@@ -618,16 +618,29 @@ const AddIssueTeamLead = ({
 
           <span className="selectProject">Select Thread Type</span>
           <br />
-          <select
-            className="addTaskDropDown"
-            style={{ margin: 0, marginBottom: '0.8rem' }}
-            onChange={handleType}
-            value={selectedThreadType} // Use the state variable as the value
-            name="thread_type"
-          >
-            <option value="bug">Bug</option>
-            <option value="suggestion">Suggestion</option>
-          </select>
+          <div className="addTaskRadioGroup">
+            <label>
+              <input
+                type="radio"
+                value="BUG"
+                checked={selectedThreadType === "BUG"} // Use the state variable for checked
+                onChange={handleType}
+                name="thread_type"
+              />
+              Bug
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="SUGGESTION"
+                checked={selectedThreadType === "SUGGESTION"} // Use the state variable for checked
+                onChange={handleType}
+                name="thread_type"
+              />
+              Suggestion
+            </label>
+          </div>
+
 
           <span className="selectProject">
             Add an Image to help explain your issue better (OPTIONAL)
