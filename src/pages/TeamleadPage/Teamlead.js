@@ -82,7 +82,11 @@ const Teamlead = ({ isGrouplead }) => {
   const [cardPagination, setCardPagination] = useState(0);
   const [cardPagination2, setCardPagination2] = useState(0);
   const [cardPagination3, setCardPagination3] = useState(0);
-
+  useEffect(() => {
+    if (cardPagination || cardPagination2 || cardPagination3) {
+      console.log("cardPagination " + cardPagination + "cardPagination2 " + cardPagination2 + "cardPagination3 " + cardPagination3)
+    }
+  }, [cardPagination, cardPagination2, cardPagination3])
   const initializePagination = () => {
     setCardPagination(0);
   };
@@ -94,6 +98,7 @@ const Teamlead = ({ isGrouplead }) => {
   };
 
   const incrementStepPagination = (steps, length) => {
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
     if (steps + 1 <= length) {
       if (steps + cardPagination !== length) {
         setCardPagination(cardPagination + 1);
@@ -101,6 +106,7 @@ const Teamlead = ({ isGrouplead }) => {
     }
   };
   const incrementStepPagination2 = (steps, length) => {
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA2222222222222222222222');
     if (steps + 1 <= length) {
       if (steps + cardPagination2 !== length) {
         setCardPagination2(cardPagination2 + 1);
@@ -108,9 +114,12 @@ const Teamlead = ({ isGrouplead }) => {
     }
   };
   const incrementStepPagination3 = (steps, length) => {
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3333333333333333333333333');
+    console.log({ steps, length, cardPagination3 })
     if (steps + 1 <= length) {
       if (steps + cardPagination3 !== length) {
-        setCardPagination2(cardPagination3 + 1);
+        setCardPagination3(cardPagination3 + 1);
+        console.log(true, true, true)
       }
     }
   };
@@ -120,12 +129,12 @@ const Teamlead = ({ isGrouplead }) => {
     }
   }
   const decrementStepPagination2 = () => {
-    if (cardPagination !== 0) {
+    if (cardPagination2 !== 0) {
       setCardPagination2(cardPagination2 - 1);
     }
   }
   const decrementStepPagination3 = () => {
-    if (cardPagination !== 0) {
+    if (cardPagination3 !== 0) {
       setCardPagination3(cardPagination3 - 1);
     }
   }
@@ -1359,9 +1368,9 @@ const Teamlead = ({ isGrouplead }) => {
                                       setCardGroupNumber(index * 4);
                                       setCardIndex(index);
                                     }}
-                                    key={`${index}_button`}
+                                    key={`${s}_button`}
                                   >
-                                    {index + 1}
+                                    {s + 1}
                                   </button>
                                 ))}
 
@@ -1521,9 +1530,9 @@ const Teamlead = ({ isGrouplead }) => {
                                       setCardGroupNumber(index * 4);
                                       setCardIndex(index);
                                     }}
-                                    key={`${index}_button`}
+                                    key={`${s}_button`}
                                   >
-                                    {index + 1}
+                                    {s + 1}
                                   </button>
                                 ))}
 
@@ -1627,7 +1636,7 @@ const Teamlead = ({ isGrouplead }) => {
                                     :
                                     Math.ceil(tasksToDisplayForLead.length / 6)
                                 )
-                                  .slice(cardPagination3, cardPagination2 + 6)
+                                  .slice(cardPagination3, cardPagination3 + 6)
                                   .map((s, index) => (
                                     <button
                                       className={s !== cardIndex ? "active" : "desactive"}
@@ -1635,9 +1644,9 @@ const Teamlead = ({ isGrouplead }) => {
                                         setCardGroupNumber(index * 4);
                                         setCardIndex(index);
                                       }}
-                                      key={`${index}_button`}
+                                      key={`${s}_button`}
                                     >
-                                      {index + 1}
+                                      {s + 1}
                                     </button>
                                   ))}
                                 <button
