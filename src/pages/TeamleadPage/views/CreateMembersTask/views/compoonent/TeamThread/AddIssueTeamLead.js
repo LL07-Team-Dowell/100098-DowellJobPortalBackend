@@ -603,7 +603,7 @@ const AddIssueTeamLead = ({
 
           <span className="selectProject">Expected Product Behavior</span>
           <textarea
-            placeholder="Enter steps to reproduce thread"
+            placeholder="Enter Expected Product Behavior"
             name={"expected_product_behavior"}
             value={createIssue.expected_product_behavior}
             style={{ margin: 0, marginBottom: "0.8rem" }}
@@ -612,7 +612,7 @@ const AddIssueTeamLead = ({
 
           <span className="selectProject">Actual product behavior</span>
           <textarea
-            placeholder="Enter steps to reproduce thread"
+            placeholder="Enter Actual product behavior"
             name={"actual_product_behavior"}
             value={createIssue.actual_product_behavior}
             style={{ margin: 0, marginBottom: "0.8rem" }}
