@@ -4242,10 +4242,10 @@ class Thread_Apis(APIView):
             "team_alerted_id": data.get("team_alerted_id"),
             "current_status": "Created",
             "previous_status": [],
-            "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"), 
-            "expected_product_behavior": data.get("expected_product_behavior"), 
+            "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"),
+            "expected_product_behavior": data.get("expected_product_behavior"),
             "actual_product_behavior": data.get("actual_product_behavior"),
-            "thread_type": data.get("thread_type")
+            "thread_type": data.get("thread_type"),
         }
 
         field = {
@@ -4259,10 +4259,10 @@ class Thread_Apis(APIView):
             "created_date": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
             "current_status": serializer_data["current_status"],
             "previous_status": [],
-            "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"), 
-            "expected_product_behavior": data.get("expected_product_behavior"), 
+            "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"),
+            "expected_product_behavior": data.get("expected_product_behavior"),
             "actual_product_behavior": data.get("actual_product_behavior"),
-            "thread_type": data.get("thread_type")
+            "thread_type": data.get("thread_type"),
         }
         update_field = {}
         serializer = ThreadsSerializer(data=serializer_data)
@@ -4271,31 +4271,39 @@ class Thread_Apis(APIView):
                 *thread_report_module, "insert", field, update_field
             )
             # print(insert_response)
-            
+
             if json.loads(insert_response)["isSuccess"] == True:
                 get_team = dowellconnection(
-                    *team_management_modules, "fetch", {"_id":data.get("team_id")}, update_field
+                    *team_management_modules,
+                    "fetch",
+                    {"_id": data.get("team_id")},
+                    update_field,
                 )
                 info = dowellconnection(
                     *candidate_management_reports, "fetch", {}, update_field
                 )
-                users={}
-                send_to_emails={}
+                users = {}
+                send_to_emails = {}
                 for user in json.loads(info)["data"]:
                     if "applicant_email" in user.keys():
-                        users[user["username"]]=user["applicant_email"]
+                        users[user["username"]] = user["applicant_email"]
                 for member in json.loads(get_team)["data"][0]["members"]:
                     if member in users.keys():
-                        send_to_emails[member]=users[member]
-                #print(send_to_emails)
+                        send_to_emails[member] = users[member]
+
+                # print(send_to_emails)
                 def send_mail(*args):
                     d = interview_email(*args)
+
                 for name, email in send_to_emails:
                     send_mail_thread = threading.Thread(
                         target=send_mail,
-                        args=(name,email,
-                              "Notification for Issue created.",
-                              f"{data.get('created_by')} has just created and issue. login into your client page to check"),
+                        args=(
+                            name,
+                            email,
+                            "Notification for Issue created.",
+                            f"{data.get('created_by')} has just created and issue. login into your client page to check",
+                        ),
                     )
                     send_mail_thread.start()
                     send_mail_thread.join()
@@ -6618,7 +6626,7 @@ class Generate_Report(APIView):
                     *candidate_management_reports, "fetch", field, update_field
                 )
                 total = [res for res in json.loads(response)["data"]]
-                
+
                 hired = [res for res in total if res["status"] == "hired"]
                 data = {user["username"]: {} for user in hired}
                 for user in data:
