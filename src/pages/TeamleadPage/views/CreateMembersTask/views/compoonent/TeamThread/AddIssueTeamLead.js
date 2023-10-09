@@ -593,31 +593,31 @@ const AddIssueTeamLead = ({
           ></textarea>
 
           <span className="selectProject">Step to Reproduce Thread</span>
-          <input
+          <textarea
             placeholder="Enter steps to reproduce thread"
             name={"steps_to_reproduce_thread"}
             value={createIssue.steps_to_reproduce_thread}
             style={{ margin: 0, marginBottom: "0.8rem" }}
             onChange={(e) => handleChange(e.target.value, e.target.name)}
-          ></input>
+          ></textarea>
 
           <span className="selectProject">Expected Product Behavior</span>
-          <input
-            placeholder="Enter steps to reproduce thread"
+          <textarea
+            placeholder="Enter Expected Product Behavior"
             name={"expected_product_behavior"}
             value={createIssue.expected_product_behavior}
             style={{ margin: 0, marginBottom: "0.8rem" }}
             onChange={(e) => handleChange(e.target.value, e.target.name)}
-          ></input>
+          ></textarea>
 
           <span className="selectProject">Actual product behavior</span>
-          <input
-            placeholder="Enter steps to reproduce thread"
+          <textarea
+            placeholder="Enter Actual product behavior"
             name={"actual_product_behavior"}
             value={createIssue.actual_product_behavior}
-            style={{ margin: 0, marginBottom: "0.8rem" }}
+            style={{ margin: 0, marginBottom: "0.8rem 0.8rem" }}
             onChange={(e) => handleChange(e.target.value, e.target.name)}
-          ></input>
+          ></textarea>
 
           <span className="selectProject">Choose Issue Type</span>
           <div style={{ display: "flex", gap: "1rem" }}>
