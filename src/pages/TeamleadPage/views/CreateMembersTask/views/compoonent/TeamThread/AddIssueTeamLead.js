@@ -615,7 +615,7 @@ const AddIssueTeamLead = ({
             placeholder="Enter Actual product behavior"
             name={"actual_product_behavior"}
             value={createIssue.actual_product_behavior}
-            style={{ margin: 0, marginBottom: "0.8rem" }}
+            style={{ margin: 0, marginBottom: "0.8rem 0.8rem" }}
             onChange={(e) => handleChange(e.target.value, e.target.name)}
           ></textarea>
 
