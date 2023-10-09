@@ -1909,14 +1909,15 @@ class approve_task(APIView):
 
         return str(_date)
 
-    def valid_teamlead(self, portfolio_name):
+    def valid_teamlead(self, username):
         profiles = SettingUserProfileInfo.objects.all()
         serializer = SettingUserProfileInfoSerializer(profiles, many=True)
         # print(serializer.data,"----")
         info = dowellconnection(
             *candidate_management_reports,
             "fetch",
-            {"username": username},
+            {"username": username,
+             },
             update_field=None,
         )
         # print(len(json.loads(info)["data"]),"==========")
@@ -2008,7 +2009,7 @@ class approve_task(APIView):
                 check_approvable = self.approvable()
 
                 if check_approvable is True:
-                    validate_teamlead = self.valid_teamlead(data.get("portfolio_name"))
+                    validate_teamlead = self.valid_teamlead(data.get("lead_username"))
                     if validate_teamlead is False:
                         return Response(
                             {
@@ -5607,34 +5608,24 @@ class Generate_Report(APIView):
                 field = {
                     "username": payload.get("applicant_username"),
                     "_id": payload.get("applicant_id"),
+                    "company_id":payload.get("company_id"),
                     "status": "hired",
                 }
             else:
                 field = {
                     "_id": payload.get("applicant_id"),
+                    "company_id":payload.get("company_id")
                 }
 
             year = payload.get("year")
 
             if not int(year) <= datetime.date.today().year:
                 return Response(
-                    {
-                        "message": "You cannot get a report on a future date",
-                        "error": f"{year} is bigger than current year {datetime.date.today().year}",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            if (
-                payload.get("applicant_username")
-                and not payload.get("applicant_username") in Team_Leads
-            ):
-                return Response(
-                    {
-                        "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
-                        "error": f"The Username->{payload.get('applicant_username')} is not a team lead",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                                {
+                                    "message": "You cannot get a report on a future date",
+                                    "error": f"{year} is bigger than current year {datetime.date.today().year}",
+                                },
+                                status=status.HTTP_400_BAD_REQUEST,)
 
             update_field = {}
             data = {}
@@ -5664,11 +5655,11 @@ class Generate_Report(APIView):
             serializer = SettingUserProfileInfoSerializer(profiles, many=True)
             # print(serializer.data,"----")
             valid_portfolio_names = []
-            for data in serializer.data:
-                for d in data["profile_info"]:
-                    if "profile_title" in d.keys():
+            for da in serializer.data:
+                for d in da["profile_info"]:
+                    if "profile_title" in d.keys() and "Role" in d.keys():
                         if d["Role"] == "Proj_Lead":
-                            # print(d,"----")
+                            #print(d,"----")
                             valid_portfolio_names.append(d["profile_title"])
             if (
                 payload.get("applicant_username")
@@ -5852,7 +5843,6 @@ class Generate_Report(APIView):
                     except KeyError:
                         pass
                     try:
-                        print(task, "------------------")
                         if task["task_approved_by"] == username and (
                             task["status"] == "Incomplete"
                             or task["status"] == "incompleted"
@@ -6292,9 +6282,9 @@ class Generate_Report(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def itr_function(self, username):
+    def itr_function(self, username,company_id):
         data = []
-        field = {"applicant": username}
+        field = {"applicant": username,"company_id":company_id}
         tasks = dowellconnection(
             *task_management_reports, "fetch", field, update_field=None
         )
@@ -6413,7 +6403,7 @@ class Generate_Report(APIView):
         payload = request.data
 
         if payload:
-            response = self.itr_function(payload.get("username"))
+            response = self.itr_function(payload.get("username"),payload.get("company_id"))
             return Response(
                 {"message": "Individual task report generated", "response": response},
                 status=status.HTTP_201_CREATED,
