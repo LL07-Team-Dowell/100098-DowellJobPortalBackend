@@ -4294,8 +4294,7 @@ class Thread_Apis(APIView):
                 # print(send_to_emails)
                 def send_mail(*args):
                     d = interview_email(*args)
-
-                for name, email in send_to_emails:
+                for name, email in send_to_emails.items():
                     send_mail_thread = threading.Thread(
                         target=send_mail,
                         args=(
