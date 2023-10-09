@@ -320,6 +320,10 @@
   }
 }
 
+.dio{
+  display: none;
+}
+
 @media (min-width: 768px) and (max-width: 991.98px) {
   .add__New__Task__Container h1.title__Item {
     margin-bottom: 6%;
@@ -444,4 +448,8 @@
 
 #customers tbody td.not__Approved {
   color: #ff0000;
+}
+
+.dio{
+  display: none;
 }
