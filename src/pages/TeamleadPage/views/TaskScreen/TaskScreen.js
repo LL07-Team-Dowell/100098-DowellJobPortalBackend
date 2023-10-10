@@ -39,14 +39,14 @@ const TaskScreen = ({
   const { currentUser } = useCurrentUserContext();
   const { userTasks, setUserTasks } = useCandidateTaskContext();
   const navigate = useNavigate();
-  const [tasksToShow, setTasksToShow] = useState([]);
+  // const [tasksToShow, setTasksToShow] = useState([]);
   const [daysInMonth, setDaysInMonth] = useState(0);
   const [currentMonth, setCurrentMonth] = useState("");
   const [datesToStyle, setDatesToStyle] = useState([]);
 
   const [project, setproject] = useState(null);
   console.log(project);
-  const [tasksofuser, settasksofuser] = useState([]);
+  // const [tasksofuser, settasksofuser] = useState([]);
   const [taskdetail2, settaskdetail2] = useState([]);
   const [value, setValue] = useState(new Date());
   const [value1, setValue1] = useState(new Date());
@@ -228,15 +228,15 @@ const TaskScreen = ({
   //   setCurrentMonth(today.toLocaleDateString("en-us", { month: "long" }));
   // }, []);
 
-  useEffect(() => {
-    setTasksToShow(
-      userTasks.filter(
-        (task) =>
-          formatDateForAPI(task.task_created_date) ===
-          formatDateForAPI(new Date())
-      )
-    );
-  }, [userTasks]);
+  // useEffect(() => {
+  //   setTasksToShow(
+  //     userTasks.filter(
+  //       (task) =>
+  //         formatDateForAPI(task.task_created_date) ===
+  //         formatDateForAPI(new Date())
+  //     )
+  //   );
+  // }, [userTasks]);
 
   useEffect(() => {
     const tab = params.get('tab');

@@ -162,7 +162,7 @@ const AddTaskScreen = ({
     if (inputsAreFilled) {
       console.log({ TASKSS: tasks.find(task => task.task === taskName) })
       if (tasks.find(task => task?.task?.toLocaleLowerCase().trim() === taskName.toLocaleLowerCase().trim() && task.is_active) !== undefined) return toast.info('You cannot add the same log')
-      if (!isStringValid(taskName)) return toast.info('The log entered should be more than 25 characters and more than 5 words.')
+      if (!isStringValid(taskName)) return toast.info('The log entered should have at least 25 characters and at least 5 words.')
       if (taskEndTime === '00:00') return toast.info("You can only update work logs for today")
       if (duration <= 15) {
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
@@ -183,7 +183,7 @@ const AddTaskScreen = ({
     if (inputsAreFilled) {
       if (duration <= 15) {
         if (tasks.find(task => task?.task?.toLocaleLowerCase().trim() === taskName.toLocaleLowerCase().trim() && task.is_active) !== undefined) return toast.info('You cannot add the same log')
-        if (!isStringValid(taskName)) return toast.info('The log entered should be more than 25 characters and more than 5 words.')
+        if (!isStringValid(taskName)) return toast.info('The log entered should have at least 25 characters and at least 5 words.')
         if (taskEndTime === '00:00') return toast.info("You can only update work logs for today")
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
 
