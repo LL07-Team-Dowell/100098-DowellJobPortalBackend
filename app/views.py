@@ -139,11 +139,82 @@ INVITATION_MAIL = """
 </body>
 </html>
 
-
-
-
 """
-
+ISSUES_MAIL="""
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>Issue Update</title>
+  </head>
+  <body
+    style="
+      font-family: poppins;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      height: 100vh;
+      display: flex;
+      width: 100%;
+      align-items: center;
+    "
+  >
+    <div
+      style="
+        max-width: 600px;
+        margin: 10px auto;
+        background-color: #fff;
+        padding: 10px 20px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <div style="text-align: center; margin-bottom: 0px;">
+        <img
+          src="http://67.217.61.253/hr/logo-2-min-min.png"
+          alt="Company Logo"
+          style="width: 100px; height: 100px;"
+        />
+      </div>
+      <div style="text-align: center;">
+        <h3 style="font-size: 24px; margin: 0; margin-bottom: 5px;">
+          Issue Raised By {},
+        </h3>
+      </div>
+      <div style="margin: 0; margin-bottom: 10px; line-height: 1.5;">
+        <p style="font-weight: bold;">
+          Issue Description:
+        </p>
+        <p>
+          This is the issue raised by {} to understand the sample of the issue
+        </p>
+        <a
+          href="https://web.discord.com"
+          style="
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            text-align: center;
+          "
+          target="_blank"
+          >Issue Page</a>
+      </div>
+    </div>
+  </body>
+</html>
+"""
 
 # api for job portal begins here---------------------------
 @method_decorator(csrf_exempt, name="dispatch")
@@ -4296,7 +4367,8 @@ class Thread_Apis(APIView):
                 # print(send_to_emails)
                 def send_mail(*args):
                     d = interview_email(*args)
-
+                
+                email_content = ISSUES_MAIL.format(data.get('created_by'), data.get('created_by'))
                 for name, email in send_to_emails.items():
                     send_mail_thread = threading.Thread(
                         target=send_mail,
@@ -4304,7 +4376,7 @@ class Thread_Apis(APIView):
                             name,
                             email,
                             "Notification for Issue created.",
-                            f"{data.get('created_by')} has just created and issue. login into your client page to check",
+                            email_content,
                         ),
                     )
                     send_mail_thread.start()
@@ -5793,6 +5865,7 @@ class Generate_Report(APIView):
                 for task in tasks_added:
                     try:
                         if task["task_added_by"] == username:
+                            
                             _tasks_list.append(task)
                     except KeyError:
                         pass
@@ -5911,6 +5984,7 @@ class Generate_Report(APIView):
             if len(_tasks_list) != 0:
                 months = []
                 for task in _tasks_list:
+                    
                     month_name = month_list[
                         datetime.datetime.strptime(
                             set_date_format(task["task_created_date"]),
@@ -5918,19 +5992,12 @@ class Generate_Report(APIView):
                         ).month
                     ]
                     months.append(month_name)
+                    
                     if month_name in item.keys():
-                        if (
-                            str(
-                                datetime.datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"tasks_added": months.count(month_name)}
-                            )
+                        if (str(datetime.datetime.strptime(
+                            set_date_format(task["task_created_date"]),"%m/%d/%Y %H:%M:%S",).year)== year):
+                            
+                            item[month_name].update({"tasks_added": months.count(month_name)})
             else:
                 for key, value in item.items():
                     item[key].update({"tasks_added": 0})
@@ -6033,7 +6100,7 @@ class Generate_Report(APIView):
                             )
             else:
                 for key, value in item.items():
-                    item[key].update({"tasks_added": 0})
+                    item[key].update({"tasks_uncompleted": 0})
 
             # teams----------------------------------------
             if len(_teams_list) != 0:
@@ -7194,3 +7261,36 @@ class AddUserGithubInfo(APIView):
             },
             status=status.HTTP_200_OK,
         )
+class SecureEndPoint(APIView):
+    def get(self, request):
+        data = request.data
+        field = {
+        }
+        update_field = {}
+        serializer = CommentsSerializer(data=request.data)
+        if serializer.is_valid():
+            insert_response = dowellconnection(
+                *comment_report_module, "insert", field, update_field
+            )
+            # print(insert_response)
+            if json.loads(insert_response)["isSuccess"] == True:
+                return Response(
+                    {
+                        "message": "Successfully",
+                        "info": json.loads(insert_response),
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {
+                        "message": "Not successful",
+                        "info": json.loads(insert_response),
+                    },
+                    status=status.HTTP_304_NOT_MODIFIED,
+                )
+        else:
+            return Response(
+                {"message": "Parameters are not valid", "error": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
