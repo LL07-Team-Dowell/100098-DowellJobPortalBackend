@@ -1916,8 +1916,9 @@ class approve_task(APIView):
         info = dowellconnection(
             *candidate_management_reports,
             "fetch",
-            {"username": username,
-             },
+            {
+                "username": username,
+            },
             update_field=None,
         )
         # print(len(json.loads(info)["data"]),"==========")
@@ -4295,6 +4296,7 @@ class Thread_Apis(APIView):
                 # print(send_to_emails)
                 def send_mail(*args):
                     d = interview_email(*args)
+
                 for name, email in send_to_emails.items():
                     send_mail_thread = threading.Thread(
                         target=send_mail,
@@ -5608,24 +5610,25 @@ class Generate_Report(APIView):
                 field = {
                     "username": payload.get("applicant_username"),
                     "_id": payload.get("applicant_id"),
-                    "company_id":payload.get("company_id"),
+                    "company_id": payload.get("company_id"),
                     "status": "hired",
                 }
             else:
                 field = {
                     "_id": payload.get("applicant_id"),
-                    "company_id":payload.get("company_id")
+                    "company_id": payload.get("company_id"),
                 }
 
             year = payload.get("year")
 
             if not int(year) <= datetime.date.today().year:
                 return Response(
-                                {
-                                    "message": "You cannot get a report on a future date",
-                                    "error": f"{year} is bigger than current year {datetime.date.today().year}",
-                                },
-                                status=status.HTTP_400_BAD_REQUEST,)
+                    {
+                        "message": "You cannot get a report on a future date",
+                        "error": f"{year} is bigger than current year {datetime.date.today().year}",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             update_field = {}
             data = {}
@@ -5659,7 +5662,7 @@ class Generate_Report(APIView):
                 for d in da["profile_info"]:
                     if "profile_title" in d.keys() and "Role" in d.keys():
                         if d["Role"] == "Proj_Lead":
-                            #print(d,"----")
+                            # print(d,"----")
                             valid_portfolio_names.append(d["profile_title"])
             if (
                 payload.get("applicant_username")
@@ -6282,9 +6285,9 @@ class Generate_Report(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def itr_function(self, username,company_id):
+    def itr_function(self, username, company_id):
         data = []
-        field = {"applicant": username,"company_id":company_id}
+        field = {"applicant": username, "company_id": company_id}
         tasks = dowellconnection(
             *task_management_reports, "fetch", field, update_field=None
         )
@@ -6403,7 +6406,9 @@ class Generate_Report(APIView):
         payload = request.data
 
         if payload:
-            response = self.itr_function(payload.get("username"),payload.get("company_id"))
+            response = self.itr_function(
+                payload.get("username"), payload.get("company_id")
+            )
             return Response(
                 {"message": "Individual task report generated", "response": response},
                 status=status.HTTP_201_CREATED,
