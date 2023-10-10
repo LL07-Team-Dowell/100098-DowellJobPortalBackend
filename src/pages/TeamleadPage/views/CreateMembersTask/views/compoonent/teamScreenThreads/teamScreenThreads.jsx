@@ -610,7 +610,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                       {editIndex === index ? (
                                         <>
                                           <div className="button">
-                                            {currentUser.portfolio_info[0]
+                                            {currentUser.userinfo
                                               .username ===
                                               comment.created_by &&
                                               (loadingcmnt ? (
@@ -637,7 +637,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                       ) : (
                                         <>
                                           <div className="button">
-                                            {currentUser.portfolio_info[0]
+                                            {currentUser.userinfo
                                               .username ===
                                               comment.created_by && (
                                               <button
@@ -821,7 +821,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                 />
                               </div>
                               <div className="progress">
-                                {currentUser.portfolio_info[0].username ===
+                                {currentUser.userinfo.username ===
                                   thread.created_by &&
                                 thread.current_status === "In progress" ? (
                                   <div
@@ -860,7 +860,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                 />
                               </div>
                               <div className="progress">
-                                {currentUser.portfolio_info[0].username ===
+                                {currentUser.userinfo.username ===
                                   thread.created_by &&
                                 thread.current_status === "Completed" ? (
                                   <div
@@ -899,7 +899,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                 />
                               </div>
                               <div className="progress">
-                                {currentUser.portfolio_info[0].username ===
+                                {currentUser.userinfo.username ===
                                   thread.created_by &&
                                 thread.current_status === "Resolved" ? (
                                   <div
@@ -1073,7 +1073,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                         {editIndex === index ? (
                                           <>
                                             <div className="button">
-                                              {currentUser.portfolio_info[0]
+                                              {currentUser.userinfo
                                                 .username ===
                                                 comment.created_by &&
                                                 (loadingcmnt ? (
@@ -1101,7 +1101,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                         ) : (
                                           <>
                                             <div className="button">
-                                              {currentUser.portfolio_info[0]
+                                              {currentUser.userinfo
                                                 .username ===
                                                 comment.created_by && (
                                                 <button
@@ -1469,7 +1469,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                       {editIndex === index ? (
                                         <>
                                           <div className="button">
-                                            {currentUser.portfolio_info[0]
+                                            {currentUser.userinfo
                                               .username ===
                                               comment.created_by &&
                                               (loadingcmnt ? (
@@ -1496,7 +1496,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                       ) : (
                                         <>
                                           <div className="button">
-                                            {currentUser.portfolio_info[0]
+                                            {currentUser.userinfo
                                               .username ===
                                               comment.created_by && (
                                               <button

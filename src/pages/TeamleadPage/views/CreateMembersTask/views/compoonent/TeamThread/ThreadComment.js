@@ -100,13 +100,13 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
   const [editIndex, setEditIndex] = useState();
   const [updateCommentInput, setUpdateCommentInput] = useState("")
   // const [threads, setThreads] = useState([])
-  console.log(currentUser.portfolio_info[0].username);
+  console.log(currentUser.userinfo.username);
   const handleChange = (e) => {
     setText(e.target.value);
   };
 
   const handleComment = async () => {
-    // setLoadingcmnt(true);
+    setLoadingcmnt(true);
     const newComment = {
       created_by: currentUser.userinfo.username,
       comment: text,
@@ -127,7 +127,7 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
     } catch (error) {
       console.log(error);
       setLoadingcmnt(false);
-      toast.error('Dont like Ayoola')
+      toast.error("An error occured while trying to add your comment. Please try again later");
     }
   };
 
@@ -157,6 +157,7 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
       })
       .catch((error) => {
         console.error("Failed to update comment:", error.message);
+        toast.error("An error occured while trying to update your comment. Please try again later");
       });
   };
 
@@ -205,7 +206,7 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
                 {editIndex === index ? (
                   <>
                     <div className="button">
-                      {currentUser.portfolio_info[0].username === comment.created_by && (
+                      {currentUser.userinfo.username === comment.created_by && (
                         <button
                           style={{ padding: "5px 10px", cursor: "pointer", backgroundColor: "#005734", border: "none", color: "white" }}
                           onClick={() => handleUpdate(comment)}
@@ -218,7 +219,7 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
                 ) : (
                   <>
                     <div className="button">
-                      {currentUser.portfolio_info[0].username === comment.created_by && (
+                      {currentUser.userinfo.username === comment.created_by && (
                         <button
                           style={{ padding: "5px 10px", cursor: "pointer", backgroundColor: "#005734", border: "none", color: "white" }}
                           onClick={() => setEditIndex(index)}
