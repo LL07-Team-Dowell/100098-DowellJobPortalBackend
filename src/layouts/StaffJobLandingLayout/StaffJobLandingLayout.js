@@ -136,7 +136,12 @@ const StaffJobLandingLayout = ({
                     alt="team management" 
                     style={{ width: '8rem' }}
                   />  
-                  <h2>Team management</h2>
+                  {
+                    isLargeScreen ? 
+                      <h2>{teamManagementProductName}</h2> 
+                    :
+                    <></>
+                  }
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
                   <MdPublic className="icon" />

@@ -132,17 +132,44 @@ const TeamScreenThreads = ({ status, id }) => {
       const now = new Date();
 
       if (foundThreadBeingUpadted) {
-        foundThreadBeingUpadted.comments.data.unshift({
+        const newCommentToAddToState = {
           ...newComment,
           created_date: dateFormat(now),
           _id: newCommentRes.info.inserted_id,
-        });
+        }
+        foundThreadBeingUpadted.comments.data.push(newCommentToAddToState);
         setThreads(updatedThreads);
+
+        const completedThreads = updatedThreads.filter(
+          (thread) => thread.current_status === "Completed"
+        );
+        const resolvedThreads = updatedThreads.filter(
+          (thread) => thread.current_status === "Resolved"
+        );
+        const inProgressThreads = updatedThreads.filter(
+          (thread) =>
+            thread.current_status === "In progress" ||
+            thread.current_status === "Created"
+        );
+
+        setCompletedThreads(completedThreads);
+        setResolvedThreads(resolvedThreads);
+        setInProgressThreads(inProgressThreads);
+
+        // switch to comments to show user new comment
+        setCommentsVisibility((prevVisibility) => ({
+          ...prevVisibility,
+          [foundThreadBeingUpadted._id]: true,
+        }))
+        setFormVisibility((prevVisibility) => ({
+          ...prevVisibility,
+          [foundThreadBeingUpadted._id]: false,
+        }))
       }
     } catch (error) {
       console.log(error);
       setLoadingcmnt(false);
-      toast.error("Error");
+      toast.error("An error occured while trying to add your comment. Please try again later");
     }
   };
 
@@ -172,6 +199,8 @@ const TeamScreenThreads = ({ status, id }) => {
       })
       .catch((error) => {
         console.error("Failed to update comment:", error.message);
+        setLoadingcmnt(false);
+        toast.error("An error occured while trying to update your comment. Please try again later");
       });
   };
 
@@ -449,19 +478,31 @@ const TeamScreenThreads = ({ status, id }) => {
                               <p className="comments">
                                 <FaRegComments
                                   onClick={() =>
-                                    setFormVisibility((prevVisibility) => ({
-                                      ...prevVisibility,
-                                      [thread._id]: !prevVisibility[thread._id],
-                                    }))
+                                    {
+                                      setFormVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: !prevVisibility[thread._id],
+                                      }));
+                                      setCommentsVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: false,
+                                      }))
+                                    }
                                   }
                                 />
                                 &bull;
                                 <span
                                   onClick={() =>
-                                    setCommentsVisibility((prevVisibility) => ({
-                                      ...prevVisibility,
-                                      [thread._id]: !prevVisibility[thread._id],
-                                    }))
+                                    {
+                                      setCommentsVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: !prevVisibility[thread._id],
+                                      }));
+                                      setFormVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: false,
+                                      }));
+                                    }
                                   }
                                 >{`${thread.comments.data.length} Comment${
                                   thread.comments.data.length !== 1 ? "s" : ""
@@ -519,7 +560,7 @@ const TeamScreenThreads = ({ status, id }) => {
                               Comments
                             </h3>
                             {React.Children.toArray(
-                              thread.comments.data.map((comment, index) => {
+                              [...thread.comments.data].reverse().map((comment, index) => {
                                 return (
                                   <div
                                     style={{
@@ -541,6 +582,9 @@ const TeamScreenThreads = ({ status, id }) => {
                                     <div className="candidate-comments-section">
                                       <p className="user-candidate">
                                         {comment.created_by}
+                                        <p className="date">
+                                          {dateFormat(comment.created_date)}
+                                        </p>
                                       </p>
                                       {editIndex === index ? (
                                         <input
@@ -897,20 +941,32 @@ const TeamScreenThreads = ({ status, id }) => {
                             <div className="comments-section">
                               <p className="comments">
                                 <FaRegComments
-                                  onClick={() =>
-                                    setFormVisibility((prevVisibility) => ({
-                                      ...prevVisibility,
-                                      [thread._id]: !prevVisibility[thread._id],
-                                    }))
+                                  onClick={() => 
+                                    {
+                                      setFormVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: !prevVisibility[thread._id],
+                                      }))
+                                      setCommentsVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: false,
+                                      }))
+                                    }
                                   }
                                 />
                                 &bull;
                                 <span
-                                  onClick={() =>
-                                    setCommentsVisibility((prevVisibility) => ({
-                                      ...prevVisibility,
-                                      [thread._id]: !prevVisibility[thread._id],
-                                    }))
+                                  onClick={() => 
+                                    {
+                                      setCommentsVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: !prevVisibility[thread._id],
+                                      }))
+                                      setFormVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: false,
+                                      }));
+                                    }
                                   }
                                 >{`${thread.comments.data.length} Comment${
                                   thread.comments.data.length !== 1 ? "s" : ""
@@ -967,7 +1023,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                 Comments
                               </h3>
                               {React.Children.toArray(
-                                thread.comments.data.map((comment, index) => {
+                                [...thread.comments.data].reverse().map((comment, index) => {
                                   return (
                                     <div
                                       style={{
@@ -990,7 +1046,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                         <p className="user-candidate">
                                           {comment.created_by}
                                           <p className="date">
-                                            {comment.created_date}
+                                            {dateFormat(comment.created_date)}
                                           </p>
                                         </p>
                                         {editIndex === index ? (
@@ -1280,20 +1336,32 @@ const TeamScreenThreads = ({ status, id }) => {
                             <div className="comments-section">
                               <p className="comments">
                                 <FaRegComments
-                                  onClick={() =>
-                                    setFormVisibility((prevVisibility) => ({
-                                      ...prevVisibility,
-                                      [thread._id]: !prevVisibility[thread._id],
-                                    }))
+                                  onClick={() => 
+                                    {
+                                      setFormVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: !prevVisibility[thread._id],
+                                      }))
+                                      setCommentsVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: false,
+                                      }))
+                                    }
                                   }
                                 />
                                 &bull;
                                 <span
                                   onClick={() =>
-                                    setCommentsVisibility((prevVisibility) => ({
-                                      ...prevVisibility,
-                                      [thread._id]: !prevVisibility[thread._id],
-                                    }))
+                                    {
+                                      setCommentsVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: !prevVisibility[thread._id],
+                                      }))
+                                      setFormVisibility((prevVisibility) => ({
+                                        ...prevVisibility,
+                                        [thread._id]: false,
+                                      }))
+                                    }
                                   }
                                 >{`${thread.comments.data.length} Comment${
                                   thread.comments.data.length !== 1 ? "s" : ""
@@ -1351,7 +1419,7 @@ const TeamScreenThreads = ({ status, id }) => {
                               Comments
                             </h3>
                             {React.Children.toArray(
-                              thread.comments.data.map((comment, index) => {
+                              [...thread.comments.data].reverse().map((comment, index) => {
                                 return (
                                   <div
                                     style={{
@@ -1373,6 +1441,9 @@ const TeamScreenThreads = ({ status, id }) => {
                                     <div className="candidate-comments-section">
                                       <p className="user-candidate">
                                         {comment.created_by}
+                                        <p className="date">
+                                          {dateFormat(comment.created_date)}
+                                        </p>
                                       </p>
                                       {editIndex === index ? (
                                         <input
