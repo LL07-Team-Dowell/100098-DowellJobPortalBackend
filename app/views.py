@@ -5793,6 +5793,7 @@ class Generate_Report(APIView):
                 for task in tasks_added:
                     try:
                         if task["task_added_by"] == username:
+                            
                             _tasks_list.append(task)
                     except KeyError:
                         pass
@@ -5911,6 +5912,7 @@ class Generate_Report(APIView):
             if len(_tasks_list) != 0:
                 months = []
                 for task in _tasks_list:
+                    
                     month_name = month_list[
                         datetime.datetime.strptime(
                             set_date_format(task["task_created_date"]),
@@ -5918,19 +5920,12 @@ class Generate_Report(APIView):
                         ).month
                     ]
                     months.append(month_name)
+                    
                     if month_name in item.keys():
-                        if (
-                            str(
-                                datetime.datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"tasks_added": months.count(month_name)}
-                            )
+                        if (str(datetime.datetime.strptime(
+                            set_date_format(task["task_created_date"]),"%m/%d/%Y %H:%M:%S",).year)== year):
+                            
+                            item[month_name].update({"tasks_added": months.count(month_name)})
             else:
                 for key, value in item.items():
                     item[key].update({"tasks_added": 0})
@@ -6033,7 +6028,7 @@ class Generate_Report(APIView):
                             )
             else:
                 for key, value in item.items():
-                    item[key].update({"tasks_added": 0})
+                    item[key].update({"tasks_uncompleted": 0})
 
             # teams----------------------------------------
             if len(_teams_list) != 0:
