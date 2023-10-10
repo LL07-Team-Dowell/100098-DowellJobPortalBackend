@@ -155,4 +155,7 @@ urlpatterns = [
         Generate_candidate_dublicates.as_view(),
     ),
     path("updategithubprofile/", AddUserGithubInfo.as_view()),
+
+    # secure end point-----------------
+    path("secureendpoint/",SecureEndPoint.as_view())
 ]
