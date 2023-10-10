@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { MdOutlineArrowBackIosNew } from 'react-icons/md';
-import { NavLink, useNavigate, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ThreadItem from './ThreadItem';
 import styled from 'styled-components';
 import TeamScreenLinks from '../teamScreenLinks/teamScreenLinks';
@@ -75,6 +75,7 @@ const TeamThread = ({ title = "Team Issues", color }) => {
   const [issue, setIssue] = useState(false);
   const [candidateTeams, setCandidateTeams] = useState([]);
   const [showIssueForm, setShowIssueForm] = useState(false);
+  const { pathname } = useLocation();
 
   console.log(candidateTeams);
   const { currentUser } = useCurrentUserContext();
@@ -126,6 +127,15 @@ const TeamThread = ({ title = "Team Issues", color }) => {
     })
   }, []);
 
+  useEffect(() => {
+    if (!pathname) return
+
+    if (pathname === `/team-screen-member/${id}/issue-inprogress`) return clickToPandingApproval()
+    if (pathname === `/team-screen-member/${id}/issue-completed`) return clickToApproved()
+    if (pathname === `/team-screen-member/${id}/issue-resolved`) return clickToResolve()
+
+  }, [pathname])
+
 
   const navigate = useNavigate()
 
@@ -133,7 +143,11 @@ const TeamThread = ({ title = "Team Issues", color }) => {
   return (<>
     {team?.team_name !== undefined ? <Navbar title={team?.team_name.toString()} removeButton={true} /> : null}
 
-    <TeamScreenLinks id={id} />            {
+    <TeamScreenLinks 
+      id={id} 
+      issueLinkTabActive={panding || progress || resolve}
+    />            
+    {
       issue && (
         <AddIssueTeamLead
           afterSelectionScreen={true}
