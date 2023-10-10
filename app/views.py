@@ -2042,7 +2042,7 @@ class approve_task(APIView):
                 else:
                     return Response(
                         {
-                            "message": "Task approval unsuccessful. The 48-hour approval window has elapsed."
+                            "message": "Task approval unsuccessful. The 2-weeks approval window has elapsed."
                         },
                         status=status.HTTP_400_BAD_REQUEST,
                     )
