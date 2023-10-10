@@ -5605,7 +5605,7 @@ class Generate_Report(APIView):
 
     def generate_individual_report(self, request):
         payload = request.data
-        company_id=payload.get("company_id")
+        company_id = payload.get("company_id")
         if payload:
             if payload.get("role") and payload.get("role") == "Teamlead":
                 field = {
@@ -5642,7 +5642,9 @@ class Generate_Report(APIView):
                 username = json.loads(info)["data"][0]["username"]
                 portfolio_name = json.loads(info)["data"][0]["portfolio_name"]
                 # get the task report based on project for the user
-                data["personal_info"]["task_report"] = self.itr_function(username,company_id)
+                data["personal_info"]["task_report"] = self.itr_function(
+                    username, company_id
+                )
             else:
                 data["personal_info"] = {}
                 username = "None"

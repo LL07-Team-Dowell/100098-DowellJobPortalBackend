@@ -394,7 +394,7 @@ class ThreadsSerializer(serializers.Serializer):
         ("Completed", "Completed"),
         ("Resolved", "Resolved"),
     )
-    
+
     thread_title = serializers.CharField(allow_null=False, allow_blank=False)
     thread = serializers.CharField(allow_null=False, allow_blank=False)
     image = serializers.URLField(allow_null=False, allow_blank=True)
@@ -409,16 +409,17 @@ class ThreadsSerializer(serializers.Serializer):
             allow_blank=False,
         )
     )
-    THREAD_TYPE = (
-        ("BUG", "BUG"),
-        ("SUGGESTION", "SUGGESTION")
-    )
-    thread_type=serializers.ChoiceField(
+    THREAD_TYPE = (("BUG", "BUG"), ("SUGGESTION", "SUGGESTION"))
+    thread_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=THREAD_TYPE
-    ) 
+    )
     actual_product_behavior = serializers.CharField(allow_null=False, allow_blank=False)
-    expected_product_behavior = serializers.CharField(allow_null=False, allow_blank=False)
-    steps_to_reproduce_thread = serializers.CharField(allow_null=False, allow_blank=False)
+    expected_product_behavior = serializers.CharField(
+        allow_null=False, allow_blank=False
+    )
+    steps_to_reproduce_thread = serializers.CharField(
+        allow_null=False, allow_blank=False
+    )
 
 
 class CommentsSerializer(serializers.Serializer):
