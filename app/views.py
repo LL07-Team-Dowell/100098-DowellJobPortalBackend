@@ -70,6 +70,7 @@ from .serializers import (
     githubinfoserializer,
 )
 from .models import UsersubProject
+from django.views.decorators.csrf import csrf_protect
 
 # Create your views here.
 
@@ -7262,6 +7263,7 @@ class AddUserGithubInfo(APIView):
             status=status.HTTP_200_OK,
         )
 class SecureEndPoint(APIView):
+    @csrf_protect
     def get(self, request):
         data = request.data
         field = {
