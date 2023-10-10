@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { createThread } from "../../../../services/threadServices";
 import { getAllTeams } from "../../../../services/createMembersTasks";
 
+
 const AddIssueScreen = ({
   closeIssuesScreen,
   afterSelectionScreen,
@@ -85,15 +86,13 @@ const AddIssueScreen = ({
   };
 
   const handleSecondOptionChange = (e) => {
-    setSelectedOption(e.target.value)
+    setSelectedOption(e.target.value);
     setCreateIssue((prev) => {
       const newCreateIssue = { ...prev };
       newCreateIssue["thread_type"] = e.target.value;
       return newCreateIssue;
     });
   };
-
-  
 
   const handleOptionChange = (e) => {
     const selectedTeamName = e.target.value;
@@ -145,9 +144,7 @@ const AddIssueScreen = ({
       formData.append("image", selectedFile);
     }
 
-    const fields = [
-      "thread_type"
-    ];
+    const fields = ["thread_type"];
 
     if (createIssue.thread_type === "") {
       toast.info("Please select an issue type");
@@ -268,35 +265,34 @@ const AddIssueScreen = ({
             rows={3}
           ></textarea>
           <span className="selectProject">Choose Issue Type</span>
-          <div>
-            <label htmlFor="bug" className="radio">
+          <div style={{ display: "flex", gap: "1rem"}}>
+            <label htmlFor="BUG" className="radio">
               <input
-                className="radio_input"
+                className="radio_input dio"
                 type={"radio"}
-                id={"bug"}
+                id={"BUG"}
                 name="options"
-                value={"Bug"}
-                checked={selectedOption === "Bug"}
+                value={"BUG"}
+                checked={selectedOption === "BUG"}
                 onChange={handleSecondOptionChange}
               />
               <div className="radio__radio"></div>
               <p>Bug</p>
             </label>
-            <label htmlFor="suggestion" className="radio">
+            <label htmlFor="SUGGESTION" className="radio">
               <input
                 className="radio_input"
                 type={"radio"}
-                id={"suggestion"}
+                id={"SUGGESTION"}
                 name="options"
-                value={"Suggestion"}
-                checked={selectedOption === "Suggestion"}
+                value={"SUGGESTION"}
+                checked={selectedOption === "SUGGESTION"}
                 onChange={handleSecondOptionChange}
               />
               <div className="radio__radio"></div>
               <p>Suggestion</p>
             </label>
           </div>
-
           <span className="selectProject">
             Add an Image to help explain your issue better (OPTIONAL)
           </span>

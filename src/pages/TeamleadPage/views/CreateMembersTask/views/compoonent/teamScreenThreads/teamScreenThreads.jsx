@@ -175,46 +175,6 @@ const TeamScreenThreads = ({ status, id }) => {
       });
   };
 
-  const editComment = async (text, commentId, id) => {
-    const editComments = {
-      comment: text,
-      document_id: commentId,
-    };
-
-    try {
-      const editedComment = (await updateComment(editComments)).data;
-      console.log(editedComment);
-    } catch (error) {
-      console.log(error);
-    }
-
-    // const updatedThreads = threads.map((thread) => {
-    //   if (thread._id === threadId) {
-    //     const updatedComments = thread.comments.map((comment) =>
-    //       comment._id === commentId ? { ...comment, comment: text } : comment
-    //     );
-    //     return {
-    //       ...thread,
-    //       comments: updatedComments,
-    //     };
-    //   }
-    //   return thread;
-    // });
-    // setThreads(updatedThreads);
-    // setEditingCommentId(commentId);
-    // setEditingCommentText(text);
-  };
-
-  const saveEditedComment = (commentId, threadId) => {
-    editComment(editingCommentText, commentId, threadId);
-    setEditingCommentId(null);
-    setEditingCommentText("");
-  };
-
-  const handleEdit = (text, commentId, threadId) => {
-    editComment(text, commentId, threadId);
-  };
-
   const handleClose = (threadId) => {
     setShowModalStates((prevShowModalStates) => ({
       ...prevShowModalStates,
@@ -299,7 +259,32 @@ const TeamScreenThreads = ({ status, id }) => {
                   return (
                     <div className="team-screen-threads-card">
                       <div className="thread-card">
-                      {thread.thread_type}
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
+                            width: "100%",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          <p
+                            style={{
+                              backgroundColor:
+                                thread.thread_type === "BUG"
+                                  ? "red"
+                                  : thread.thread_type === "SUGGESTION"
+                                  ? "green"
+                                  : null,
+                              color: "#fff",
+                              fontSize: "0.8rem",
+                              fontWeight: "600",
+                              padding: "0.3rem 0.5rem",
+                              borderRadius: "1.5rem",
+                            }}
+                          >
+                            {thread.thread_type}
+                          </p>
+                        </div>
                         {showModalStates[thread._id] && (
                           <div
                             className="modal-cont"
@@ -347,13 +332,6 @@ const TeamScreenThreads = ({ status, id }) => {
                             }}
                           >
                             {thread.thread_title}
-                            <br></br>
-                            {thread.steps_to_reproduce_thread}
-                            <br></br>
-                            {thread.expected_product_behavior}
-                            <br></br>
-                            {thread.actual_product_behavior}
-                            <br></br>
                           </p>
                           <div>
                             <p>Assigned to : {assignedTeamName}</p>
@@ -368,7 +346,24 @@ const TeamScreenThreads = ({ status, id }) => {
                               textTransform: "capitalize",
                             }}
                           >
-                            {thread.thread}
+                            <p>Details:</p>
+                            <p style={{ color: "#005734" }}>{thread.thread}</p>
+                            <br></br>
+                            <p>Steps to Reproduce:</p>
+                            <p style={{ color: "#005734" }}>
+                              {thread.steps_to_reproduce_thread}
+                            </p>
+                            <br></br>
+                            <p>Expected Behavior:</p>
+                            <p style={{ color: "#005734" }}>
+                              {thread.expected_product_behavior}
+                            </p>
+                            <br></br>
+                            <p>Actual Behavior:</p>
+                            <p style={{ color: "#005734" }}>
+                              {thread.actual_product_behavior}
+                            </p>
+                            <br></br>
                           </p>
                           <div>
                             <div
@@ -648,7 +643,32 @@ const TeamScreenThreads = ({ status, id }) => {
                   return (
                     <div className="team-screen-threads-card">
                       <div className="thread-card">
-                      {thread.thread_type}
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
+                            width: "100%",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          <p
+                            style={{
+                              backgroundColor:
+                                thread.thread_type === "BUG"
+                                  ? "red"
+                                  : thread.thread_type === "SUGGESTION"
+                                  ? "green"
+                                  : null,
+                              color: "#fff",
+                              fontSize: "0.8rem",
+                              fontWeight: "600",
+                              padding: "0.3rem 0.5rem",
+                              borderRadius: "1.5rem",
+                            }}
+                          >
+                            {thread.thread_type}
+                          </p>
+                        </div>
                         {showModalStates[thread._id] && (
                           <div
                             className="modal-cont"
@@ -710,13 +730,23 @@ const TeamScreenThreads = ({ status, id }) => {
                               textTransform: "capitalize",
                             }}
                           >
-                            {thread.thread}
+                            <p>Details:</p>
+                            <p style={{ color: "#005734" }}>{thread.thread}</p>
                             <br></br>
-                            {thread.steps_to_reproduce_thread}
+                            <p>Steps to Reproduce:</p>
+                            <p style={{ color: "#005734" }}>
+                              {thread.steps_to_reproduce_thread}
+                            </p>
                             <br></br>
-                            {thread.expected_product_behavior}
+                            <p>Expected Behavior:</p>
+                            <p style={{ color: "#005734" }}>
+                              {thread.expected_product_behavior}
+                            </p>
                             <br></br>
-                            {thread.actual_product_behavior}
+                            <p>Actual Behavior:</p>
+                            <p style={{ color: "#005734" }}>
+                              {thread.actual_product_behavior}
+                            </p>
                             <br></br>
                           </p>
                           <div>
@@ -1066,7 +1096,32 @@ const TeamScreenThreads = ({ status, id }) => {
                   return (
                     <div className="team-screen-threads-card">
                       <div className="thread-card">
-                      {thread.thread_type}
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "end",
+                            width: "100%",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          <p
+                            style={{
+                              backgroundColor:
+                                thread.thread_type === "BUG"
+                                  ? "red"
+                                  : thread.thread_type === "SUGGESTION"
+                                  ? "green"
+                                  : null,
+                              color: "#fff",
+                              fontSize: "0.8rem",
+                              fontWeight: "600",
+                              padding: "0.3rem 0.5rem",
+                              borderRadius: "1.5rem",
+                            }}
+                          >
+                            {thread.thread_type}
+                          </p>
+                        </div>
                         {showModalStates[thread._id] && (
                           <div
                             className="modal-cont"
@@ -1114,13 +1169,6 @@ const TeamScreenThreads = ({ status, id }) => {
                             }}
                           >
                             {thread.thread_title}
-                            <br></br>
-                            {thread.steps_to_reproduce_thread}
-                            <br></br>
-                            {thread.expected_product_behavior}
-                            <br></br>
-                            {thread.actual_product_behavior}
-                            <br></br>
                           </p>
                           <div>
                             <p>Assigned to : {assignedTeamName}</p>
@@ -1135,7 +1183,24 @@ const TeamScreenThreads = ({ status, id }) => {
                               textTransform: "capitalize",
                             }}
                           >
-                            {thread.thread}
+                            <p>Details:</p>
+                            <p style={{ color: "#005734" }}>{thread.thread}</p>
+                            <br></br>
+                            <p>Steps to Reproduce:</p>
+                            <p style={{ color: "#005734" }}>
+                              {thread.steps_to_reproduce_thread}
+                            </p>
+                            <br></br>
+                            <p>Expected Behavior:</p>
+                            <p style={{ color: "#005734" }}>
+                              {thread.expected_product_behavior}
+                            </p>
+                            <br></br>
+                            <p>Actual Behavior:</p>
+                            <p style={{ color: "#005734" }}>
+                              {thread.actual_product_behavior}
+                            </p>
+                            <br></br>
                           </p>
                           <div>
                             <div
