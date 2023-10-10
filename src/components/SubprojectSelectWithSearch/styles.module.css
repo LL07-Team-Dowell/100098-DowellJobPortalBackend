@@ -16,7 +16,7 @@
 
 .search__Wrapper input {
     background: none;
-    border: none;
+    border: none !important;
     font-family: 'Poppins', sans-serif;
     box-shadow: none;
     border-radius: 0;
@@ -26,6 +26,7 @@
     margin: 0 !important;
     font-size: 0.75rem;
     outline: none;
+    box-shadow: none !important;
 }
 
 .search__Wrapper:focus-within {
