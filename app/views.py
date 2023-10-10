@@ -139,11 +139,10 @@ INVITATION_MAIL = """
 </body>
 </html>
 
-
-
+"""
+ISSUES_MAIL="""
 
 """
-
 
 # api for job portal begins here---------------------------
 @method_decorator(csrf_exempt, name="dispatch")
