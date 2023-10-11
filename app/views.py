@@ -7329,8 +7329,8 @@ class AddUserGithubInfo(APIView):
         )
     
 class SecureEndPoint(APIView):
-    http_method_names = ['POST']
-    def get(self, request):
+    http_method_names = ['post']
+    def post(self, request):
         data = request.data
         field = {
         }
