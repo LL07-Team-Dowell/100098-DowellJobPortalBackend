@@ -8,7 +8,7 @@ import Modal from './Modal';
 import { featchAllComment, fetchThread, updateSingleThread } from '../../../../../../../services/teamleadServices';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
-import { getAllTeams } from '../../../../../../../services/createMembersTasks';
+import { getAllTeams, getSingleTeam } from '../../../../../../../services/createMembersTasks';
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from "react-tooltip";
@@ -258,7 +258,7 @@ align-items: left !important;
   
 `
 
-const ThreadItem = ({ status, isAdmin }) => {
+const ThreadItem = ({ status }) => {
   console.log(status);
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const { id } = useParams();
@@ -278,7 +278,8 @@ const ThreadItem = ({ status, isAdmin }) => {
 
   const [reducerComment, forceUpdate] = useReducer(x => x + 1, 0)
   const [reducerStatus, forceUpdateStatus] = useReducer(x => x + 1, 0)
-
+  const [ singleTeamDetail, setSingleTeamDetail ] = useState(null);
+  const [ singleTeamDetailLoaded, setSingleTeamDetailLoaded ] = useState(false);
 
   console.log(threads);
   const handleImageClick = (threadId) => {
@@ -338,7 +339,22 @@ const ThreadItem = ({ status, isAdmin }) => {
     const documentId = id;
     console.log(documentId);
     setLoading(true);
-    if (isAdmin) {
+
+    if (!singleTeamDetail) {
+      getSingleTeam(documentId).then(res => {
+        setSingleTeamDetail(res.data?.response?.data[0])
+        setSingleTeamDetailLoaded(true);
+      }).catch(err => {
+        console.log(err);
+        setSingleTeamDetailLoaded(true);
+      })
+
+      return
+    }
+
+    if (!singleTeamDetailLoaded) return
+
+    if (singleTeamDetail?.admin_team && singleTeamDetail?.admin_team === true) {
       fetchTeamThreadsForAdmin(documentId)
       .then((resp) => {
         console.log(resp);
@@ -381,7 +397,7 @@ const ThreadItem = ({ status, isAdmin }) => {
       .catch((error) => {
         setLoading(false);
       });
-  }, [reducerComment, reducerStatus, undefined]);
+  }, [reducerComment, reducerStatus, singleTeamDetail, singleTeamDetailLoaded]);
 
 
 
