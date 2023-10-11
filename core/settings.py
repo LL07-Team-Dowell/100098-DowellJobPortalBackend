@@ -30,7 +30,7 @@ ALLOWED_HOSTS = [
     "https://ll07-team-dowell.github.io/100098-DowellJobPortal/",
     "http://localhost:3000/100098-DowellJobPortal/",
     "http://127.0.0.1:8000/",
-    "https://100098.pythonanywhere.com",
+    "100098.pythonanywhere.com",
 ]
 
 # Application definition
