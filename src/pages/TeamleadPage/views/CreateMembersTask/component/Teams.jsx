@@ -12,6 +12,7 @@ import { Tooltip } from "react-tooltip";
 import { RiEdit2Fill } from "react-icons/ri";
 import { MdDelete, MdVerified } from "react-icons/md";
 import DeleteConfirmationTeam from "../../../../../components/DeleteConfirmationTeam/DeleteConfirmationTeam";
+
 const Teams = ({
   back,
   setChoosedTeam,
@@ -39,11 +40,11 @@ const Teams = ({
   return (
     <div className="teams_data">
       {reversedTeams
-        .filter((team) => team.created_by === currentUser.userinfo.username)
+        // .filter((team) => team.created_by === currentUser.userinfo.username)
         .filter((e) => e.team_name.includes(searchValue)).length !== 0 ? (
         <div>
           {reversedTeams
-            .filter((team) => team.created_by === currentUser.userinfo.username)
+            // .filter((team) => team.created_by === currentUser.userinfo.username)
             .filter((e) => e.team_name.includes(searchValue))
             .map((v) => (
               <Team
@@ -119,6 +120,7 @@ const Team = ({ v, team_name, setChoosedTeam, deleteTeamState,showDeletePopupFun
           className="team_logo"
           style={{ width: 56, height: 56 }}
           src={imageReturn(team_name)}
+          alt="team"
         />
       ) : (
         <AiOutlineTeam

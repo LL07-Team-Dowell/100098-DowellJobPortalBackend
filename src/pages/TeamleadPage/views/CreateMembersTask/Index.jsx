@@ -32,7 +32,35 @@ const Index = ({ isGrouplead }) => {
     getAllTeams(currentUser.portfolio_info[0].org_id)
     .then(resp =>{ 
       console.log(resp.data.response.data)
-      setdata({...data , TeamsSelected:resp.data.response.data.filter(team => team.data_type === currentUser.portfolio_info[0].data_type)});
+
+      const [ teamsCreatedByUser, teamsUserIsAMemberOf ] = [
+        resp.data.response.data
+        .filter(team => 
+          team.created_by === currentUser.userinfo.username
+        )
+        .filter(team => 
+          team.data_type === currentUser.portfolio_info[0].data_type
+        )
+        ,
+        resp.data.response.data
+        .filter((team) =>
+          team?.members.includes(currentUser.userinfo.username)
+        )
+        .filter(team => 
+          team.data_type === currentUser.portfolio_info[0].data_type
+        )
+      ]
+
+      const teamsToShowForUser = [
+        ...new Map(
+          [...teamsCreatedByUser, ...teamsUserIsAMemberOf].map((team) => [team._id, team])
+        ).values(),
+      ];
+
+      setdata({
+        ...data , 
+        TeamsSelected: teamsToShowForUser,
+      });
       setresponse(true)
   })
   .catch(e =>{
