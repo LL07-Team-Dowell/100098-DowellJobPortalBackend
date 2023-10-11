@@ -7331,10 +7331,6 @@ class AddUserGithubInfo(APIView):
 import secrets
 from django.conf import settings
 class SecureEndPoint(APIView):
-    def generate_token(self):
-        # Generate a random token
-        return secrets.token_urlsafe(32)
-
     def post(self, request):
         data = request.data
         field = {}
@@ -7343,7 +7339,7 @@ class SecureEndPoint(APIView):
 
         # Check if the 'Authorization' header contains a valid token
         token = request.META.get('HTTP_AUTHORIZATION', '')
-        valid_token = settings.SECURE_API_TOKEN  # Load the token from your settings
+        valid_token = settings.SECURE_API_TOKEN
 
         if token == f"Bearer {valid_token}":
             if serializer.is_valid():

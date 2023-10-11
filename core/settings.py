@@ -138,4 +138,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-SECURE_API_TOKEN = []
+import secrets
+
+# Generate the token when the application starts
+SECURE_API_TOKEN = secrets.token_urlsafe(32)
