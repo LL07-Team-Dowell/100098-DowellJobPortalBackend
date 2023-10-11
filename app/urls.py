@@ -55,7 +55,6 @@ urlpatterns = [
     # update task apis
     path("create_task_update_request/", create_task_update_request.as_view()),
     path("get_update_task/<str:document_id>/", get_task_request_update.as_view()),
-    path("get_update_task_team_alerted/<str:team_alerted_id>/", get_task_request_update_team_alerted.as_view()),
     path(
         "get_all_update_task/<str:company_id>/", get_all_task_request_update.as_view()
     ),
@@ -125,6 +124,7 @@ urlpatterns = [
     path("fetch_public_product_url/<str:job_company_id>/", public_product.as_view()),
     # Thread-------------------------------------
     path("fetch_thread/<str:document_id>/", Thread_Apis.as_view()),
+    path("fetch_team_alerted_id_thread/<str:team_alerted_id>/",GetTeamAlertedThreads.as_view()),
     path("fetch_team_thread/<str:team_id>/", GetTeamThreads.as_view()),
     path("fetch_all_threads/", GetAllThreads.as_view()),
     path("create_thread/", Thread_Apis.as_view()),
