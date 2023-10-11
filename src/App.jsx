@@ -109,10 +109,10 @@ function App() {
   const [assignedProjects, setAssignedProjects] = useState([]);
   const [shorlistedJob, setshorlistedJob] = useState([]);
 
-  // // USE ONLY WHEN APP IS BROKEN/UNDERGOING MAJOR CHANGES
-  // return <Routes>
-  //   <Route path="*" element={<PageUnderConstruction showProductView={true} />} />
-  // </Routes>
+  // USE ONLY WHEN APP IS BROKEN/UNDERGOING MAJOR CHANGES
+  return <Routes>
+    <Route path="*" element={<PageUnderConstruction showProductView={true} />} />
+  </Routes>
 
   // console.log(shorlistedJob);
   useDowellLogin(
@@ -784,7 +784,7 @@ function App() {
               >
                 <TeamProvider>
                   <ValuesProvider>
-                    <TeamThread />
+                    <TeamThread isAdmin={true} />
                   </ValuesProvider>
                 </TeamProvider>
               </StaffJobLandingLayout>
