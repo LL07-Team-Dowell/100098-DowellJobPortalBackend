@@ -128,3 +128,9 @@ export const generateIndividualTaskReport = async (data) => {
 export const createNewReportsLink = async (data) => {
   return await currentBackendAxiosInstance.post("public_product_url/", data);
 };
+
+export const fetchTeamThreadsForAdmin = async (teamId) => {
+  return await currentBackendAxiosInstance.get(
+  `fetch_team_alerted_id_thread/${teamId}/`
+  ) 
+}

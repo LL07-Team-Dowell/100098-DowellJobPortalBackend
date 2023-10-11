@@ -11,7 +11,7 @@ import { useTeam } from '../../../context/Team';
 import { getSettingUserProject } from '../../../../../../../services/hrServices';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 
-const TeamThread = ({ title = "Team Issues", color }) => {
+const TeamThread = ({ title = "Team Issues", color, isAdmin }) => {
   const { id } = useParams();
   console.log(id);
   const Wrappen = styled.section`
@@ -165,7 +165,10 @@ const TeamThread = ({ title = "Team Issues", color }) => {
         <NavLink className={`${progress ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/issue-completed`} onClick={clickToApproved}>Completed</NavLink>
         <NavLink className={`${resolve ? 'link-isActive' : 'link-notactive'}`} to={`/team-screen-member/${id}/issue-resolved`} onClick={clickToResolve}>Resolved</NavLink>
       </Wrappen>
-      <ThreadItem status={status} />
+      <ThreadItem 
+        status={status} 
+        isAdmin={isAdmin}
+      />
     </div>
   </>
   )

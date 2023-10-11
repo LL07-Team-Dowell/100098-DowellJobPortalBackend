@@ -12,6 +12,7 @@ import { getAllTeams } from '../../../../../../../services/createMembersTasks';
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from 'react-toastify';
 import { Tooltip as ReactTooltip } from "react-tooltip";
+import { fetchTeamThreadsForAdmin } from '../../../../../../../services/adminServices';
 
 const Wrapper = styled.div`
 display: flex;
@@ -257,7 +258,7 @@ align-items: left !important;
   
 `
 
-const ThreadItem = ({ status }) => {
+const ThreadItem = ({ status, isAdmin }) => {
   console.log(status);
   const { currentUser, setCurrentUser } = useCurrentUserContext();
   const { id } = useParams();
@@ -337,6 +338,30 @@ const ThreadItem = ({ status }) => {
     const documentId = id;
     console.log(documentId);
     setLoading(true);
+    if (isAdmin) {
+      fetchTeamThreadsForAdmin(documentId)
+      .then((resp) => {
+        console.log(resp);
+        const threads = resp.data.data;
+        const sortedThreads = threads.reverse()
+        setThreads(sortedThreads)
+
+        const completedThreads = sortedThreads.filter((thread) => thread.current_status == "Completed");
+        const resolvedThreads = sortedThreads.filter((thread) => thread.current_status == "Resolved");
+        const inProgressThreads = sortedThreads.filter((thread) => thread.current_status == "In progress" || thread.current_status === "Created" || thread.current_status === undefined);
+
+        setCompletedThreads(completedThreads);
+        setResolvedThreads(resolvedThreads);
+        setInProgressThreads(inProgressThreads);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log('error occured while trying to fetch threads for admin');
+        setLoading(false);
+      });
+      return
+    }
+
     fetchThread(documentId)
       .then((resp) => {
         console.log(resp);

@@ -16,6 +16,7 @@ import SubprojectSelectWithSearch from "../../../../components/SubprojectSelectW
 import useListenToKeyStrokeInElement from "../../../../hooks/useListenToKeyStrokeInElement";
 import { formatSubprojectStringItemToHTML } from "../../util/formatSubprojectStringItemToHTML";
 import ContentEditable from "react-contenteditable";
+import { formatDateForAPI } from "../../../../helpers/helpers";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -323,8 +324,10 @@ const AddTaskScreen = ({
     setTaskDetailForTodayLoaded(false);
 
     const today = new Date();
-    const [year, month, day] = [today.getFullYear(), today.getMonth() + 1, today.getDate()];
-    const todayDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+
+    // const [year, month, day] = [today.getFullYear(), today.getMonth() + 1, today.getDate()];
+    // const todayDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+    const todayDate = formatDateForAPI(today);
 
     const dataToPost = {
       "company_id": currentUser.portfolio_info[0].org_id,
@@ -457,8 +460,9 @@ const AddTaskScreen = ({
 
   const addTaskForToday = async (startTime, endTime, task, details, updateTask = false) => {
     const today = new Date();
-    const [year, month, day] = [today.getFullYear(), today.getMonth() + 1, today.getDate()];
-    const todayDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+    // const [year, month, day] = [today.getFullYear(), today.getMonth() + 1, today.getDate()];
+    // const todayDate = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+    const todayDate = formatDateForAPI(today);
 
     const dataToPost = {
       "project": optionValue,
