@@ -5,6 +5,7 @@ import JobLandingLayout from '../../../../layouts/CandidateJobLandingLayout/Land
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getUserLiveStatus, postUserLiveStatus } from '../../../../services/commonServices';
 import { teamManagementProductName } from '../../../../utils/utils';
+import {ApproveVouchar, ClaimVouchar} from '../../../TeamleadPage/views/ClaimVouchar/ClaimVouchar';
 
 function UserScreen({ candidateSelected }) {
 
@@ -35,9 +36,8 @@ function UserScreen({ candidateSelected }) {
               <h2>User Name</h2>
               <span>{currentUser.userinfo.username}</span>
             </div>
-            {/* <div className="edit__Btn">
-              Edit
-            </div> */}
+            <ClaimVouchar />
+
           </div>
           <div className="user__Intro__Item">
             <h2>Email</h2>

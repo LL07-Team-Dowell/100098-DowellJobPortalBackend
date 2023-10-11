@@ -93,6 +93,27 @@ export const claimVoucher = async (data) => {
   }
 };
 
+//Claim Vouchar
+export const getVouchar = async (data) => {
+  try {
+    const response = await axios.post('https://100105.pythonanywhere.com/api/v3/voucher/?type=voucher_code_details', data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const verifyVouchar = async (data) => {
+  try {
+    const response = await axios.post(`https://100105.pythonanywhere.com/api/v3/voucher/?type=verify_voucher_redemption&voucher_id=${data}`);
+    console.log({ "verify res": response });
+    return response;
+  } catch (error) {
+    throw error
+  }
+}
+
+
 export const getCandidateTasksV2 = async (data) => {
   return await currentBackendAxiosInstance.post(
     'task_module/?type=get_all_candidate_tasks',

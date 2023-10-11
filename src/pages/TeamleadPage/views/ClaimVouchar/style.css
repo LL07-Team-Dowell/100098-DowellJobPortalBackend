@@ -10,6 +10,22 @@ button.claim__button {
     cursor: pointer;
 }
 
+button.approve__button {
+    position: absolute;
+    top: 4rem;
+    right: 8rem;
+    border: none;
+    color: white;
+    background: #005734;
+    padding: 10px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.form__data .get_vouchar_button {
+    width: 150px;
+}
+
 .form__data {
     position: absolute;
     top: 0rem;
@@ -104,4 +120,8 @@ button.claim__button {
     padding: 6px;
     color: white;
     border-radius: 5px;
+}
+
+#vouchar form {
+    height: 400px;
 }
