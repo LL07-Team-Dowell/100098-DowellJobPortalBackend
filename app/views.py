@@ -7329,7 +7329,7 @@ class AddUserGithubInfo(APIView):
         )
     
 class SecureEndPoint(APIView):
-    http_method_names = ['post']
+    @csrf_exempt
     def post(self, request):
         data = request.data
         field = {
