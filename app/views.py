@@ -7328,45 +7328,45 @@ class AddUserGithubInfo(APIView):
             status=status.HTTP_200_OK,
         )
     
-import secrets
-from django.conf import settings
-class SecureEndPoint(APIView):
-    def post(self, request):
-        data = request.data
-        field = {}
-        update_field = {}
-        serializer = CommentsSerializer(data=request.data)
+# import secrets
+# from django.conf import settings
+# class SecureEndPoint(APIView):
+#     def post(self, request):
+#         data = request.data
+#         field = {}
+#         update_field = {}
+#         serializer = CommentsSerializer(data=request.data)
 
-        # Check if the 'Authorization' header contains a valid token
-        token = request.META.get('HTTP_AUTHORIZATION', '')
-        valid_token = settings.SECURE_API_TOKEN
+#         # Check if the 'Authorization' header contains a valid token
+#         token = request.META.get('HTTP_AUTHORIZATION', '')
+#         valid_token = settings.SECURE_API_TOKEN
 
-        if token == f"Bearer {valid_token}":
-            if serializer.is_valid():
-                insert_response = dowellconnection(
-                    *comment_report_module, "insert", field, update_field
-                )
+#         if token == f"Bearer {valid_token}":
+#             if serializer.is_valid():
+#                 insert_response = dowellconnection(
+#                     *comment_report_module, "insert", field, update_field
+#                 )
 
-                if json.loads(insert_response)["isSuccess"]:
-                    return Response(
-                        {
-                            "message": "Successfully",
-                            "info": json.loads(insert_response),
-                        },
-                        status=status.HTTP_201_CREATED,
-                    )
-                else:
-                    return Response(
-                        {
-                            "message": "Not successful",
-                            "info": json.loads(insert_response),
-                        },
-                        status=status.HTTP_304_NOT_MODIFIED,
-                    )
-            else:
-                return Response(
-                    {"message": "Parameters are not valid", "error": serializer.errors},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-        else:
-            return Response({"message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+#                 if json.loads(insert_response)["isSuccess"]:
+#                     return Response(
+#                         {
+#                             "message": "Successfully",
+#                             "info": json.loads(insert_response),
+#                         },
+#                         status=status.HTTP_201_CREATED,
+#                     )
+#                 else:
+#                     return Response(
+#                         {
+#                             "message": "Not successful",
+#                             "info": json.loads(insert_response),
+#                         },
+#                         status=status.HTTP_304_NOT_MODIFIED,
+#                     )
+#             else:
+#                 return Response(
+#                     {"message": "Parameters are not valid", "error": serializer.errors},
+#                     status=status.HTTP_400_BAD_REQUEST,
+#                 )
+#         else:
+#             return Response({"message": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
