@@ -556,7 +556,7 @@ const ThreadItem = ({ status }) => {
                         <div className="progress">
                           <div data-tooltip-id='resolved'>
                             {
-                              currentUser.portfolio_info[0].username == thread.created_by ? <div className={thread.current_status == "Resolved" ? "active-thread-btn" : "threads-btn"} onClick={(e) => updateStatus({ status: "Resolved", document_id: thread._id })}></div> : <div className={thread.current_status == "Resolved" ? "active-thread-btn" : "threads-btn"} onClick={() => alert("You can't update the status")}></div>
+                              currentUser.userinfo.username == thread.created_by ? <div className={thread.current_status == "Resolved" ? "active-thread-btn" : "threads-btn"} onClick={(e) => updateStatus({ status: "Resolved", document_id: thread._id })}></div> : <div className={thread.current_status == "Resolved" ? "active-thread-btn" : "threads-btn"} onClick={() => alert("You can't update the status")}></div>
                             }
                           </div>
 
@@ -735,7 +735,7 @@ const ThreadItem = ({ status }) => {
                           </div>
                           <div className="progress">
                             {
-                              currentUser.portfolio_info[0].username == thread.created_by && thread.current_status == "In progress" ? <div data-tooltip-id='completed' className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"} onClick={(e) => updateStatus({ status: "Completed", document_id: thread._id })}></div> : <div data-tooltip-id='completed' className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"} onClick={() => toast.warning("You can't update the status")}></div>
+                              currentUser.userinfo.username == thread.created_by && thread.current_status == "In progress" ? <div data-tooltip-id='completed' className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"} onClick={(e) => updateStatus({ status: "Completed", document_id: thread._id })}></div> : <div data-tooltip-id='completed' className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"} onClick={() => toast.warning("You can't update the status")}></div>
                             }
                             <ReactTooltip
                               id="completed"
@@ -921,7 +921,7 @@ const ThreadItem = ({ status }) => {
                           </div>
                           <div className="progress">
                             {
-                              currentUser.portfolio_info[0].username == thread.created_by && thread.current_status == "In progress" ? <div data-tooltip-id='completed' className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"} onClick={(e) => updateStatus({ status: "Completed", document_id: thread._id })}></div> : <div data-tooltip-id='completed' className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"} onClick={() => toast.warning("You can't update the status")}></div>
+                              currentUser.userinfo.username == thread.created_by && thread.current_status == "In progress" ? <div data-tooltip-id='completed' className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"} onClick={(e) => updateStatus({ status: "Completed", document_id: thread._id })}></div> : <div data-tooltip-id='completed' className={thread.current_status == "Completed" ? "active-thread-btn" : "threads-btn"} onClick={() => toast.warning("You can't update the status")}></div>
                             }
                             <ReactTooltip
                               id="completed"

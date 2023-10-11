@@ -20,7 +20,7 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
         setFormData({
             ...formData,
             company_id: currentUser.portfolio_info[0].org_id,
-            username: currentUser.portfolio_info[0].username,
+            username: currentUser.userinfo.username,
             portfolio_name: currentUser.portfolio_info[0].portfolio_name,
         });
     }, [])
