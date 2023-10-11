@@ -1904,7 +1904,7 @@ class approve_task(APIView):
         task_updated_date = datetime.datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
         )
-        _date = task_updated_date + relativedelta(hours=48)
+        _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%m/%d/%Y %H:%M:%S")
 
         return str(_date)
