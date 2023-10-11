@@ -31,7 +31,7 @@ import { getTrainingManagementQuestions, getTrainingManagementResponses } from '
 import { IoMdRefresh } from "react-icons/io";
 import { set } from 'date-fns';
 import { toast } from 'react-toastify';
-import { getUserInfoFromLoginAPI } from '../../../../services/authServices';
+import { getRolesInOrganization, getUserInfoFromLoginAPI } from '../../../../services/authServices';
 import { teamManagementProductName } from '../../../../utils/utils';
 import { getCandidateTasksV2 } from '../../../../services/teamleadServices';
 import { extractNewTasksAndAddExtraDetail } from '../../../TeamleadPage/util/extractNewTasks';
@@ -112,11 +112,10 @@ function HrJobScreen() {
     }
 
     if (!userRolesLoaded) {
-      getUserInfoFromLoginAPI({ session_id: sessionStorage.getItem('session_id'), product: teamManagementProductName }).then(res => {
-        // console.log(res.data.roles);
-        setUserRolesFromLogin(res.data.roles);
+      getRolesInOrganization(currentUser.portfolio_info[0].org_id).then(res => {
+        console.log(res.data);
+        setUserRolesFromLogin(res.data);
         setRolesLoaded(true);
-
       }).catch(err => {
         console.log('Failed to fetch roles: ', err.response ? err.response.data : err.message);
         setRolesLoaded(true);

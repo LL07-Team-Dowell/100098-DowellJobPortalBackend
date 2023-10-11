@@ -11,3 +11,7 @@ export const getUserInfoFromPortfolioAPI = async (data) => {
 export const getUserDetails = async (data) => {
     return await authAxiosInstance.post("hruser/", data)
 }
+
+export const getRolesInOrganization = async (orgId) => {
+    return await otherAuthAxiosInstance.get(`get_roles/${orgId}`)
+}
