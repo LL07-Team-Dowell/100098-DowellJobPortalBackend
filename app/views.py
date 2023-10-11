@@ -1463,7 +1463,7 @@ class create_task(APIView):
         task_updated_date = datetime.datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
         )
-        _date = task_updated_date + relativedelta(hours=48)
+        _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%m/%d/%Y %H:%M:%S")
 
         return str(_date)
@@ -1904,7 +1904,7 @@ class approve_task(APIView):
         task_updated_date = datetime.datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
         )
-        _date = task_updated_date + relativedelta(hours=336)
+        _date = task_updated_date + relativedelta(hours=48)
         _date = _date.strftime("%m/%d/%Y %H:%M:%S")
 
         return str(_date)
@@ -2097,7 +2097,7 @@ class delete_task(APIView):
 class task_module(APIView):
     def max_updated_date(self, updated_date):
         task_updated_date = datetime.datetime.strptime(updated_date, "%Y-%m-%d")
-        _date = task_updated_date + relativedelta(hours=48)
+        _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
 
