@@ -7328,42 +7328,42 @@ class AddUserGithubInfo(APIView):
             status=status.HTTP_200_OK,
         )
     
-import secrets
-from django.conf import settings
-class SecureEndPoint(APIView):
-    def post(self, request):
-        allowed_hosts = ["100098.pythonanywhere.com"]
-        referer = request.META.get('HTTP_REFERER')
-        if any(host in referer for host in allowed_hosts):
-            data = request.data
-            field = {}
-            update_field = {}
-            serializer = CommentsSerializer(data=request.data)
+# import secrets
+# from django.conf import settings
+# class SecureEndPoint(APIView):
+#     def post(self, request):
+#         allowed_hosts = ["100098.pythonanywhere.com"]
+#         referer = request.META.get('HTTP_REFERER')
+#         if any(host in referer for host in allowed_hosts):
+#             data = request.data
+#             field = {}
+#             update_field = {}
+#             serializer = CommentsSerializer(data=request.data)
 
-            if serializer.is_valid():
-                insert_response = dowellconnection(
-                        *comment_report_module, "insert", field, update_field
-                    )
+#             if serializer.is_valid():
+#                 insert_response = dowellconnection(
+#                         *comment_report_module, "insert", field, update_field
+#                     )
 
-                if json.loads(insert_response)["isSuccess"]:
-                        return Response(
-                            {
-                                "message": "Successfully",
-                                "info": json.loads(insert_response),
-                            },
-                            status=status.HTTP_201_CREATED,
-                        )
-                else:
-                        return Response(
-                            {
-                                "message": "Not successful",
-                                "info": json.loads(insert_response),
-                            },
-                            status=status.HTTP_304_NOT_MODIFIED,
-                        )
-        else:
-            return Response(
-                        {"message": "not allowed", "error": serializer.errors},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+#                 if json.loads(insert_response)["isSuccess"]:
+#                         return Response(
+#                             {
+#                                 "message": "Successfully",
+#                                 "info": json.loads(insert_response),
+#                             },
+#                             status=status.HTTP_201_CREATED,
+#                         )
+#                 else:
+#                         return Response(
+#                             {
+#                                 "message": "Not successful",
+#                                 "info": json.loads(insert_response),
+#                             },
+#                             status=status.HTTP_304_NOT_MODIFIED,
+#                         )
+#         else:
+#             return Response(
+#                         {"message": "not allowed", "error": serializer.errors},
+#                         status=status.HTTP_400_BAD_REQUEST,
+#                     )
           
