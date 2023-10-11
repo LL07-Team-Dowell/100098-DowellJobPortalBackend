@@ -7328,9 +7328,8 @@ class AddUserGithubInfo(APIView):
             status=status.HTTP_200_OK,
         )
     
-from django.views.decorators.csrf import csrf_exempt
 class SecureEndPoint(APIView):
-    @csrf_exempt
+    http_method_names = ['post']
     def get(self, request):
         data = request.data
         field = {
