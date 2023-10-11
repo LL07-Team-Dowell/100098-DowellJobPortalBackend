@@ -55,6 +55,7 @@ urlpatterns = [
     # update task apis
     path("create_task_update_request/", create_task_update_request.as_view()),
     path("get_update_task/<str:document_id>/", get_task_request_update.as_view()),
+    path("get_update_task_team_alerted/<str:team_alerted_id>/", get_task_request_update_team_alerted.as_view()),
     path(
         "get_all_update_task/<str:company_id>/", get_all_task_request_update.as_view()
     ),

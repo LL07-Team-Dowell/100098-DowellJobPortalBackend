@@ -1830,6 +1830,40 @@ class get_task_request_update(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
+@method_decorator(csrf_exempt, name="dispatch")
+class get_task_request_update_team_alerted(APIView):
+    def get(self, request, team_alerted_id):
+        field = {"team_alerted_id": team_alerted_id}
+        update_field = {"status": "Nothing to update"}
+        response = dowellconnection(
+            *update_task_request_module, "fetch", field, update_field
+        )
+        if json.loads(response)["isSuccess"] == True:
+            if len(json.loads(response)["data"]) == 0:
+                return Response(
+                    {
+                        "message": f"There is no task with this company id",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+            else:
+                return Response(
+                    {
+                        "message": f"List of the Update tasks",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_200_OK,
+                )
+        else:
+            return Response(
+                {
+                    "message": "There are no update tasks",
+                    "response": json.loads(response),
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_task_request_update(APIView):
