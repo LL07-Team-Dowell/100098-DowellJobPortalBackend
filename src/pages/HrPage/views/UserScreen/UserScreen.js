@@ -5,6 +5,7 @@ import { getUserLiveStatus, postUserLiveStatus } from "../../../../services/comm
 import React from "react";
 import { teamManagementProductName } from "../../../../utils/utils"; 
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
+import { ClaimVouchar } from "../../../TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 
 const UserScreen = ({subAdminView}) => {
     const navigate = useNavigate();
@@ -27,7 +28,11 @@ const UserScreen = ({subAdminView}) => {
     },[])
     return <>
         <div className="user__Page__Container hr">
-
+            {
+                <>
+                    <ClaimVouchar />
+                </>
+            }
             <div className="user__Intro__Item__Container">
                 <div className="user__Intro__Item ">
                     <h2>User Name</h2>
