@@ -1808,7 +1808,7 @@ class get_task_request_update(APIView):
             if len(json.loads(response)["data"]) == 0:
                 return Response(
                     {
-                        "message": f"There is no task with this company id",
+                        "message": f"There is no update task with this document id",
                         "response": json.loads(response),
                     },
                     status=status.HTTP_204_NO_CONTENT,
@@ -1829,41 +1829,6 @@ class get_task_request_update(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-@method_decorator(csrf_exempt, name="dispatch")
-class get_task_request_update_team_alerted(APIView):
-    def get(self, request, team_alerted_id):
-        field = {"team_alerted_id": team_alerted_id}
-        update_field = {"status": "Nothing to update"}
-        response = dowellconnection(
-            *update_task_request_module, "fetch", field, update_field
-        )
-        if json.loads(response)["isSuccess"] == True:
-            if len(json.loads(response)["data"]) == 0:
-                return Response(
-                    {
-                        "message": f"There is no task with this company id",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
-            else:
-                return Response(
-                    {
-                        "message": f"List of the Update tasks",
-                        "response": json.loads(response),
-                    },
-                    status=status.HTTP_200_OK,
-                )
-        else:
-            return Response(
-                {
-                    "message": "There are no update tasks",
-                    "response": json.loads(response),
-                },
-                status=status.HTTP_204_NO_CONTENT,
-            )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_task_request_update(APIView):
@@ -2214,6 +2179,8 @@ class task_module(APIView):
             return self.add_task(request)
         elif type_request == "get_candidate_task":
             return self.get_candidate_task(request)
+        elif type_request == "get_specific_task":
+            return self.get_specific_task(request)
         elif type_request == "update_candidate_task":
             return self.update_candidate_task(request)
         elif type_request == "update_single_task":
@@ -2381,7 +2348,37 @@ class task_module(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
+    def get_specific_task(self, request):
+        data = request.data
+        field = {"_id": data.get("document_id")}
+        response = dowellconnection(*task_details_module, "fetch", field, update_field=None)
+        #print(response,"===================")
+        
+        if json.loads(response)["isSuccess"] == True:
+            if len(json.loads(response)["data"]) == 0:
+                return Response(
+                    {
+                        "message": f"No task found for this id - {data.get('document_id')}",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+            else:
+                return Response(
+                    {
+                        "message": f"Task details of {data.get('document_id')}",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_200_OK,
+                )
+        else:
+            return Response(
+                {
+                    "error": f"No task found for this id - {data.get('document_id')}",
+                    "response": json.loads(response),
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
     def update_candidate_task(self, request):
         data = request.data
         payload = {
@@ -4608,6 +4605,40 @@ class GetTeamThreads(APIView):
         if json.loads(get_response)["isSuccess"] == True:
             return Response(
                 {"message": f"List of Threads with team id-{team_id}", "data": threads},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"message": "Failed to fetch", "data": threads},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+@method_decorator(csrf_exempt, name="dispatch")
+class GetTeamAlertedThreads(APIView):
+    def get(self, request, team_alerted_id):
+        field = {
+            "team_alerted_id": team_alerted_id,
+        }
+        update_field = {}
+
+        get_response = dowellconnection(
+            *thread_report_module, "fetch", field, update_field
+        )
+        threads = []
+        for thread in json.loads(get_response)["data"]:
+            if not len(json.loads(get_response)["data"]) <= 0:
+                get_comment = dowellconnection(
+                    *comment_report_module,
+                    "fetch",
+                    {"thread_id": thread["_id"]},
+                    update_field,
+                )
+                thread["comments"] = json.loads(get_comment)
+                threads.append(thread)
+
+        if json.loads(get_response)["isSuccess"] == True:
+            return Response(
+                {"message": f"List of Threads with team id-{team_alerted_id}", "data": threads},
                 status=status.HTTP_200_OK,
             )
         else:
