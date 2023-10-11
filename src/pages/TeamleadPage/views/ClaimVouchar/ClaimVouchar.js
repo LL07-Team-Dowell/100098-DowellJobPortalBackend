@@ -1,12 +1,12 @@
 import { useState } from "react"
-import { claimVoucher } from "../../../../services/teamleadServices"
+import { claimVoucher, getVouchar, verifyVouchar } from "../../../../services/teamleadServices"
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import './style.css'
 import { AiOutlineClose } from "react-icons/ai";
 import { toast } from "react-toastify";
 import LittleLoading from "../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 
-const ClaimVouchar = () => {
+export const ClaimVouchar = () => {
     const { currentUser } = useCurrentUserContext();
     const [showform, setShowForm] = useState(false);
     console.log(showform);
@@ -46,6 +46,7 @@ const ClaimVouchar = () => {
             setLoading(false)
             console.log(result);  // You can handle the result as needed
         } catch (error) {
+            setLoading(false)
             console.error(error);  // Handle errors appropriately
         }
     }
@@ -116,5 +117,143 @@ const ClaimVouchar = () => {
     </>
 }
 
+export const ApproveVouchar = () => {
+    const { currentUser } = useCurrentUserContext();
+    const [showform, setShowForm] = useState(false);
+    const [isClaimed, setIsClaimed] = useState(false);
+    const [details, setDetails] = useState([]);
+    console.log(details);
+    const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [verifyLoading, setVerifyLoading] = useState(false)
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const [formData, setFormData] = useState({
+        description: details.description,
+        voucher_code: "",
+        email: currentUser.userinfo.email
+    })
 
-export default ClaimVouchar;
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setLoading(true)
+        try {
+            const result = await getVouchar({
+                "voucher_code": formData.voucher_code,
+            });
+
+            if (result.success) {
+                // setShowForm(false);
+                // setIsClaimed(true);
+                setDetails([result.response]);
+                toast.success(result)
+                setFormData({
+                    voucher_code: "",
+                })
+            }
+            setLoading(false)
+            console.log(result);  // You can handle the result as needed
+        } catch (error) {
+            setLoading(false)
+            console.error(error);  // Handle errors appropriately
+        }
+    }
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            [name]: value
+        }));
+    }
+
+    const handleVerify = async (e) => {
+        setVerifyLoading(true)
+        e.preventDefault();
+        const id = details[0]._id;
+        console.log(id);
+        try {
+            const result = await verifyVouchar(id);
+            toast.success(result?.data?.message);
+            setShowForm(!showform);
+            setDetails([])
+            setVerifyLoading(false)
+            console.log(result);
+        } catch (error) {
+            setVerifyLoading(false)
+            console.log(error);
+        }
+    }
+
+
+    return <>
+        <button onClick={() => setShowForm(!showform)} className="approve__button">{showform ? '' : 'Verify Voucher'}</button>
+        {
+            showform && (
+                <div className="form__data" id="vouchar">
+                    <form action="#">
+                        <AiOutlineClose onClick={() => {
+                            setShowForm(false);
+                            setDetails([]);
+                        }} />
+                        <h2>Fill this form</h2>
+                        <br />
+                        <div className="des">
+                            <label htmlFor="#">Vouchar Code</label>
+                            <input type="text" name="voucher_code" value={formData.voucher_code} onChange={handleChange} required />
+                        </div>
+                        {
+                            loading ? <LittleLoading /> : <button className="get_vouchar_button" onClick={(e) => handleSubmit(e)}>Get The Details</button>
+
+                        }
+
+                        {
+                            details.length > 0 ?
+                                <>
+                                    <div className="vouchar_details">
+                                        <br />
+                                        <h3>Details of Vouchar</h3>
+                                        <hr />
+                                        <p>Voucher Name: {details[0]?.name}</p>
+                                        <p>Claim Method: {details[0]?.claim_method}</p>
+                                        <p>Redemption Status: {details[0]?.is_redeemed ? "Redeemed" : "Not Redeemed"}</p>
+                                        <p>Description: {details[0]?.description}</p>
+                                        <p>Verification status: {details[0]?.is_verified ? "Verified" : "Not Verified"}</p>
+                                    </div>
+                                    {
+                                        details[0].is_verified == false ?
+                                            verifyLoading ? <LittleLoading /> :
+                                                <button className="get_vouchar_button" onClick={(e) => handleVerify(e)}>Verify</button> : ''
+                                    }
+                                </>
+                                : " "
+                        }
+
+
+                    </form>
+
+                </div>
+            )
+        }
+    </>
+}
+
+
+export const Details = ({ details, verifyLoading, handleVerify }) => {
+    console.log(details);
+    return <div>
+        <div className="vouchar_details">
+            <h3>Details of Vouchar</h3>
+            <hr />
+            <p>Voucher Name: {details[0]?.name}</p>
+            <p>Claim Method: {details[0]?.claim_method}</p>
+            <p>Redemption Status: {details[0]?.is_redeemed ? "Redeemed" : "Not Redeemed"}</p>
+            <p>Description: {details[0]?.description}</p>
+            <p>Verification status: {details[0]?.is_verified ? "Verified" : "Not Verified"}</p>
+        </div>
+        {
+            details[0].is_verified == false ?
+                verifyLoading ? <LittleLoading /> :
+                    <button className="get_vouchar_button" onClick={(e) => handleVerify(e)}>Verify</button> : ''
+        }
+    </div>
+}

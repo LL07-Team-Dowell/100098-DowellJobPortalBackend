@@ -32,7 +32,7 @@ import {
 import { useCandidateTaskContext } from "../../contexts/CandidateTasksContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from "react-icons/io";
-import ClaimVouchar from "./views/ClaimVouchar/ClaimVouchar";
+import { ApproveVouchar, ClaimVouchar } from "./views/ClaimVouchar/ClaimVouchar";
 import AddPage from "../GroupLeadPage/components/AddPage";
 import { getAllOnBoardedCandidate, getCandidateTasksOfTheDayV2 } from "../../services/candidateServices";
 import { extractNewTasksAndAddExtraDetail } from "./util/extractNewTasks";
@@ -935,7 +935,6 @@ const Teamlead = ({ isGrouplead }) => {
             </div>
           </button>
         }
-        {/* <ClaimVouchar /> */}
         <>
           {loading ? (
             <LoadingSpinner />

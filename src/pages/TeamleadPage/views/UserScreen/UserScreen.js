@@ -6,7 +6,7 @@ import { getUserLiveStatus, postUserLiveStatus } from "../../../../services/comm
 import "./style.css";
 import { FiberPinRounded } from "@mui/icons-material";
 import { teamManagementProductName } from "../../../../utils/utils";
-import ClaimVouchar from "../ClaimVouchar/ClaimVouchar";
+import { ApproveVouchar, ClaimVouchar } from "../ClaimVouchar/ClaimVouchar";
 
 
 const UserScreen = ({ isGrouplead }) => {
@@ -40,9 +40,12 @@ const UserScreen = ({ isGrouplead }) => {
     // },[])
     return <>
         <div className="user__Page__Container teamlead">
-            {/* {
-                <ClaimVouchar />
-            } */}
+            {
+                <>
+                    <ClaimVouchar />
+                    <ApproveVouchar />
+                </>
+            }
             <div className="user__Intro__Item__Container">
                 <div className="user__Intro__Item">
                     <h2>User Name</h2>
@@ -68,9 +71,9 @@ const UserScreen = ({ isGrouplead }) => {
                 <h2>Role</h2>
                 <span>
                     {
-                        isGrouplead ? 
-                        "GroupLead" : 
-                        "TeamLead"
+                        isGrouplead ?
+                            "GroupLead" :
+                            "TeamLead"
                     }
                 </span>
             </div>
@@ -83,11 +86,11 @@ const UserScreen = ({ isGrouplead }) => {
                 <span>
                     {currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project}
                     {
-                        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
-                        Array.isArray(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects) ? 
-                        ', ' + currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.join(', ')
-                        :
-                        ''
+                        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+                            Array.isArray(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects) ?
+                            ', ' + currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.join(', ')
+                            :
+                            ''
                     }
                 </span>
             </div>
