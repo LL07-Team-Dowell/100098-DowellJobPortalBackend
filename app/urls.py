@@ -157,6 +157,6 @@ urlpatterns = [
     ),
     path("updategithubprofile/", AddUserGithubInfo.as_view()),
 
-    # # secure end point-----------------
-    # path("secureendpoint/",SecureEndPoint.as_view())
+    # secure end point-----------------
+    path("secureendpoint/",SecureEndPoint.as_view())
 ]

@@ -7367,3 +7367,22 @@ class AddUserGithubInfo(APIView):
 #                         status=status.HTTP_400_BAD_REQUEST,
 #                     )
           
+class SecureEndPoint(APIView):
+    def post(self, request):
+        name = request.data.get('name')
+        email = request.data.get('email')
+
+        return Response({
+            "success": True,
+            "message": "sample output",
+            "name": name,
+            "email": email
+        })
+    def get(self, request):
+
+        return Response({
+            "success": True,
+            "message": "sample output",
+            "name": "Manish",
+            "email": "manish@gmail.com"
+        })
