@@ -82,16 +82,29 @@ const TaskScreen = ({
     setproject(assignedProject[0]);
     setValue1(new Date());
     setDatesToStyle([]);
+    setTasksForTheDay(null);
+
+    const dateFormattedForAPI = formatDateForAPI(new Date());
+    const dataToPost = {
+      "company_id": currentUser.portfolio_info[0].org_id,
+      "user_id": currentUser.userinfo.userID,
+      "data_type": currentUser.portfolio_info[0].data_type,
+      "task_created_date": dateFormattedForAPI,
+    }
 
     Promise.all([
-      getCandidateTask(currentUser.portfolio_info[0].org_id),
+      // getCandidateTask(currentUser.portfolio_info[0].org_id),
+      getCandidateTasksOfTheDayV2(dataToPost),
       getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id, currentUser.portfolio_info[0].data_type),
       loadProjects && getSettingUserProject(),
     ]).then(res => {
+      // setUserTasks(
+      //   res[0]?.data?.response?.data?.filter(
+      //     (v) => v.applicant === currentUser.userinfo.username
+      //   )
+      // );
       setUserTasks(
-        res[0]?.data?.response?.data?.filter(
-          (v) => v.applicant === currentUser.userinfo.username
-        )
+        res[0]?.data?.task_details
       );
       setLoading(false);
       setAllSubprojects(res[1]);
