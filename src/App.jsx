@@ -84,7 +84,7 @@ import WorkLogRequest from "./pages/TeamleadPage/views/WorkLogRequest/WorkLogReq
 import { teamManagementProductName } from "./utils/utils";
 
 function App() {
-  console.log = () => { };
+  console.log = () => {};
 
   const {
     currentUser,
@@ -1517,6 +1517,16 @@ function App() {
               </TeamCandidateProvider>
             </CandidateTaskContextProvider>
           </NavigationContextProvider>
+        }
+      />
+      <Route
+        path='/work-log-request'
+        element={
+          <ResponsesContextProvider>
+            <candidateValuesProvider>
+              <h1>hello world</h1>
+            </candidateValuesProvider>
+          </ResponsesContextProvider>
         }
       />
       <Route
