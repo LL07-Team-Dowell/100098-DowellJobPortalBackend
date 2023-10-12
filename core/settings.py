@@ -59,7 +59,7 @@ MIDDLEWARE = [
 ]
 
 # CORS_ORIGIN_ALLOW_ALL = ["ll07-team-dowell.github.io/100098-DowellJobPortal/"]
-CORS_ALLOWED_ORIGINS  = ["ll07-team-dowell.github.io/100098-DowellJobPortal/"]
+CORS_ALLOWED_ORIGINS  = ["https://ll07-team-dowell.github.io/100098-DowellJobPortal/"]
 # CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = "core.urls"
