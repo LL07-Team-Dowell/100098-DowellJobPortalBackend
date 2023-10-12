@@ -13,7 +13,7 @@ export const useGetAllUpdateTask = (currentUser) => {
                 setLoading(false);
                 setData(response.data.response.data);
             })
-            .catch(error => setError(error.message))
+            .catch(error => { setLoading(false); setError(error.message) })
     }, [])
     return { data, loading, error }
 
