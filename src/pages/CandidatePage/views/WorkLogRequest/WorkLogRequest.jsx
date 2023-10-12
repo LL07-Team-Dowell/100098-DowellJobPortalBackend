@@ -10,6 +10,7 @@ import Card from "./component/Card";
 
 const WorkLogRequest = () => {
   const { currentUser } = useCurrentUserContext();
+  console.log({ currentUser });
   const { data, loading, error } = useGetAllUpdateTask(currentUser);
   const [cardData, setCardData] = useState("");
   const changeCardsStats = (cardData) => {
@@ -36,7 +37,11 @@ const WorkLogRequest = () => {
                 element.approved === true && element.request_denied === false
             )
             .map((element, index) => (
-              <Card key={`approved__card${index}`} {...element} />
+              <Card
+                key={`approved__card${index}`}
+                updateTask={true}
+                {...element}
+              />
             ))
         : cardData === "denied"
         ? data
