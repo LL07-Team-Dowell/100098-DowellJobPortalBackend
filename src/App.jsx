@@ -81,6 +81,7 @@ import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
 import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal";
 import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
 import WorkLogRequest from "./pages/TeamleadPage/views/WorkLogRequest/WorkLogRequest";
+import WorkLogRequestCandidate from "./pages/CandidatePage/views/WorkLogRequest/WorkLogRequest";
 import { teamManagementProductName } from "./utils/utils";
 
 function App() {
@@ -1524,7 +1525,7 @@ function App() {
         element={
           <ResponsesContextProvider>
             <candidateValuesProvider>
-              <h1>hello world</h1>
+              <WorkLogRequestCandidate />
             </candidateValuesProvider>
           </ResponsesContextProvider>
         }
