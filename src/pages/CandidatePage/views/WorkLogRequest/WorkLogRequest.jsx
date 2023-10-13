@@ -11,7 +11,7 @@ import Card from "./component/Card";
 const WorkLogRequest = () => {
   const { currentUser } = useCurrentUserContext();
   const { data, loading, error } = useGetAllUpdateTask(currentUser);
-  const [cardData, setCardData] = useState("");
+  const [cardData, setCardData] = useState("pending-approved");
   const changeCardsStats = (cardData) => {
     setCardData(cardData);
   };
