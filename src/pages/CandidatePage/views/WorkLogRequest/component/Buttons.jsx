@@ -12,7 +12,7 @@ const Buttons = ({ changeCardsStats }) => {
           setButton(1);
         }}
       >
-        pending approved
+        Pending approval
       </button>
       <button
         className={button === 2 && "active"}
@@ -21,7 +21,7 @@ const Buttons = ({ changeCardsStats }) => {
           setButton(2);
         }}
       >
-        approved
+        Approved
       </button>
       <button
         className={button === 3 && "active"}
@@ -30,7 +30,7 @@ const Buttons = ({ changeCardsStats }) => {
           setButton(3);
         }}
       >
-        denied
+        Denied
       </button>
     </div>
   );

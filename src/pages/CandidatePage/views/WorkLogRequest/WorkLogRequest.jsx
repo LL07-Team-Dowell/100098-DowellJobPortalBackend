@@ -7,6 +7,7 @@ import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner
 import Buttons from "./component/Buttons";
 import { useState } from "react";
 import Card from "./component/Card";
+import { useNavigate } from "react-router-dom";
 
 const WorkLogRequest = () => {
   const { currentUser } = useCurrentUserContext();
@@ -15,7 +16,14 @@ const WorkLogRequest = () => {
   const changeCardsStats = (cardData) => {
     setCardData(cardData);
   };
+  const navigate = useNavigate();
   // asdsad
+
+  const handleUpdateTaskForDay = (detail) => {
+    navigate('/', { state: { log_request_date: detail?.update_task_date }})
+  }
+
+
   if (error) return <h1>{error}</h1>;
   return (
     <JobLandingLayout user={currentUser} afterSelection={true}>
@@ -47,6 +55,7 @@ const WorkLogRequest = () => {
                     <Card
                       key={`approved__card${index}`}
                       updateTask={true}
+                      handleBtnClick={() => handleUpdateTaskForDay(element)}
                       {...element}
                     />
                   ))

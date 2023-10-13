@@ -24,7 +24,7 @@ export const afterSelectionLinks = [
     linkAddress: "/teams",
   },
   {
-    text: "Work Log Request",
+    text: "Log Requests",
     icon: <RiFileList3Line />,
     linkAddress: "/work-log-request",
   },

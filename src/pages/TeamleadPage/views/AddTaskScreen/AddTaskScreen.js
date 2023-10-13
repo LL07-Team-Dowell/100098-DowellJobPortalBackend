@@ -30,6 +30,7 @@ const AddTaskScreen = ({
   hrPageActive,
   assignedProject,
   subprojects,
+  logRequestDate,
 }) => {
   const ref = useRef(null);
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -335,8 +336,24 @@ const AddTaskScreen = ({
       const today = res.data?.current_time;
       const todayInDateString = new Date(today).toDateString();
 
-      setTimeValue(`${todayInDateString.split(" ")[0]} ${todayInDateString.split(" ")[1]} ${todayInDateString.split(" ")[2]} ${todayInDateString.split(" ")[3]}`);
-      const todayDate = formatDateForAPI(today);
+      const passedRequestDate = logRequestDate && new Date (logRequestDate != 'Invalid Date') ?
+        new Date(logRequestDate)
+      :
+        null;
+
+      setTimeValue(
+        passedRequestDate ?
+        `${passedRequestDate.toDateString().split(" ")[0]} ${passedRequestDate.toDateString().split(" ")[1]} ${passedRequestDate.toDateString().split(" ")[2]} ${passedRequestDate.toDateString().split(" ")[3]}`
+        :
+        `${todayInDateString.split(" ")[0]} ${todayInDateString.split(" ")[1]} ${todayInDateString.split(" ")[2]} ${todayInDateString.split(" ")[3]}`
+      );
+
+      const todayDate = formatDateForAPI(
+        passedRequestDate ? 
+          passedRequestDate
+        :
+        today
+      );
   
       const dataToPost = {
         "company_id": currentUser.portfolio_info[0].org_id,

@@ -13,7 +13,7 @@ import NewAddTaskScreen from "./NewAddTaskScreen";
 import AddIssueScreen from "../../../TeamleadPage/views/AddIssueScreen/AddIssueScreen";
 
 import "./style.css";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { getAllTeams } from "../../../../services/createMembersTasks";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import { getAllCompanyUserSubProject } from "../../../../services/commonServices";
@@ -31,6 +31,8 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
   const [ candidateAssignedProjects, setCandidateAssignedProjects ] = useState([]);
   const [ allProjects, setAllProjects ] = useState([]);
   const [ allSubProjects, setAllSubprojects ] = useState([]);
+  const [ logRequestDate, setLogRequestDate ] = useState(null);
+  const { state } = useLocation();
 
   useEffect(() => {
     if (assignedProjects.length < 1) {
@@ -79,6 +81,19 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
       console.log('An error occured trying to fetch teams or projects for candidate');
     })
   }, []);
+
+  useEffect(() => {
+    if (!state || !state?.log_request_date) return
+
+    const validDatePassed = new Date(state?.log_request_date);
+    if (typeof validDatePassed == 'Invalid Date') return;
+
+    setLogRequestDate(state?.log_request_date);
+    setShowAddTaskModal(true);
+
+    // RESET STATE TO PREVENT ADD TASK MODAL FROM POPPING UP AFTER EVERY RELOAD
+    window.history.replaceState({}, '/100098-DowellJobPortal/#/')
+  }, [state])
   
 
   return (
@@ -98,6 +113,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
                 updateTasks={setUserTasks}
                 assignedProject={allProjects}
                 subprojects={allSubProjects}
+                logRequestDate={logRequestDate}
               />
             )}
             {showAddIssueModal && (

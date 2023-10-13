@@ -6,13 +6,14 @@ const Card = ({
   project,
   update_reason,
   updateTask,
+  handleBtnClick,
 }) => {
   return (
     <div className='card__work__log__request'>
       <h2>{project}</h2>
-      <p>Request Data:{formatDate(update_task_date)}</p>
-      <p>{update_reason}</p>
-      {updateTask && <button>Update Task</button>}
+      <p>Date of request: {new Date(update_task_date).toDateString()}</p>
+      <p>Request reason: {update_reason}</p>
+      {updateTask && <button onClick={handleBtnClick}>Update Task</button>}
     </div>
   );
 };
