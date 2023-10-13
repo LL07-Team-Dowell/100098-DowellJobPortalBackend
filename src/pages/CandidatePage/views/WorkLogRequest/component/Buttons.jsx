@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const Buttons = ({ changeCardsStats }) => {
-  const [button, setButton] = useState(0);
+  const [button, setButton] = useState(1);
 
   return (
     <div className='btns__work_log_request'>
