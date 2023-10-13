@@ -8,7 +8,7 @@ const Card = ({
   updateTask,
 }) => {
   return (
-    <div>
+    <div className='card__work__log__request'>
       <h2>{project}</h2>
       <p>Request Data:{formatDate(update_task_date)}</p>
       <p>{update_reason}</p>

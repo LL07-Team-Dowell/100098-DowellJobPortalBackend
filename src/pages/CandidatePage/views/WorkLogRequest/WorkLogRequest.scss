@@ -1,3 +1,5 @@
+
+
 .btns__work_log_request{
     display: flex;
     -webkit-box-align: center;
@@ -30,5 +32,21 @@
     text-align: center;
     border: none;
     width: fit-content;
+    padding: 10px;
+    &.active{
+        background-color:#005734;
+        box-shadow: 0px 2.79922px 25px rgba(0, 87, 52, 0.67);
+        color: white;
     }
+    
+    }
+}
+.card__work__log__request{
+    width: max-content;
+    border-radius: 20px;
+    padding: 2% 2% 3%;
+    transition: 0.3s ease-in-out;
+    font-family: "Poppins", sans-serif;
+    background-color: red;
+    position: relative;
 }
