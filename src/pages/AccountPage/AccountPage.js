@@ -579,7 +579,7 @@ const AccountPage = () => {
                                       : ""
                                   }
                                   handleBtnClick={handleViewBtnClick}
-                                  showOnboardingInfo={true}
+                                  showOnboardingInfo={newJoniees}
                                 />
                               );
                             })
@@ -619,7 +619,7 @@ const AccountPage = () => {
                                         : ""
                                     }
                                     handleBtnClick={handleViewBtnClick}
-                                    showOnboardingInfo={true}
+                                    showOnboardingInfo={newJoniees}
                                   />
                                 );
                               })
@@ -646,7 +646,7 @@ const AccountPage = () => {
                                         : ""
                                     }
                                     handleBtnClick={handleViewBtnClick}
-                                    showOnboardingInfo={true}
+                                    showOnboardingInfo={newJoniees}
                                   />
                                 );
                               }
