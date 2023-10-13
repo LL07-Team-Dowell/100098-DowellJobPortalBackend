@@ -23,7 +23,9 @@ button.approve__button {
 }
 
 .form__data .get_vouchar_button {
-    width: 150px;
+    width: max-content;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
 }
 
 .form__data {
@@ -71,6 +73,7 @@ button.approve__button {
 .des {
     display: flex;
     flex-direction: column;
+    margin-bottom: 1rem;
 }
 
 .mail {
@@ -80,17 +83,20 @@ button.approve__button {
 
 .form__data button {
     border: none;
+    outline: none;
     font-size: 1rem;
-    width: 6rem;
+    width: max-content;
     height: 2.5rem;
     border: 1px solid white;
     border-radius: 5px;
     background-color: #005734;
-    padding: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
     color: white;
     margin-top: 0.2rem;
     cursor: pointer;
     transition: 0.3s ease-in-out;
+    font-family: 'Poppins', sans-serif;
 }
 
 .form__data button:hover {
@@ -123,5 +129,5 @@ button.approve__button {
 }
 
 #vouchar form {
-    height: 400px;
+    height: max-content;
 }

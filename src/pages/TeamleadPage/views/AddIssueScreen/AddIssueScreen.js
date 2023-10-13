@@ -11,7 +11,6 @@ import { toast } from "react-toastify";
 import { createThread } from "../../../../services/threadServices";
 import { getAllTeams } from "../../../../services/createMembersTasks";
 
-
 const AddIssueScreen = ({
   closeIssuesScreen,
   afterSelectionScreen,
@@ -129,13 +128,20 @@ const AddIssueScreen = ({
   }, [createIssue.thread]);
 
   useEffect(() => {
-    if (createIssue.thread.length < 1) return setDisabled(true);
+    if (
+      createIssue.thread.length < 1 ||
+      issueTitle.length < 1 ||
+      createIssue.steps_to_reproduce_thread.length < 1 ||
+      createIssue.expected_product_behavior.length < 1 ||
+      createIssue.actual_product_behavior.length < 1 ||
+      createIssue.thread_type.length < 1
+    ) return setDisabled(true);
+    
     setDisabled(false);
-  }, [createIssue.thread]);
+  }, [createIssue, issueTitle]);
 
   const handleCreateIssue = async (e) => {
     e.preventDefault();
-    setDisabled(true);
 
     // Create a FormData object to send the file
     const formData = new FormData();
@@ -144,19 +150,32 @@ const AddIssueScreen = ({
       formData.append("image", selectedFile);
     }
 
-    const fields = ["thread_type"];
+    // const fields = ["thread_type"];
 
-    if (createIssue.thread_type === "") {
-      toast.info("Please select an issue type");
+    // if (createIssue.thread_type === "") {
+    //   toast.info("Please select an issue type");
+    //   return;
+    // } else if (fields.find((field) => createIssue[field] === "")) {
+    //   toast.info(
+    //     `Please fill in the '${fields.find(
+    //       (field) => createIssue[field] === ""
+    //     )}' field`
+    //   );
+    //   return;
+    // } 
+    
+    if (!createIssue.team_id || createIssue.team_id === "") {
+      toast.info("Please select a team you will like to create this issue in");
       return;
-    } else if (fields.find((field) => createIssue[field] === "")) {
-      toast.info(
-        `Please select ${fields.find(
-          (field) => createIssue[field] === ""
-        )} field`
-      );
+    } 
+    
+    if (createIssue.team_alerted_id === "") {
+      toast.info("Please select a team you will like to notify about this issue");
       return;
     }
+
+
+    setDisabled(true);
 
     try {
       // Send a POST request to the upload URL
@@ -199,10 +218,12 @@ const AddIssueScreen = ({
       } catch (error) {
         console.error("Something went wrong", error);
         setDisabled(false);
+        toast.error("Something went wrong");
       }
     } catch (error) {
       // Handle any errors that occurred during the request
       toast.error("Error uploading image", error);
+      setDisabled(false);
     }
   };
 
@@ -237,33 +258,6 @@ const AddIssueScreen = ({
             onChange={(e) => handleChange(e.target.value, e.target.name)}
             rows={5}
           ></textarea>
-          <span className="selectProject">Steps to Reproduce</span>
-          <textarea
-            placeholder="Enter Steps to reproduce issue"
-            name={"steps_to_reproduce_thread"}
-            value={createIssue.steps_to_reproduce_thread}
-            style={{ margin: 0, marginBottom: "0.8rem" }}
-            onChange={(e) => handleChange(e.target.value, e.target.name)}
-            rows={3}
-          ></textarea>
-          <span className="selectProject">Expected Behavior</span>
-          <textarea
-            placeholder="Enter the Expected Behavior of the product"
-            name={"expected_product_behavior"}
-            value={createIssue.expected_product_behavior}
-            style={{ margin: 0, marginBottom: "0.8rem" }}
-            onChange={(e) => handleChange(e.target.value, e.target.name)}
-            rows={3}
-          ></textarea>
-          <span className="selectProject">Actual Behavior</span>
-          <textarea
-            placeholder="Enter the Actual behavior of the product"
-            name={"actual_product_behavior"}
-            value={createIssue.actual_product_behavior}
-            style={{ margin: 0, marginBottom: "0.8rem" }}
-            onChange={(e) => handleChange(e.target.value, e.target.name)}
-            rows={3}
-          ></textarea>
           <span className="selectProject">Choose Issue Type</span>
           <div style={{ display: "flex", gap: "1rem" }}>
             <label htmlFor="BUG" className="radio">
@@ -293,6 +287,33 @@ const AddIssueScreen = ({
               <p>Suggestion</p>
             </label>
           </div>
+          <span className="selectProject">Steps to Reproduce</span>
+          <textarea
+            placeholder="Enter Steps to reproduce issue"
+            name={"steps_to_reproduce_thread"}
+            value={createIssue.steps_to_reproduce_thread}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+            rows={3}
+          ></textarea>
+          <span className="selectProject">Expected Product Behavior</span>
+          <textarea
+            placeholder="Enter the Expected Behavior of the product"
+            name={"expected_product_behavior"}
+            value={createIssue.expected_product_behavior}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+            rows={3}
+          ></textarea>
+          <span className="selectProject">Actual Product Behavior</span>
+          <textarea
+            placeholder="Enter the Actual behavior of the product"
+            name={"actual_product_behavior"}
+            value={createIssue.actual_product_behavior}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+            rows={3}
+          ></textarea>
           <span className="selectProject">
             Add an Image to help explain your issue better (OPTIONAL)
           </span>
@@ -309,7 +330,7 @@ const AddIssueScreen = ({
               style={{ display: "block" }}
             />
           )}
-          {candidateView && teams && (
+          {candidateView && (
             <>
               <span className="selectProject">
                 Select Team you want to create this issue in
@@ -324,7 +345,7 @@ const AddIssueScreen = ({
               >
                 <option value="">Select Team</option>
                 {/* Dynamically populate the options */}
-                {teams.map((team) => (
+                {teams?.map((team) => (
                   <option key={team._id} value={team._id}>
                     {team.team_name}
                   </option>

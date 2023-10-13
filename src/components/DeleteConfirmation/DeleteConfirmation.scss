@@ -10,7 +10,8 @@
       0,
       0.5
     ); /* Black background with opacity (0.8) */
-    z-index: 1000; /* Adjust the z-index value to ensure the overlay appears on top */
+    z-index: 9990; /* Adjust the z-index value to ensure the overlay appears on top */
+
     font-family: Poppins;
     .delete_confirmation_container {
       z-index: 9999;

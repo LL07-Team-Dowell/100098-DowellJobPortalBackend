@@ -305,10 +305,10 @@ const CreateTeam = ({ isAdmin }) => {
               <br />
               <label htmlFor="task_name">Select Members</label>
               <div className="members">
-                {displaidMembers?.filter((f) => f.member.includes(query))
+                {[...new Map(displaidMembers.map((member) => [member.member, member])).values()]?.filter((f) => f.member.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
                   .length > 0 ? (
-                  displaidMembers
-                    ?.filter((f) => f.member.includes(query))
+                    [...new Map(displaidMembers.map((member) => [member.member, member])).values()]
+                    ?.filter((f) => f.member.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
                     ?.map((element) => (
                       <div
                         className="single-member"

@@ -161,7 +161,7 @@ const Card = ({
     <>
       {showModal && (
         <DeleteConfirmation
-          text='are you sure you wanna delete this job'
+          text='Are you sure you want to delete this job?'
           closeModal={clodeModal}
           deleteFunction={() => handleDeleteOfJob(_id)}
           id={_id}

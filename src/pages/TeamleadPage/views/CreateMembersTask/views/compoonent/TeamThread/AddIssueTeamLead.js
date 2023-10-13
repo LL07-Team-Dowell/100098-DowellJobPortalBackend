@@ -398,6 +398,19 @@ const AddIssueTeamLead = ({
       });
   }, []);
 
+  useEffect(() => {
+    if (
+      createIssue.thread.length < 1 ||
+      createIssue.thread_title.length < 1 ||
+      createIssue.steps_to_reproduce_thread.length < 1 ||
+      createIssue.expected_product_behavior.length < 1 ||
+      createIssue.actual_product_behavior.length < 1 ||
+      createIssue.thread_type.length < 1
+    ) return setDisabled(true);
+    
+    setDisabled(false);
+  }, [createIssue]);
+
   const handleChange = (valueEntered, inputName) => {
     setCreateIssue((prev) => {
       const newCreateIssue = { ...prev };
@@ -507,6 +520,12 @@ const AddIssueTeamLead = ({
 
   const handleCreateIssue = async (e) => {
     e.preventDefault();
+
+    if (createIssue.team_alerted_id === "") {
+      toast.info("Please select a team you will like to notify about this issue");
+      return;
+    }
+
     setDisabled(true);
 
     const formData = new FormData();
@@ -555,6 +574,8 @@ const AddIssueTeamLead = ({
       }
     } catch (error) {
       console.error("Error uploading image", error);
+      toast.error("Error uploading image", error);
+      setDisabled(false);
     }
   };
 
@@ -592,33 +613,6 @@ const AddIssueTeamLead = ({
             rows={5}
           ></textarea>
 
-          <span className="selectProject">Step to Reproduce Thread</span>
-          <textarea
-            placeholder="Enter steps to reproduce thread"
-            name={"steps_to_reproduce_thread"}
-            value={createIssue.steps_to_reproduce_thread}
-            style={{ margin: 0, marginBottom: "0.8rem" }}
-            onChange={(e) => handleChange(e.target.value, e.target.name)}
-          ></textarea>
-
-          <span className="selectProject">Expected Product Behavior</span>
-          <textarea
-            placeholder="Enter Expected Product Behavior"
-            name={"expected_product_behavior"}
-            value={createIssue.expected_product_behavior}
-            style={{ margin: 0, marginBottom: "0.8rem" }}
-            onChange={(e) => handleChange(e.target.value, e.target.name)}
-          ></textarea>
-
-          <span className="selectProject">Actual product behavior</span>
-          <textarea
-            placeholder="Enter Actual product behavior"
-            name={"actual_product_behavior"}
-            value={createIssue.actual_product_behavior}
-            style={{ margin: 0, marginBottom: "0.8rem 0.8rem" }}
-            onChange={(e) => handleChange(e.target.value, e.target.name)}
-          ></textarea>
-
           <span className="selectProject">Choose Issue Type</span>
           <div style={{ display: "flex", gap: "1rem" }}>
             <label htmlFor="BUG" className="radio">
@@ -649,6 +643,32 @@ const AddIssueTeamLead = ({
             </label>
           </div>
 
+          <span className="selectProject">Step to Reproduce Thread</span>
+          <textarea
+            placeholder="Enter steps to reproduce thread"
+            name={"steps_to_reproduce_thread"}
+            value={createIssue.steps_to_reproduce_thread}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+          ></textarea>
+
+          <span className="selectProject">Expected Product Behavior</span>
+          <textarea
+            placeholder="Enter Expected Product Behavior"
+            name={"expected_product_behavior"}
+            value={createIssue.expected_product_behavior}
+            style={{ margin: 0, marginBottom: "0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+          ></textarea>
+
+          <span className="selectProject">Actual product behavior</span>
+          <textarea
+            placeholder="Enter Actual product behavior"
+            name={"actual_product_behavior"}
+            value={createIssue.actual_product_behavior}
+            style={{ margin: 0, marginBottom: "0.8rem 0.8rem" }}
+            onChange={(e) => handleChange(e.target.value, e.target.name)}
+          ></textarea>
 
           <span className="selectProject">
             Add an Image to help explain your issue better (OPTIONAL)
@@ -666,7 +686,7 @@ const AddIssueTeamLead = ({
               style={{ display: "block" }}
             />
           )}
-          {candidateView && teams && (
+          {candidateView && (
             <>
               <span className="selectProject">
                 Select Team you want to create this issue in
@@ -681,7 +701,7 @@ const AddIssueTeamLead = ({
                 disabled
               >
                 {/* Dynamically populate the options */}
-                {teams.map((team) => (
+                {teams?.map((team) => (
                   <option key={team._id} value={team._id} disabled>
                     {team.team_name}
                   </option>

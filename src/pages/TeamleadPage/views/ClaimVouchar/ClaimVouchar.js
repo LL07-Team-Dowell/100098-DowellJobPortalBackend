@@ -26,7 +26,7 @@ export const ClaimVouchar = () => {
         setLoading(true)
         try {
             const result = await claimVoucher({
-                "claim_method": "INTERNAL CREDIT COUPONS",
+                "claim_method": "TEAM MANAGEMENT CREDITS",
                 "description": formData.description,
                 "timezone": timeZone,
                 "email": formData.email

@@ -24,6 +24,7 @@ const SelectedCandidates = ({
     handleRefresh,
     availableSortOptions,
     hideSortOptions,
+    customTextContent,
 }) => {
     const [showSortOptions, setShowSortOptions] = useState(false);
     const sortOptionsRef = useRef(null);
@@ -73,7 +74,18 @@ const SelectedCandidates = ({
 
                 <div className="selected-candidates-count-container">
                     <h2>{ showTasks ? hrAttendancePageActive ? title : "Work log" : "Selected Candidates" }</h2>
-                    <p>{ showTasks ? `Work log added by ${tasksCount ? tasksCount : '0'} candidates`: `${candidatesCount ? candidatesCount : '0'} candidates are selected for the roles` }</p>    
+                    <p>
+                        { 
+                            showTasks ? 
+                                `Work log added by ${tasksCount ? tasksCount : '0'} candidates`
+                            : 
+                            customTextContent ?
+                                `${candidatesCount ? candidatesCount : '0'} ${customTextContent}`
+                            :
+
+                                `${candidatesCount ? candidatesCount : '0'} candidates are selected for the roles` 
+                        }
+                    </p>    
                 </div>
             }
             {

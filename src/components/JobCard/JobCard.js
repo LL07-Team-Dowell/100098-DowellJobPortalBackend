@@ -5,7 +5,7 @@ import { IoMdTime } from "react-icons/io";
 import "./style.css";
 import { mutableNewApplicationStateNames } from "../../contexts/NewApplicationContext";
 import { BiTimeFive } from "react-icons/bi";
-import { IoAlertCircleOutline } from "react-icons/io5";
+import { IoAlertCircleOutline, IoCheckmarkCircle } from "react-icons/io5";
 
 
 const JobCard = ({ 
@@ -27,6 +27,7 @@ const JobCard = ({
     jobAppliedFor, 
     taskView,
     className,
+    showOnboardingInfo,
 }) => {
     // console.log(job);
     return <div className={`job__Card__Container ${className ? className : ''}`}>
@@ -145,7 +146,7 @@ const JobCard = ({
         {
             candidateCardView && candidateData && !taskView &&
             <div className="job__Details__Info">
-                <div className="detail__Item">
+                <div className="detail__Item full__Width">
                     <BiTimeFive className="status__Icon" />
                     <span>Applied {getDaysDifferenceFromPresentDate(candidateData.application_submitted_on)} {getDaysDifferenceFromPresentDate(candidateData.application_submitted_on) ? "days" : "day"} ago</span>
                 </div>
@@ -154,6 +155,15 @@ const JobCard = ({
                     <IoAlertCircleOutline className="status__Icon" />
                     <span>Applied as {jobAppliedFor ? jobAppliedFor : ""}</span>
                 </div>
+                {
+                    showOnboardingInfo && <>
+                        <div className="vertical__Seperator"></div>
+                        <div className="detail__Item full__Width">
+                            <IoCheckmarkCircle className="status__Icon" />
+                            <span>Onboarded {getDaysDifferenceFromPresentDate(candidateData.onboarded_on)} {getDaysDifferenceFromPresentDate(candidateData.onboarded_on) ? "days" : "day"} ago</span>
+                        </div>
+                    </>
+                }
             </div>
         }
         {
