@@ -324,7 +324,7 @@ const AddIssueScreen = ({
               >
                 <option value="">Select Team</option>
                 {/* Dynamically populate the options */}
-                {teams.map((team) => (
+                {teams?.map((team) => (
                   <option key={team._id} value={team._id}>
                     {team.team_name}
                   </option>

@@ -206,15 +206,42 @@ const AccountPage = () => {
     setHireTabActive(true);
     setShowOnboarding(false);
     setRehireTabActive(false);
+    setCurrentActiveItem("Hire");
   }, [searchParams]);
 
   useEffect(() => {
     setShowCandidate(false);
+    setHireTabActive(false);
+    setShowOnboarding(false);
+    setRehireTabActive(false);
 
     const currentPath = location.pathname.split("/")[1];
     const currentTab = searchParams.get("tab");
 
-    if (!currentPath && !currentTab) return setCurrentActiveItem("Hire");
+    if (!currentPath) {
+      if (currentTab === "rehire") {
+        setRehireTabActive(true);
+        setHireTabActive(false);
+        setShowOnboarding(false);
+        setCurrentActiveItem("Rehire");
+        return;
+      }
+
+      if (currentTab === "onboarding") {
+        setShowOnboarding(true);
+        setHireTabActive(false);
+        setRehireTabActive(false);
+        setCurrentActiveItem("Onboarding");
+        return;
+      }
+      
+      setHireTabActive(true);
+      setShowOnboarding(false);
+      setRehireTabActive(false);
+      setCurrentActiveItem("Hire");
+      return
+    }
+
     if (currentPath && currentPath === "rejected")
       return setCurrentActiveItem("Reject");
   }, [location]);
@@ -435,27 +462,37 @@ const AccountPage = () => {
                           ? candidatesData.candidatesToRehire.length
                           : 0
                       }
+                      customTextContent={
+                        showOnboarding && newJoniees ? 
+                        'candidates were onboarded in the last 14 days'
+                        :
+                        null
+                      }
                     />
 
                     <div className="refresh-container-account">
-                      <div className="refresh-nav-container">
-                        <div
-                          className={`nav-links-cont ${
-                            newJoniees === false ? "active" : ""
-                          }`}
-                        >
-                          <p onClick={() => setNewJoniees(false)}>All</p>
-                          <span className="span"></span>
-                        </div>
-                        <div
-                          className={`nav-links-cont ${
-                            newJoniees === true ? "active" : ""
-                          }`}
-                        >
-                          <p onClick={() => setNewJoniees(true)}>New Joniees</p>
-                          <span className="span"></span>
-                        </div>
-                      </div>
+                      {
+                        showOnboarding ? <div className="refresh-nav-container">
+                          <div
+                            className={`nav-links-cont ${
+                              newJoniees === false ? "active" : ""
+                            }`}
+                          >
+                            <p onClick={() => setNewJoniees(false)}>All</p>
+                            <span className="span"></span>
+                          </div>
+                          <div
+                            className={`nav-links-cont ${
+                              newJoniees === true ? "active" : ""
+                            }`}
+                          >
+                            <p onClick={() => setNewJoniees(true)}>New Joinees</p>
+                            <span className="span"></span>
+                          </div>
+                        </div> 
+                        : 
+                        <></>
+                      }
                       <button
                         className="refresh-btn-account"
                         onClick={
@@ -542,6 +579,7 @@ const AccountPage = () => {
                                       : ""
                                   }
                                   handleBtnClick={handleViewBtnClick}
+                                  showOnboardingInfo={true}
                                 />
                               );
                             })
@@ -581,6 +619,7 @@ const AccountPage = () => {
                                         : ""
                                     }
                                     handleBtnClick={handleViewBtnClick}
+                                    showOnboardingInfo={true}
                                   />
                                 );
                               })
@@ -607,6 +646,7 @@ const AccountPage = () => {
                                         : ""
                                     }
                                     handleBtnClick={handleViewBtnClick}
+                                    showOnboardingInfo={true}
                                   />
                                 );
                               }

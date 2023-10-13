@@ -191,15 +191,20 @@
 }
 
 .refresh-btn-account {
+  border: none;
+  outline: none;
   background-color: #005734;
   width: 100px;
-  margin-left: 0;
+  margin-left: auto;
   padding: 0.4rem 0.8rem;
   border-radius: 0.3rem;
   color: #fff;
   display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
+  gap: 0.4rem;
+  font-family: 'Poppins', sans-serif;
 }
 
 .refresh-btn-applied {

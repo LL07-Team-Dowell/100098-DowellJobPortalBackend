@@ -666,7 +666,7 @@ const AddIssueTeamLead = ({
               style={{ display: "block" }}
             />
           )}
-          {candidateView && teams && (
+          {candidateView && (
             <>
               <span className="selectProject">
                 Select Team you want to create this issue in
@@ -681,7 +681,7 @@ const AddIssueTeamLead = ({
                 disabled
               >
                 {/* Dynamically populate the options */}
-                {teams.map((team) => (
+                {teams?.map((team) => (
                   <option key={team._id} value={team._id} disabled>
                     {team.team_name}
                   </option>

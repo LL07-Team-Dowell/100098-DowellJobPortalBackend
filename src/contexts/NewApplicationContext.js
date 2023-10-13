@@ -51,8 +51,8 @@ export const excludedApplicantInfo = [
   "portfolio_name",
   "product_discord_link",
   "shortlisted_on",
-  "onboarded_on",
-  "selected_on",
+//   "onboarded_on",
+//   "selected_on",
   "payment",
   "is_public",
 ];
