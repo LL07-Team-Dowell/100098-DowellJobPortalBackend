@@ -51,7 +51,18 @@
     position: relative;
 }
 .work__log__request{
-    background-color: blue;
+    >.cards
+    {
+    margin-top: 30px;
     padding: 0 7% 24%;
-
+    >.card__work__log__request{
+        display: inline-block;
+        margin-right: 20px;
+        margin-bottom: 20px;
+        height: 150px;
+        width: calc(96% / 2);
+        display: inline-block;
+        background-color: #fcfcfc;
+    }
+}
 }
