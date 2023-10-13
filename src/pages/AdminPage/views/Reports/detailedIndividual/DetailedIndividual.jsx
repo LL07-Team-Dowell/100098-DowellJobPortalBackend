@@ -404,7 +404,68 @@ export default function DetailedIndividual({ isPublicReportUser }) {
                     <Bar
                       data={{
                         labels: Object.keys(candidateData),
-                        datasets: [
+                        datasets: selectedUserRoleSetting && selectedUserRoleSetting?.Role === rolesNamesDict.Teamlead ?
+                        [
+                          {
+                            label: "Work logs approved",
+                            backgroundColor: "blue",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_approved;
+                            }),
+                            maxBarThickness: 40,
+                          },
+                          {
+                            label: "Work logs you approved",
+                            backgroundColor: "orange",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_you_approved;
+                            }),
+                            maxBarThickness: 40,
+                          },
+                          {
+                            label: "Work logs added",
+                            backgroundColor: "#005734",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_added;
+                            }),
+                            maxBarThickness: 40,
+                          },
+                          {
+                            label: "Work logs uncompleted",
+                            backgroundColor: "red",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_uncompleted;
+                            }),
+                            maxBarThickness: 40,
+                          },
+                          {
+                            label: "Work logs you marked as incomplete",
+                            backgroundColor: "indigo",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_you_marked_as_incomplete;
+                            }),
+                            maxBarThickness: 40,
+                          },
+                          
+                          {
+                            label: "Work logs completed",
+                            backgroundColor: "yellow",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_completed;
+                            }),
+                            maxBarThickness: 40,
+                          },
+                          {
+                            label: "Work logs you marked as complete",
+                            backgroundColor: "#be6464",
+                            data: Object.keys(candidateData).map((key) => {
+                              return candidateData[key].tasks_you_marked_as_complete;
+                            }),
+                            maxBarThickness: 40,
+                          },
+                        ]
+                        :
+                        [
                           {
                             label: "Work logs approved",
                             backgroundColor: "blue",
