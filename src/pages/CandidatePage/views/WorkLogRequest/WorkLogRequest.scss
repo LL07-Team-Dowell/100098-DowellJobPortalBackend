@@ -1,0 +1,68 @@
+
+
+.btns__work_log_request{
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    justify-content: space-around;
+    gap: 2rem;
+    padding-top: 30px;
+    flex-direction: row;
+    width: 32%;
+    margin-right: auto;
+    margin-left: auto;
+    button{
+        border-radius: 10px;
+    background: rgb(243, 248, 244);
+    color: rgb(184, 184, 184);
+    font-family: Poppins, sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 20px;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    width: 10rem;
+    height: 3rem;
+    transition: all 0.3s ease-in-out 0s;
+    text-align: center;
+    border: none;
+    width: fit-content;
+    padding: 10px;
+    &.active{
+        background-color:#005734;
+        box-shadow: 0px 2.79922px 25px rgba(0, 87, 52, 0.67);
+        color: white;
+    }
+    // sadasd
+    }
+}
+.card__work__log__request{
+    width: max-content;
+    border-radius: 20px;
+    padding: 2% 2% 3%;
+    transition: 0.3s ease-in-out;
+    font-family: "Poppins", sans-serif;
+    background-color: red;
+    position: relative;
+}
+.work__log__request{
+    >.cards
+    {
+    margin-top: 30px;
+    padding: 0 7% 24%;
+    >.card__work__log__request{
+        display: inline-block;
+        margin-right: 20px;
+        margin-bottom: 20px;
+        height: 150px;
+        width: calc(96% / 2);
+        display: inline-block;
+        background-color: #fcfcfc;
+    }
+}
+}
