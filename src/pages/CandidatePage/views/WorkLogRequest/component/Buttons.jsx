@@ -2,7 +2,7 @@ import React from "react";
 
 const Buttons = ({ changeCardsStats }) => {
   return (
-    <div className='btns'>
+    <div className='btns__work_log_request'>
       <button onClick={() => changeCardsStats("pending-approved")}>
         pending approved
       </button>
