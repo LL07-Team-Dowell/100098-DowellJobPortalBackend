@@ -309,7 +309,7 @@ const AddIssueScreen = ({
               style={{ display: "block" }}
             />
           )}
-          {candidateView && teams && (
+          {candidateView && (
             <>
               <span className="selectProject">
                 Select Team you want to create this issue in
