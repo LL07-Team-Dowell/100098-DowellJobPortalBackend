@@ -754,8 +754,8 @@ const SelectedCandidatesScreen = ({
                 disabled={accountPage ? true : disabled}
               >
                 {/* <CheckCircleIcon className="status-icon" /> */}
-                <br />
-                <br />
+                {/* <br />
+                <br /> */}
                 <div className="textt">Pay</div>
               </button>
             ) : (
@@ -836,6 +836,7 @@ const SelectedCandidatesScreen = ({
                   )
                 }
                 disabled={accountPage && rehireTabActive ? true : disabled}
+                style={rehireTabActive ? { margin: '0 14px'} : {}}
               >
                 {/* <BsStopCircle className='status-icon' /> */}
                 {/* <br /><br/> */}
@@ -915,8 +916,8 @@ const SelectedCandidatesScreen = ({
                   disabled={disabled}
                 >
                   {/* <BsStopCircle className="status-icon" /> */}
-                  <br />
-                  <br />
+                  {/* <br />
+                  <br /> */}
                   <div className="textt">Onboarding</div>
                 </button>
                 <button
@@ -928,8 +929,8 @@ const SelectedCandidatesScreen = ({
                   disabled={disabled}
                 >
                   {/* <BsStopCircle className="status-icon" /> */}
-                  <br />
-                  <br />
+                  {/* <br />
+                  <br /> */}
                   <div className="textt">Reject</div>
                 </button>
               </div>
