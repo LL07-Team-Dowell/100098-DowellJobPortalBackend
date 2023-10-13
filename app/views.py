@@ -5877,22 +5877,46 @@ class Generate_Report(APIView):
 
             _tasks_added = dowellconnection(
                 *task_management_reports,
-                "fetch",
-                {"task_added_by": username},
-                update_field,
+                "fetch",{"task_added_by":username},update_field,
             )
+            
             _task_details = dowellconnection(
                 *task_details_module, "fetch", {}, update_field
             )
+            #print([r for r in json.loads(_task_details)["data"] if "task_approved_by" in r.keys() and r["task_approved_by"] == username],username)
 
-            tasks_added = []
-            for t in json.loads(_tasks_added)["data"]:
-                for task in json.loads(_task_details)["data"]:
+            tasks_details = []
+            _tasks_list = []
+            _tasks_completed = []
+            _tasks_uncompleted = []
+            _tasks_approved = []
+            _tasks_you_approved = []
+            _tasks_you_marked_as_complete = []
+            _tasks_you_marked_as_incomplete = []
+            for task in json.loads(_task_details)["data"]:
+                for t in json.loads(_tasks_added)["data"]:
                     if t["_id"] == task["task_id"]:
-                        tasks_added.append(t)
+                        _tasks_list.append(t)
+                        tasks_details.append(task)
+                        
+                if "task_approved_by" in task.keys() and task["task_approved_by"] == username:
+                    _tasks_you_approved.append(task)
+                if "task_approved_by" in task.keys() and task["task_approved_by"] == username and (
+                            task["status"] == "Completed"
+                            or task["status"] == "Complete"
+                            or task["status"] == "completed"
+                            or task["status"] == "complete"
+                        ):
+                    _tasks_you_marked_as_complete.append(task)
+                if "task_approved_by" in task.keys() and task["task_approved_by"] == username and (
+                            task["status"] == "Incomplete"
+                            or task["status"] == "incompleted"
+                            or task["status"] == "incomplete"
+                            or task["status"] == "Incompleted"
+                        ):
+                            _tasks_you_marked_as_incomplete.append(task)
+                
 
-            # tasks_completed =[t for t in json.loads(tasks_added)['data'] if t["status"]=="Completed"]
-            # tasks_uncompleted =[t for t in json.loads(tasks_added)['data'] if t["status"]=="Incomplete"]
             teams = dowellconnection(
                 *team_management_modules, "fetch", {}, update_field
             )
@@ -5905,6 +5929,7 @@ class Generate_Report(APIView):
 
             _teams_list = []
             _teams_ids = []
+            
             for team in json.loads(teams)["data"]:
                 try:
                     if username in team["members"]:
@@ -5912,13 +5937,7 @@ class Generate_Report(APIView):
                         _teams_ids.append(team["_id"])
                 except KeyError:
                     pass
-            _tasks_list = []
-            _tasks_completed = []
-            _tasks_uncompleted = []
-            _tasks_approved = []
-            _tasks_you_approved = []
-            _tasks_you_marked_as_complete = []
-            _tasks_you_marked_as_incomplete = []
+
             _teams_tasks = []
             _teams_tasks_completed = []
             _teams_tasks_uncompleted = []
@@ -5927,76 +5946,20 @@ class Generate_Report(APIView):
             _teams_tasks_issues_raised_ids = []
             _teams_tasks_issues_resolved = []
             _teams_tasks_comments_added = []
-            if len(tasks_added) != 0:
-                for task in tasks_added:
-                    try:
-                        if task["task_added_by"] == username:
-                            
-                            _tasks_list.append(task)
-                    except KeyError:
-                        pass
-                    try:
-                        if task["task_added_by"] == username:
-                            if (
-                                task["status"] == "Incomplete"
-                                or task["status"] == "incompleted"
-                                or task["status"] == "incomplete"
-                                or task["status"] == "Incompleted"
-                            ):
-                                _tasks_uncompleted.append(task)
-                    except KeyError:
-                        pass
-                    try:
-                        if task["task_added_by"] == username:
-                            if (
-                                task["status"] == "Completed"
-                                or task["status"] == "Complete"
-                                or task["status"] == "completed"
-                                or task["status"] == "complete"
-                            ):
-                                _tasks_completed.append(task)
-                    except KeyError:
-                        pass
-                    try:
-                        if (
-                            task["task_added_by"] == username
-                            and task["status"] == "Mark as complete"
-                        ):
-                            _tasks_completed.append(task)
-                    except KeyError:
-                        pass
-                    try:
-                        if task["approved"] == True or task["approval"] == True:
+            if len(tasks_details) != 0:
+                for task in tasks_details:
+                    
+                    if "approved" in task.keys() :
+                            if task["approved"] == True:
+                                _tasks_approved.append(task)
+                    if "approval" in task.keys():
+                        if task["approval"] == True:
                             _tasks_approved.append(task)
-                    except Exception:
-                        pass
-                    try:
-                        if task["task_approved_by"] == username and (
-                            task["approved"] == True or task["approval"] == True
-                        ):
-                            _tasks_you_approved.append(task)
-                    except KeyError:
-                        pass
-                    try:
-                        if task["task_approved_by"] == username and (
-                            task["status"] == "Completed"
-                            or task["status"] == "Complete"
-                            or task["status"] == "completed"
-                            or task["status"] == "complete"
-                        ):
-                            _tasks_you_marked_as_complete.append(task)
-                    except KeyError:
-                        pass
-                    try:
-                        if task["task_approved_by"] == username and (
-                            task["status"] == "Incomplete"
-                            or task["status"] == "incompleted"
-                            or task["status"] == "incomplete"
-                            or task["status"] == "Incompleted"
-                        ):
-                            _tasks_you_marked_as_incomplete.append(task)
-                    except KeyError:
-                        pass
+                    if "status" in task.keys():
+                        if  task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete" or task["status"] == "Mark as complete":
+                                _tasks_completed.append(task)
+                        if  task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted":
+                               _tasks_uncompleted.append(task) 
                     try:
                         if task["team_id"] in _teams_ids:
                             _teams_tasks.append(task)
@@ -6167,6 +6130,92 @@ class Generate_Report(APIView):
             else:
                 for key, value in item.items():
                     item[key].update({"tasks_uncompleted": 0})
+            # tasks you approved ---------------------
+            if len(_tasks_you_approved) != 0:
+                months = []
+                for task in _tasks_you_approved:
+                    month_name = month_list[
+                        datetime.datetime.strptime(
+                            set_date_format(task["task_created_date"]),
+                            "%m/%d/%Y %H:%M:%S",
+                        ).month
+                    ]
+                    # print(month_name,"=====",task["task_created_date"],"====",item.keys())
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        if (
+                            str(
+                                datetime.datetime.strptime(
+                                    set_date_format(task["task_created_date"]),
+                                    "%m/%d/%Y %H:%M:%S",
+                                ).year
+                            )
+                            == year
+                        ):
+                            item[month_name].update(
+                                {"tasks_you_approved": months.count(month_name)}
+                            )
+            else:
+                for key, value in item.items():
+                    item[key].update({"tasks_you_approved": 0})
+            
+            # tasks you marked as complete ---------------------
+            if len(_tasks_you_marked_as_complete) != 0:
+                months = []
+                for task in _tasks_you_marked_as_complete:
+                    month_name = month_list[
+                        datetime.datetime.strptime(
+                            set_date_format(task["task_created_date"]),
+                            "%m/%d/%Y %H:%M:%S",
+                        ).month
+                    ]
+                    # print(month_name,"=====",task["task_created_date"],"====",item.keys())
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        if (
+                            str(
+                                datetime.datetime.strptime(
+                                    set_date_format(task["task_created_date"]),
+                                    "%m/%d/%Y %H:%M:%S",
+                                ).year
+                            )
+                            == year
+                        ):
+                            item[month_name].update(
+                                {"tasks_you_marked_as_complete": months.count(month_name)}
+                            )
+            else:
+                for key, value in item.items():
+                    item[key].update({"tasks_you_marked_as_complete": 0})
+            
+            # tasks you marked as incomplete ---------------------
+            if len(_tasks_you_marked_as_incomplete) != 0:
+                months = []
+                for task in _tasks_you_marked_as_incomplete:
+                    month_name = month_list[
+                        datetime.datetime.strptime(
+                            set_date_format(task["task_created_date"]),
+                            "%m/%d/%Y %H:%M:%S",
+                        ).month
+                    ]
+                    # print(month_name,"=====",task["task_created_date"],"====",item.keys())
+                    months.append(month_name)
+                    if month_name in item.keys():
+                        if (
+                            str(
+                                datetime.datetime.strptime(
+                                    set_date_format(task["task_created_date"]),
+                                    "%m/%d/%Y %H:%M:%S",
+                                ).year
+                            )
+                            == year
+                        ):
+                            item[month_name].update(
+                                {"tasks_you_marked_as_incomplete": months.count(month_name)}
+                            )
+            else:
+                for key, value in item.items():
+                    item[key].update({"tasks_you_marked_as_incomplete": 0})
 
             # teams----------------------------------------
             if len(_teams_list) != 0:

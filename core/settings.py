@@ -32,7 +32,6 @@ ALLOWED_HOSTS = [
     "127.0.0.1:8000/",
     "100098.pythonanywhere.com",
 ]
-
 # Application definition
 
 INSTALLED_APPS = [
