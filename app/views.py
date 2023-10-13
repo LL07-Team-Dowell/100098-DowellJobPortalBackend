@@ -1868,7 +1868,7 @@ class get_all_task_request_update(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class approve_task_request_update(APIView):
-    def check_approvable(self, id):
+    def check_denied(self, id):
         response = dowellconnection(
             *update_task_request_module, "fetch", {"_id": id}, {}
         )
@@ -1877,11 +1877,42 @@ class approve_task_request_update(APIView):
             return True
         else:
             return False
+    def check_approved(self, id):
+        response = dowellconnection(
+            *update_task_request_module, "fetch", {"_id": id}, {}
+        )
+        data = json.loads(response)["data"][0]
+        if data["approved"] is True:
+            return False
+        else:
+            return True
 
     def patch(self, request, document_id):
-        if self.check_approvable(document_id) is True:
+        data = request.data
+        
+        if self.check_approved(document_id) is False:
+            return Response(
+                {
+                    "error": "Request failed to be approved",
+                    "response": "Request has already been approved",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if self.check_denied(document_id) is True:
+            if not data.get("approved_by"):
+                return Response(
+                    {
+                        "error": "Request failed to be approved",
+                        "response": "Ensure that 'approved_by' is set to your username",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             field = {"_id": document_id}
-            update_field = {"approved": True}
+            update_field = {
+                "approved": True,
+                "approved_by":data.get("approved_by"),
+                "approved_on":set_date_format(datetime.datetime.now())
+                }
             response = dowellconnection(
                 *update_task_request_module, "update", field, update_field
             )
@@ -1892,7 +1923,7 @@ class approve_task_request_update(APIView):
             if isSuccess:
                 return Response(
                     {
-                        "message": "Task is approved",
+                        "message": "Request is approved",
                         "response": response_json,
                     },
                     status=status.HTTP_200_OK,
@@ -1900,16 +1931,16 @@ class approve_task_request_update(APIView):
             else:
                 return Response(
                     {
-                        "message": "Task approval failed",
+                        "message": "Request failed to be approved",
                         "response": response_json,
                     },
-                    status=status.status.HTTP_400_BAD_REQUEST,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
             return Response(
                 {
-                    "error": "Task approval failed",
-                    "response": "Task has already been denied",
+                    "error": "Request failed to be approved",
+                    "response": "Request has already been denied",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -1917,23 +1948,59 @@ class approve_task_request_update(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class denied_task_request_update(APIView):
-    def check_deniable(self, id):
+    def check_denied(self, id):
         response = dowellconnection(
             *update_task_request_module, "fetch", {"_id": id}, {}
         )
         data = json.loads(response)["data"][0]
-        if data["approved"] is False:
+        if data["request_denied"] is False:
             return True
         else:
             return False
+    def check_approved(self, id):
+        response = dowellconnection(
+            *update_task_request_module, "fetch", {"_id": id}, {}
+        )
+        data = json.loads(response)["data"][0]
+        if data["approved"] is True:
+            return False
+        else:
+            return True
 
     def patch(self, request, document_id):
         data = request.data
-        if self.check_deniable(document_id) is True:
+        
+        if self.check_denied(document_id) is False:
+            return Response(
+                {
+                    "error": "Request failed to be denied",
+                    "response": "Request has already been denied",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if self.check_approved(document_id) is True:
+            if not data.get("reason_for_denial"):
+                return Response(
+                    {
+                        "error": "Request failed to be denied",
+                        "response": "The Reason for denial has not been added",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not data.get("denied_by"):
+                return Response(
+                    {
+                        "error": "Request failed to be denied",
+                        "response": "Ensure that 'denied_by' is set to your username",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             field = {"_id": document_id}
             update_field = {
                 "request_denied": True,
                 "reason_for_denial": data.get("reason_for_denial"),
+                "denied_by":data.get("denied_by"),
+                "denied_on":set_date_format(datetime.datetime.now())
             }
 
             response = dowellconnection(
@@ -1946,7 +2013,7 @@ class denied_task_request_update(APIView):
             if isSuccess:
                 return Response(
                     {
-                        "message": "Task is denied",
+                        "message": "Request has been denied",
                         "response": response_json,
                     },
                     status=status.HTTP_200_OK,
@@ -1954,7 +2021,7 @@ class denied_task_request_update(APIView):
             else:
                 return Response(
                     {
-                        "message": "Task denial failed",
+                        "message": "Request failed to be denied",
                         "response": response_json,
                     },
                     status=status.HTTP_400_BAD_REQUEST,
@@ -1962,8 +2029,8 @@ class denied_task_request_update(APIView):
         else:
             return Response(
                 {
-                    "error": "Task denial failed",
-                    "response": "Task has already been approved",
+                    "error": "Request failed to be denied",
+                    "response": "Request has already been approved",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )

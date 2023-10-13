@@ -22,16 +22,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-8^e(uccf37__s49*t5!z(14davy4$0ywo!ofwomox+_6qy-v+@"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = [
+"""ALLOWED_HOSTS = [
     "ll07-team-dowell.github.io/Jobportal/",
     "localhost:3000/Jobportal",
     "ll07-team-dowell.github.io/100098-DowellJobPortal/",
     "localhost:3000/100098-DowellJobPortal/",
     "127.0.0.1:8000/",
     "100098.pythonanywhere.com",
-]
+]"""
 # Application definition
 
 INSTALLED_APPS = [
