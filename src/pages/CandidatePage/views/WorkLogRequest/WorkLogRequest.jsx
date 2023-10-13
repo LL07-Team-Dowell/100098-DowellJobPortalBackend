@@ -21,38 +21,43 @@ const WorkLogRequest = () => {
     <JobLandingLayout user={currentUser} afterSelection={true}>
       <div className='work__log__request'>
         <Buttons changeCardsStats={changeCardsStats} />
-        {cardData === "pending-approved"
-          ? data
-              .filter(
-                (element) =>
-                  element.approved === false && element.request_denied === false
-              )
-              .map((element, index) => (
-                <Card key={`pending__approved__card${index}`} {...element} />
-              ))
-          : cardData === "approved"
-          ? data
-              .filter(
-                (element) =>
-                  element.approved === true && element.request_denied === false
-              )
-              .map((element, index) => (
-                <Card
-                  key={`approved__card${index}`}
-                  updateTask={true}
-                  {...element}
-                />
-              ))
-          : cardData === "denied"
-          ? data
-              .filter(
-                (element) =>
-                  element.approved === false && element.request_denied === true
-              )
-              .map((element, index) => (
-                <Card key={`denied__card${index}`} {...element} />
-              ))
-          : null}
+        <div className='cards'>
+          {cardData === "pending-approved"
+            ? data
+                .filter(
+                  (element) =>
+                    element.approved === false &&
+                    element.request_denied === false
+                )
+                .map((element, index) => (
+                  <Card key={`pending__approved__card${index}`} {...element} />
+                ))
+            : cardData === "approved"
+            ? data
+                .filter(
+                  (element) =>
+                    element.approved === true &&
+                    element.request_denied === false
+                )
+                .map((element, index) => (
+                  <Card
+                    key={`approved__card${index}`}
+                    updateTask={true}
+                    {...element}
+                  />
+                ))
+            : cardData === "denied"
+            ? data
+                .filter(
+                  (element) =>
+                    element.approved === false &&
+                    element.request_denied === true
+                )
+                .map((element, index) => (
+                  <Card key={`denied__card${index}`} {...element} />
+                ))
+            : null}
+        </div>
       </div>
     </JobLandingLayout>
   );
