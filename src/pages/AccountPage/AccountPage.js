@@ -446,10 +446,10 @@ const AccountPage = () => {
                           ? newJoniees
                             ? candidatesData.onboardingCandidates.filter(
                                 (applicant) =>
-                                  (present_date.getTime() -
-                                    new Date(applicant.hired_on).getTime()) /
-                                    (1000 * 3600 * 24) <=
-                                    14 ||
+                                  // (present_date.getTime() -
+                                  //   new Date(applicant.hired_on).getTime()) /
+                                  //   (1000 * 3600 * 24) <=
+                                  //   14 ||
                                   (present_date.getTime() -
                                     new Date(
                                       applicant.onboarded_on
@@ -589,10 +589,10 @@ const AccountPage = () => {
                             candidatesData.onboardingCandidates
                               .filter(
                                 (applicant) =>
-                                  (present_date.getTime() -
-                                    new Date(applicant.hired_on).getTime()) /
-                                    (1000 * 3600 * 24) <=
-                                    14 ||
+                                  // (present_date.getTime() -
+                                  //   new Date(applicant.hired_on).getTime()) /
+                                  //   (1000 * 3600 * 24) <=
+                                  //   14 ||
                                   (present_date.getTime() -
                                     new Date(
                                       applicant.onboarded_on
