@@ -25,7 +25,7 @@ const WorkLogRequest = () => {
           <div className='cards'>
             {cardData === "pending-approved"
               ? data
-                  .filter(
+                  ?.filter(
                     (element) =>
                       element.approved === false &&
                       element.request_denied === false
@@ -38,7 +38,7 @@ const WorkLogRequest = () => {
                   ))
               : cardData === "approved"
               ? data
-                  .filter(
+                  ?.filter(
                     (element) =>
                       element.approved === true &&
                       element.request_denied === false
@@ -52,7 +52,7 @@ const WorkLogRequest = () => {
                   ))
               : cardData === "denied"
               ? data
-                  .filter(
+                  ?.filter(
                     (element) =>
                       element.approved === false &&
                       element.request_denied === true
