@@ -151,7 +151,7 @@ const CreateTeam = ({ isAdmin }) => {
 
     const dataToPost = {
       session_id: currentSessionId,
-      product: teamManagementProduct?.product,
+      product: teamManagementProduct?.product ? teamManagementProduct?.product : teamManagementProductName,
     };
 
     getUserInfoFromLoginAPI(dataToPost)
