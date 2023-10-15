@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useReducer } from "react";
 import "./style.scss";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import JobLandingLayout from "../../../../layouts/CandidateJobLandingLayout/LandingLayout";
@@ -8,17 +8,25 @@ import Buttons from "../../../CandidatePage/views/WorkLogRequest/component/Butto
 import { useState } from "react";
 import Card from "../../../CandidatePage/views/WorkLogRequest/component/Card";
 import { useNavigate } from "react-router-dom";
-import { approveLogRequest, denyLogRequest, getAllUpdateTask } from "../../../../services/taskUpdateServices";
+import {
+  approveLogRequest,
+  denyLogRequest,
+  getAllUpdateTask,
+} from "../../../../services/taskUpdateServices";
+import { toast } from "react-toastify";
+import LittleLoading from "../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 
-const WorkLogRequest = () => {
+const WorkLogRequest = ({ cardData }) => {
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(undefined);
+  const [approveRequestbtn, setApproveRequestBtn] = useState(false);
+  const [data, setData] = useState([]);
+  const [approve, setApprove] = useState([]);
+  const [deny, setDeny] = useState([]);
+  const [pendingApproval, setPendingApproval] = useState([]);
   const { error } = useGetAllUpdateTask(currentUser);
-  const [cardData, setCardData] = useState("pending-approved");
-  const changeCardsStats = (cardData) => {
-    setCardData(cardData);
-  };
+  const [reducerReuest, forceUpdate] = useReducer((x) => x + 1, 0);
+  const [reducerRequest, forceUpdateRequest] = useReducer((x) => x + 1, 0);
   const navigate = useNavigate();
   // asdsad
 
@@ -28,82 +36,142 @@ const WorkLogRequest = () => {
     getAllUpdateTask(currentUser.portfolio_info[0].org_id)
       .then((response) => {
         // console.log(response.data.response.data);
-        setData(
-          response?.data?.response?.data?.filter(
-            (applicant) =>
-              applicant?.company_id === currentUser.portfolio_info[0].org_id
-          )
+        const request = response?.data?.response?.data;
+        const sortedRequest = request.filter(
+          (applicant) =>
+            applicant?.company_id === currentUser.portfolio_info[0].org_id
         );
+        setData(sortedRequest);
+
+        const approveRequest = sortedRequest?.filter(
+          (element) =>
+            element.approved === true && element.request_denied === false
+        );
+
+        const denyRequest = sortedRequest?.filter(
+          (element) =>
+            element.approved === false && element.request_denied === true
+        );
+
+        const pendingApprovalRequest = sortedRequest?.filter(
+          (element) =>
+            element.approved === false && element.request_denied === false
+        );
+
+        setApprove(approveRequest);
+        setDeny(denyRequest);
+        setPendingApproval(pendingApprovalRequest);
         setLoading(false);
       })
       .catch((error) => {
-        setLoading(false)
+        setLoading(false);
         console.log(error);
       });
-  }, []);
+  }, [reducerReuest, reducerRequest]);
 
-  const approveRequest = () => {
-    approveLogRequest(currentUser.portfolio_info[0].org_id)
-    .then((response) => {
-      console.log(response.date)
+  const approveRequest = (element) => {
+    setApproveRequestBtn(true);
+    approveLogRequest(element._id, {
+      approved_by: currentUser.userinfo.username,
     })
-  }
+      .then((response) => {
+        console.log(response.data);
+        if (response.status === 200) {
+          setApproveRequestBtn(false);
+          toast.success("Approved");
+          forceUpdateRequest();
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const denyRequest = () => {
-    denyLogRequest()
-  }
+    denyLogRequest();
+  };
 
   if (error) return <h1>{error}</h1>;
+
+  if (loading) return <LoadingSpinner />;
   return (
-    <JobLandingLayout user={currentUser} afterSelection={true}>
-      <div className="work__log__request">
-        <Buttons changeCardsStats={changeCardsStats} />
-        {!loading ? (
-          <div className="cards">
-            {cardData === "pending-approved"
-              ? data
-                  ?.filter(
-                    (element) =>
-                      element.approved === false &&
-                      element.request_denied === false
-                  )
-                  .map((element, index) => (
-                    <Card
-                      key={`pending__approved__card${index}`}
-                      approve={true}
-                      deny={true}
-                      handleApproveBtnClick={() => approveRequest()}
-                      // handleDenyBtnClick={() => denyRequest()}
-                      {...element}
-                    />
-                  ))
-              : cardData === "approved"
-              ? data
-                  ?.filter(
-                    (element) =>
-                      element.approved === true &&
-                      element.request_denied === false
-                  )
-                  .map((element, index) => (
-                    <Card key={`approved__card${index}`} {...element} />
-                  ))
-              : cardData === "denied"
-              ? data
-                  ?.filter(
-                    (element) =>
-                      element.approved === false &&
-                      element.request_denied === true
-                  )
-                  .map((element, index) => (
-                    <Card key={`denied__card${index}`} {...element} />
-                  ))
-              : null}
-          </div>
-        ) : (
-          <LoadingSpinner />
+    <div className="work__log__request">
+      <div className="cards">
+        {cardData === "Pending approval" && (
+          <>
+            {React.Children.toArray(
+              pendingApproval.map((element) => (
+                <div className="card__work__log__request" key={element._id}>
+                  <h2>{element.username}</h2>
+                  <p>
+                    Date of request:{" "}
+                    {new Date(element.update_task_date).toDateString()}
+                  </p>
+                  <p>Request reason: {element.update_reason}</p>
+                  <div className="request__action__btn">
+                    {approveRequestbtn ? (
+                      <LittleLoading />
+                    ) : (
+                      <button
+                        className="req__act__btn "
+                        onClick={() =>
+                          approveRequest(element, {
+                            cardData: "Approved",
+                          })
+                        }
+                      >
+                        Approve
+                      </button>
+                    )}
+                    <button
+                      className="req__act__btn deny"
+                      onClick={() => denyRequest()}
+                    >
+                      Deny
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </>
+        )}
+
+        {cardData === "Approved" && (
+          <>
+            {React.Children.toArray(
+              approve.map((element) => (
+                <div className="card__work__log__request" key={element._id}>
+                  <h2>{element.username}</h2>
+                  <p>
+                    Date of request:{" "}
+                    {new Date(element.update_task_date).toDateString()}
+                  </p>
+                  <p>Request reason: {element.update_reason}</p>
+                </div>
+              ))
+            )}
+          </>
+        )}
+
+        {cardData === "Denied" && (
+          <>
+            {React.Children.toArray(
+              deny.map((element) => (
+                <div className="card__work__log__request" key={element._id}>
+                  <h2>{element.username}</h2>
+                  <p>
+                    Date of request:{" "}
+                    {new Date(element.update_task_date).toDateString()}
+                  </p>
+                  <p>Request reason: {element.update_reason}</p>
+                  <p>Reason for denial: {element.reason_for_denial}</p>
+                </div>
+              ))
+            )}
+          </>
         )}
       </div>
-    </JobLandingLayout>
+    </div>
   );
 };
 

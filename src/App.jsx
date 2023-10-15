@@ -83,6 +83,7 @@ import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport
 import WorkLogRequest from "./pages/TeamleadPage/views/WorkLogRequest/WorkLogRequest";
 import WorkLogRequestCandidate from "./pages/CandidatePage/views/WorkLogRequest/WorkLogRequest";
 import { teamManagementProductName } from "./utils/utils";
+import LogRequest from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestNav";
 
 function App() {
   // console.log = () => {};
@@ -928,7 +929,7 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
-                <WorkLogRequest />
+                <LogRequest />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }

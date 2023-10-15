@@ -6,15 +6,16 @@ export const getAllUpdateTask = async (company_id) => {
   );
 };
 
-export const approveLogRequest = async (id) => {
+export const approveLogRequest = async (document_id, data) => {
   return await currentBackendAxiosInstance.patch(
-    `get_all_update_task/${id}`
+    `approve_task_update_request/${document_id}/`,
+    data
   );
 };
 
-export const denyLogRequest = async ( id, data) => {
+export const denyLogRequest = async (document_id, data) => {
   return await currentBackendAxiosInstance.patch(
-    `get_all_update_task/${id}`,
+    `denied_task_update_request/${document_id}/`,
     data
   );
 };
