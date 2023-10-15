@@ -8,7 +8,7 @@ export const ModalContainer = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,8 +19,8 @@ export const ModalContent = styled.div`
   background-color: #fff;
   padding: 20px;
   border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
-  width: 400px;
+  box-shadow: 0 7px 29px 0 rgba(100, 100, 111, 0.2);
+  width: 450px;
   position: relative;
   `;
 
@@ -40,24 +40,33 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description }) 
     return (
         <ModalContainer>
             <ModalContent>
-                <h3 style={{ textAlign: 'center' }}>View Team Task Details</h3>
+                <h3 style={{ 
+                    // textAlign: 'center', 
+                    fontSize: '1.5rem', 
+                    fontFamily: 'Poppins, sans-serif', 
+                    letterSpacing: '0.03em',
+                    color: '#005734'
+                }}>
+                    View Team Task Details
+                </h3>
 
                 <div>
                     <h4>Task</h4>
-                    <p>{taskname}</p>
+                    <p style={{ fontSize: '0.9rem' }}>{taskname}</p>
                 </div>
+                <br />
                 <div>
                     <h4>Description</h4>
-                    <p>{description}</p>
+                    <p style={{ fontSize: '0.9rem' }}>{description}</p>
                 </div>
                 <br />
                 <div>
                     <h4>Status</h4>
-                    <p>{status ? 'Completed' : 'In Progress'}</p>
+                    <p style={{ fontSize: '0.9rem' }}>{status ? 'Completed' : 'In Progress'}</p>
                 </div>
                 <br />
                 <div>
-                    <h4>Member Assigned</h4>
+                    <h4>{`Member${memberassign?.length > 1 ? 's' : ''} Assigned`}</h4>
 
                     {memberassign?.map((membur, index) => {
                         // Assuming membur is a string with first and last name separated by a space

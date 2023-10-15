@@ -224,7 +224,7 @@ const AddTaskScreen = ({
         } catch (error) {
 
           console.log(error);
-          toast.error('An error occured while trying to edit your task');
+          toast.error('An error occured while trying to edit your work log');
           setLoading(false);
           setDisabled(false);
           setEditLoading(false);

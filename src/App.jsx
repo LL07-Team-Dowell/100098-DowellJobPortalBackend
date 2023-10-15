@@ -85,7 +85,7 @@ import WorkLogRequestCandidate from "./pages/CandidatePage/views/WorkLogRequest/
 import { teamManagementProductName } from "./utils/utils";
 
 function App() {
-  // console.log = () => {};
+  console.log = () => {};
 
   const {
     currentUser,
