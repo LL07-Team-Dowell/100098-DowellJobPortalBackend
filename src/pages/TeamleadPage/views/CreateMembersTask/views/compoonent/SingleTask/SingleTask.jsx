@@ -3,6 +3,7 @@ import ModelDetails from "./ModelDetails";
 import axios from "axios";
 import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
+
 const SingleTask = ({
   title,
   image,
@@ -105,6 +106,7 @@ const SingleTask = ({
             <button
               className='team-screen-task-progress-detail-btn'
               onClick={completeTaskFunction}
+              style={{ marginLeft: 20 }}
             >
               {loading ? (
                 <LoadingSpinner width={30} height={30} color={"white"} />

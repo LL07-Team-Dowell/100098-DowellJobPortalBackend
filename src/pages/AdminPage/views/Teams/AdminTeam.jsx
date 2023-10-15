@@ -11,6 +11,7 @@ import "./index.scss";
 import { getAllTeams } from "../../../../services/createMembersTasks";
 import Navbar from "../../../TeamleadPage/views/CreateMembersTask/component/Navbar";
 import DeleteConfirmationTeam from "../../../../components/DeleteConfirmationTeam/DeleteConfirmationTeam";
+
 const AdminTeam = () => {
   const { currentUser } = useCurrentUserContext();
   const { data, setdata } = useValues();
@@ -39,6 +40,10 @@ const AdminTeam = () => {
           ...data,
           TeamsSelected: resp.data.response.data.filter(
             (team) => team.data_type === currentUser.portfolio_info[0].data_type
+          ).filter(
+            (team) => 
+              team?.created_by === currentUser?.userinfo?.username ||
+            team?.members?.includes(currentUser?.userinfo?.username)
           ),
         });
         setresponse(true);

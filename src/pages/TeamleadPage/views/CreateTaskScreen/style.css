@@ -143,8 +143,8 @@
   }
 
   .task__Details__Item {
-    width: 90%;
-    margin-left: 1.1rem;
+    width: 100%;
+    /* margin-left: 1.1rem; */
   }
 
   .candidate-task-container .approve__Task__Btn {

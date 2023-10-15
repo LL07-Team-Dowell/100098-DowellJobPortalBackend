@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BiEdit } from "react-icons/bi";
+import { BiEdit, BiSelectMultiple } from "react-icons/bi";
 import { formatDateAndTime } from "../../../../helpers/helpers";
 import { candidateUpdateTaskForTeamLead } from "../../../../services/teamleadServices";
 import CustomHr from "../CustomHr/CustomHr";
@@ -10,6 +10,7 @@ import Button from "../../../AdminPage/components/Button/Button";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { AiOutlineCheckCircle } from "react-icons/ai";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import BatchApproveModal from "./BatchApproveModal/BatchApproveModal";
 
 
 const CandidateTaskItem = ({ 
@@ -23,6 +24,10 @@ const CandidateTaskItem = ({
   newTaskItem,
   tasks,
   subproject,
+  batchApprovalLoading,
+  handleBatchApproveTasks,
+  showBatchApprovalModal,
+  setShowBatchApprovalModal,
 }) => {
 
     const [ tasksBeingUpdated, setTasksBeingUpdated ] = useState([]);
@@ -69,7 +74,7 @@ const CandidateTaskItem = ({
     return (
       <>
         <div className="candidate-task-container">
-          <div className="candidate-task-status-container">
+          <div className="candidate-task-status-container" style={{ marginBottom: '2.5rem' }}>
             <div className="candidate-task-details">
               {/*<span className="task__Title">
                 {" "}
@@ -79,7 +84,7 @@ const CandidateTaskItem = ({
                 )}
                 </span>*/}
               {
-                newTaskItem ? <span className="task__Title">
+                newTaskItem ? <span className="task__Title" style={{ marginBottom: 0 }}>
                   {" "}
                   Work logs added
                   {!candidatePage && (
@@ -104,6 +109,16 @@ const CandidateTaskItem = ({
               
               {/*<span className="task__Description">Task Description: <br />{currentTask.description}</span>*/}
             </div>
+
+            {
+              !candidatePage && 
+              <Button
+                text={"Batch Approval"}
+                icon={<BiSelectMultiple />}
+                handleClick={() => setShowBatchApprovalModal(true)}
+                className={'approve__Task__Btn batch'}
+              />
+            }
 
             {
               candidatePage ? (
@@ -225,6 +240,17 @@ const CandidateTaskItem = ({
 
           <CustomHr />
         </div>
+
+        {
+          showBatchApprovalModal && <>
+            <BatchApproveModal 
+              batchApprovalLoading={batchApprovalLoading}
+              handleCloseModal={() => setShowBatchApprovalModal(false)}
+              logs={tasks.filter(task => !task.approved)}
+              handleApproveSelected={(selectedLogs) => handleBatchApproveTasks(selectedLogs)}
+            />
+          </>
+        }
       </>
     );
 
