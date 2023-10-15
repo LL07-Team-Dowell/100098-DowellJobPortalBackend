@@ -59,6 +59,8 @@ const CreateTaskScreen = ({
   const [ allSubProjects, setAllSubprojects ] = useState([]);
   const [ subprojectSelected, setSubprojectSelected ] = useState('');
   const [ showSubprojectSelection, setShowSubprojectSelection ] = useState(false);
+  const [ batchApprovalLoading, setBatchApprovalLoading ] = useState(false);
+  const [ showBatchApprovalModal, setShowBatchApprovalModal ] = useState(false);
 
 
   useEffect(() => {
@@ -279,21 +281,90 @@ const CreateTaskScreen = ({
 
       console.log(response.data);
       if (response.status === 200) {
-        toast.success("Task approved");
+        toast.success("Log approved");
       }
     } catch (err) {
       console.log(err.response);
       toast.error(
         err.response
           ? err.response.status === 500
-            ? 'Task approval failed'
+            ? 'Log approval failed'
             : err.response.data.message
-          : 'Task approval failed'
+          : 'Log approval failed'
       );
       setTasksBeingApproved(copyOfTasksBeingApproved.filter(t => task.single_task_id !== t.single_task_id));
 
     }
   };
+
+  const handleBatchApproveTasks = async (logs) => {
+    const copyOfTasksBeingApproved = tasksBeingApproved.slice();
+    setTasksBeingApproved([
+      ...copyOfTasksBeingApproved, 
+      ...logs.map(log => {
+        return {
+          single_task_id: log,
+        }
+      })
+    ]);
+    setBatchApprovalLoading(true);
+
+    const logApprovalAPICalls = await Promise.all(logs.map(async (log) => {
+      try {
+        await approveTask({
+          document_id: log,
+          lead_username: currentUser?.userinfo?.username,
+        });
+  
+        const copyOfTasks = tasksForTheDay && Array.isArray(tasksForTheDay) ? 
+          tasksForTheDay.slice() 
+          : 
+        null
+        const foundIndexOfUpdatedTask = copyOfTasks?.findIndex(t => t.single_task_id === log);
+  
+        if (copyOfTasks && foundIndexOfUpdatedTask !== -1) {
+          const taskAtIndex = copyOfTasks[foundIndexOfUpdatedTask];
+          copyOfTasks[foundIndexOfUpdatedTask] = { ...taskAtIndex, approved: true };
+          setTasksForTheDay(copyOfTasks);
+        }
+  
+        const copyOfTasksDate = tasksDate.slice();
+        const copyOfTasksDateObjIndex = copyOfTasksDate.findIndex(i => i.tasksAdded.find(t => t.single_task_id === log))
+        if (copyOfTasksDateObjIndex !== -1) {
+          const updatedTasksAddedForDate = copyOfTasksDate[copyOfTasksDateObjIndex]?.tasksAdded?.map(t => {
+            if (t.single_task_id === log) {
+              return {
+                ...t,
+                approved: true,
+              }
+            }
+            return t
+          });
+          copyOfTasksDate[copyOfTasksDateObjIndex].tasksAdded = updatedTasksAddedForDate;
+          setTasksDate(copyOfTasksDate);
+        }
+        
+  
+        const copyOfTasksBeingApproved = tasksBeingApproved.slice();
+        copyOfTasksBeingApproved.filter(t => t.single_task_id !== log);
+        setTasksBeingApproved(copyOfTasksBeingApproved);
+  
+        return true
+      } catch (err) {
+        console.log(err.response);
+        setTasksBeingApproved(copyOfTasksBeingApproved.filter(t => log !== t.single_task_id));
+  
+        return false
+      }
+    }))
+
+    const tasksSuccessfullyApproved = logApprovalAPICalls.filter(item => item === true).length
+
+    setShowBatchApprovalModal(false);
+    setBatchApprovalLoading(false);
+
+    toast.success(`Successfully approved ${tasksSuccessfullyApproved} work logs`);
+  }
 
   const handleSelectDateChange = async (date) => {
     setSelectedDate(date);
@@ -452,6 +523,10 @@ const CreateTaskScreen = ({
                               []
                             }
                             subproject={subprojectSelected}
+                            batchApprovalLoading={batchApprovalLoading}
+                            handleBatchApproveTasks={handleBatchApproveTasks}
+                            showBatchApprovalModal={showBatchApprovalModal}
+                            setShowBatchApprovalModal={setShowBatchApprovalModal}
                           />
                         }
                         
@@ -483,6 +558,10 @@ const CreateTaskScreen = ({
                                 []
                               }
                               subproject={subprojectSelected}
+                              batchApprovalLoading={batchApprovalLoading}
+                              handleBatchApproveTasks={handleBatchApproveTasks}
+                              showBatchApprovalModal={showBatchApprovalModal}
+                              setShowBatchApprovalModal={setShowBatchApprovalModal}
                             />
                           );
                         })

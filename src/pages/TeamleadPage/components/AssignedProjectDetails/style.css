@@ -32,3 +32,9 @@
         width: 82%;
     }
 }
+
+@media screen and (max-width: 767px) {
+    .project-details-container .project-info-container {
+        margin-left: auto;
+    }
+}

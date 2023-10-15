@@ -111,6 +111,16 @@
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
 }
 
+.approve__Task__Btn.batch {
+    right: unset;
+    bottom: unset;
+    white-space: nowrap;
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+    min-width: 9.5rem;
+    max-width: 10.5rem;
+}
+
 .candidate-task-container .approve__Task__Btn svg {
     font-size: 1rem;
 }
