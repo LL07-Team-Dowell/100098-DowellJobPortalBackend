@@ -74,27 +74,32 @@ const Team = ({ v, team_name, setChoosedTeam, deleteTeamState,showDeletePopupFun
     showDeletePopupFunction(v._id)
     
   };
+  const { currentUser } = useCurrentUserContext();
+  
   return (
     <li className="team">
-      <div
-        style={{
-          position: "absolute",
-          top: 10,
-          right: 10,
-          width: "fit-content",
-          zIndex: 999,
-          cursor: "pointer",
-        }}
-        onClick={showDeletePopup}
-        data-tooltip-id={v._id}
-        data-tooltip-content={"Delete"}
-      >
-        <MdDelete style={{ fontSize: "1.3rem", color: "#000" }} />
-        <Tooltip
-          id={v._id}
-          style={{ fontSize: "0.7rem", fontWeight: "normal" }}
-        />
-      </div>
+      {
+        v.created_by === currentUser.userinfo.username &&
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+            width: "fit-content",
+            zIndex: 999,
+            cursor: "pointer",
+          }}
+          onClick={showDeletePopup}
+          data-tooltip-id={v._id}
+          data-tooltip-content={"Delete"}
+        >
+          <MdDelete style={{ fontSize: "1.3rem", color: "#000" }} />
+          <Tooltip
+            id={v._id}
+            style={{ fontSize: "0.7rem", fontWeight: "normal" }}
+          />
+        </div>
+      }
       {v.admin_team && (
         <div
           style={{

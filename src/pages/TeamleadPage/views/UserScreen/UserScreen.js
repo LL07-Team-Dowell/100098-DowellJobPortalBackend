@@ -41,6 +41,10 @@ const UserScreen = ({ isGrouplead }) => {
     return <>
         <div className="user__Page__Container teamlead">
             {
+                isGrouplead ? <>
+                    <ClaimVouchar />
+                </>
+                :
                 <>
                     <ClaimVouchar />
                     <ApproveVouchar />

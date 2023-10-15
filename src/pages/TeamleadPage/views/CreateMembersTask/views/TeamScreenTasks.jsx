@@ -93,7 +93,7 @@ const TeamScreenTasks = () => {
         tasks={tasks}
         setTasks={setTasks}
       />
-      {showCreatTask && (
+      {showCreatTask && team?.created_by === currentUser.userinfo.username && (
         <CreateTask
           id={id}
           setTasks={setTasks}
