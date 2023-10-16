@@ -4,6 +4,8 @@ from .views import *
 urlpatterns = [
     # job portal-------------------------------------------
     path("", serverStatus.as_view()),
+    # authentication-------------------------------------------
+    path("auth/", auth.as_view()),
     # accounts management-------------------------------------------
     path("accounts_onboard_candidate/", accounts_onboard_candidate.as_view()),
     path("accounts_update_project/", accounts_update_project.as_view()),

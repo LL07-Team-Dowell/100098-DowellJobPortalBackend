@@ -2,6 +2,7 @@ import json
 import requests
 import pprint
 import os
+import bson
 from datetime import datetime, timedelta
 import datetime
 import base64
@@ -481,3 +482,12 @@ def update_task_status(self, current_task_id, is_active):
         dowellconnection(*task_details_module, "update", field, update_field)
     )
     return response.get("isSuccess", False)
+
+def validate_id(id):
+    try:
+        if bson.objectid.ObjectId.is_valid(id):
+            return True
+        else:
+            return None
+    except:
+        return None

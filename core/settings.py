@@ -32,6 +32,9 @@ ALLOWED_HOSTS = [
     "127.0.0.1:8000/",
     "100098.pythonanywhere.com",
 ]
+JWT_CONF = {"TOKEN_LIFETIME_HOURS": 24}
+
+
 # Application definition
 
 INSTALLED_APPS = [
