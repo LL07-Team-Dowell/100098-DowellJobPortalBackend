@@ -68,10 +68,20 @@
     }
 }
 
-@media screen and (max-width:442px) {
+@media screen and (max-width: 767px) {
 
-    .title__Navigation__Bar__Container,
+    .title__Navigation__Bar__Container {
+        width: 90%;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    
     .title__Navigation__Bar__Container .title__Item {
-        width: 300px;
+        max-width: 100%;
+    }
+
+    .title__Navigation__Bar__Container .title__Item .back__Icon__Container {
+        width: 3rem;
     }
 }

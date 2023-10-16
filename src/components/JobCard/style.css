@@ -164,7 +164,7 @@
 
 @media (max-width: 767px) {
   .job__Card__Container {
-    width: 90%;
+    width: 100%;
     transform: translateX(2px);
   }
 }

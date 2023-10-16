@@ -13,6 +13,24 @@
   padding-bottom: 5%;
 }
 
+.project__Select__Wrapper {
+  width: 76%;
+  margin: 0 auto 1rem;
+}
+
+.project__Select__Wrapper select {
+  margin-left: auto;
+  padding: 0.3rem 0.5rem;
+  display: block;
+  border: none;
+  background-color: #fff;
+  border: 1px solid #005734;
+  border-radius: 6px;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
 @media (min-width: 768px) and (max-width: 991.98px) {
   .tasks-container .add__Btn {
     padding-top: 3%;
@@ -117,9 +135,9 @@
     margin: auto;
   }
 
-  .title__Navigation__Bar__Container {
+  /* .title__Navigation__Bar__Container {
     width: 100%;
-  }
+  } */
 
   .staff__Jobs__Layout__Content__Container .toggler_Nav_Container.teamlead {
     margin: auto;
