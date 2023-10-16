@@ -34,6 +34,7 @@ from .helper import (
     set_date_format,
     update_task_status,
     valid_period,
+    validate_id
 )
 from .serializers import (
     AccountSerializer,
@@ -68,6 +69,9 @@ from .serializers import (
     ReportSerializer,
     ProjectWiseReportSerializer,
     githubinfoserializer,
+)
+from .authorization import (
+    verify_user_token , sign_token,
 )
 from .models import UsersubProject
 from django.views.decorators.csrf import csrf_protect
@@ -225,10 +229,24 @@ class serverStatus(APIView):
             {"info": "Welcome to Dowell-Job-Portal-Version 2.0"},
             status=status.HTTP_200_OK,
         )
-
-
 # api for job portal ends here--------------------------------
 
+## authorization api----------------------------------------
+@method_decorator(csrf_exempt, name="dispatch")
+class auth(APIView):
+    """get jwt token for authorization"""
+    def post(self, request):
+        print(request.data.get("company_id"))
+        if not validate_id(request.data.get("company_id")):
+            return Response("something went wrong ok!", status.HTTP_400_BAD_REQUEST)
+        user = {
+            "username": request.data.get("username"),
+            "portfolio": request.data.get("portfolio"),
+            "data_type": request.data.get("data_type"),
+            "company_id": request.data.get("company_id"),
+        }
+        return sign_token(user)
+## authorization ends here-----------------------------------
 
 # api for account management begins here______________________
 @method_decorator(csrf_exempt, name="dispatch")
@@ -2239,6 +2257,7 @@ class task_module(APIView):
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
 
+    
     def post(self, request):
         type_request = request.GET.get("type")
 
@@ -2257,6 +2276,7 @@ class task_module(APIView):
         else:
             return self.handle_error(request)
 
+    
     def get(self, request):
         type_request = request.GET.get("type")
 
@@ -2267,6 +2287,7 @@ class task_module(APIView):
         else:
             return self.handle_error(request)
 
+    
     def add_task(self, request):
         data = request.data
         payload = {
@@ -2364,6 +2385,7 @@ class task_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+    
     def get_candidate_task(self, request):
         data = request.data
         user_id = data.get("user_id")
@@ -7484,7 +7506,8 @@ class AddUserGithubInfo(APIView):
 #                     )
           
 class SecureEndPoint(APIView):
-    def post(self, request):
+    @verify_user_token
+    def post(self, request,user):
         name = request.data.get('name')
         email = request.data.get('email')
 
@@ -7494,7 +7517,9 @@ class SecureEndPoint(APIView):
             "name": name,
             "email": email
         })
-    def get(self, request):
+    
+    @verify_user_token
+    def get(self, request,user):
 
         return Response({
             "success": True,
