@@ -28,6 +28,7 @@ import PublicAccountConfigurationModal from "../../pages/HrPage/component/Public
 import { testingRoles } from "../../utils/testingRoles";
 import teamManagementLogo from "../../assets/images/team-management-logo.png";
 import { MdPublic } from "react-icons/md";
+import { projectLeadNavLinks } from "../../pages/ProjectLeadPage/utils/projectLeadNavigationLinks";
 
 const StaffJobLandingLayout = ({
   children,
@@ -65,6 +66,7 @@ const StaffJobLandingLayout = ({
   isProductLink,
   isGrouplead,
   isReportLink,
+  projectLeadView,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const { currentUser } = useCurrentUserContext();
@@ -250,7 +252,10 @@ const StaffJobLandingLayout = ({
                   ? subAdminView
                     ? subAdminNavigationLinks
                     : adminNavigationLinks
-                  : []
+                  : projectLeadView ?
+                    projectLeadNavLinks
+                  :
+                  []
               }
               runExtraFunctionOnNavItemClick={runExtraFunctionOnNavItemClick}
               superUser={isSuperUser}

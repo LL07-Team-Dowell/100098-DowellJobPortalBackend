@@ -31,7 +31,7 @@ const [
     formatDateForAPI(dateSevenDaysAgo),
 ];
 
-const LeaderboardReport = ({ isPublicReportUser }) => {
+const LeaderboardReport = ({ isPublicReportUser, isProjectLead }) => {
     const initialDatesSelection = {
         startDate: dateSevenDaysAgoFormattedForAPI,
         endDate: todayDateFormattedForAPI,
@@ -273,9 +273,11 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
 
     if (pageLoading) return <>
         <StaffJobLandingLayout
-            adminView={true}
-            adminAlternativePageActive={true}
+            adminView={isProjectLead ? false : true}
+            adminAlternativePageActive={isProjectLead ? false : true}
             pageTitle={"Leaderboard report"}
+            hideSearchBar={true}
+            projectLeadView={isProjectLead}
         >
             <LoadingSpinner />
             <p style={{ textAlign: 'center' }}>
@@ -290,9 +292,11 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
     
     if (error) return <>
         <StaffJobLandingLayout
-            adminView={true}
-            adminAlternativePageActive={true}
+            adminView={isProjectLead ? false : true}
+            adminAlternativePageActive={isProjectLead ? false : true}
             pageTitle={"Leaderboard report"}
+            hideSearchBar={true}
+            projectLeadView={isProjectLead}
         >
             <p style={{ textAlign: 'center', color: 'red', marginTop: 40 }}>An error occured while trying to generate your report</p>
         </StaffJobLandingLayout>
@@ -300,9 +304,11 @@ const LeaderboardReport = ({ isPublicReportUser }) => {
 
     return <>
         <StaffJobLandingLayout
-            adminView={true}
-            adminAlternativePageActive={true}
+            adminView={isProjectLead ? false : true}
+            adminAlternativePageActive={isProjectLead ? false : true}
             pageTitle={"Leaderboard report"}
+            hideSearchBar={true}
+            projectLeadView={isProjectLead}
         >
             <div className="detailed_indiv_container">
                 <div className="task__report__nav">

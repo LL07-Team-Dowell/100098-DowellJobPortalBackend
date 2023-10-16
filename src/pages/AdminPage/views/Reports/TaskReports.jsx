@@ -43,7 +43,7 @@ export const options = {
   },
 };
 
-const TaskReports = ({ subAdminView, isPublicReportUser }) => {
+const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -215,12 +215,15 @@ const TaskReports = ({ subAdminView, isPublicReportUser }) => {
         setReport(null);
       });
   }, [selectedProject]);
+
   return (
     <StaffJobLandingLayout
-      adminView={true}
-      adminAlternativePageActive={true}
+      adminView={isProjectLead ? false : true}
+      adminAlternativePageActive={isProjectLead ? false : true}
       pageTitle={"Reports"}
       subAdminView={subAdminView}
+      projectLeadView={isProjectLead}
+      hideSearchBar={true}
     >
       <div className="task__reports__container">
         <div className="task__reports__container_header">

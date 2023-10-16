@@ -37,7 +37,7 @@ export const chartOptions = {
   },
 };
 
-export default function DetailedIndividual({ isPublicReportUser }) {
+export default function DetailedIndividual({ isPublicReportUser, isProjectLead }) {
   const { currentUser, setCurrentUser, reportsUserDetails } =
     useCurrentUserContext();
 
@@ -254,9 +254,11 @@ export default function DetailedIndividual({ isPublicReportUser }) {
   if (firstLoading)
     return (
       <StaffJobLandingLayout
-        adminView={true}
-        adminAlternativePageActive={true}
+        adminView={isProjectLead ? false : true}
+        adminAlternativePageActive={isProjectLead ? false: true}
         pageTitle={"Detailed individual report"}
+        projectLeadView={isProjectLead}
+        hideSearchBar={true}
       >
         <div className="detailed_indiv_container">
           <div className="task__report__nav">
@@ -283,9 +285,11 @@ export default function DetailedIndividual({ isPublicReportUser }) {
     );
   return (
     <StaffJobLandingLayout
-      adminView={true}
-      adminAlternativePageActive={true}
+      adminView={isProjectLead ? false : true}
+      adminAlternativePageActive={isProjectLead ? false : true}
       pageTitle={"Detailed individual report"}
+      projectLeadView={isProjectLead}
+      hideSearchBar={true}
     >
       <div className="detailed_indiv_container">
         <div className="task__report__nav">

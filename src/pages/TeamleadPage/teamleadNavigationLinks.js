@@ -25,11 +25,11 @@ export const teamleadNavigationLinks = [
     icon: <GiTeamIdea />,
     text: "Teams",
   },
-  {
-    linkAddress: "/user",
-    icon: <FiUser />,
-    text: "User",
-  },
+  // {
+  //   linkAddress: "/user",
+  //   icon: <FiUser />,
+  //   text: "User",
+  // },
 ];
 
 export const groupLeadNavigationLinks = [
@@ -48,9 +48,9 @@ export const groupLeadNavigationLinks = [
     icon: <GiTeamIdea />,
     text: "Teams",
   },
-  {
-    linkAddress: "/user",
-    icon: <FiUser />,
-    text: "User",
-  },
+  // {
+  //   linkAddress: "/user",
+  //   icon: <FiUser />,
+  //   text: "User",
+  // },
 ];

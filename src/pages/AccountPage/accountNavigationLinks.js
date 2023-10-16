@@ -18,9 +18,9 @@ export const accountNavigationLinks = [
         icon: <MdCancelPresentation />,
         text: "Rejected"
     },
-    {
-        linkAddress: "/user",
-        icon: <FiUser />, 
-        text: "User",
-    }
+    // {
+    //     linkAddress: "/user",
+    //     icon: <FiUser />, 
+    //     text: "User",
+    // }
 ]
