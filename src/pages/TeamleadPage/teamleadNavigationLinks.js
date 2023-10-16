@@ -18,7 +18,7 @@ export const teamleadNavigationLinks = [
   {
     linkAddress: "/request",
     icon: <RiFileList3Line />,
-    text: "logs request",
+    text: "Log requests",
   },
   {
     linkAddress: "/create-task",

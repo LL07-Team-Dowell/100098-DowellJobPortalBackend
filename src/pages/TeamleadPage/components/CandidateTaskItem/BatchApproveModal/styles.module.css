@@ -17,12 +17,33 @@
   width: 60%;
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-direction: column;
   background-color: #fff;
   border-radius: 10px;
   padding: 1rem 2rem 2rem;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  max-height: 85%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+
+.approve__Modal::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.approve__Modal::-webkit-scrollbar-track {
+    background: #efefef;
+}
+
+.approve__Modal::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+}
+
+.approve__Modal::-webkit-scrollbar-thumb:hover {
+    background: #005734;
 }
 
 .approve__Modal__CLose__Container {
@@ -47,6 +68,15 @@
     font-family: 'Poppins', sans-serif;
     font-weight: 700;
     letter-spacing: 0.04em;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.selection__Count {
+    font-size: 0.8rem;
+    color: #005734;
 }
 
 .approve__Modal__Content h2 {

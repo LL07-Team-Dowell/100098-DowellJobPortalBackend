@@ -25,6 +25,26 @@
     padding: 1rem 2rem 2rem;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     font-family: 'Poppins', sans-serif;
+    max-height: 85%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.public__Modal::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.public__Modal::-webkit-scrollbar-track {
+    background: #efefef;
+}
+
+.public__Modal::-webkit-scrollbar-thumb {
+    background: #b8b8b8;
+}
+
+.public__Modal::-webkit-scrollbar-thumb:hover {
+    background: #005734;
 }
 
 .Btn {

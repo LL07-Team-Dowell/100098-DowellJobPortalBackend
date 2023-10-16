@@ -9,6 +9,7 @@
   width: 32%;
   margin-right: auto;
   margin-left: auto;
+  
   button {
     border-radius: 10px;
     background: rgb(243, 248, 244);
@@ -88,8 +89,8 @@
       display: inline-block;
       margin-right: 25px;
       margin-bottom: 25px;
-      min-height: 180px;
-      max-height: 200px;
+      min-height: 160px;
+      max-height: 220px;
       width: calc(96% / 2);
       display: inline-block;
       background-color: #fcfcfc;
@@ -112,6 +113,27 @@
       p {
         font-size: 0.8rem;
         letter-spacing: 0.02em;
+        overflow-y: auto;
+        max-height: 3rem;
+        scrollbar-width: thin;
+
+        // SCROLLBAR STYLES FOR CHROME
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+    
+        &::-webkit-scrollbar-track {
+          background: #efefef;
+        }
+    
+        &::-webkit-scrollbar-thumb {
+          background: #b8b8b8;
+        }
+    
+        &::-webkit-scrollbar-thumb:hover {
+          background: #005734;
+        }
       }
 
       .update__action__btn {

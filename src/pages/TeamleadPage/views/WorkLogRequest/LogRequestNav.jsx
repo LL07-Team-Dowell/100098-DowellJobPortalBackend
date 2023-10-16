@@ -4,14 +4,28 @@ import { Wrappen } from "../../../CandidatePage/views/TeamScreenThread/style";
 import WorkLogRequest from "./WorkLogRequest";
 import JobLandingLayout from "../../../../layouts/CandidateJobLandingLayout/LandingLayout";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 
 const LogRequest = () => {
     const { currentUser } = useCurrentUserContext();
   const [cardData, setCardData] = useState("Pending approval");
   // sadsadasd
   return (
-    <JobLandingLayout user={currentUser} afterSelection={true}>
+    <StaffJobLandingLayout
+      teamleadView={true}
+      hideSearchBar={true}
+    >
     <div style={{ height: "130%" }}>
+      <h1
+        style={{ 
+          fontFamily: 'Poppins, sans-serif',
+          fontSize: '1.8rem',
+          width: '86%',
+          margin: '0 auto',
+          color: '#005734',
+          letterSpacing: '0.03em'
+        }} 
+      >Work log requests</h1>
       <Wrappen>
         <NavLink
           className={cardData === "Pending approval" && "isActive"}
@@ -43,7 +57,7 @@ const LogRequest = () => {
       </Wrappen>
       <WorkLogRequest cardData={cardData} />
     </div>
-    </JobLandingLayout>
+    </StaffJobLandingLayout>
   );
 };
 

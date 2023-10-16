@@ -23,6 +23,26 @@
   border-radius: 10px;
   padding: 1rem 2rem 2rem;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  max-height: 85%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.share__Modal::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.share__Modal::-webkit-scrollbar-track {
+  background: #efefef;
+}
+
+.share__Modal::-webkit-scrollbar-thumb {
+  background: #b8b8b8;
+}
+
+.share__Modal::-webkit-scrollbar-thumb:hover {
+  background: #005734;
 }
 
 .share__Modal__CLose__Container {

@@ -78,7 +78,10 @@ const BatchApproveModal = ({
                         className={styles.select__All__Btn}
                         isDisabled={batchApprovalLoading ? true : false}
                     />
-                    <p className={styles.title}>Work Logs Added</p>
+                    <p className={styles.title}>
+                        <span>Work Logs Pending Approval: {Number(logs?.length) - Number(selectedLogs.length)}</span>
+                        <span className={styles.selection__Count}>Logs selected for approval: {selectedLogs.length}</span>
+                    </p>
                     <div className={styles.logs__Wrapper}>
                         {
                             logs.length < 1 ? <p>No logs to approve</p>
