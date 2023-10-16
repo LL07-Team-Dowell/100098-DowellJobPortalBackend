@@ -6,14 +6,22 @@ const Card = ({
   project,
   update_reason,
   updateTask,
+  approve,
+  deny,
   handleBtnClick,
+  handleApproveBtnClick,
+  handleDenyBtnClick
 }) => {
   return (
-    <div className='card__work__log__request'>
+    <div className="card__work__log__request">
       <h2>{project}</h2>
       <p>Date of request: {new Date(update_task_date).toDateString()}</p>
       <p>Request reason: {update_reason}</p>
-      {updateTask && <button onClick={handleBtnClick}>Update Task</button>}
+      {updateTask && <button className="update__action__btn" onClick={handleBtnClick}>Update Task</button>}
+      <div className="request__action__btn">
+        {approve && <button className="req__act__btn " onClick={handleApproveBtnClick}>Approve</button>}
+        {deny && <button className="req__act__btn" onClick={handleDenyBtnClick}>Deny</button>}
+      </div>
     </div>
   );
 };
