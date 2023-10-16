@@ -40,11 +40,12 @@ const AdminTeam = () => {
           ...data,
           TeamsSelected: resp.data.response.data.filter(
             (team) => team.data_type === currentUser.portfolio_info[0].data_type
-          ).filter(
-            (team) => 
-              team?.created_by === currentUser?.userinfo?.username ||
-            team?.members?.includes(currentUser?.userinfo?.username)
-          ),
+          )
+          // .filter(
+          //   (team) => 
+          //     team?.created_by === currentUser?.userinfo?.username ||
+          //   team?.members?.includes(currentUser?.userinfo?.username)
+          // ),
         });
         setresponse(true);
       })
