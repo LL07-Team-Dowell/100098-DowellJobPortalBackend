@@ -31,6 +31,8 @@ ALLOWED_HOSTS = [
     "localhost:3000/100098-DowellJobPortal/",
     "127.0.0.1:8000/",
     "100098.pythonanywhere.com",
+    "localhost",
+    "127.0.0.1"
 ]
 JWT_CONF = {"TOKEN_LIFETIME_HOURS": 24}
 

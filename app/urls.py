@@ -160,5 +160,6 @@ urlpatterns = [
     path("updategithubprofile/", AddUserGithubInfo.as_view()),
 
     # secure end point-----------------
-    path("secureendpoint/",SecureEndPoint.as_view())
+    path("secureendpoint/",SecureEndPoint.as_view()),
+    path("gettime/<str:company_id>/",GetTime.as_view())
 ]

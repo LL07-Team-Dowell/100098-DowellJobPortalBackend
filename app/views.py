@@ -7527,3 +7527,43 @@ class SecureEndPoint(APIView):
             "name": "Manish",
             "email": "manish@gmail.com"
         })
+    
+
+
+from datetime import datetime, timedelta
+class GetTime(APIView):
+    def get(self, request, company_id):
+        task_field = {
+            "project": "Workflow AI",
+            "company_id": company_id,
+        }
+        task_response = json.loads(
+            dowellconnection(
+                *task_details_module, "fetch", task_field, update_field=None
+            )
+        )
+
+        total_duration = timedelta() 
+
+        for task in task_response["data"]:
+            start_time_str = task["start_time"]
+            end_time_str = task["end_time"]
+
+            start_time = datetime.strptime(start_time_str, "%H:%M")
+            end_time = datetime.strptime(end_time_str, "%H:%M")
+
+
+            task_duration = end_time - start_time
+            total_duration += task_duration
+
+     
+        total_duration_str = str(total_duration)
+
+        return Response(
+            {
+                "success": True,
+                "message": f"List of task {company_id}",
+                "total_time": total_duration_str,
+            },
+            status.HTTP_200_OK,
+        )
