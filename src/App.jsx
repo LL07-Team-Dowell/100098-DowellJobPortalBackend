@@ -86,7 +86,7 @@ import { teamManagementProductName } from "./utils/utils";
 import LogRequest from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestNav";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => {};
 
   const {
     currentUser,

@@ -15,11 +15,14 @@ import {
 } from "../../../../services/taskUpdateServices";
 import { toast } from "react-toastify";
 import LittleLoading from "../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
+import DenyRequest from "./denyRequest";
 
 const WorkLogRequest = ({ cardData }) => {
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
-  const [approveRequestbtn, setApproveRequestBtn] = useState(false);
+  const [approveRequestLoading, setApproveRequestLoading] = useState([]);
+  const [reasonForDenial, setReasonForDenial] = useState("");
+  const [denyRequestLoading, setDenyRequestLoading] = useState([]);
   const [data, setData] = useState([]);
   const [approve, setApprove] = useState([]);
   const [deny, setDeny] = useState([]);
@@ -27,15 +30,24 @@ const WorkLogRequest = ({ cardData }) => {
   const { error } = useGetAllUpdateTask(currentUser);
   const [reducerReuest, forceUpdate] = useReducer((x) => x + 1, 0);
   const [reducerRequest, forceUpdateRequest] = useReducer((x) => x + 1, 0);
+  const [showDenyPopup, setShowDenyPopup] = useState(false);
   const navigate = useNavigate();
   // asdsad
+
+  const unshowDenyPopup = () => {
+    setShowDenyPopup(false);
+  };
+
+  const showDenyPopupFunction = (element) => {
+    setShowDenyPopup(true);
+  };
 
   useEffect(() => {
     setLoading(true);
 
     getAllUpdateTask(currentUser.portfolio_info[0].org_id)
       .then((response) => {
-        // console.log(response.data.response.data);
+        console.log(response.data.response.data);
         const request = response?.data?.response?.data;
         const sortedRequest = request.filter(
           (applicant) =>
@@ -70,14 +82,16 @@ const WorkLogRequest = ({ cardData }) => {
   }, [reducerReuest, reducerRequest]);
 
   const approveRequest = (element) => {
-    setApproveRequestBtn(true);
+    setApproveRequestLoading([...approveRequestLoading, element._id]);
     approveLogRequest(element._id, {
       approved_by: currentUser.userinfo.username,
     })
       .then((response) => {
         console.log(response.data);
         if (response.status === 200) {
-          setApproveRequestBtn(false);
+          setApproveRequestLoading(
+            approveRequestLoading.filter((id) => id !== element._id)
+          );
           toast.success("Approved");
           forceUpdateRequest();
         }
@@ -87,8 +101,24 @@ const WorkLogRequest = ({ cardData }) => {
       });
   };
 
-  const denyRequest = () => {
-    denyLogRequest();
+  const denyRequest = (element) => {
+    setDenyRequestLoading([...denyRequestLoading, element._id]);
+    denyLogRequest(element._id, {
+      reason_for_denial: reasonForDenial,
+      denied_by: currentUser.userinfo.username,
+    })
+      .then((response) => {
+        console.log(response.data);
+        if (response.status === 200) {
+          setDenyRequestLoading(
+            denyRequestLoading.filter((id) => id !== element._id)
+          );
+          toast.success("Denied");
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   if (error) return <h1>{error}</h1>;
@@ -109,23 +139,39 @@ const WorkLogRequest = ({ cardData }) => {
                   </p>
                   <p>Request reason: {element.update_reason}</p>
                   <div className="request__action__btn">
-                    {approveRequestbtn ? (
+                    {approveRequestLoading.includes(element._id) ? (
                       <LittleLoading />
                     ) : (
                       <button
                         className="req__act__btn "
-                        onClick={() =>
-                          approveRequest(element, {
-                            cardData: "Approved",
-                          })
-                        }
+                        onClick={() => approveRequest(element)}
                       >
                         Approve
                       </button>
                     )}
+                    {showDenyPopup && (
+                      <div className="overlay">
+                        <div className="delete_confirmation_container">
+                          <input
+                            type="text"
+                            placeholder="Reason for denial"
+                            onChange={(e) => setReasonForDenial(e.target.value)}
+                          />
+                          <div className="buttons">
+                            <button
+                              onClick={() => denyRequest(element)}
+                              className="delete"
+                            >
+                              Deny
+                            </button>
+                            <button onClick={unshowDenyPopup}>Cancel</button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     <button
                       className="req__act__btn deny"
-                      onClick={() => denyRequest()}
+                      onClick={showDenyPopupFunction}
                     >
                       Deny
                     </button>
