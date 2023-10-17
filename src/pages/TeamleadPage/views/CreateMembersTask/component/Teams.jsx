@@ -134,7 +134,7 @@ const Team = ({
           style={{
             position: "absolute",
             top: 12,
-            right: 60,
+            right: v.created_by !== currentUser.userinfo.username ? 10 : 60,
             width: "fit-content",
             zIndex: 999,
             cursor: "pointer",
