@@ -1,20 +1,15 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useValues } from "../context/Values";
+import React, { useState } from "react";
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { HiArrowNarrowRight } from "react-icons/hi";
-// Fetch Teams for that company
-import { teams, imageReturn } from "../assets/teamsName";
+import { imageReturn } from "../assets/teamsName";
 import { useNavigate } from "react-router-dom";
 import { AiFillEdit, AiOutlineClose, AiOutlineTeam } from "react-icons/ai";
 import { deleteTeam } from "../../../../../services/createMembersTasks";
 import { Tooltip } from "react-tooltip";
-import { RiEdit2Fill } from "react-icons/ri";
 import { MdDelete, MdVerified } from "react-icons/md";
 import DeleteConfirmationTeam from "../../../../../components/DeleteConfirmationTeam/DeleteConfirmationTeam";
-
+import EditTeamPopup from "./EditTeamPopup";
 const Teams = ({
-  back,
   setChoosedTeam,
   searchValue,
   data,
@@ -23,9 +18,14 @@ const Teams = ({
   showDeletePopup,
   teamId,
   showDeletePopupFunction,
+  showEditPopupFunction,
+  showEditPopup,
+  teamInfo,
+  unShowEditTeam,
 }) => {
-  const { currentUser } = useCurrentUserContext();
-  const reversedTeams = [...data.TeamsSelected].reverse();
+  const [reversedTeams, setReversedTeams] = useState(
+    [...data.TeamsSelected].reverse()
+  );
   const deleteFunction = () => {
     deleteTeam(teamId)
       .then((resp) => {
@@ -39,12 +39,10 @@ const Teams = ({
   };
   return (
     <div className='teams_data'>
-      {reversedTeams
-        // .filter((team) => team.created_by === currentUser.userinfo.username)
-        .filter((e) => e.team_name.includes(searchValue)).length !== 0 ? (
+      {reversedTeams.filter((e) => e.team_name.includes(searchValue)).length !==
+      0 ? (
         <div>
           {reversedTeams
-            // .filter((team) => team.created_by === currentUser.userinfo.username)
             .filter((e) => e.team_name.includes(searchValue))
             .map((v) => (
               <Team
@@ -53,12 +51,22 @@ const Teams = ({
                 setChoosedTeam={setChoosedTeam}
                 deleteTeamState={deleteTeamState}
                 showDeletePopupFunction={showDeletePopupFunction}
+                setReversedTeams={setReversedTeams}
+                showEditPopupFunction={showEditPopupFunction}
               />
             ))}
           {showDeletePopup && (
             <DeleteConfirmationTeam
               close={unshowDeletePopup}
               deleteFunction={deleteFunction}
+            />
+          )}
+          {showEditPopup && (
+            <EditTeamPopup
+              teamInfo={teamInfo}
+              teamId={teamId}
+              unShowEditTeam={unShowEditTeam}
+              setReversedTeams={setReversedTeams}
             />
           )}
         </div>
@@ -74,9 +82,8 @@ export default Teams;
 const Team = ({
   v,
   team_name,
-  setChoosedTeam,
-  deleteTeamState,
   showDeletePopupFunction,
+  showEditPopupFunction,
 }) => {
   console.log({ v });
   const navigate = useNavigate();
@@ -118,7 +125,16 @@ const Team = ({
             zIndex: 999,
             cursor: "pointer",
           }}
-          onClick={showDeletePopup}
+          onClick={() => {
+            // const { team_name, team_description, members } = teamInfo;
+
+            showEditPopupFunction(
+              v._id,
+              v.team_name,
+              v.team_description,
+              v.members
+            );
+          }}
           data-tooltip-id={v._id}
           data-tooltip-content={"Edit"}
         >

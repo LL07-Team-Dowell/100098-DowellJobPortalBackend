@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
-// import TasksCo from "./TasksCo";
 import Teams from "../../../TeamleadPage/views/CreateMembersTask/component/Teams";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-import { AiOutlinePlus, AiOutlineTeam } from "react-icons/ai";
-import { useValues } from "../../../TeamleadPage/views/CreateMembersTask/context/Values";
-import axios from "axios";
-import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
-import "./index.scss";
-import { getAllTeams } from "../../../../services/createMembersTasks";
 import Navbar from "../../../TeamleadPage/views/CreateMembersTask/component/Navbar";
-import DeleteConfirmationTeam from "../../../../components/DeleteConfirmationTeam/DeleteConfirmationTeam";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import { useValues } from "../../../TeamleadPage/views/CreateMembersTask/context/Values";
+import { getAllTeams } from "../../../../services/createMembersTasks";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import "./index.scss";
 
 const AdminTeam = () => {
   const { currentUser } = useCurrentUserContext();
@@ -19,8 +15,19 @@ const AdminTeam = () => {
   const [searchValue, setSearchValue] = useState("");
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [teamId, setTeamId] = useState("");
+  const [showEditPopup, setShowEditPopup] = useState(false);
+  const [teamInfo, setTeamInfo] = useState({});
+
+  const showEditPopupFunction = (id, name, description, members) => {
+    setTeamId(id);
+    setShowEditPopup(true);
+    setTeamInfo({ name, description, members });
+  };
   const unshowDeletePopup = () => {
     setShowDeletePopup(false);
+  };
+  const unShowEditTeam = () => {
+    setShowEditPopup(false);
   };
   const showDeletePopupFunction = (id) => {
     setTeamId(id);
@@ -40,12 +47,7 @@ const AdminTeam = () => {
           ...data,
           TeamsSelected: resp.data.response.data.filter(
             (team) => team.data_type === currentUser.portfolio_info[0].data_type
-          )
-          // .filter(
-          //   (team) => 
-          //     team?.created_by === currentUser?.userinfo?.username ||
-          //   team?.members?.includes(currentUser?.userinfo?.username)
-          // ),
+          ),
         });
         setresponse(true);
       })
@@ -58,7 +60,11 @@ const AdminTeam = () => {
   console.log(data.TeamsSelected.length);
   if (data.TeamsSelected.length === 0 && !response)
     return (
-      <StaffJobLandingLayout adminView={true} pageTitle={"All Teams"} adminAlternativePageActive={true}>
+      <StaffJobLandingLayout
+        adminView={true}
+        pageTitle={"All Teams"}
+        adminAlternativePageActive={true}
+      >
         <LoadingSpinner />
       </StaffJobLandingLayout>
     );
@@ -72,7 +78,7 @@ const AdminTeam = () => {
       adminAlternativePageActive={true}
     >
       <Navbar color={"#005734"} noButtonBack={true} adminTeams={true} />
-      <div className="container">
+      <div className='container'>
         <Teams
           searchValue={searchValue}
           data={data}
@@ -82,6 +88,10 @@ const AdminTeam = () => {
           teamId={teamId}
           setTeamId={setTeamId}
           showDeletePopupFunction={showDeletePopupFunction}
+          showEditPopupFunction={showEditPopupFunction}
+          showEditPopup={showEditPopup}
+          teamInfo={teamInfo}
+          unShowEditTeam={unShowEditTeam}
         />
       </div>
     </StaffJobLandingLayout>
