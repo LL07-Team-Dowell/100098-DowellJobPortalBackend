@@ -90,7 +90,7 @@ import ProjectLeadTeams from "./pages/ProjectLeadPage/views/TeamsPage/TeamsLandi
 import ProjectLeadUserScreen from "./pages/ProjectLeadPage/views/UserScreen/UserScreen";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => {};
 
   const {
     currentUser,
