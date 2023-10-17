@@ -22,7 +22,7 @@ const Teams = ({
   unshowDeletePopup,
   showDeletePopup,
   teamId,
-  showDeletePopupFunction
+  showDeletePopupFunction,
 }) => {
   const { currentUser } = useCurrentUserContext();
   const reversedTeams = [...data.TeamsSelected].reverse();
@@ -31,14 +31,14 @@ const Teams = ({
       .then((resp) => {
         deleteTeamState(teamId);
         console.log(resp);
-        unshowDeletePopup()
+        unshowDeletePopup();
       })
       .catch((err) => {
         console.log(err);
       });
-  }
+  };
   return (
-    <div className="teams_data">
+    <div className='teams_data'>
       {reversedTeams
         // .filter((team) => team.created_by === currentUser.userinfo.username)
         .filter((e) => e.team_name.includes(searchValue)).length !== 0 ? (
@@ -55,8 +55,12 @@ const Teams = ({
                 showDeletePopupFunction={showDeletePopupFunction}
               />
             ))}
-        { showDeletePopup && <DeleteConfirmationTeam close={unshowDeletePopup} deleteFunction={deleteFunction}/>}
-
+          {showDeletePopup && (
+            <DeleteConfirmationTeam
+              close={unshowDeletePopup}
+              deleteFunction={deleteFunction}
+            />
+          )}
         </div>
       ) : (
         <h4>There is no Team in this Profile.</h4>
@@ -67,19 +71,23 @@ const Teams = ({
 
 export default Teams;
 
-const Team = ({ v, team_name, setChoosedTeam, deleteTeamState,showDeletePopupFunction }) => {
+const Team = ({
+  v,
+  team_name,
+  setChoosedTeam,
+  deleteTeamState,
+  showDeletePopupFunction,
+}) => {
   console.log({ v });
   const navigate = useNavigate();
   const showDeletePopup = () => {
-    showDeletePopupFunction(v._id)
-    
+    showDeletePopupFunction(v._id);
   };
   const { currentUser } = useCurrentUserContext();
-  
+
   return (
-    <li className="team">
-      {
-        v.created_by === currentUser.userinfo.username &&
+    <li className='team'>
+      {v.created_by === currentUser.userinfo.username && (
         <div
           style={{
             position: "absolute",
@@ -99,7 +107,7 @@ const Team = ({ v, team_name, setChoosedTeam, deleteTeamState,showDeletePopupFun
             style={{ fontSize: "0.7rem", fontWeight: "normal" }}
           />
         </div>
-      }
+      )}
       {v.admin_team && (
         <div
           style={{
@@ -113,7 +121,7 @@ const Team = ({ v, team_name, setChoosedTeam, deleteTeamState,showDeletePopupFun
           data-tooltip-id={v._id}
           data-tooltip-content={"Admin"}
         >
-          <MdVerified color="#005734"/>
+          <MdVerified color='#005734' />
           <Tooltip
             id={v._id}
             style={{ fontSize: "0.7rem", fontWeight: "normal" }}
@@ -122,10 +130,10 @@ const Team = ({ v, team_name, setChoosedTeam, deleteTeamState,showDeletePopupFun
       )}
       {imageReturn(team_name) ? (
         <img
-          className="team_logo"
+          className='team_logo'
           style={{ width: 56, height: 56 }}
           src={imageReturn(team_name)}
-          alt="team"
+          alt='team'
         />
       ) : (
         <AiOutlineTeam
@@ -144,7 +152,7 @@ const Team = ({ v, team_name, setChoosedTeam, deleteTeamState,showDeletePopupFun
         />
       )}
       <h2>{team_name}</h2>
-      <p className="paragraph-discription">
+      <p className='paragraph-discription'>
         {v.team_description !== null && v.team_description !== undefined
           ? v.team_description
           : "no description"}
