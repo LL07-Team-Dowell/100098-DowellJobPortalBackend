@@ -459,10 +459,10 @@ const AdminSettings = () => {
                 value={rowsToDisplayPerPage} 
                 onChange={({ target }) => {
                   const currentIndexes = {...indexes}
-                  currentIndexes.end = target.value;
+                  currentIndexes.end = Number(target.value);
                   setIndexes(currentIndexes);
 
-                  setRowsToDisplayPerPage(target.value);
+                  setRowsToDisplayPerPage(Number(target.value));
                   }
                 }
               >
