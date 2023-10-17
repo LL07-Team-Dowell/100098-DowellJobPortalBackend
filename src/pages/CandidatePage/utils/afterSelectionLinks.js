@@ -28,11 +28,11 @@ export const afterSelectionLinks = [
     icon: <RiFileList3Line />,
     linkAddress: "/work-log-request",
   },
-  {
-    text: "User",
-    icon: <FiUser />,
-    linkAddress: "/user",
-  },
+  // {
+  //   text: "User",
+  //   icon: <FiUser />,
+  //   linkAddress: "/user",
+  // },
 ];
 
 export const loggedInCandidateNavLinks = [

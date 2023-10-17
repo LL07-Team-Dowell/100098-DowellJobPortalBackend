@@ -144,3 +144,9 @@
 .select__All__Btn.approve__Btn {
     margin-left: 0;
 }
+
+@media screen and (max-width: 767px) {
+    .approve__Modal {
+        width: 95%;
+    }
+}

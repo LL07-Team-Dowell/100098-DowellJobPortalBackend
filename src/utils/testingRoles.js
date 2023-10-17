@@ -7,6 +7,7 @@ export const testingRoles = {
   groupLeadRole: "group_lead",
   provertionRole:"proverion_period",
   superAdminRole: "super_admin",
+  projectLeadRole: "Project_Lead",
 };
 
 export const testingRolesDict = {
@@ -17,4 +18,5 @@ export const testingRolesDict = {
   subAdminRole: "Sub Admin",
   groupLeadRole: "Group Lead",
   superAdminRole: "Super Admin",
+  projectLeadRole: "Project Lead",
 };

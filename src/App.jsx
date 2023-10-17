@@ -84,6 +84,10 @@ import WorkLogRequest from "./pages/TeamleadPage/views/WorkLogRequest/WorkLogReq
 import WorkLogRequestCandidate from "./pages/CandidatePage/views/WorkLogRequest/WorkLogRequest";
 import { teamManagementProductName } from "./utils/utils";
 import LogRequest from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestNav";
+import ProjectLeadHomePage from "./pages/ProjectLeadPage/views/HomePage/HomePage";
+import ProjectLeadReportsLandingPage from "./pages/ProjectLeadPage/views/ReportsPage/ReportsLandingPage";
+import ProjectLeadTeams from "./pages/ProjectLeadPage/views/TeamsPage/TeamsLandingPage";
+import ProjectLeadUserScreen from "./pages/ProjectLeadPage/views/UserScreen/UserScreen";
 
 function App() {
   // console.log = () => {};
@@ -1272,6 +1276,185 @@ function App() {
         <Route path='*' element={<ErrorPage />} />
       </Routes>
     );
+  }
+
+  // PROJECT LEAD PAGE
+  if (
+    currentUser.settings_for_profile_info &&
+    currentUser.settings_for_profile_info.profile_info[
+      currentUser.settings_for_profile_info.profile_info.length - 1
+    ].Role === testingRoles.projectLeadRole
+  ) {
+    return (
+      <Routes>
+        <Route 
+          path="/" 
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <ProjectLeadHomePage />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          } 
+        />
+        <Route
+          path="/new-task-screen"
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <CreateTaskScreen isProjectLead={true} />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route 
+          path="/report" 
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <ProjectLeadReportsLandingPage />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          } 
+        />
+        <Route
+          path='/report/team-report'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <TeamReport 
+                  isProjectLead={true}  
+                />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path='/report/detailed-individual-report'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <DetailedIndividual 
+                  isProjectLead={true}  
+                />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path='/report/task-report'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <TaskReports 
+                  isProjectLead={true}
+                />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path='/report/leaderboard-report'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <LeaderboardReport 
+                  isProjectLead={true}
+                />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />        
+        <Route
+          path='/teams'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <ProjectLeadTeams />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path='/teams/create-new-team/'
+          element={
+              <StaffJobLandingLayout
+                projectLeadView={true}
+                hideSearchBar={true}
+              >
+                <CandidateTaskContextProvider>
+                  <ValuesProvider>
+                    <CreateTeam />
+                  </ValuesProvider>
+                </CandidateTaskContextProvider>
+              </StaffJobLandingLayout>
+          }
+        />
+        <Route
+          path='/team-screen-member/:id/team-members'
+          element={
+            <StaffJobLandingLayout
+              projectLeadView={true}
+              hideSearchBar={true}
+            >
+              <CandidateTaskContextProvider>
+                <TeamProvider>
+                  <ValuesProvider>
+                    <TeamScreenMembers />
+                  </ValuesProvider>
+                </TeamProvider>
+              </CandidateTaskContextProvider>
+            </StaffJobLandingLayout>
+          }
+        />
+
+        <Route
+          path='/team-screen-member/:id/team-tasks'
+          element={
+            <StaffJobLandingLayout
+              projectLeadView={true}
+              hideSearchBar={true}
+            >
+              <CandidateTaskContextProvider>
+                <TeamProvider>
+                  <ValuesProvider>
+                    <TeamScreenTasks />
+                  </ValuesProvider>
+                </TeamProvider>
+              </CandidateTaskContextProvider>
+            </StaffJobLandingLayout>
+          }
+        />
+        <Route
+          path='/team-screen-member/:id/team-issues'
+          element={
+            <StaffJobLandingLayout
+              projectLeadView={true}
+              hideSearchBar={true}
+            >
+              <CandidateTaskContextProvider>
+                <TeamProvider>
+                  <ValuesProvider>
+                    <TeamThread />
+                  </ValuesProvider>
+                </TeamProvider>  
+              </CandidateTaskContextProvider>
+            </StaffJobLandingLayout>
+          }
+        />
+        <Route
+          path="/user"
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <ProjectLeadUserScreen />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          } 
+        />
+        <Route path="*" element={<ErrorPage />} />
+      </Routes>
+    )
   }
 
   //Provertion Period Page

@@ -27,7 +27,7 @@ import './index.scss'
 
 
 
-export default function TeamReport({ isPublicReportUser }) {
+export default function TeamReport({ isPublicReportUser, isProjectLead }) {
     const navigate = useNavigate();
     const [candidates, setcandidates] = useState([]);
     const [project, setProject] = useState({})
@@ -119,9 +119,11 @@ export default function TeamReport({ isPublicReportUser }) {
     if (firstLoading)
         return (
             <StaffJobLandingLayout
-                adminView={true}
-                adminAlternativePageActive={true}
+                adminView={isProjectLead ? false : true}
+                adminAlternativePageActive={isProjectLead ? false : true}
                 pageTitle={"Team Report"}
+                projectLeadView={isProjectLead}
+                hideSearchBar={true}
             >
                 <div className="detailed_indiv_container">
                     <div className="task__report__nav">
@@ -148,9 +150,11 @@ export default function TeamReport({ isPublicReportUser }) {
         );
     return (
         <StaffJobLandingLayout
-            adminView={true}
-            adminAlternativePageActive={true}
+            adminView={isProjectLead ? false : true}
+            adminAlternativePageActive={isProjectLead ? false : true}
             pageTitle={"Team Report"}
+            projectLeadView={isProjectLead}
+            hideSearchBar={true}
         >
             <div className="detailed_indiv_container">
                 <div className="task__report__nav">
