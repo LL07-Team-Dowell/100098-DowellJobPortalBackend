@@ -1,11 +1,6 @@
 import React from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { CSVLink, CSVDownload } from "react-csv";
-
-import {
-  generateReport,
-  getJobsFromAdmin,
-} from "../../../../services/adminServices";
 import { useEffect } from "react";
 import { useState } from "react";
 import { MdArrowBackIosNew } from "react-icons/md";
@@ -106,7 +101,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
     "skyblue",
     "royalblue",
   ];
-
+  const exportRef = useRef();
   // handle functions
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
@@ -197,9 +192,9 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         toast.info(
           err.response
             ? err.response.status === 500
-              ? 'Report generation failed'
+              ? "Report generation failed"
               : err.response.data.message
-            : 'Report generation failed'
+            : "Report generation failed"
         );
       });
   };
@@ -209,14 +204,12 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
   useEffect(() => {
     setLoading(true);
     const data = {
-      start_date: isPublicReportUser ? 
-        formatDateForAPI(reportsUserDetails?.reportStartDate, 'report')
-      : 
-      firstDate,
-      end_date: isPublicReportUser ? 
-        formatDateForAPI(reportsUserDetails?.reportEndDate, 'report')
-      : 
-      lastDate,
+      start_date: isPublicReportUser
+        ? formatDateForAPI(reportsUserDetails?.reportStartDate, "report")
+        : firstDate,
+      end_date: isPublicReportUser
+        ? formatDateForAPI(reportsUserDetails?.reportEndDate, "report")
+        : lastDate,
       report_type: "Admin",
       company_id: isPublicReportUser
         ? reportsUserDetails?.company_id
@@ -345,7 +338,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       subAdminView={subAdminView}
       hideSideBar={showCustomTimeModal}
     >
-      <div className='reports__container'>
+      <div className='reports__container' ref={exportRef}>
         <div className='reports__container_header'>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -366,8 +359,8 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               Download Me
             </CSVLink>
           </div>
-          {
-            !isPublicReportUser && <div>
+          {!isPublicReportUser && (
+            <div>
               <p></p>
               <select
                 className='select_time_tage'
@@ -381,7 +374,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 <option value='custom_time'>custom time</option>
               </select>
             </div>
-          }
+          )}
         </div>
         <div className='graphs'>
           <div className='graph__Item'>
@@ -404,10 +397,18 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   </h4>
                 ) : (
                   <>
-                    <p style={{ textAlign: 'center' }}>
+                    <p style={{ textAlign: "center" }}>
                       <b>Doughnut chart showing active and inactive jobs</b>
                     </p>
-                    <div style={{ width: "100%", height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center',  }}>
+                    <div
+                      style={{
+                        width: "100%",
+                        height: 320,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
                       <Doughnut
                         data={{
                           labels: ["active jobs", "inactive jobs"],
@@ -430,7 +431,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               </div>
 
               <div style={{ width: "48%" }}>
-                <p style={{ textAlign: 'center' }}>
+                <p style={{ textAlign: "center" }}>
                   <b>
                     Pie chart showing job most applied to and job least applied
                     to
@@ -438,7 +439,15 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                 </p>
                 {/* <p style={{marginTop:10}}>most applied job: {data.most_applied_job?.job_title}</p>
                 <p>least applied job: {data.least_applied_job?.job_title}</p> */}
-                <div style={{ width: "100%", height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center',  }}>
+                <div
+                  style={{
+                    width: "100%",
+                    height: 320,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   <Pie
                     data={{
                       labels: [
@@ -710,7 +719,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   and {lastDateState.split(" ")[0]}
                 </h4>
               ) : (
-                <div style={{ marginBottom: 60}}>
+                <div style={{ marginBottom: 60 }}>
                   <div style={{ width: 400, height: 300 }}>
                     <p style={{ marginBottom: 20 }}>
                       <b>Doughnut chart showing teams and work logs</b>
@@ -744,7 +753,10 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     </p>
                     <Doughnut
                       data={{
-                        labels: ["work logs uncompleted", "work logs completed"],
+                        labels: [
+                          "work logs uncompleted",
+                          "work logs completed",
+                        ],
                         datasets: [
                           {
                             label: "Poll",
@@ -799,20 +811,26 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
             <p>
               project with least tasks: {data.project_with_least_tasks?.title}
             </p> */}
-            {
-              (!data.project_with_most_tasks?.title || !data.project_with_most_tasks?.title) ?
+            {!data.project_with_most_tasks?.title ||
+            !data.project_with_most_tasks?.title ? (
               <>
                 <h4>
                   there is no data between {firstDateState.split(" ")[0]} and{" "}
                   {lastDateState.split(" ")[0]}
                 </h4>
-              </> 
-              : 
+              </>
+            ) : (
               <>
-                <p style={{ marginBottom: 20, marginTop: 40, textAlign: "center" }}>
+                <p
+                  style={{
+                    marginBottom: 20,
+                    marginTop: 40,
+                    textAlign: "center",
+                  }}
+                >
                   <b>
-                    Doughnut chart showing the project with the most work logs added and
-                    project with the least work logs added
+                    Doughnut chart showing the project with the most work logs
+                    added and project with the least work logs added
                   </b>
                 </p>
                 <div
@@ -842,9 +860,9 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                     }}
                     options={chartOptions}
                   />
-                </div> 
+                </div>
               </>
-            }
+            )}
           </div>
         </div>
       </div>
