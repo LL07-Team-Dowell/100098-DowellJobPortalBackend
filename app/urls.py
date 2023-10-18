@@ -161,4 +161,10 @@ urlpatterns = [
 
     # secure end point-----------------
     path("secureendpoint/",SecureEndPoint.as_view()),
+
+    # tme endpoint
+    path("add_total_time/",AddTotalTime.as_view()),
+    path("get_total_time/<str:company_id>/",AddTotalTime.as_view()),
+    path("get_individual_total_time/<str:document_id>/",GetbyDocumentIDTotalTime.as_view()),
+    path("update_time/<str:document_id>/",AddTotalTime.as_view())
 ]

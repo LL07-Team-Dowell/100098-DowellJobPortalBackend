@@ -168,6 +168,15 @@ github_details_module = [
     "ABCDE",
 ]
 
+time_detail_module = [
+    "jobportal",
+    "jobportal",
+    "ProjectTarget",
+    "ProjectTarget",
+    "1248001",
+    "ABCDE",
+]
+
 
 generate_public_link = "https://ll07-team-dowell.github.io/Jobportal/#?view=public&qr_id={}&job_company_id={}&job_id={}&company_data_type={}"
 
@@ -180,9 +189,5 @@ generate_product_link_with_category = (
 generate_report_link = (
     "{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}"
 )
-generate_report_link_org = (
-    "{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}&start_date={}&end_date={}"
-)
-generate_report_link_leaderboard = (
-    "{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}&start_date={}&end_date={}&threshold={}"
-)
+generate_report_link_org = "{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}&start_date={}&end_date={}"
+generate_report_link_leaderboard = "{}?view=report&qr_id={}&company_id={}&company_data_type={}&report_type={}&start_date={}&end_date={}&threshold={}"
