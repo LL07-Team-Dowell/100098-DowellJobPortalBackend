@@ -12,6 +12,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from app.time_functon import get_total_time
 from .constant import *
 from .helper import (
     get_event_id,
@@ -7618,19 +7620,38 @@ class AddTotalTime(APIView):
                 status=status.HTTP_200_OK,
             )
 
-    def patch(self, request, document_id):
+    def patch(self, request, company_id):
         data = request.data
-        field = {"left_time": data.get("left_time")}
-        response2 = json.loads(
-            dowellconnection(
-                *time_detail_module, "update", field=None, update_field=field
-            )
+        field = {"company_id": company_id}
+        response = json.loads(
+            dowellconnection(*time_detail_module, "fetch", field, update_field=None)
         )
+        response2_data = []
+
+        for item in response['data']:
+            project = item['project']
+            company_id = item["company_id"]
+            time_gotten = get_total_time(project, company_id)
+            
+           
+            left_time_str = item["left_time"]
+            if left_time_str and time_gotten:
+                left_time = float(left_time_str) - float(time_gotten)
+            else:
+                left_time = 0.0  
+
+            field2 = {"left_time": left_time}
+            response2 = json.loads(
+                dowellconnection(*time_detail_module, "update", field=field, update_field=field2)
+            )
+            
+            response2_data.append(response2)
+
         return Response(
             {
                 "success": True,
                 "message": "Created",
-                "data": response2,
+                "data": response2_data,
             },
             status=status.HTTP_200_OK,
         )
@@ -7650,30 +7671,4 @@ class GetbyDocumentIDTotalTime(APIView):
             )
 
 
-from datetime import datetime, timedelta
-import json
 
-
-def get_total_time(project_name):
-    task_field = {
-        "project": project_name,
-    }
-    task_response = json.loads(
-        dowellconnection(*task_details_module, "fetch", task_field, update_field=None)
-    )
-
-    total_duration = timedelta()
-
-    for task in task_response["data"]:
-        start_time_str = task["start_time"]
-        end_time_str = task["end_time"]
-
-        start_time = datetime.strptime(start_time_str, "%H:%M")
-        end_time = datetime.strptime(end_time_str, "%H:%M")
-
-        task_duration = end_time - start_time
-        total_duration += task_duration
-
-    total_duration_str = str(total_duration)
-
-    return total_duration_str
