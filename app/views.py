@@ -2088,11 +2088,9 @@ class approve_task(APIView):
             for data in serializer.data:
                 for d in data["profile_info"]:
                     if "profile_title" in d.keys():
-                        if (
-                            d["profile_title"] in portfolio_name
-                            and d["Role"] == "Proj_Lead"
-                        ):
-                            valid_profiles.append(d["profile_title"])
+                        if d["profile_title"] in portfolio_name :
+                            if d["Role"] == "Project_Lead" or d["Role"] == "Proj_Lead":
+                                valid_profiles.append(d["profile_title"])
             if len(valid_profiles) > 0:
                 if valid_profiles[-1] in portfolio_name:
                     return True
@@ -2170,7 +2168,7 @@ class approve_task(APIView):
                     if validate_teamlead is False:
                         return Response(
                             {
-                                "message": "This username is not valid. Enter valid username for TeamLead",
+                                "message": "This username is not valid. Enter valid username for TeamLead or ProjectLead",
                             },
                             status=status.HTTP_400_BAD_REQUEST,
                         )
