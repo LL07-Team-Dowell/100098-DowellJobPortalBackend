@@ -10,6 +10,7 @@ import LoadingSpinner from "../../../../../../../components/LoadingSpinner/Loadi
 import { teamManagementProductName } from "../../../../../../../utils/utils";
 import { testingRoles } from "../../../../../../../utils/testingRoles";
 import { getUserInfoFromLoginAPI } from "../../../../../../../services/authServices";
+import { AiOutlineClose } from "react-icons/ai";
 
 const returnMissingMember = (bigMember, smallMember) => {
   let data = bigMember;
@@ -211,9 +212,9 @@ const AddMemberPopup = ({
     <div className='overlay'>
       <div className='add-member-popup' style={{ zIndex: 100 }}>
         <button className='close-btn' onClick={close}>
-          X
+          <AiOutlineClose />
         </button>
-        <h2>Edit Team</h2>
+        <h2>Edit Team Members</h2>
         {/* <label htmlFor='task_name'>Team Name</label>
         <input
           type='text'

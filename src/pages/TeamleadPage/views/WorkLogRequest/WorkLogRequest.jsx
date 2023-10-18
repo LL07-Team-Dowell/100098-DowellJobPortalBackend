@@ -31,6 +31,7 @@ const WorkLogRequest = ({ cardData }) => {
   const [reducerReuest, forceUpdate] = useReducer((x) => x + 1, 0);
   const [reducerRequest, forceUpdateRequest] = useReducer((x) => x + 1, 0);
   const [showDenyPopup, setShowDenyPopup] = useState(false);
+  const [ projectsForLead, setProjectsForLead ] = useState([]);
   const navigate = useNavigate();
   // asdsad
 
@@ -49,9 +50,25 @@ const WorkLogRequest = ({ cardData }) => {
       .then((response) => {
         console.log(response.data.response.data);
         const request = response?.data?.response?.data;
+        
+        const userMainProject = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project;
+        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
+          Array.isArray(
+            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+          );
+        
+        const projects = userHasOtherProjects ? 
+          [userMainProject, ...currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects]
+        :
+        [userMainProject];
+
+        setProjectsForLead(projects);
+          
         const sortedRequest = request.filter(
           (applicant) =>
             applicant?.company_id === currentUser.portfolio_info[0].org_id
+        ).filter(applicant => 
+          projects.includes(applicant.project)  
         );
         setData(sortedRequest);
 
@@ -92,16 +109,31 @@ const WorkLogRequest = ({ cardData }) => {
           setApproveRequestLoading(
             approveRequestLoading.filter((id) => id !== element._id)
           );
-          toast.success("Approved");
+
+          setApprove((prev) => {
+            return [...prev, { ...element, approved: true }]
+          });
+
+          setPendingApproval((prev) => {
+            return prev.filter(elem => elem._id !== element._id)
+          })
+
+          toast.success("Successfully approved request");
           forceUpdateRequest();
         }
       })
       .catch((error) => {
         console.log(error);
+        setApproveRequestLoading(
+          approveRequestLoading.filter((id) => id !== element._id)
+        );
+        toast.error('An error occured while trying to approve this request. Please try again')
       });
   };
 
   const denyRequest = (element) => {
+    if (reasonForDenial.length < 1) return toast.info('Please enter a reason');
+
     setDenyRequestLoading([...denyRequestLoading, element._id]);
     denyLogRequest(element._id, {
       reason_for_denial: reasonForDenial,
@@ -113,11 +145,25 @@ const WorkLogRequest = ({ cardData }) => {
           setDenyRequestLoading(
             denyRequestLoading.filter((id) => id !== element._id)
           );
-          toast.success("Denied");
+
+          setDeny((prev) => {
+            return [...prev, { ...element, request_denied: true, reason_for_denial: reasonForDenial, }]
+          });
+
+          setPendingApproval((prev) => {
+            return prev.filter(elem => elem._id !== element._id)
+          })
+
+          toast.success("Successfully denied request");
+          setShowDenyPopup(false);
         }
       })
       .catch((error) => {
         console.log(error);
+        setDenyRequestLoading(
+          denyRequestLoading.filter((id) => id !== element._id)
+        );
+        toast.error('An error occured while trying to deny this request. Please try again')
       });
   };
 
@@ -126,6 +172,22 @@ const WorkLogRequest = ({ cardData }) => {
   if (loading) return <LoadingSpinner />;
   return (
     <div className="work__log__request">
+      <div className="project__Select__Wrapper">
+        <select 
+          defaultValue={''} 
+          value={''} 
+          onChange={({ target }) => console.log(target.value)}>
+          <option value={''} disabled>Select project</option>
+          {
+            React.Children.toArray(
+              projectsForLead.map(project => {
+                console.log(projectsForLead);
+                return <option value={project}>{project}</option>
+              })
+            )
+          }
+        </select>
+      </div>
       <div className="cards">
         {cardData === "Pending approval" && (
           <>
@@ -135,9 +197,15 @@ const WorkLogRequest = ({ cardData }) => {
                   <h2>{element.username}</h2>
                   <p>
                     Date of request:{" "}
-                    {new Date(element.update_task_date).toDateString()}
+                    {
+                      new Date(element.update_task_date) == 'Invalid Date' ? 
+                        element.update_task_date 
+                        : 
+                      new Date(element.update_task_date).toDateString()
+                    }
                   </p>
                   <p>Request reason: {element.update_reason}</p>
+                  <p>Project: {element.project}</p>
                   <div className="request__action__btn">
                     {approveRequestLoading.includes(element._id) ? (
                       <LittleLoading />
@@ -150,20 +218,32 @@ const WorkLogRequest = ({ cardData }) => {
                       </button>
                     )}
                     {showDenyPopup && (
-                      <div className="overlay">
+                      <div className="overlay log_req">
                         <div className="delete_confirmation_container">
-                          <input
-                            type="text"
-                            placeholder="Reason for denial"
-                            onChange={(e) => setReasonForDenial(e.target.value)}
-                          />
+                          <h2>Enter Reason</h2>
+                          <label
+                            htmlFor="reasonDeny"
+                          >
+                            <span>Reason for denial</span>
+                            <input
+                              type="text"
+                              placeholder="Reason for denial"
+                              onChange={(e) => setReasonForDenial(e.target.value)}
+                            />
+                          </label>
+                          
                           <div className="buttons">
-                            <button
-                              onClick={() => denyRequest(element)}
-                              className="delete"
-                            >
-                              Deny
-                            </button>
+                            {
+                              denyRequestLoading.includes(element._id) ? (
+                                <LittleLoading />
+                              ) : (
+                              <button
+                                onClick={() => denyRequest(element)}
+                                className="delete"
+                              >
+                                Deny
+                              </button>
+                            )}
                             <button onClick={unshowDenyPopup}>Cancel</button>
                           </div>
                         </div>
@@ -190,9 +270,15 @@ const WorkLogRequest = ({ cardData }) => {
                   <h2>{element.username}</h2>
                   <p>
                     Date of request:{" "}
-                    {new Date(element.update_task_date).toDateString()}
+                    {
+                      new Date(element.update_task_date) == 'Invalid Date' ? 
+                        element.update_task_date 
+                        : 
+                      new Date(element.update_task_date).toDateString()
+                    }
                   </p>
                   <p>Request reason: {element.update_reason}</p>
+                  <p>Project: {element.project}</p>
                 </div>
               ))
             )}
@@ -207,9 +293,15 @@ const WorkLogRequest = ({ cardData }) => {
                   <h2>{element.username}</h2>
                   <p>
                     Date of request:{" "}
-                    {new Date(element.update_task_date).toDateString()}
+                    {
+                      new Date(element.update_task_date) == 'Invalid Date' ? 
+                        element.update_task_date 
+                        : 
+                      new Date(element.update_task_date).toDateString()
+                    }
                   </p>
                   <p>Request reason: {element.update_reason}</p>
+                  <p>Project: {element.project}</p>
                   <p>Reason for denial: {element.reason_for_denial}</p>
                 </div>
               ))

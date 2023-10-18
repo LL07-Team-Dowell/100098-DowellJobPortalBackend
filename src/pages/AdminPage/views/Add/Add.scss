@@ -7,6 +7,13 @@
     background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity (0.8) */
     z-index: 9990; /* Adjust the z-index value to ensure the overlay appears on top */
     font-family: Poppins;
+    &.log_req {
+        backdrop-filter: blur(3px);
+        background-color: initial;
+        .delete_confirmation_container {
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.12);
+        }
+    }
     .Project_Popup {
         z-index: 9999;
         position: absolute;

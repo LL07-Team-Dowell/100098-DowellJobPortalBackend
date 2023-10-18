@@ -3,6 +3,7 @@ import './style.css';
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { requestToUpdateTask } from "../../../../../services/candidateServices";
 import { toast } from "react-toastify";
+import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
 
 function RequestTask({ project, updatetaskdate, setShowModal }) {
     const { currentUser } = useCurrentUserContext();
@@ -50,7 +51,13 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
                 setShowModal(false);
                 setLoading(false);
             } catch (error) {
-                toast.warning("Failed to add task request");
+                toast.warning(
+                    error.response
+                        ? error.response.status === 500
+                        ? 'Failed to add task request'
+                        : error.response.data.message
+                        : 'Failed to add task request'
+                );
                 setLoading(false);
             }
 
@@ -98,7 +105,12 @@ function RequestTask({ project, updatetaskdate, setShowModal }) {
                     <button 
                         disabled={loading ? true : false}
                     >
-                        Submit
+                        {
+                            !loading ? 
+                                'Submit'
+                            :
+                            <LoadingSpinner width={'1.5rem'} height={'1.5rem'} color={'white'} />
+                        }
                     </button>
                     <button 
                         className="cancel" 

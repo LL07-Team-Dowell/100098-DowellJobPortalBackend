@@ -41,17 +41,27 @@ const EditTeamPopup = ({
   return (
     <div className='overlay'>
       <div className='delete_confirmation_container'>
-        <input
-          type='text'
-          value={teamName}
-          onChange={(e) => setTeamName(e.target.value)}
-        />
+        <h2>Edit Team</h2>
         <br />
-        <input
-          type='text'
-          value={teamDescription}
-          onChange={(e) => setTeamDescription(e.target.value)}
-        />
+        <label htmlFor="teamName">
+          <span>Team Name</span>
+          <input
+            type='text'
+            value={teamName}
+            onChange={(e) => setTeamName(e.target.value)}
+            id="teamName"
+          />
+        </label>
+        <br />
+        <label htmlFor="teamDescription">
+          <span>Team Description</span>
+          <input
+            type='text'
+            value={teamDescription}
+            onChange={(e) => setTeamDescription(e.target.value)}
+            id="teamDescription"
+          />
+        </label>
         <br />
         <div>
           <button onClick={() => editFunction()}>Edit</button>
