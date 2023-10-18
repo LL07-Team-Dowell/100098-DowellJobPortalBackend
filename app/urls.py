@@ -161,5 +161,4 @@ urlpatterns = [
 
     # secure end point-----------------
     path("secureendpoint/",SecureEndPoint.as_view()),
-    path("gettime/<str:company_id>/",GetTime.as_view())
 ]
