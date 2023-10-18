@@ -1,22 +1,42 @@
 import React from "react";
-import { AiOutlineCamera } from "react-icons/ai";
-
-const ReportCapture = ({ htmlToCanvaFunction, htmlToPdfFunction }) => {
+import { AiFillFilePdf, AiOutlineCamera, AiOutlineClose } from "react-icons/ai";
+import "./ReportCapture.scss";
+import Overlay from "../Overlay";
+const ReportCapture = ({
+  htmlToCanvaFunction,
+  htmlToPdfFunction,
+  closeModal,
+}) => {
   return (
-    <div className='report__capture'>
-      <div className=''>
+    <Overlay>
+      <div className='report__capture'>
+        <button
+          onClick={() => {}}
+          style={{
+            display: "block",
+            marginRight: 0,
+            marginLeft: "89%",
+            marginTop: "10px",
+          }}
+        >
+          <AiOutlineClose />
+        </button>
         <div>
-          <AiOutlineCamera />
+          <div className='' onClick={htmlToCanvaFunction}>
+            <div>
+              <AiOutlineCamera />
+            </div>
+            <p>Screenshot</p>
+          </div>
+          <div className='' onClick={htmlToPdfFunction}>
+            <div>
+              <AiFillFilePdf />
+            </div>
+            <p>PDF</p>
+          </div>
         </div>
-        <p>Screenshot</p>
       </div>
-      <div className=''>
-        <div>
-          <AiOutlineCamera />
-        </div>
-        <p>PDF</p>
-      </div>
-    </div>
+    </Overlay>
   );
 };
 

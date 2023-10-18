@@ -1,0 +1,35 @@
+.report__capture{
+    z-index: 9999;
+    position: absolute;
+    background-color: white;
+    padding: 20px;
+    padding-bottom: 20px;
+    width: 450px;
+    border-radius: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-height: 400px;
+    text-align: center;
+    overflow-y: auto;
+    button{
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+    }
+    >div{
+
+        display: flex;
+        justify-content: space-around;
+    >div{
+
+        background-color: #005734;
+        padding: 7px;
+        border-radius: 5px;
+        min-width: 100px;
+        cursor: pointer;
+        color: white;
+    }
+    }
+   
+}
