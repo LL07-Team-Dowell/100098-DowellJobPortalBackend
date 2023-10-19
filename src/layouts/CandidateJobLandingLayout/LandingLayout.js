@@ -15,13 +15,14 @@ import { useMediaQuery } from "@mui/material";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import { teamManagementProductName } from "../../utils/utils";
 import { testingRoles } from "../../utils/testingRoles";
+import HorizontalBarLoader from "../../components/HorizontalBarLoader/HorizontalBarLoader";
 
 const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, hideSearch }) => {
     const [ searchValue, setSearchValue ] = useState("");
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     const [ screenTitle, setScreenTitle ] = useState("Work logs");
     const location = useLocation();
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser, currentAuthSessionExpired } = useCurrentUserContext();
     const [ isSuperUser, setIsSuperUser ] = useState(false);
 
     useEffect(() => {
@@ -55,6 +56,22 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
         setIsSuperUser(true);
     }, [currentUser])
 
+    useEffect(() => {
+      if (currentAuthSessionExpired) {
+        const sessionId = sessionStorage.getItem('session_id');
+  
+        const timeout = setTimeout(() => {
+          window.location.replace(
+            `https://100093.pythonanywhere.com/?session_id=${sessionId}`
+          );
+        }, 2000)
+        
+        return (() => {
+          clearTimeout(timeout)
+        })
+      }
+    }, [currentAuthSessionExpired])
+
     const handleChatIconClick = () => toast.info("Still in development")
 
     const handleLogin = (e) => {
@@ -64,6 +81,12 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
 
     return (
       <>
+        {
+          currentAuthSessionExpired && 
+          <div className="auth__overlay">
+            <HorizontalBarLoader />
+          </div>
+        }
         <nav>
           <div style={{ position: "relative" }}>
             <p

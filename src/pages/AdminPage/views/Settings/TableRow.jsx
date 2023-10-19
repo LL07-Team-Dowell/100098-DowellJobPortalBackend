@@ -1,11 +1,10 @@
 import React, { useRef } from "react";
 import { useState } from "react";
-import axios from "axios";
 import { useEffect } from "react";
 import { AiOutlineArrowLeft, AiOutlineCheck, AiOutlineClose, AiOutlineSearch } from "react-icons/ai";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
-import { adminEditUserSettingProfile } from "../../../../services/adminServices";
+import { adminAddNewSettingProfile, adminEditUserSettingProfile } from "../../../../services/adminServices";
 import './index.scss';
 import useClickOutside from "../../../../hooks/useClickOutside";
 import useClickInside from "../../../../hooks/useClickInside";
@@ -171,9 +170,8 @@ export default function TableRow({
       return
     }
 
-    axios
-      .post(
-        "https://100098.pythonanywhere.com/settinguserprofileinfo/",
+    adminAddNewSettingProfile
+      (
         {
           company_id: teamManagementProduct.org_id,
           org_name: teamManagementProduct.org_name,
@@ -188,7 +186,6 @@ export default function TableRow({
             },
           ],
         },
-        []
       )
       .then((response) => {
         console.log(response);

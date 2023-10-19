@@ -210,6 +210,34 @@ const Add = () => {
               }
             </div>
           </div>
+          <div 
+            style={{ marginTop: 30, maxWidth: '18rem' }} 
+            className="Create_Team" 
+            onClick={
+              () => {
+                setShowSubProjectsPop(true);
+              }  
+            }>
+            <div>
+              <div>
+                <AiOutlinePlusCircle
+                  className="icon"
+                  style={{ fontSize: "2rem" }}
+                />
+              </div>
+              <h4>Add/Edit subprojects</h4>
+              {
+                subProjectsLoading ? 
+                  <div style={{ margin: '1rem auto', width: 'max-content', backgroundColor: '#fff' }}>
+                    <LoadingSpinner />
+                  </div>
+                :
+                <p style={{ fontSize: '0.8rem' }}>
+                  Simplify projects in your organization by splitting each one into subprojects
+                </p>
+              }
+            </div>
+          </div>
           <div style={{ marginTop: 30, maxWidth: '18rem' }} className="Create_Team" onClick={() => navigate('/teams/create-new-team/')}  >
             <div>
               <div>
@@ -244,34 +272,6 @@ const Add = () => {
               <p style={{ fontSize: '0.8rem' }}>
                 Create a product link for users to view open jobs in your amazing organization.
               </p>
-            </div>
-          </div>
-          <div 
-            style={{ marginTop: 30, maxWidth: '18rem' }} 
-            className="Create_Team" 
-            onClick={
-              () => {
-                setShowSubProjectsPop(true);
-              }  
-            }>
-            <div>
-              <div>
-                <AiOutlinePlusCircle
-                  className="icon"
-                  style={{ fontSize: "2rem" }}
-                />
-              </div>
-              <h4>Add/Edit subprojects</h4>
-              {
-                subProjectsLoading ? 
-                  <div style={{ margin: '1rem auto', width: 'max-content', backgroundColor: '#fff' }}>
-                    <LoadingSpinner />
-                  </div>
-                :
-                <p style={{ fontSize: '0.8rem' }}>
-                  Simplify projects in your organization by splitting each one into subprojects
-                </p>
-              }
             </div>
           </div>
           <div 
@@ -335,9 +335,9 @@ const AddProjectPopup = ({projects, unshowProjectPopup}) => {
   
   useEffect(() => {
 
-    const projectsToDisplay = dowellProjects.filter(project => !projectsAdded[0]?.project_list.includes(project.project_name));
+    const projectsToDisplay = dowellProjects.filter(project => !projectsAdded[0]?.project_list.includes(project.project_name)).sort((a, b) => a.project_name.localeCompare(b.project_name));
     setDisplayedProjects(projectsToDisplay);
-    setInputProjects(Array.isArray(projectsAdded[0]?.project_list) ? projectsAdded[0]?.project_list : []);
+    setInputProjects(Array.isArray(projectsAdded[0]?.project_list) ? projectsAdded[0]?.project_list.sort((a, b) => a.localeCompare(b)) : []);
   
   }, [])
 
@@ -516,7 +516,7 @@ const AddSubProjectPopup = ({projects, unshowProjectPopup}) => {
     setSelectedProject(project);
     const foundList = subProjectsAdded.find(item => item.parent_project === project)?.sub_project_list;
     if (!foundList) return
-    setInputProjects(foundList);
+    setInputProjects(foundList.sort((a, b) => a.localeCompare(b)));
   }
 
   const handleUnselectProject = () => {
@@ -669,16 +669,16 @@ const AddSubProjectPopup = ({projects, unshowProjectPopup}) => {
             <ul className='project__Listing__Sub'>
               {
                 
-                query.length > 0 ? projectsAdded[0]?.project_list.filter(project => project.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase().replaceAll(' ', ''))).length < 1 ?
+                query.length > 0 ? projectsAdded[0]?.project_list.sort((a, b) => a.localeCompare(b)).filter(project => project.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase().replaceAll(' ', ''))).length < 1 ?
                 <p>No projects found matching {query}</p>
                 :
 
-                React.Children.toArray(projectsAdded[0]?.project_list.filter(project => project.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase().replaceAll(' ', ''))).map(project => {
+                React.Children.toArray(projectsAdded[0]?.project_list.sort((a, b) => a.localeCompare(b)).filter(project => project.replaceAll(' ', '').toLocaleLowerCase().includes(query.toLocaleLowerCase().replaceAll(' ', ''))).map(project => {
                   return <li onClick={() => handleSelectProject(project)}>{project}</li>
                 }))
                 :
 
-                React.Children.toArray(projectsAdded[0]?.project_list.map(project => {
+                React.Children.toArray(projectsAdded[0]?.project_list.sort((a, b) => a.localeCompare(b)).map(project => {
                   return <li onClick={() => handleSelectProject(project)}>{project}</li>
                 }))
               }

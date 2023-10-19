@@ -12,6 +12,7 @@ const EditTeamPopup = ({
   const { name, description, members } = teamInfo;
   const [teamName, setTeamName] = useState(name);
   const [teamDescription, setTeamDescription] = useState(description);
+
   const editFunction = () => {
     EditTeam(teamId, {
       team_name: teamName,
@@ -38,6 +39,7 @@ const EditTeamPopup = ({
         console.log(err);
       });
   };
+  
   return (
     <div className='overlay'>
       <div className='delete_confirmation_container'>
@@ -55,12 +57,13 @@ const EditTeamPopup = ({
         <br />
         <label htmlFor="teamDescription">
           <span>Team Description</span>
-          <input
+          <textarea
             type='text'
             value={teamDescription}
             onChange={(e) => setTeamDescription(e.target.value)}
             id="teamDescription"
-          />
+            rows={4}
+          ></textarea>
         </label>
         <br />
         <div>

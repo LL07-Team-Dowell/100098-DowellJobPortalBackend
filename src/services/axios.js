@@ -47,6 +47,16 @@ const currentBackendAxiosInstance = axios.create({
     baseURL: currentBaseURL,
     // withCredentials: true,
 })
+currentBackendAxiosInstance.interceptors.request.use((config) => {
+    const copyOfConfigHeaders = structuredClone(config.headers);
+    config.headers = {
+        ...copyOfConfigHeaders,
+        Authorization: sessionStorage.getItem('token'),
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+})
 
 const liveStatusBackendAxiosInstance = axios.create({
     baseURL: loginStaticBaseURL,

@@ -39,3 +39,7 @@ export const getAllCompanyUserSubProject = async (companyId, companyDataType) =>
 export const generateCommonAdminReport = async (data) => {
     return await currentBackendAxiosInstance.post(`generate_report/`, data);
 }
+
+export const getAllUpdateTaskRequests = async (companyId) => {
+    return await currentBackendAxiosInstance.get(`/get_all_update_task/${companyId}`)
+}

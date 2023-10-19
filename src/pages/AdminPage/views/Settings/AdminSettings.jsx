@@ -8,7 +8,7 @@ import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { getSettingUserProfileInfo, configureSettingUserProfileInfo } from "../../../../services/settingServices";
 import { useJobContext } from "../../../../contexts/Jobs";
-import { getApplicationForAdmin } from "../../../../services/adminServices";
+import { adminAddNewSettingProfile, getApplicationForAdmin } from "../../../../services/adminServices";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 import { testingRoles } from "../../../../utils/testingRoles";
 import { MdArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
@@ -262,7 +262,7 @@ const AdminSettings = () => {
     const teamManagementProduct = currentUser.portfolio_info.find(item => item.product === teamManagementProductName);
     if (!teamManagementProduct) return
     setLoading(true);
-    axios.post('https://100098.pythonanywhere.com/settinguserprofileinfo/', {
+    adminAddNewSettingProfile({
       company_id: teamManagementProduct.org_id,
       org_name: teamManagementProduct.org_name,
       owner: currentUser.userinfo.username,
@@ -270,7 +270,7 @@ const AdminSettings = () => {
       profile_info: [
         { profile_title: firstSelection, Role: secondSelection, version: "1.0" }
       ]
-    }, [])
+    })
       .then(response => { console.log(response); setFirstSelection(""); setSecondSelection(""); setAlert(true); setLoading(false); })
       .catch(error => console.log(error))
   }
@@ -279,7 +279,7 @@ const AdminSettings = () => {
     const teamManagementProduct = currentUser.portfolio_info.find(item => item.product === teamManagementProductName);
     if (!teamManagementProduct) return
     setLoading(true);
-    axios.post('https://100098.pythonanywhere.com/settinguserprofileinfo/', {
+    adminAddNewSettingProfile({
       company_id: teamManagementProduct.org_id,
       org_name: teamManagementProduct.org_name,
       owner: currentUser.userinfo.username,
@@ -287,7 +287,7 @@ const AdminSettings = () => {
       profile_info: [
         { profile_title: firstSelection, Role: secondSelection, version: "1.0", project: Proj_Lead }
       ]
-    }, [])
+    })
       .then(response => { console.log(response); setFirstSelection(""); setSecondSelection(""); setAlert(true); setLoading(false); })
       .catch(error => console.log(error))
   }

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Wrappen } from "../../../CandidatePage/views/TeamScreenThread/style";
 import WorkLogRequest from "./WorkLogRequest";
-import JobLandingLayout from "../../../../layouts/CandidateJobLandingLayout/LandingLayout";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 

@@ -134,3 +134,7 @@ export const fetchTeamThreadsForAdmin = async (teamId) => {
   `fetch_team_alerted_id_thread/${teamId}/`
   ) 
 }
+
+export const adminAddNewSettingProfile = async (data) => {
+  return await currentBackendAxiosInstance.post('/settinguserprofileinfo/', data)
+}
