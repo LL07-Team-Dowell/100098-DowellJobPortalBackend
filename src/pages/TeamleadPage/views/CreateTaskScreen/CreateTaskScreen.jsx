@@ -25,6 +25,7 @@ import { extractNewTasksAndAddExtraDetail } from "../../util/extractNewTasks";
 import { getAllCompanyUserSubProject } from "../../../../services/commonServices";
 import { AiOutlineClose, AiOutlineDown } from "react-icons/ai";
 import SubprojectSelectWithSearch from "../../../../components/SubprojectSelectWithSearch/SubprojectSelectWithSearch";
+import { formatDateForAPI } from "../../../../helpers/helpers";
 
 const CreateTaskScreen = ({
   candidateAfterSelectionScreen,
@@ -371,8 +372,9 @@ const CreateTaskScreen = ({
     setSelectedDate(date);
 
     const dateSelected = new Date(date);
-    const [ year, month, day ] = [ dateSelected.getFullYear(), dateSelected.getMonth() + 1, dateSelected.getDate() ];
-    const dateFormattedForAPI = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+    // const [ year, month, day ] = [ dateSelected.getFullYear(), dateSelected.getMonth() + 1, dateSelected.getDate() ];
+    // const dateFormattedForAPI = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+    const dateFormattedForAPI = formatDateForAPI(dateSelected);
     const dataToPost = {
       "company_id": currentUser.portfolio_info[0].org_id,
       "data_type": currentUser.portfolio_info[0].data_type,

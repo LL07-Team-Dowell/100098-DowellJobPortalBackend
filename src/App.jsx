@@ -108,6 +108,7 @@ function App() {
     setIsReportsUser,
     reportsUserDetails,
     setReportsUserDetails,
+    setCurrentAuthSessionExpired,
   } = useCurrentUserContext();
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
@@ -124,6 +125,7 @@ function App() {
   useDowellLogin(
     setCurrentUser,
     setLoading,
+    setCurrentAuthSessionExpired,
     setIsPublicUser,
     setPublicUserDetails,
     setUserDetailsNotFound,

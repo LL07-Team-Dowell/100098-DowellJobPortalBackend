@@ -1,0 +1,41 @@
+.progress {
+  width: 100.8px;
+  height: 16.8px;
+  background: linear-gradient(#005734 50%, #0000 0),
+    linear-gradient(#0000 50%, #005734 0), linear-gradient(#005734 50%, #0000 0),
+    linear-gradient(#0000 50%, #005734 0), linear-gradient(#005734 50%, #0000 0),
+    linear-gradient(#0000 50%, #005734 0) #dbdcef;
+  background-size: calc(100% / 6 + 1px) 200%;
+  background-repeat: no-repeat;
+  animation: progress-qh65fe 2s infinite;
+}
+
+@keyframes progress-qh65fe {
+  0% {
+    background-position: 0% 100%, 20% 0%, 40% 100%, 60% 0%, 80% 100%, 100% 0%;
+  }
+
+  16.67% {
+    background-position: 0% 0%, 20% 0%, 40% 100%, 60% 0%, 80% 100%, 100% 0%;
+  }
+
+  33.33% {
+    background-position: 0% 0%, 20% 100%, 40% 100%, 60% 0%, 80% 100%, 100% 0%;
+  }
+
+  50% {
+    background-position: 0% 0%, 20% 100%, 40% 0%, 60% 0%, 80% 100%, 100% 0%;
+  }
+
+  66.67% {
+    background-position: 0% 0%, 20% 100%, 40% 0%, 60% 100%, 80% 100%, 100% 0%;
+  }
+
+  83.33% {
+    background-position: 0% 0%, 20% 100%, 40% 0%, 60% 100%, 80% 0%, 100% 0%;
+  }
+
+  100% {
+    background-position: 0% 0%, 20% 100%, 40% 0%, 60% 100%, 80% 0%, 100% 100%;
+  }
+}

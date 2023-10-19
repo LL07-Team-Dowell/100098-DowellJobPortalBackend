@@ -29,6 +29,7 @@ import { testingRoles } from "../../utils/testingRoles";
 import teamManagementLogo from "../../assets/images/team-management-logo.png";
 import { MdPublic } from "react-icons/md";
 import { projectLeadNavLinks } from "../../pages/ProjectLeadPage/utils/projectLeadNavigationLinks";
+import HorizontalBarLoader from "../../components/HorizontalBarLoader/HorizontalBarLoader";
 
 const StaffJobLandingLayout = ({
   children,
@@ -69,7 +70,7 @@ const StaffJobLandingLayout = ({
   projectLeadView,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
-  const { currentUser } = useCurrentUserContext();
+  const { currentUser, currentAuthSessionExpired } = useCurrentUserContext();
   const [isSuperUser, setIsSuperUser] = useState(false);
 
   useEffect(() => {
@@ -94,8 +95,30 @@ const StaffJobLandingLayout = ({
     setIsSuperUser(true);
   }, [currentUser]);
 
+  useEffect(() => {
+    if (currentAuthSessionExpired) {
+      const sessionId = sessionStorage.getItem('session_id');
+
+      const timeout = setTimeout(() => {
+        window.location.replace(
+          `https://100093.pythonanywhere.com/?session_id=${sessionId}`
+        );
+      }, 2000)
+      
+      return (() => {
+        clearTimeout(timeout)
+      })
+    }
+  }, [currentAuthSessionExpired])
+
   return (
     <>
+      {
+        currentAuthSessionExpired && 
+        <div className="auth__overlay">
+          <HorizontalBarLoader />
+        </div>
+      }
       <nav style={{ display: hideTitleBar ? "none" : "block" }}>
         <div style={{ position: "relative" }}>
           <p

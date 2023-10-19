@@ -1,15 +1,20 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
+  generateAuthToken,
+  getAuthStatus,
   getUserInfoFromLoginAPI,
   getUserInfoFromPortfolioAPI,
 } from "../services/authServices";
 import { dowellLoginUrl } from "../services/axios";
 import { getSettingUserProfileInfo } from "../services/settingServices";
+import { teamManagementProductName } from "../utils/utils";
+import { toast } from "react-toastify";
 
 export default function useDowellLogin(
   updateCurrentUserState,
   updatePageLoading,
+  updateCurrentAuthSessionStatus,
   updatePublicUserState,
   updateDetailsForPublicUser,
   updateNoUserDetailFound,
@@ -159,7 +164,22 @@ export default function useDowellLogin(
     if (!session_id && !portfolio_id) {
       if (currentLocalSessionId && currentLocalPortfolioId) {
         if (currentLocalUserDetails) {
-          updateCurrentUserState(JSON.parse(currentLocalUserDetails));
+          const parsedUserDetails = JSON.parse(currentLocalUserDetails);
+
+          // GET USER'S CURRENT AUTH STATUS
+          getAuthStatus({
+            name: `${parsedUserDetails?.userinfo?.first_name} ${parsedUserDetails?.userinfo?.last_name}`,
+            email: parsedUserDetails?.userinfo?.email,
+          }).then(res => {
+            // STILL AUTHORIZED
+            console.log('aaa', res);
+          }).catch(err => {
+            // unauthorized
+            updateCurrentAuthSessionStatus(true);
+            toast.info('Login session expired. Redirecting to login...')
+          });
+
+          updateCurrentUserState(parsedUserDetails);
           updatePageLoading(false);
           return
         }
@@ -174,9 +194,19 @@ export default function useDowellLogin(
               return;
             }
 
-            try {
-              const settingsResponse = await getSettingUserProfileInfo();
-              const settingForCurrentUserOrg = settingsResponse.data
+            // NEW IMPLEMENTATION WITH TOKEN
+            Promise.all([
+              getSettingUserProfileInfo(),
+              generateAuthToken({
+                "username": currentUserDetails?.userinfo?.username,
+                "portfolio": currentUserDetails?.portfolio_info[0]?.portfolio_name,
+                "data_type": currentUserDetails?.portfolio_info[0]?.data_type,
+                "company_id": currentUserDetails?.portfolio_info[0]?.org_id,
+              }),
+            ]).then((responses) => {
+              sessionStorage.setItem('token', responses[1]?.data?.access_token);
+
+              const settingForCurrentUserOrg = responses[0]?.data
                 .reverse()
                 .filter(
                   (setting) =>
@@ -212,11 +242,58 @@ export default function useDowellLogin(
                 });
                 updatePageLoading(false);
               }
-            } catch (error) {
+            }).catch(error => {
+              console.log('tt', error);
               sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
               updateCurrentUserState(currentUserDetails);
               updatePageLoading(false);
-            }
+            })
+
+
+            // // PREVIOUS IMPLEMENTATION WITHOUT TOKEN
+            // try {
+            //   const settingsResponse = await getSettingUserProfileInfo();
+            //   const settingForCurrentUserOrg = settingsResponse.data
+            //     .reverse()
+            //     .filter(
+            //       (setting) =>
+            //         setting.company_id ===
+            //         currentUserDetails.portfolio_info[0].org_id
+            //     )
+            //     .filter(
+            //       (setting) => 
+            //         setting.data_type === 
+            //         currentUserDetails.portfolio_info[0].data_type
+            //     );
+
+            //   //CHECK IF USER HAS ROLE CONFIGURED
+            //   const userHasRoleConfigured = settingForCurrentUserOrg.find(
+            //     (setting) =>
+            //       setting.profile_info[setting.profile_info.length - 1].profile_title ===
+            //       currentUserDetails.portfolio_info[0].portfolio_name
+            //   );
+
+            //   //USER DOES NOT HAVE ROLE CONFIGURED
+            //   if (!userHasRoleConfigured) {
+            //     sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+            //     updateCurrentUserState(currentUserDetails);
+            //     updatePageLoading(false);
+
+            //     return;
+            //   } else {
+            //     //USER HAS ROLE CONFIGURED
+            //     sessionStorage.setItem('user', JSON.stringify({...currentUserDetails, settings_for_profile_info: userHasRoleConfigured }));
+            //     updateCurrentUserState({
+            //       ...currentUserDetails,
+            //       settings_for_profile_info: userHasRoleConfigured,
+            //     });
+            //     updatePageLoading(false);
+            //   }
+            // } catch (error) {
+            //   sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+            //   updateCurrentUserState(currentUserDetails);
+            //   updatePageLoading(false);
+            // }
           })
           .catch((err) => {
             console.log(err);
@@ -227,7 +304,22 @@ export default function useDowellLogin(
 
       if (currentLocalSessionId && !currentLocalPortfolioId) {
         if (currentLocalUserDetails) {
-          updateCurrentUserState(JSON.parse(currentLocalUserDetails));
+          const parsedUserDetails = JSON.parse(currentLocalUserDetails);
+
+          // GET USER'S CURRENT AUTH STATUS
+          getAuthStatus({
+            name: `${parsedUserDetails?.userinfo?.first_name} ${parsedUserDetails?.userinfo?.last_name}`,
+            email: parsedUserDetails?.userinfo?.email,
+          }).then(res => {
+            // STILL AUTHORIZED
+            console.log('aaa', res);
+          }).catch(err => {
+            // unauthorized
+            updateCurrentAuthSessionStatus(true);
+            toast.info('Login session expired. Redirecting to login...')
+          });
+
+          updateCurrentUserState(parsedUserDetails);
           updatePageLoading(false);
           return
         }
@@ -241,6 +333,22 @@ export default function useDowellLogin(
 
               return;
             }
+
+            const foundTeamManagementProductInPortfolio = currentUserDetails?.portfolio_info?.find(
+              (item) => item.product === teamManagementProductName &&
+                item.member_type === 'owner'
+            )
+
+            generateAuthToken({
+              "username": currentUserDetails?.userinfo?.username,
+              "portfolio": foundTeamManagementProductInPortfolio?.portfolio_name,
+              "data_type": foundTeamManagementProductInPortfolio?.data_type,
+              "company_id": foundTeamManagementProductInPortfolio?.org_id,
+            }).then(res => {
+              sessionStorage.setItem('token', res?.data?.access_token);
+            }).catch(err => {
+              console.log('Failed to get token', err);
+            })
 
             sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
             updateCurrentUserState(currentUserDetails);
@@ -267,7 +375,22 @@ export default function useDowellLogin(
       // );
 
       if (currentLocalUserDetails) {
-        updateCurrentUserState(JSON.parse(currentLocalUserDetails));
+        const parsedUserDetails = JSON.parse(currentLocalUserDetails);
+
+        // GET USER'S CURRENT AUTH STATUS
+        getAuthStatus({
+          name: `${parsedUserDetails?.userinfo?.first_name} ${parsedUserDetails?.userinfo?.last_name}`,
+          email: parsedUserDetails?.userinfo?.email,
+        }).then(res => {
+          // STILL AUTHORIZED
+          console.log('aaa', res);
+        }).catch(err => {
+          // unauthorized
+          updateCurrentAuthSessionStatus(true);
+          toast.info('Login session expired. Redirecting to login...')
+        });
+
+        updateCurrentUserState(parsedUserDetails);
         updatePageLoading(false);
         return
       }
@@ -282,6 +405,22 @@ export default function useDowellLogin(
 
             return;
           }
+
+          const foundTeamManagementProductInPortfolio = currentUserDetails?.portfolio_info?.find(
+            (item) => item.product === teamManagementProductName &&
+              item.member_type === 'owner'
+          )
+
+          generateAuthToken({
+            "username": currentUserDetails?.userinfo?.username,
+            "portfolio": foundTeamManagementProductInPortfolio?.portfolio_name,
+            "data_type": foundTeamManagementProductInPortfolio?.data_type,
+            "company_id": foundTeamManagementProductInPortfolio?.org_id,
+          }).then(res => {
+            sessionStorage.setItem('token', res?.data?.access_token);
+          }).catch(err => {
+            console.log('Failed to get token', err);
+          })
 
           sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
           updateCurrentUserState(currentUserDetails);
@@ -300,7 +439,22 @@ export default function useDowellLogin(
     sessionStorage.setItem("portfolio_id", portfolio_id);
 
     if (currentLocalUserDetails) {
-      updateCurrentUserState(JSON.parse(currentLocalUserDetails));
+      const parsedUserDetails = JSON.parse(currentLocalUserDetails);
+
+      // GET USER'S CURRENT AUTH STATUS
+      getAuthStatus({
+        name: `${parsedUserDetails?.userinfo?.first_name} ${parsedUserDetails?.userinfo?.last_name}`,
+        email: parsedUserDetails?.userinfo?.email,
+      }).then(res => {
+        // STILL AUTHORIZED
+        console.log('aaa', res);
+      }).catch(err => {
+        // unauthorized
+        updateCurrentAuthSessionStatus(true);
+        toast.info('Login session expired. Redirecting to login...')
+      });
+
+      updateCurrentUserState(parsedUserDetails);
       updatePageLoading(false);
       return
     }
@@ -316,9 +470,19 @@ export default function useDowellLogin(
           return;
         }
         
-        try {
-          const settingsResponse = await getSettingUserProfileInfo();
-          const settingForCurrentUserOrg = settingsResponse.data
+        // NEW IMPLEMENTATION WITH TOKEN
+        Promise.all([
+          getSettingUserProfileInfo(),
+          generateAuthToken({
+            "username": currentUserDetails?.userinfo?.username,
+            "portfolio": currentUserDetails?.portfolio_info[0]?.portfolio_name,
+            "data_type": currentUserDetails?.portfolio_info[0]?.data_type,
+            "company_id": currentUserDetails?.portfolio_info[0]?.org_id,
+          }),
+        ]).then(responses => {
+          sessionStorage.setItem('token', responses[1]?.data?.access_token);
+
+          const settingForCurrentUserOrg = responses[0]?.data
             .reverse()
             .filter(
               (setting) =>
@@ -354,11 +518,57 @@ export default function useDowellLogin(
             });
             updatePageLoading(false);
           }
-        } catch (error) {
+        }).catch(error => {
+          console.log('tt', error);
           sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
           updateCurrentUserState(currentUserDetails);
           updatePageLoading(false);
-        }
+        })
+
+        // // PREVIOUS IMPLEMENTATION WITHOUT TOKEN
+        // try {
+        //   const settingsResponse = await getSettingUserProfileInfo();
+        //   const settingForCurrentUserOrg = settingsResponse.data
+        //     .reverse()
+        //     .filter(
+        //       (setting) =>
+        //         setting.company_id ===
+        //         currentUserDetails.portfolio_info[0].org_id
+        //     )
+        //     .filter(
+        //       (setting) => 
+        //         setting.data_type === 
+        //         currentUserDetails.portfolio_info[0].data_type
+        //     );
+
+        //   //CHECK IF USER HAS ROLE CONFIGURED
+        //   const userHasRoleConfigured = settingForCurrentUserOrg.find(
+        //     (setting) =>
+        //       setting.profile_info[setting.profile_info.length - 1].profile_title ===
+        //       currentUserDetails.portfolio_info[0].portfolio_name
+        //   );
+
+        //   //User Does not have role configured
+        //   if (!userHasRoleConfigured) {
+        //     sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+        //     updateCurrentUserState(currentUserDetails);
+        //     updatePageLoading(false);
+
+        //     return;
+        //   } else {
+        //     //User has role configured
+        //     sessionStorage.setItem('user', JSON.stringify({...currentUserDetails, settings_for_profile_info: userHasRoleConfigured}));
+        //     updateCurrentUserState({
+        //       ...currentUserDetails,
+        //       settings_for_profile_info: userHasRoleConfigured,
+        //     });
+        //     updatePageLoading(false);
+        //   }
+        // } catch (error) {
+        //   sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+        //   updateCurrentUserState(currentUserDetails);
+        //   updatePageLoading(false);
+        // }
       })
       .catch((err) => {
         console.log(err);
