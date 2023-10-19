@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useCurrentUserContext } from '../../../../../../contexts/CurrentUserContext';
 import { toast } from 'react-toastify';
 import CreateTeamChoice from '../smallComponents/CreateTeamChoice';
@@ -10,6 +9,7 @@ import CreateTask from '../smallComponents/CreateTask';
 import { EditTeam } from '../../../../../../services/createMembersTasks';
 import { initialState } from '../../context/Values';
 import { useValues } from '../../context/Values';
+import { createNewTeamTask } from '../../../../../../services/teamleadServices';
 
 const SecondForm = () => {
   const { currentUser } = useCurrentUserContext();
@@ -57,8 +57,7 @@ const SecondForm = () => {
   }, [choosedTeam]);
 
   const createSingleMemberTask = () => {
-    axios
-      .post('https://100098.pythonanywhere.com/task_management/create_task/', {
+    createNewTeamTask({
         project: [projectname],
         applicant: data.selected_members[0],
         task: singlemembertask,

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import ModelDetails from "./ModelDetails";
-import axios from "axios";
 import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
+import { editTeamTask } from "../../../../../../../services/teamleadServices";
 
 const SingleTask = ({
   title,
@@ -29,9 +29,9 @@ const SingleTask = ({
         completed: true,
         task_added_by: currentUser.userinfo.username,
       };
-      axios
-        .patch(
-          `https://100098.pythonanywhere.com/edit_team_task/${taskId}/`,
+      editTeamTask
+        (
+          taskId,
           data
         )
         .then(({ data }) => {

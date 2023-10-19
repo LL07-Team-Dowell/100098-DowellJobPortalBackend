@@ -122,3 +122,10 @@ export const getCandidateTasksV2 = async (data) => {
 }
 
 
+export const createNewTeamTask = async (data) => {
+  return await currentBackendAxiosInstance.post('/task_management/create_task/', data)
+}
+
+export const editTeamTask = async (taskId, data) => {
+  return await currentBackendAxiosInstance.patch(`/edit_team_task/${taskId}/`, data)
+}
