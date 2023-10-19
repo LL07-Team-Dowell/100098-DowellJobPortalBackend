@@ -84,16 +84,18 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
   const [datasetForApplications, setDatasetForApplications] = useState(null);
 
   const exportPDF = () => {
-    const input = document.createElement("reports");
+    const input = document.getElementById("reports__container");
     html2canvas(input, {
       logging: true,
       letterRendering: 1,
       useCors: true,
     }).then((canvas) => {
-      const imgData = canvas.toDataUrl("image/png");
-      const pdf = new jsPDF();
-      pdf.addImage(imgData, "JPEG", 0, 0);
-      pdf.save("download.pdf");
+      const imgWidth = 208;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const imgData = canvas.toDataURL("img/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+      pdf.save("goatrank.pdf");
     });
   };
   console.log({ selectOptions, lastDate, firstDate });
@@ -328,7 +330,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         pageTitle={"Reports"}
         subAdminView={subAdminView}
       >
-        <div className='reports__container'>
+        <div className='reports__container' id='reports__container'>
           <div className='reports__container_header'>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div
