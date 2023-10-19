@@ -623,19 +623,25 @@ class admin_create_jobs(APIView):
             "created_by": data.get("created_by"),
             "created_on": data.get("created_on"),
             "paymentInterval": data.get("paymentInterval"),
-            "type_of_opening": data.get("type_of_opening")
+            "type_of_opening": data.get("type_of_opening"),
         }
         type_request = request.GET.get("type")
-        if type_request=="is_internal":
-            if data.get("type_of_opening")=="Group_Lead" or data.get("type_of_opening")=="Team_Lead":
-                field["is_internal"]=True
-                field["type_of_opening"]=data.get("type_of_opening")
+        if type_request == "is_internal":
+            if (
+                data.get("type_of_opening") == "Group_Lead"
+                or data.get("type_of_opening") == "Team_Lead"
+            ):
+                field["is_internal"] = True
+                field["type_of_opening"] = data.get("type_of_opening")
             else:
-                return Response({
+                return Response(
+                    {
                         "message": "Job creation was unsuccessful.",
                         "response": " Pass 'type_of_opening' as either 'Group_Lead' or 'Team_Lead'",
-                    }, status=status.HTTP_400_BAD_REQUEST)
-            
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
         update_field = {"status": "nothing to update"}
         serializer = AdminSerializer(data=field)
         if serializer.is_valid():
@@ -1572,7 +1578,6 @@ class lead_reject_candidate(APIView):
 # api for task management starts here________________________
 @method_decorator(csrf_exempt, name="dispatch")
 class create_task(APIView):
-    
     def max_updated_date(self, updated_date):
         print(updated_date)
         task_updated_date = datetime.datetime.strptime(
@@ -1582,9 +1587,9 @@ class create_task(APIView):
         _date = _date.strftime("%m/%d/%Y %H:%M:%S")
 
         return str(_date)
-    
+
     @verify_user_token
-    def post(self, request,user):
+    def post(self, request, user):
         data = request.data
         if data:
             try:
@@ -1650,7 +1655,7 @@ class create_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_task(APIView):
     @verify_user_token
-    def get(self, request, company_id,user):
+    def get(self, request, user, company_id):
         field = {"company_id": company_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1681,7 +1686,7 @@ class get_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_candidate_task(APIView):
     @verify_user_token
-    def get(self, request, document_id,user):
+    def get(self, request,user, document_id):
         field = {"_id": document_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1712,7 +1717,7 @@ class get_candidate_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class update_task(APIView):
     @verify_user_token
-    def patch(self, request,user):
+    def patch(self, request, user):
         data = request.data
         if data:
             field = {"_id": data.get("document_id")}
@@ -1788,8 +1793,9 @@ class create_task_update_request(APIView):
             return True
         else:
             return False
+
     @verify_user_token
-    def post(self, request,user):
+    def post(self, request, user):
         data = request.data
         if data:
             username = data.get("username")
@@ -1846,7 +1852,7 @@ class create_task_update_request(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_task_request_update(APIView):
     @verify_user_token
-    def get(self, request, document_id,user):
+    def get(self, request, user,document_id):
         field = {"_id": document_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1882,7 +1888,7 @@ class get_task_request_update(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_task_request_update(APIView):
     @verify_user_token
-    def get(self, request, company_id,user):
+    def get(self, request, user,company_id):
         field = {"company_id": company_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1937,8 +1943,9 @@ class approve_task_request_update(APIView):
             return False
         else:
             return True
+
     @verify_user_token
-    def patch(self, request, document_id,user):
+    def patch(self, request, user,document_id):
         data = request.data
 
         if self.check_approved(document_id) is False:
@@ -2018,8 +2025,9 @@ class denied_task_request_update(APIView):
             return False
         else:
             return True
+
     @verify_user_token
-    def patch(self, request, document_id,user):
+    def patch(self, request, user ,document_id):
         data = request.data
 
         if self.check_denied(document_id) is False:
@@ -2090,7 +2098,6 @@ class denied_task_request_update(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class approve_task(APIView):
-    
     def max_updated_date(self, updated_date):
         task_updated_date = datetime.datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
@@ -2184,8 +2191,9 @@ class approve_task(APIView):
                 return True
 
         return False
+
     @verify_user_token
-    def patch(self, request,user):
+    def patch(self, request, user):
         data = request.data
         print(data)
         if data:
@@ -2253,7 +2261,7 @@ class approve_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_task(APIView):
     @verify_user_token
-    def delete(self, request, document_id,user):
+    def delete(self, request, user, document_id):
         field = {"_id": document_id}
         update_field = {"data_type": "Archived_Data"}
         response = dowellconnection(
@@ -2290,9 +2298,9 @@ class task_module(APIView):
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
-    
+
     @verify_user_token
-    def post(self, request,user):
+    def post(self, request, user):
         type_request = request.GET.get("type")
 
         if type_request == "add_task":
@@ -2309,8 +2317,9 @@ class task_module(APIView):
             return self.get_all_candidate_tasks(request)
         else:
             return self.handle_error(request)
+
     @verify_user_token
-    def get(self, request,user):
+    def get(self, request, user):
         type_request = request.GET.get("type")
 
         if type_request == "save_task":
@@ -2319,8 +2328,9 @@ class task_module(APIView):
             return self.delete_current_task(request)
         else:
             return self.handle_error(request)
+
     @verify_user_token
-    def add_task(self, request,user):
+    def add_task(self, request, user):
         data = request.data
         payload = {
             "project": data.get("project"),
@@ -2416,8 +2426,9 @@ class task_module(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
     @verify_user_token
-    def get_candidate_task(self, request,user):
+    def get_candidate_task(self, request, user):
         data = request.data
         user_id = data.get("user_id")
         company_id = data.get("company_id")
@@ -2502,8 +2513,9 @@ class task_module(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
+
     @verify_user_token
-    def update_candidate_task(self, request,user):
+    def update_candidate_task(self, request, user):
         data = request.data
         payload = {
             "task_id": request.GET.get("task_id"),
@@ -2585,7 +2597,7 @@ class task_module(APIView):
                 {"success": False, "message": "Failed save task"},
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
- 
+
     def update_single_task(self, request):
         current_task_id = request.GET.get("current_task_id")
         update_task = request.data.get("update_task")
@@ -7630,19 +7642,19 @@ class AddTotalTime(APIView):
             },
             status=status.HTTP_200_OK,
         )
-    
+
     def get(self, request, company_id):
         field = {"company_id": company_id}
         response = json.loads(
-                dowellconnection(*time_detail_module, "fetch", field, update_field=None)
-            )
+            dowellconnection(*time_detail_module, "fetch", field, update_field=None)
+        )
         return Response(
-                {
-                    "success": True,
-                    "data": response,
-                },
-                status=status.HTTP_200_OK,
-            )
+            {
+                "success": True,
+                "data": response,
+            },
+            status=status.HTTP_200_OK,
+        )
 
     def patch(self, request, company_id):
         data = request.data
@@ -7652,23 +7664,24 @@ class AddTotalTime(APIView):
         )
         response2_data = []
 
-        for item in response['data']:
-            project = item['project']
+        for item in response["data"]:
+            project = item["project"]
             company_id = item["company_id"]
             time_gotten = get_total_time(project, company_id)
-            
-           
+
             left_time_str = item["left_time"]
             if left_time_str and time_gotten:
                 left_time = float(left_time_str) - float(time_gotten)
             else:
-                left_time = 0.0  
+                left_time = 0.0
 
             field2 = {"left_time": left_time}
             response2 = json.loads(
-                dowellconnection(*time_detail_module, "update", field=field, update_field=field2)
+                dowellconnection(
+                    *time_detail_module, "update", field=field, update_field=field2
+                )
             )
-            
+
             response2_data.append(response2)
 
         return Response(
@@ -7679,22 +7692,26 @@ class AddTotalTime(APIView):
             },
             status=status.HTTP_200_OK,
         )
-    
+
+
 class GetbyDocumentIDTotalTime(APIView):
     def get(self, request, document_id):
         field = {"_id": document_id}
         response = json.loads(
-                dowellconnection(*time_detail_module, "fetch", field, update_field=None)
-            )
+            dowellconnection(*time_detail_module, "fetch", field, update_field=None)
+        )
         return Response(
-                {
-                    "success": True,
-                    "data": response,
-                },
-                status=status.HTTP_200_OK,
-            )
+            {
+                "success": True,
+                "data": response,
+            },
+            status=status.HTTP_200_OK,
+        )
+
 
 """Total time for project hours"""
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class project_hours(APIView):
     def post(self, request):
@@ -7706,8 +7723,8 @@ class project_hours(APIView):
             return self.enable_edit_project_hours(request)
         else:
             return self.handle_error(request)
-    def get(self, request):
 
+    def get(self, request):
         type_request = request.GET.get("type")
 
         if type_request == "get_project_hours_details":
@@ -7716,14 +7733,15 @@ class project_hours(APIView):
             return self.get_project_hours_detail(request)
         else:
             return self.handle_error(request)
-    
+
     """Add total project hours"""
+
     def add_total_project_hours(self, request):
         field = {
             "project": request.data.get("project"),
             "company_id": request.data.get("company_id"),
             "total_time": request.data.get("total_time"),
-            "lead_name": request.data.get("lead_name")
+            "lead_name": request.data.get("lead_name"),
         }
 
         """ADD SERIALIZER HERE"""
@@ -7732,73 +7750,85 @@ class project_hours(APIView):
             field = {
                 "project": field["project"],
                 "company_id": field["company_id"],
-                "total_time":field["total_time"],
+                "total_time": field["total_time"],
                 "lead_name": field["lead_name"],
                 "enabale_modification": False,
-                "left_time":0
+                "left_time": 0,
             }
-            response = json.loads(dowellconnection(*time_detail_module,"insert",field,update_field=None))
+            response = json.loads(
+                dowellconnection(
+                    *time_detail_module, "insert", field, update_field=None
+                )
+            )
             if response["isSuccess"]:
-                return Response({
-                    "success": True,
-                    "message":"Total project time added successfully",
-                    "response": field,
-                    "_id": response["inserted_id"]
-                })
+                return Response(
+                    {
+                        "success": True,
+                        "message": "Total project time added successfully",
+                        "response": field,
+                        "_id": response["inserted_id"],
+                    }
+                )
             else:
-                return Response({
-                    "success": False,
-                    "message":"Failed to add total project time"
-                })
-                                  
+                return Response(
+                    {"success": False, "message": "Failed to add total project time"}
+                )
+
         else:
-            return Response({
-                "success": False,
-                "message": "Posting wrong data to API",
-                "error":serializer.errors
-            })
-    
+            return Response(
+                {
+                    "success": False,
+                    "message": "Posting wrong data to API",
+                    "error": serializer.errors,
+                }
+            )
+
     """Enable edit option for the team lead"""
+
     def enable_edit_project_hours(self, request):
-        field = {
-            "_id": request.data.get("document_id")
-        }
+        field = {"_id": request.data.get("document_id")}
         update_field = {
             "enabale_modification": request.data.get("enabale_modification")
         }
 
-        response = json.loads(dowellconnection(*time_detail_module, "update",field,update_field))
+        response = json.loads(
+            dowellconnection(*time_detail_module, "update", field, update_field)
+        )
 
-        return Response({
-            "success": True,
-            "message": "Status updated successfully"
-        })
-    
+        return Response({"success": True, "message": "Status updated successfully"})
+
     """Get project hour details for company"""
+
     def get_project_hours_details(self, request):
-        field = {
-            "company_id" : request.GET.get('company_id')
-        }
-        response = json.loads(dowellconnection(*time_detail_module,"fetch",field,update_field=None))
-        return Response({
-            "success": True,
-            "message": "List project hour details for company",
-            "response": response["data"]
-        })
-    
+        field = {"company_id": request.GET.get("company_id")}
+        response = json.loads(
+            dowellconnection(*time_detail_module, "fetch", field, update_field=None)
+        )
+        return Response(
+            {
+                "success": True,
+                "message": "List project hour details for company",
+                "response": response["data"],
+            }
+        )
+
     """Get project hour detail for company"""
+
     def get_project_hours_detail(self, request):
-        field = {
-            "_id" : request.GET.get('document_id')
-        }
-        response = json.loads(dowellconnection(*time_detail_module,"find",field,update_field=None))
-        return Response({
-            "success": True,
-            "message": "List project hour details for company",
-            "response": response["data"]
-        })
-    
+        field = {"_id": request.GET.get("document_id")}
+        response = json.loads(
+            dowellconnection(*time_detail_module, "find", field, update_field=None)
+        )
+        return Response(
+            {
+                "success": True,
+                "message": "List project hour details for company",
+                "response": response["data"],
+            }
+        )
+
     """HANDLE ERROR"""
+
     def handle_error(self, request):
         return Response(
             {"success": False, "message": "Invalid request type"},
