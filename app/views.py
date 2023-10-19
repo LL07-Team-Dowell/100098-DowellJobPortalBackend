@@ -1584,7 +1584,7 @@ class create_task(APIView):
         return str(_date)
     
     @verify_user_token
-    def post(self, request):
+    def post(self, request,user):
         data = request.data
         if data:
             try:
@@ -1650,7 +1650,7 @@ class create_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_task(APIView):
     @verify_user_token
-    def get(self, request, company_id):
+    def get(self, request, company_id,user):
         field = {"company_id": company_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1681,7 +1681,7 @@ class get_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_candidate_task(APIView):
     @verify_user_token
-    def get(self, request, document_id):
+    def get(self, request, document_id,user):
         field = {"_id": document_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1712,7 +1712,7 @@ class get_candidate_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class update_task(APIView):
     @verify_user_token
-    def patch(self, request):
+    def patch(self, request,user):
         data = request.data
         if data:
             field = {"_id": data.get("document_id")}
@@ -1789,7 +1789,7 @@ class create_task_update_request(APIView):
         else:
             return False
     @verify_user_token
-    def post(self, request):
+    def post(self, request,user):
         data = request.data
         if data:
             username = data.get("username")
@@ -1846,7 +1846,7 @@ class create_task_update_request(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_task_request_update(APIView):
     @verify_user_token
-    def get(self, request, document_id):
+    def get(self, request, document_id,user):
         field = {"_id": document_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1882,7 +1882,7 @@ class get_task_request_update(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_task_request_update(APIView):
     @verify_user_token
-    def get(self, request, company_id):
+    def get(self, request, company_id,user):
         field = {"company_id": company_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1938,7 +1938,7 @@ class approve_task_request_update(APIView):
         else:
             return True
     @verify_user_token
-    def patch(self, request, document_id):
+    def patch(self, request, document_id,user):
         data = request.data
 
         if self.check_approved(document_id) is False:
@@ -2019,7 +2019,7 @@ class denied_task_request_update(APIView):
         else:
             return True
     @verify_user_token
-    def patch(self, request, document_id):
+    def patch(self, request, document_id,user):
         data = request.data
 
         if self.check_denied(document_id) is False:
@@ -2185,7 +2185,7 @@ class approve_task(APIView):
 
         return False
     @verify_user_token
-    def patch(self, request):
+    def patch(self, request,user):
         data = request.data
         print(data)
         if data:
@@ -2253,7 +2253,7 @@ class approve_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_task(APIView):
     @verify_user_token
-    def delete(self, request, document_id):
+    def delete(self, request, document_id,user):
         field = {"_id": document_id}
         update_field = {"data_type": "Archived_Data"}
         response = dowellconnection(
@@ -2290,8 +2290,9 @@ class task_module(APIView):
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
+    
     @verify_user_token
-    def post(self, request):
+    def post(self, request,user):
         type_request = request.GET.get("type")
 
         if type_request == "add_task":
@@ -2309,7 +2310,7 @@ class task_module(APIView):
         else:
             return self.handle_error(request)
     @verify_user_token
-    def get(self, request):
+    def get(self, request,user):
         type_request = request.GET.get("type")
 
         if type_request == "save_task":
@@ -2319,7 +2320,7 @@ class task_module(APIView):
         else:
             return self.handle_error(request)
     @verify_user_token
-    def add_task(self, request):
+    def add_task(self, request,user):
         data = request.data
         payload = {
             "project": data.get("project"),
@@ -2416,7 +2417,7 @@ class task_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
     @verify_user_token
-    def get_candidate_task(self, request):
+    def get_candidate_task(self, request,user):
         data = request.data
         user_id = data.get("user_id")
         company_id = data.get("company_id")
@@ -2502,7 +2503,7 @@ class task_module(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
     @verify_user_token
-    def update_candidate_task(self, request):
+    def update_candidate_task(self, request,user):
         data = request.data
         payload = {
             "task_id": request.GET.get("task_id"),
