@@ -1,5 +1,6 @@
 import React from "react";
 import { AiFillFilePdf, AiOutlineCamera, AiOutlineClose } from "react-icons/ai";
+import { FaFileExcel } from "react-icons/fa";
 import "./ReportCapture.scss";
 import Overlay from "../Overlay";
 const ReportCapture = ({
@@ -21,9 +22,9 @@ const ReportCapture = ({
         <div>
           <div className='' onClick={htmlToCanvaFunction}>
             <div>
-              <AiOutlineCamera />
+              <FaFileExcel />
             </div>
-            <p>Screenshot</p>
+            <p>Excel</p>
           </div>
           <div className='' onClick={htmlToPdfFunction}>
             <div>

@@ -930,7 +930,10 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
           />
         )}
         {reportCaptureModal && (
-          <ReportCapture closeModal={() => closeReportCaptureModal()} />
+          <ReportCapture
+            closeModal={() => closeReportCaptureModal()}
+            htmlToCanvaFunction={exportPDF}
+          />
         )}
       </>
     </StaffJobLandingLayout>
