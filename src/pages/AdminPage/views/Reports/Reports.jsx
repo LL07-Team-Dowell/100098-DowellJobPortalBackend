@@ -90,11 +90,9 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       letterRendering: 1,
       useCors: true,
     }).then((canvas) => {
-      const imgWidth = 208;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
       const imgData = canvas.toDataURL("img/png");
       const pdf = new jsPDF("p", "mm", "a4");
-      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+      pdf.addImage(imgData, "PNG");
       pdf.save("goatrank.pdf");
     });
   };
@@ -932,10 +930,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
           />
         )}
         {reportCaptureModal && (
-          <ReportCapture
-            closeModal={() => closeReportCaptureModal()}
-            htmlToCanvaFunction={captureScreen}
-          />
+          <ReportCapture closeModal={() => closeReportCaptureModal()} />
         )}
       </>
     </StaffJobLandingLayout>
