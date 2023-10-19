@@ -1,13 +1,9 @@
 import React, { useEffect, useReducer } from "react";
 import "./style.scss";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import JobLandingLayout from "../../../../layouts/CandidateJobLandingLayout/LandingLayout";
 import { useGetAllUpdateTask } from "../../../CandidatePage/views/WorkLogRequest/hook/useGetAllUpdateTask";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
-import Buttons from "../../../CandidatePage/views/WorkLogRequest/component/Buttons";
 import { useState } from "react";
-import Card from "../../../CandidatePage/views/WorkLogRequest/component/Card";
-import { useNavigate } from "react-router-dom";
 import {
   approveLogRequest,
   denyLogRequest,
@@ -15,7 +11,6 @@ import {
 } from "../../../../services/taskUpdateServices";
 import { toast } from "react-toastify";
 import LittleLoading from "../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
-import DenyRequest from "./denyRequest";
 
 const WorkLogRequest = ({ cardData }) => {
   const { currentUser } = useCurrentUserContext();
@@ -32,7 +27,6 @@ const WorkLogRequest = ({ cardData }) => {
   const [reducerRequest, forceUpdateRequest] = useReducer((x) => x + 1, 0);
   const [showDenyPopup, setShowDenyPopup] = useState(false);
   const [ projectsForLead, setProjectsForLead ] = useState([]);
-  const navigate = useNavigate();
   // asdsad
 
   const unshowDenyPopup = () => {
@@ -173,19 +167,20 @@ const WorkLogRequest = ({ cardData }) => {
   return (
     <div className="work__log__request">
       <div className="project__Select__Wrapper">
-        <select 
-          defaultValue={''} 
-          value={''} 
-          onChange={({ target }) => console.log(target.value)}>
-          <option value={''} disabled>Select project</option>
-          {
-            React.Children.toArray(
-              projectsForLead.map(project => {
-                console.log(projectsForLead);
-                return <option value={project}>{project}</option>
-              })
-            )
-          }
+        <select
+          defaultValue={""}
+          value={""}
+          onChange={({ target }) => console.log(target.value)}
+        >
+          <option value={""} disabled>
+            Select project
+          </option>
+          {React.Children.toArray(
+            projectsForLead.map((project) => {
+              console.log(projectsForLead);
+              return <option value={project}>{project}</option>;
+            })
+          )}
         </select>
       </div>
       <div className="cards">
@@ -197,12 +192,9 @@ const WorkLogRequest = ({ cardData }) => {
                   <h2>{element.username}</h2>
                   <p>
                     Date of request:{" "}
-                    {
-                      new Date(element.update_task_date) == 'Invalid Date' ? 
-                        element.update_task_date 
-                        : 
-                      new Date(element.update_task_date).toDateString()
-                    }
+                    {new Date(element.update_task_date) == "Invalid Date"
+                      ? element.update_task_date
+                      : new Date(element.update_task_date).toDateString()}
                   </p>
                   <p>Request reason: {element.update_reason}</p>
                   <p>Project: {element.project}</p>
@@ -221,22 +213,21 @@ const WorkLogRequest = ({ cardData }) => {
                       <div className="overlay log_req">
                         <div className="delete_confirmation_container">
                           <h2>Enter Reason</h2>
-                          <label
-                            htmlFor="reasonDeny"
-                          >
+                          <label htmlFor="reasonDeny">
                             <span>Reason for denial</span>
                             <input
                               type="text"
                               placeholder="Reason for denial"
-                              onChange={(e) => setReasonForDenial(e.target.value)}
+                              onChange={(e) =>
+                                setReasonForDenial(e.target.value)
+                              }
                             />
                           </label>
-                          
+
                           <div className="buttons">
-                            {
-                              denyRequestLoading.includes(element._id) ? (
-                                <LittleLoading />
-                              ) : (
+                            {denyRequestLoading.includes(element._id) ? (
+                              <LittleLoading />
+                            ) : (
                               <button
                                 onClick={() => denyRequest(element)}
                                 className="delete"
@@ -270,12 +261,9 @@ const WorkLogRequest = ({ cardData }) => {
                   <h2>{element.username}</h2>
                   <p>
                     Date of request:{" "}
-                    {
-                      new Date(element.update_task_date) == 'Invalid Date' ? 
-                        element.update_task_date 
-                        : 
-                      new Date(element.update_task_date).toDateString()
-                    }
+                    {new Date(element.update_task_date) == "Invalid Date"
+                      ? element.update_task_date
+                      : new Date(element.update_task_date).toDateString()}
                   </p>
                   <p>Request reason: {element.update_reason}</p>
                   <p>Project: {element.project}</p>
@@ -293,16 +281,13 @@ const WorkLogRequest = ({ cardData }) => {
                   <h2>{element.username}</h2>
                   <p>
                     Date of request:{" "}
-                    {
-                      new Date(element.update_task_date) == 'Invalid Date' ? 
-                        element.update_task_date 
-                        : 
-                      new Date(element.update_task_date).toDateString()
-                    }
+                    {new Date(element.update_task_date) == "Invalid Date"
+                      ? element.update_task_date
+                      : new Date(element.update_task_date).toDateString()}
                   </p>
                   <p>Request reason: {element.update_reason}</p>
                   <p>Project: {element.project}</p>
-                  <p>Reason for denial: {element.reason_for_denial}</p>
+                  <p>Reason for denial: {typeof element.reason_for_denial === 'string' && element.reason_for_denial}</p>
                 </div>
               ))
             )}
