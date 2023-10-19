@@ -11,12 +11,9 @@ const ReportCapture = ({
     <Overlay>
       <div className='report__capture'>
         <button
-          onClick={() => {}}
-          style={{
-            display: "block",
-            marginRight: 0,
-            marginLeft: "89%",
-            marginTop: "10px",
+          className='close__btn'
+          onClick={() => {
+            closeModal();
           }}
         >
           <AiOutlineClose />

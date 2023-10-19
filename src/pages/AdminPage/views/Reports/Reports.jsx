@@ -19,6 +19,7 @@ import {
   Title,
 } from "chart.js";
 // don
+import exportAsImage from "../../../../helpers/exportAsImage";
 import { Doughnut, Bar, Line, Pie } from "react-chartjs-2";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
@@ -29,6 +30,9 @@ import { generateCommonAdminReport } from "../../../../services/commonServices";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { formatDateForAPI } from "../../../../helpers/helpers";
 import ReportCapture from "../../../../components/ReportCapture/ReportCapture";
+import { useModal } from "../../../../hooks/useModal";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 // register chart.js
 ChartJs.register(ArcElement, Tooltip, Legend);
 
@@ -52,6 +56,11 @@ export const chartOptions = {
 };
 
 const AdminReports = ({ subAdminView, isPublicReportUser }) => {
+  const {
+    closeModal: closeReportCaptureModal,
+    modalOpen: reportCaptureModal,
+    openModal: openCaptureModal,
+  } = useModal();
   const navigate = useNavigate();
   // states
   const [selectOptions, setSelectOptions] = useState("");
@@ -74,6 +83,19 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
   const { currentUser, reportsUserDetails } = useCurrentUserContext();
   const [datasetForApplications, setDatasetForApplications] = useState(null);
 
+  const exportPDF = () => {
+    const input = document.createElement("reports");
+    html2canvas(input, {
+      logging: true,
+      letterRendering: 1,
+      useCors: true,
+    }).then((canvas) => {
+      const imgData = canvas.toDataUrl("image/png");
+      const pdf = new jsPDF();
+      pdf.addImage(imgData, "JPEG", 0, 0);
+      pdf.save("download.pdf");
+    });
+  };
   console.log({ selectOptions, lastDate, firstDate });
   const colors = [
     "#005734",
@@ -103,6 +125,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
     "royalblue",
   ];
   const exportRef = useRef();
+  const captureScreen = () => exportAsImage(exportRef.current, "test");
   // handle functions
   const handleSelectOptionsFunction = (e) => {
     setSelectOptions(e.target.value);
@@ -362,6 +385,13 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               <CSVLink data={[Object.keys(data), Object.values(data)]}>
                 Download Me
               </CSVLink>
+              <button
+                onClick={() => {
+                  openCaptureModal();
+                }}
+              >
+                Capture
+              </button>
             </div>
             {!isPublicReportUser && (
               <div>
@@ -899,7 +929,12 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
             loading={loadingButton}
           />
         )}
-        <ReportCapture />
+        {reportCaptureModal && (
+          <ReportCapture
+            closeModal={() => closeReportCaptureModal()}
+            htmlToCanvaFunction={captureScreen}
+          />
+        )}
       </>
     </StaffJobLandingLayout>
   );
