@@ -530,3 +530,10 @@ class githubinfoserializer(serializers.Serializer):
 
 class TaskApprovedBySerializer(serializers.Serializer):
     task_approved_by = serializers.CharField(allow_null=False, allow_blank=False)
+
+
+class ProjectDeadlineSerializer(serializers.Serializer):
+    project = serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = serializers.CharField(allow_null=True, allow_blank=True)
+    lead_name = serializers.CharField(allow_null=True, allow_blank=True)
+    total_time = serializers.IntegerField()
