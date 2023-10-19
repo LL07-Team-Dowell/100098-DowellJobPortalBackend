@@ -27,6 +27,7 @@ const WorkLogRequest = ({ cardData }) => {
   const [reducerRequest, forceUpdateRequest] = useReducer((x) => x + 1, 0);
   const [showDenyPopup, setShowDenyPopup] = useState(false);
   const [ projectsForLead, setProjectsForLead ] = useState([]);
+  const [ currentProjectSelected, setCurrentProjectSelected ] = useState('');
   // asdsad
 
   const unshowDenyPopup = () => {
@@ -169,15 +170,14 @@ const WorkLogRequest = ({ cardData }) => {
       <div className="project__Select__Wrapper">
         <select
           defaultValue={""}
-          value={""}
-          onChange={({ target }) => console.log(target.value)}
+          value={currentProjectSelected}
+          onChange={({ target }) => setCurrentProjectSelected(target.value)}
         >
           <option value={""} disabled>
             Select project
           </option>
           {React.Children.toArray(
             projectsForLead.map((project) => {
-              console.log(projectsForLead);
               return <option value={project}>{project}</option>;
             })
           )}
@@ -187,7 +187,7 @@ const WorkLogRequest = ({ cardData }) => {
         {cardData === "Pending approval" && (
           <>
             {React.Children.toArray(
-              pendingApproval.map((element) => (
+              pendingApproval.filter(element => element.project === currentProjectSelected).map((element) => (
                 <div className="card__work__log__request" key={element._id}>
                   <h2>{element.username}</h2>
                   <p>
@@ -199,42 +199,49 @@ const WorkLogRequest = ({ cardData }) => {
                   <p>Request reason: {element.update_reason}</p>
                   <p>Project: {element.project}</p>
                   <div className="request__action__btn">
-                    {approveRequestLoading.includes(element._id) ? (
-                      <LittleLoading />
-                    ) : (
-                      <button
-                        className="req__act__btn "
-                        onClick={() => approveRequest(element)}
-                      >
-                        Approve
-                      </button>
-                    )}
+                    <button
+                      className="req__act__btn "
+                      onClick={() => approveRequest(element)}
+                      disabled={approveRequestLoading.includes(element._id) ? true : false}
+                    >
+                      {
+                        approveRequestLoading.includes(element._id) ?
+                          <LoadingSpinner width={'0.9rem'} height={'0.9rem'} color={'#fff'} />
+                        :
+                        'Approve'
+                      }
+                    </button>
                     {showDenyPopup && (
                       <div className="overlay log_req">
                         <div className="delete_confirmation_container">
-                          <h2>Enter Reason</h2>
+                          <h2>Enter Reason For Denying</h2>
+                          <span className="extra__Detail">User: {element.username}</span>
+                          <span className="extra__Detail">Request reason: {element.update_reason}</span>
                           <label htmlFor="reasonDeny">
                             <span>Reason for denial</span>
-                            <input
+                            <textarea
                               type="text"
                               placeholder="Reason for denial"
                               onChange={(e) =>
                                 setReasonForDenial(e.target.value)
                               }
-                            />
+                              rows={4}
+                            ></textarea>
                           </label>
-
+                          <br />
                           <div className="buttons">
-                            {denyRequestLoading.includes(element._id) ? (
-                              <LittleLoading />
-                            ) : (
-                              <button
-                                onClick={() => denyRequest(element)}
-                                className="delete"
-                              >
-                                Deny
-                              </button>
-                            )}
+                            <button
+                              onClick={() => denyRequest(element)}
+                              className="delete"
+                              disabled={denyRequestLoading.includes(element._id) ? true : false}
+                            >
+                              {
+                                denyRequestLoading.includes(element._id) ?
+                                  <LoadingSpinner width={'0.9rem'} height={'0.9rem'} color={'#fff'} />
+                                :
+                                  'Deny'
+                              }
+                            </button>
                             <button onClick={unshowDenyPopup}>Cancel</button>
                           </div>
                         </div>
@@ -256,7 +263,7 @@ const WorkLogRequest = ({ cardData }) => {
         {cardData === "Approved" && (
           <>
             {React.Children.toArray(
-              approve.map((element) => (
+              approve.filter(element => element.project === currentProjectSelected).map((element) => (
                 <div className="card__work__log__request" key={element._id}>
                   <h2>{element.username}</h2>
                   <p>
@@ -276,7 +283,7 @@ const WorkLogRequest = ({ cardData }) => {
         {cardData === "Denied" && (
           <>
             {React.Children.toArray(
-              deny.map((element) => (
+              deny.filter(element => element.project === currentProjectSelected).map((element) => (
                 <div className="card__work__log__request" key={element._id}>
                   <h2>{element.username}</h2>
                   <p>
