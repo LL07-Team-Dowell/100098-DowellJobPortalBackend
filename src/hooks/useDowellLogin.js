@@ -10,6 +10,7 @@ import { dowellLoginUrl } from "../services/axios";
 import { getSettingUserProfileInfo } from "../services/settingServices";
 import { teamManagementProductName } from "../utils/utils";
 import { toast } from "react-toastify";
+import { useCurrentUserContext } from "../contexts/CurrentUserContext";
 
 export default function useDowellLogin(
   updateCurrentUserState,
@@ -33,6 +34,7 @@ export default function useDowellLogin(
   const currentProductUserDetails = sessionStorage.getItem("product_user");
   const currentReportsSession = sessionStorage.getItem("reports_user_session");
   const currentReportsUserDetails = sessionStorage.getItem("reports_user");
+  const { currentUser } = useCurrentUserContext();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -175,6 +177,7 @@ export default function useDowellLogin(
             console.log('aaa', res);
           }).catch(err => {
             // unauthorized
+            if (!currentUser) return
             updateCurrentAuthSessionStatus(true);
             toast.info('Login session expired. Redirecting to login...')
           });
@@ -195,60 +198,67 @@ export default function useDowellLogin(
             }
 
             // NEW IMPLEMENTATION WITH TOKEN
-            Promise.all([
-              getSettingUserProfileInfo(),
-              generateAuthToken({
+            try {
+              const { access_token } = (await generateAuthToken({
                 "username": currentUserDetails?.userinfo?.username,
                 "portfolio": currentUserDetails?.portfolio_info[0]?.portfolio_name,
                 "data_type": currentUserDetails?.portfolio_info[0]?.data_type,
                 "company_id": currentUserDetails?.portfolio_info[0]?.org_id,
-              }),
-            ]).then((responses) => {
-              sessionStorage.setItem('token', responses[1]?.data?.access_token);
+              })).data;
+              
+              sessionStorage.setItem('token', access_token);
+              
+              try {
+                const settingsResponse = await getSettingUserProfileInfo();
+                const settingForCurrentUserOrg = settingsResponse?.data
+                  .reverse()
+                  .filter(
+                    (setting) =>
+                      setting.company_id ===
+                      currentUserDetails.portfolio_info[0].org_id
+                  )
+                  .filter(
+                    (setting) => 
+                      setting.data_type === 
+                      currentUserDetails.portfolio_info[0].data_type
+                  );
 
-              const settingForCurrentUserOrg = responses[0]?.data
-                .reverse()
-                .filter(
+                //CHECK IF USER HAS ROLE CONFIGURED
+                const userHasRoleConfigured = settingForCurrentUserOrg.find(
                   (setting) =>
-                    setting.company_id ===
-                    currentUserDetails.portfolio_info[0].org_id
-                )
-                .filter(
-                  (setting) => 
-                    setting.data_type === 
-                    currentUserDetails.portfolio_info[0].data_type
+                    setting.profile_info[setting.profile_info.length - 1].profile_title ===
+                    currentUserDetails.portfolio_info[0].portfolio_name
                 );
 
-              //CHECK IF USER HAS ROLE CONFIGURED
-              const userHasRoleConfigured = settingForCurrentUserOrg.find(
-                (setting) =>
-                  setting.profile_info[setting.profile_info.length - 1].profile_title ===
-                  currentUserDetails.portfolio_info[0].portfolio_name
-              );
+                //USER DOES NOT HAVE ROLE CONFIGURED
+                if (!userHasRoleConfigured) {
+                  sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+                  updateCurrentUserState(currentUserDetails);
+                  updatePageLoading(false);
 
-              //USER DOES NOT HAVE ROLE CONFIGURED
-              if (!userHasRoleConfigured) {
+                  return;
+                } else {
+                  //USER HAS ROLE CONFIGURED
+                  sessionStorage.setItem('user', JSON.stringify({...currentUserDetails, settings_for_profile_info: userHasRoleConfigured }));
+                  updateCurrentUserState({
+                    ...currentUserDetails,
+                    settings_for_profile_info: userHasRoleConfigured,
+                  });
+                  updatePageLoading(false);
+                }
+              } catch (error) {
+                console.log('fetch seetings error: ', error);
                 sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
                 updateCurrentUserState(currentUserDetails);
                 updatePageLoading(false);
-
-                return;
-              } else {
-                //USER HAS ROLE CONFIGURED
-                sessionStorage.setItem('user', JSON.stringify({...currentUserDetails, settings_for_profile_info: userHasRoleConfigured }));
-                updateCurrentUserState({
-                  ...currentUserDetails,
-                  settings_for_profile_info: userHasRoleConfigured,
-                });
-                updatePageLoading(false);
               }
-            }).catch(error => {
-              console.log('tt', error);
+              
+            } catch (error) {
+              console.log('fetch token error: ', error);
               sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
               updateCurrentUserState(currentUserDetails);
               updatePageLoading(false);
-            })
-
+            }
 
             // // PREVIOUS IMPLEMENTATION WITHOUT TOKEN
             // try {
@@ -315,6 +325,7 @@ export default function useDowellLogin(
             console.log('aaa', res);
           }).catch(err => {
             // unauthorized
+            if (!currentUser) return
             updateCurrentAuthSessionStatus(true);
             toast.info('Login session expired. Redirecting to login...')
           });
@@ -386,6 +397,7 @@ export default function useDowellLogin(
           console.log('aaa', res);
         }).catch(err => {
           // unauthorized
+          if (!currentUser) return
           updateCurrentAuthSessionStatus(true);
           toast.info('Login session expired. Redirecting to login...')
         });
@@ -450,6 +462,7 @@ export default function useDowellLogin(
         console.log('aaa', res);
       }).catch(err => {
         // unauthorized
+        if (!currentUser) return
         updateCurrentAuthSessionStatus(true);
         toast.info('Login session expired. Redirecting to login...')
       });
@@ -471,59 +484,67 @@ export default function useDowellLogin(
         }
         
         // NEW IMPLEMENTATION WITH TOKEN
-        Promise.all([
-          getSettingUserProfileInfo(),
-          generateAuthToken({
+        try {
+          const { access_token } = (await generateAuthToken({
             "username": currentUserDetails?.userinfo?.username,
             "portfolio": currentUserDetails?.portfolio_info[0]?.portfolio_name,
             "data_type": currentUserDetails?.portfolio_info[0]?.data_type,
             "company_id": currentUserDetails?.portfolio_info[0]?.org_id,
-          }),
-        ]).then(responses => {
-          sessionStorage.setItem('token', responses[1]?.data?.access_token);
+          })).data;
+          
+          sessionStorage.setItem('token', access_token);
+          
+          try {
+            const settingsResponse = await getSettingUserProfileInfo();
+            const settingForCurrentUserOrg = settingsResponse?.data
+              .reverse()
+              .filter(
+                (setting) =>
+                  setting.company_id ===
+                  currentUserDetails.portfolio_info[0].org_id
+              )
+              .filter(
+                (setting) => 
+                  setting.data_type === 
+                  currentUserDetails.portfolio_info[0].data_type
+              );
 
-          const settingForCurrentUserOrg = responses[0]?.data
-            .reverse()
-            .filter(
+            //CHECK IF USER HAS ROLE CONFIGURED
+            const userHasRoleConfigured = settingForCurrentUserOrg.find(
               (setting) =>
-                setting.company_id ===
-                currentUserDetails.portfolio_info[0].org_id
-            )
-            .filter(
-              (setting) => 
-                setting.data_type === 
-                currentUserDetails.portfolio_info[0].data_type
+                setting.profile_info[setting.profile_info.length - 1].profile_title ===
+                currentUserDetails.portfolio_info[0].portfolio_name
             );
 
-          //CHECK IF USER HAS ROLE CONFIGURED
-          const userHasRoleConfigured = settingForCurrentUserOrg.find(
-            (setting) =>
-              setting.profile_info[setting.profile_info.length - 1].profile_title ===
-              currentUserDetails.portfolio_info[0].portfolio_name
-          );
+            //User Does not have role configured
+            if (!userHasRoleConfigured) {
+              sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+              updateCurrentUserState(currentUserDetails);
+              updatePageLoading(false);
 
-          //User Does not have role configured
-          if (!userHasRoleConfigured) {
+              return;
+            } else {
+              //User has role configured
+              sessionStorage.setItem('user', JSON.stringify({...currentUserDetails, settings_for_profile_info: userHasRoleConfigured}));
+              updateCurrentUserState({
+                ...currentUserDetails,
+                settings_for_profile_info: userHasRoleConfigured,
+              });
+              updatePageLoading(false);
+            }
+          } catch (error) {
+            console.log('fetch settings error: ', error);
             sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
             updateCurrentUserState(currentUserDetails);
             updatePageLoading(false);
-
-            return;
-          } else {
-            //User has role configured
-            sessionStorage.setItem('user', JSON.stringify({...currentUserDetails, settings_for_profile_info: userHasRoleConfigured}));
-            updateCurrentUserState({
-              ...currentUserDetails,
-              settings_for_profile_info: userHasRoleConfigured,
-            });
-            updatePageLoading(false);
           }
-        }).catch(error => {
-          console.log('tt', error);
+          
+        } catch (error) {
+          console.log('fetch token error: ', error);
           sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
           updateCurrentUserState(currentUserDetails);
           updatePageLoading(false);
-        })
+        }
 
         // // PREVIOUS IMPLEMENTATION WITHOUT TOKEN
         // try {
