@@ -1572,6 +1572,7 @@ class lead_reject_candidate(APIView):
 # api for task management starts here________________________
 @method_decorator(csrf_exempt, name="dispatch")
 class create_task(APIView):
+    
     def max_updated_date(self, updated_date):
         print(updated_date)
         task_updated_date = datetime.datetime.strptime(
@@ -1581,7 +1582,8 @@ class create_task(APIView):
         _date = _date.strftime("%m/%d/%Y %H:%M:%S")
 
         return str(_date)
-
+    
+    @verify_user_token
     def post(self, request):
         data = request.data
         if data:
@@ -1647,6 +1649,7 @@ class create_task(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_task(APIView):
+    @verify_user_token
     def get(self, request, company_id):
         field = {"company_id": company_id}
         update_field = {"status": "Nothing to update"}
@@ -1677,6 +1680,7 @@ class get_task(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_candidate_task(APIView):
+    @verify_user_token
     def get(self, request, document_id):
         field = {"_id": document_id}
         update_field = {"status": "Nothing to update"}
@@ -1707,6 +1711,7 @@ class get_candidate_task(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class update_task(APIView):
+    @verify_user_token
     def patch(self, request):
         data = request.data
         if data:
@@ -1783,7 +1788,7 @@ class create_task_update_request(APIView):
             return True
         else:
             return False
-
+    @verify_user_token
     def post(self, request):
         data = request.data
         if data:
@@ -1840,6 +1845,7 @@ class create_task_update_request(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_task_request_update(APIView):
+    @verify_user_token
     def get(self, request, document_id):
         field = {"_id": document_id}
         update_field = {"status": "Nothing to update"}
@@ -1875,6 +1881,7 @@ class get_task_request_update(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_task_request_update(APIView):
+    @verify_user_token
     def get(self, request, company_id):
         field = {"company_id": company_id}
         update_field = {"status": "Nothing to update"}
@@ -1930,7 +1937,7 @@ class approve_task_request_update(APIView):
             return False
         else:
             return True
-
+    @verify_user_token
     def patch(self, request, document_id):
         data = request.data
 
@@ -2011,7 +2018,7 @@ class denied_task_request_update(APIView):
             return False
         else:
             return True
-
+    @verify_user_token
     def patch(self, request, document_id):
         data = request.data
 
@@ -2083,6 +2090,7 @@ class denied_task_request_update(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class approve_task(APIView):
+    
     def max_updated_date(self, updated_date):
         task_updated_date = datetime.datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
@@ -2176,7 +2184,7 @@ class approve_task(APIView):
                 return True
 
         return False
-
+    @verify_user_token
     def patch(self, request):
         data = request.data
         print(data)
@@ -2244,6 +2252,7 @@ class approve_task(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_task(APIView):
+    @verify_user_token
     def delete(self, request, document_id):
         field = {"_id": document_id}
         update_field = {"data_type": "Archived_Data"}
@@ -2281,7 +2290,7 @@ class task_module(APIView):
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
-
+    @verify_user_token
     def post(self, request):
         type_request = request.GET.get("type")
 
@@ -2299,7 +2308,7 @@ class task_module(APIView):
             return self.get_all_candidate_tasks(request)
         else:
             return self.handle_error(request)
-
+    @verify_user_token
     def get(self, request):
         type_request = request.GET.get("type")
 
@@ -2309,7 +2318,7 @@ class task_module(APIView):
             return self.delete_current_task(request)
         else:
             return self.handle_error(request)
-
+    @verify_user_token
     def add_task(self, request):
         data = request.data
         payload = {
@@ -2406,7 +2415,7 @@ class task_module(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
+    @verify_user_token
     def get_candidate_task(self, request):
         data = request.data
         user_id = data.get("user_id")
@@ -2492,7 +2501,7 @@ class task_module(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
+    @verify_user_token
     def update_candidate_task(self, request):
         data = request.data
         payload = {
@@ -2575,7 +2584,7 @@ class task_module(APIView):
                 {"success": False, "message": "Failed save task"},
                 status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
+ 
     def update_single_task(self, request):
         current_task_id = request.GET.get("current_task_id")
         update_task = request.data.get("update_task")
