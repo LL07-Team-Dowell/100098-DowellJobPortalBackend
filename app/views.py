@@ -623,7 +623,19 @@ class admin_create_jobs(APIView):
             "created_by": data.get("created_by"),
             "created_on": data.get("created_on"),
             "paymentInterval": data.get("paymentInterval"),
+            "type_of_opening": data.get("type_of_opening")
         }
+        type_request = request.GET.get("type")
+        if type_request=="is_internal":
+            if data.get("type_of_opening")=="Group_Lead" or data.get("type_of_opening")=="Team_Lead":
+                field["is_internal"]=True
+                field["type_of_opening"]=data.get("type_of_opening")
+            else:
+                return Response({
+                        "message": "Job creation was unsuccessful.",
+                        "response": " Pass 'type_of_opening' as either 'Group_Lead' or 'Team_Lead'",
+                    }, status=status.HTTP_400_BAD_REQUEST)
+            
         update_field = {"status": "nothing to update"}
         serializer = AdminSerializer(data=field)
         if serializer.is_valid():
