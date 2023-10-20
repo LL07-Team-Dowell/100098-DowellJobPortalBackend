@@ -2976,6 +2976,11 @@ class create_team_task(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class edit_team_task(APIView):
+    def get_current_datetime(self, date):
+        _date = datetime.datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
+            "%m/%d/%Y %H:%M:%S"
+        )
+        return str(_date)
     def patch(self, request, task_id):
         data = request.data
         if data:
@@ -2986,9 +2991,12 @@ class edit_team_task(APIView):
                 "title": data.get("title"),
                 "description": data.get("description"),
                 "assignee": data.get("assignee"),
-                "completed": data.get("completed"),
                 "team_name": data.get("team_name"),
             }
+            if data.get("completed") =="True" or data.get("completed") =="true" or data.get("completed") ==True:
+                update_field["completed"] =data.get("completed")
+                update_field["completed_on"] = self.get_current_datetime(datetime.datetime.now())
+            print(update_field,"=====")
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
