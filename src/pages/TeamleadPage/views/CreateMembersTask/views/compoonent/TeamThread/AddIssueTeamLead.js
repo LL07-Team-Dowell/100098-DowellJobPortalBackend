@@ -337,6 +337,7 @@ const AddIssueTeamLead = ({
   setEditPage,
   candidateView,
   teams,
+  teamName,
 }) => {
   const ref = useRef(null);
   const [showIssueForm, setShowIssueForm] = useState(false);
@@ -363,6 +364,8 @@ const AddIssueTeamLead = ({
     thread_type: "",
     previous_status: "",
   });
+
+  console.log(createIssue);
 
 
   // useClickOutside(ref, () => {
@@ -669,7 +672,7 @@ const AddIssueTeamLead = ({
             style={{ margin: 0, marginBottom: "0.8rem 0.8rem" }}
             onChange={(e) => handleChange(e.target.value, e.target.name)}
           ></textarea>
-
+          <br />
           <span className="selectProject">
             Add an Image to help explain your issue better (OPTIONAL)
           </span>
@@ -689,7 +692,7 @@ const AddIssueTeamLead = ({
           {candidateView && (
             <>
               <span className="selectProject">
-                Select Team you want to create this issue in
+                This issue will be created in this team
               </span>
               <br />
               <select
@@ -700,12 +703,15 @@ const AddIssueTeamLead = ({
                 name={"team_id"}
                 disabled
               >
-                {/* Dynamically populate the options */}
+                <option value={createIssue.team_id}>
+                  {teamName}
+                </option>
+                {/* Dynamically populate the options
                 {teams?.map((team) => (
                   <option key={team._id} value={team._id} disabled>
                     {team.team_name}
                   </option>
-                ))}
+                ))} */}
               </select>
             </>
           )}

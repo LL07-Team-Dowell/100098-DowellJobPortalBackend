@@ -52,17 +52,17 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description }) 
 
                 <div>
                     <h4>Task</h4>
-                    <p style={{ fontSize: '0.9rem' }}>{taskname}</p>
+                    <p style={{ fontSize: '0.8rem' }}>{taskname}</p>
                 </div>
                 <br />
                 <div>
                     <h4>Description</h4>
-                    <p style={{ fontSize: '0.9rem' }}>{description}</p>
+                    <p style={{ fontSize: '0.8rem', whiteSpace: 'pre-line' }}>{description}</p>
                 </div>
                 <br />
                 <div>
                     <h4>Status</h4>
-                    <p style={{ fontSize: '0.9rem' }}>{status ? 'Completed' : 'In Progress'}</p>
+                    <p style={{ fontSize: '0.8rem' }}>{status ? 'Completed' : 'In Progress'}</p>
                 </div>
                 <br />
                 <div>
