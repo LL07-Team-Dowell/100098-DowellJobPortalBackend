@@ -4490,6 +4490,7 @@ class Thread_Apis(APIView):
             "thread_title": data.get("thread_title"),
             "thread": data.get("thread"),
             "image": request.data["image"],
+            "company_id":data.get("company_id"),
             "created_by": data.get("created_by"),
             "team_id": data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
@@ -4506,6 +4507,7 @@ class Thread_Apis(APIView):
             "thread_title": data.get("thread_title"),
             "thread": data.get("thread"),
             "image": request.data["image"],
+            "company_id":data.get("company_id"),
             "created_by": data.get("created_by"),
             "team_id": data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
@@ -4803,8 +4805,10 @@ class GetTeamAlertedThreads(APIView):
 
 
 class GetAllThreads(APIView):
-    def get(self, request):
-        field = {}
+    def get(self, request,company_id):
+        field = {
+            "company_id":company_id
+        }
         update_field = {}
 
         try:
@@ -4834,11 +4838,16 @@ class GetAllThreads(APIView):
                             if comment["thread_id"] == thread["_id"]:
                                 thread["comments"].append(comment)
                         threads.append(thread)
-
-                return Response(
-                    {"isSuccess": True, "message": "List of Threads", "data": threads},
-                    status=status.HTTP_200_OK,
-                )
+                if len(threads) > 0 :
+                    return Response(
+                        {"isSuccess": True, "message": "List of Threads", "data": threads},
+                        status=status.HTTP_200_OK,
+                    )
+                else:
+                    return Response(
+                        {"isSuccess": True, "message": f"No Threads with this company_id- {company_id} found", "data": threads},
+                        status=status.HTTP_204_NO_CONTENT,
+                    )
             else:
                 return Response(
                     {"message": "Failed to fetch", "data": threads},
