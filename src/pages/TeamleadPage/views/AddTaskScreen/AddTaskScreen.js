@@ -48,7 +48,7 @@ const AddTaskScreen = ({
   // const TimeValue = `${time.split(" ")[0]} ${time.split(" ")[1]} ${time.split(" ")[2]
   //   } ${time.split(" ")[3]}`;
   const time = new Date().toString();
-  const [ TimeValue, setTimeValue ] = useState(`${time.split(" ")[0]} ${time.split(" ")[1]} ${time.split(" ")[2]} ${time.split(" ")[3]}`);
+  const [TimeValue, setTimeValue] = useState(`${time.split(" ")[0]} ${time.split(" ")[1]} ${time.split(" ")[2]} ${time.split(" ")[3]}`);
   const [optionValue, setoptionValue] = useState("");
   const [taskStartTime, setTaskStartTime] = useState("");
   const [taskEndTime, setTaskEndTime] = useState("");
@@ -75,9 +75,9 @@ const AddTaskScreen = ({
   );
   const textareaRef = useRef();
   const subprojectRef = useRef();
-  const [ showSubprojectSelections, setShowSubprojectSelections ] = useState(false);
-  const [ formattedTaskName, setFormattedTaskName ] = useState('');
-  
+  const [showSubprojectSelections, setShowSubprojectSelections] = useState(false);
+  const [formattedTaskName, setFormattedTaskName] = useState('');
+
 
   //   var conditions
   const inputsAreFilled = taskStartTime && taskEndTime && taskName && taskType;
@@ -155,19 +155,24 @@ const AddTaskScreen = ({
     // Use a regular expression to replace all spaces with an empty string
     return inputString.replace(/\s/g, '');
   }
-  
+
   function isStringValid(inputString) {
+    if (inputString === undefined) return ''
     const trimmedString = inputString.trim();
     const words = trimmedString.split(/\s+/);
     return trimmedString.length >= 25 && words.length >= 5;
   }
-
+  function cleanString(inputString) {
+    const cleanedString = inputString.replace(/[!?.]/g, '');
+    const trimmedString = cleanedString.trim();
+    return trimmedString;
+  }
   //   importand fuction
   const addNewTask = () => {
     if (optionValue.length < 1) return toast.info("Please select a project before proceding");
     if (inputsAreFilled) {
       console.log({ TASKSS: tasks.find(task => task.task === taskName) })
-      if (tasks.find(task => task?.task?.toLocaleLowerCase().trim() === taskName.toLocaleLowerCase().trim() && task.is_active) !== undefined) return toast.info('You cannot add the same log')
+      if (tasks.find(task => isStringValid(task?.task?.toLocaleLowerCase().trim()) === isStringValid(taskName.toLocaleLowerCase().trim()) && task.is_active) !== undefined) return toast.info('You cannot add the same log')
       if (!isStringValid(taskName)) return toast.info('The log entered should have at least 25 characters and at least 5 words.')
       if (taskEndTime === '00:00') return toast.info("You can only update work logs for today")
       if (duration <= 15) {
@@ -336,32 +341,32 @@ const AddTaskScreen = ({
       const today = res.data?.current_time;
       const todayInDateString = new Date(today).toDateString();
 
-      const passedRequestDate = logRequestDate && new Date (logRequestDate != 'Invalid Date') ?
+      const passedRequestDate = logRequestDate && new Date(logRequestDate != 'Invalid Date') ?
         new Date(logRequestDate)
-      :
+        :
         null;
 
       setTimeValue(
         passedRequestDate ?
-        `${passedRequestDate.toDateString().split(" ")[0]} ${passedRequestDate.toDateString().split(" ")[1]} ${passedRequestDate.toDateString().split(" ")[2]} ${passedRequestDate.toDateString().split(" ")[3]}`
-        :
-        `${todayInDateString.split(" ")[0]} ${todayInDateString.split(" ")[1]} ${todayInDateString.split(" ")[2]} ${todayInDateString.split(" ")[3]}`
+          `${passedRequestDate.toDateString().split(" ")[0]} ${passedRequestDate.toDateString().split(" ")[1]} ${passedRequestDate.toDateString().split(" ")[2]} ${passedRequestDate.toDateString().split(" ")[3]}`
+          :
+          `${todayInDateString.split(" ")[0]} ${todayInDateString.split(" ")[1]} ${todayInDateString.split(" ")[2]} ${todayInDateString.split(" ")[3]}`
       );
 
       const todayDate = formatDateForAPI(
-        passedRequestDate ? 
+        passedRequestDate ?
           passedRequestDate
-        :
-        today
+          :
+          today
       );
-  
+
       const dataToPost = {
         "company_id": currentUser.portfolio_info[0].org_id,
         "user_id": currentUser.userinfo.userID,
         "data_type": currentUser.portfolio_info[0].data_type,
         "task_created_date": todayDate,
       }
-  
+
       getCandidateTasksOfTheDayV2(dataToPost).then(res => {
         const [parentTaskAddedForToday, listsOfTasksForToday] = [
           res.data.task_details.find(task =>
@@ -374,7 +379,7 @@ const AddTaskScreen = ({
           ,
           res.data.task
         ]
-  
+
         if (parentTaskAddedForToday && listsOfTasksForToday.length > 0) {
           setTaskDetailForToday({
             parentTask: parentTaskAddedForToday,
@@ -382,10 +387,10 @@ const AddTaskScreen = ({
           })
           setTasks(listsOfTasksForToday?.reverse());
         }
-  
+
         setTaskDetailForTodayLoaded(true);
         setTaskDetailForTodayLoading(false);
-  
+
       }).catch(err => {
         console.log(err);
         setTaskDetailForTodayLoading(false);
@@ -473,8 +478,8 @@ const AddTaskScreen = ({
     () => {
       const currentTaskName = taskName.slice(-4) === '<br>' ?
         taskName.slice(0, -5)
-      :
-      taskName.slice(0, -1);
+        :
+        taskName.slice(0, -1);
 
       const userIsDeletingSubproject = currentTaskName.slice(-3) === '</p';
 
@@ -596,7 +601,7 @@ const AddTaskScreen = ({
   }
 
   const addTaskForToday = async (startTime, endTime, task, details, updateTask = false) => {
-  
+
     setLoading(true);
     setDisabled(true);
 
@@ -607,11 +612,11 @@ const AddTaskScreen = ({
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
       }
       const dowellClockResponse = (await getCurrentTimeFromDowell(data)).data;
-      
+
       makeAPICallToAddTasks(
-        dowellClockResponse?.current_time, 
-        startTime, 
-        endTime, 
+        dowellClockResponse?.current_time,
+        startTime,
+        endTime,
         task,
         updateTask
       );
@@ -619,7 +624,7 @@ const AddTaskScreen = ({
     } catch (error) {
       console.log('Fetching time from dowell failed', error);
       toast.error('An error occurred while trying to determine your current time. Please try adding later.')
-      
+
       setLoading(false);
       setDisabled(false);
     }
@@ -652,7 +657,7 @@ const AddTaskScreen = ({
   const handleSelectSubprojectFromListing = (subprojectPassed, projectPassed, idPassed) => {
     setSubprojectSelected(subprojectPassed);
     setoptionValue(projectPassed);
-    
+
     const taskNamewithAtCharStripped = taskName.split('@')[0];
     setTaskName(taskNamewithAtCharStripped.concat(`<@${subprojectPassed}~${projectPassed}~${idPassed}!> `));
 
@@ -660,7 +665,7 @@ const AddTaskScreen = ({
   }
 
   const handleCancelSubprojectSelection = () => {
-    const [ startIndex, endIndex ] = [ taskName.indexOf('<p><span'), taskName.indexOf('</span></p>')];
+    const [startIndex, endIndex] = [taskName.indexOf('<p><span'), taskName.indexOf('</span></p>')];
     setSubprojectSelected(null);
     setoptionValue('');
     setTaskName(taskName.replace(`${taskName.substring(startIndex, endIndex + 11)}`, '@'))
