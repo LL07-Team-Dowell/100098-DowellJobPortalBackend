@@ -97,6 +97,7 @@ const TeamThreadScreen = () => {
                         candidateView={true}
                         teams={candidateTeams}
                         closeIssuesScreen={() => setShowIssueForm(false)}
+                        teamName={team?.team_name}
                     />)
             }
             <br />

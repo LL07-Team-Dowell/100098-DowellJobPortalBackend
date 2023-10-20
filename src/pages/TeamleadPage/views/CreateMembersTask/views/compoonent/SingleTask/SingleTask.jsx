@@ -3,6 +3,7 @@ import ModelDetails from "./ModelDetails";
 import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { editTeamTask } from "../../../../../../../services/teamleadServices";
+import { Tooltip } from "react-tooltip";
 
 const SingleTask = ({
   title,
@@ -14,10 +15,12 @@ const SingleTask = ({
   teamName,
   taskCompleted,
   taskId,
+  team,
 }) => {
   console.log({ taskCompleted });
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
+
   const completeTaskFunction = () => {
     if (!taskCompleted) {
       setLoading(true);
@@ -54,6 +57,7 @@ const SingleTask = ({
   };
 
   if (!members || !Array.isArray(members)) return <></>;
+
   return (
     <>
       <div
@@ -80,8 +84,16 @@ const SingleTask = ({
             </p>
             <div className='team-screen-task-progress-detail-content-members-and-progress'>
               <div className='team-screen-task-progress-detail-content-members'>
-                {members?.map((e) => (
-                  <span>{e[0].toUpperCase()}</span>
+                {members?.map((e, i) => (
+                  <>
+                    <span 
+                      data-tooltip-id={`${e} ${i}`}
+                      data-tooltip-content={e}
+                    >
+                      {e[0].toUpperCase()}
+                    </span>
+                    <Tooltip id={`${e} ${i}`} />
+                  </>
                 ))}
               </div>
               <div
@@ -103,17 +115,20 @@ const SingleTask = ({
             {"View details"}
           </button>
           {taskCompleted ? null : (
-            <button
-              className='team-screen-task-progress-detail-btn'
-              onClick={completeTaskFunction}
-              style={{ marginLeft: 20 }}
-            >
-              {loading ? (
-                <LoadingSpinner width={30} height={30} color={"white"} />
-              ) : (
-                "mark as done"
-              )}
-            </button>
+            team?.created_by === currentUser.userinfo.username ?
+              <button
+                className='team-screen-task-progress-detail-btn'
+                onClick={completeTaskFunction}
+                style={{ marginLeft: 20 }}
+              >
+                {loading ? (
+                  <LoadingSpinner width={30} height={30} color={"white"} />
+                ) : (
+                  "mark as done"
+                )}
+              </button>
+            :
+              <></>
           )}
         </div>
       </div>

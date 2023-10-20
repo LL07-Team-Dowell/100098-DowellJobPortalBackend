@@ -78,6 +78,7 @@ const TeamScreenTasksCandidate = () => {
         showAddTaskButton={false}
         tasks={tasks}
         setTasks={setTasks}
+        team={team}
       />
     </div>
   );
