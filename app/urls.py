@@ -11,7 +11,8 @@ urlpatterns = [
     path("accounts_update_project/", accounts_update_project.as_view()),
     path("accounts_rehire_candidate/", accounts_rehire_candidate.as_view()),
     path("accounts_reject_candidate/", accounts_reject_candidate.as_view()),
-    path("onboard_candidate/<str:document_id>", accounts_onboard_candidate.as_view()),
+    path("onboard_candidate/<str:document_id>",
+         accounts_onboard_candidate.as_view()),
     path("update_project/", accounts_update_project.as_view()),
     path("rehire_candidate/", accounts_rehire_candidate.as_view()),
     path("reject_candidate/", accounts_reject_candidate.as_view()),
@@ -56,7 +57,8 @@ urlpatterns = [
     path("delete_task/<str:document_id>/", delete_task.as_view()),
     # update task apis
     path("create_task_update_request/", create_task_update_request.as_view()),
-    path("get_update_task/<str:document_id>/", get_task_request_update.as_view()),
+    path("get_update_task/<str:document_id>/",
+         get_task_request_update.as_view()),
     path(
         "get_all_update_task/<str:company_id>/", get_all_task_request_update.as_view()
     ),
@@ -96,7 +98,8 @@ urlpatterns = [
     path("update_rating/", update_rating.as_view()),
     # settings -------------------------------------------------------
     path("settinguserprofileinfo/", SettingUserProfileInfoView.as_view()),
-    path("settinguserprofileinfo/<int:pk>", SettingUserProfileInfoView.as_view()),
+    path("settinguserprofileinfo/<int:pk>",
+         SettingUserProfileInfoView.as_view()),
     path("settinguserproject/", SettingUserProjectView.as_view()),
     path("settinguserproject/<int:pk>", SettingUserProjectView.as_view()),
     path("settinguserdatatype/<int:pk>", SettingUserProfileInfoView.as_view()),
@@ -115,7 +118,8 @@ urlpatterns = [
     ),
     # public job application link-------------------------------------
     path("public_candidate_job_application/", Public_apply_job.as_view()),
-    path("generate_public_job_application_link/", createPublicApplication.as_view()),
+    path("generate_public_job_application_link/",
+         createPublicApplication.as_view()),
     path(
         "generate_public_job_application_link/<str:company_id>/",
         createPublicApplication.as_view(),
@@ -123,10 +127,12 @@ urlpatterns = [
     path("send_mail_to_public/", sendMailToPublicCandidate.as_view()),
     path("update_user_status/", updateTheUserDetails.as_view()),
     path("public_product_url/", public_product.as_view()),
-    path("fetch_public_product_url/<str:job_company_id>/", public_product.as_view()),
+    path("fetch_public_product_url/<str:job_company_id>/",
+         public_product.as_view()),
     # Thread-------------------------------------
     path("fetch_thread/<str:document_id>/", Thread_Apis.as_view()),
-    path("fetch_team_alerted_id_thread/<str:team_alerted_id>/",GetTeamAlertedThreads.as_view()),
+    path("fetch_team_alerted_id_thread/<str:team_alerted_id>/",
+         GetTeamAlertedThreads.as_view()),
     path("fetch_team_thread/<str:team_id>/", GetTeamThreads.as_view()),
     path("fetch_all_threads/", GetAllThreads.as_view()),
     path("create_thread/", Thread_Apis.as_view()),
@@ -160,14 +166,16 @@ urlpatterns = [
     path("updategithubprofile/", AddUserGithubInfo.as_view()),
 
     # secure end point-----------------
-    path("secureendpoint/",SecureEndPoint.as_view()),
+    path("secureendpoint/", SecureEndPoint.as_view()),
 
     # tme endpoint
-    path("add_total_time/",AddTotalTime.as_view()),
-    path("get_total_time/<str:company_id>/",AddTotalTime.as_view()),
-    path("get_individual_total_time/<str:document_id>/",GetbyDocumentIDTotalTime.as_view()),
-    path("update_time/<str:company_id>/",AddTotalTime.as_view()),
+    path("add_total_time/", AddTotalTime.as_view()),
+    path("get_total_time/<str:company_id>/", AddTotalTime.as_view()),
+    path("get_individual_total_time/<str:document_id>/",
+         GetbyDocumentIDTotalTime.as_view()),
+    path("update_time/<str:company_id>/", AddTotalTime.as_view()),
 
     # total project time
-    path("project_deadline/",project_hours.as_view())
+    path("project_deadline/", project_hours.as_view()),
+    path("testing_threads/", Testing_Thereds.as_view())
 ]
