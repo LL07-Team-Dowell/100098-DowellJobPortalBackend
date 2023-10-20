@@ -88,6 +88,7 @@ import ProjectLeadHomePage from "./pages/ProjectLeadPage/views/HomePage/HomePage
 import ProjectLeadReportsLandingPage from "./pages/ProjectLeadPage/views/ReportsPage/ReportsLandingPage";
 import ProjectLeadTeams from "./pages/ProjectLeadPage/views/TeamsPage/TeamsLandingPage";
 import ProjectLeadUserScreen from "./pages/ProjectLeadPage/views/UserScreen/UserScreen";
+import TeamInfo from "./components/TeamInfo/TeamInfo";
 
 function App() {
   // console.log = () => {};
@@ -772,7 +773,7 @@ function App() {
               >
                 <TeamProvider>
                   <ValuesProvider>
-                    <TeamScreenMembers />
+                    <TeamInfo />
                   </ValuesProvider>
                 </TeamProvider>
               </StaffJobLandingLayout>
@@ -1006,7 +1007,7 @@ function App() {
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
                 <TeamProvider>
                   <ValuesProvider>
-                    <TeamScreenMembers />
+                    <TeamInfo />
                   </ValuesProvider>
                 </TeamProvider>
               </StaffJobLandingLayout>
@@ -1754,7 +1755,7 @@ function App() {
               <TeamCandidateProvider>
                 <CandidateValuesProvider>
                   <JobLandingLayout user={currentUser} afterSelection={true}>
-                    <TeamScreenMembersCandidate />
+                    <TeamInfo />
                   </JobLandingLayout>
                 </CandidateValuesProvider>
               </TeamCandidateProvider>
