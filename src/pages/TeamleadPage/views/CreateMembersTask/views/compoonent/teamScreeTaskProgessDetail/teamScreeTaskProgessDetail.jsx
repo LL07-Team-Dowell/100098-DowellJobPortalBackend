@@ -15,6 +15,7 @@ const TeamScreeTaskProgessDetail = ({
   title,
   tasks,
   setTasks,
+  team,
 }) => {
   console.log({ tasks });
   return (
@@ -51,6 +52,7 @@ const TeamScreeTaskProgessDetail = ({
                 description={task.description}
                 taskCompleted={false}
                 taskId={task._id}
+                team={team}
                 {...tasks}
               />
             ))
@@ -74,6 +76,7 @@ const TeamScreeTaskProgessDetail = ({
                 setTasks={setTasks}
                 taskCompleted={true}
                 taskId={task._id}
+                team={team}
                 {...tasks}
               />
             ))
