@@ -89,6 +89,8 @@ import ProjectLeadReportsLandingPage from "./pages/ProjectLeadPage/views/Reports
 import ProjectLeadTeams from "./pages/ProjectLeadPage/views/TeamsPage/TeamsLandingPage";
 import ProjectLeadUserScreen from "./pages/ProjectLeadPage/views/UserScreen/UserScreen";
 import TeamInfo from "./components/TeamInfo/TeamInfo";
+import TeamScreenInfoAdminTeamLead from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamScreenInfo";
+import TeamInfoCandidate from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamInfoCandidate/TeamInfoCandidate";
 
 function App() {
   // console.log = () => {};
@@ -773,7 +775,7 @@ function App() {
               >
                 <TeamProvider>
                   <ValuesProvider>
-                    <TeamInfo />
+                    <TeamScreenInfoAdminTeamLead />
                   </ValuesProvider>
                 </TeamProvider>
               </StaffJobLandingLayout>
@@ -1007,7 +1009,7 @@ function App() {
               <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
                 <TeamProvider>
                   <ValuesProvider>
-                    <TeamInfo />
+                    <TeamScreenInfoAdminTeamLead />
                   </ValuesProvider>
                 </TeamProvider>
               </StaffJobLandingLayout>
@@ -1755,7 +1757,7 @@ function App() {
               <TeamCandidateProvider>
                 <CandidateValuesProvider>
                   <JobLandingLayout user={currentUser} afterSelection={true}>
-                    <TeamInfo />
+                    <TeamInfoCandidate />
                   </JobLandingLayout>
                 </CandidateValuesProvider>
               </TeamCandidateProvider>
