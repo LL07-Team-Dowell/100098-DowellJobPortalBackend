@@ -47,6 +47,9 @@ const TeamScreenTasks = () => {
     }
   }, []);
   useEffect(() => {
+    console.log({ Team: team });
+  }, [team]);
+  useEffect(() => {
     if (tasks.length > 0) {
       const tasksCompletedNumber = tasks.filter(
         (task) => task.completed === true
@@ -80,7 +83,9 @@ const TeamScreenTasks = () => {
         <Navbar
           title={team?.team_name.toString()}
           removeButton={true}
-          addTeamTask={team?.created_by === currentUser?.userinfo?.username ? true : false}
+          addTeamTask={
+            team?.created_by === currentUser?.userinfo?.username ? true : false
+          }
           handleAddTeamTaskFunction={() => setShowCreateTask(true)}
           addTeamTaskTitle='Add Task'
         />

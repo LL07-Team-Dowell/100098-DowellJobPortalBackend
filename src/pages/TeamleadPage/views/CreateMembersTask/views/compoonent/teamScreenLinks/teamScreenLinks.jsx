@@ -6,7 +6,7 @@ const TeamScreenLinks = ({ id, issueLinkTabActive }) => {
     <div className='team-screen-member-links'>
       <NavLink
         className={({ isActive }) => `${isActive && "link-isActive"}`}
-        to={`/team-screen-member/${id}/team-members`}
+        to={`/team-screen-member/${id}/team-info`}
       >
         Team Info
       </NavLink>
