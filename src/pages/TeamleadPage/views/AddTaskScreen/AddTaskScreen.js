@@ -155,7 +155,7 @@ const AddTaskScreen = ({
     // Use a regular expression to replace all spaces with an empty string
     return inputString.replace(/\s/g, '');
   }
-
+  // complete
   function isStringValid(inputString) {
     if (inputString === undefined) return ''
     const trimmedString = inputString.trim();
