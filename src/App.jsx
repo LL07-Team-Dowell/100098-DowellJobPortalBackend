@@ -1747,6 +1747,23 @@ function App() {
         }
       />
       <Route
+        path='/team-screen-member/:id/team-info'
+        element={
+          <NavigationContextProvider>
+            <CandidateTaskContextProvider>
+              <TeamCandidateProvider>
+                <CandidateValuesProvider>
+                  <JobLandingLayout user={currentUser} afterSelection={true}>
+                    <TeamScreenMembersCandidate />
+                  </JobLandingLayout>
+                </CandidateValuesProvider>
+              </TeamCandidateProvider>
+            </CandidateTaskContextProvider>
+          </NavigationContextProvider>
+        }
+      />
+
+      <Route
         path='/team-screen-member/:id/team-issues'
         element={
           <NavigationContextProvider>
