@@ -30,6 +30,7 @@ import teamManagementLogo from "../../assets/images/team-management-logo.png";
 import { MdPublic } from "react-icons/md";
 import { projectLeadNavLinks } from "../../pages/ProjectLeadPage/utils/projectLeadNavigationLinks";
 import HorizontalBarLoader from "../../components/HorizontalBarLoader/HorizontalBarLoader";
+import useCheckCurrentAuthStatus from "../../hooks/useCheckCurrentAuthStatus";
 
 const StaffJobLandingLayout = ({
   children,
@@ -72,6 +73,8 @@ const StaffJobLandingLayout = ({
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const { currentUser, currentAuthSessionExpired } = useCurrentUserContext();
   const [isSuperUser, setIsSuperUser] = useState(false);
+
+  useCheckCurrentAuthStatus(currentUser);
 
   useEffect(() => {
     if (!currentUser) return

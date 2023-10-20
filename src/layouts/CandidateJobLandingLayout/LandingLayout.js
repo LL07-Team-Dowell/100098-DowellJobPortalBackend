@@ -16,6 +16,7 @@ import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import { teamManagementProductName } from "../../utils/utils";
 import { testingRoles } from "../../utils/testingRoles";
 import HorizontalBarLoader from "../../components/HorizontalBarLoader/HorizontalBarLoader";
+import useCheckCurrentAuthStatus from "../../hooks/useCheckCurrentAuthStatus";
 
 const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, hideSearch }) => {
     const [ searchValue, setSearchValue ] = useState("");
@@ -25,6 +26,8 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
     const { currentUser, currentAuthSessionExpired } = useCurrentUserContext();
     const [ isSuperUser, setIsSuperUser ] = useState(false);
 
+    useCheckCurrentAuthStatus(currentUser);
+    
     useEffect(() => {
         
         if (location.pathname.includes("teams")) return setScreenTitle("Teams");
