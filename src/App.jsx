@@ -1000,6 +1000,21 @@ function App() {
         />
 
         <Route
+          path='/team-screen-member/:id/team-info'
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+                <TeamProvider>
+                  <ValuesProvider>
+                    <TeamScreenMembers />
+                  </ValuesProvider>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+
+        <Route
           path='/team-screen-member/:id/team-tasks'
           element={
             <CandidateTaskContextProvider>
