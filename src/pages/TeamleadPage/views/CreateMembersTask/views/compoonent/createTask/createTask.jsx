@@ -47,7 +47,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
         const memberIDRemove = inputMembers[0].id;
         setInputMembers([displaidMembers.find((f) => f.id === id)]);
         setDesplaidMembers([
-          ...displaidMembers.filter((p) => p.id !== memberIDRemove),
+          ...displaidMembers.filter((p) => p.id !== id),
           inputMembers[0],
         ]);
       }
