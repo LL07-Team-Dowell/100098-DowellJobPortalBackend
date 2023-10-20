@@ -7942,32 +7942,44 @@ class project_hours(APIView):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class Testing_Thereds(APIView):
+class Testing_Threads(APIView):
+
     def get(self, request):
-        field = {}
-        update_field = {}
+        status = request.GET.get("status")
+        field = {
+            "current_status": status
+        }
+        update_field = {
+        }
 
         try:
             get_response = dowellconnection(
                 *thread_report_module, "fetch", field, update_field
             )
             threads_response = json.loads(get_response)
-            # print(threads_response)
-            threads = []
+
             if threads_response["isSuccess"]:
-                threads_data = threads_response["data"]["current_status"] == "In progress"
+                threads_data = threads_response["data"]
 
                 return Response(
-                    {"isSuccess": True, "message": "List of Threads",
-                        "data": threads_data},
-                    status=status.HTTP_200_OK,
+                    {
+                        "isSuccess": True,
+                        "message": "List of Threads",
+                        "data": threads_data,
+                    }
                 )
             else:
                 return Response(
-                    {"message": "Failed to fetch", "data": threads_data},
-                    status=status.HTTP_400_BAD_REQUEST,
+                    {
+                        "message": "Failed to fetch",
+                        "data": threads_data,
+                    }
                 )
-        except:
+        except Exception as e:
             return Response(
-                {"isSuccess": False, "message": f"An error occurred:", "data": []}
+                {
+                    "isSuccess": False,
+                    "message": f"An error occurred: {str(e)}",
+                    "data": [],
+                }
             )
