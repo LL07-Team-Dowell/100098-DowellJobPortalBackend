@@ -88,9 +88,12 @@ import ProjectLeadHomePage from "./pages/ProjectLeadPage/views/HomePage/HomePage
 import ProjectLeadReportsLandingPage from "./pages/ProjectLeadPage/views/ReportsPage/ReportsLandingPage";
 import ProjectLeadTeams from "./pages/ProjectLeadPage/views/TeamsPage/TeamsLandingPage";
 import ProjectLeadUserScreen from "./pages/ProjectLeadPage/views/UserScreen/UserScreen";
+import TeamInfo from "./components/TeamInfo/TeamInfo";
+import TeamScreenInfoAdminTeamLead from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamScreenInfo";
+import TeamInfoCandidate from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamInfoCandidate/TeamInfoCandidate";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => {};
 
   const {
     currentUser,
@@ -758,6 +761,25 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
+        <Route
+          path='/team-screen-member/:id/team-info'
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout
+                adminView={true}
+                hideSearchBar={true}
+                adminAlternativePageActive={true}
+                pageTitle={"Teams"}
+              >
+                <TeamProvider>
+                  <ValuesProvider>
+                    <TeamScreenInfoAdminTeamLead />
+                  </ValuesProvider>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
 
         <Route
           path='/team-screen-member/:id/team-tasks'
@@ -971,6 +993,21 @@ function App() {
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamScreenMembers />
+                  </ValuesProvider>
+                </TeamProvider>
+              </StaffJobLandingLayout>
+            </CandidateTaskContextProvider>
+          }
+        />
+
+        <Route
+          path='/team-screen-member/:id/team-info'
+          element={
+            <CandidateTaskContextProvider>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+                <TeamProvider>
+                  <ValuesProvider>
+                    <TeamScreenInfoAdminTeamLead />
                   </ValuesProvider>
                 </TeamProvider>
               </StaffJobLandingLayout>
@@ -1287,18 +1324,18 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route 
-          path="/" 
+        <Route
+          path='/'
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
                 <ProjectLeadHomePage />
               </ValuesProvider>
             </CandidateTaskContextProvider>
-          } 
+          }
         />
         <Route
-          path="/new-task-screen"
+          path='/new-task-screen'
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
@@ -1307,24 +1344,22 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
-        <Route 
-          path="/report" 
+        <Route
+          path='/report'
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
                 <ProjectLeadReportsLandingPage />
               </ValuesProvider>
             </CandidateTaskContextProvider>
-          } 
+          }
         />
         <Route
           path='/report/team-report'
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
-                <TeamReport 
-                  isProjectLead={true}  
-                />
+                <TeamReport isProjectLead={true} />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
@@ -1334,9 +1369,7 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
-                <DetailedIndividual 
-                  isProjectLead={true}  
-                />
+                <DetailedIndividual isProjectLead={true} />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
@@ -1346,9 +1379,7 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
-                <TaskReports 
-                  isProjectLead={true}
-                />
+                <TaskReports isProjectLead={true} />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
@@ -1358,13 +1389,11 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
-                <LeaderboardReport 
-                  isProjectLead={true}
-                />
+                <LeaderboardReport isProjectLead={true} />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
-        />        
+        />
         <Route
           path='/teams'
           element={
@@ -1378,25 +1407,19 @@ function App() {
         <Route
           path='/teams/create-new-team/'
           element={
-              <StaffJobLandingLayout
-                projectLeadView={true}
-                hideSearchBar={true}
-              >
-                <CandidateTaskContextProvider>
-                  <ValuesProvider>
-                    <CreateTeam />
-                  </ValuesProvider>
-                </CandidateTaskContextProvider>
-              </StaffJobLandingLayout>
+            <StaffJobLandingLayout projectLeadView={true} hideSearchBar={true}>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <CreateTeam />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </StaffJobLandingLayout>
           }
         />
         <Route
           path='/team-screen-member/:id/team-members'
           element={
-            <StaffJobLandingLayout
-              projectLeadView={true}
-              hideSearchBar={true}
-            >
+            <StaffJobLandingLayout projectLeadView={true} hideSearchBar={true}>
               <CandidateTaskContextProvider>
                 <TeamProvider>
                   <ValuesProvider>
@@ -1411,10 +1434,7 @@ function App() {
         <Route
           path='/team-screen-member/:id/team-tasks'
           element={
-            <StaffJobLandingLayout
-              projectLeadView={true}
-              hideSearchBar={true}
-            >
+            <StaffJobLandingLayout projectLeadView={true} hideSearchBar={true}>
               <CandidateTaskContextProvider>
                 <TeamProvider>
                   <ValuesProvider>
@@ -1428,33 +1448,30 @@ function App() {
         <Route
           path='/team-screen-member/:id/team-issues'
           element={
-            <StaffJobLandingLayout
-              projectLeadView={true}
-              hideSearchBar={true}
-            >
+            <StaffJobLandingLayout projectLeadView={true} hideSearchBar={true}>
               <CandidateTaskContextProvider>
                 <TeamProvider>
                   <ValuesProvider>
                     <TeamThread />
                   </ValuesProvider>
-                </TeamProvider>  
+                </TeamProvider>
               </CandidateTaskContextProvider>
             </StaffJobLandingLayout>
           }
         />
         <Route
-          path="/user"
+          path='/user'
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
                 <ProjectLeadUserScreen />
               </ValuesProvider>
             </CandidateTaskContextProvider>
-          } 
+          }
         />
-        <Route path="*" element={<ErrorPage />} />
+        <Route path='*' element={<ErrorPage />} />
       </Routes>
-    )
+    );
   }
 
   //Provertion Period Page
@@ -1730,6 +1747,23 @@ function App() {
           </NavigationContextProvider>
         }
       />
+      <Route
+        path='/team-screen-member/:id/team-info'
+        element={
+          <NavigationContextProvider>
+            <CandidateTaskContextProvider>
+              <TeamCandidateProvider>
+                <CandidateValuesProvider>
+                  <JobLandingLayout user={currentUser} afterSelection={true}>
+                    <TeamInfoCandidate />
+                  </JobLandingLayout>
+                </CandidateValuesProvider>
+              </TeamCandidateProvider>
+            </CandidateTaskContextProvider>
+          </NavigationContextProvider>
+        }
+      />
+
       <Route
         path='/team-screen-member/:id/team-issues'
         element={
