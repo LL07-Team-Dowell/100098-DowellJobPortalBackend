@@ -28,7 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { generateCommonAdminReport } from "../../../../services/commonServices";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import { formatDateForAPI } from "../../../../helpers/helpers";
+import { changeToTitleCase, formatDateForAPI } from "../../../../helpers/helpers";
 import ReportCapture from "../../../../components/ReportCapture/ReportCapture";
 import { useModal } from "../../../../hooks/useModal";
 import jsPDF from "jspdf";
@@ -82,6 +82,10 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
   const [loadingButton, setLoadingButton] = useState(false);
   const { currentUser, reportsUserDetails } = useCurrentUserContext();
   const [datasetForApplications, setDatasetForApplications] = useState(null);
+  const [ reportDataToDownload, setReportDataToDownload ] = useState([]);
+  const [ PDFbtnDisabled, setPDFBtnDisabled ] = useState(false);
+  const csvLinkRef = useRef();
+  const graphDivRef = useRef();
 
   const exportPDF = () => {
     const input = document.getElementById("reports__container");
@@ -96,6 +100,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       pdf.save("goatrank.pdf");
     });
   };
+
   console.log({ selectOptions, lastDate, firstDate });
   const colors = [
     "#005734",
@@ -316,10 +321,123 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       });
   }, []);
   console.log((data?.hired / data?.job_applications?.total) * 100);
+  
   useEffect(() => {
     console.log(data);
+
+    const reportDataKeys = ['ITEM', 'COUNT', 'TITLE'];
+    
+    const reportDataVals = Object.keys(data || {}).map(dataKey => {
+      if (dataKey === 'job_applications') return null
+
+      if (typeof data[dataKey] === 'object') {
+        if (dataKey === 'least_applied_job') return [
+          changeToTitleCase(dataKey.replaceAll('_', ' ')),
+          data[dataKey]?.no_job_applications,
+          data[dataKey]?.job_title
+        ]
+
+        if (dataKey === 'most_applied_job') return [
+          changeToTitleCase(dataKey.replaceAll('_', ' ')),
+          data[dataKey]?.no_job_applications,
+          data[dataKey]?.job_title,
+        ]
+        
+        return null
+      }
+
+      if (Array.isArray(data[dataKey])) {
+        if (dataKey === 'project_with_least_tasks') return [
+          changeToTitleCase(dataKey.replaceAll('_', ' ')),
+          data[dataKey][0]?.tasks_added,
+          data[dataKey][0]?.title,
+        ]
+
+        if (dataKey === 'project_with_most_tasks') return [
+          changeToTitleCase(dataKey.replaceAll('_', ' ')),
+          data[dataKey][0]?.tasks_added,
+          data[dataKey][0]?.title,
+        ]
+
+        return null
+      }
+
+      return [
+        changeToTitleCase(dataKey.replaceAll('_', ' ')),
+        data[dataKey],
+        ''
+      ]
+
+    }).filter(item => item);
+
+    const [ 
+      jobApplicationHeaderTitle,
+      jobApplicationDataKeys,
+      jobApplicationDataVals,
+    ] = [
+      ['MONTHLY JOB APPLICATION DATA'],
+      [
+        'MONTH',
+        'COUNT OF APPLICATIONS',
+      ],
+      Object.keys(data?.job_applications?.months || {}).map(key => {
+        return [
+          key,
+          data?.job_applications?.months[key],
+        ]
+      }),
+    ];
+
+    setReportDataToDownload([
+      reportDataKeys,
+      ...reportDataVals,
+      [], // to act as spacing before next data
+      [], // to act as spacing before next data
+      [], // to act as spacing before next data
+      [], // to act as spacing before next data
+      jobApplicationHeaderTitle,
+      [], // to act as spacing before next data
+      jobApplicationDataKeys,
+      ...jobApplicationDataVals,
+    ]);
+
   }, [data]);
+
   console.log(data.hiring_rate);
+
+  const handleDownloadExcelData = () => {
+    
+    if (!csvLinkRef.current) return
+
+    csvLinkRef.current?.link?.click();
+
+    closeReportCaptureModal();
+    toast.success('Successfully downloaded report!');
+  }
+
+  const handleDownloadPDFData = (elemRef) => {
+    if (!elemRef.current) return
+
+    setPDFBtnDisabled(true);
+
+    html2canvas(elemRef.current).then((canvas) => {
+      let dataURL = canvas.toDataURL("image/png");
+
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "px",
+        format: [elemRef.current.scrollHeight, elemRef.current.scrollWidth]
+      });
+      
+      doc.addImage(dataURL, 'PNG',  1, 1);
+      doc.save("report.pdf");
+
+      setPDFBtnDisabled(false);
+      closeReportCaptureModal();
+      toast.success('Successfully downloaded report!');
+    });
+  }
+
   if (loading)
     return (
       <StaffJobLandingLayout
@@ -382,17 +500,23 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
                   </>
                 )}
               </div>
-              <CSVLink data={[Object.keys(data), Object.values(data)]}>
+              <CSVLink 
+                data={reportDataToDownload}
+                ref={csvLinkRef}
+                style={{ display: 'none' }}
+              >
                 Download Me
               </CSVLink>
               <button
+                className={'download__Report__Btn'}
                 onClick={() => {
                   openCaptureModal();
                 }}
               >
-                Capture
+                Download report
               </button>
             </div>
+            <br />
             {!isPublicReportUser && (
               <div>
                 <p></p>
@@ -410,7 +534,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
               </div>
             )}
           </div>
-          <div className='graphs'>
+          <div className='graphs' ref={graphDivRef}>
             <div className='graph__Item'>
               <h6 style={{ marginBottom: 20 }}>jobs</h6>
               <div
@@ -933,6 +1057,9 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
           <ReportCapture
             closeModal={() => closeReportCaptureModal()}
             htmlToCanvaFunction={exportPDF}
+            handleExcelItemDownload={handleDownloadExcelData}
+            htmlToPdfFunction={() => handleDownloadPDFData(graphDivRef)}
+            pdfBtnIsDisabled={PDFbtnDisabled}
           />
         )}
       </>

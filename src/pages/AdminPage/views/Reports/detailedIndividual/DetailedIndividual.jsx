@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./DetailedIndividual.scss";
 import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import {
@@ -27,6 +27,12 @@ import Select from "react-select";
 import { getSettingUserProfileInfo } from "../../../../../services/settingServices";
 import { rolesDict, rolesNamesDict } from "../../Settings/AdminSettings";
 import { formatDateForAPI } from "../../../../../helpers/helpers";
+import { useModal } from "../../../../../hooks/useModal";
+import ReportCapture from "../../../../../components/ReportCapture/ReportCapture";
+import { toast } from "react-toastify";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { CSVLink } from "react-csv";
 
 export const chartOptions = {
   responsive: true,
@@ -41,6 +47,11 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
   const { currentUser, setCurrentUser, reportsUserDetails } =
     useCurrentUserContext();
 
+  const {
+    closeModal: closeReportCaptureModal,
+    modalOpen: reportCaptureModal,
+    openModal: openCaptureModal,
+  } = useModal();
   const navigate = useNavigate();
   const [candidates, setcandidates] = useState([]);
   const [candidates2, setcandidates2] = useState([]);
@@ -57,6 +68,11 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
     useState(null);
   const [projectSelectedForTasksBox, setProjectSelectedForTasksBox] =
     useState(null);
+  const [ PDFbtnDisabled, setPDFBtnDisabled ] = useState(false);
+  const [ reportDataToDownload, setReportDataToDownload ] = useState([]);
+  const csvLinkRef = useRef();
+  const mainDivRef = useRef();
+  
   const date = new Date();
   const yesterdayDate = new Date(new Date().setDate(date.getDate() - 1));
   
@@ -247,9 +263,92 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
       });
   }, []);
 
+  useEffect(() => {
+
+    if (
+      !taskReportData ||
+      !projectSelectedForTasksBox
+    ) {
+      setReportDataToDownload([]);
+      return
+    }
+
+    const currentTabularData = taskReportData
+    ?.find((task) => task.project === projectSelectedForTasksBox)
+    ?.tasks?.filter(
+      (task) =>
+        (
+          new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
+          &&
+            new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
+        ) &&
+        task.project === projectSelectedForTasksBox
+        &&
+        task.is_active
+        &&
+        task.task_created_date
+    ).reverse()
+
+    const [ reportDataKeys, reportDataVals ] = [
+      ['S/N', 'DATE ADDED', 'TIME STARTED', 'TIME FINISHED', 'WORK LOG', 'WORK LOG TYPE', 'WORK LOG APPROVED', 'SUBPROJECT', 'PROJECT'],
+      currentTabularData.map((item, index) => {
+        return [
+          index + 1,
+          new Date(item.task_created_date).toDateString(),
+          item.start_time,
+          item.end_time,
+          item.task,
+          item.task_type,
+          item.approved ? 'Yes' : 'No',
+          item.subproject,
+          item.project,
+        ] 
+      })
+    ];
+
+    setReportDataToDownload([
+      reportDataKeys,
+      ...reportDataVals
+    ])
+
+  }, [taskReportData, projectSelectedForTasksBox, startDateSelectedForTasksBox, endDateSelectedForTasksBox])
+
   const handleDateChange = (val) => {
     console.log(val);
   };
+
+  const handleDownloadExcelData = () => {
+    
+    if (!csvLinkRef.current) return
+
+    csvLinkRef.current?.link?.click();
+
+    closeReportCaptureModal();
+    toast.success('Successfully downloaded report!');
+  }
+
+  const handleDownloadPDFData = (elemRef) => {
+    if (!elemRef.current) return
+
+    setPDFBtnDisabled(true);
+
+    html2canvas(elemRef.current).then((canvas) => {
+      let dataURL = canvas.toDataURL("image/png");
+
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "px",
+        format: [elemRef.current.scrollHeight, elemRef.current.scrollWidth]
+      });
+      
+      doc.addImage(dataURL, 'PNG',  1, 1);
+      doc.save("report.pdf");
+
+      setPDFBtnDisabled(false);
+      closeReportCaptureModal();
+      toast.success('Successfully downloaded report!');
+    });
+  }
 
   if (firstLoading)
     return (
@@ -291,7 +390,7 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
       projectLeadView={isProjectLead}
       hideSearchBar={true}
     >
-      <div className="detailed_indiv_container">
+      <div className="detailed_indiv_container" ref={mainDivRef}>
         <div className="task__report__nav">
           {isPublicReportUser ? (
             <>
@@ -714,7 +813,25 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                               {new Date(endDateSelectedForTasksBox).toDateString()}
                             </b>
                           </p>
-
+                          {
+                            reportDataToDownload.length > 0 && <>
+                              <CSVLink 
+                                data={reportDataToDownload}
+                                ref={csvLinkRef}
+                                style={{ display: 'none' }}
+                              >
+                                Download Me
+                              </CSVLink>
+                              <button
+                                className={'download__Report__Btn'}
+                                onClick={() => {
+                                  openCaptureModal();
+                                }}
+                              >
+                                Download report
+                              </button>
+                            </>
+                          }
                           <div className="cand__task__Wrap">
                             {!taskReportData.find(
                               (task) =>
@@ -858,6 +975,15 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
           )}
         </div>
       </div>
+      {reportCaptureModal && (
+        <ReportCapture
+          closeModal={() => closeReportCaptureModal()}
+          htmlToCanvaFunction={() => {}}
+          handleExcelItemDownload={handleDownloadExcelData}
+          htmlToPdfFunction={() => handleDownloadPDFData(mainDivRef)}
+          pdfBtnIsDisabled={PDFbtnDisabled}
+        />
+      )}
     </StaffJobLandingLayout>
   );
 }

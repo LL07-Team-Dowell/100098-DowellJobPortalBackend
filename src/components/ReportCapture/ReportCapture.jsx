@@ -7,7 +7,10 @@ const ReportCapture = ({
   htmlToCanvaFunction,
   htmlToPdfFunction,
   closeModal,
+  handleExcelItemDownload,
+  pdfBtnIsDisabled,
 }) => {
+
   return (
     <Overlay>
       <div className='report__capture'>
@@ -19,18 +22,25 @@ const ReportCapture = ({
         >
           <AiOutlineClose />
         </button>
+        <h2>Download</h2>
         <div>
-          <div className='' onClick={htmlToCanvaFunction}>
+          <div className='' onClick={handleExcelItemDownload}>
             <div>
               <FaFileExcel />
             </div>
             <p>Excel</p>
           </div>
-          <div className='' onClick={htmlToPdfFunction}>
+          <div className='' onClick={pdfBtnIsDisabled ? () => {} : () => htmlToPdfFunction()}>
             <div>
               <AiFillFilePdf />
             </div>
-            <p>PDF</p>
+            <p>
+              {
+                pdfBtnIsDisabled ? 'Please wait...'
+                :
+                'PDF'
+              }
+            </p>
           </div>
         </div>
       </div>
