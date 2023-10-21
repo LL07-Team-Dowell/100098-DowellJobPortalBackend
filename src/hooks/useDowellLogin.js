@@ -324,13 +324,16 @@ export default function useDowellLogin(
               "company_id": foundTeamManagementProductInPortfolio?.org_id,
             }).then(res => {
               sessionStorage.setItem('token', res?.data?.access_token);
+              
+              sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+              updateCurrentUserState(currentUserDetails);
+              updatePageLoading(false);
             }).catch(err => {
               console.log('Failed to get token', err);
+              sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+              updateCurrentUserState(currentUserDetails);
+              updatePageLoading(false);
             })
-
-            sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
-            updateCurrentUserState(currentUserDetails);
-            updatePageLoading(false);
           })
           .catch((err) => {
             console.log(err);
@@ -383,13 +386,16 @@ export default function useDowellLogin(
             "company_id": foundTeamManagementProductInPortfolio?.org_id,
           }).then(res => {
             sessionStorage.setItem('token', res?.data?.access_token);
+
+            sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+            updateCurrentUserState(currentUserDetails);
+            updatePageLoading(false);
           }).catch(err => {
             console.log('Failed to get token', err);
+            sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
+            updateCurrentUserState(currentUserDetails);
+            updatePageLoading(false);
           })
-
-          sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
-          updateCurrentUserState(currentUserDetails);
-          updatePageLoading(false);
         })
         .catch((err) => {
           console.log(err);

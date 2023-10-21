@@ -23,10 +23,14 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
     const [ screenTitle, setScreenTitle ] = useState("Work logs");
     const location = useLocation();
-    const { currentUser, currentAuthSessionExpired } = useCurrentUserContext();
+    const { 
+      currentUser, 
+      currentAuthSessionExpired, 
+      setCurrentAuthSessionExpired 
+    } = useCurrentUserContext();
     const [ isSuperUser, setIsSuperUser ] = useState(false);
 
-    useCheckCurrentAuthStatus(currentUser);
+    useCheckCurrentAuthStatus(currentUser, setCurrentAuthSessionExpired);
     
     useEffect(() => {
         

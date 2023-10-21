@@ -14,6 +14,7 @@ export default function useCheckCurrentAuthStatus (userDetails, updateCurrentAut
         }).then(res => {
             // STILL AUTHORIZED
             console.log('User still authorized');
+            updateCurrentAuthSessionStatus(false);
         }).catch(err => {
             // unauthorized
             console.log('User no longer authorized');
