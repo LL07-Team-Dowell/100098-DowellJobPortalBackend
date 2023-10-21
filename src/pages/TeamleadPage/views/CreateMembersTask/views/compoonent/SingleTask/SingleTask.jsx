@@ -122,7 +122,7 @@ const SingleTask = ({
                 style={{ marginLeft: 20 }}
               >
                 {loading ? (
-                  <LoadingSpinner width={30} height={30} color={"white"} />
+                  <LoadingSpinner width={16} height={16} color={"white"} />
                 ) : (
                   "mark as done"
                 )}
