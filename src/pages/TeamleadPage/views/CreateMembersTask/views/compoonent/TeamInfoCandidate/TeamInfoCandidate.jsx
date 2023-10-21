@@ -35,6 +35,7 @@ const TeamInfoCandidate = () => {
           removeButton={true}
           team_description={team.team_description}
           team_name={team.team_name}
+          team_members={team.members}
         />
       )}
     </div>

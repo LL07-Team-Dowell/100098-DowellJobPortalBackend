@@ -9,6 +9,7 @@ const TeamInfo = ({
   date_created,
   removeButton,
   id,
+  team_members,
 }) => {
   return (
     <div>
@@ -28,7 +29,11 @@ const TeamInfo = ({
         </p>
         <p>
           <b>Date created: </b>
-          {date_created}
+          {new Date(date_created).toDateString()}
+        </p>
+        <p>
+          <b>Number of members: </b>
+          {team_members.length}
         </p>
       </div>
     </div>
