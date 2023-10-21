@@ -124,7 +124,6 @@ export default function TableRow({
 
     if (updatedRole && rolesDict[updatedRole] === "Teamlead" && Proj_Lead.length < 1 && projectAssigned === 'No project assigned') return toast.info("Please assign a project for teamlead");
     if (updatedRole && rolesDict[updatedRole] === "Group Lead" && Proj_Lead.length < 1 && projectAssigned === 'No project assigned') return toast.info("Please assign a project for grouplead");
-    if (updatedRole && rolesDict[updatedRole] === "Project Lead" && Proj_Lead.length < 1 && projectAssigned === 'No project assigned') return toast.info("Please assign a project for project lead");
 
     setLoading(true);
 
@@ -352,7 +351,6 @@ export default function TableRow({
                     {
                       Object.keys(rolesDict)
                       .filter(role => role !== rolesNamesDict.Candidate)
-                      .filter(role => role !== rolesNamesDict['Project Lead'])
                       .filter(roleKey => roleAssigned !== rolesDict[roleKey])
                       .filter(roleKey => !updatedRolesAssigned.includes(roleKey)) 
                       .filter(roleKey => rolesDict[roleKey].toLocaleLowerCase().includes(additionalRoleSearch.toLocaleLowerCase())).length < 1 ?
@@ -361,7 +359,6 @@ export default function TableRow({
                       React.Children.toArray(
                         Object.keys(rolesDict)
                         .filter(role => role !== rolesNamesDict.Candidate)
-                        .filter(role => role !== rolesNamesDict['Project Lead'])
                         .filter(roleKey => roleAssigned !== rolesDict[roleKey])
                         .filter(roleKey => rolesDict[roleKey].toLocaleLowerCase().includes(additionalRoleSearch.toLocaleLowerCase()))
                         .filter(roleKey => !updatedRolesAssigned.includes(roleKey))
@@ -416,9 +413,7 @@ export default function TableRow({
                 (roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || 
                 (updatedRole && rolesDict[updatedRole] === 'Teamlead') ||
                 (roleAssigned === 'Group Lead' && hiredCandidates.includes(option.portfolio_name)) || 
-                (updatedRole && rolesDict[updatedRole] === 'Group Lead') ||
-                (roleAssigned === 'Project Lead' && hiredCandidates.includes(option.portfolio_name)) || 
-                (updatedRole && rolesDict[updatedRole] === 'Project Lead')
+                (updatedRole && rolesDict[updatedRole] === 'Group Lead')
               ) ? '#fff' 
               : 
               `#f5f5f5`
@@ -427,9 +422,7 @@ export default function TableRow({
                 (roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || 
                 (updatedRole && rolesDict[updatedRole] === 'Teamlead') ||
                 (roleAssigned === 'Group Lead' && hiredCandidates.includes(option.portfolio_name)) || 
-                (updatedRole && rolesDict[updatedRole] === 'Group Lead') ||
-                (roleAssigned === 'Project Lead' && hiredCandidates.includes(option.portfolio_name)) || 
-                (updatedRole && rolesDict[updatedRole] === 'Project Lead')
+                (updatedRole && rolesDict[updatedRole] === 'Group Lead')
               ) ? 'brightness(1)'
               : 
               'brightness(0.9)'
@@ -438,9 +431,7 @@ export default function TableRow({
                 (roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || 
                 (updatedRole && rolesDict[updatedRole] === 'Teamlead') ||
                 (roleAssigned === 'Group Lead' && hiredCandidates.includes(option.portfolio_name)) || 
-                (updatedRole && rolesDict[updatedRole] === 'Group Lead') ||
-                (roleAssigned === 'Project Lead' && hiredCandidates.includes(option.portfolio_name)) || 
-                (updatedRole && rolesDict[updatedRole] === 'Project Lead')
+                (updatedRole && rolesDict[updatedRole] === 'Group Lead')
               ) ? 'pointer' 
               : 
               'not-allowed'
@@ -451,9 +442,7 @@ export default function TableRow({
             (roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || 
             (updatedRole && rolesDict[updatedRole] === 'Teamlead') ||
             (roleAssigned === 'Group Lead' && hiredCandidates.includes(option.portfolio_name)) || 
-            (updatedRole && rolesDict[updatedRole] === 'Group Lead') ||
-            (roleAssigned === 'Project Lead' && hiredCandidates.includes(option.portfolio_name)) || 
-            (updatedRole && rolesDict[updatedRole] === 'Project Lead')
+            (updatedRole && rolesDict[updatedRole] === 'Group Lead')
           )}
           ref={projectAssignedRef}
         >
@@ -476,9 +465,7 @@ export default function TableRow({
                 disabled={
                   !(
                     (roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || 
-                    (updatedRole && rolesDict[updatedRole] === 'Teamlead') ||
-                    (roleAssigned === 'Project Lead' && hiredCandidates.includes(option.portfolio_name)) || 
-                    (updatedRole && rolesDict[updatedRole] === 'Project Lead')
+                    (updatedRole && rolesDict[updatedRole] === 'Teamlead')
                   )
                 }
               >
@@ -492,9 +479,7 @@ export default function TableRow({
                   disabled={
                     !(
                       (roleAssigned === 'Teamlead' && hiredCandidates.includes(option.portfolio_name)) || 
-                      (updatedRole && rolesDict[updatedRole] === 'Teamlead') ||
-                      (roleAssigned === 'Project Lead' && hiredCandidates.includes(option.portfolio_name)) || 
-                      (updatedRole && rolesDict[updatedRole] === 'Project Lead')
+                      (updatedRole && rolesDict[updatedRole] === 'Teamlead')
                     )
                   }
                 >

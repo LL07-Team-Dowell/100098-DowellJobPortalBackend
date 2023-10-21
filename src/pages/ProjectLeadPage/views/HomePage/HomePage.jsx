@@ -14,6 +14,7 @@ import JobCard from "../../../../components/JobCard/JobCard";
 import { useNavigate } from "react-router-dom";
 import { createArrayWithLength } from "../../../AdminPage/views/Landingpage/LandingPage";
 import { toast } from "react-toastify";
+import { getSettingUserProject } from "../../../../services/hrServices";
 
 const ProjectLeadHomePage = () => {
     const { currentUser } = useCurrentUserContext();
@@ -32,6 +33,7 @@ const ProjectLeadHomePage = () => {
     const [taskForProjectLoading, setTaskForProjectLoading] = useState(false);
     const [ fetchedOnboardingUsers, setFetchedOnboardingUsers ] = useState([]);
     const [ refreshLoading, setRefreshLoading ] = useState(false);
+    const [ allProjects, setAllProjects ] = useState([]);
 
     const navigate = useNavigate();
 
@@ -76,64 +78,92 @@ const ProjectLeadHomePage = () => {
     };
 
     useEffect(() => {
-        const initialProjectSelected = currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project;
-        const tasksForMainProject = userTasks?.find(item => item.project === initialProjectSelected);
+        if (allProjects.length > 0) {
+            const tasksForMainProject = userTasks?.find(item => item.project === allProjects[0]);
 
-        if (initialTasksLoaded && tasksForMainProject) {
-            setLoading(false);
-            return
-        }
-
-        setCurrentSelectedProjectForLead(initialProjectSelected);
-
-        const requestDataToPost = {
-            "company_id": currentUser.portfolio_info[0].org_id,
-            "data_type": currentUser.portfolio_info[0].data_type,
-            "project": initialProjectSelected,
+            if (initialTasksLoaded && tasksForMainProject) {
+                setLoading(false);
+                return
+            }
         }
 
         setInitialTasksLoaded(false);
         setLoading(true);
 
-        Promise.all([
-            getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id),
-            getCandidateTasksV2(requestDataToPost),
-        ]).then(res => {
-            const onboardingCandidates = res[0]?.data?.response?.data
-            .filter(
-              (application) =>
-                application.data_type === currentUser?.portfolio_info[0].data_type
-            );
+        getSettingUserProject().then((res) => {
+            const projectsGotten = res.data
+            ?.filter(
+              (project) =>
+                project?.data_type === currentUser.portfolio_info[0].data_type &&
+                project?.company_id === currentUser.portfolio_info[0].org_id &&
+                project.project_list &&
+                project.project_list.every(
+                  (listing) => typeof listing === "string"
+                )
+            )
+            ?.reverse()
+            
+            let allProjectsFetched;
 
-            setFetchedOnboardingUsers(onboardingCandidates);
+            if (projectsGotten.length > 0) {
+                allProjectsFetched = projectsGotten[0]?.project_list.sort((a, b) => a.localeCompare(b));
+                setAllProjects(allProjectsFetched);
+            }
 
-            const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task, false, onboardingCandidates);
+            const initialProjectSelected = allProjectsFetched[0];
 
-            const usersWithTasks = [
-                ...new Map(
-                    updatedTasksForMainProject.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
-                ).values(),
-            ].sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date));
+            setCurrentSelectedProjectForLead(initialProjectSelected);
 
-            setUserTasks((prevDetail) => {
-                return [
-                    ...prevDetail,
-                    {
-                        project: initialProjectSelected,
-                        tasksForProject: usersWithTasks,
-                    }
-                ]
+            const requestDataToPost = {
+                "company_id": currentUser.portfolio_info[0].org_id,
+                "data_type": currentUser.portfolio_info[0].data_type,
+                "project": initialProjectSelected,
+            }
+
+            Promise.all([
+                getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id),
+                getCandidateTasksV2(requestDataToPost),
+            ]).then(res => {
+                const onboardingCandidates = res[0]?.data?.response?.data
+                .filter(
+                (application) =>
+                    application.data_type === currentUser?.portfolio_info[0].data_type
+                );
+
+                setFetchedOnboardingUsers(onboardingCandidates);
+
+                const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task, false, onboardingCandidates);
+
+                const usersWithTasks = [
+                    ...new Map(
+                        updatedTasksForMainProject.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
+                    ).values(),
+                ].sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date));
+
+                setUserTasks((prevDetail) => {
+                    return [
+                        ...prevDetail,
+                        {
+                            project: initialProjectSelected,
+                            tasksForProject: usersWithTasks,
+                        }
+                    ]
+                })
+
+                setTasksToDisplayForLead(usersWithTasks)
+
+                setInitialTasksLoaded(true);
+                setLoading(false);
+
+            }).catch(err => {
+                setLoading(false);
             })
 
-            setTasksToDisplayForLead(usersWithTasks)
-
-            setInitialTasksLoaded(true);
-            setLoading(false);
-
         }).catch(err => {
+            console.log(err);
             setLoading(false);
         })
-
+        
     }, [])
 
     useEffect(() => {
@@ -346,22 +376,9 @@ const ProjectLeadHomePage = () => {
                     <div className="project__Select__Wrapper">
                         <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
                           <option value={''} disabled>Select project</option>
-                          <option
-                            value={
-                              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
-                            }
-                          >
-                            {
-                              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
-                            }
-                          </option>
                           {
-                            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-                            Array.isArray(
-                              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-                            ) &&
                             React.Children.toArray(
-                              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(project => {
+                              allProjects.map(project => {
                                 return <option value={project}>{project}</option>
                               })
                             )
