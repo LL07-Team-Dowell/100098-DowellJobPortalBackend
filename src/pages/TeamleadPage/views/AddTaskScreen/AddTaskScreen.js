@@ -150,7 +150,11 @@ const AddTaskScreen = ({
     getInputsForEditing(id);
     setEditLoading(true);
   };
-
+  const compareStrings = (str1, str2) => {
+    const formattedStr1 = str1.replace(/[. ]/g, '').toLowerCase();
+    const formattedStr2 = str2.replace(/[. ]/g, '').toLowerCase();
+    return formattedStr1 === formattedStr2;
+  };
   function removeSpaces(inputString) {
     // Use a regular expression to replace all spaces with an empty string
     return inputString.replace(/\s/g, '');
@@ -173,6 +177,7 @@ const AddTaskScreen = ({
     if (inputsAreFilled) {
       console.log({ TASKSS: tasks.find(task => task.task === taskName) })
       if (tasks.find(task => task?.task?.toLocaleLowerCase().trim() === taskName.toLocaleLowerCase().trim() && task.is_active) !== undefined) return toast.info('You cannot add the same log')
+      if (tasks.find(task => compareStrings(task?.task?.toLocaleLowerCase().trim(), taskName.toLocaleLowerCase().trim())) !== undefined) return toast.info('You cannot add the same log');
       if (!isStringValid(taskName)) return toast.info('The log entered should have at least 25 characters and at least 5 words.')
       if (taskEndTime === '00:00') return toast.info("You can only update work logs for today")
       if (duration <= 15) {
