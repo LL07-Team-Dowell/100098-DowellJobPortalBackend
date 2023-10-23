@@ -142,7 +142,7 @@ function App() {
   console.log("CURRENT USER", currentUser);
 
   // NO LOGGED IN PUBLIC USER VIEW
-  if (isPublicUser) {
+  if (!currentUser && isPublicUser) {
     return (
       <Routes>
         <Route
@@ -173,7 +173,7 @@ function App() {
   }
 
   // NON LOGGED IN PRODUCT USER
-  if (isProductUser) {
+  if (!currentUser && isProductUser) {
     if (productUserDetails.onlySingleJobCategoryPermitted) {
       return (
         <Routes>
@@ -348,7 +348,7 @@ function App() {
   }
 
   // NON LOGGED IN REPORTS USER
-  if (isReportsUser) {
+  if (!currentUser && isReportsUser) {
     if (
       reportsUserDetails.reportsViewPermitted ===
       reportOptionsPermitted.organization_report
