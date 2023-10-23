@@ -151,8 +151,8 @@ const AddTaskScreen = ({
     setEditLoading(true);
   };
   const compareStrings = (str1, str2) => {
-    const formattedStr1 = str1.replace(/[. ]/g, '').toLowerCase();
-    const formattedStr2 = str2.replace(/[. ]/g, '').toLowerCase();
+    const formattedStr1 = str1.replace(/[. ]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    const formattedStr2 = str2.replace(/[. ]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
     return formattedStr1 === formattedStr2;
   };
   function removeSpaces(inputString) {
