@@ -546,6 +546,4 @@ class TeamTaskSerializer(serializers.Serializer):
     )
     team_id = serializers.CharField(allow_null=False, allow_blank=False)
     task_created_date = serializers.CharField(allow_null=False, allow_blank=False)
-    subtasks = serializers.ListField(
-        child=serializers.DictField(allow_null=False)
-    )
+    subtasks = serializers.DictField(allow_null=False)

@@ -3064,8 +3064,7 @@ class get_team_task(APIView):
                 return Response(
                     {
                         "message": f"There are no tasks with this team id - {team_id}",
-                        "success": False,
-                        "Data": [],
+                        "response": [],
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
