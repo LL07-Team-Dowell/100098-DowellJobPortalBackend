@@ -2976,6 +2976,11 @@ class create_team_task(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class edit_team_task(APIView):
+    def get_current_datetime(self, date):
+        _date = datetime.datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
+            "%m/%d/%Y %H:%M:%S"
+        )
+        return str(_date)
     def patch(self, request, task_id):
         data = request.data
         if data:
@@ -2986,9 +2991,12 @@ class edit_team_task(APIView):
                 "title": data.get("title"),
                 "description": data.get("description"),
                 "assignee": data.get("assignee"),
-                "completed": data.get("completed"),
                 "team_name": data.get("team_name"),
             }
+            if data.get("completed") =="True" or data.get("completed") =="true" or data.get("completed") ==True:
+                update_field["completed"] =data.get("completed")
+                update_field["completed_on"] = self.get_current_datetime(datetime.datetime.now())
+            print(update_field,"=====")
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
@@ -4482,6 +4490,7 @@ class Thread_Apis(APIView):
             "thread_title": data.get("thread_title"),
             "thread": data.get("thread"),
             "image": request.data["image"],
+            "company_id":data.get("company_id"),
             "created_by": data.get("created_by"),
             "team_id": data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
@@ -4498,6 +4507,7 @@ class Thread_Apis(APIView):
             "thread_title": data.get("thread_title"),
             "thread": data.get("thread"),
             "image": request.data["image"],
+            "company_id":data.get("company_id"),
             "created_by": data.get("created_by"),
             "team_id": data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
@@ -4795,8 +4805,10 @@ class GetTeamAlertedThreads(APIView):
 
 
 class GetAllThreads(APIView):
-    def get(self, request):
-        field = {}
+    def get(self, request,company_id):
+        field = {
+            "company_id":company_id
+        }
         update_field = {}
 
         try:
@@ -4826,11 +4838,16 @@ class GetAllThreads(APIView):
                             if comment["thread_id"] == thread["_id"]:
                                 thread["comments"].append(comment)
                         threads.append(thread)
-
-                return Response(
-                    {"isSuccess": True, "message": "List of Threads", "data": threads},
-                    status=status.HTTP_200_OK,
-                )
+                if len(threads) > 0 :
+                    return Response(
+                        {"isSuccess": True, "message": "List of Threads", "data": threads},
+                        status=status.HTTP_200_OK,
+                    )
+                else:
+                    return Response(
+                        {"isSuccess": True, "message": f"No Threads with this company_id- {company_id} found", "data": threads},
+                        status=status.HTTP_204_NO_CONTENT,
+                    )
             else:
                 return Response(
                     {"message": "Failed to fetch", "data": threads},
