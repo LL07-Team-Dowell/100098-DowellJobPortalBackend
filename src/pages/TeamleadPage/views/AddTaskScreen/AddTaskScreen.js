@@ -208,7 +208,7 @@ const AddTaskScreen = ({
               update_task: {
                 "project": optionValue,
                 "task": taskName,
-                "task_type": "MEETING UPDATE",
+                "task_type": taskType,
                 "start_time": taskStartTime,
                 "end_time": taskEndTime,
                 "subproject": subprojectSelected,
@@ -535,15 +535,14 @@ const AddTaskScreen = ({
 
         toast.success(res?.message);
 
-        const copyOfTasksForToday = structuredClone(taskDetailForToday);
-        copyOfTasksForToday.tasks.unshift({ ...res.response, _id: res.current_task_id });
+        const copyOfTasksForToday = tasks.slice();
 
-        setTaskDetailForToday(copyOfTasksForToday);
+        copyOfTasksForToday.unshift({ ...res.response, _id: res.current_task_id });
 
         setLoading(false);
         setDisabled(false);
 
-        setTasks(copyOfTasksForToday.tasks);
+        setTasks(copyOfTasksForToday);
         clearAllInputs();
         setTaskId("");
         setTaskStartTime(endTime);
