@@ -537,3 +537,15 @@ class ProjectDeadlineSerializer(serializers.Serializer):
     company_id = serializers.CharField(allow_null=True, allow_blank=True)
     lead_name = serializers.CharField(allow_null=True, allow_blank=True)
     total_time = serializers.IntegerField()
+
+class TeamTaskSerializer(serializers.Serializer):
+    title = serializers.CharField(allow_null=False, allow_blank=False)
+    description = serializers.CharField(allow_null=False, allow_blank=False)
+    assignee = serializers.ListField(
+        child=serializers.CharField(allow_null=False, allow_blank=False)
+    )
+    team_id = serializers.CharField(allow_null=False, allow_blank=False)
+    task_created_date = serializers.CharField(allow_null=False, allow_blank=False)
+    subtasks = serializers.ListField(
+        child=serializers.DictField(allow_null=False)
+    )
