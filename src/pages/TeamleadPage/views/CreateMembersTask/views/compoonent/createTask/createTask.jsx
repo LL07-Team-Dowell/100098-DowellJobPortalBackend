@@ -14,6 +14,7 @@ import LittleLoading from "../../../../../../CandidatePage/views/ResearchAssocia
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { BsPlus } from "react-icons/bs";
 import { FaTimes } from "react-icons/fa";
+import formatDate from "../../../../../../../helpers/formateDate";
 const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   // USER
   const { currentUser } = useCurrentUserContext();
@@ -150,7 +151,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
           id='task_name'
           placeholder='Choose a Sub Tasks'
           value={name}
-          onChange={(e) => setname(e.target.value)}
+          onChange={(e) => setSubTask(e.target.value)}
         />
 
         <br />
@@ -162,7 +163,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
           id='task_name'
           placeholder='Choose a Date'
           value={name}
-          onChange={(e) => setname(e.target.value)}
+          onChange={(e) => setDate(formatDate(e.target.value))}
         />
         {/*  */}
         {name && description ? (
