@@ -537,3 +537,40 @@ class ProjectDeadlineSerializer(serializers.Serializer):
     company_id = serializers.CharField(allow_null=True, allow_blank=True)
     lead_name = serializers.CharField(allow_null=True, allow_blank=True)
     total_time = serializers.IntegerField()
+
+class researchassociateSerializer(serializers.Serializer):
+    JOB_CATEGORY_CHOICE = (
+        ("Freelancer", "Freelancer"),
+        ("Internship", "Internship"),
+        ("Employee", "Employee"),
+    )
+    DATA_TYPE_CHOICE = (
+        ("Real_Data", "Real_Data"),
+        ("Learning_Data", "Learning_Data"),
+        ("Testing_Data", "Testing_Data"),
+        ("Archived_Data", "Archived_Data"),
+    )
+    paymentInterval_choice = (
+        ("hour", "hour"),
+        ("day", "day"),
+        ("week", "week"),
+        ("month", "month"),
+        ("year", "year"),
+    )
+    job_title = serializers.CharField()
+    country = serializers.CharField()
+    city = serializers.CharField()
+    is_active = serializers.BooleanField()
+    job_category = serializers.CharField()
+    job_number = serializers.CharField(allow_null=False, allow_blank=False)
+    skills = serializers.ListField(child=serializers.CharField())
+    description = serializers.CharField()
+    qualification = serializers.CharField()
+    payment = serializers.DecimalField(max_digits=10, decimal_places=2)
+    company_id = serializers.CharField(allow_null=True, allow_blank=True)
+    data_type = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+    paymentInterval = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=paymentInterval_choice
+    )
