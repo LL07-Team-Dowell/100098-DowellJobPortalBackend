@@ -445,7 +445,7 @@ const TaskScreen = ({
     const day = String(currentDate.getDate()).padStart(2, '0');
     const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
     const year = String(currentDate.getFullYear()).slice(2);
-    const formattedDate = `${day}/${month}/${year}`;
+    const formattedDate = `${month}/${day}/${year}`;
     setUpdateTaskDate(formattedDate)
     setShowModal(true);
   }
