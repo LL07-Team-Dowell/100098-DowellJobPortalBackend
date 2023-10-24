@@ -166,8 +166,8 @@ const WorkLogRequest = ({ cardData }) => {
 
   if (loading) return <LoadingSpinner />;
   return (
-    <div className="work__log__request">
-      <div className="project__Select__Wrapper">
+    <div className="work__log__request__teams">
+      <div className="project__Select__Wrapper project__teams">
         <select
           defaultValue={""}
           value={currentProjectSelected}
@@ -183,21 +183,21 @@ const WorkLogRequest = ({ cardData }) => {
           )}
         </select>
       </div>
-      <div className="cards">
+      <div className="cards__teams">
         {cardData === "Pending approval" && (
           <>
             {React.Children.toArray(
               pendingApproval.filter(element => element.project === currentProjectSelected).map((element) => (
-                <div className="card__work__log__request" key={element._id}>
-                  <h2>{element.username}</h2>
+                <div className="card__work__log__request__teams" key={element._id}>
+                  <h2>{typeof element.username === 'string' && element.username}</h2>
                   <p>
                     Date of request:{" "}
                     {new Date(element.update_task_date) == "Invalid Date"
                       ? element.update_task_date
                       : new Date(element.update_task_date).toDateString()}
                   </p>
-                  <p>Request reason: {element.update_reason}</p>
-                  <p>Project: {element.project}</p>
+                  <p>Request reason: {typeof element.update_reason === 'string' &&  element.update_reason}</p>
+                  <p>Project: {typeof element.project === 'string' && element.project}</p>
                   <div className="request__action__btn">
                     <button
                       className="req__act__btn "
@@ -213,10 +213,10 @@ const WorkLogRequest = ({ cardData }) => {
                     </button>
                     {showDenyPopup && (
                       <div className="overlay log_req">
-                        <div className="delete_confirmation_container">
+                        <div className="delete_confirmation_container delete__logRequest__teams">
                           <h2>Enter Reason For Denying</h2>
-                          <span className="extra__Detail">User: {element.username}</span>
-                          <span className="extra__Detail">Request reason: {element.update_reason}</span>
+                          <span className="extra__Detail">User: {typeof element.username === 'string' && element.username}</span>
+                          <span className="extra__Detail">Request reason: {typeof element.update_reason === 'string' &&  element.update_reason}</span>
                           <label htmlFor="reasonDeny">
                             <span>Reason for denial</span>
                             <textarea
@@ -264,16 +264,16 @@ const WorkLogRequest = ({ cardData }) => {
           <>
             {React.Children.toArray(
               approve.filter(element => element.project === currentProjectSelected).map((element) => (
-                <div className="card__work__log__request" key={element._id}>
-                  <h2>{element.username}</h2>
+                <div className="card__work__log__request__teams" key={element._id}>
+                  <h2>{typeof element.username === 'string' && element.username}</h2>
                   <p>
                     Date of request:{" "}
                     {new Date(element.update_task_date) == "Invalid Date"
                       ? element.update_task_date
                       : new Date(element.update_task_date).toDateString()}
                   </p>
-                  <p>Request reason: {element.update_reason}</p>
-                  <p>Project: {element.project}</p>
+                  <p>Request reason: {typeof element.update_reason === 'string' &&  element.update_reason}</p>
+                  <p>Project: {typeof element.project === 'string' && element.project}</p>
                 </div>
               ))
             )}
@@ -284,16 +284,16 @@ const WorkLogRequest = ({ cardData }) => {
           <>
             {React.Children.toArray(
               deny.filter(element => element.project === currentProjectSelected).map((element) => (
-                <div className="card__work__log__request" key={element._id}>
-                  <h2>{element.username}</h2>
+                <div className="card__work__log__request__teams" key={element._id}>
+                  <h2>{ typeof element.username === 'string' && element.username}</h2>
                   <p>
                     Date of request:{" "}
                     {new Date(element.update_task_date) == "Invalid Date"
                       ? element.update_task_date
                       : new Date(element.update_task_date).toDateString()}
                   </p>
-                  <p>Request reason: {element.update_reason}</p>
-                  <p>Project: {element.project}</p>
+                  <p>Request reason: { typeof element.update_reason === 'string' &&  element.update_reason}</p>
+                  <p>Project: { typeof element.project === 'string' && element.project}</p>
                   <p>Reason for denial: {typeof element.reason_for_denial === 'string' && element.reason_for_denial}</p>
                 </div>
               ))
