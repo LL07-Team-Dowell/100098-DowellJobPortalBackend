@@ -33,6 +33,7 @@ import { toast } from "react-toastify";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { CSVLink } from "react-csv";
+import { AiOutlineSearch } from "react-icons/ai";
 
 export const chartOptions = {
   responsive: true,
@@ -70,8 +71,11 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
     useState(null);
   const [ PDFbtnDisabled, setPDFBtnDisabled ] = useState(false);
   const [ reportDataToDownload, setReportDataToDownload ] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [currentRoleFilter, setCurrentRoleFilter] = useState("all");
   const csvLinkRef = useRef();
   const mainDivRef = useRef();
+  const roleFilterRef = useRef();
   
   const date = new Date();
   const yesterdayDate = new Date(new Date().setDate(date.getDate() - 1));
@@ -230,9 +234,17 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
           )
         );
         setOptions(
-          promiseRes[0]?.data?.response?.data
-            ?.filter((candidate) => candidate.status === "hired")
-            .map((v) => ({ value: v._id, label: v.applicant }))
+          currentRoleFilter === "working"
+            ? promiseRes[0]?.data?.response?.data
+                ?.filter((candidate) => candidate.status === "hired")
+                .map((v) => ({ value: v._id, label: v.applicant }))
+            : currentRoleFilter === "not working"
+            ? promiseRes[0]?.data?.response?.data
+                ?.filter((candidate) => candidate.status !== "hired")
+                .map((v) => ({ value: v._id, label: v.applicant }))
+            : promiseRes[0]?.data?.response?.data
+                ?.filter((candidate) => candidate.status === "hired")
+                .map((v) => ({ value: v._id, label: v.applicant }))
         );
 
         const settingsInfo = isPublicReportUser
@@ -409,6 +421,16 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
           Get well-detailed actionable insights on hired individuals in your
           organization
         </p>
+        <div className="filter__container">
+        <div className="role__Filter__Wrapper" onClick={() => roleFilterRef.current.click()}>
+          <IoFilterOutline />
+          <select ref={roleFilterRef} className="role__Filter filter__filter" value={currentRoleFilter} onChange={({ target }) => setCurrentRoleFilter(target.value)}>
+            <option value={'all'}>All</option>
+            <option value={'working'}>Currently working</option>
+            <option value={'not working'}>Currently not working</option>
+          </select>
+        </div>
+        </div>
         <div className="selction_container">
           <p>Select name</p>
           <Select
