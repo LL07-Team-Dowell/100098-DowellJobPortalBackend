@@ -72,7 +72,8 @@ from .serializers import (
     ProjectWiseReportSerializer,
     githubinfoserializer,
     ProjectDeadlineSerializer,
-    researchassociateSerializer
+    researchassociateSerializer,
+    TeamTaskSerializer,
 )
 from .authorization import (
     verify_user_token,
@@ -2978,7 +2979,16 @@ class create_team_task(APIView):
 
     def post(self, request):
         data = request.data
-        if data:
+        payload = {
+            "title": data.get("title"),
+            "description": data.get("description"),
+            "assignee": data.get("assignee"),
+            "team_id": data.get("team_id"),
+            "task_created_date": self.get_current_datetime(datetime.datetime.now()),
+            "subtasks": data.get("subtasks"),
+        }
+        serializer = TeamTaskSerializer(data=payload)
+        if serializer.is_valid():
             field = {
                 "eventId": get_event_id()["event_id"],
                 "title": data.get("title"),
@@ -2991,6 +3001,7 @@ class create_team_task(APIView):
                 "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
+                "subtasks": data.get("subtasks"),
                 # "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.datetime.now())),
             }
             update_field = {"status": "nothing to update"}
@@ -3016,7 +3027,7 @@ class create_team_task(APIView):
                 )
         else:
             return Response(
-                {"message": "Parameters are not valid"},
+                {"message": "Parameters are not valid","response": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -3039,11 +3050,11 @@ class edit_team_task(APIView):
                 "description": data.get("description"),
                 "assignee": data.get("assignee"),
                 "team_name": data.get("team_name"),
+                "subtasks": data.get("subtasks"),
             }
             if data.get("completed") =="True" or data.get("completed") =="true" or data.get("completed") ==True:
                 update_field["completed"] =data.get("completed")
                 update_field["completed_on"] = self.get_current_datetime(datetime.datetime.now())
-            print(update_field,"=====")
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
@@ -3100,8 +3111,7 @@ class get_team_task(APIView):
                 return Response(
                     {
                         "message": f"There are no tasks with this team id - {team_id}",
-                        "success": False,
-                        "Data": [],
+                        "response": [],
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
