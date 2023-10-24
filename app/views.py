@@ -72,6 +72,7 @@ from .serializers import (
     ProjectWiseReportSerializer,
     githubinfoserializer,
     ProjectDeadlineSerializer,
+    researchassociateSerializer,
     TeamTaskSerializer,
 )
 from .authorization import (
@@ -669,7 +670,53 @@ class admin_create_jobs(APIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+@method_decorator(csrf_exempt, name="dispatch")
+class associate_job(APIView):
+    def post(self, request):
+        data = request.data
+        # continue create job api-----
+        field = {
+            "job_title":data.get('job_title'),
+            "country":data.get('country'),
+            "city":data.get("city"),
+            "is_active":data.get("is_active"),
+            "job_category":"research_associate",
+            "job_number":data.get("job_number"),
+            "skills":data.get("skills"),
+            "description":data.get("description"),
+            "qualification":data.get("qualification"),
+            "payment":data.get("payment"),
+            "company_id":data.get("company_id"),
+            "data_type":data.get("data_type"),
+            "paymentInterval":data.get("paymentInterval")
+        }
+        update_field = {"status": "nothing to update"}
 
+        serializer=researchassociateSerializer(data=field)
+        if serializer.is_valid():
+            response = dowellconnection(*jobs, "insert", field, update_field)
+            if json.loads(response)["isSuccess"] == True:
+                return Response(
+                    {
+                        "message": "Job creation was successful.",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {
+                        "message": "Job creation has failed",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+        else:
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)  
 
 @method_decorator(csrf_exempt, name="dispatch")
 class admin_get_job(APIView):
