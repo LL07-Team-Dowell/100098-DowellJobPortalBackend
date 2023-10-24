@@ -14,7 +14,7 @@ import LittleLoading from "../../../../../../CandidatePage/views/ResearchAssocia
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { BsPlus } from "react-icons/bs";
 import { FaTimes } from "react-icons/fa";
-const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
+const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   // USER
   const { currentUser } = useCurrentUserContext();
   // DATA
@@ -27,6 +27,8 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
   const [taskMembers, setTaskMembers] = useState([]);
   const [loading, setloading] = useState(false);
   const [inputMembers, setInputMembers] = useState([]);
+  const [date, setDate] = useState(undefined);
+  const [subTask, setSubTask] = useState("");
   const [displaidMembers, setDesplaidMembers] = useState(
     members.map((member, index) => ({ id: index, member }))
   );
@@ -140,6 +142,28 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
           onChange={(e) => setdiscription(e.target.value)}
         />
         <br />
+
+        <label htmlFor='task_name'>Sub Tasks</label>
+        <input
+          className='input'
+          type='text'
+          id='task_name'
+          placeholder='Choose a Sub Tasks'
+          value={name}
+          onChange={(e) => setname(e.target.value)}
+        />
+
+        <br />
+
+        <label htmlFor='task_name'>Date</label>
+        <input
+          className='input'
+          type='date'
+          id='task_name'
+          placeholder='Choose a Date'
+          value={name}
+          onChange={(e) => setname(e.target.value)}
+        />
         {/*  */}
         {name && description ? (
           <div>
