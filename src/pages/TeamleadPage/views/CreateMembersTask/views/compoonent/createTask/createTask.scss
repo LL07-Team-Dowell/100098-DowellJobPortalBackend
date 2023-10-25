@@ -184,9 +184,11 @@
 .sub__tasks{
   .input{
     border: 1px solid #efefef  ;
+    margin: 0.4rem 0 1rem;
     button{
       border: none;
       background-color: transparent;
+      cursor: pointer;
     }
   }
   input{
@@ -194,8 +196,10 @@
     display: block;
     outline: transparent;
     border-radius: 4px;
-    margin-bottom: 10px;
+    // margin-bottom: 10px;
     width: 100%;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.75rem;
   }
   >.btn{
     display: flex;
