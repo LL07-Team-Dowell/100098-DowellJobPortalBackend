@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@mui/material';
 import Avatar from 'react-avatar';
 import { FaTimes } from 'react-icons/fa';
 import styled from 'styled-components';
@@ -36,10 +37,16 @@ export const CloseButton = styled.button`
 `;
 
 const ModalDetails = ({ taskname, status, memberassign, onClose, description }) => {
+      const isSmallScreen = useMediaQuery('(max-width: 767px)');
+
     console.log(memberassign);
     return (
         <ModalContainer>
-            <ModalContent>
+            <ModalContent style={{ 
+                width: isSmallScreen ? '90%' : '450px',
+                maxHeight: '75%',
+                overflowY: 'auto', 
+            }}>
                 <h3 style={{ 
                     // textAlign: 'center', 
                     fontSize: '1.5rem', 

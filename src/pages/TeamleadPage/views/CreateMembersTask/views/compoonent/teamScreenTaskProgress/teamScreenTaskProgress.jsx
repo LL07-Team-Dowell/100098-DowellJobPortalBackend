@@ -5,8 +5,10 @@ import "./teamScreenTaskProgress.scss";
 
 // react
 import React from "react";
+import { useMediaQuery } from "@mui/material";
 const TeamScreenTaskProgress = ({ progessPercentage }) => {
   const { currentUser } = useCurrentUserContext();
+  const isSmallScreen = useMediaQuery('(max-width: 767px)');
   console.log({ currentUser });
   return (
     <div className='team-screen-task-progress'>
@@ -19,7 +21,7 @@ const TeamScreenTaskProgress = ({ progessPercentage }) => {
       </div>
       <div
         className='team-screen-task-progress-data'
-        style={{ width: 200, height: 200 }}
+        style={{ width: isSmallScreen ? 130 : 200, height: isSmallScreen ? 130 : 200 }}
       >
         {/* <div className='team-screen-task-progress-data-circle'>
           <span>{progessPercentage}%</span>

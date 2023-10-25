@@ -18,4 +18,8 @@
     color: #005734;
     border-bottom: 2px solid #005734;
   }
+  
+  @media screen and (max-width: 767px) {
+    width: 90%;
+  }
 }

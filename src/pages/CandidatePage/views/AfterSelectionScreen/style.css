@@ -89,8 +89,8 @@
         margin: 0.3rem 0;
     }
 
-    .add__New__Task__Container .add__Btn__Task {
-        margin-top: 0.8rem;
+    .add__New__Task__Container .task__Timing__Wrapper .task__Item.full__Widthh {
+        width: 100%;
     }
 }
 

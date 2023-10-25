@@ -12,6 +12,9 @@
         background-color: initial;
         .delete_confirmation_container {
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.12);
+            @media screen and (max-width: 767px) {
+                width: 90%;
+            }
         }
     }
     .Project_Popup {

@@ -2,6 +2,18 @@
   width: 80%;
   @media (max-width: 798px) {
     width: 90%;
+    padding-left: 0px;
+    padding-right: 0px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.9rem;
+    h2 {
+      font-size: 1.3rem;
+    }
+    p {
+      font-size: 0.875rem;
+    }
   }
   margin: auto;
   padding: 50px;
@@ -61,6 +73,10 @@
       color: rgba(124, 124, 124, 1);
       margin-right: 20px;
       font-size: 21px;
+      @media screen and (max-width: 767px) {
+        font-size: 0.875rem;
+        text-align: center;
+      }
     }
   }
 }

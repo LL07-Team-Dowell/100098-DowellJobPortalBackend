@@ -935,7 +935,7 @@ const AddTaskScreen = ({
                                   readOnly={loading || !taskDetailForTodayLoaded || taskStartTime.length < 1 ? true : false}
                                 />
                               </div>
-                              <div className="task__Item">
+                              <div className="task__Item full__Widthh">
                                 <span className="selectProject">Work log</span>
                                 <div className="log__Add__New__Wrapper">
                                   <textarea
@@ -1004,7 +1004,7 @@ const AddTaskScreen = ({
                                   ))}
                                 </select>
                               </div>
-                              <div className="task__Item">
+                              <div className="task__Item full__Widthh">
                                 <span className="selectProject">Subproject</span>
                                 <SubprojectSelectWithSearch
                                   subprojects={subprojects}

@@ -734,6 +734,7 @@ function App() {
                 adminView={true}
                 pageTitle={"New Team"}
                 adminAlternativePageActive={true}
+                hideSearchBar={true}
               >
                 <ValuesProvider>
                   <CreateTeam isAdmin={true} />
@@ -976,7 +977,7 @@ function App() {
           path='/create-task/create-new-team/'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true}>
+              <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
                 <ValuesProvider>
                   <CreateTeam />
                 </ValuesProvider>
@@ -1171,7 +1172,7 @@ function App() {
           path='/create-task/create-new-team/'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} isGrouplead={true}>
+              <StaffJobLandingLayout teamleadView={true} isGrouplead={true} hideSearchBar={true}>
                 <ValuesProvider>
                   <CreateTeam />
                 </ValuesProvider>
