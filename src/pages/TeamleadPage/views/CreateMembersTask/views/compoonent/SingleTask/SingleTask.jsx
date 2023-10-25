@@ -17,8 +17,9 @@ const SingleTask = ({
   taskId,
   team,
   subtasks,
+  task,
 }) => {
-  console.log({ AAAAAA: subtasks });
+  console.log({ subtasks });
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +33,7 @@ const SingleTask = ({
         team_name: teamName,
         completed: true,
         task_added_by: currentUser.userinfo.username,
+        subtasks,
       };
       editTeamTask(taskId, data)
         .then(({ data }) => {
@@ -69,6 +71,15 @@ const SingleTask = ({
             memberassign={members}
             description={detail}
             onClose={handleViewDetails}
+            taskId={taskId}
+            data={{
+              title: title,
+              description: detail,
+              assignee: members,
+              team_name: teamName,
+              completed: false,
+              task_added_by: currentUser.userinfo.username,
+            }}
           />
         )}
         <div className='team-screen-task-progress-detail-content-data'>

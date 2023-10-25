@@ -78,20 +78,10 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
           due_date: formatDate(date),
           subtasks: arrayToObject(subTask),
         })
-          // RESPONSE
           .then((resp) => {
-            console.log(resp);
             toast.success("task created successfully");
             unShowCreateTask();
             setloading(false);
-            console.log({
-              assignee: inputMembers.map((v) => v.member),
-              title: name,
-              description: description,
-              team_id: id,
-              completed: false,
-              due_date: new Date().toDateString(),
-            });
             setTasks((tasks) => [
               ...tasks,
               {
@@ -101,13 +91,13 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
                 due_date: new Date().toDateString(),
                 _id: new Date().getTime().toString(),
                 assignee: inputMembers.map((v) => v.member),
+                subtasks: arrayToObject(subTask),
               },
             ]);
           })
           // ERROR
           .catch((err) => {
             toast.error("task error");
-            console.log(err);
             setloading(false);
           });
       } else {
