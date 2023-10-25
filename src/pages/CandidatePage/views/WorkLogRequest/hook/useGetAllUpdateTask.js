@@ -13,11 +13,11 @@ export const useGetAllUpdateTask = (currentUser) => {
       .then((response) => {
         setLoading(false);
         const { portfolio_name, username } = currentUser.portfolio_info[0];
-        const newResponse = response.data.response.data.filter(
+        const newResponse = response?.data?.response?.data?.filter(
           (element) =>
             username === element.username &&
             portfolio_name === element.portfolio_name
-        );
+        )?.reverse();
         setData(newResponse);
       })
       .catch((error) => {
