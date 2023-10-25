@@ -4,6 +4,11 @@
   background: transparent;
 }
 
+.tasks-container.admin {
+  padding-left: 2%;
+  padding-right: 2%;
+}
+
 .tasks-container .add__Btn {
   display: flex;
   align-items: center;
@@ -113,6 +118,10 @@
   .project__Select__Wrapper {
     width: 76%;
     margin: 0 auto 1rem;
+  }
+
+  .project__Select__Wrapper.admin {
+    width: 83%;
   }
 
   .project__Select__Wrapper select {

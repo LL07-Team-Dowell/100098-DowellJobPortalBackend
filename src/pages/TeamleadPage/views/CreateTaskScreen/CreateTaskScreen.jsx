@@ -34,6 +34,7 @@ const CreateTaskScreen = ({
   assignedProject,
   isGrouplead,
   isProjectLead,
+  isAdmin,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const applicant = searchParams.get("applicant");
@@ -402,10 +403,13 @@ const CreateTaskScreen = ({
 
   return (
     <StaffJobLandingLayout 
-      teamleadView={isProjectLead ? false : true} 
-      isGrouplead={isProjectLead ? false : isGrouplead} 
+      teamleadView={(isProjectLead || isAdmin) ? false : true} 
+      isGrouplead={(isProjectLead || isAdmin) ? false : isGrouplead} 
       hideSearchBar={true}
       projectLeadView={isProjectLead}
+      adminView={isAdmin}
+      pageTitle={isAdmin ? 'Work Logs' : ''}
+      adminAlternativePageActive={isAdmin}
     >
       <>
         <TitleNavigationBar

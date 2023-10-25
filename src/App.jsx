@@ -91,6 +91,7 @@ import ProjectLeadUserScreen from "./pages/ProjectLeadPage/views/UserScreen/User
 import TeamInfo from "./components/TeamInfo/TeamInfo";
 import TeamScreenInfoAdminTeamLead from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamScreenInfo";
 import TeamInfoCandidate from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamInfoCandidate/TeamInfoCandidate";
+import AdminLogsHomePage from "./pages/AdminPage/views/LogsHomePage/LogsHomePage";
 
 function App() {
   // console.log = () => {};
@@ -601,8 +602,11 @@ function App() {
           path='/'
           element={
             <JobContextProvider>
-              {" "}
-              <LandingPage />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <LandingPage />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -610,8 +614,11 @@ function App() {
           path='/logout'
           element={
             <JobContextProvider>
-              {" "}
-              <Logout />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <Logout />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -619,7 +626,11 @@ function App() {
           path='/edit-job/:id'
           element={
             <JobContextProvider>
-              <EditJob />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <EditJob />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -627,7 +638,11 @@ function App() {
           path='/view-job/:id'
           element={
             <JobContextProvider>
-              <ViewJob />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <ViewJob />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -635,7 +650,11 @@ function App() {
           path='/add-job'
           element={
             <JobContextProvider>
-              <AddJob />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AddJob />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -643,7 +662,11 @@ function App() {
           path='/add'
           element={
             <JobContextProvider>
-              <Add />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <Add />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -651,16 +674,32 @@ function App() {
           path='/user'
           element={
             <JobContextProvider>
-              <AdminUserScreen />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AdminUserScreen />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
-        <Route path='/report' element={<ReportPages />} />
+        <Route path='/report' element={
+          <JobContextProvider>
+            <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <ReportPages />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+          </JobContextProvider>
+        } />
         <Route
           path='/report/organization-report'
           element={
             <JobContextProvider>
-              <AdminReports />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AdminReports />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -668,7 +707,11 @@ function App() {
           path='/report/team-report'
           element={
             <JobContextProvider>
-              <TeamReport />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <TeamReport />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -680,7 +723,11 @@ function App() {
           path='/report/task-report'
           element={
             <JobContextProvider>
-              <TaskReports />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <TaskReports />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -688,7 +735,11 @@ function App() {
           path='/report/individual-task-report'
           element={
             <JobContextProvider>
-              <IndividualTaskReports />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <IndividualTaskReports />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -696,7 +747,11 @@ function App() {
           path='/report/leaderboard-report'
           element={
             <JobContextProvider>
-              <LeaderboardReport />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <LeaderboardReport />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -719,120 +774,167 @@ function App() {
         <Route
           path='/teams'
           element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <AdminTeam />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AdminTeam />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
           }
         />
         <Route
           path='/teams/create-new-team/'
           element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                adminView={true}
-                pageTitle={"New Team"}
-                adminAlternativePageActive={true}
-                hideSearchBar={true}
-              >
-                <ValuesProvider>
-                  <CreateTeam isAdmin={true} />
-                </ValuesProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <StaffJobLandingLayout
+                  adminView={true}
+                  pageTitle={"New Team"}
+                  adminAlternativePageActive={true}
+                  hideSearchBar={true}
+                >
+                  <ValuesProvider>
+                    <CreateTeam isAdmin={true} />
+                  </ValuesProvider>
+                </StaffJobLandingLayout>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
           }
         />
         <Route
           path='/team-screen-member/:id/team-members'
           element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                adminView={true}
-                hideSearchBar={true}
-                adminAlternativePageActive={true}
-                pageTitle={"Teams"}
-              >
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamScreenMembers />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <StaffJobLandingLayout
+                  adminView={true}
+                  hideSearchBar={true}
+                  adminAlternativePageActive={true}
+                  pageTitle={"Teams"}
+                >
+                  <TeamProvider>
+                    <ValuesProvider>
+                      <TeamScreenMembers />
+                    </ValuesProvider>
+                  </TeamProvider>
+                </StaffJobLandingLayout>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
           }
         />
         <Route
           path='/team-screen-member/:id/team-info'
           element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                adminView={true}
-                hideSearchBar={true}
-                adminAlternativePageActive={true}
-                pageTitle={"Teams"}
-              >
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamScreenInfoAdminTeamLead />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <StaffJobLandingLayout
+                  adminView={true}
+                  hideSearchBar={true}
+                  adminAlternativePageActive={true}
+                  pageTitle={"Teams"}
+                >
+                  <TeamProvider>
+                    <ValuesProvider>
+                      <TeamScreenInfoAdminTeamLead />
+                    </ValuesProvider>
+                  </TeamProvider>
+                </StaffJobLandingLayout>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
           }
         />
 
         <Route
           path='/team-screen-member/:id/team-tasks'
           element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                adminView={true}
-                hideSearchBar={true}
-                adminAlternativePageActive={true}
-                pageTitle={"Teams"}
-              >
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamScreenTasks />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <StaffJobLandingLayout
+                  adminView={true}
+                  hideSearchBar={true}
+                  adminAlternativePageActive={true}
+                  pageTitle={"Teams"}
+                >
+                  <TeamProvider>
+                    <ValuesProvider>
+                      <TeamScreenTasks />
+                    </ValuesProvider>
+                  </TeamProvider>
+                </StaffJobLandingLayout>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
           }
         />
         <Route
           path='/team-screen-member/:id/team-issues'
           element={
-            <CandidateTaskContextProvider>
-              <StaffJobLandingLayout
-                adminView={true}
-                hideSearchBar={true}
-                adminAlternativePageActive={true}
-                pageTitle={"Teams"}
-              >
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamThread />
-                  </ValuesProvider>
-                </TeamProvider>
-              </StaffJobLandingLayout>
-            </CandidateTaskContextProvider>
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <StaffJobLandingLayout
+                  adminView={true}
+                  hideSearchBar={true}
+                  adminAlternativePageActive={true}
+                  pageTitle={"Teams"}
+                >
+                  <TeamProvider>
+                    <ValuesProvider>
+                      <TeamThread />
+                    </ValuesProvider>
+                  </TeamProvider>
+                </StaffJobLandingLayout>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
           }
         />
         <Route
           path='/settings'
           element={
             <JobContextProvider>
-              <AdminSettings />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AdminSettings />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
+
+        <Route
+          path='/logs'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AdminLogsHomePage />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+
+        <Route
+          path='/new-task-screen'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <CreateTaskScreen isAdmin={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+
         <Route
           path='*'
           element={
             <JobContextProvider>
-              <ErrorPage />
+              <CandidateContextProvider>
+                <ValuesProvider>
+                  <ErrorPage />
+                </ValuesProvider>
+              </CandidateContextProvider>
             </JobContextProvider>
           }
         />
