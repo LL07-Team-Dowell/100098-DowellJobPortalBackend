@@ -93,7 +93,7 @@ import TeamScreenInfoAdminTeamLead from "./pages/TeamleadPage/views/CreateMember
 import TeamInfoCandidate from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamInfoCandidate/TeamInfoCandidate";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => {};
 
   const {
     currentUser,

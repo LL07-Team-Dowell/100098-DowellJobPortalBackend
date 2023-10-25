@@ -1,26 +1,14 @@
-import React, { useEffect, useState } from "react";
-import "./createTask.scss";
-import { useValues } from "../../../context/Values";
-import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
-import {
-  createTeam,
-  createTeamTask,
-} from "../../../../../../../services/createMembersTasks";
-import { useNavigate } from "react-router-dom";
-import { AiOutlinePlusCircle } from "react-icons/ai";
+import { useEffect, useState } from "react";
+import { createTeamTask } from "../../../../../../../services/createMembersTasks";
 import { toast } from "react-toastify";
-import axios from "axios";
-import LittleLoading from "../../../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { BsPlus } from "react-icons/bs";
 import { FaTimes } from "react-icons/fa";
 import formatDate from "../../../../../../../helpers/formateDate";
+import { FiPlus } from "react-icons/fi";
+import "./createTask.scss";
+
 const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
-  // USER
-  const { currentUser } = useCurrentUserContext();
-  // DATA
-  const { data, setdata } = useValues();
-  // States
   const [name, setname] = useState("");
   const [description, setdiscription] = useState("");
   const [singleTask, setSingleTask] = useState(false);
@@ -29,7 +17,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   const [loading, setloading] = useState(false);
   const [inputMembers, setInputMembers] = useState([]);
   const [date, setDate] = useState(undefined);
-  const [subTask, setSubTask] = useState("");
+  const [subTask, setSubTask] = useState([]);
   const [displaidMembers, setDesplaidMembers] = useState(
     members.map((member, index) => ({ id: index, member }))
   );
@@ -65,7 +53,15 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   };
   const createTeamTaskFunction = () => {
     if (!loading) {
-      if (name && description && inputMembers.length > 0) {
+      if (subTask) {
+        const noSubTaskInOtherTasks = tasks.find(
+          (t) =>
+            t?.subtasks === subTask && t?.subtasks?.["tast task team cdsds"]
+        );
+        if (!noSubTaskInOtherTasks)
+          return toast.error("subtasks should not be the same");
+      }
+      if (name && description && inputMembers.length > 0 && date && subTask) {
         setloading(true);
         createTeamTask({
           assignee: inputMembers.map((v) => v.member),
@@ -73,7 +69,10 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
           description: description,
           team_id: id,
           completed: false,
-          due_date: new Date().toDateString(),
+          due_date: formatDate(date),
+          subtasks: {
+            "test task team cdsds": false,
+          },
         })
           // RESPONSE
           .then((resp) => {
@@ -113,7 +112,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
       }
     }
   };
-
+  console.log({ date, subTask });
   useEffect(() => {
     setTaskMembers([]);
   }, [singleTask]);
@@ -145,28 +144,21 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
         <br />
 
         <label htmlFor='task_name'>Sub Tasks</label>
-        <input
-          className='input'
-          type='text'
-          id='task_name'
-          placeholder='Choose a Sub Tasks'
-          value={name}
-          onChange={(e) => setSubTask(e.target.value)}
-        />
-
+        <SubTasks setSubTasks={setSubTask} subTasks={subTask} />
         <br />
 
-        <label htmlFor='task_name'>Date</label>
+        <label htmlFor='task_name'>Due Date</label>
         <input
           className='input'
           type='date'
           id='task_name'
           placeholder='Choose a Date'
-          value={name}
-          onChange={(e) => setDate(formatDate(e.target.value))}
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
         />
+
         {/*  */}
-        {name && description ? (
+        {name && description && subTask && date ? (
           <div>
             <label>Task Type</label>
             <div>
@@ -200,7 +192,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
                   <p>Team Task</p>
                 </div>
               </div>
-              {choosed && name && description ? (
+              {choosed && name && description && subTask && date ? (
                 <>
                   <label>Task Members</label>
                   <div className='added-members-input'>
@@ -216,6 +208,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
                       value={query}
                       onChange={(e) => setquery(e.target.value)}
                     />
+                    <SubTasks />
                   </div>
                   <div></div>
                   <br />
@@ -266,3 +259,30 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
 };
 
 export default CreateTask;
+
+const SubTasks = ({ subTasks, setSubTasks }) => {
+  const handleChangeInput = (e, index) => {
+    const newSubTasks = [...subTasks];
+    newSubTasks[index] = e.target.value;
+    setSubTasks(newSubTasks);
+  };
+
+  const handleClick = () => {
+    if (subTasks[subTasks.length - 1] !== "" || subTasks.length === 0) {
+      setSubTasks([...subTasks, ""]);
+    } else {
+      toast.error("you left the last subtask empty");
+    }
+  };
+
+  return (
+    <div className='sub__tasks'>
+      {subTasks.map((s, index) => (
+        <input value={s} onChange={(e) => handleChangeInput(e, index)} />
+      ))}
+      <button onClick={handleClick}>
+        <FiPlus />
+      </button>
+    </div>
+  );
+};
