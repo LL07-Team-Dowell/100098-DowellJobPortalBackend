@@ -127,7 +127,10 @@ urlpatterns = [
     path("fetch_public_product_url/<str:job_company_id>/", public_product.as_view()),
     # Thread-------------------------------------
     path("fetch_thread/<str:document_id>/", Thread_Apis.as_view()),
-    path("fetch_team_alerted_id_thread/<str:team_alerted_id>/",GetTeamAlertedThreads.as_view()),
+    path(
+        "fetch_team_alerted_id_thread/<str:team_alerted_id>/",
+        GetTeamAlertedThreads.as_view(),
+    ),
     path("fetch_team_thread/<str:team_id>/", GetTeamThreads.as_view()),
     path("fetch_all_threads/<str:company_id>/", GetAllThreads.as_view()),
     path("create_thread/", Thread_Apis.as_view()),
@@ -159,16 +162,17 @@ urlpatterns = [
         Generate_candidate_dublicates.as_view(),
     ),
     path("updategithubprofile/", AddUserGithubInfo.as_view()),
-
     # secure end point-----------------
-    path("secureendpoint/",SecureEndPoint.as_view()),
-
+    path("secureendpoint/", SecureEndPoint.as_view()),
     # tme endpoint
-    path("add_total_time/",AddTotalTime.as_view()),
-    path("get_total_time/<str:company_id>/",AddTotalTime.as_view()),
-    path("get_individual_total_time/<str:document_id>/",GetbyDocumentIDTotalTime.as_view()),
-    path("update_time/<str:company_id>/",AddTotalTime.as_view()),
-
+    path("add_total_time/", AddTotalTime.as_view()),
+    path("get_total_time/<str:company_id>/", AddTotalTime.as_view()),
+    path(
+        "get_individual_total_time/<str:document_id>/",
+        GetbyDocumentIDTotalTime.as_view(),
+    ),
+    path("update_time/<str:company_id>/", AddTotalTime.as_view()),
     # total project time
-    path("project_deadline/",project_hours.as_view())
+    path("project_deadline/", project_hours.as_view()),
+    path("testing_threads/", Testing_Threads.as_view()),
 ]

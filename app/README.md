@@ -1,8 +1,8 @@
 ### Backend services version 2 for app view
 
-
 ### account management view-------------------------------------------------
-__Post__ to `accounts_onboard_candidate/`
+
+**Post** to `accounts_onboard_candidate/`
 
 - Request Body
 
@@ -15,7 +15,7 @@ __Post__ to `accounts_onboard_candidate/`
   "status": "<status>",
   "company_id": "<company_id>",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-  "company_name": "<company_name>", 
+  "company_name": "<company_name>",
   "user_type": "<Freelancer | Internship | Employee>",
   "onboarded_on": "<onboarded on>"
 }
@@ -26,11 +26,13 @@ __Post__ to `accounts_onboard_candidate/`
 ```json
 {
   "message": "Candidate has been onboarded.",
-  "notification": {"notified": "True/False",
-                  "notification_id": "notification id"
-                    }
+  "notification": {
+    "notified": "True/False",
+    "notification_id": "notification id"
+  }
 }
 ```
+
 - Response 304
 
 ```json
@@ -39,7 +41,6 @@ __Post__ to `accounts_onboard_candidate/`
 }
 ```
 
-
 - Response 400
 
 ```json
@@ -47,7 +48,8 @@ __Post__ to `accounts_onboard_candidate/`
   "message": "serializer.errors"
 }
 ```
-__Patch__ to `accounts_update_project/`
+
+**Patch** to `accounts_update_project/`
 
 - Request Body
 
@@ -59,7 +61,7 @@ __Patch__ to `accounts_update_project/`
   "applicant": "applicant",
   "company_id": "company_id",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-  "company_name": "<company_name>", 
+  "company_name": "<company_name>",
   "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
@@ -69,12 +71,14 @@ __Patch__ to `accounts_update_project/`
 ```json
 {
   "message": "Candidate project and payment has been updated",
-  "notification": {"notified": "True/False",
-                    "seen": "True/False",
-                  "notification_id": "notification id"
-                    }
+  "notification": {
+    "notified": "True/False",
+    "seen": "True/False",
+    "notification_id": "notification id"
+  }
 }
 ```
+
 - Response 304
 
 ```json
@@ -90,7 +94,8 @@ __Patch__ to `accounts_update_project/`
   "message": "Parameters are not valid"
 }
 ```
-__Post__ to `accounts_rehire_candidate/`
+
+**Post** to `accounts_rehire_candidate/`
 
 - Request Body
 
@@ -101,7 +106,7 @@ __Post__ to `accounts_rehire_candidate/`
   "applicant": "applicant",
   "company_id": "company_id",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-  "company_name": "<company_name>", 
+  "company_name": "<company_name>",
   "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
@@ -111,12 +116,14 @@ __Post__ to `accounts_rehire_candidate/`
 ```json
 {
   "message": "Candidate has been rehired",
-  "notification": {"notified": "True/False",
-                    "rehired": "True/False",
-                  "notification_id": "notification id"
-                    }
+  "notification": {
+    "notified": "True/False",
+    "rehired": "True/False",
+    "notification_id": "notification id"
+  }
 }
 ```
+
 - Response 204
 
 ```json
@@ -124,6 +131,7 @@ __Post__ to `accounts_rehire_candidate/`
   "message": "Operation failed"
 }
 ```
+
 - Response 304
 
 ```json
@@ -131,6 +139,7 @@ __Post__ to `accounts_rehire_candidate/`
   "message": "Operation failed"
 }
 ```
+
 - Response 400
 
 ```json
@@ -138,21 +147,22 @@ __Post__ to `accounts_rehire_candidate/`
   "message": "Parameters are not valid"
 }
 ```
-__Post__ to `accounts_reject_candidate/`
+
+**Post** to `accounts_reject_candidate/`
 
 - Request Body
 
 ```json
 {
-    "document_id":"<document id>",
-    "reject_remarks": "<reject remark>",
-    "applicant": "<applicant>",
-    "username": "<username>",
-    "company_id": "<company id>",
-    "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-    "rejected_on": "<rejected on>",
-    "company_name": "<company_name>", 
-    "user_type": "<Freelancer | Internship | Employee>"
+  "document_id": "<document id>",
+  "reject_remarks": "<reject remark>",
+  "applicant": "<applicant>",
+  "username": "<username>",
+  "company_id": "<company id>",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "rejected_on": "<rejected on>",
+  "company_name": "<company_name>",
+  "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
 
@@ -161,12 +171,14 @@ __Post__ to `accounts_reject_candidate/`
 ```json
 {
   "message": "Candidate has been Rejected.",
-  "notification": {"notified": "True/False",
-                  "rejected": "True/False",
-                  "notification_id": "notification id"
-                    }
+  "notification": {
+    "notified": "True/False",
+    "rejected": "True/False",
+    "notification_id": "notification id"
+  }
 }
 ```
+
 - Response 204
 
 ```json
@@ -174,6 +186,7 @@ __Post__ to `accounts_reject_candidate/`
   "message": "Operation failed"
 }
 ```
+
 - Response 304
 
 ```json
@@ -192,7 +205,7 @@ __Post__ to `accounts_reject_candidate/`
 
 ### admin management view-------------------------------------------------
 
-__Post__ to `admin_create_jobs/`
+**Post** to `admin_create_jobs/`
 
 - Request Body
 
@@ -220,7 +233,7 @@ __Post__ to `admin_create_jobs/`
   "created_on": "<created_on>",
   "applicant": "applicant",
   "company_name": "company_name",
-  "user_type": "<Freelancer | Internship | Employee>",
+  "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
 
@@ -248,9 +261,7 @@ __Post__ to `admin_create_jobs/`
 }
 ```
 
-
-__Get__ to `admin_get_job/<str:document_id>/`
-
+**Get** to `admin_get_job/<str:document_id>/`
 
 - Response 200
 
@@ -270,9 +281,7 @@ __Get__ to `admin_get_job/<str:document_id>/`
 }
 ```
 
-
-__Get__ to `admin_get_all_jobs/<str:company_id>/`
-
+**Get** to `admin_get_all_jobs/<str:company_id>/`
 
 - Response 200
 
@@ -292,15 +301,14 @@ __Get__ to `admin_get_all_jobs/<str:company_id>/`
 }
 ```
 
-
-__Patch__ to `admin_update_jobs/`
+**Patch** to `admin_update_jobs/`
 
 - Request Body
 
 ```json
 {
-    "document_id":"<document_id>",
-    "update_field" : "Kindly follow notes to update the database , you should not update other field"
+  "document_id": "<document_id>",
+  "update_field": "Kindly follow notes to update the database , you should not update other field"
 }
 ```
 
@@ -319,6 +327,7 @@ __Patch__ to `admin_update_jobs/`
   "message": "Job update has failed"
 }
 ```
+
 - Response 400
 
 ```json
@@ -327,7 +336,7 @@ __Patch__ to `admin_update_jobs/`
 }
 ```
 
-__Delete__ to `admin_delete_job/<str:document_id>/`
+**Delete** to `admin_delete_job/<str:document_id>/`
 
 - Response 200
 
@@ -345,9 +354,9 @@ __Delete__ to `admin_delete_job/<str:document_id>/`
 }
 ```
 
-
 ### candidate management view-------------------------------------------------
-__Post__ to `candidate_apply_job/`
+
+**Post** to `candidate_apply_job/`
 
 - Request Body
 
@@ -379,9 +388,7 @@ __Post__ to `candidate_apply_job/`
 - Response 201
 
 ```json
-{"message": "Application received.",
-  "Eligibility": "True/False"
-}
+{ "message": "Application received.", "Eligibility": "True/False" }
 ```
 
 - Response 304
@@ -391,6 +398,7 @@ __Post__ to `candidate_apply_job/`
   "message": "Application not received"
 }
 ```
+
 - Response 400
 
 ```json
@@ -399,8 +407,7 @@ __Post__ to `candidate_apply_job/`
 }
 ```
 
-
-__Get__ to `candidate_get_job_application/<str:company_id>/`
+**Get** to `candidate_get_job_application/<str:company_id>/`
 
 - Response 200
 
@@ -420,7 +427,7 @@ __Get__ to `candidate_get_job_application/<str:company_id>/`
 }
 ```
 
-__Get__ to `get_candidate_application/<str:document_id>/`
+**Get** to `get_candidate_application/<str:document_id>/`
 
 - Response 200
 
@@ -440,14 +447,14 @@ __Get__ to `get_candidate_application/<str:document_id>/`
 }
 ```
 
-__Get__ to `get_all_onboarded_candidate/<str:company_id>/`
+**Get** to `get_all_onboarded_candidate/<str:company_id>/`
 
 - Response 200
 
 ```json
 {
   "message": "List of onboarded Candidates",
-  "response": ["List of onboarded Candidates"] 
+  "response": ["List of onboarded Candidates"]
 }
 ```
 
@@ -459,6 +466,7 @@ __Get__ to `get_all_onboarded_candidate/<str:company_id>/`
   "response": ["onboarded Candidates do not exist"]
 }
 ```
+
 - Response 400
 
 ```json
@@ -467,7 +475,7 @@ __Get__ to `get_all_onboarded_candidate/<str:company_id>/`
 }
 ```
 
-__Delete__ to `delete_candidate_application/<str:document_id>/`
+**Delete** to `delete_candidate_application/<str:document_id>/`
 
 - Response 200
 
@@ -486,7 +494,8 @@ __Delete__ to `delete_candidate_application/<str:document_id>/`
 ```
 
 ### hr management view-------------------------------------------------
-__Post__ to `hr_shortlisted_candidate/`
+
+**Post** to `hr_shortlisted_candidate/`
 
 - Request Body
 
@@ -497,7 +506,7 @@ __Post__ to `hr_shortlisted_candidate/`
   "applicant": "<applicant name>",
   "company_id": "<company_id>",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-  "company_name": "<company_name>", 
+  "company_name": "<company_name>",
   "user_type": "<Freelancer | Internship | Employee>",
   "shortlisted_on": "<shortlisted_on>"
 }
@@ -510,6 +519,7 @@ __Post__ to `hr_shortlisted_candidate/`
   "message": "Candidate has been shortlisted"
 }
 ```
+
 - Response 204
 
 ```json
@@ -517,6 +527,7 @@ __Post__ to `hr_shortlisted_candidate/`
   "message": "Operation has failed"
 }
 ```
+
 - Response 304
 
 ```json
@@ -533,7 +544,7 @@ __Post__ to `hr_shortlisted_candidate/`
 }
 ```
 
-__Post__ to `hr_selected_candidate/`
+**Post** to `hr_selected_candidate/`
 
 - Request Body
 
@@ -547,7 +558,7 @@ __Post__ to `hr_selected_candidate/`
   "applicant": "<applicant name>",
   "company_id": "<company_id>",
   "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-  "company_name": "<company_name>", 
+  "company_name": "<company_name>",
   "user_type": "<Freelancer | Internship | Employee>",
   "selected_on": "<selected on>"
 }
@@ -560,6 +571,7 @@ __Post__ to `hr_selected_candidate/`
   "message": "Candidate has been selected"
 }
 ```
+
 - Response 204
 
 ```json
@@ -567,6 +579,7 @@ __Post__ to `hr_selected_candidate/`
   "message": "Operation has failed"
 }
 ```
+
 - Response 304
 
 ```json
@@ -574,6 +587,7 @@ __Post__ to `hr_selected_candidate/`
   "message": "Operation has failed"
 }
 ```
+
 - Response 400
 
 ```json
@@ -581,20 +595,21 @@ __Post__ to `hr_selected_candidate/`
   "message": "Parameters are not valid"
 }
 ```
-__Post__ to `hr_reject_candidate/`
+
+**Post** to `hr_reject_candidate/`
 
 - Request Body
 
 ```json
 {
-    "document_id":"<document id>",
-    "reject_remarks": "<reject remark>",
-    "applicant": "<applicant>",
-    "username": "<username>",
-    "company_id": "<company id>",
-    "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-    "rejected_on": "<rejected on>",
-    "company_name": "<company_name>", 
+  "document_id": "<document id>",
+  "reject_remarks": "<reject remark>",
+  "applicant": "<applicant>",
+  "username": "<username>",
+  "company_id": "<company id>",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "rejected_on": "<rejected on>",
+  "company_name": "<company_name>",
   "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
@@ -610,6 +625,7 @@ __Post__ to `hr_reject_candidate/`
                     }
 }
 ```
+
 - Response 204
 
 ```json
@@ -617,6 +633,7 @@ __Post__ to `hr_reject_candidate/`
   "message": "Hr Operation failed"
 }
 ```
+
 - Response 304
 
 ```json
@@ -634,7 +651,8 @@ __Post__ to `hr_reject_candidate/`
 ```
 
 ### lead management view-------------------------------------------------
-__Post__ to `lead_hire_candidate/`
+
+**Post** to `lead_hire_candidate/`
 
 - Request Body
 
@@ -647,7 +665,7 @@ __Post__ to `lead_hire_candidate/`
   "company_id": "<company_id>",
   "data_type": "<data_type>",
   "hired_on": "<hired_on>",
-  "company_name": "<company_name>", 
+  "company_name": "<company_name>",
   "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
@@ -657,12 +675,14 @@ __Post__ to `lead_hire_candidate/`
 ```json
 {
   "message": "Candidate has been Hired",
-  "notification": {"notified": "True/False",
-                  "Hired": "True/False",
-                  "notification_id": "notification id"
-                    }
+  "notification": {
+    "notified": "True/False",
+    "Hired": "True/False",
+    "notification_id": "notification id"
+  }
 }
 ```
+
 - Response 204
 
 ```json
@@ -670,6 +690,7 @@ __Post__ to `lead_hire_candidate/`
   "message": "Lead Operation failed"
 }
 ```
+
 - Response 304
 
 ```json
@@ -677,6 +698,7 @@ __Post__ to `lead_hire_candidate/`
   "message": "Lead operation failed"
 }
 ```
+
 - Response 400
 
 ```json
@@ -685,7 +707,7 @@ __Post__ to `lead_hire_candidate/`
 }
 ```
 
-__Post__ to `lead_rehire_candidate/`
+**Post** to `lead_rehire_candidate/`
 
 - Request Body
 
@@ -697,7 +719,7 @@ __Post__ to `lead_rehire_candidate/`
   "company_id": "63a2b3fb2be81449d3a30d9h",
   "data_type": "Real_Data",
   "rehired_on": "12/12/2022",
-  "company_name": "<company_name>", 
+  "company_name": "<company_name>",
   "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
@@ -707,10 +729,11 @@ __Post__ to `lead_rehire_candidate/`
 ```json
 {
   "message": "Candidate has been rehired",
-  "notification": {"notified": "True/False",
-                  "rehired": "True/False",
-                  "notification_id": "notification id"
-                    }                                                
+  "notification": {
+    "notified": "True/False",
+    "rehired": "True/False",
+    "notification_id": "notification id"
+  }
 }
 ```
 
@@ -721,6 +744,7 @@ __Post__ to `lead_rehire_candidate/`
   "message": "Lead operation failed"
 }
 ```
+
 - Response 400
 
 ```json
@@ -728,22 +752,23 @@ __Post__ to `lead_rehire_candidate/`
   "message": "Parameters are not valid"
 }
 ```
-__Post__ to `lead_reject_candidate/`
+
+**Post** to `lead_reject_candidate/`
 
 - Request Body
 
 ```json
 {
-    "document_id":"<document id>",
-    "reject_remarks": "<reject remark>",
-    "applicant": "<applicant>",
-    "username": "<username>",
-    "company_id": "<company id>",
-    "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
-    "rejected_on": "<rejected on>",
-    "status": "Rejected",
-    "company_name": "<company_name>", 
-    "user_type": "<Freelancer | Internship | Employee>"
+  "document_id": "<document id>",
+  "reject_remarks": "<reject remark>",
+  "applicant": "<applicant>",
+  "username": "<username>",
+  "company_id": "<company id>",
+  "data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "rejected_on": "<rejected on>",
+  "status": "Rejected",
+  "company_name": "<company_name>",
+  "user_type": "<Freelancer | Internship | Employee>"
 }
 ```
 
@@ -752,12 +777,14 @@ __Post__ to `lead_reject_candidate/`
 ```json
 {
   "message": "Candidate has been Rejected",
-  "notification": {"notified": "True/False",
-                  "rejected": "True/False",
-                  "notification_id": "notification id"
-                    }
+  "notification": {
+    "notified": "True/False",
+    "rejected": "True/False",
+    "notification_id": "notification id"
+  }
 }
 ```
+
 - Response 204
 
 ```json
@@ -765,6 +792,7 @@ __Post__ to `lead_reject_candidate/`
   "message": "Lead Operation failed"
 }
 ```
+
 - Response 304
 
 ```json
@@ -783,7 +811,7 @@ __Post__ to `lead_reject_candidate/`
 
 ### task management view-------------------------------------------------
 
-__Post__ to `create_task/`
+**Post** to `create_task/`
 
 - Request Body
 
@@ -806,6 +834,7 @@ __Post__ to `create_task/`
   "message": "Task has been created successfully"
 }
 ```
+
 - Response 204
 
 ```json
@@ -822,8 +851,7 @@ __Post__ to `create_task/`
 }
 ```
 
-__Get__ to `get_task/<str:company_id>/`
-
+**Get** to `get_task/<str:company_id>/`
 
 - Response 200
 
@@ -843,7 +871,7 @@ __Get__ to `get_task/<str:company_id>/`
 }
 ```
 
-__Get__ to `get_candidate_task/<str:document_id>/`
+**Get** to `get_candidate_task/<str:document_id>/`
 
 - Response 200
 
@@ -863,7 +891,7 @@ __Get__ to `get_candidate_task/<str:document_id>/`
 }
 ```
 
-__Patch__ to `update_task/`
+**Patch** to `update_task/`
 
 - Request Body
 
@@ -884,6 +912,7 @@ __Patch__ to `update_task/`
   "message": "Task updated successfully"
 }
 ```
+
 - Response 204
 
 ```json
@@ -891,6 +920,7 @@ __Patch__ to `update_task/`
   "message": "Task failed to be updated"
 }
 ```
+
 - Response 400
 
 ```json
@@ -898,6 +928,7 @@ __Patch__ to `update_task/`
   "message": "Parameters are not valid"
 }
 ```
+
 - Response 404
 
 ```json
@@ -906,8 +937,7 @@ __Patch__ to `update_task/`
 }
 ```
 
-
-__Patch__ to `approve_task/`
+**Patch** to `approve_task/`
 
 - Request Body
 
@@ -927,6 +957,7 @@ __Patch__ to `approve_task/`
   "message": "Task approved successfully"
 }
 ```
+
 - Response 204
 
 ```json
@@ -934,11 +965,11 @@ __Patch__ to `approve_task/`
   "message": "Task failed to be approved"
 }
 ```
+
 - Response 304
 
 ```json
-{"message": "Task failed to be approved. Approval date is over"
-}
+{ "message": "Task failed to be approved. Approval date is over" }
 ```
 
 - Response 400
@@ -949,8 +980,7 @@ __Patch__ to `approve_task/`
 }
 ```
 
-
-__Delete__ to `delete_task/<str:document_id>/`
+**Delete** to `delete_task/<str:document_id>/`
 
 - Response 200
 
@@ -968,17 +998,16 @@ __Delete__ to `delete_task/<str:document_id>/`
 }
 ```
 
-
 ### team task management view-------------------------------------------------
 
-__Post__ to `create_team/`
+**Post** to `create_team/`
 
 - Request Body
 
 ```json
 {
   "team_name": "team name",
-  "team_description":"team description",
+  "team_description": "team description",
   "company_id": "company_id",
   "members": ["list of members"]
 }
@@ -991,6 +1020,7 @@ __Post__ to `create_team/`
   "message": "Team created successfully"
 }
 ```
+
 - Response 304
 
 ```json
@@ -998,6 +1028,7 @@ __Post__ to `create_team/`
   "message": "Team failed to be created"
 }
 ```
+
 - Response 400
 
 ```json
@@ -1006,7 +1037,7 @@ __Post__ to `create_team/`
 }
 ```
 
-__Get__ to `get_team/<str:document_id>/`
+**Get** to `get_team/<str:document_id>/`
 
 - Response 200
 
@@ -1025,8 +1056,7 @@ __Get__ to `get_team/<str:document_id>/`
 }
 ```
 
-
-__Get__ to `get_all_teams/<str:company_id>/`
+**Get** to `get_all_teams/<str:company_id>/`
 
 - Response 200
 
@@ -1045,23 +1075,23 @@ __Get__ to `get_all_teams/<str:company_id>/`
 }
 ```
 
-__Patch__ to `edit_team/<str:document_id>/`
+**Patch** to `edit_team/<str:document_id>/`
 
 - Request Body
 
 ```json
 {
   "team_name": "team name",
-  "team_description":"team description",
+  "team_description": "team description",
   "members": ["list of members"]
 }
-
 ```
+
 - Response 200
 
 ```json
 {
-  "message": "Team Updated Successfully", 
+  "message": "Team Updated Successfully",
   "response": "response"
 }
 ```
@@ -1073,6 +1103,7 @@ __Patch__ to `edit_team/<str:document_id>/`
   "message": "Team failed to be updated"
 }
 ```
+
 - Response 400
 
 ```json
@@ -1081,7 +1112,7 @@ __Patch__ to `edit_team/<str:document_id>/`
 }
 ```
 
-__Delete__ to `delete_team/<int:team_id>/`
+**Delete** to `delete_team/<int:team_id>/`
 
 - Response 200
 
@@ -1099,8 +1130,7 @@ __Delete__ to `delete_team/<int:team_id>/`
 }
 ```
 
-
-__Post__ to `create_team_task/`
+**Post** to `create_team_task/`
 
 - Request Body
 
@@ -1129,6 +1159,7 @@ __Post__ to `create_team_task/`
   "message": "Task Creation Failed"
 }
 ```
+
 - Response 400
 
 ```json
@@ -1137,25 +1168,25 @@ __Post__ to `create_team_task/`
 }
 ```
 
-
-__Patch__ to `edit_team_task/<str:task_id>/`
+**Patch** to `edit_team_task/<str:task_id>/`
 
 - Request Body
 
 ```json
 {
-    "title": "title",
-    "description": "description",
-    "assignee": "assignee",
-    "completed": "<True | False>",
-    "team_name": "team_name"
+  "title": "title",
+  "description": "description",
+  "assignee": "assignee",
+  "completed": "<True | False>",
+  "team_name": "team_name"
 }
 ```
+
 - Response 200
 
 ```json
 {
-  "message": "Team Task Updated successfully", 
+  "message": "Team Task Updated successfully",
   "response": "response"
 }
 ```
@@ -1167,6 +1198,7 @@ __Patch__ to `edit_team_task/<str:task_id>/`
   "message": "Team Task failed to be updated"
 }
 ```
+
 - Response 400
 
 ```json
@@ -1175,7 +1207,7 @@ __Patch__ to `edit_team_task/<str:task_id>/`
 }
 ```
 
-__Get__ to `get_team_task/<str:task_id>/`
+**Get** to `get_team_task/<str:task_id>/`
 
 - Response 200
 
@@ -1193,7 +1225,8 @@ __Get__ to `get_team_task/<str:task_id>/`
   "message": "There is no task"
 }
 ```
-__Delete__ to `delete_team_task/<int:task_id>/`
+
+**Delete** to `delete_team_task/<int:task_id>/`
 
 - Response 200
 
@@ -1211,8 +1244,7 @@ __Delete__ to `delete_team_task/<int:task_id>/`
 }
 ```
 
-
-__Post__ to `create_member_task/`
+**Post** to `create_member_task/`
 
 - Request Body
 
@@ -1242,6 +1274,7 @@ __Post__ to `create_member_task/`
   "message": "Task for member Creation Failed"
 }
 ```
+
 - Response 400
 
 ```json
@@ -1250,8 +1283,7 @@ __Post__ to `create_member_task/`
 }
 ```
 
-
-__Get__ to `get_member_task/<str:task_id>/`
+**Get** to `get_member_task/<str:task_id>/`
 
 - Response 200
 
@@ -1269,7 +1301,8 @@ __Get__ to `get_member_task/<str:task_id>/`
   "message": "There is no member tasks with this task id"
 }
 ```
-__Delete__ to `delete_team_task/<int:task_id>/`
+
+**Delete** to `delete_team_task/<int:task_id>/`
 
 - Response 200
 
@@ -1287,23 +1320,21 @@ __Delete__ to `delete_team_task/<int:task_id>/`
 }
 ```
 
-
-
-
 ### training management view-------------------------------------------------
-__Post__ to `create_question/`
+
+**Post** to `create_question/`
 
 - Request Body
 
 ```json
 {
-    "company_id": "<company_id>",
-    "data_type": "<data_type>",
-    "question_link": "<question_link>",
-    "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
-    "created_on": "<created_on>",
-    "created_by": "<created_by>",
-    "is_active": "<True | False>"
+  "company_id": "<company_id>",
+  "data_type": "<data_type>",
+  "question_link": "<question_link>",
+  "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
+  "created_on": "<created_on>",
+  "created_by": "<created_by>",
+  "is_active": "<True | False>"
 }
 ```
 
@@ -1319,7 +1350,7 @@ __Post__ to `create_question/`
 
 ```json
 {
-    "message":"Question failed to be created"
+  "message": "Question failed to be created"
 }
 ```
 
@@ -1331,7 +1362,7 @@ __Post__ to `create_question/`
 }
 ```
 
-__get__ to `get_question/<str:document_id>/`
+**get** to `get_question/<str:document_id>/`
 
 - Response 200
 
@@ -1345,11 +1376,11 @@ __get__ to `get_question/<str:document_id>/`
 
 ```json
 {
-    "message":"No question found"
+  "message": "No question found"
 }
 ```
 
-__get__ to `get_all_question/<str:company_id>/`
+**get** to `get_all_question/<str:company_id>/`
 `
 
 - Response 200
@@ -1364,20 +1395,19 @@ __get__ to `get_all_question/<str:company_id>/`
 
 ```json
 {
-    "message":"There is no questions"
+  "message": "There is no questions"
 }
 ```
 
-
-__patch__ to `update_question/`
+**patch** to `update_question/`
 
 - Request Body
 
 ```json
 {
-    "document_id": "<document_id>",
-    "is_active":"<true|false>",
-    "question_link": "question_link"
+  "document_id": "<document_id>",
+  "is_active": "<true|false>",
+  "question_link": "question_link"
 }
 ```
 
@@ -1393,34 +1423,35 @@ __patch__ to `update_question/`
 
 ```json
 {
-    "message":"Question failed to update"
+  "message": "Question failed to update"
 }
 ```
+
 - Response 400
 
 ```json
 {
-    "message":"serializer.errors"
+  "message": "serializer.errors"
 }
 ```
 
-__Post__ to `create_response/`
+**Post** to `create_response/`
 
 - Request Body
 
 ```json
 {
-    "company_id": "company_id",
-    "data_type": "<Real_Data|Learning_Data|Testing_Data|Archived_Data>",
-    "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
-    "project_name": "project_name",
-    "username": "username",
-    "code_base_link": "code_base_link",
-    "live_link": "live_link",
-    "documentation_link": "documentation_link",
-    "started_on": "started_on",
-    "submitted_on": "submitted_on",
-    "rating": "rating"
+  "company_id": "company_id",
+  "data_type": "<Real_Data|Learning_Data|Testing_Data|Archived_Data>",
+  "module": "<Frontend | Backend | UI/UX | Virtual Assistant |Web | Mobile>",
+  "project_name": "project_name",
+  "username": "username",
+  "code_base_link": "code_base_link",
+  "live_link": "live_link",
+  "documentation_link": "documentation_link",
+  "started_on": "started_on",
+  "submitted_on": "submitted_on",
+  "rating": "rating"
 }
 ```
 
@@ -1436,7 +1467,7 @@ __Post__ to `create_response/`
 
 ```json
 {
-    "message":"Response failed to be Created"
+  "message": "Response failed to be Created"
 }
 ```
 
@@ -1448,17 +1479,17 @@ __Post__ to `create_response/`
 }
 ```
 
-__patch__ to `update_response/`
+**patch** to `update_response/`
 
 - Request Body
 
 ```json
 {
-    "document_id": "<document_id>",
-    "code_base_link": "code_base_link",
-    "live_link": "live_link",
-    "documentation_link": "documentation_link",
-    "status": "<Hired|Rejected>"
+  "document_id": "<document_id>",
+  "code_base_link": "code_base_link",
+  "live_link": "live_link",
+  "documentation_link": "documentation_link",
+  "status": "<Hired|Rejected>"
 }
 ```
 
@@ -1469,6 +1500,7 @@ __patch__ to `update_response/`
   "message": "Candidate has been {Hired|Rejected}"
 }
 ```
+
 - Response 204
 
 ```json
@@ -1476,6 +1508,7 @@ __patch__ to `update_response/`
   "message": "Candidate has been {Hired|Rejected}"
 }
 ```
+
 - Response 304
 
 ```json
@@ -1484,7 +1517,7 @@ __patch__ to `update_response/`
 }
 ```
 
-__get__ to `get_response/<str:document_id>/`
+**get** to `get_response/<str:document_id>/`
 `
 
 - Response 200
@@ -1495,6 +1528,7 @@ __get__ to `get_response/<str:document_id>/`
   "response": "[List of responses]"
 }
 ```
+
 - Response 204
 
 ```json
@@ -1503,19 +1537,19 @@ __get__ to `get_response/<str:document_id>/`
 }
 ```
 
-__patch__ to `submit_response/`
+**patch** to `submit_response/`
 
 - Request Body
 
 ```json
 {
-    "document_id": "<document_id>",
-    "code_base_link": "<code_base_link>",
-    "live_link": "<live_link>",
-    "video_link": "video_link",
-    "documentation_link": "<documentation_link>",
-    "answer_link": "<answer_link>",
-    "submitted_on": "<submitted_on>"
+  "document_id": "<document_id>",
+  "code_base_link": "<code_base_link>",
+  "live_link": "<live_link>",
+  "video_link": "video_link",
+  "documentation_link": "<documentation_link>",
+  "answer_link": "<answer_link>",
+  "submitted_on": "<submitted_on>"
 }
 ```
 
@@ -1531,18 +1565,19 @@ __patch__ to `submit_response/`
 
 ```json
 {
-    "message":"Response failed to be submitted"
+  "message": "Response failed to be submitted"
 }
 ```
+
 - Response 400
 
 ```json
 {
-    "message":"serializers.error"
+  "message": "serializers.error"
 }
 ```
 
-__get__ to `get_all_responses/<str:company_id>/`
+**get** to `get_all_responses/<str:company_id>/`
 
 - Response 200
 
@@ -1552,6 +1587,7 @@ __get__ to `get_all_responses/<str:company_id>/`
   "response": "[List of response]"
 }
 ```
+
 - Response 204
 
 ```json
@@ -1562,7 +1598,7 @@ __get__ to `get_all_responses/<str:company_id>/`
 
 ### settings view-------------------------------------------------
 
-__post__ to `settinguserprofileinfo/`
+**post** to `settinguserprofileinfo/`
 
 - Request Body
 
@@ -1595,11 +1631,11 @@ __post__ to `settinguserprofileinfo/`
 
 ```json
 {
-    "message":"serializer.errors",
+  "message": "serializer.errors"
 }
 ```
 
-__get__ to `settinguserprofileinfo/`
+**get** to `settinguserprofileinfo/`
 
 - Response 200
 
@@ -1610,13 +1646,18 @@ __get__ to `settinguserprofileinfo/`
   "owner": "<owner>",
   "data_type": "<data_type>",
   "profile_info": [
-                    { "profile_title": "profile_title", "Role": "Role", "project": "project", "version": "version" }
-                  ],
-  "status":"200"
+    {
+      "profile_title": "profile_title",
+      "Role": "Role",
+      "project": "project",
+      "version": "version"
+    }
+  ],
+  "status": "200"
 }
 ```
 
-__put__ to `settinguserprofileinfo/<int:pk>`
+**put** to `settinguserprofileinfo/<int:pk>`
 
 - Request Body
 
@@ -1640,7 +1681,7 @@ __put__ to `settinguserprofileinfo/<int:pk>`
 
 ```json
 {
-    "message":"serializer.errors"
+  "message": "serializer.errors"
 }
 ```
 
@@ -1658,7 +1699,7 @@ __put__ to `settinguserprofileinfo/<int:pk>`
 }
 ```
 
-__post__ to `settinguserproject/`
+**post** to `settinguserproject/`
 
 - Request Body
 
@@ -1685,12 +1726,12 @@ __post__ to `settinguserproject/`
 
 ```json
 {
-    "message":"serializer.errors",
-    "status":"400"
+  "message": "serializer.errors",
+  "status": "400"
 }
 ```
 
-__get__ to `settinguserproject/`
+**get** to `settinguserproject/`
 
 - Response 200
 
@@ -1703,7 +1744,7 @@ __get__ to `settinguserproject/`
 }
 ```
 
-__put__ to `settinguserproject/<int:pk>`
+**put** to `settinguserproject/<int:pk>`
 
 - Request Body
 
@@ -1730,14 +1771,13 @@ __put__ to `settinguserproject/<int:pk>`
 
 ```json
 {
-    "message":"serializer.errors"
+  "message": "serializer.errors"
 }
 ```
 
-
 ### discord api view------------------------------------------------
 
-__post__ to `generate_discord_invite/`
+**post** to `generate_discord_invite/`
 
 - Request Body
 
@@ -1745,22 +1785,22 @@ __post__ to `generate_discord_invite/`
 {
   "guild_id": "<guild id>",
   "owners_ids": "[owners_ids]",
-  "bot_token":"<generated bot token>"
+  "bot_token": "<generated bot token>"
 }
 ```
 
 - Response 201
 
 ```json
-{"message": "Invite link has been generated successfully",
-  "response": {"invite_link":"invite link",
-            "server":"invite",             
-            }
+{
+  "message": "Invite link has been generated successfully",
+  "response": { "invite_link": "invite link", "server": "invite" }
 }
 ```
+
 - Response 304
 
-```json
+````json
 {
   "message": "Invite link failed to be generated",
 }
@@ -1771,22 +1811,25 @@ __post__ to `generate_discord_invite/`
 {
     "message": "Parameters are not valid",
 }
-```
+````
 
-__get__ to `get_discord_server_channels/<str:token>/<int:guild_id>/`
+**get** to `get_discord_server_channels/<str:token>/<int:guild_id>/`
 
 - Response 200
 
 ```json
-{"message": "List of channels in server",
-  "response": {"num of channels":"No of channels",
-                "channels":"[list of channels]",           
-              }
+{
+  "message": "List of channels in server",
+  "response": {
+    "num of channels": "No of channels",
+    "channels": "[list of channels]"
+  }
 }
 ```
+
 - Response 204
 
-```json
+````json
 {
   "message":"There is no channels",
   "response":"[channels]"
@@ -1799,22 +1842,23 @@ __get__ to `get_discord_server_members/<str:token>/<int:guild_id>/`
 ```json
 {"message": "List of members in server",
   "response": {"num of members":"No of members",
-                "members":"[list of members]",           
+                "members":"[list of members]",
               }
 }
-```
+````
+
 - Response 204
 
 ```json
 {
-  "message":"There is no members",
-  "response":"[members]"
+  "message": "There is no members",
+  "response": "[members]"
 }
 ```
 
 ### public api view --------------------------
 
-__Post__ to `public_candidate_job_application/`
+**Post** to `public_candidate_job_application/`
 
 - Request Body
 
@@ -1842,17 +1886,14 @@ __Post__ to `public_candidate_job_application/`
   "application_submitted_on": "<application_submitted_on>",
   "status": "Guest_Pending",
   "module": "<Frontend|Backend|UI/UX|Virtual Assistant|Web|Mobile>",
-  "is_public":"<True/False>"
-
+  "is_public": "<True/False>"
 }
 ```
 
 - Response 201
 
 ```json
-{"message": "Application received.",
-  "Eligibility": "True/False"
-}
+{ "message": "Application received.", "Eligibility": "True/False" }
 ```
 
 - Response 304
@@ -1862,6 +1903,7 @@ __Post__ to `public_candidate_job_application/`
   "message": "Application not received"
 }
 ```
+
 - Response 400
 
 ```json
@@ -1870,26 +1912,27 @@ __Post__ to `public_candidate_job_application/`
 }
 ```
 
-__post__ to `generate_public_job_application_link`
+**post** to `generate_public_job_application_link`
 
 - Request Body
 
 ```json
 {
-      "qr_ids": "('qr_ids')",
-      "job_company_id": "('job_company_id')",
-      "job_id": "('job_id')",
-      "company_data_type":"<Real_Data | Learning_Data | Testing_Data | Archived_Data>",
+  "qr_ids": "('qr_ids')",
+  "job_company_id": "('job_company_id')",
+  "job_id": "('job_id')",
+  "company_data_type": "<Real_Data | Learning_Data | Testing_Data | Archived_Data>"
 }
 ```
+
 - Response 200
 
 ```json
 {
-    "success": "True",
-    "message":"Master link for public job apllication generated successfully",
-    "master_link": "masterlink",
-    "qr_code": "qrcode_image_url",
+  "success": "True",
+  "message": "Master link for public job apllication generated successfully",
+  "master_link": "masterlink",
+  "qr_code": "qrcode_image_url"
 }
 ```
 
@@ -1897,20 +1940,20 @@ __post__ to `generate_public_job_application_link`
 
 ```json
 {
-
-   "success": "False",
-   "message": "Failed to generate master link for public job apllication"
+  "success": "False",
+  "message": "Failed to generate master link for public job apllication"
 }
 ```
-__get__ to `generate_public_job_application_link/<str:company_id>/`
+
+**get** to `generate_public_job_application_link/<str:company_id>/`
 
 - Response 200
 
 ```json
 {
-    "success": "True",
-   "message": "Master link deatils.",
-    "master_link": "master_links"
+  "success": "True",
+  "message": "Master link deatils.",
+  "master_link": "master_links"
 }
 ```
 
@@ -1918,90 +1961,199 @@ __get__ to `generate_public_job_application_link/<str:company_id>/`
 
 ```json
 {
-    "success": "False",
-     "message": "User details is not updated."
+  "success": "False",
+  "message": "User details is not updated."
 }
 ```
 
-__post__ to `send_mail_to_public/`
+**post** to `send_mail_to_public/`
 
 - Request Body
 
 ```json
-
 {
-            "qr_id": "qr_id",
-            "org_name": "org_name",
-            "org_id": "org_id",
-            "owner_name": "owner_name",
-            "portfolio_name": "portfolio_name",
-            "unique_id": "unique_id",
-            "product": "product",
-            "role": "role",
-            "member_type": "member_type",
-            "toemail": "toemail",
-            "toname": "toname",
-            "subject": "subject",
-            "job_role": "job_role",
-            "data_type": "data_type"
-        }
-
+  "qr_id": "qr_id",
+  "org_name": "org_name",
+  "org_id": "org_id",
+  "owner_name": "owner_name",
+  "portfolio_name": "portfolio_name",
+  "unique_id": "unique_id",
+  "product": "product",
+  "role": "role",
+  "member_type": "member_type",
+  "toemail": "toemail",
+  "toname": "toname",
+  "subject": "subject",
+  "job_role": "job_role",
+  "data_type": "data_type"
+}
 ```
+
 - Response 200
 
 ```json
 {
- "success": "True",
-"message": "Mail sent successfully to {toname}"
-                }
+  "success": "True",
+  "message": "Mail sent successfully to {toname}"
+}
 ```
 
 - Response 400
 
 ```json
 {
- "success": "False",
-"message": "Something went wrong",
-"error": "serializer.errors"
+  "success": "False",
+  "message": "Something went wrong",
+  "error": "serializer.errors"
 }
 ```
+
 - Response 401
 
 ```json
 {
-    "success": "False",
-    "message": "Something went wrong"
+  "success": "False",
+  "message": "Something went wrong"
 }
 ```
 
-__post__ to `update_user_status/`
+**post** to `update_user_status/`
 
 - Request Body
 
 ```json
-
 {
- "username": "username",
-"portfolio_name": "protfolio_name",
+  "username": "username",
+  "portfolio_name": "protfolio_name",
   "status": "Pending"
- }
-
+}
 ```
+
 - Response 200
 
 ```json
 {
- "success": "True",
- "message": "User details is updated.",
-            }
+  "success": "True",
+  "message": "User details is updated."
+}
 ```
 
 - Response 400
 
-```json
+`````json
 {
 "success": "False",
 "message": "User details is not updated."
             }
 
+**Post** to `project_deadline/`
+
+type_request = add_total_project_hours,enable_edit_project_hours
+
+type_request == add_total_project_hours
+- Request Body
+
+```json
+{
+    "project":"<project>",
+    "company_id": "<company_id>",
+    "total_time": "<total_time>",
+    "lead_name": "<lead_name>",
+
+}
+```
+- Response 200
+
+```json
+{
+  {
+    "success": "True",
+    "message": "Total project time added successfully",
+    "response": "field",
+    "_id": "response"
+  }
+}
+```
+- Response 400
+
+```json
+{
+  {
+    "success": "False",
+    "message": "Failed to add total project time",
+  }
+}
+```
+- Response 400
+
+```json
+{
+  {
+    "success": "False",
+    "message": "Posting wrong data to API",
+    "error": "serializer.errors"
+}
+}
+```
+
+type_request == enable_edit_project_hours
+- Request Body
+
+```json
+{
+    "_id":"document_id",
+}
+```
+- Response 200
+
+```json
+{
+  {
+    "success": "True",
+    "message": "Status updated successfully",
+}
+}
+```
+
+**get** to `project_deadline`
+
+type_request = get_project_hours_details,get_project_hours_detail
+type_request = get_project_hours_details
+
+- Request Body
+
+````json
+{
+    "company_id": "<company_id>",
+}
+
+- Response 200
+
+```json
+{
+  "success": "True",
+  "message": "List project hour details for company",
+  "response": "response"
+}
+```
+
+type_request = get_project_hours_detail
+- Request Body
+
+````json
+{
+    "_id": "document_id",
+}
+
+- Response 200
+
+```json
+{
+  "success": "True",
+  "message": "List project hour details for company",
+  "response": "response"
+}
+```
 # Change Log Link :- https://github.com/LL07-Team-Dowell/100098-DowellJobPortal/blob/backend-v2/app/CHANGELOG.md
+````
+`````

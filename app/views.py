@@ -241,7 +241,7 @@ class serverStatus(APIView):
 # api for job portal ends here--------------------------------
 
 
-## authorization api----------------------------------------
+# authorization api----------------------------------------
 @method_decorator(csrf_exempt, name="dispatch")
 class auth(APIView):
     """get jwt token for authorization"""
@@ -259,7 +259,7 @@ class auth(APIView):
         return sign_token(user)
 
 
-## authorization ends here-----------------------------------
+# authorization ends here-----------------------------------
 
 
 # api for account management begins here______________________
@@ -1734,7 +1734,7 @@ class get_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_candidate_task(APIView):
     @verify_user_token
-    def get(self, request,user, document_id):
+    def get(self, request, user, document_id):
         field = {"_id": document_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1900,7 +1900,7 @@ class create_task_update_request(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_task_request_update(APIView):
     @verify_user_token
-    def get(self, request, user,document_id):
+    def get(self, request, user, document_id):
         field = {"_id": document_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1936,7 +1936,7 @@ class get_task_request_update(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_task_request_update(APIView):
     @verify_user_token
-    def get(self, request, user,company_id):
+    def get(self, request, user, company_id):
         field = {"company_id": company_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1993,7 +1993,7 @@ class approve_task_request_update(APIView):
             return True
 
     @verify_user_token
-    def patch(self, request, user,document_id):
+    def patch(self, request, user, document_id):
         data = request.data
 
         if self.check_approved(document_id) is False:
@@ -2075,7 +2075,7 @@ class denied_task_request_update(APIView):
             return True
 
     @verify_user_token
-    def patch(self, request, user ,document_id):
+    def patch(self, request, user, document_id):
         data = request.data
 
         if self.check_denied(document_id) is False:
@@ -3039,6 +3039,7 @@ class edit_team_task(APIView):
             "%m/%d/%Y %H:%M:%S"
         )
         return str(_date)
+
     def patch(self, request, task_id):
         data = request.data
         if data:
@@ -3052,9 +3053,16 @@ class edit_team_task(APIView):
                 "team_name": data.get("team_name"),
                 "subtasks": data.get("subtasks"),
             }
-            if data.get("completed") =="True" or data.get("completed") =="true" or data.get("completed") ==True:
-                update_field["completed"] =data.get("completed")
-                update_field["completed_on"] = self.get_current_datetime(datetime.datetime.now())
+            if (
+                data.get("completed") == "True"
+                or data.get("completed") == "true"
+                or data.get("completed") == True
+            ):
+                update_field["completed"] = data.get("completed")
+                update_field["completed_on"] = self.get_current_datetime(
+                    datetime.datetime.now()
+                )
+            print(update_field, "====="
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
@@ -4251,11 +4259,11 @@ class sendMailToPublicCandidate(APIView):
                 algorithm="HS256",
             )
             if type(encoded_jwt) == bytes:
-                decodedbytestr=encoded_jwt.decode('utf-8')
+                decodedbytestr = encoded_jwt.decode("utf-8")
             else:
-                decodedbytestr=encoded_jwt
+                decodedbytestr = encoded_jwt
             link = f"https://100014.pythonanywhere.com/?hr_invitation={decodedbytestr}"
-            #print("------link new------", link)
+            # print("------link new------", link)
             email_content = INVITATION_MAIL.format(toname, job_role, link)
             mail_response = interview_email(toname, toemail, subject, email_content)
 
@@ -4547,7 +4555,7 @@ class Thread_Apis(APIView):
             "thread_title": data.get("thread_title"),
             "thread": data.get("thread"),
             "image": request.data["image"],
-            "company_id":data.get("company_id"),
+            "company_id": data.get("company_id"),
             "created_by": data.get("created_by"),
             "team_id": data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
@@ -4564,7 +4572,7 @@ class Thread_Apis(APIView):
             "thread_title": data.get("thread_title"),
             "thread": data.get("thread"),
             "image": request.data["image"],
-            "company_id":data.get("company_id"),
+            "company_id": data.get("company_id"),
             "created_by": data.get("created_by"),
             "team_id": data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
@@ -4862,10 +4870,8 @@ class GetTeamAlertedThreads(APIView):
 
 
 class GetAllThreads(APIView):
-    def get(self, request,company_id):
-        field = {
-            "company_id":company_id
-        }
+    def get(self, request, company_id):
+        field = {"company_id": company_id}
         update_field = {}
 
         try:
@@ -4895,14 +4901,22 @@ class GetAllThreads(APIView):
                             if comment["thread_id"] == thread["_id"]:
                                 thread["comments"].append(comment)
                         threads.append(thread)
-                if len(threads) > 0 :
+                if len(threads) > 0:
                     return Response(
-                        {"isSuccess": True, "message": "List of Threads", "data": threads},
+                        {
+                            "isSuccess": True,
+                            "message": "List of Threads",
+                            "data": threads,
+                        },
                         status=status.HTTP_200_OK,
                     )
                 else:
                     return Response(
-                        {"isSuccess": True, "message": f"No Threads with this company_id- {company_id} found", "data": threads},
+                        {
+                            "isSuccess": True,
+                            "message": f"No Threads with this company_id- {company_id} found",
+                            "data": threads,
+                        },
                         status=status.HTTP_204_NO_CONTENT,
                     )
             else:
@@ -6014,7 +6028,7 @@ class Generate_Report(APIView):
                     status=status.HTTP_204_NO_CONTENT,
                 )
 
-            ##checking if the user is a team lead-----
+            # checking if the user is a team lead-----
             profiles = SettingUserProfileInfo.objects.all()
             serializer = SettingUserProfileInfoSerializer(profiles, many=True)
             # print(serializer.data,"----")
@@ -7094,7 +7108,7 @@ class Generate_Report(APIView):
                             {"title": items, "tasks_added": count}
                         )
 
-                ## get highest and lowest counts of tasks------------
+                # get highest and lowest counts of tasks------------
                 if len(tasks_added_by) > 0:
                     c = Counter(tasks_added_by)
                     m = min(c.values())
@@ -7912,3 +7926,43 @@ class project_hours(APIView):
             {"success": False, "message": "Invalid request type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class Testing_Threads(APIView):
+    def get(self, request):
+        status = request.GET.get("status")
+        field = {"current_status": status}
+        update_field = {}
+
+        try:
+            get_response = dowellconnection(
+                *thread_report_module, "fetch", field, update_field
+            )
+            threads_response = json.loads(get_response)
+
+            if threads_response["isSuccess"]:
+                threads_data = threads_response["data"]
+
+                return Response(
+                    {
+                        "isSuccess": True,
+                        "message": "List of Threads",
+                        "data": threads_data,
+                    }
+                )
+            else:
+                return Response(
+                    {
+                        "message": "Failed to fetch",
+                        "data": threads_data,
+                    }
+                )
+        except Exception as e:
+            return Response(
+                {
+                    "isSuccess": False,
+                    "message": f"An error occurred: {str(e)}",
+                    "data": [],
+                }
+            )
