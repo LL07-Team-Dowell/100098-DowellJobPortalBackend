@@ -2179,7 +2179,7 @@ class approve_task(APIView):
                 for d in data["profile_info"]:
                     if "profile_title" in d.keys():
                         if d["profile_title"] in portfolio_name:
-                            if (d["Role"] == "Project_Lead" or d["Role"] == "Proj_Lead"):
+                            if (d["Role"] == "Project_Lead" or d["Role"] == "Proj_Lead" or d["Role"] == "super_admin"):
                                 valid_profiles.append(d["profile_title"])
             if len(valid_profiles) > 0:
                 if valid_profiles[-1] in portfolio_name:
