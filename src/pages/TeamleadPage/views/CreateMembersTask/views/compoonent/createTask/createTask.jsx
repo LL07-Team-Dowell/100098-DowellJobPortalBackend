@@ -62,6 +62,11 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   const createTeamTaskFunction = () => {
     if (!loading) {
       if (
+        subTask.find((s) => subTask.filter((t) => s === t).length > 1) !==
+        undefined
+      )
+        return toast.error("do not pass the same subtask!");
+      if (
         name &&
         description &&
         inputMembers.length > 0 &&
