@@ -72,6 +72,8 @@ from .serializers import (
     ProjectWiseReportSerializer,
     githubinfoserializer,
     ProjectDeadlineSerializer,
+    researchassociateSerializer,
+    TeamTaskSerializer,
 )
 from .authorization import (
     verify_user_token,
@@ -668,7 +670,53 @@ class admin_create_jobs(APIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+@method_decorator(csrf_exempt, name="dispatch")
+class associate_job(APIView):
+    def post(self, request):
+        data = request.data
+        # continue create job api-----
+        field = {
+            "job_title":data.get('job_title'),
+            "country":data.get('country'),
+            "city":data.get("city"),
+            "is_active":data.get("is_active"),
+            "job_category":"research_associate",
+            "job_number":data.get("job_number"),
+            "skills":data.get("skills"),
+            "description":data.get("description"),
+            "qualification":data.get("qualification"),
+            "payment":data.get("payment"),
+            "company_id":data.get("company_id"),
+            "data_type":data.get("data_type"),
+            "paymentInterval":data.get("paymentInterval")
+        }
+        update_field = {"status": "nothing to update"}
 
+        serializer=researchassociateSerializer(data=field)
+        if serializer.is_valid():
+            response = dowellconnection(*jobs, "insert", field, update_field)
+            if json.loads(response)["isSuccess"] == True:
+                return Response(
+                    {
+                        "message": "Job creation was successful.",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {
+                        "message": "Job creation has failed",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+        else:
+            default_errors = serializer.errors
+            new_error = {}
+            for field_name, field_errors in default_errors.items():
+                new_error[field_name] = field_errors[0]
+            return Response(new_error, status=status.HTTP_400_BAD_REQUEST)  
 
 @method_decorator(csrf_exempt, name="dispatch")
 class admin_get_job(APIView):
@@ -2931,7 +2979,16 @@ class create_team_task(APIView):
 
     def post(self, request):
         data = request.data
-        if data:
+        payload = {
+            "title": data.get("title"),
+            "description": data.get("description"),
+            "assignee": data.get("assignee"),
+            "team_id": data.get("team_id"),
+            "task_created_date": self.get_current_datetime(datetime.datetime.now()),
+            "subtasks": data.get("subtasks"),
+        }
+        serializer = TeamTaskSerializer(data=payload)
+        if serializer.is_valid():
             field = {
                 "eventId": get_event_id()["event_id"],
                 "title": data.get("title"),
@@ -2944,6 +3001,7 @@ class create_team_task(APIView):
                 "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
+                "subtasks": data.get("subtasks"),
                 # "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.datetime.now())),
             }
             update_field = {"status": "nothing to update"}
@@ -2969,7 +3027,7 @@ class create_team_task(APIView):
                 )
         else:
             return Response(
-                {"message": "Parameters are not valid"},
+                {"message": "Parameters are not valid","response": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -2993,6 +3051,7 @@ class edit_team_task(APIView):
                 "description": data.get("description"),
                 "assignee": data.get("assignee"),
                 "team_name": data.get("team_name"),
+                "subtasks": data.get("subtasks"),
             }
             if (
                 data.get("completed") == "True"
@@ -3003,7 +3062,7 @@ class edit_team_task(APIView):
                 update_field["completed_on"] = self.get_current_datetime(
                     datetime.datetime.now()
                 )
-            print(update_field, "=====")
+            print(update_field, "====="
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
@@ -3060,8 +3119,7 @@ class get_team_task(APIView):
                 return Response(
                     {
                         "message": f"There are no tasks with this team id - {team_id}",
-                        "success": False,
-                        "Data": [],
+                        "response": [],
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
