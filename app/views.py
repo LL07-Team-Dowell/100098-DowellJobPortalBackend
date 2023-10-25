@@ -3062,7 +3062,7 @@ class edit_team_task(APIView):
                 update_field["completed_on"] = self.get_current_datetime(
                     datetime.datetime.now()
                 )
-            print(update_field, "====="
+            print(update_field, "=====")
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
