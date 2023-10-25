@@ -17,7 +17,6 @@ const TeamScreeTaskProgessDetail = ({
   setTasks,
   team,
 }) => {
-  console.log({ tasks });
   return (
     <div className='team-screen-task-progress-detail'>
       <div className='team-screen-task-progress-detail-header'>
@@ -43,6 +42,7 @@ const TeamScreeTaskProgessDetail = ({
               <SingleTask
                 key={task._id}
                 teamName={title}
+                subtasks={task.subtasks}
                 title={task.title}
                 members={task.assignee}
                 detail={task.description}
@@ -66,7 +66,9 @@ const TeamScreeTaskProgessDetail = ({
             .reverse()
             .map((task) => (
               <SingleTask
+                task={task}
                 teamName={title}
+                subtasks={task.subtasks}
                 key={task._id}
                 title={task.title}
                 members={task.assignee}

@@ -16,8 +16,10 @@ const SingleTask = ({
   taskCompleted,
   taskId,
   team,
+  subtasks,
+  task,
 }) => {
-  console.log({ taskCompleted });
+  console.log({ subtasks });
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
 
@@ -31,12 +33,9 @@ const SingleTask = ({
         team_name: teamName,
         completed: true,
         task_added_by: currentUser.userinfo.username,
+        subtasks,
       };
-      editTeamTask
-        (
-          taskId,
-          data
-        )
+      editTeamTask(taskId, data)
         .then(({ data }) => {
           console.log(data);
           setLoading(false);
@@ -66,11 +65,21 @@ const SingleTask = ({
       >
         {viewdata && (
           <ModelDetails
+            subtasks={subtasks}
             taskname={title}
             status={taskCompleted}
             memberassign={members}
             description={detail}
             onClose={handleViewDetails}
+            taskId={taskId}
+            data={{
+              title: title,
+              description: detail,
+              assignee: members,
+              team_name: teamName,
+              completed: false,
+              task_added_by: currentUser.userinfo.username,
+            }}
           />
         )}
         <div className='team-screen-task-progress-detail-content-data'>
@@ -86,7 +95,7 @@ const SingleTask = ({
               <div className='team-screen-task-progress-detail-content-members'>
                 {members?.map((e, i) => (
                   <>
-                    <span 
+                    <span
                       data-tooltip-id={`${e} ${i}`}
                       data-tooltip-content={e}
                     >
@@ -114,21 +123,21 @@ const SingleTask = ({
           >
             {"View details"}
           </button>
-          {taskCompleted ? null : (
-            team?.created_by === currentUser.userinfo.username ?
-              <button
-                className='team-screen-task-progress-detail-btn'
-                onClick={completeTaskFunction}
-                style={{ marginLeft: 20 }}
-              >
-                {loading ? (
-                  <LoadingSpinner width={16} height={16} color={"white"} />
-                ) : (
-                  "mark as done"
-                )}
-              </button>
-            :
-              <></>
+          {taskCompleted ? null : team?.created_by ===
+            currentUser.userinfo.username ? (
+            <button
+              className='team-screen-task-progress-detail-btn'
+              onClick={completeTaskFunction}
+              style={{ marginLeft: 20 }}
+            >
+              {loading ? (
+                <LoadingSpinner width={16} height={16} color={"white"} />
+              ) : (
+                "mark as done"
+              )}
+            </button>
+          ) : (
+            <></>
           )}
         </div>
       </div>

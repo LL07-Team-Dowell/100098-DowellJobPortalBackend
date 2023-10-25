@@ -62,6 +62,11 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   const createTeamTaskFunction = () => {
     if (!loading) {
       if (
+        subTask.find((s) => subTask.filter((t) => s === t).length > 1) !==
+        undefined
+      )
+        return toast.error("do not pass the same subtask!");
+      if (
         name &&
         description &&
         inputMembers.length > 0 &&
@@ -78,20 +83,10 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
           due_date: formatDate(date),
           subtasks: arrayToObject(subTask),
         })
-          // RESPONSE
           .then((resp) => {
-            console.log(resp);
             toast.success("task created successfully");
             unShowCreateTask();
             setloading(false);
-            console.log({
-              assignee: inputMembers.map((v) => v.member),
-              title: name,
-              description: description,
-              team_id: id,
-              completed: false,
-              due_date: new Date().toDateString(),
-            });
             setTasks((tasks) => [
               ...tasks,
               {
@@ -101,13 +96,13 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
                 due_date: new Date().toDateString(),
                 _id: new Date().getTime().toString(),
                 assignee: inputMembers.map((v) => v.member),
+                subtasks: arrayToObject(subTask),
               },
             ]);
           })
           // ERROR
           .catch((err) => {
             toast.error("task error");
-            console.log(err);
             setloading(false);
           });
       } else {
@@ -269,13 +264,22 @@ const SubTasks = ({ subTasks, setSubTasks }) => {
     newSubTasks[index] = e.target.value;
     setSubTasks(newSubTasks);
   };
-
+  const deleteSubTasks = (value) => {
+    setSubTasks(subTasks.filter((s) => s !== value));
+  };
   const handleClick = () => {
     if (subTasks.length === 0) setSubTasks([""]);
     else {
       if (subTasks.find((s) => s === "") === "") {
         toast.error("you left the last subtask empty");
       } else {
+        if (
+          subTasks.find(
+            (s, idx) =>
+              s === subTasks[subTasks.length - 1] && idx !== subTasks.length - 1
+          )
+        )
+          return toast.error("do not pass the same subtask twice!");
         setSubTasks([...subTasks, ""]);
       }
     }
@@ -285,11 +289,16 @@ const SubTasks = ({ subTasks, setSubTasks }) => {
     <div className='sub__tasks'>
       {subTasks?.map((s, index) => (
         <>
-          <input
-            value={s}
-            onChange={(e) => handleChangeInput(e, index)}
-            placeholder='Enter a Subtask'
-          />
+          <div style={{ display: "flex" }} className='input'>
+            <input
+              style={{ flex: 1 }}
+              value={s}
+              onChange={(e) => handleChangeInput(e, index)}
+              placeholder='Enter a Subtask'
+              key={`input__${index}`}
+            />
+            <button onClick={() => deleteSubTasks(s)}>X</button>
+          </div>
         </>
       ))}
       <div className='btn'>

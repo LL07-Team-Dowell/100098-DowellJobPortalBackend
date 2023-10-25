@@ -1,7 +1,11 @@
 import { useMediaQuery } from '@mui/material';
+import { AirlineSeatFlat } from '@mui/icons-material';
+import { useState } from 'react';
 import Avatar from 'react-avatar';
 import { FaTimes } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import { editTeamTask } from '../../../../../../../services/teamleadServices';
 
 export const ModalContainer = styled.div`
   position: fixed;
@@ -36,10 +40,24 @@ export const CloseButton = styled.button`
   color: black;
 `;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description }) => {
-      const isSmallScreen = useMediaQuery('(max-width: 767px)');
+const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data }) => {
+    const [subTasks, setSubTask] = useState(Object.keys(subtasks || {}));
+    const isSmallScreen = useMediaQuery('(max-width: 767px)');
 
-    console.log(memberassign);
+    const removeSubTask = (value) => {
+        const newData = {
+            ...data,
+            subtasks: subTasks.map(s => s === value ? true : false)
+        }
+        editTeamTask(taskId, newData)
+            .then(() => {
+                setSubTask(subTasks?.filter(t => t !== value));
+                toast.success(`${value} marked as done`);
+            })
+            .catch(err => {
+                toast.error(err.message)
+            })
+    }
     return (
         <ModalContainer>
             <ModalContent style={{ 
@@ -47,10 +65,9 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description }) 
                 maxHeight: '75%',
                 overflowY: 'auto', 
             }}>
-                <h3 style={{ 
-                    // textAlign: 'center', 
-                    fontSize: '1.5rem', 
-                    fontFamily: 'Poppins, sans-serif', 
+                <h3 style={{
+                    fontSize: '1.5rem',
+                    fontFamily: 'Poppins, sans-serif',
                     letterSpacing: '0.03em',
                     color: '#005734'
                 }}>
@@ -62,6 +79,35 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description }) 
                     <p style={{ fontSize: '0.8rem' }}>{taskname}</p>
                 </div>
                 <br />
+                {
+                    subTasks.length > 0 ?
+                        <div className='subTasks'>
+                            <h4>subtasks</h4>
+                            {
+                                subTasks.map(t => <div
+                                    style={{
+                                        borderRadius: '5px',
+                                        border: '1px solid #ececec',
+                                        padding: '5px',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                    }}
+                                    className='subTask' key={t}>
+                                    <div style={{ flex: 1 }}>{t}</div>
+                                    <button onClick={() => removeSubTask(t)}
+                                        style={{
+                                            backgroundColor: 'transparent',
+                                            border: 'none',
+                                            cursor: 'pointer'
+
+                                        }}
+                                    >Done</button>
+                                </div>)
+                            }
+                        </div>
+                        :
+                        null
+                }
                 <div>
                     <h4>Description</h4>
                     <p style={{ fontSize: '0.8rem', whiteSpace: 'pre-line' }}>{description}</p>
@@ -70,6 +116,9 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description }) 
                 <div>
                     <h4>Status</h4>
                     <p style={{ fontSize: '0.8rem' }}>{status ? 'Completed' : 'In Progress'}</p>
+                </div>
+                <div>
+
                 </div>
                 <br />
                 <div>
