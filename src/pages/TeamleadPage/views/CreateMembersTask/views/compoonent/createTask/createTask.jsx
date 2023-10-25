@@ -51,17 +51,23 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
       inputMembers.find((f) => f.id === id),
     ]);
   };
+  console.log({ inputMembers });
+  function arrayToObject(arr) {
+    const obj = {};
+    arr.forEach((element) => {
+      obj[element] = false;
+    });
+    return obj;
+  }
   const createTeamTaskFunction = () => {
     if (!loading) {
-      if (subTask) {
-        const noSubTaskInOtherTasks = tasks.find(
-          (t) =>
-            t?.subtasks === subTask && t?.subtasks?.["tast task team cdsds"]
-        );
-        if (!noSubTaskInOtherTasks)
-          return toast.error("subtasks should not be the same");
-      }
-      if (name && description && inputMembers.length > 0 && date && subTask) {
+      if (
+        name &&
+        description &&
+        inputMembers.length > 0 &&
+        date &&
+        subTask.length > 0
+      ) {
         setloading(true);
         createTeamTask({
           assignee: inputMembers.map((v) => v.member),
@@ -70,9 +76,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
           team_id: id,
           completed: false,
           due_date: formatDate(date),
-          subtasks: {
-            "test task team cdsds": false,
-          },
+          subtasks: arrayToObject(subTask),
         })
           // RESPONSE
           .then((resp) => {
@@ -192,7 +196,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
                   <p>Team Task</p>
                 </div>
               </div>
-              {choosed && name && description && subTask && date ? (
+              {choosed && name && description && date ? (
                 <>
                   <label>Task Members</label>
                   <div className='added-members-input'>
@@ -208,7 +212,6 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
                       value={query}
                       onChange={(e) => setquery(e.target.value)}
                     />
-                    <SubTasks />
                   </div>
                   <div></div>
                   <br />
@@ -268,21 +271,34 @@ const SubTasks = ({ subTasks, setSubTasks }) => {
   };
 
   const handleClick = () => {
-    if (subTasks[subTasks.length - 1] !== "" || subTasks.length === 0) {
-      setSubTasks([...subTasks, ""]);
-    } else {
-      toast.error("you left the last subtask empty");
+    if (subTasks.length === 0) setSubTasks([""]);
+    else {
+      if (subTasks.find((s) => s === "") === "") {
+        toast.error("you left the last subtask empty");
+      } else {
+        setSubTasks([...subTasks, ""]);
+      }
     }
   };
 
   return (
     <div className='sub__tasks'>
-      {subTasks.map((s, index) => (
-        <input value={s} onChange={(e) => handleChangeInput(e, index)} />
+      {subTasks?.map((s, index) => (
+        <>
+          <input
+            value={s}
+            onChange={(e) => handleChangeInput(e, index)}
+            placeholder='Enter a Subtask'
+          />
+        </>
       ))}
-      <button onClick={handleClick}>
-        <FiPlus />
-      </button>
+      <div className='btn'>
+        <button onClick={handleClick}>
+          <FiPlus />
+        </button>
+      </div>
     </div>
   );
 };
+
+// sdfsdf
