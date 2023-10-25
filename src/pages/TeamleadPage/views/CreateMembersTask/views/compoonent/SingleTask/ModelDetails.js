@@ -82,7 +82,7 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 {
                     subTasks.length > 0 ?
                         <div className='subTasks'>
-                            <h4>subtasks</h4>
+                            <h4>Subtasks</h4>
                             {
                                 subTasks.map(t => <div
                                     style={{
@@ -90,7 +90,8 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                                         border: '1px solid #ececec',
                                         padding: '5px',
                                         display: 'flex',
-                                        alignItems: 'center'
+                                        alignItems: 'center',
+                                        fontSize: '0.875rem'
                                     }}
                                     className='subTask' key={t}>
                                     <div style={{ flex: 1 }}>{t}</div>
@@ -98,16 +99,18 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                                         style={{
                                             backgroundColor: 'transparent',
                                             border: 'none',
-                                            cursor: 'pointer'
+                                            cursor: 'pointer',
+                                            color: '#005734',
 
                                         }}
-                                    >Done</button>
+                                    >Mark as Done</button>
                                 </div>)
                             }
                         </div>
                         :
                         null
                 }
+                <br />
                 <div>
                     <h4>Description</h4>
                     <p style={{ fontSize: '0.8rem', whiteSpace: 'pre-line' }}>{description}</p>
