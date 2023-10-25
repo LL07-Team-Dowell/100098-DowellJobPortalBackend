@@ -269,13 +269,22 @@ const SubTasks = ({ subTasks, setSubTasks }) => {
     newSubTasks[index] = e.target.value;
     setSubTasks(newSubTasks);
   };
-
+  const deleteSubTasks = (value) => {
+    setSubTasks(subTasks.filter((s) => s !== value));
+  };
   const handleClick = () => {
     if (subTasks.length === 0) setSubTasks([""]);
     else {
       if (subTasks.find((s) => s === "") === "") {
         toast.error("you left the last subtask empty");
       } else {
+        if (
+          subTasks.find(
+            (s, idx) =>
+              s === subTasks[subTasks.length - 1] && idx !== subTasks.length - 1
+          )
+        )
+          return toast.error("do not pass the same subtask twice!");
         setSubTasks([...subTasks, ""]);
       }
     }
@@ -285,11 +294,16 @@ const SubTasks = ({ subTasks, setSubTasks }) => {
     <div className='sub__tasks'>
       {subTasks?.map((s, index) => (
         <>
-          <input
-            value={s}
-            onChange={(e) => handleChangeInput(e, index)}
-            placeholder='Enter a Subtask'
-          />
+          <div style={{ display: "flex" }} className='input'>
+            <input
+              style={{ flex: 1 }}
+              value={s}
+              onChange={(e) => handleChangeInput(e, index)}
+              placeholder='Enter a Subtask'
+              key={`input__${index}`}
+            />
+            <button onClick={() => deleteSubTasks(s)}>X</button>
+          </div>
         </>
       ))}
       <div className='btn'>

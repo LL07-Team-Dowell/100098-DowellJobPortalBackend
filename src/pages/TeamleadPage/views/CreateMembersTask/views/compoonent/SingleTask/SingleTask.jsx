@@ -16,8 +16,9 @@ const SingleTask = ({
   taskCompleted,
   taskId,
   team,
+  subtasks,
 }) => {
-  console.log({ taskCompleted });
+  console.log({ AAAAAA: subtasks });
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
 
@@ -32,11 +33,7 @@ const SingleTask = ({
         completed: true,
         task_added_by: currentUser.userinfo.username,
       };
-      editTeamTask
-        (
-          taskId,
-          data
-        )
+      editTeamTask(taskId, data)
         .then(({ data }) => {
           console.log(data);
           setLoading(false);
@@ -66,6 +63,7 @@ const SingleTask = ({
       >
         {viewdata && (
           <ModelDetails
+            subtasks={subtasks}
             taskname={title}
             status={taskCompleted}
             memberassign={members}
@@ -86,7 +84,7 @@ const SingleTask = ({
               <div className='team-screen-task-progress-detail-content-members'>
                 {members?.map((e, i) => (
                   <>
-                    <span 
+                    <span
                       data-tooltip-id={`${e} ${i}`}
                       data-tooltip-content={e}
                     >
@@ -114,21 +112,21 @@ const SingleTask = ({
           >
             {"View details"}
           </button>
-          {taskCompleted ? null : (
-            team?.created_by === currentUser.userinfo.username ?
-              <button
-                className='team-screen-task-progress-detail-btn'
-                onClick={completeTaskFunction}
-                style={{ marginLeft: 20 }}
-              >
-                {loading ? (
-                  <LoadingSpinner width={16} height={16} color={"white"} />
-                ) : (
-                  "mark as done"
-                )}
-              </button>
-            :
-              <></>
+          {taskCompleted ? null : team?.created_by ===
+            currentUser.userinfo.username ? (
+            <button
+              className='team-screen-task-progress-detail-btn'
+              onClick={completeTaskFunction}
+              style={{ marginLeft: 20 }}
+            >
+              {loading ? (
+                <LoadingSpinner width={16} height={16} color={"white"} />
+              ) : (
+                "mark as done"
+              )}
+            </button>
+          ) : (
+            <></>
           )}
         </div>
       </div>

@@ -161,10 +161,17 @@
   }
 }
 .sub__tasks{
-  input{
-    padding: 4px 7px;
-    display: block;
+  .input{
     border: 1px solid #efefef  ;
+    button{
+      border: none;
+      background-color: transparent;
+    }
+  }
+  input{
+    border: none;
+    display: block;
+    outline: transparent;
     border-radius: 4px;
     margin-bottom: 10px;
     width: 100%;
