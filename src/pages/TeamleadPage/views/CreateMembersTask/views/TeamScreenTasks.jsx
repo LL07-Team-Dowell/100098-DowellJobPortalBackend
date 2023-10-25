@@ -106,6 +106,7 @@ const TeamScreenTasks = () => {
           members={team.members}
           team={team}
           unShowCreateTask={() => setShowCreateTask(false)}
+          tasks={tasks}
         />
       )}
     </div>

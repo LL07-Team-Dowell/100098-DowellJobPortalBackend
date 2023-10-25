@@ -1,25 +1,14 @@
-import React, { useEffect, useState } from "react";
-import "./createTask.scss";
-import { useValues } from "../../../context/Values";
-import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUserContext";
-import {
-  createTeam,
-  createTeamTask,
-} from "../../../../../../../services/createMembersTasks";
-import { useNavigate } from "react-router-dom";
-import { AiOutlinePlusCircle } from "react-icons/ai";
+import { useEffect, useState } from "react";
+import { createTeamTask } from "../../../../../../../services/createMembersTasks";
 import { toast } from "react-toastify";
-import axios from "axios";
-import LittleLoading from "../../../../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { BsPlus } from "react-icons/bs";
 import { FaTimes } from "react-icons/fa";
-const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
-  // USER
-  const { currentUser } = useCurrentUserContext();
-  // DATA
-  const { data, setdata } = useValues();
-  // States
+import formatDate from "../../../../../../../helpers/formateDate";
+import { FiPlus } from "react-icons/fi";
+import "./createTask.scss";
+
+const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   const [name, setname] = useState("");
   const [description, setdiscription] = useState("");
   const [singleTask, setSingleTask] = useState(false);
@@ -27,6 +16,8 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
   const [taskMembers, setTaskMembers] = useState([]);
   const [loading, setloading] = useState(false);
   const [inputMembers, setInputMembers] = useState([]);
+  const [date, setDate] = useState(undefined);
+  const [subTask, setSubTask] = useState([]);
   const [displaidMembers, setDesplaidMembers] = useState(
     members.map((member, index) => ({ id: index, member }))
   );
@@ -60,9 +51,23 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
       inputMembers.find((f) => f.id === id),
     ]);
   };
+  console.log({ inputMembers });
+  function arrayToObject(arr) {
+    const obj = {};
+    arr.forEach((element) => {
+      obj[element] = false;
+    });
+    return obj;
+  }
   const createTeamTaskFunction = () => {
     if (!loading) {
-      if (name && description && inputMembers.length > 0) {
+      if (
+        name &&
+        description &&
+        inputMembers.length > 0 &&
+        date &&
+        subTask.length > 0
+      ) {
         setloading(true);
         createTeamTask({
           assignee: inputMembers.map((v) => v.member),
@@ -70,7 +75,8 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
           description: description,
           team_id: id,
           completed: false,
-          due_date: new Date().toDateString(),
+          due_date: formatDate(date),
+          subtasks: arrayToObject(subTask),
         })
           // RESPONSE
           .then((resp) => {
@@ -110,7 +116,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
       }
     }
   };
-
+  console.log({ date, subTask });
   useEffect(() => {
     setTaskMembers([]);
   }, [singleTask]);
@@ -140,8 +146,23 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
           onChange={(e) => setdiscription(e.target.value)}
         />
         <br />
+
+        <label htmlFor='task_name'>Sub Tasks</label>
+        <SubTasks setSubTasks={setSubTask} subTasks={subTask} />
+        <br />
+
+        <label htmlFor='task_name'>Due Date</label>
+        <input
+          className='input'
+          type='date'
+          id='task_name'
+          placeholder='Choose a Date'
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+
         {/*  */}
-        {name && description ? (
+        {name && description && subTask && date ? (
           <div>
             <label>Task Type</label>
             <div>
@@ -175,7 +196,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
                   <p>Team Task</p>
                 </div>
               </div>
-              {choosed && name && description ? (
+              {choosed && name && description && date ? (
                 <>
                   <label>Task Members</label>
                   <div className='added-members-input'>
@@ -241,3 +262,43 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks }) => {
 };
 
 export default CreateTask;
+
+const SubTasks = ({ subTasks, setSubTasks }) => {
+  const handleChangeInput = (e, index) => {
+    const newSubTasks = [...subTasks];
+    newSubTasks[index] = e.target.value;
+    setSubTasks(newSubTasks);
+  };
+
+  const handleClick = () => {
+    if (subTasks.length === 0) setSubTasks([""]);
+    else {
+      if (subTasks.find((s) => s === "") === "") {
+        toast.error("you left the last subtask empty");
+      } else {
+        setSubTasks([...subTasks, ""]);
+      }
+    }
+  };
+
+  return (
+    <div className='sub__tasks'>
+      {subTasks?.map((s, index) => (
+        <>
+          <input
+            value={s}
+            onChange={(e) => handleChangeInput(e, index)}
+            placeholder='Enter a Subtask'
+          />
+        </>
+      ))}
+      <div className='btn'>
+        <button onClick={handleClick}>
+          <FiPlus />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// sdfsdf
