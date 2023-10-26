@@ -19,7 +19,7 @@ export default function useCheckCurrentAuthStatus (userDetails, updateCurrentAut
             // unauthorized
             console.log('User no longer authorized');
             updateCurrentAuthSessionStatus(true);
-            toast.info('Login session expired. Redirecting to login...')
+            toast.info('Login session expired.')
         });
 
     }, [userDetails])

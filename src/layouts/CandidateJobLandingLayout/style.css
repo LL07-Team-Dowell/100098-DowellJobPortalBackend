@@ -125,21 +125,6 @@
     margin-left: 3%;
 }
 
-.auth__overlay {
-    background: rgba(0, 0, 0, 0.12);
-    backdrop-filter: blur(2px);
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    animation: fadeIn 0.2s ease-in-out;
-    z-index: 999;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-}
-
 @media screen and (max-width: 991px) {
     .jobs__Layout__Navigation__Container {
         height: 4rem;
