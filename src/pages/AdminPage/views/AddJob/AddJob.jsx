@@ -56,6 +56,7 @@ const AddJob = ({ subAdminView }) => {
   const [currency, setCurrency] = useState("Select Currency");
   const [isValidCurrency, setIsValidCurrency] = useState(false);
   const currencyList = ["USD", "NGN", "GBP", "INR"];
+  const [activeLinkTab, setActiveLinkTab] = useState("public");
 
   const jobTitleRef = useRef(null);
   const skillsRef = useRef(null);
@@ -342,6 +343,37 @@ const AddJob = ({ subAdminView }) => {
             Project Management - <span>UX Living Lab</span>
           </p>
         </div>*/}
+        <div className="landing-page">
+          <div className="landing_Nav_Wrapper">
+            <div
+              className={`landing_Nav_Item ${
+                activeLinkTab === "public" ? "active" : ""
+              }`}
+              onClick={() => setActiveLinkTab("public")}
+            >
+              <p>Public</p>
+              <span></span>
+            </div>
+            <div
+              className={`landing_Nav_Item ${
+                activeLinkTab === "internal" ? "active" : ""
+              }`}
+              onClick={() => setActiveLinkTab("internal")}
+            >
+              <p>Internal</p>
+              <span></span>
+            </div>
+            <div
+              className={`landing_Nav_Item ${
+                activeLinkTab === "regonial assiociate" ? "active" : ""
+              }`}
+              onClick={() => setActiveLinkTab("regonial assiociate")}
+            >
+              <p>Regional Associate</p>
+              <span></span>
+            </div>
+          </div>
+        </div>
         <div className="job_details_bg">
           <div>
             <h3 className="title">Job Details</h3>
@@ -428,8 +460,8 @@ const AddJob = ({ subAdminView }) => {
                     checked={selectedOption === "Research_associate"}
                     onChange={handleOptionChange}
                   />
-                  <div className="radio__radio"></div>
-                  <p>Research Assocaiate</p>
+                  {/*<div className="radio__radio"></div>
+                  <p>Research Assocaiate</p>*/}
                 </label>
               </div>
 
