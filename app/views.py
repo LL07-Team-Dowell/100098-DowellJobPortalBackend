@@ -670,17 +670,19 @@ class admin_create_jobs(APIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
+        
 @method_decorator(csrf_exempt, name="dispatch")
-class associate_job(APIView):
+class regional_associate_job(APIView):
     def post(self, request):
         data = request.data
         # continue create job api-----
         field = {
             "job_title":data.get('job_title'),
+            'continent': data.get('continent'),
             "country":data.get('country'),
             "city":data.get("city"),
             "is_active":data.get("is_active"),
-            "job_category":"research_associate",
+            "job_category":"regional_associate",
             "job_number":data.get("job_number"),
             "skills":data.get("skills"),
             "description":data.get("description"),
