@@ -66,13 +66,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
         undefined
       )
         return toast.error("do not pass the same subtask!");
-      if (
-        name &&
-        description &&
-        inputMembers.length > 0 &&
-        date &&
-        subTask.length > 0
-      ) {
+      if (name && description && inputMembers.length > 0 && date) {
         setloading(true);
         createTeamTask({
           assignee: inputMembers.map((v) => v.member),
