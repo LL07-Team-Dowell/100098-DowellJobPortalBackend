@@ -2179,7 +2179,7 @@ class approve_task(APIView):
                 for d in data["profile_info"]:
                     if "profile_title" in d.keys():
                         if d["profile_title"] in portfolio_name:
-                            if d["Role"] == "Project_Lead" or d["Role"] == "Proj_Lead":
+                            if (d["Role"] == "Project_Lead" or d["Role"] == "Proj_Lead" or d["Role"] == "super_admin"):
                                 valid_profiles.append(d["profile_title"])
             if len(valid_profiles) > 0:
                 if valid_profiles[-1] in portfolio_name:
@@ -6119,8 +6119,6 @@ class Generate_Report(APIView):
             _task_details = dowellconnection(
                 *task_details_module, "fetch", {}, update_field
             )
-            # print([r for r in json.loads(_task_details)["data"] if "task_approved_by" in r.keys() and r["task_approved_by"] == username],username)
-
             tasks_details = []
             _tasks_list = []
             _tasks_completed = []
@@ -6134,7 +6132,6 @@ class Generate_Report(APIView):
                     if t["_id"] == task["task_id"]:
                         _tasks_list.append(t)
                         tasks_details.append(task)
-
                 if (
                     "task_approved_by" in task.keys()
                     and task["task_approved_by"] == username
@@ -6177,12 +6174,9 @@ class Generate_Report(APIView):
             _teams_ids = []
 
             for team in json.loads(teams)["data"]:
-                try:
-                    if username in team["members"]:
-                        _teams_list.append(team)
-                        _teams_ids.append(team["_id"])
-                except KeyError:
-                    pass
+                if ("members" in team.keys() and username in team["members"]):
+                    _teams_list.append(team)
+                    _teams_ids.append(team["_id"])
 
             _teams_tasks = []
             _teams_tasks_completed = []
@@ -6194,12 +6188,9 @@ class Generate_Report(APIView):
             _teams_tasks_comments_added = []
             if len(tasks_details) != 0:
                 for task in tasks_details:
-                    if "approved" in task.keys():
-                        if task["approved"] == True:
-                            _tasks_approved.append(task)
-                    if "approval" in task.keys():
-                        if task["approval"] == True:
-                            _tasks_approved.append(task)
+                    if ("approved" in task.keys() and task["approved"] == True) or  ("approval" in task.keys() and task["approval"] == True):
+                        _tasks_approved.append(task)
+
                     if "status" in task.keys():
                         if (
                             task["status"] == "Completed"
@@ -6216,50 +6207,35 @@ class Generate_Report(APIView):
                             or task["status"] == "Incompleted"
                         ):
                             _tasks_uncompleted.append(task)
-                    try:
-                        if task["team_id"] in _teams_ids:
-                            _teams_tasks.append(task)
-                    except KeyError:
-                        pass
-                    try:
-                        if (
-                            task["team_id"] in _teams_ids
-                            and task["completed"] == "True"
+
+                    if ("team_id" in task.keys() and task["team_id"] in _teams_ids):
+                        _teams_tasks.append(task)
+
+                    if ("team_id" in task.keys() and "completed" in task.keys()) and (
+                        task["team_id"] in _teams_ids and task["completed"] == "True"
                         ):
-                            _teams_tasks_completed.append(task)
-                    except KeyError:
-                        pass
-                    try:
-                        if (
-                            task["team_id"] in _teams_ids
-                            and task["completed"] == "False"
+                        _teams_tasks_completed.append(task)
+                    
+                    if ("team_id" in task.keys() and "completed" in task.keys()) and (
+                        task["team_id"] in _teams_ids and task["completed"] == "False"
                         ):
-                            _teams_tasks_uncompleted.append(task)
-                    except KeyError:
-                        pass
-                    try:
-                        if task["team_id"] in _teams_ids:
-                            if task["approved"] == True or task["approval"] == True:
-                                _teams_tasks_approved.append(task)
-                    except KeyError:
-                        pass
+                        _teams_tasks_uncompleted.append(task)
+                    
+                    if ("team_id" in task.keys() and task["team_id"] in _teams_ids):
+                        if ("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True):
+                            _teams_tasks_approved.append(task)
+                    
 
             if len(json.loads(issues_raised)["data"]) != 0:
                 for issue in json.loads(issues_raised)["data"]:
-                    try:
-                        if issue["team_id"] in _teams_ids:
-                            _teams_tasks_issues_raised.append(issue)
-                            _teams_tasks_issues_raised_ids.append(issue["_id"])
-                    except KeyError:
-                        pass
-                    try:
-                        if (
-                            issue["team_id"] in _teams_ids
-                            and issue["current_status"] == "Resolved"
+                    if ("team_id" in issue.keys() and issue["team_id"] in _teams_ids):
+                        _teams_tasks_issues_raised.append(issue)
+                        _teams_tasks_issues_raised_ids.append(issue["_id"])
+                    
+                    if ("team_id" in issue.keys() and issue["team_id"] in _teams_ids) and (
+                            "current_status" in issue.keys() and issue["current_status"] == "Resolved"
                         ):
-                            _teams_tasks_issues_resolved.append(issue)
-                    except KeyError:
-                        pass
+                        _teams_tasks_issues_resolved.append(issue)
 
             if len(json.loads(comments_added)["data"]) != 0:
                 for comment in json.loads(comments_added)["data"]:
@@ -6269,27 +6245,11 @@ class Generate_Report(APIView):
             if len(_tasks_list) != 0:
                 months = []
                 for task in _tasks_list:
-                    month_name = month_list[
-                        datetime.datetime.strptime(
-                            set_date_format(task["task_created_date"]),
-                            "%m/%d/%Y %H:%M:%S",
-                        ).month
-                    ]
+                    datime=datetime.datetime.strptime(set_date_format(task["task_created_date"]),"%m/%d/%Y %H:%M:%S")
+                    month_name = month_list[datime.month]
                     months.append(month_name)
-
-                    if month_name in item.keys():
-                        if (
-                            str(
-                                datetime.datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"tasks_added": months.count(month_name)}
-                            )
+                    if (str(datime.year)== year):
+                        item[month_name].update({"tasks_added": months.count(month_name)})
             else:
                 for key, value in item.items():
                     item[key].update({"tasks_added": 0})
@@ -6297,27 +6257,14 @@ class Generate_Report(APIView):
             if len(_tasks_approved) != 0:
                 months = []
                 for task in _tasks_approved:
-                    month_name = month_list[
-                        datetime.datetime.strptime(
-                            set_date_format(task["task_created_date"]),
-                            "%m/%d/%Y %H:%M:%S",
-                        ).month
-                    ]
+                    datime=datetime.datetime.strptime(set_date_format(task["task_created_date"]),"%m/%d/%Y %H:%M:%S")
+                    month_name = month_list[datime.month]
 
                     months.append(month_name)
-                    if month_name in item.keys():
-                        if (
-                            str(
-                                datetime.datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"tasks_approved": months.count(month_name)}
-                            )
+                    if (str(datime.year)== year):
+                        item[month_name].update(
+                            {"tasks_approved": months.count(month_name)}
+                        )
             else:
                 for key, value in item.items():
                     item[key].update({"tasks_approved": 0})
