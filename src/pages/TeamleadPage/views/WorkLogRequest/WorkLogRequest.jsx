@@ -44,7 +44,7 @@ const WorkLogRequest = ({ cardData }) => {
     getAllUpdateTask(currentUser.portfolio_info[0].org_id)
       .then((response) => {
         console.log(response.data.response.data);
-        const request = response?.data?.response?.data;
+        const request = response?.data?.response?.data?.reverse();
         
         const userMainProject = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project;
         const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&

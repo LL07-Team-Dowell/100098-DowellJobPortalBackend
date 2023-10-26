@@ -23,6 +23,8 @@ const TeamScreenTasksCandidate = () => {
   const [showCreatTask, setShowCreateTask] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [progessPercentage, setProgressPercentage] = useState(null);
+  const [taskLoading, setTaskLoading] = useState(true);
+
   useEffect(() => {
     if (tasks.length > 0) {
       const tasksCompletedNumber = tasks.filter(
@@ -37,6 +39,7 @@ const TeamScreenTasksCandidate = () => {
   useEffect(() => {
     if (team?.members === undefined) {
       setloading(true);
+      setTaskLoading(true);
 
       Promise.all([
         // getAllTeams(currentUser.portfolio_info[0].org_id),
@@ -52,10 +55,12 @@ const TeamScreenTasksCandidate = () => {
               : []
           );
           setloading(false);
+          setTaskLoading(false);
         })
         .catch((err) => {
           console.log(err);
           setloading(false);
+          setTaskLoading(false);
         });
     }
   }, []);
@@ -79,6 +84,7 @@ const TeamScreenTasksCandidate = () => {
         tasks={tasks}
         setTasks={setTasks}
         team={team}
+        taskLoading={taskLoading}
       />
     </div>
   );

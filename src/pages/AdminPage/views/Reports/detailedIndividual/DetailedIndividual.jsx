@@ -71,7 +71,6 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
     useState(null);
   const [ PDFbtnDisabled, setPDFBtnDisabled ] = useState(false);
   const [ reportDataToDownload, setReportDataToDownload ] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
   const [currentRoleFilter, setCurrentRoleFilter] = useState("all");
   const csvLinkRef = useRef();
   const mainDivRef = useRef();

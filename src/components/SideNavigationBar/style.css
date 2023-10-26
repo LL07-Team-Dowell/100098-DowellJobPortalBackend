@@ -1,6 +1,7 @@
 .new__Side__Navigation__Bar {
     --green-color: #005734;
     --white-color: #fff;
+    --gray-color: #808080;
 }
 
 .new__Side__Navigation__Bar {
@@ -19,6 +20,10 @@
     display: flex;
     flex-direction: column;
 }
+
+/* .new__Side__Navigation__Bar .new__Side__Navigation__Links a.active {
+    color: var(--white-color);
+} */
 
 .new__Side__Navigation__Bar .new__Side__Navigation__Links {
     list-style: none;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./style.css";
 import { FiEdit } from "react-icons/fi";
 import { FaUsersCog } from "react-icons/fa";
@@ -9,6 +9,7 @@ const NewSideNavigationBar = ({ className, links, runExtraFunctionOnNavItemClick
     
     const navigate = useNavigate();
     const [ showViewsModal, setShowViewsModal ] = useState(false);
+    const { pathname } = useLocation();
 
     const handleNavItemClick = (e, addressToNavigateTo) => {
         e.preventDefault();
@@ -35,7 +36,7 @@ const NewSideNavigationBar = ({ className, links, runExtraFunctionOnNavItemClick
                                 if (!link.linkAddress) return <></>
 
                                 return <li>
-                                    <Link to={link.linkAddress} onClick={(e) => handleNavItemClick(e, link.linkAddress)}>
+                                    <Link to={link.linkAddress} onClick={(e) => handleNavItemClick(e, link.linkAddress)} className={link?.linkAddress?.includes(pathname) ? 'active' : ''}>
                                         {link.icon ? link.icon : <></>}
                                         {link.text ? <span>{link.text}</span> : <></>}
                                     </Link>

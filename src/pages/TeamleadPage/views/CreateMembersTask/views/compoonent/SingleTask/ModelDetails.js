@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@mui/material';
 import { AirlineSeatFlat } from '@mui/icons-material';
 import { useState } from 'react';
 import Avatar from 'react-avatar';
@@ -41,6 +42,8 @@ export const CloseButton = styled.button`
 
 const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data }) => {
     const [subTasks, setSubTask] = useState(Object.keys(subtasks || {}));
+    const isSmallScreen = useMediaQuery('(max-width: 767px)');
+
     const removeSubTask = (value) => {
         const newData = {
             ...data,
@@ -57,7 +60,11 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
     }
     return (
         <ModalContainer>
-            <ModalContent>
+            <ModalContent style={{ 
+                width: isSmallScreen ? '90%' : '450px',
+                maxHeight: '75%',
+                overflowY: 'auto', 
+            }}>
                 <h3 style={{
                     fontSize: '1.5rem',
                     fontFamily: 'Poppins, sans-serif',
@@ -75,7 +82,7 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 {
                     subTasks.length > 0 ?
                         <div className='subTasks'>
-                            <h4>subtasks</h4>
+                            <h4>Subtasks</h4>
                             {
                                 subTasks.map(t => <div
                                     style={{
@@ -83,7 +90,8 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                                         border: '1px solid #ececec',
                                         padding: '5px',
                                         display: 'flex',
-                                        alignItems: 'center'
+                                        alignItems: 'center',
+                                        fontSize: '0.875rem'
                                     }}
                                     className='subTask' key={t}>
                                     <div style={{ flex: 1 }}>{t}</div>
@@ -91,16 +99,18 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                                         style={{
                                             backgroundColor: 'transparent',
                                             border: 'none',
-                                            cursor: 'pointer'
+                                            cursor: 'pointer',
+                                            color: '#005734',
 
                                         }}
-                                    >Done</button>
+                                    >Mark as Done</button>
                                 </div>)
                             }
                         </div>
                         :
                         null
                 }
+                <br />
                 <div>
                     <h4>Description</h4>
                     <p style={{ fontSize: '0.8rem', whiteSpace: 'pre-line' }}>{description}</p>

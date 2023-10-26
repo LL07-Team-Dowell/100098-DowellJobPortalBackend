@@ -7,6 +7,7 @@ import { FaTimes } from "react-icons/fa";
 import formatDate from "../../../../../../../helpers/formateDate";
 import { FiPlus } from "react-icons/fi";
 import "./createTask.scss";
+import { Close } from "@mui/icons-material";
 
 const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   const [name, setname] = useState("");
@@ -291,7 +292,9 @@ const SubTasks = ({ subTasks, setSubTasks }) => {
               placeholder='Enter a Subtask'
               key={`input__${index}`}
             />
-            <button onClick={() => deleteSubTasks(s)}>X</button>
+            <button onClick={() => deleteSubTasks(s)}>
+              <Close fontSize="0.75rem" />
+            </button>
           </div>
         </>
       ))}

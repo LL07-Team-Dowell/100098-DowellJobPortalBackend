@@ -15,8 +15,8 @@ import { useMediaQuery } from "@mui/material";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import { teamManagementProductName } from "../../utils/utils";
 import { testingRoles } from "../../utils/testingRoles";
-import HorizontalBarLoader from "../../components/HorizontalBarLoader/HorizontalBarLoader";
 import useCheckCurrentAuthStatus from "../../hooks/useCheckCurrentAuthStatus";
+import AuthOverlay from "../../components/AuthOverlay/AuthOverlay";
 
 const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, hideSearch }) => {
     const [ searchValue, setSearchValue ] = useState("");
@@ -63,22 +63,6 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
         setIsSuperUser(true);
     }, [currentUser])
 
-    useEffect(() => {
-      if (currentAuthSessionExpired) {
-        const sessionId = sessionStorage.getItem('session_id');
-  
-        const timeout = setTimeout(() => {
-          window.location.replace(
-            `https://100093.pythonanywhere.com/?session_id=${sessionId}`
-          );
-        }, 2000)
-        
-        return (() => {
-          clearTimeout(timeout)
-        })
-      }
-    }, [currentAuthSessionExpired])
-
     const handleChatIconClick = () => toast.info("Still in development")
 
     const handleLogin = (e) => {
@@ -90,9 +74,7 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
       <>
         {
           currentAuthSessionExpired && 
-          <div className="auth__overlay">
-            <HorizontalBarLoader />
-          </div>
+          <AuthOverlay />
         }
         <nav>
           <div style={{ position: "relative" }}>

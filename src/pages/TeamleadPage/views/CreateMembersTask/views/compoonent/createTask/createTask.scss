@@ -25,6 +25,9 @@
     transform: translate(-50%, -50%);
     width: 500px;
     font-family: Poppins;
+    max-height: 75%;
+    overflow-y: auto;
+
     @media (max-width: 798px) {
       width: 90%;
     }
@@ -113,6 +116,24 @@
         }
       }
     }
+
+    // SCROLLBAR STYLES FOR CHROME
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #efefef;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #b8b8b8;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #005734;
+    }
   }
 }
 
@@ -163,9 +184,11 @@
 .sub__tasks{
   .input{
     border: 1px solid #efefef  ;
+    margin: 0.4rem 0 1rem;
     button{
       border: none;
       background-color: transparent;
+      cursor: pointer;
     }
   }
   input{
@@ -173,8 +196,10 @@
     display: block;
     outline: transparent;
     border-radius: 4px;
-    margin-bottom: 10px;
+    // margin-bottom: 10px;
     width: 100%;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.75rem;
   }
   >.btn{
     display: flex;

@@ -1,9 +1,13 @@
 import styles from './styles.module.css';
 
 
-const HorizontalBarLoader = () => {
+const HorizontalBarLoader = ({ width, height }) => {
+    const customStyles = {
+        width: width ? width : '100.8px',
+        height: height ? height : '16.8px'
+    }
     return <>
-        <div className={styles.progress}></div>
+        <div style={customStyles} className={styles.progress}></div>
     </>
 }
 

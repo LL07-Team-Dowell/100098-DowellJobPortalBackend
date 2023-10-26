@@ -2,6 +2,7 @@ import { AiOutlinePlus, AiOutlineSetting } from "react-icons/ai";
 import { FiHome } from "react-icons/fi";
 import { TbBrandGoogleAnalytics } from "react-icons/tb";
 import { GiTeamIdea } from "react-icons/gi";
+import { ImStack } from "react-icons/im";
 
 export const adminNavigationLinks = [
   {
@@ -18,6 +19,11 @@ export const adminNavigationLinks = [
     linkAddress: "/report",
     icon: <TbBrandGoogleAnalytics />,
     text: "Report",
+  },
+  {
+    linkAddress: "/logs",
+    icon: <ImStack />,
+    text: "Work Logs",
   },
   {
     linkAddress: "/teams",

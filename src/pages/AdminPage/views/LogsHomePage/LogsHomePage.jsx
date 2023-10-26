@@ -7,7 +7,6 @@ import { getCandidateTasksV2 } from "../../../../services/teamleadServices";
 import { getAllOnBoardedCandidate } from "../../../../services/candidateServices";
 import { extractNewTasksAndAddExtraDetail } from "../../../TeamleadPage/util/extractNewTasks";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
-import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleNavigationBar";
 import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from "react-icons/io";
 import SelectedCandidates from "../../../TeamleadPage/components/SelectedCandidates/SelectedCandidates";
 import JobCard from "../../../../components/JobCard/JobCard";
@@ -16,7 +15,7 @@ import { createArrayWithLength } from "../../../AdminPage/views/Landingpage/Land
 import { toast } from "react-toastify";
 import { getSettingUserProject } from "../../../../services/hrServices";
 
-const ProjectLeadHomePage = () => {
+const AdminLogsHomePage = () => {
     const { currentUser } = useCurrentUserContext();
     const { tasksLoaded, setTasksLoaded } = useCandidateTaskContext();
     const [searchValue, setSearchValue] = useState("");
@@ -56,7 +55,7 @@ const ProjectLeadHomePage = () => {
         console.log("value", value);
         setSearchValue(value);
         setFilteredTasks(
-        tasksToDisplayForLead.filter(
+        tasksToDisplayForLead?.filter(
             (task) =>
             (typeof task.applicant === "string" &&
                 task.applicant &&
@@ -318,7 +317,9 @@ const ProjectLeadHomePage = () => {
 
     return (
         <StaffJobLandingLayout
-            projectLeadView={true}
+            adminView={true}
+            adminAlternativePageActive={true}
+            pageTitle={'Work Logs'}
             searchValue={searchValue}
             setSearchValue={handleSearch}
             searchPlaceHolder={'user'}
@@ -328,13 +329,8 @@ const ProjectLeadHomePage = () => {
                     <LoadingSpinner />
                 :
                 <>
-                    <TitleNavigationBar 
-                        title={'Work Logs'}
-                        hideBackBtn={true}
-                    />
-
                     <button
-                        className="refresh-container-teamlead desktop"
+                        className="refresh-container-teamlead desktop admin"
                     >
                         <div className="refresh-btn refresh-btn-teamlead" onClick={refreshLoading ? () => {} : () => handleRefreshForCandidateTask()}
                         >
@@ -371,9 +367,10 @@ const ProjectLeadHomePage = () => {
                         availableSortOptions={sortOptionsForLead}
                         sortActive={currentSortOption ? true : false}
                         handleSortOptionClick={(data) => setCurrentSortOption(data)}
+                        className={'adminn'}
                     />
 
-                    <div className="project__Select__Wrapper">
+                    <div className="project__Select__Wrapper admin">
                         <select defaultValue={''} value={currentSelectedProjectForLead} onChange={({ target }) => setCurrentSelectedProjectForLead(target.value)}>
                           <option value={''} disabled>Select project</option>
                           {
@@ -386,7 +383,7 @@ const ProjectLeadHomePage = () => {
                         </select>
                     </div>
 
-                    <div className="tasks-container">
+                    <div className="tasks-container admin">
                         <>
                             {
                                 taskForProjectLoading ? <>
@@ -531,4 +528,4 @@ const sortOptionsForLead = [
     'applicant',
 ]
 
-export default ProjectLeadHomePage;
+export default AdminLogsHomePage;

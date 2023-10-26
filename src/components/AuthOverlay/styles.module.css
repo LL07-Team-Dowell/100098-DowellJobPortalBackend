@@ -1,0 +1,53 @@
+.auth__overlay {
+    background: rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(2px);
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    animation: fadeIn 0.2s ease-in-out;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth__Container {
+    width: 40%;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 6px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.auth__Container img {
+    width: 15rem;
+    display: block;
+    margin: 0 auto;
+}
+
+.auth__Container h2 {
+    color: #005734;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.auth__Container button {
+    outline: none;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    background-color: #005734;
+    width: 7rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}

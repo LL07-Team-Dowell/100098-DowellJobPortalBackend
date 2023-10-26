@@ -155,6 +155,13 @@
     margin: 0 auto;
     padding: 3% 6% 3% 4.2%;
   }
+
+  .selected-candidates-container.adminn {
+    padding-left: 0%;
+    padding-right: 0%;
+    width: 83%;
+  }
+
   .sort__Candidates__Selection__Container {
     right: 6%;
     top: 28%;

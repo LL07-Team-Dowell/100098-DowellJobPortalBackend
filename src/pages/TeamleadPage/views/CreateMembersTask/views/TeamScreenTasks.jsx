@@ -26,6 +26,8 @@ const TeamScreenTasks = () => {
   const [tasks, setTasks] = useState([]);
   const [addedNewTask, setAddedNewTask] = useState(true);
   const [progessPercentage, setProgressPercentage] = useState(null);
+  const [taskLoading, setTaskLoading] = useState(true);
+
   // useEffect
   useEffect(() => {
     if (team?.members === undefined) {
@@ -68,10 +70,12 @@ const TeamScreenTasks = () => {
           setTasks(resp.data.response.data);
           console.log("response", resp.data.response.data);
           setAddedNewTask(false);
+          setTaskLoading(false);
         })
         .catch((err) => {
           console.log(err);
           setAddedNewTask(false);
+          setTaskLoading(false);
         });
     }
   }, [addedNewTask]);
@@ -98,6 +102,7 @@ const TeamScreenTasks = () => {
         tasks={tasks}
         setTasks={setTasks}
         team={team}
+        taskLoading={taskLoading}
       />
       {showCreatTask && team?.created_by === currentUser.userinfo.username && (
         <CreateTask

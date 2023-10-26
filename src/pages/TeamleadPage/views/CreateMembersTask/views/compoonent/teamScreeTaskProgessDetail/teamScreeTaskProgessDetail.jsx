@@ -8,6 +8,8 @@ import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUser
 import image from "../../../../../../../assets/images/4380.jpg";
 import axios from "axios";
 import SingleTask from "../SingleTask/SingleTask";
+import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
+
 const TeamScreeTaskProgessDetail = ({
   detail,
   setdetail,
@@ -16,6 +18,7 @@ const TeamScreeTaskProgessDetail = ({
   tasks,
   setTasks,
   team,
+  taskLoading,
 }) => {
   return (
     <div className='team-screen-task-progress-detail'>
@@ -33,59 +36,69 @@ const TeamScreeTaskProgessDetail = ({
           Completed
         </button>
       </div>
-      {detail === "in progress" &&
-        (tasks?.filter((task) => task.completed === false).length > 0 ? (
-          tasks
-            ?.filter((task) => task.completed === false)
-            .reverse()
-            .map((task) => (
-              <SingleTask
-                key={task._id}
-                teamName={title}
-                subtasks={task.subtasks}
-                title={task.title}
-                members={task.assignee}
-                detail={task.description}
-                image={image}
-                date={task.due_date}
-                setTasks={setTasks}
-                description={task.description}
-                taskCompleted={false}
-                taskId={task._id}
-                team={team}
-                {...tasks}
-              />
+      {
+        taskLoading ? <LoadingSpinner width={'1.8rem'} height={'1.8rem'} /> :
+        <>
+          {
+            detail === "in progress" &&
+            (tasks?.filter((task) => task.completed === false).length > 0 ? (
+              tasks
+                ?.filter((task) => task.completed === false)
+                .reverse()
+                .map((task) => (
+                  <SingleTask
+                    key={task._id}
+                    teamName={title}
+                    subtasks={task.subtasks}
+                    title={task.title}
+                    members={task.assignee}
+                    detail={task.description}
+                    image={image}
+                    date={task.due_date}
+                    setTasks={setTasks}
+                    description={task.description}
+                    taskCompleted={false}
+                    taskId={task._id}
+                    team={team}
+                    {...tasks}
+                  />
+                ))
+            ) : (
+              <h2>No Task is In Progress.</h2>
             ))
-        ) : (
-          <h2>No Task is In Progress.</h2>
-        ))}
-      {detail === "completed" &&
-        (tasks?.filter((task) => task.completed === true).length > 0 ? (
-          tasks
-            ?.filter((task) => task.completed === true)
-            .reverse()
-            .map((task) => (
-              <SingleTask
-                task={task}
-                teamName={title}
-                subtasks={task.subtasks}
-                key={task._id}
-                title={task.title}
-                members={task.assignee}
-                detail={task.description}
-                image={image}
-                date={task.due_date}
-                setTasks={setTasks}
-                taskCompleted={true}
-                taskId={task._id}
-                team={team}
-                {...tasks}
-              />
+          }
+
+          {
+            detail === "completed" &&
+            (tasks?.filter((task) => task.completed === true).length > 0 ? (
+              tasks
+                ?.filter((task) => task.completed === true)
+                .reverse()
+                .map((task) => (
+                  <SingleTask
+                    task={task}
+                    teamName={title}
+                    subtasks={task.subtasks}
+                    key={task._id}
+                    title={task.title}
+                    members={task.assignee}
+                    detail={task.description}
+                    image={image}
+                    date={task.due_date}
+                    setTasks={setTasks}
+                    taskCompleted={true}
+                    taskId={task._id}
+                    team={team}
+                    {...tasks}
+                  />
+                ))
+            ) : (
+              <h2>No Task is Completed.</h2>
             ))
-        ) : (
-          <h2>No Task is Completed.</h2>
-        ))}
-      <hr />
+          }
+          <hr />
+        </>
+      }
     </div>
   );
 };
