@@ -1,12 +1,12 @@
 import { useMediaQuery } from '@mui/material';
 import { AirlineSeatFlat } from '@mui/icons-material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Avatar from 'react-avatar';
 import { FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { editTeamTask } from '../../../../../../../services/teamleadServices';
-
+import { arrayToObject, objectToArray } from './helper/arrayToObject';
 export const ModalContainer = styled.div`
   position: fixed;
   top: 0;
@@ -40,30 +40,48 @@ export const CloseButton = styled.button`
   color: black;
 `;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data }) => {
-    const [subTasks, setSubTask] = useState(Object.keys(subtasks || {}));
+const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks }) => {
+    // const subTaskArray = Object.keys(subtasks || {}).map((key, idx) => ({ name: key, value: Object.values(subtasks)[idx][key] }));
+    const [subTasks, setSubTask] = useState(objectToArray(subtasks));
+    console.log({ subTasks });
+    const [edit, setEdit] = useState(false)
+    const [checkedSubtask, setCheckedSubtask] = useState([]);
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
 
-    const removeSubTask = (value) => {
+
+    const editSubtaskStatus = (name, value) => {
         const newData = {
             ...data,
-            subtasks: subTasks.map(s => s === value ? true : false)
+            subtasks: {
+                ...arrayToObject(subTasks),
+                [name]: !value
+            }
         }
         editTeamTask(taskId, newData)
             .then(() => {
-                setSubTask(subTasks?.filter(t => t !== value));
-                toast.success(`${value} marked as done`);
+                setSubTask(subTasks.map(t => t.name === name ? { name, value: !t.value } : t))
+                setTasks(previousTask => previousTask.map(t => t._id === taskId ? {
+                    ...t, subtasks: {
+                        ...arrayToObject(subTasks),
+                        [name]: !value
+                    }
+                } : t
+                ))
+                toast.success(`updated the task status`);
             })
             .catch(err => {
                 toast.error(err.message)
             })
     }
+    useEffect(() => {
+        setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
+    }, [subTasks])
     return (
         <ModalContainer>
-            <ModalContent style={{ 
+            <ModalContent style={{
                 width: isSmallScreen ? '90%' : '450px',
                 maxHeight: '75%',
-                overflowY: 'auto', 
+                overflowY: 'auto',
             }}>
                 <h3 style={{
                     fontSize: '1.5rem',
@@ -84,26 +102,16 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                         <div className='subTasks'>
                             <h4>Subtasks</h4>
                             {
-                                subTasks.map(t => <div
-                                    style={{
-                                        borderRadius: '5px',
-                                        border: '1px solid #ececec',
-                                        padding: '5px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        fontSize: '0.875rem'
-                                    }}
-                                    className='subTask' key={t}>
-                                    <div style={{ flex: 1 }}>{t}</div>
-                                    <button onClick={() => removeSubTask(t)}
-                                        style={{
-                                            backgroundColor: 'transparent',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            color: '#005734',
-
-                                        }}
-                                    >Mark as Done</button>
+                                subTasks.map(t => <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <input
+                                        type="checkbox"
+                                        value={t.name}
+                                        key={t.name}
+                                        onChange={() => editSubtaskStatus(t.name, t.value)}
+                                        name={t.name}
+                                        checked={checkedSubtask.includes(t.name)}
+                                    />
+                                    <p>{t.name}</p>
                                 </div>)
                             }
                         </div>
