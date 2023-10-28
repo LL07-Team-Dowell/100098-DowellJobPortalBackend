@@ -179,5 +179,6 @@ urlpatterns = [
     path("update_time/<str:company_id>/", AddTotalTime.as_view()),
     # total project time
     path("project_deadline/", project_hours.as_view()),
-    path("testing_threads/<str:company_id>/", Testing_Threads.as_view()),
+    path("testing_threads/<str:company_id>/",
+         Testing_Threads.as_view()),  # add company id
 ]
