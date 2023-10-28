@@ -3,23 +3,31 @@ import { BsFillBookmarkFill } from "react-icons/bs";
 import { MdArrowBackIos } from "react-icons/md";
 import { MdOutlineAddCircle } from "react-icons/md";
 import { MdCancel } from "react-icons/md";
-import { addNewJob } from "../../../../services/adminServices";
+import { addInternalJob, addNewJob } from "../../../../services/adminServices";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { useJobContext } from "../../../../contexts/Jobs";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
 
 import "./style.css";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import DropdownButton from "../../../TeamleadPage/components/DropdownButton/Dropdown";
+import { useEffect } from "react";
+import AddJobDescription from "./AddDescription";
 
 const AddJob = ({ subAdminView }) => {
   const { currentUser } = useCurrentUserContext();
   const navigate = useNavigate();
   const { setJobs } = useJobContext();
+  const [params, setParams] = useSearchParams();
+  const [currentTab, setCurrentTab] = useState(null);
+
+  useEffect(() => {
+    setCurrentTab(params.get("tab"));
+  }, [params]);
 
   const [newJob, setNewJob] = useState({
     job_number: crypto.randomUUID(),
@@ -28,6 +36,7 @@ const AddJob = ({ subAdminView }) => {
     qualification: "",
     job_category: "",
     type_of_job: "",
+    type_of_opening: "",
     time_interval: "",
     is_active: true,
     payment: "",
@@ -46,17 +55,19 @@ const AddJob = ({ subAdminView }) => {
     // user_type: currentUser.userinfo.User_type,
     // company_name: currentUser.portfolio_info[0].org_name,
     created_on: new Date(),
+    rejected_on: new Date(),
   });
 
   const [selectedOption, setSelectedOption] = useState("");
   const [secondOption, setSecondOption] = useState("");
   const [thirdOption, setThirdOption] = useState("");
   const [fourthOption, setFourthOption] = useState("");
+  const [fifthOption, setFifthOption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currency, setCurrency] = useState("Select Currency");
   const [isValidCurrency, setIsValidCurrency] = useState(false);
   const currencyList = ["USD", "NGN", "GBP", "INR"];
-  const [activeLinkTab, setActiveLinkTab] = useState("public");
+  const [activeLinkTab, setActiveLinkTab] = useState("Public");
 
   const jobTitleRef = useRef(null);
   const skillsRef = useRef(null);
@@ -75,6 +86,15 @@ const AddJob = ({ subAdminView }) => {
     setNewJob((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
       copyOfPrevValue["job_category"] = e.target.value;
+      return copyOfPrevValue;
+    });
+  };
+
+  const handleFifthOptionChange = (e) => {
+    setFifthOption(e.target.value);
+    setNewJob((prevValue) => {
+      const copyOfPrevValue = { ...prevValue };
+      copyOfPrevValue["type_of_opening"] = e.target.value;
       return copyOfPrevValue;
     });
   };
@@ -164,6 +184,7 @@ const AddJob = ({ subAdminView }) => {
       "paymentInterval",
       "description",
       "job_category",
+      "type_of_opening",
       "module",
       "qualification",
       "general_terms",
@@ -178,6 +199,15 @@ const AddJob = ({ subAdminView }) => {
     }
     if (newJob.job_category === "") {
       toast.info("Please select a category type");
+      return;
+    } else if (fields.find((field) => newJob[field] === "")) {
+      toast.info(
+        `Please select ${fields.find((field) => newJob[field] === "")} field`
+      );
+      return;
+    }
+    if (newJob.type_of_opening === "") {
+      toast.info("Please select type of opening");
       return;
     } else if (fields.find((field) => newJob[field] === "")) {
       toast.info(
@@ -213,16 +243,6 @@ const AddJob = ({ subAdminView }) => {
       );
       return;
     }
-
-    // if (newJob.qualification === "") {
-    //   toast.info("Please input qualification");
-    //   return;
-    // } else if (fields.find((field) => newJob[field] === "")) {
-    //   toast.info(
-    //     `Please input ${fields.find((field) => newJob[field] === "")}`
-    //   );
-    //   return;
-    // }
 
     if (newJob.job_title === "") {
       toast.info("Please input job title");
@@ -296,25 +316,52 @@ const AddJob = ({ subAdminView }) => {
       return toast.info("No other info term can be left empty");
 
     setIsLoading(true);
-    try {
-      const response = await addNewJob({
-        ...newJob,
-        payment: `${newJob.payment} ${currency}`,
-      });
-      console.log(response.data);
+    if (!currentTab) {
+      try {
+        const response = await addNewJob({
+          ...newJob,
+          payment: `${newJob.payment} ${currency}`,
+        });
+        console.log(response.data);
 
-      if (response.status === 201) {
-        setJobs((prevValue) => [
-          { ...newJob, newly_created: true },
-          ...prevValue,
-        ]);
-        toast.success("Job created successfully");
-        navigate("/");
-      } else {
-        toast.info("Something went wrong");
+        if (response.status === 201) {
+          setJobs((prevValue) => [
+            { ...newJob, newly_created: true },
+            ...prevValue,
+          ]);
+          toast.success("Job created successfully");
+          navigate("/");
+        } else {
+          toast.info("Something went wrong");
+        }
+      } catch (error) {
+        toast.error("Something went wrong");
       }
-    } catch (error) {
-      toast.error("Something went wrong");
+      return;
+    }
+
+    if (currentTab === "Internal") {
+      try {
+        const response = await addInternalJob({
+          ...newJob,
+          payment: `${newJob.payment} ${currency}`,
+        });
+        console.log(response.data);
+
+        if (response.status === 201) {
+          setJobs((prevValue) => [
+            { ...newJob, newly_created: true, is_internal: true },
+            ...prevValue,
+          ]);
+          toast.success("Job created successfully");
+          navigate("/");
+        } else {
+          toast.info("Something went wrong");
+        }
+      } catch (error) {
+        toast.error("Something went wrong");
+      }
+      return;
     }
 
     setIsLoading(false);
@@ -332,10 +379,11 @@ const AddJob = ({ subAdminView }) => {
       subAdminView={subAdminView}
     >
       <div className="job_container">
+        <h1>{currentTab}</h1>
         {/*<Link to="/" className="navLink">
           <button className="nav_button">
             <MdArrowBackIos size="1.5rem" className="back_icon" />
-  </button>
+        </button>
         </Link>
         <div className="add_section">
           <h1>Add New Job</h1>
@@ -345,616 +393,60 @@ const AddJob = ({ subAdminView }) => {
         </div>*/}
         <div className="landing-page">
           <div className="landing_Nav_Wrapper">
-            <div
-              className={`landing_Nav_Item ${
-                activeLinkTab === "public" ? "active" : ""
-              }`}
-              onClick={() => setActiveLinkTab("public")}
-            >
-              <p>Public</p>
+            <div className={`landing_Nav_Item ${!currentTab ? "active" : ""}`}>
+              <Link to={"/add-job"}>Public</Link>
               <span></span>
             </div>
             <div
               className={`landing_Nav_Item ${
-                activeLinkTab === "internal" ? "active" : ""
+                currentTab === "Internal" ? "active" : ""
               }`}
-              onClick={() => setActiveLinkTab("internal")}
             >
-              <p>Internal</p>
+              <Link to={"/add-job?tab=Internal"}>Internal</Link>
               <span></span>
             </div>
             <div
               className={`landing_Nav_Item ${
-                activeLinkTab === "regonial assiociate" ? "active" : ""
+                currentTab === "Regional Associate" ? "active" : ""
               }`}
-              onClick={() => setActiveLinkTab("regonial assiociate")}
             >
-              <p>Regional Associate</p>
+              <Link to={"/add-job?tab=Regional Associate"}>
+                Research Associates
+              </Link>
               <span></span>
             </div>
           </div>
         </div>
-        <div className="job_details_bg">
-          <div>
-            <h3 className="title">Job Details</h3>
-            <div className="job_details">
-              <label htmlFor="job_title">Name of Job</label>
-              <input
-                type={"text"}
-                name={"job_title"}
-                value={newJob.job_title}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-                placeholder={"Enter Name of Job"}
-                required
-                ref={jobTitleRef}
-              />
-
-              <label htmlFor="skills">Skills</label>
-              <input
-                type={"text"}
-                name={"skills"}
-                value={newJob.skills}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-                placeholder={"Enter Skills"}
-                required
-                ref={skillsRef}
-              />
-              <label htmlFor="qualification">Qualifications</label>
-              <input
-                type={"text"}
-                name={"qualification"}
-                value={newJob.qualification}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-                placeholder={"Enter Qualifications"}
-                required
-                ref={qualificationRef}
-              />
-              <h3>Job Category</h3>
-              <div className="job_category">
-                <label htmlFor="freelancer" className="radio">
-                  <input
-                    className="radio_input"
-                    type={"radio"}
-                    id={"freelancer"}
-                    name="options"
-                    value={"Freelancer"}
-                    checked={selectedOption === "Freelancer"}
-                    onChange={handleOptionChange}
-                  />
-                  <div className="radio__radio"></div>
-                  <p>Freelancer</p>
-                </label>
-                <label htmlFor="internship" className="radio">
-                  <input
-                    className="radio_input"
-                    type={"radio"}
-                    id={"internship"}
-                    name="options"
-                    value={"Internship"}
-                    checked={selectedOption === "Internship"}
-                    onChange={handleOptionChange}
-                  />
-                  <div className="radio__radio"></div>
-                  <p>Internship</p>
-                </label>
-                <label htmlFor="employee" className="radio">
-                  <input
-                    className="radio_input"
-                    type={"radio"}
-                    id={"employee"}
-                    name="options"
-                    value={"Employee"}
-                    checked={selectedOption === "Employee"}
-                    onChange={handleOptionChange}
-                  />
-                  <div className="radio__radio"></div>
-                  <p>Employee</p>
-                </label>
-                <label htmlFor="research_associate" className="radio">
-                  <input
-                    className="radio_input"
-                    type={"radio"}
-                    id={"research_associate"}
-                    name="options"
-                    value={"Research_associate"}
-                    checked={selectedOption === "Research_associate"}
-                    onChange={handleOptionChange}
-                  />
-                  {/*<div className="radio__radio"></div>
-                  <p>Research Assocaiate</p>*/}
-                </label>
-              </div>
-
-              {newJob.job_category.length < 1 ? (
-                <></>
-              ) : newJob.job_category === "Freelancer" ? (
-                <>
-                  <h3>Type of Job</h3>
-                  <div className="type_of_job">
-                    <div>
-                      <label htmlFor="taskbased" className="radio">
-                        <input
-                          className="radio_input"
-                          type={"radio"}
-                          id={"taskbased"}
-                          name="options2"
-                          value={"Task based"}
-                          checked={secondOption === "Task based"}
-                          onChange={handleSecondOptionChange}
-                        />
-                        <div className="radio__radio"></div>
-                        <p>Task Based</p>
-                      </label>
-                    </div>
-                    <div>
-                      <label htmlFor="timebased" className="radio">
-                        <input
-                          className="radio_input"
-                          type={"radio"}
-                          id={"timebased"}
-                          name="options2"
-                          value={"Time based"}
-                          checked={secondOption === "Time based"}
-                          onChange={handleSecondOptionChange}
-                        />
-                        <div className="radio__radio"></div>
-                        <p>Time Based</p>
-                      </label>
-                    </div>
-                  </div>
-                </>
-              ) : newJob.job_category === "Internship" ? (
-                <>
-                  <h3>Type of Job</h3>
-                  <div className="type_of_job">
-                    <div>
-                      <label htmlFor="fulltime" className="radio">
-                        <input
-                          className="radio_input"
-                          type={"radio"}
-                          id={"fulltime"}
-                          name="options2"
-                          value={"Full time"}
-                          checked={secondOption === "Full time"}
-                          onChange={handleSecondOptionChange}
-                        />
-                        <div className="radio__radio"></div>
-                        <p>Full Time</p>
-                      </label>
-                    </div>
-                    <div>
-                      <label htmlFor="parttime" className="radio">
-                        <input
-                          className="radio_input"
-                          type={"radio"}
-                          id={"parttime"}
-                          name="options2"
-                          value={"Part time"}
-                          checked={secondOption === "Part time"}
-                          onChange={handleSecondOptionChange}
-                        />
-                        <div className="radio__radio"></div>
-                        <p>Part Time</p>
-                      </label>
-                    </div>
-                  </div>
-                </>
-              ) : newJob.job_category === "Employee" ? (
-                <>
-                  <h3>Type of Job</h3>
-                  <div className="type_of_job">
-                    <div>
-                      <label htmlFor="fulltime" className="radio">
-                        <input
-                          className="radio_input"
-                          type={"radio"}
-                          id={"fulltime"}
-                          name="options2"
-                          value={"Full time"}
-                          checked={secondOption === "Full time"}
-                          onChange={handleSecondOptionChange}
-                        />
-                        <div className="radio__radio"></div>
-                        <p>Full Time</p>
-                      </label>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <></>
-              )}
-
-              <label htmlFor="time_interval">Time Period</label>
-              <input
-                type="text"
-                name={"time_interval"}
-                value={newJob.time_interval}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-                placeholder={"Enter Time Period"}
-                required
-                ref={timeIntervalRef}
-              />
-
-              <div className="state_of_job">
-                <label htmlFor="is_active">State of Job</label>
-                <div className="is_active">
-                  <input
-                    className="active_checkbox"
-                    type="checkbox"
-                    name={"is_active"}
-                    checked={newJob.is_active}
-                    onChange={(e) =>
-                      handleChange(e.target.checked, e.target.name)
-                    }
-                    required
-                  />
-                </div>
-              </div>
-
-              <label htmlFor="module">Module</label>
-              <select
-                className="module"
-                name={"module"}
-                id="module"
-                onChange={handleThirdOptionChange}
-              >
-                <option value="">Select Module</option>
-                <option value="Frontend" selected={thirdOption === "Frontend"}>
-                  Frontend
-                </option>
-                <option value="Backend" selected={thirdOption === "Backend"}>
-                  Backend
-                </option>
-                <option value="UI/UX" selected={thirdOption === "UI/UX"}>
-                  UI/UX
-                </option>
-                <option
-                  value="Virtual Assistant"
-                  selected={thirdOption === "Virtual Assistant"}
-                >
-                  Virtual Assistant
-                </option>
-                <option value="Web" selected={thirdOption === "Web"}>
-                  Web
-                </option>
-                <option value="Mobile" selected={thirdOption === "Mobile"}>
-                  Mobile
-                </option>
-              </select>
-
-              <div>
-                <label htmlFor="payment">Payment</label>
-                <div className="payment_section">
-                  <DropdownButton
-                    className="currency"
-                    currentSelection={currency}
-                    handleSelectionClick={(value) => {
-                      handleCurrencyChange(value);
-                    }}
-                    selections={currencyList}
-                    removeDropDownIcon={false}
-                  />
-                  <input
-                    type="text"
-                    className="payment_input"
-                    name={"payment"}
-                    value={newJob.payment}
-                    onChange={(e) =>
-                      handlePaymentChange(e.target.value, e.target.name)
-                    }
-                    placeholder={"Enter your amount"}
-                    required
-                    ref={paymentRef}
-                  />
-                </div>
-              </div>
-
-              <label htmlFor="paymentInterval">Payment Interval</label>
-              <select
-                className="module"
-                name={"paymentInterval"}
-                id="paymentInterval"
-                onChange={handleFourthOptionChange}
-              >
-                <option value="">Select payment interval</option>
-                <option value="hour" selected={fourthOption === "hour"}>
-                  Per hour
-                </option>
-                <option value="week" selected={fourthOption === "week"}>
-                  Per week
-                </option>
-                <option value="day" selected={fourthOption === "day"}>
-                  Per day
-                </option>
-                <option value="month" selected={fourthOption === "month"}>
-                  Per month
-                </option>
-                <option value="year" selected={fourthOption === "year"}>
-                  Per year
-                </option>
-              </select>
-
-              <label htmlFor="description">Description</label>
-              <textarea
-                name={"description"}
-                value={newJob.description}
-                onChange={(e) => handleChange(e.target.value, e.target.name)}
-                placeholder={"Enter your answer"}
-                required
-                ref={descriptionRef}
-                rows={5}
-              />
-
-              <div className="terms">
-                <h3>General Terms</h3>
-                <div className="terms_head">
-                  {React.Children.toArray(
-                    newJob.general_terms.map((term, index) => {
-                      return (
-                        <div className="add_terms" key={index}>
-                          <input
-                            className="terms_input"
-                            placeholder="Enter terms"
-                            type="text"
-                            value={term}
-                            onChange={(e) =>
-                              handleTermsChange(
-                                e.target.value,
-                                "general_terms",
-                                index
-                              )
-                            }
-                          />
-                          <button
-                            className="terms_remove"
-                            onClick={() =>
-                              handleRemoveTerms("general_terms", index)
-                            }
-                          >
-                            <MdCancel size="1.2rem" color="#b8b8b8" />
-                          </button>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-                <button
-                  className="terms_button"
-                  onClick={() => handleAddTerms("general_terms")}
-                  id="addTermsBtn"
-                >
-                  <span>
-                    <MdOutlineAddCircle size="2.6rem" color="#005734" />
-                    <Tooltip
-                      anchorId="addTermsBtn"
-                      place="top"
-                      content="Add General Terms"
-                      className="tooltip"
-                    />
-                  </span>
-                  <span className="terms_text">Add General Terms</span>
-                </button>
-
-                <h3>Technical Specifications</h3>
-                <div className="terms_head">
-                  {React.Children.toArray(
-                    newJob.technical_specification.map((term, index) => {
-                      return (
-                        <div className="add_terms" key={index}>
-                          <input
-                            className="terms_input"
-                            placeholder="Enter terms"
-                            type="text"
-                            value={term}
-                            onChange={(e) =>
-                              handleTermsChange(
-                                e.target.value,
-                                "technical_specification",
-                                index
-                              )
-                            }
-                          />
-                          <button
-                            className="terms_remove"
-                            onClick={() =>
-                              handleRemoveTerms(
-                                "technical_specification",
-                                index
-                              )
-                            }
-                          >
-                            <MdCancel size="1rem" color="#b8b8b8" />
-                          </button>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-                <button
-                  className="terms_button"
-                  onClick={() => handleAddTerms("technical_specification")}
-                  id="addSpecBtn"
-                >
-                  <span>
-                    <MdOutlineAddCircle size="2.6rem" color="#005734" />
-                    <Tooltip
-                      anchorId="addSpecBtn"
-                      place="top"
-                      content="Add Specifications"
-                      className="tooltip"
-                    />
-                  </span>
-                  <span className="terms_text">Add Specifications</span>
-                </button>
-
-                <h3>Payment Terms</h3>
-                <div className="terms_head">
-                  {React.Children.toArray(
-                    newJob.payment_terms.map((term, index) => {
-                      return (
-                        <div className="add_terms" key={index}>
-                          <input
-                            className="terms_input"
-                            placeholder="Enter terms"
-                            type="text"
-                            value={term}
-                            onChange={(e) =>
-                              handleTermsChange(
-                                e.target.value,
-                                "payment_terms",
-                                index
-                              )
-                            }
-                          />
-                          <button
-                            className="terms_remove"
-                            onClick={() =>
-                              handleRemoveTerms("payment_terms", index)
-                            }
-                          >
-                            <MdCancel size="1rem" color="#b8b8b8" />
-                          </button>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-                <button
-                  className="terms_button"
-                  onClick={() => handleAddTerms("payment_terms")}
-                  id="addPayBtn"
-                >
-                  <span>
-                    <MdOutlineAddCircle size="2.6rem" color="#005734" />
-                    <Tooltip
-                      anchorId="addPayBtn"
-                      place="top"
-                      content="Add Payment Terms"
-                      className="tooltip"
-                    />
-                  </span>
-                  <span className="terms_text">Add Payment Terms</span>
-                </button>
-
-                <h3>Workflow</h3>
-                <div className="terms_head">
-                  {React.Children.toArray(
-                    newJob.workflow_terms.map((term, index) => {
-                      return (
-                        <div className="add_terms" key={index}>
-                          <input
-                            className="terms_input"
-                            placeholder="Enter terms"
-                            type="text"
-                            value={term}
-                            onChange={(e) =>
-                              handleTermsChange(
-                                e.target.value,
-                                "workflow_terms",
-                                index
-                              )
-                            }
-                          />
-                          <button
-                            className="terms_remove"
-                            onClick={() =>
-                              handleRemoveTerms("workflow_terms", index)
-                            }
-                          >
-                            <MdCancel size="1rem" color="#b8b8b8" />
-                          </button>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-                <button
-                  className="terms_button"
-                  onClick={() => handleAddTerms("workflow_terms")}
-                  id="addWorkBtn"
-                >
-                  <span>
-                    <MdOutlineAddCircle size="2.6rem" color="#005734" />
-                    <Tooltip
-                      anchorId="addWorkBtn"
-                      place="top"
-                      content="Add Workflow"
-                      className="tooltip"
-                    />
-                  </span>
-                  <span className="terms_text">Add Workflow</span>
-                </button>
-
-                <h3>Others</h3>
-                <div className="terms_head">
-                  {React.Children.toArray(
-                    newJob.other_info.map((term, index) => {
-                      return (
-                        <div className="add_terms" key={index}>
-                          <input
-                            className="terms_input"
-                            placeholder="Enter terms"
-                            type="text"
-                            value={term}
-                            onChange={(e) =>
-                              handleTermsChange(
-                                e.target.value,
-                                "other_info",
-                                index
-                              )
-                            }
-                          />
-                          <button
-                            className="terms_remove"
-                            onClick={() =>
-                              handleRemoveTerms("other_info", index)
-                            }
-                          >
-                            <MdCancel size="1rem" color="#b8b8b8" />
-                          </button>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-                <button
-                  className="terms_button"
-                  onClick={() => handleAddTerms("other_info")}
-                  id="addOthersBtn"
-                >
-                  <span>
-                    <MdOutlineAddCircle size="2.6rem" color="#005734" />
-                    <Tooltip
-                      anchorId="addOthersBtn"
-                      place="top"
-                      content="Add Others"
-                      className="tooltip"
-                    />
-                  </span>
-                  <span className="terms_text">Add Others</span>
-                </button>
-              </div>
-
-              <div>
-                <button
-                  className="submit"
-                  onClick={(e) => handleSubmit(e)}
-                  disabled={isLoading}
-                >
-                  <div className="save">
-                    {isLoading ? (
-                      <LoadingSpinner width={25} height={25} color="#fff" />
-                    ) : (
-                      <div>
-                        Save <BsFillBookmarkFill size="1.2rem" />
-                      </div>
-                    )}
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AddJobDescription
+          activeLinkTab={currentTab}
+          newJob={newJob}
+          jobTitleRef={jobTitleRef}
+          skillsRef={skillsRef}
+          qualificationRef={qualificationRef}
+          selectedOption={selectedOption}
+          handleChange={handleChange}
+          handleOptionChange={handleOptionChange}
+          secondOption={secondOption}
+          handleSecondOptionChange={handleSecondOptionChange}
+          thirdOption={thirdOption}
+          handleThirdOptionChange={handleThirdOptionChange}
+          fifthOption={fifthOption}
+          handleFifthOptionChange={handleFifthOptionChange}
+          timeIntervalRef={timeIntervalRef}
+          currency={currency}
+          handleCurrencyChange={handleCurrencyChange}
+          currencyList={currencyList}
+          handlePaymentChange={handlePaymentChange}
+          paymentRef={paymentRef}
+          fourthOption={fourthOption}
+          handleFourthOptionChange={handleFourthOptionChange}
+          descriptionRef={descriptionRef}
+          handleTermsChange={handleTermsChange}
+          handleRemoveTerms={handleRemoveTerms}
+          handleAddTerms={handleAddTerms}
+          isLoading={isLoading}
+          handleSubmit={handleSubmit}
+        />
       </div>
     </StaffJobLandingLayout>
   );

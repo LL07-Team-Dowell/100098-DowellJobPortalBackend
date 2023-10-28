@@ -8,6 +8,14 @@ export const addNewJob = async (dataToPost) => {
   return response;
 };
 
+export const addInternalJob = async (dataToPost) => {
+  const response = await currentBackendAxiosInstance.post(
+    "admin_create_jobs/?type=is_internal",
+    dataToPost
+  );
+  return response;
+};
+
 export const deleteJob = async (data, document_id) => {
   return await currentBackendAxiosInstance.delete(
     `admin_delete_job/${document_id}/`,
