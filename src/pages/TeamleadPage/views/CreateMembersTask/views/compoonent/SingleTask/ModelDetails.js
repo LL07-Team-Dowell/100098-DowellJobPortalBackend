@@ -41,17 +41,20 @@ export const CloseButton = styled.button`
 `;
 
 const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data }) => {
-    const [subTasks, setSubTask] = useState(Object.keys(subtasks || {}));
+    const subTaskArray = Object.keys(subtasks || {}).map(key => [{ name: key, value: Object.values(subtasks)[key] }])
+    const [subTasks, setSubTask] = useState(subTaskArray);
+    const [edit, setEdit] = useState(false)
+    const [checkedSubtask, setCheckedSubtask] = useState([]);
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
 
-    const removeSubTask = (value) => {
+    const editSubtaskStatus = (value) => {
         const newData = {
             ...data,
-            subtasks: subTasks.map(s => s === value ? true : false)
+            subtasks: subTasks.map(s => s === value ? s === true : false)
         }
         editTeamTask(taskId, newData)
             .then(() => {
-                setSubTask(subTasks?.filter(t => t !== value));
+                setCheckedSubtask([...checkedSubtask, subTasks.find(t => t === value)])
                 toast.success(`${value} marked as done`);
             })
             .catch(err => {
@@ -60,10 +63,10 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
     }
     return (
         <ModalContainer>
-            <ModalContent style={{ 
+            <ModalContent style={{
                 width: isSmallScreen ? '90%' : '450px',
                 maxHeight: '75%',
-                overflowY: 'auto', 
+                overflowY: 'auto',
             }}>
                 <h3 style={{
                     fontSize: '1.5rem',
@@ -80,30 +83,18 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 </div>
                 <br />
                 {
-                    subTasks.length > 0 ?
+                    subTaskArray.length > 0 ?
                         <div className='subTasks'>
                             <h4>Subtasks</h4>
                             {
-                                subTasks.map(t => <div
-                                    style={{
-                                        borderRadius: '5px',
-                                        border: '1px solid #ececec',
-                                        padding: '5px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        fontSize: '0.875rem'
-                                    }}
-                                    className='subTask' key={t}>
-                                    <div style={{ flex: 1 }}>{t}</div>
-                                    <button onClick={() => removeSubTask(t)}
-                                        style={{
-                                            backgroundColor: 'transparent',
-                                            border: 'none',
-                                            cursor: 'pointer',
-                                            color: '#005734',
-
-                                        }}
-                                    >Mark as Done</button>
+                                subTaskArray.map(t => <div>
+                                    <input
+                                        type="checkbox"
+                                        value={t.name}
+                                        key={t.name}
+                                        onChange={() => editSubtaskStatus(t.name)}
+                                    />
+                                    <p>{t.name}</p>
                                 </div>)
                             }
                         </div>
