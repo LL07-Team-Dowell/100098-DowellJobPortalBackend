@@ -88,6 +88,7 @@ const TeamScreeTaskProgessDetail = ({
                     taskCompleted={true}
                     taskId={task._id}
                     team={team}
+                    completed_date={task.completed_on}
                     {...tasks}
                   />
                 ))

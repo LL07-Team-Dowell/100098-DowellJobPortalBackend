@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { editTeamTask } from '../../../../../../../services/teamleadServices';
 import { arrayToObject, objectToArray } from './helper/arrayToObject';
+import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 export const ModalContainer = styled.div`
   position: fixed;
   top: 0;
@@ -40,13 +41,14 @@ export const CloseButton = styled.button`
   color: black;
 `;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks }) => {
+const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner }) => {
     // const subTaskArray = Object.keys(subtasks || {}).map((key, idx) => ({ name: key, value: Object.values(subtasks)[idx][key] }));
     const [subTasks, setSubTask] = useState(objectToArray(subtasks));
     console.log({ subTasks });
     const [edit, setEdit] = useState(false)
     const [checkedSubtask, setCheckedSubtask] = useState([]);
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
+    const  { currentUser } = useCurrentUserContext();
 
 
     const editSubtaskStatus = (name, value) => {
@@ -96,29 +98,33 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                     <h4>Task</h4>
                     <p style={{ fontSize: '0.8rem' }}>{taskname}</p>
                 </div>
-                <br />
+                <br />                
                 {
                     subTasks.length > 0 ?
-                        <div className='subTasks'>
-                            <h4>Subtasks</h4>
-                            {
-                                subTasks.map(t => <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                    <input
-                                        type="checkbox"
-                                        value={t.name}
-                                        key={t.name}
-                                        onChange={() => editSubtaskStatus(t.name, t.value)}
-                                        name={t.name}
-                                        checked={checkedSubtask.includes(t.name)}
-                                    />
-                                    <p>{t.name}</p>
-                                </div>)
-                            }
-                        </div>
+                        <>
+                            <div className='subTasks'>
+                                <h4>Subtasks</h4>
+                                {
+                                    subTasks.map(t => <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                        {
+                                            teamOwner === currentUser.userinfo.username && <input
+                                                type="checkbox"
+                                                value={t.name}
+                                                key={t.name}
+                                                onChange={() => editSubtaskStatus(t.name, t.value)}
+                                                name={t.name}
+                                                checked={checkedSubtask.includes(t.name)}
+                                            />
+                                        }
+                                        <p>{t.name}</p>
+                                    </div>)
+                                }
+                            </div>
+                            <br />
+                        </>
                         :
                         null
                 }
-                <br />
                 <div>
                     <h4>Description</h4>
                     <p style={{ fontSize: '0.8rem', whiteSpace: 'pre-line' }}>{description}</p>
@@ -143,6 +149,15 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                         return <Avatar key={index} name={firstName} size="40" round />;
                     })}
                 </div>
+                {
+                    date && typeof date != 'Invalid Date' && <>
+                        <br />
+                        <div>
+                            <h4>Due Date</h4>
+                            <p style={{ fontSize: '0.8rem' }}>{new Date(date).toDateString()}</p>
+                        </div>
+                    </>
+                }
                 <CloseButton onClick={onClose}>
                     <FaTimes />
                 </CloseButton>

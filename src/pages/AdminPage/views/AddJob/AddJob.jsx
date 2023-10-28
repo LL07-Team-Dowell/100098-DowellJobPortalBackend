@@ -379,7 +379,7 @@ const AddJob = ({ subAdminView }) => {
       subAdminView={subAdminView}
     >
       <div className="job_container">
-        <h1>{currentTab}</h1>
+        {/* <h1>{currentTab}</h1> */}
         {/*<Link to="/" className="navLink">
           <button className="nav_button">
             <MdArrowBackIos size="1.5rem" className="back_icon" />
@@ -411,7 +411,7 @@ const AddJob = ({ subAdminView }) => {
               }`}
             >
               <Link to={"/add-job?tab=Regional Associate"}>
-                Research Associates
+                Regional Associate
               </Link>
               <span></span>
             </div>

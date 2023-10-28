@@ -129,6 +129,11 @@
                         z-index: -1;
                         background-color: #ccc;
                     }
+                    &.team-screen-task-progress-data-circle-complete{
+                        &::before {
+                          background-color: #005734;
+                        }
+                    }
                 }
                 .team-screen-task-progress-detail-content-members{
                     display: flex;
