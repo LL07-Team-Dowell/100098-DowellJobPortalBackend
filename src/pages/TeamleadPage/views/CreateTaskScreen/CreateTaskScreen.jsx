@@ -73,8 +73,9 @@ const CreateTaskScreen = ({
     const dataToPost = {
       "company_id": currentUser.portfolio_info[0].org_id,
       "data_type": currentUser.portfolio_info[0].data_type,
-      "project": currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project,
-    }
+      "project": projectPassed,
+      // currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1]?.project,
+    };
 
     Promise.all([
       getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
@@ -92,13 +93,13 @@ const CreateTaskScreen = ({
         
         let updatedTasksForOtherProjects;
 
-        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
+        const userHasOtherProjects = currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects && 
         Array.isArray(
-          currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+          currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects
         )
 
         if (userHasOtherProjects) {
-          updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async(project) => {
+          updatedTasksForOtherProjects = await Promise.all(currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects.map(async(project) => {
             const dataToPost2 = {
               ...dataToPost,
               project: project
@@ -154,17 +155,17 @@ const CreateTaskScreen = ({
     const applicantTasks = userTasks.filter((d) => d.applicant === applicant);
     setCurrentApplicantTasks(applicantTasks);
     setSelectOption(
-      currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects && 
+      currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects && 
       Array.isArray(
-        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+        currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects
       ) ? 
       [
-        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project,
-        ...currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
+        currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1]?.project,
+        ...currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects
       ]
       :
       [
-        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project 
+        currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1]?.project 
       ]
     );
   }, [userTasks, applicant]);

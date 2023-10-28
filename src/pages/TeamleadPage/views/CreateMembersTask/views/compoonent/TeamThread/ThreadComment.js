@@ -187,20 +187,25 @@ const ThreadComment = ({ comments, commentInput, user, updateComments, threadId,
           return (
             <div className="comment-container" key={comment._id}>
               <div className="avatar-container">
-                <Avatar name={initials} size={40} round />
+                <Avatar name={comment.created_by} size={40} round />
               </div>
               <div className="comment-content">
-                <div className="comment-details">
+                <div className="comment-details" style={{ marginBottom: '0.5rem' }}>
                   <p className="user-name">{comment.created_by}</p>
                   {editIndex === index ? (
-                    <input
+                    <textarea
                       className="comment-text"
-                      style={{ paddingLeft: "5px", border: "1px solid black" }}
+                      style={{ paddingLeft: "5px", border: "1px solid black", width: '100%' }}
                       defaultValue={comment.comment}
                     // onChange={(e) => setUpdateCommentInput(e.target.value)}
-                    />
+                    ></textarea>
                   ) : (
-                    <input className="comment-text" defaultValue={comment.comment} disabled />
+                    <textarea 
+                      className="comment-text" 
+                      defaultValue={comment.comment} 
+                      disabled 
+                      style={{ border: 'none' }}
+                    ></textarea>
                   )}
                 </div>
                 {editIndex === index ? (

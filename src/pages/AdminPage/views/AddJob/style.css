@@ -67,10 +67,11 @@
 }
 
 .job_details_bg {
-  margin: 2.9rem 0.7rem 10rem 0.7rem;
+  margin: 2.9rem auto 10rem auto;
   padding: 3rem 2rem 3rem 2rem;
   background-color: var(--bg-color);
   border-radius: 1.2rem;
+  width: 83%;
 }
 
 .job_details_bg .title {
@@ -409,5 +410,9 @@ h3 {
   .tooltip {
     font-size: 0.7rem;
     visibility: visible;
+  }
+
+  .job_details_bg {
+    width: 100%;
   }
 }

@@ -17,7 +17,7 @@ import { getSettingUserProject } from "../../../../services/hrServices";
 
 const AdminLogsHomePage = () => {
     const { currentUser } = useCurrentUserContext();
-    const { userTasks, setUserTasks } = useCandidateTaskContext();
+    const { tasksLoaded, setTasksLoaded } = useCandidateTaskContext();
     const [searchValue, setSearchValue] = useState("");
     const [filteredTasks, setFilteredTasks] = useState([]);
     const [cardPagination, setCardPagination] = useState(0);
@@ -55,7 +55,7 @@ const AdminLogsHomePage = () => {
         console.log("value", value);
         setSearchValue(value);
         setFilteredTasks(
-        tasksToDisplayForLead.filter(
+        tasksToDisplayForLead?.filter(
             (task) =>
             (typeof task.applicant === "string" &&
                 task.applicant &&
@@ -78,7 +78,7 @@ const AdminLogsHomePage = () => {
 
     useEffect(() => {
         if (allProjects.length > 0) {
-            const tasksForMainProject = userTasks?.find(item => item.project === allProjects[0]);
+            const tasksForMainProject = tasksLoaded?.find(item => item.project === allProjects[0]);
 
             if (initialTasksLoaded && tasksForMainProject) {
                 setLoading(false);
@@ -139,7 +139,7 @@ const AdminLogsHomePage = () => {
                     ).values(),
                 ].sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date));
 
-                setUserTasks((prevDetail) => {
+                setTasksLoaded((prevDetail) => {
                     return [
                         ...prevDetail,
                         {
@@ -168,7 +168,7 @@ const AdminLogsHomePage = () => {
     useEffect(() => {
         if (currentSelectedProjectForLead.length < 1) return
 
-        const tasksLoadedForProject = userTasks?.find(item => item.project === currentSelectedProjectForLead);
+        const tasksLoadedForProject = tasksLoaded?.find(item => item.project === currentSelectedProjectForLead);
 
         if (tasksLoadedForProject && tasksLoadedForProject?.project) {
             setTasksToDisplayForLead(tasksLoadedForProject?.tasksForProject)
@@ -192,7 +192,7 @@ const AdminLogsHomePage = () => {
                 ).values(),
             ].sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date));
 
-            setUserTasks((prevDetail) => {
+            setTasksLoaded((prevDetail) => {
                 return [
                     ...prevDetail,
                     {
@@ -221,7 +221,7 @@ const AdminLogsHomePage = () => {
     
         const getCategoryArray = (propertyName, date) => {
     
-          tasksToDisplayForLead.forEach(task => {
+          tasksToDisplayForLead?.forEach(task => {
             if (date) {
     
               if (categories.hasOwnProperty(new Date(task[`${propertyName}`]).toDateString())) return
@@ -243,7 +243,7 @@ const AdminLogsHomePage = () => {
             if (key === "undefined") return;
     
             if (date) {
-              const matchingTasks = tasksToDisplayForLead.filter(task => new Date(task[`${propertyName}`]).toDateString() === key);
+              const matchingTasks = tasksToDisplayForLead?.filter(task => new Date(task[`${propertyName}`]).toDateString() === key);
               categoryObj.name = key;
               categoryObj.data = matchingTasks;
               newArray.push(categoryObj);
@@ -251,7 +251,7 @@ const AdminLogsHomePage = () => {
               return
             }
     
-            const matchingTasks = tasksToDisplayForLead.filter(task => task[`${propertyName}`] === key);
+            const matchingTasks = tasksToDisplayForLead?.filter(task => task[`${propertyName}`] === key);
             categoryObj.name = key;
             categoryObj.data = matchingTasks;
             newArray.push(categoryObj);
@@ -298,13 +298,13 @@ const AdminLogsHomePage = () => {
                 ).values(),
             ].sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date));
             
-            const copyOfUserTasks = userTasks.slice();
+            const copyOfUserTasks = tasksLoaded.slice();
             const previousIndexOfTasksLoadedForProject = copyOfUserTasks.findIndex(item => item.project === currentSelectedProjectForLead);
             if (previousIndexOfTasksLoadedForProject !== -1) {
                 copyOfUserTasks[previousIndexOfTasksLoadedForProject].tasksForProject = usersWithTasks;
             }
 
-            setUserTasks(copyOfUserTasks);
+            setTasksLoaded(copyOfUserTasks);
             setTasksToDisplayForLead(usersWithTasks);
             setRefreshLoading(false);
             toast.success('Successfully refreshed work logs')
@@ -362,7 +362,7 @@ const AdminLogsHomePage = () => {
                             :
                             searchValue.length >= 1
                               ? filteredTasks.length
-                              : tasksToDisplayForLead.length
+                              : tasksToDisplayForLead?.length
                         }
                         availableSortOptions={sortOptionsForLead}
                         sortActive={currentSortOption ? true : false}
@@ -440,8 +440,8 @@ const AdminLogsHomePage = () => {
                                     :
                                     React.Children.toArray(
                                         tasksToDisplayForLead
-                                        .slice(cardIndex, cardIndex + 6)
-                                        .map((dataitem, index) => {
+                                        ?.slice(cardIndex, cardIndex + 6)
+                                        ?.map((dataitem, index) => {
                                             return (
                                                 <JobCard
                                                 buttonText={"View"}
@@ -477,7 +477,7 @@ const AdminLogsHomePage = () => {
                                     searchValue.length >= 1 ?
                                     Math.ceil(filteredTasks.length / 6)
                                     :
-                                    Math.ceil(tasksToDisplayForLead.length / 6)
+                                    Math.ceil(tasksToDisplayForLead?.length / 6)
                                 )
                                 .slice(
                                     cardPagination,
@@ -506,7 +506,7 @@ const AdminLogsHomePage = () => {
                                         searchValue.length >= 1 ?
                                         Math.ceil(filteredTasks.length / 6)
                                         :
-                                        Math.ceil(tasksToDisplayForLead.length / 6)
+                                        Math.ceil(tasksToDisplayForLead?.length / 6)
                                     )
                                 }
                                 >
