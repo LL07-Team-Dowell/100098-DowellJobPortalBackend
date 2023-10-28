@@ -19,7 +19,7 @@ const SingleTask = ({
   subtasks,
   task,
 }) => {
-  console.log({ subtasks });
+  console.log({ task });
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
 
@@ -72,6 +72,7 @@ const SingleTask = ({
             description={detail}
             onClose={handleViewDetails}
             taskId={taskId}
+            setTasks={setTasks}
             data={{
               title: title,
               description: detail,

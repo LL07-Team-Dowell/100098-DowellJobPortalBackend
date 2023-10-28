@@ -40,7 +40,7 @@ export const CloseButton = styled.button`
   color: black;
 `;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data }) => {
+const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks }) => {
     // const subTaskArray = Object.keys(subtasks || {}).map((key, idx) => ({ name: key, value: Object.values(subtasks)[idx][key] }));
     const [subTasks, setSubTask] = useState(objectToArray(subtasks));
     console.log({ subTasks });
@@ -60,6 +60,13 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
         editTeamTask(taskId, newData)
             .then(() => {
                 setSubTask(subTasks.map(t => t.name === name ? { name, value: !t.value } : t))
+                setTasks(previousTask => previousTask.map(t => t._id === taskId ? {
+                    ...t, subtasks: {
+                        ...arrayToObject(subTasks),
+                        [name]: !value
+                    }
+                } : t
+                ))
                 toast.success(`updated the task status`);
             })
             .catch(err => {

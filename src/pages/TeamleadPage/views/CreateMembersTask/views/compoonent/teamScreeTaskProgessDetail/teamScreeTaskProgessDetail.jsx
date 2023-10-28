@@ -20,6 +20,7 @@ const TeamScreeTaskProgessDetail = ({
   team,
   taskLoading,
 }) => {
+  console.log({ tasks });
   return (
     <div className='team-screen-task-progress-detail'>
       <div className='team-screen-task-progress-detail-header'>
