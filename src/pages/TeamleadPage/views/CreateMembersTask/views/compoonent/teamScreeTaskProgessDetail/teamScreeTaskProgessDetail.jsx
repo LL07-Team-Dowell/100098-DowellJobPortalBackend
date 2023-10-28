@@ -36,11 +36,11 @@ const TeamScreeTaskProgessDetail = ({
           Completed
         </button>
       </div>
-      {
-        taskLoading ? <LoadingSpinner width={'1.8rem'} height={'1.8rem'} /> :
+      {taskLoading ? (
+        <LoadingSpinner width={"1.8rem"} height={"1.8rem"} />
+      ) : (
         <>
-          {
-            detail === "in progress" &&
+          {detail === "in progress" &&
             (tasks?.filter((task) => task.completed === false).length > 0 ? (
               tasks
                 ?.filter((task) => task.completed === false)
@@ -65,11 +65,9 @@ const TeamScreeTaskProgessDetail = ({
                 ))
             ) : (
               <h2>No Task is In Progress.</h2>
-            ))
-          }
+            ))}
 
-          {
-            detail === "completed" &&
+          {detail === "completed" &&
             (tasks?.filter((task) => task.completed === true).length > 0 ? (
               tasks
                 ?.filter((task) => task.completed === true)
@@ -94,11 +92,10 @@ const TeamScreeTaskProgessDetail = ({
                 ))
             ) : (
               <h2>No Task is Completed.</h2>
-            ))
-          }
+            ))}
           <hr />
         </>
-      }
+      )}
     </div>
   );
 };

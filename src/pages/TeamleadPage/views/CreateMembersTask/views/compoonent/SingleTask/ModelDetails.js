@@ -1,12 +1,12 @@
 import { useMediaQuery } from '@mui/material';
 import { AirlineSeatFlat } from '@mui/icons-material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Avatar from 'react-avatar';
 import { FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { editTeamTask } from '../../../../../../../services/teamleadServices';
-
+import { arrayToObject, objectToArray } from './helper/arrayToObject';
 export const ModalContainer = styled.div`
   position: fixed;
   top: 0;
@@ -41,26 +41,34 @@ export const CloseButton = styled.button`
 `;
 
 const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data }) => {
-    const subTaskArray = Object.keys(subtasks || {}).map(key => [{ name: key, value: Object.values(subtasks)[key] }])
-    const [subTasks, setSubTask] = useState(subTaskArray);
+    // const subTaskArray = Object.keys(subtasks || {}).map((key, idx) => ({ name: key, value: Object.values(subtasks)[idx][key] }));
+    const [subTasks, setSubTask] = useState(objectToArray(subtasks));
+    console.log({ subTasks });
     const [edit, setEdit] = useState(false)
     const [checkedSubtask, setCheckedSubtask] = useState([]);
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
 
-    const editSubtaskStatus = (value) => {
+
+    const editSubtaskStatus = (name, value) => {
         const newData = {
             ...data,
-            subtasks: subTasks.map(s => s === value ? s === true : false)
+            subtasks: {
+                ...arrayToObject(subTasks),
+                [name]: !value
+            }
         }
         editTeamTask(taskId, newData)
             .then(() => {
-                setCheckedSubtask([...checkedSubtask, subTasks.find(t => t === value)])
-                toast.success(`${value} marked as done`);
+                setSubTask(subTasks.map(t => t.name === name ? { name, value: !t.value } : t))
+                toast.success(`updated the task status`);
             })
             .catch(err => {
                 toast.error(err.message)
             })
     }
+    useEffect(() => {
+        setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
+    }, [subTasks])
     return (
         <ModalContainer>
             <ModalContent style={{
@@ -83,16 +91,18 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 </div>
                 <br />
                 {
-                    subTaskArray.length > 0 ?
+                    subTasks.length > 0 ?
                         <div className='subTasks'>
                             <h4>Subtasks</h4>
                             {
-                                subTaskArray.map(t => <div>
+                                subTasks.map(t => <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                                     <input
                                         type="checkbox"
                                         value={t.name}
                                         key={t.name}
-                                        onChange={() => editSubtaskStatus(t.name)}
+                                        onChange={() => editSubtaskStatus(t.name, t.value)}
+                                        name={t.name}
+                                        checked={checkedSubtask.includes(t.name)}
                                     />
                                     <p>{t.name}</p>
                                 </div>)
