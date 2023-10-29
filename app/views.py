@@ -7998,6 +7998,7 @@ class project_hours(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class Testing_Threads(APIView):
     def get(self, request, company_id):
+        # remove space 
         status = request.GET.get("status")
         if status:
             field = {"current_status": status, "company_id": company_id}
