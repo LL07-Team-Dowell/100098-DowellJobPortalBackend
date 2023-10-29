@@ -6828,9 +6828,9 @@ class Generate_Report(APIView):
             total_secs[p] = 0
 
         # total hours, seconds and minutes----------
-        today = datetime.date.today()
-        start = today - datetime.timedelta(days=today.weekday())
-        end = start + datetime.timedelta(days=6)
+        today = datetime.today()
+        start = today - timedelta(days=today.weekday())
+        end = start + timedelta(days=6)
         today = datetime.datetime.strptime(
             set_date_format(str(today)), "%m/%d/%Y %H:%M:%S"
         )
