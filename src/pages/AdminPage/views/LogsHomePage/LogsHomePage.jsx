@@ -17,12 +17,22 @@ import { getSettingUserProject } from "../../../../services/hrServices";
 
 const AdminLogsHomePage = () => {
     const { currentUser } = useCurrentUserContext();
-    const { tasksLoaded, setTasksLoaded } = useCandidateTaskContext();
+    const { 
+        tasksLoaded, 
+        setTasksLoaded,
+        fetchedOnboardingUsers,
+        setFetchedOnboardingUsers,
+        fetchedOnboardingUsersLoaded,
+        setFetchedOnboardingUsersLoaded,
+        allProjects,
+        setAllProjects,
+        initialTasksLoaded,
+        setInitialTasksLoaded,
+    } = useCandidateTaskContext();
     const [searchValue, setSearchValue] = useState("");
     const [filteredTasks, setFilteredTasks] = useState([]);
     const [cardPagination, setCardPagination] = useState(0);
     const [ loading, setLoading ] = useState(false);
-    const [ initialTasksLoaded, setInitialTasksLoaded ] = useState(false);
     const [tasksToDisplayForLead, setTasksToDisplayForLead] = useState([]);
     const [currentSelectedProjectForLead, setCurrentSelectedProjectForLead] = useState('');
     const [currentSortOption, setCurrentSortOption] = useState(null);
@@ -30,9 +40,7 @@ const AdminLogsHomePage = () => {
     const [cardIndex, setCardIndex] = useState(0);
     const [cardGroupNumber, setCardGroupNumber] = useState(0);
     const [taskForProjectLoading, setTaskForProjectLoading] = useState(false);
-    const [ fetchedOnboardingUsers, setFetchedOnboardingUsers ] = useState([]);
     const [ refreshLoading, setRefreshLoading ] = useState(false);
-    const [ allProjects, setAllProjects ] = useState([]);
 
     const navigate = useNavigate();
 
@@ -76,12 +84,38 @@ const AdminLogsHomePage = () => {
         navigate(`/new-task-screen?applicant=${data.applicant}&project=${data.project}`);
     };
 
+
     useEffect(() => {
+        if (!fetchedOnboardingUsersLoaded) {
+            setLoading(true);
+
+            getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id).then(res => {
+                const onboardingCandidates = res?.data?.response?.data
+                .filter(
+                (application) =>
+                    application.data_type === currentUser?.portfolio_info[0].data_type
+                );
+
+                setFetchedOnboardingUsers(onboardingCandidates);
+                setFetchedOnboardingUsersLoaded(true);
+            }).catch(err => {
+                console.log('onboarded failed to load');
+                setFetchedOnboardingUsersLoaded(true);
+            })
+
+            return
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!fetchedOnboardingUsersLoaded) return
+
         if (allProjects.length > 0) {
             const tasksForMainProject = tasksLoaded?.find(item => item.project === allProjects[0]);
 
             if (initialTasksLoaded && tasksForMainProject) {
                 setLoading(false);
+                setCurrentSelectedProjectForLead(tasksForMainProject?.project);
                 return
             }
         }
@@ -119,19 +153,10 @@ const AdminLogsHomePage = () => {
                 "project": initialProjectSelected,
             }
 
-            Promise.all([
-                getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id),
-                getCandidateTasksV2(requestDataToPost),
-            ]).then(res => {
-                const onboardingCandidates = res[0]?.data?.response?.data
-                .filter(
-                (application) =>
-                    application.data_type === currentUser?.portfolio_info[0].data_type
-                );
+            getCandidateTasksV2(requestDataToPost)
+            .then(res => {
 
-                setFetchedOnboardingUsers(onboardingCandidates);
-
-                const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task, false, onboardingCandidates);
+                const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res?.data?.task_details, res?.data?.task, false, fetchedOnboardingUsers);
 
                 const usersWithTasks = [
                     ...new Map(
@@ -163,7 +188,7 @@ const AdminLogsHomePage = () => {
             setLoading(false);
         })
         
-    }, [])
+    }, [fetchedOnboardingUsersLoaded])
 
     useEffect(() => {
         if (currentSelectedProjectForLead.length < 1) return

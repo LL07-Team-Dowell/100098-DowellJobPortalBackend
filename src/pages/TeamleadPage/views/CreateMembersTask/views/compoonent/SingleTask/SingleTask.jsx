@@ -18,8 +18,9 @@ const SingleTask = ({
   team,
   subtasks,
   task,
+  completed_date,
 }) => {
-  console.log({ subtasks });
+  console.log({ task });
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
 
@@ -72,6 +73,7 @@ const SingleTask = ({
             description={detail}
             onClose={handleViewDetails}
             taskId={taskId}
+            setTasks={setTasks}
             data={{
               title: title,
               description: detail,
@@ -80,6 +82,8 @@ const SingleTask = ({
               completed: false,
               task_added_by: currentUser.userinfo.username,
             }}
+            date={date}
+            teamOwner={team?.created_by}
           />
         )}
         <div className='team-screen-task-progress-detail-content-data'>
@@ -89,7 +93,15 @@ const SingleTask = ({
               {title}
             </p>
             <p className='team-screen-task-progress-detail-content-data-team-start-date'>
-              Started on . <span>{date}</span>
+              {
+                taskCompleted && completed_date && typeof new Date(completed_date) != 'Invalid Date' ? <>
+                  Completed on . <span>{new Date(completed_date).toDateString()}</span>
+                </>
+                :
+                <>
+                  Started on . <span>{date}</span>
+                </>
+              }
             </p>
             <div className='team-screen-task-progress-detail-content-members-and-progress'>
               <div className='team-screen-task-progress-detail-content-members'>
@@ -107,8 +119,10 @@ const SingleTask = ({
               </div>
               <div
                 className={`team-screen-task-progress-data-circle ${
-                  taskCompleted &&
+                  taskCompleted ?
                   "team-screen-task-progress-data-circle-complete"
+                  :
+                  ''
                 }`}
               >
                 <span>{taskCompleted ? "100" : "00"}%</span>

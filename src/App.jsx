@@ -94,7 +94,7 @@ import TeamInfoCandidate from "./pages/TeamleadPage/views/CreateMembersTask/view
 import AdminLogsHomePage from "./pages/AdminPage/views/LogsHomePage/LogsHomePage";
 
 function App() {
-  // console.log = () => {};
+  console.log = () => {};
 
   const {
     currentUser,
