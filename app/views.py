@@ -6831,40 +6831,40 @@ class Generate_Report(APIView):
         today = datetime.today()
         start = today - timedelta(days=today.weekday())
         end = start + timedelta(days=6)
-        today = datetime.datetime.strptime(
+        today = datetime.strptime(
             set_date_format(str(today)), "%m/%d/%Y %H:%M:%S"
         )
-        start = datetime.datetime.strptime(
+        start = datetime.strptime(
             set_date_format(str(start)), "%m/%d/%Y %H:%M:%S"
         )
-        end = datetime.datetime.strptime(
+        end = datetime.strptime(
             set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
 
         for res in response["data"]:
             try:
                 if "task_created_date" in res.keys():
-                    task_created_date = datetime.datetime.strptime(
+                    task_created_date = datetime.strptime(
                         set_date_format(
                             res["task_created_date"]), "%m/%d/%Y %H:%M:%S"
                     )
                     if task_created_date >= start and task_created_date <= end:
                         week_details.append(res["project"])
-                    if task_created_date >= today - datetime.timedelta(days=1):
+                    if task_created_date >= today - timedelta(days=1):
                         total_tasks_last_one_day.append(res["project"])
-                    if task_created_date >= today - datetime.timedelta(days=7):
+                    if task_created_date >= today - timedelta(days=7):
                         total_tasks_last_one_week.append(res["project"])
                 try:
-                    start_time = datetime.datetime.strptime(
+                    start_time = datetime.strptime(
                         res["start_time"], "%H:%M")
                 except ValueError:
-                    start_time = datetime.datetime.strptime(
+                    start_time = datetime.strptime(
                         res["start_time"], "%H:%M:%S"
                     )
                 try:
-                    end_time = datetime.datetime.strptime(
+                    end_time = datetime.strptime(
                         res["end_time"], "%H:%M")
                 except ValueError:
-                    end_time = datetime.datetime.strptime(
+                    end_time = datetime.strptime(
                         res["end_time"], "%H:%M:%S")
                 duration = end_time - start_time
                 dur_secs = (duration).total_seconds()
