@@ -2,7 +2,7 @@ import json
 import requests
 import threading
 import calendar
-import datetime
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import jwt
 from collections import Counter
@@ -7770,7 +7770,7 @@ class SecureEndPoint(APIView):
             }
         )
 
-
+# ------------------ Project Time API -----------------------------  #
 @method_decorator(csrf_exempt, name="dispatch")
 class AddTotalTime(APIView):
     def post(self, request):
@@ -7797,18 +7797,22 @@ class AddTotalTime(APIView):
         )
 
     def get(self, request, company_id):
-        field = {"company_id": company_id}
-        response = json.loads(
-            dowellconnection(*time_detail_module, "fetch",
-                             field, update_field=None)
-        )
+        project = request.GET.get('project')
+        print(project)
+        if project:
+            field = {"company_id": company_id,
+                     "project":project}
+            response = json.loads(
+                dowellconnection(*time_detail_module, "fetch",
+                                field, update_field=None)
+            )
         return Response(
-            {
-                "success": True,
-                "data": response,
-            },
-            status=status.HTTP_200_OK,
-        )
+                {
+                    "success": True,
+                    "data": response,
+                },
+                status=status.HTTP_200_OK,
+            )
 
     def patch(self, request, company_id):
         data = request.data
@@ -7865,134 +7869,134 @@ class GetbyDocumentIDTotalTime(APIView):
         )
 
 
-"""Total time for project hours"""
+# """Total time for project hours"""
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class project_hours(APIView):
-    def post(self, request):
-        type_request = request.GET.get("type")
+# @method_decorator(csrf_exempt, name="dispatch")
+# class project_hours(APIView):
+#     def post(self, request):
+#         type_request = request.GET.get("type")
 
-        if type_request == "add_total_project_hours":
-            return self.add_total_project_hours(request)
-        elif type_request == "enable_edit_project_hours":
-            return self.enable_edit_project_hours(request)
-        else:
-            return self.handle_error(request)
+#         if type_request == "add_total_project_hours":
+#             return self.add_total_project_hours(request)
+#         elif type_request == "enable_edit_project_hours":
+#             return self.enable_edit_project_hours(request)
+#         else:
+#             return self.handle_error(request)
 
-    def get(self, request):
-        type_request = request.GET.get("type")
+#     def get(self, request):
+#         type_request = request.GET.get("type")
 
-        if type_request == "get_project_hours_details":
-            return self.get_project_hours_details(request)
-        elif type_request == "get_project_hours_detail":
-            return self.get_project_hours_detail(request)
-        else:
-            return self.handle_error(request)
+#         if type_request == "get_project_hours_details":
+#             return self.get_project_hours_details(request)
+#         elif type_request == "get_project_hours_detail":
+#             return self.get_project_hours_detail(request)
+#         else:
+#             return self.handle_error(request)
 
-    """Add total project hours"""
+#     """Add total project hours"""
 
-    def add_total_project_hours(self, request):
-        field = {
-            "project": request.data.get("project"),
-            "company_id": request.data.get("company_id"),
-            "total_time": request.data.get("total_time"),
-            "lead_name": request.data.get("lead_name"),
-        }
+#     def add_total_project_hours(self, request):
+#         field = {
+#             "project": request.data.get("project"),
+#             "company_id": request.data.get("company_id"),
+#             "total_time": request.data.get("total_time"),
+#             "lead_name": request.data.get("lead_name"),
+#         }
 
-        """ADD SERIALIZER HERE"""
-        serializer = ProjectDeadlineSerializer(data=field)
-        if serializer.is_valid():
-            field = {
-                "project": field["project"],
-                "company_id": field["company_id"],
-                "total_time": field["total_time"],
-                "lead_name": field["lead_name"],
-                "enabale_modification": False,
-                "left_time": 0,
-            }
-            response = json.loads(
-                dowellconnection(
-                    *time_detail_module, "insert", field, update_field=None
-                )
-            )
-            if response["isSuccess"]:
-                return Response(
-                    {
-                        "success": True,
-                        "message": "Total project time added successfully",
-                        "response": field,
-                        "_id": response["inserted_id"],
-                    }
-                )
-            else:
-                return Response(
-                    {"success": False, "message": "Failed to add total project time"}
-                )
+#         """ADD SERIALIZER HERE"""
+#         serializer = ProjectDeadlineSerializer(data=field)
+#         if serializer.is_valid():
+#             field = {
+#                 "project": field["project"],
+#                 "company_id": field["company_id"],
+#                 "total_time": field["total_time"],
+#                 "lead_name": field["lead_name"],
+#                 "enabale_modification": False,
+#                 "left_time": 0,
+#             }
+#             response = json.loads(
+#                 dowellconnection(
+#                     *time_detail_module, "insert", field, update_field=None
+#                 )
+#             )
+#             if response["isSuccess"]:
+#                 return Response(
+#                     {
+#                         "success": True,
+#                         "message": "Total project time added successfully",
+#                         "response": field,
+#                         "_id": response["inserted_id"],
+#                     }
+#                 )
+#             else:
+#                 return Response(
+#                     {"success": False, "message": "Failed to add total project time"}
+#                 )
 
-        else:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Posting wrong data to API",
-                    "error": serializer.errors,
-                }
-            )
+#         else:
+#             return Response(
+#                 {
+#                     "success": False,
+#                     "message": "Posting wrong data to API",
+#                     "error": serializer.errors,
+#                 }
+#             )
 
-    """Enable edit option for the team lead"""
+#     """Enable edit option for the team lead"""
 
-    def enable_edit_project_hours(self, request):
-        field = {"_id": request.data.get("document_id")}
-        update_field = {
-            "enabale_modification": request.data.get("enabale_modification")
-        }
+#     def enable_edit_project_hours(self, request):
+#         field = {"_id": request.data.get("document_id")}
+#         update_field = {
+#             "enabale_modification": request.data.get("enabale_modification")
+#         }
 
-        response = json.loads(
-            dowellconnection(*time_detail_module,
-                             "update", field, update_field)
-        )
+#         response = json.loads(
+#             dowellconnection(*time_detail_module,
+#                              "update", field, update_field)
+#         )
 
-        return Response({"success": True, "message": "Status updated successfully"})
+#         return Response({"success": True, "message": "Status updated successfully"})
 
-    """Get project hour details for company"""
+#     """Get project hour details for company"""
 
-    def get_project_hours_details(self, request):
-        field = {"company_id": request.GET.get("company_id")}
-        response = json.loads(
-            dowellconnection(*time_detail_module, "fetch",
-                             field, update_field=None)
-        )
-        return Response(
-            {
-                "success": True,
-                "message": "List project hour details for company",
-                "response": response["data"],
-            }
-        )
+#     def get_project_hours_details(self, request):
+#         field = {"company_id": request.GET.get("company_id")}
+#         response = json.loads(
+#             dowellconnection(*time_detail_module, "fetch",
+#                              field, update_field=None)
+#         )
+#         return Response(
+#             {
+#                 "success": True,
+#                 "message": "List project hour details for company",
+#                 "response": response["data"],
+#             }
+#         )
 
-    """Get project hour detail for company"""
+#     """Get project hour detail for company"""
 
-    def get_project_hours_detail(self, request):
-        field = {"_id": request.GET.get("document_id")}
-        response = json.loads(
-            dowellconnection(*time_detail_module, "find",
-                             field, update_field=None)
-        )
-        return Response(
-            {
-                "success": True,
-                "message": "List project hour details for company",
-                "response": response["data"],
-            }
-        )
+#     def get_project_hours_detail(self, request):
+#         field = {"_id": request.GET.get("document_id")}
+#         response = json.loads(
+#             dowellconnection(*time_detail_module, "find",
+#                              field, update_field=None)
+#         )
+#         return Response(
+#             {
+#                 "success": True,
+#                 "message": "List project hour details for company",
+#                 "response": response["data"],
+#             }
+#         )
 
-    """HANDLE ERROR"""
+#     """HANDLE ERROR"""
 
-    def handle_error(self, request):
-        return Response(
-            {"success": False, "message": "Invalid request type"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+#     def handle_error(self, request):
+#         return Response(
+#             {"success": False, "message": "Invalid request type"},
+#             status=status.HTTP_400_BAD_REQUEST,
+#         )
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -8038,3 +8042,86 @@ class Testing_Threads(APIView):
                     "data": [],
                 }
             )
+
+@method_decorator(csrf_exempt, name="dispatch")
+class GetTotalTimeOfProject(APIView):
+    def get(self, request):
+        project_name = request.GET.get("project_name")
+        company_id = request.GET.get("company_id")
+        task_field = {
+            "project": project_name,
+            "company_id":company_id
+        }
+        task_response = json.loads(
+            dowellconnection(*task_details_module, "fetch", task_field, update_field=None)
+        )
+        total_duration = timedelta()
+
+        for task in task_response["data"]:
+            start_time_str = task["start_time"]
+            end_time_str = task["end_time"]
+
+            start_time = datetime.strptime(start_time_str, "%H:%M")
+            end_time = datetime.strptime(end_time_str, "%H:%M")
+
+            task_duration = end_time - start_time
+            total_duration += task_duration
+
+        total_hours, remainder = divmod(total_duration.total_seconds(), 3600)
+        total_minutes = remainder / 60
+
+        return Response(
+            {
+                "total_time": f"{int(total_hours):02d}:{int(total_minutes):02d}",
+            }
+        )
+      
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class GetAllProjectAndTime(APIView):
+    def get(self, request):
+        company_id = request.GET.get("company_id")
+        task_field = {
+            "company_id": company_id
+        }
+        task_response = json.loads(
+            dowellconnection(*task_details_module, "fetch", task_field, update_field=None)
+        )
+
+        project_times = {}
+
+        for task in task_response["data"]:
+            project_name = task.get("project")
+            if project_name is None:
+                continue
+
+            start_time_str = task["start_time"]
+            end_time_str = task["end_time"]
+
+            # Function to handle various time string formats
+            def parse_time(time_str):
+                formats = ["%H:%M:%S", "%H:%M"]
+                for fmt in formats:
+                    try:
+                        return datetime.strptime(time_str, fmt)
+                    except ValueError:
+                        continue
+                raise ValueError("Time format not recognized")
+
+            start_time = parse_time(start_time_str)
+            end_time = parse_time(end_time_str)
+
+            task_duration = end_time - start_time
+
+            if project_name in project_times:
+                project_times[project_name] += task_duration
+            else:
+                project_times[project_name] = task_duration
+
+        project_time_data = {
+            project_name: f"{int(project_duration.total_seconds() // 3600):02d}:{int((project_duration.total_seconds() % 3600) // 60):02d}"
+            for project_name, project_duration in project_times.items()
+        }
+
+        return Response(project_time_data)

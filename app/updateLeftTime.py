@@ -8,7 +8,7 @@ import requests
    
 def get_project_details():
     url = "https://100098.pythonanywhere.com/project_deadline/?type=get_project_hours_details&company_id=ABCD12345"
-    
+    url = "https://100098.pythonanywhere.com/get_all_project_task_time/?company_id=63a2b3fb2be81449d3a30d3f"
     response = requests.get(url)
     data = response.json()
 

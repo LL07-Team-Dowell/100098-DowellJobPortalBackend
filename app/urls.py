@@ -169,7 +169,11 @@ urlpatterns = [
     path("updategithubprofile/", AddUserGithubInfo.as_view()),
     # secure end point-----------------
     path("secureendpoint/", SecureEndPoint.as_view()),
-    # tme endpoint
+
+
+    # time endpoint
+    path("get_total_task_time/",GetTotalTimeOfProject.as_view()),
+    path("get_all_project_task_time/",GetAllProjectAndTime.as_view()),
     path("add_total_time/", AddTotalTime.as_view()),
     path("get_total_time/<str:company_id>/", AddTotalTime.as_view()),
     path(
@@ -177,8 +181,11 @@ urlpatterns = [
         GetbyDocumentIDTotalTime.as_view(),
     ),
     path("update_time/<str:company_id>/", AddTotalTime.as_view()),
+
+
+
     # total project time
-    path("project_deadline/", project_hours.as_view()),
+    # path("project_deadline/", project_hours.as_view()),
     path("testing_threads/<str:company_id>/",
          Testing_Threads.as_view()),  # add company id
 ]
