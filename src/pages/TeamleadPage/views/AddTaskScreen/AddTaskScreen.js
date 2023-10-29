@@ -506,7 +506,17 @@ const AddTaskScreen = ({
     task,
     updateTask,
   ) => {
-    const todayDate = formatDateForAPI(today);
+    const passedRequestDate = logRequestDate && new Date(logRequestDate) != 'Invalid Date' ?
+      new Date(logRequestDate)
+      :
+    null;
+
+    const todayDate = formatDateForAPI(
+      passedRequestDate ?
+          passedRequestDate
+        :
+        today
+    );
 
     const dataToPost = {
       "project": optionValue,
