@@ -563,7 +563,6 @@ class regionalassociateSerializer(serializers.Serializer):
         ("year", "year"),
     )
     job_title = serializers.CharField()
-    continent=serializers.CharField()  
     country = serializers.CharField()
     city = serializers.CharField()
     is_active = serializers.BooleanField()
