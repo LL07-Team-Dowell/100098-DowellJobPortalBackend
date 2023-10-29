@@ -411,7 +411,7 @@ const AddJob = ({ subAdminView }) => {
               }`}
             >
               <Link to={"/add-job?tab=Regional Associate"}>
-                Research Associates
+                Regional Associates
               </Link>
               <span></span>
             </div>
