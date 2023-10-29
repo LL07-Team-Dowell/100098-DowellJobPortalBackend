@@ -117,6 +117,10 @@ class AdminSerializer(serializers.Serializer):
     paymentInterval = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=paymentInterval_choice
     )
+    country = serializers.CharField(allow_null=True, allow_blank=True)
+    city = serializers.CharField(allow_null=True, allow_blank=True)
+    continent = serializers.CharField(allow_null=True, allow_blank=True)
+    
 
 
 # candidate serializers__________________________________________________________________
@@ -359,6 +363,7 @@ class CreatePublicLinkSerializer(serializers.Serializer):
     company_data_type = serializers.CharField(allow_null=False, allow_blank=False)
 
 
+
 class SendMailToPublicSerializer(serializers.Serializer):
     qr_id = serializers.CharField(allow_null=False, allow_blank=False)
     org_name = serializers.CharField(allow_null=False, allow_blank=False)
@@ -538,7 +543,7 @@ class ProjectDeadlineSerializer(serializers.Serializer):
     lead_name = serializers.CharField(allow_null=True, allow_blank=True)
     total_time = serializers.IntegerField()
 
-class researchassociateSerializer(serializers.Serializer):
+class regionalassociateSerializer(serializers.Serializer):
     JOB_CATEGORY_CHOICE = (
         ("Freelancer", "Freelancer"),
         ("Internship", "Internship"),

@@ -72,7 +72,7 @@ from .serializers import (
     ProjectWiseReportSerializer,
     githubinfoserializer,
     ProjectDeadlineSerializer,
-    researchassociateSerializer,
+    regionalassociateSerializer,
     TeamTaskSerializer,
 )
 from .authorization import (
@@ -636,6 +636,9 @@ class admin_create_jobs(APIView):
             "created_on": data.get("created_on"),
             "paymentInterval": data.get("paymentInterval"),
             "type_of_opening": data.get("type_of_opening"),
+            "country": request.data.get("country"),
+            "city": request.data.get("city"),
+            "continent": request.data.get("continent"),
         }
         type_request = request.GET.get("type")
         if type_request == "is_internal":
@@ -704,7 +707,7 @@ class associate_job(APIView):
         }
         update_field = {"status": "nothing to update"}
 
-        serializer = researchassociateSerializer(data=field)
+        serializer=regionalassociateSerializer(data=field)
         if serializer.is_valid():
             response = dowellconnection(*jobs, "insert", field, update_field)
             if json.loads(response)["isSuccess"] == True:
@@ -4149,6 +4152,7 @@ class createPublicApplication(APIView):
             "job_id": request.data.get("job_id"),
             "job_name": request.data.get("job_name"),
             "company_data_type": request.data.get("company_data_type"),
+           
         }
         serializer = CreatePublicLinkSerializer(data=field)
         if serializer.is_valid():
