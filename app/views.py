@@ -7995,8 +7995,10 @@ class project_hours(APIView):
 class Testing_Threads(APIView):
     def get(self, request, company_id):
         status = request.GET.get("status")
-        field = {"company_id": company_id,
-                 "current_status": status}
+        if status:
+            field = {"current_status": status, "company_id": company_id}
+        else:
+            field = {"company_id": company_id}
         update_field = {}
 
         try:
