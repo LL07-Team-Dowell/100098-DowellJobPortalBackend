@@ -13,7 +13,13 @@ import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getAppliedJobs } from '../../../../services/candidateServices';
 import { Tooltip } from 'react-tooltip';
 
-function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorlistedJob }) {
+function Home({ 
+  setHired, 
+  setAssignedProjects, 
+  setCandidateShortListed, 
+  setshorlistedJob, 
+  setRemoved,
+}) {
 
   const [loading, setLoading] = useState(true);
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
@@ -37,6 +43,13 @@ function Home({ setHired, setAssignedProjects, setCandidateShortListed, setshorl
       const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
       const userShortlistedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.SHORTLISTED);
       console.log(userShortlistedJobs);
+
+      if (currentUserAppliedJobs.find(application => application.status === candidateStatuses.REMOVED)) {
+        setRemoved(true);
+        setLoading(false);
+        return
+      }
+
       if (userShortlistedJobs.length >= 1) {
         setCandidateShortListed(true);
         setshorlistedJob(userShortlistedJobs);
