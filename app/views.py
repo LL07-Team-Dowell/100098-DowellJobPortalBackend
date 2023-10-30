@@ -6080,11 +6080,11 @@ class Generate_Report(APIView):
 
             year = payload.get("year")
 
-            if not int(year) <= datetime.date.today().year:
+            if not int(year) <= datetime.today().year:
                 return Response(
                     {
                         "message": "You cannot get a report on a future date",
-                        "error": f"{year} is bigger than current year {datetime.date.today().year}",
+                        "error": f"{year} is bigger than current year {datetime.today().year}",
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
