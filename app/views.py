@@ -434,7 +434,7 @@ class accounts_rehire_candidate(APIView):
             }
             update_field = {
                 "status": data.get("status"),
-                "rehired_on": str(datetime.datetime.now()),
+                "rehired_on": str(datetime.now()),
             }
 
             c_r = []
@@ -875,7 +875,7 @@ class candidate_apply_job(APIView):
         # Check if applicant is present in rejected_reports_modules
         if applicant is not None:
             rejected_dates = [
-                datetime.datetime.strptime(
+                datetime.strptime(
                     item["rejected_on"], "%m/%d/%Y %H:%M:%S")
                 for item in json.loads(applicant)["data"]
             ]
@@ -883,10 +883,10 @@ class candidate_apply_job(APIView):
                 rejected_on = max(rejected_dates)
                 if rejected_on:
                     three_months_after = rejected_on + relativedelta(months=3)
-                    current_date = datetime.datetime.today()
+                    current_date = datetime.today()
                     if (
                         current_date >= three_months_after
-                        or current_date == datetime.datetime.today()
+                        or current_date == datetime.today()
                     ):
                         return True
                 return True
@@ -1512,7 +1512,7 @@ class lead_rehire_candidate(APIView):
             update_field = {
                 "rehire_remarks": data.get("rehire_remarks"),
                 "status": "rehired",
-                "rehired_on": str(datetime.datetime.now()),
+                "rehired_on": str(datetime.now()),
             }
             update_response = dowellconnection(
                 *candidate_management_reports, "update", field, update_field
@@ -1655,7 +1655,7 @@ class lead_reject_candidate(APIView):
 class create_task(APIView):
     def max_updated_date(self, updated_date):
         print(updated_date)
-        task_updated_date = datetime.datetime.strptime(
+        task_updated_date = datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
         )
         _date = task_updated_date + relativedelta(hours=336)
@@ -1805,7 +1805,7 @@ class update_task(APIView):
                 "task": data.get("task"),
                 "task_added_by": data.get("task_added_by"),
                 "task_updated_by": data.get("task_updated_by"),
-                "task_updated_date": str(datetime.datetime.now()),
+                "task_updated_date": str(datetime.now()),
             }
             # check if task exists---
             check = dowellconnection(
@@ -2049,7 +2049,7 @@ class approve_task_request_update(APIView):
             update_field = {
                 "approved": True,
                 "approved_by": data.get("approved_by"),
-                "approved_on": set_date_format(datetime.datetime.now()),
+                "approved_on": set_date_format(datetime.now()),
             }
             response = dowellconnection(
                 *update_task_request_module, "update", field, update_field
@@ -2140,7 +2140,7 @@ class denied_task_request_update(APIView):
                 "request_denied": True,
                 "reason_for_denial": data.get("reason_for_denial"),
                 "denied_by": data.get("denied_by"),
-                "denied_on": set_date_format(datetime.datetime.now()),
+                "denied_on": set_date_format(datetime.now()),
             }
 
             response = dowellconnection(
@@ -2179,7 +2179,7 @@ class denied_task_request_update(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class approve_task(APIView):
     def max_updated_date(self, updated_date):
-        task_updated_date = datetime.datetime.strptime(
+        task_updated_date = datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
         )
         _date = task_updated_date + relativedelta(hours=336)
@@ -2230,11 +2230,11 @@ class approve_task(APIView):
             for item in json.loads(response)["data"]:
                 if "max_updated_date" not in item:
                     return True
-            current_date = datetime.datetime.today()
+            current_date = datetime.today()
             # print(json.loads(response)["data"],"=========")
             try:
                 max_updated_dates = [
-                    datetime.datetime.strptime(
+                    datetime.strptime(
                         item["max_updated_date"], "%m/%d/%Y %H:%M:%S"
                     )
                     for item in json.loads(response)["data"]
@@ -2256,7 +2256,7 @@ class approve_task(APIView):
                     *task_details_module, "fetch", field, update_field
                 )
                 max_updated_dates = [
-                    datetime.datetime.strptime(
+                    datetime.strptime(
                         item["max_updated_date"], "%m/%d/%Y %H:%M:%S"
                     )
                     for item in json.loads(resp)["data"]
@@ -2376,7 +2376,7 @@ class delete_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class task_module(APIView):
     def max_updated_date(self, updated_date):
-        task_updated_date = datetime.datetime.strptime(
+        task_updated_date = datetime.strptime(
             updated_date, "%Y-%m-%d")
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
@@ -2795,7 +2795,7 @@ class task_module(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class create_team(APIView):
     def get_current_datetime(self, date):
-        _date = datetime.datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
+        _date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
             "%m/%d/%Y %H:%M:%S"
         )
         return str(_date)
@@ -2808,7 +2808,7 @@ class create_team(APIView):
                 "team_name": data.get("team_name"),
                 "team_description": data.get("team_description"),
                 "created_by": data.get("created_by"),
-                "date_created": self.get_current_datetime(datetime.datetime.now()),
+                "date_created": self.get_current_datetime(datetime.now()),
                 "company_id": data.get("company_id"),
                 "data_type": data.get("data_type"),
                 "members": data.get("members"),
@@ -3004,14 +3004,14 @@ class delete_team(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class create_team_task(APIView):
     # def max_updated_date(self, updated_date):
-    #     task_updated_date = datetime.datetime.strptime(
+    #     task_updated_date = datetime.strptime(
     #         updated_date, "%m/%d/%Y %H:%M:%S"
     #     )
     #     _date = task_updated_date + relativedelta(hours=12)
     #     _date = _date.strftime('%m/%d/%Y %H:%M:%S')
     #     return str(_date)
     def get_current_datetime(self, date):
-        _date = datetime.datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
+        _date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
             "%m/%d/%Y %H:%M:%S"
         )
         return str(_date)
@@ -3023,7 +3023,7 @@ class create_team_task(APIView):
             "description": data.get("description"),
             "assignee": data.get("assignee"),
             "team_id": data.get("team_id"),
-            "task_created_date": self.get_current_datetime(datetime.datetime.now()),
+            "task_created_date": self.get_current_datetime(datetime.now()),
             "subtasks": data.get("subtasks"),
         }
         serializer = TeamTaskSerializer(data=payload)
@@ -3036,12 +3036,12 @@ class create_team_task(APIView):
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
                 "data_type": data.get("data_type"),
-                "task_created_date": self.get_current_datetime(datetime.datetime.now()),
+                "task_created_date": self.get_current_datetime(datetime.now()),
                 "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
                 "subtasks": data.get("subtasks"),
-                # "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.datetime.now())),
+                # "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.now())),
             }
             update_field = {"status": "nothing to update"}
             response = dowellconnection(
@@ -3075,7 +3075,7 @@ class create_team_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class edit_team_task(APIView):
     def get_current_datetime(self, date):
-        _date = datetime.datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
+        _date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
             "%m/%d/%Y %H:%M:%S"
         )
         return str(_date)
@@ -3100,7 +3100,7 @@ class edit_team_task(APIView):
             ):
                 update_field["completed"] = data.get("completed")
                 update_field["completed_on"] = self.get_current_datetime(
-                    datetime.datetime.now()
+                    datetime.now()
                 )
             print(update_field, "=====")
             # check if task exists---
@@ -3212,7 +3212,7 @@ class delete_team_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class create_member_task(APIView):
     def get_current_datetime(self, date):
-        _date = datetime.datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
+        _date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
             "%m/%d/%Y %H:%M:%S"
         )
         return str(_date)
@@ -3227,7 +3227,7 @@ class create_member_task(APIView):
                 "assignee": data.get("assignee"),
                 "completed": data.get("completed"),
                 "team_name": data.get("team_name"),
-                "task_created_date": self.get_current_datetime(datetime.datetime.now()),
+                "task_created_date": self.get_current_datetime(datetime.now()),
                 "team_member": data.get("team_member"),
                 "data_type": data.get("data_type"),
             }
@@ -4632,7 +4632,7 @@ class Thread_Apis(APIView):
             "created_by": data.get("created_by"),
             "team_id": data.get("team_id"),
             "team_alerted_id": data.get("team_alerted_id"),
-            "created_date": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+            "created_date": f"{datetime.today().month}/{datetime.today().day}/{datetime.today().year} {datetime.today().hour}:{datetime.today().minute}:{datetime.today().second}",
             "current_status": serializer_data["current_status"],
             "previous_status": [],
             "steps_to_reproduce_thread": data.get("steps_to_reproduce_thread"),
@@ -4993,7 +4993,7 @@ class Comment_Apis(APIView):
         field = {
             "event_id": get_event_id()["event_id"],
             "created_by": data.get("created_by"),
-            "created_date": f"{datetime.datetime.today().month}/{datetime.datetime.today().day}/{datetime.datetime.today().year} {datetime.datetime.today().hour}:{datetime.datetime.today().minute}:{datetime.datetime.today().second}",
+            "created_date": f"{datetime.today().month}/{datetime.today().day}/{datetime.today().year} {datetime.today().hour}:{datetime.today().minute}:{datetime.today().second}",
             "comment": data.get("comment"),
             "thread_id": data.get("thread_id"),
         }
@@ -5220,7 +5220,7 @@ class Generate_Report(APIView):
                 for res in res_job_application[0]:
                     date = set_date_format(res["application_submitted_on"])
                     month = month_list[
-                        datetime.datetime.strptime(
+                        datetime.strptime(
                             date, "%m/%d/%Y %H:%M:%S").month
                     ]
                     months.append(
@@ -5403,10 +5403,10 @@ class Generate_Report(APIView):
                 tasks_completed_on_time = []
                 for t in res_tasks[0]:
                     try:
-                        due_date = datetime.datetime.strptime(
+                        due_date = datetime.strptime(
                             set_date_format(t["due_date"]), "%m/%d/%Y %H:%M:%S"
                         )
-                        task_updated_date = datetime.datetime.strptime(
+                        task_updated_date = datetime.strptime(
                             set_date_format(
                                 t["task_updated_date"]), "%m/%d/%Y %H:%M:%S"
                         )
@@ -5960,10 +5960,10 @@ class Generate_Report(APIView):
                 team_tasks_completed_on_time = []
                 for t in res_team_tasks[0]:
                     try:
-                        due_date = datetime.datetime.strptime(
+                        due_date = datetime.strptime(
                             set_date_format(t["due_date"]), "%m/%d/%Y %H:%M:%S"
                         )
-                        task_updated_date = datetime.datetime.strptime(
+                        task_updated_date = datetime.strptime(
                             set_date_format(
                                 t["task_updated_date"]), "%m/%d/%Y %H:%M:%S"
                         )
@@ -6331,7 +6331,7 @@ class Generate_Report(APIView):
             if len(_tasks_list) != 0:
                 months = []
                 for task in _tasks_list:
-                    datime = datetime.datetime.strptime(set_date_format(
+                    datime = datetime.strptime(set_date_format(
                         task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
                     month_name = month_list[datime.month]
                     months.append(month_name)
@@ -6345,7 +6345,7 @@ class Generate_Report(APIView):
             if len(_tasks_approved) != 0:
                 months = []
                 for task in _tasks_approved:
-                    datime = datetime.datetime.strptime(set_date_format(
+                    datime = datetime.strptime(set_date_format(
                         task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
                     month_name = month_list[datime.month]
 
@@ -6363,7 +6363,7 @@ class Generate_Report(APIView):
                 months = []
                 for task in _tasks_completed:
                     month_name = month_list[
-                        datetime.datetime.strptime(
+                        datetime.strptime(
                             set_date_format(task["task_created_date"]),
                             "%m/%d/%Y %H:%M:%S",
                         ).month
@@ -6372,7 +6372,7 @@ class Generate_Report(APIView):
                     if month_name in item.keys():
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(task["task_created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6406,7 +6406,7 @@ class Generate_Report(APIView):
                 months = []
                 for task in _tasks_uncompleted:
                     month_name = month_list[
-                        datetime.datetime.strptime(
+                        datetime.strptime(
                             set_date_format(task["task_created_date"]),
                             "%m/%d/%Y %H:%M:%S",
                         ).month
@@ -6416,7 +6416,7 @@ class Generate_Report(APIView):
                     if month_name in item.keys():
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(task["task_created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6434,7 +6434,7 @@ class Generate_Report(APIView):
                 months = []
                 for task in _tasks_you_approved:
                     month_name = month_list[
-                        datetime.datetime.strptime(
+                        datetime.strptime(
                             set_date_format(task["task_created_date"]),
                             "%m/%d/%Y %H:%M:%S",
                         ).month
@@ -6444,7 +6444,7 @@ class Generate_Report(APIView):
                     if month_name in item.keys():
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(task["task_created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6464,7 +6464,7 @@ class Generate_Report(APIView):
                 months = []
                 for task in _tasks_you_marked_as_complete:
                     month_name = month_list[
-                        datetime.datetime.strptime(
+                        datetime.strptime(
                             set_date_format(task["task_created_date"]),
                             "%m/%d/%Y %H:%M:%S",
                         ).month
@@ -6474,7 +6474,7 @@ class Generate_Report(APIView):
                     if month_name in item.keys():
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(task["task_created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6497,7 +6497,7 @@ class Generate_Report(APIView):
                 months = []
                 for task in _tasks_you_marked_as_incomplete:
                     month_name = month_list[
-                        datetime.datetime.strptime(
+                        datetime.strptime(
                             set_date_format(task["task_created_date"]),
                             "%m/%d/%Y %H:%M:%S",
                         ).month
@@ -6507,7 +6507,7 @@ class Generate_Report(APIView):
                     if month_name in item.keys():
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(task["task_created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6531,7 +6531,7 @@ class Generate_Report(APIView):
                 for team in _teams_list:
                     try:
                         month_name = month_list[
-                            datetime.datetime.strptime(
+                            datetime.strptime(
                                 set_date_format(team["date_created"]),
                                 "%m/%d/%Y %H:%M:%S",
                             ).month
@@ -6539,7 +6539,7 @@ class Generate_Report(APIView):
                         months.append(month_name)
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(team["date_created"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6559,7 +6559,7 @@ class Generate_Report(APIView):
                 for task in _teams_tasks:
                     try:
                         month_name = month_list[
-                            datetime.datetime.strptime(
+                            datetime.strptime(
                                 set_date_format(task["task_created_date"]),
                                 "%m/%d/%Y %H:%M:%S",
                             ).month
@@ -6567,7 +6567,7 @@ class Generate_Report(APIView):
                         months.append(month_name)
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(task["task_created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6588,7 +6588,7 @@ class Generate_Report(APIView):
                 for task in _teams_tasks_completed:
                     try:
                         month_name = month_list[
-                            datetime.datetime.strptime(
+                            datetime.strptime(
                                 set_date_format(task["task_created_date"]),
                                 "%m/%d/%Y %H:%M:%S",
                             ).month
@@ -6596,7 +6596,7 @@ class Generate_Report(APIView):
                         months.append(month_name)
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(task["task_created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6633,7 +6633,7 @@ class Generate_Report(APIView):
                 for task in _teams_tasks_uncompleted:
                     try:
                         month_name = month_list[
-                            datetime.datetime.strptime(
+                            datetime.strptime(
                                 set_date_format(task["task_created_date"]),
                                 "%m/%d/%Y %H:%M:%S",
                             ).month
@@ -6641,7 +6641,7 @@ class Generate_Report(APIView):
                         months.append(month_name)
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(task["task_created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6663,7 +6663,7 @@ class Generate_Report(APIView):
                 for task in _teams_tasks_approved:
                     try:
                         month_name = month_list[
-                            datetime.datetime.strptime(
+                            datetime.strptime(
                                 set_date_format(task["task_created_date"]),
                                 "%m/%d/%Y %H:%M:%S",
                             ).month
@@ -6671,7 +6671,7 @@ class Generate_Report(APIView):
                         months.append(month_name)
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(task["task_created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6693,7 +6693,7 @@ class Generate_Report(APIView):
                 for thread in _teams_tasks_issues_raised:
                     try:
                         month_name = month_list[
-                            datetime.datetime.strptime(
+                            datetime.strptime(
                                 set_date_format(thread["created_date"]),
                                 "%m/%d/%Y %H:%M:%S",
                             ).month
@@ -6701,7 +6701,7 @@ class Generate_Report(APIView):
                         months.append(month_name)
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(thread["created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6723,7 +6723,7 @@ class Generate_Report(APIView):
                 for thread in _teams_tasks_issues_resolved:
                     try:
                         month_name = month_list[
-                            datetime.datetime.strptime(
+                            datetime.strptime(
                                 set_date_format(thread["created_date"]),
                                 "%m/%d/%Y %H:%M:%S",
                             ).month
@@ -6731,7 +6731,7 @@ class Generate_Report(APIView):
                         months.append(month_name)
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(thread["created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6753,7 +6753,7 @@ class Generate_Report(APIView):
                 for comment in _teams_tasks_comments_added:
                     try:
                         month_name = month_list[
-                            datetime.datetime.strptime(
+                            datetime.strptime(
                                 set_date_format(comment["created_date"]),
                                 "%m/%d/%Y %H:%M:%S",
                             ).month
@@ -6761,7 +6761,7 @@ class Generate_Report(APIView):
                         months.append(month_name)
                         if (
                             str(
-                                datetime.datetime.strptime(
+                                datetime.strptime(
                                     set_date_format(comment["created_date"]),
                                     "%m/%d/%Y %H:%M:%S",
                                 ).year
@@ -6965,10 +6965,10 @@ class Generate_Report(APIView):
 
                     for time_format in time_formats:
                         try:
-                            start_time = datetime.datetime.strptime(
+                            start_time = datetime.strptime(
                                 start_time_str, time_format
                             )
-                            end_time = datetime.datetime.strptime(
+                            end_time = datetime.strptime(
                                 end_time_str, time_format
                             )
                             break
@@ -7498,10 +7498,10 @@ class Generate_project_task_details_Report(APIView):
 
                     for time_format in time_formats:
                         try:
-                            start_time = datetime.datetime.strptime(
+                            start_time = datetime.strptime(
                                 start_time_str, time_format
                             )
-                            end_time = datetime.datetime.strptime(
+                            end_time = datetime.strptime(
                                 end_time_str, time_format
                             )
                             break
