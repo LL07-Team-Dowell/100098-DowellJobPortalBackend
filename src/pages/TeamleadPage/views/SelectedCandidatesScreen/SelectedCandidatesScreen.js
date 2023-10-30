@@ -279,7 +279,7 @@ const SelectedCandidatesScreen = ({
           configureSettingUserProfileInfo({
             company_id: currentUser.portfolio_info[0].org_id,
             org_name: currentUser.portfolio_info[0].org_name,
-            owner: currentUser.userinfo.username,
+            owner: selectedCandidateData.portfolio_name,
             data_type: currentUser.portfolio_info[0].data_type,
             profile_info: [
               {
@@ -362,7 +362,7 @@ const SelectedCandidatesScreen = ({
           configureSettingUserProfileInfo({
             company_id: currentUser.portfolio_info[0].org_id,
             org_name: currentUser.portfolio_info[0].org_name,
-            owner: currentUser.userinfo.username,
+            owner: selectedCandidateData.portfolio_name,
             data_type: currentUser.portfolio_info[0].data_type,
             profile_info: [
               {
@@ -496,7 +496,10 @@ const SelectedCandidatesScreen = ({
           configureSettingUserProfileInfo({
             company_id: currentUser.portfolio_info[0].org_id,
             org_name: currentUser.portfolio_info[0].org_name,
-            owner: currentUser.userinfo.username,
+            owner: guestApplication ? 
+              selectedCandidateData.applicant_email
+              : 
+            selectedCandidateData.portfolio_name,
             data_type: currentUser.portfolio_info[0].data_type,
             profile_info: [
               {
