@@ -8126,3 +8126,20 @@ class GetAllProjectAndTime(APIView):
         }
 
         return Response(project_time_data)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class Product_Services_API(APIView):
+    def get(self, request):
+        field = {}
+        response = json.loads(
+            dowellconnection(*Product_Services, "fetch",
+                             field, update_field=None)
+        )
+        return Response(
+            {
+                "success": True,
+                "data": response,
+            },
+            status=status.HTTP_200_OK,
+        )

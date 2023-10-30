@@ -177,6 +177,14 @@ time_detail_module = [
     "ABCDE",
 ]
 
+Product_Services = [
+    "api_key", 
+    "api_key", 
+    "ProductServices",
+    "ProductServices", 
+    "100105004", 
+    "ABCDE"
+]
 
 generate_public_link = "https://ll07-team-dowell.github.io/Jobportal/#?view=public&qr_id={}&job_company_id={}&job_id={}&company_data_type={}"
 
