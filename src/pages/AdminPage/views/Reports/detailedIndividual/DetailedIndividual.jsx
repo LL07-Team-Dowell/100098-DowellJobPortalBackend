@@ -5,6 +5,7 @@ import {
   getAllOnBoardCandidate,
   generateindividualReport,
   generateIndividualTaskReport,
+  getCandidateJobApplication,
 } from "../../../../../services/adminServices";
 import { IoFilterOutline } from "react-icons/io5";
 import { RiH1 } from "react-icons/ri";
@@ -34,6 +35,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { CSVLink } from "react-csv";
 import { AiOutlineSearch } from "react-icons/ai";
+import { candidateStatuses } from "../../../../CandidatePage/utils/candidateStatuses";
 
 export const chartOptions = {
   responsive: true,
@@ -44,7 +46,10 @@ export const chartOptions = {
   },
 };
 
-export default function DetailedIndividual({ isPublicReportUser, isProjectLead }) {
+export default function DetailedIndividual({
+  isPublicReportUser,
+  isProjectLead,
+}) {
   const { currentUser, setCurrentUser, reportsUserDetails } =
     useCurrentUserContext();
 
@@ -69,28 +74,26 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
     useState(null);
   const [projectSelectedForTasksBox, setProjectSelectedForTasksBox] =
     useState(null);
-  const [ PDFbtnDisabled, setPDFBtnDisabled ] = useState(false);
-  const [ reportDataToDownload, setReportDataToDownload ] = useState([]);
+  const [PDFbtnDisabled, setPDFBtnDisabled] = useState(false);
+  const [reportDataToDownload, setReportDataToDownload] = useState([]);
   const [currentRoleFilter, setCurrentRoleFilter] = useState("all");
   const csvLinkRef = useRef();
   const mainDivRef = useRef();
   const roleFilterRef = useRef();
-  
+
   const date = new Date();
   const yesterdayDate = new Date(new Date().setDate(date.getDate() - 1));
-  
-  const [
-    todayDateFormattedForAPI,
-    yesterdayDateFormattedForAPI,
-  ] = [
+
+  const [todayDateFormattedForAPI, yesterdayDateFormattedForAPI] = [
     formatDateForAPI(date),
     formatDateForAPI(yesterdayDate),
-  ]
+  ];
 
   const [startDateSelectedForTasksBox, setStartDateSelectedForTasksBox] =
     useState(yesterdayDateFormattedForAPI);
-  const [endDateSelectedForTasksBox, setEndDateSelectedForTasksBox] =
-    useState(todayDateFormattedForAPI);
+  const [endDateSelectedForTasksBox, setEndDateSelectedForTasksBox] = useState(
+    todayDateFormattedForAPI
+  );
   const [settingsUserList, setSettingsUserList] = useState([]);
   const [selectedUserRoleSetting, setSelectedUserRoleSetting] = useState(null);
 
@@ -124,12 +127,13 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
     const foundCandidate = candidates2.find((item) => item._id === id);
     const foundUserSettingItem = settingsUserList?.find(
       (value) =>
-        value?.profile_info[value?.profile_info?.length - 1]
-          ?.profile_title === foundCandidate?.portfolio_name
+        value?.profile_info[value?.profile_info?.length - 1]?.profile_title ===
+        foundCandidate?.portfolio_name
     );
-    const currentUserSetting = foundUserSettingItem?.profile_info[
-      foundUserSettingItem?.profile_info?.length - 1
-    ];
+    const currentUserSetting =
+      foundUserSettingItem?.profile_info[
+        foundUserSettingItem?.profile_info?.length - 1
+      ];
 
     console.log(foundCandidate);
     console.log(currentUserSetting);
@@ -139,13 +143,13 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
       year: new Date().getFullYear().toString(),
       applicant_id: id,
       company_id: foundCandidate?.company_id,
-    }
+    };
 
     const payloadForIndividualTaskReport = {
       report_type: "Individual Task",
       username: foundCandidate?.username,
       company_id: foundCandidate?.company_id,
-    }
+    };
 
     if (currentUserSetting?.Role === rolesNamesDict.Teamlead) {
       payloadForIndividualReport.role = "Teamlead";
@@ -196,9 +200,7 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
         setProjectSelectedForTasksBox(null);
 
         if (foundUserSettingItem) {
-          setSelectedUserRoleSetting(
-            currentUserSetting
-          );
+          setSelectedUserRoleSetting(currentUserSetting);
         }
         setSecondLoadng(false);
       })
@@ -214,7 +216,7 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
   useEffect(() => {
     setFirstLoading(true);
     Promise.all([
-      getAllOnBoardCandidate(
+      getCandidateJobApplication(
         isPublicReportUser
           ? reportsUserDetails?.company_id
           : currentUser?.portfolio_info[0].org_id
@@ -222,29 +224,8 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
       getSettingUserProfileInfo(),
     ])
       .then((promiseRes) => {
-        setcandidates(
-          promiseRes[0]?.data?.response?.data?.filter(
-            (candidate) => candidate.status === "hired"
-          )
-        );
-        setcandidates2(
-          promiseRes[0]?.data?.response?.data?.filter(
-            (candidate) => candidate.status === "hired"
-          )
-        );
-        setOptions(
-          currentRoleFilter === "working"
-            ? promiseRes[0]?.data?.response?.data
-                ?.filter((candidate) => candidate.status === "hired")
-                .map((v) => ({ value: v._id, label: v.applicant }))
-            : currentRoleFilter === "not working"
-            ? promiseRes[0]?.data?.response?.data
-                ?.filter((candidate) => candidate.status !== "hired")
-                .map((v) => ({ value: v._id, label: v.applicant }))
-            : promiseRes[0]?.data?.response?.data
-                ?.filter((candidate) => candidate.status === "hired")
-                .map((v) => ({ value: v._id, label: v.applicant }))
-        );
+        setcandidates(promiseRes[0]?.data?.response?.data);
+        setcandidates2(promiseRes[0]?.data?.response?.data);
 
         const settingsInfo = isPublicReportUser
           ? promiseRes[1]?.data
@@ -275,33 +256,51 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
   }, []);
 
   useEffect(() => {
+    setOptions(
+      currentRoleFilter === "currently working"
+        ? candidates
+            ?.filter((candidate) => candidate.status === candidateStatuses.ONBOARDING)
+            .map((v) => ({ value: v._id, label: v.applicant }))
+        : currentRoleFilter === "currently not working"
+        ? candidates
+            ?.filter((candidate) => candidate.status === candidateStatuses.REMOVED)
+            .map((v) => ({ value: v._id, label: v.applicant }))
+        : candidates.map((v) => ({ value: v._id, label: v.applicant }))
+    );
+  }, [currentRoleFilter, candidates]);
 
-    if (
-      !taskReportData ||
-      !projectSelectedForTasksBox
-    ) {
+  useEffect(() => {
+    if (!taskReportData || !projectSelectedForTasksBox) {
       setReportDataToDownload([]);
-      return
+      return;
     }
 
     const currentTabularData = taskReportData
-    ?.find((task) => task.project === projectSelectedForTasksBox)
-    ?.tasks?.filter(
-      (task) =>
-        (
-          new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
-          &&
-            new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
-        ) &&
-        task.project === projectSelectedForTasksBox
-        &&
-        task.is_active
-        &&
-        task.task_created_date
-    ).reverse()
+      ?.find((task) => task.project === projectSelectedForTasksBox)
+      ?.tasks?.filter(
+        (task) =>
+          new Date(task.task_created_date).getTime() >=
+            new Date(startDateSelectedForTasksBox).getTime() &&
+          new Date(task.task_created_date).getTime() <=
+            new Date(endDateSelectedForTasksBox).getTime() &&
+          task.project === projectSelectedForTasksBox &&
+          task.is_active &&
+          task.task_created_date
+      )
+      .reverse();
 
-    const [ reportDataKeys, reportDataVals ] = [
-      ['S/N', 'DATE ADDED', 'TIME STARTED', 'TIME FINISHED', 'WORK LOG', 'WORK LOG TYPE', 'WORK LOG APPROVED', 'SUBPROJECT', 'PROJECT'],
+    const [reportDataKeys, reportDataVals] = [
+      [
+        "S/N",
+        "DATE ADDED",
+        "TIME STARTED",
+        "TIME FINISHED",
+        "WORK LOG",
+        "WORK LOG TYPE",
+        "WORK LOG APPROVED",
+        "SUBPROJECT",
+        "PROJECT",
+      ],
       currentTabularData.map((item, index) => {
         return [
           index + 1,
@@ -310,36 +309,36 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
           item.end_time,
           item.task,
           item.task_type,
-          item.approved ? 'Yes' : 'No',
+          item.approved ? "Yes" : "No",
           item.subproject,
           item.project,
-        ] 
-      })
+        ];
+      }),
     ];
 
-    setReportDataToDownload([
-      reportDataKeys,
-      ...reportDataVals
-    ])
-
-  }, [taskReportData, projectSelectedForTasksBox, startDateSelectedForTasksBox, endDateSelectedForTasksBox])
+    setReportDataToDownload([reportDataKeys, ...reportDataVals]);
+  }, [
+    taskReportData,
+    projectSelectedForTasksBox,
+    startDateSelectedForTasksBox,
+    endDateSelectedForTasksBox,
+  ]);
 
   const handleDateChange = (val) => {
     console.log(val);
   };
 
   const handleDownloadExcelData = () => {
-    
-    if (!csvLinkRef.current) return
+    if (!csvLinkRef.current) return;
 
     csvLinkRef.current?.link?.click();
 
     closeReportCaptureModal();
-    toast.success('Successfully downloaded report!');
-  }
+    toast.success("Successfully downloaded report!");
+  };
 
   const handleDownloadPDFData = (elemRef) => {
-    if (!elemRef.current) return
+    if (!elemRef.current) return;
 
     setPDFBtnDisabled(true);
 
@@ -349,23 +348,23 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "px",
-        format: [elemRef.current.scrollHeight, elemRef.current.scrollWidth]
+        format: [elemRef.current.scrollHeight, elemRef.current.scrollWidth],
       });
-      
-      doc.addImage(dataURL, 'PNG',  1, 1);
+
+      doc.addImage(dataURL, "PNG", 1, 1);
       doc.save("report.pdf");
 
       setPDFBtnDisabled(false);
       closeReportCaptureModal();
-      toast.success('Successfully downloaded report!');
+      toast.success("Successfully downloaded report!");
     });
-  }
+  };
 
   if (firstLoading)
     return (
       <StaffJobLandingLayout
         adminView={isProjectLead ? false : true}
-        adminAlternativePageActive={isProjectLead ? false: true}
+        adminAlternativePageActive={isProjectLead ? false : true}
         pageTitle={"Detailed individual report"}
         projectLeadView={isProjectLead}
         hideSearchBar={true}
@@ -421,14 +420,24 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
           organization
         </p>
         <div className="filter__container">
-        <div className="role__Filter__Wrapper" onClick={() => roleFilterRef.current.click()}>
-          <IoFilterOutline />
-          <select ref={roleFilterRef} className="role__Filter filter__filter" value={currentRoleFilter} onChange={({ target }) => setCurrentRoleFilter(target.value)}>
-            <option value={'all'}>All</option>
-            <option value={'working'}>Currently working</option>
-            <option value={'not working'}>Currently not working</option>
-          </select>
-        </div>
+          <div
+            className="role__Filter__Wrapper"
+            onClick={() => roleFilterRef.current.click()}
+          >
+            <IoFilterOutline />
+            <select
+              ref={roleFilterRef}
+              className="role__Filter filter__filter"
+              value={currentRoleFilter}
+              onChange={({ target }) => setCurrentRoleFilter(target.value)}
+            >
+              <option value={"all"}>All</option>
+              <option value={"currently working"}>Currently working</option>
+              <option value={"currently not working"}>
+                Currently not working
+              </option>
+            </select>
+          </div>
         </div>
         <div className="selction_container">
           <p>Select name</p>
@@ -522,107 +531,136 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                   <div className="graph">
                     <h3>Work logs overview</h3>
                     <h4 style={{ textAlign: "center", marginBottom: "2rem" }}>
-                      Bar chart showing work log details for {candidateName} this
-                      year
+                      Bar chart showing work log details for {candidateName}{" "}
+                      this year
                     </h4>
                     <Bar
                       data={{
                         labels: Object.keys(candidateData),
-                        datasets: selectedUserRoleSetting && selectedUserRoleSetting?.Role === rolesNamesDict.Teamlead ?
-                        [
-                          {
-                            label: "Work logs approved",
-                            backgroundColor: "blue",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_approved;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                          {
-                            label: "Work logs you approved",
-                            backgroundColor: "orange",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_you_approved;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                          {
-                            label: "Work logs added",
-                            backgroundColor: "#005734",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_added;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                          {
-                            label: "Work logs uncompleted",
-                            backgroundColor: "red",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_uncompleted;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                          {
-                            label: "Work logs you marked as incomplete",
-                            backgroundColor: "indigo",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_you_marked_as_incomplete;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                          
-                          {
-                            label: "Work logs completed",
-                            backgroundColor: "yellow",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_completed;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                          {
-                            label: "Work logs you marked as complete",
-                            backgroundColor: "#be6464",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_you_marked_as_complete;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                        ]
-                        :
-                        [
-                          {
-                            label: "Work logs approved",
-                            backgroundColor: "blue",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_approved;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                          {
-                            label: "Work logs added",
-                            backgroundColor: "#005734",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_added;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                          {
-                            label: "Work logs uncompleted",
-                            backgroundColor: "red",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_uncompleted;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                          {
-                            label: "Work logs completed",
-                            backgroundColor: "yellow",
-                            data: Object.keys(candidateData).map((key) => {
-                              return candidateData[key].tasks_completed;
-                            }),
-                            maxBarThickness: 40,
-                          },
-                        ],
+                        datasets:
+                          selectedUserRoleSetting &&
+                          selectedUserRoleSetting?.Role ===
+                            rolesNamesDict.Teamlead
+                            ? [
+                                {
+                                  label: "Work logs approved",
+                                  backgroundColor: "blue",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key].tasks_approved;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+                                {
+                                  label: "Work logs you approved",
+                                  backgroundColor: "orange",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key]
+                                        .tasks_you_approved;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+                                {
+                                  label: "Work logs added",
+                                  backgroundColor: "#005734",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key].tasks_added;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+                                {
+                                  label: "Work logs uncompleted",
+                                  backgroundColor: "red",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key]
+                                        .tasks_uncompleted;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+                                {
+                                  label: "Work logs you marked as incomplete",
+                                  backgroundColor: "indigo",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key]
+                                        .tasks_you_marked_as_incomplete;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+
+                                {
+                                  label: "Work logs completed",
+                                  backgroundColor: "yellow",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key].tasks_completed;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+                                {
+                                  label: "Work logs you marked as complete",
+                                  backgroundColor: "#be6464",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key]
+                                        .tasks_you_marked_as_complete;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+                              ]
+                            : [
+                                {
+                                  label: "Work logs approved",
+                                  backgroundColor: "blue",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key].tasks_approved;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+                                {
+                                  label: "Work logs added",
+                                  backgroundColor: "#005734",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key].tasks_added;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+                                {
+                                  label: "Work logs uncompleted",
+                                  backgroundColor: "red",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key]
+                                        .tasks_uncompleted;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+                                {
+                                  label: "Work logs completed",
+                                  backgroundColor: "yellow",
+                                  data: Object.keys(candidateData).map(
+                                    (key) => {
+                                      return candidateData[key].tasks_completed;
+                                    }
+                                  ),
+                                  maxBarThickness: 40,
+                                },
+                              ],
                       }}
                     />
                   </div>
@@ -634,8 +672,8 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                           <>
                             <p style={{ margin: "25px 0 10px" }}>
                               <b>
-                                Bar chart showing hours, total work logs and work logs
-                                this week per project
+                                Bar chart showing hours, total work logs and
+                                work logs this week per project
                               </b>
                             </p>
                             <div className="graph">
@@ -781,12 +819,19 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                             onChange={({ target }) =>
                               setStartDateSelectedForTasksBox(target.value)
                             }
-                            disabled={!projectSelectedForTasksBox ? true : false}
+                            disabled={
+                              !projectSelectedForTasksBox ? true : false
+                            }
                             max={
                               new Date(endDateSelectedForTasksBox)
-                              .toISOString()
-                              .slice(0, new Date(endDateSelectedForTasksBox).toISOString().lastIndexOf(":"))
-                              .split('T')[0]
+                                .toISOString()
+                                .slice(
+                                  0,
+                                  new Date(endDateSelectedForTasksBox)
+                                    .toISOString()
+                                    .lastIndexOf(":")
+                                )
+                                .split("T")[0]
                             }
                           />
                         </div>
@@ -798,12 +843,19 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                             onChange={({ target }) =>
                               setEndDateSelectedForTasksBox(target.value)
                             }
-                            disabled={!projectSelectedForTasksBox ? true : false}
+                            disabled={
+                              !projectSelectedForTasksBox ? true : false
+                            }
                             min={
                               new Date(startDateSelectedForTasksBox)
-                              .toISOString()
-                              .slice(0, new Date(startDateSelectedForTasksBox).toISOString().lastIndexOf(":"))
-                              .split('T')[0]
+                                .toISOString()
+                                .slice(
+                                  0,
+                                  new Date(startDateSelectedForTasksBox)
+                                    .toISOString()
+                                    .lastIndexOf(":")
+                                )
+                                .split("T")[0]
                             }
                           />
                         </div>
@@ -813,38 +865,54 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                         <>
                           <p className="task__Select">
                             <b>
-                              {taskReportData
-                              .find(
-                                (task) =>
-                                  task.project === projectSelectedForTasksBox
-                              )
-                              ?.tasks?.filter(
-                                (task) =>
-                                  (
-                                    new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
-                                    &&
-                                      new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
-                                  ) &&
-                                  task.project === projectSelectedForTasksBox
-                                  &&
-                                  task.is_active
-                              ).length} work logs added by {candidateName} under the{" "}
+                              {
+                                taskReportData
+                                  .find(
+                                    (task) =>
+                                      task.project ===
+                                      projectSelectedForTasksBox
+                                  )
+                                  ?.tasks?.filter(
+                                    (task) =>
+                                      new Date(
+                                        task.task_created_date
+                                      ).getTime() >=
+                                        new Date(
+                                          startDateSelectedForTasksBox
+                                        ).getTime() &&
+                                      new Date(
+                                        task.task_created_date
+                                      ).getTime() <=
+                                        new Date(
+                                          endDateSelectedForTasksBox
+                                        ).getTime() &&
+                                      task.project ===
+                                        projectSelectedForTasksBox &&
+                                      task.is_active
+                                  ).length
+                              }{" "}
+                              work logs added by {candidateName} under the{" "}
                               {projectSelectedForTasksBox} project between{" "}
-                              {new Date(startDateSelectedForTasksBox).toDateString()} and{" "}
-                              {new Date(endDateSelectedForTasksBox).toDateString()}
+                              {new Date(
+                                startDateSelectedForTasksBox
+                              ).toDateString()}{" "}
+                              and{" "}
+                              {new Date(
+                                endDateSelectedForTasksBox
+                              ).toDateString()}
                             </b>
                           </p>
-                          {
-                            reportDataToDownload.length > 0 && <>
-                              <CSVLink 
+                          {reportDataToDownload.length > 0 && (
+                            <>
+                              <CSVLink
                                 data={reportDataToDownload}
                                 ref={csvLinkRef}
-                                style={{ display: 'none' }}
+                                style={{ display: "none" }}
                               >
                                 Download Me
                               </CSVLink>
                               <button
-                                className={'download__Report__Btn'}
+                                className={"download__Report__Btn"}
                                 onClick={() => {
                                   openCaptureModal();
                                 }}
@@ -852,7 +920,7 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                                 Download report
                               </button>
                             </>
-                          }
+                          )}
                           <div className="cand__task__Wrap">
                             {!taskReportData.find(
                               (task) =>
@@ -865,13 +933,15 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                               )
                               ?.tasks?.filter(
                                 (task) =>
-                                  (
-                                    new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
-                                    &&
-                                      new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
-                                  ) &&
-                                  task.project === projectSelectedForTasksBox
-                                  &&
+                                  new Date(task.task_created_date).getTime() >=
+                                    new Date(
+                                      startDateSelectedForTasksBox
+                                    ).getTime() &&
+                                  new Date(task.task_created_date).getTime() <=
+                                    new Date(
+                                      endDateSelectedForTasksBox
+                                    ).getTime() &&
+                                  task.project === projectSelectedForTasksBox &&
                                   task.is_active
                               ).length < 1 ||
                             !Array.isArray(
@@ -882,13 +952,20 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                                 )
                                 ?.tasks?.filter(
                                   (task) =>
-                                    (
-                                      new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
-                                      &&
-                                        new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
-                                    ) &&
-                                    task.project === projectSelectedForTasksBox
-                                    &&
+                                    new Date(
+                                      task.task_created_date
+                                    ).getTime() >=
+                                      new Date(
+                                        startDateSelectedForTasksBox
+                                      ).getTime() &&
+                                    new Date(
+                                      task.task_created_date
+                                    ).getTime() <=
+                                      new Date(
+                                        endDateSelectedForTasksBox
+                                      ).getTime() &&
+                                    task.project ===
+                                      projectSelectedForTasksBox &&
                                     task.is_active
                                 )
                             ) ? (
@@ -904,10 +981,16 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                                     marginTop: 20,
                                   }}
                                 >
-                                  No work logs were added by {candidateName} under
-                                  the {projectSelectedForTasksBox} project between{" "}
-                                  {new Date(startDateSelectedForTasksBox).toDateString()} and{" "}
-                                  {new Date(endDateSelectedForTasksBox).toDateString()}
+                                  No work logs were added by {candidateName}{" "}
+                                  under the {projectSelectedForTasksBox} project
+                                  between{" "}
+                                  {new Date(
+                                    startDateSelectedForTasksBox
+                                  ).toDateString()}{" "}
+                                  and{" "}
+                                  {new Date(
+                                    endDateSelectedForTasksBox
+                                  ).toDateString()}
                                 </p>
                               </>
                             ) : (
@@ -923,27 +1006,37 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                                     <th>Work log approved</th>
                                     <th>sub project</th>
                                   </tr>
-                                  {React.Children.toArray (
+                                  {React.Children.toArray(
                                     taskReportData
-                                      .find((task) => task.project === projectSelectedForTasksBox)
+                                      .find(
+                                        (task) =>
+                                          task.project ===
+                                          projectSelectedForTasksBox
+                                      )
                                       ?.tasks?.filter(
                                         (task) =>
-                                          (
-                                            new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
-                                            &&
-                                              new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
-                                          ) &&
-                                          task.project === projectSelectedForTasksBox
-                                          &&
-                                          task.is_active
-                                          &&
+                                          new Date(
+                                            task.task_created_date
+                                          ).getTime() >=
+                                            new Date(
+                                              startDateSelectedForTasksBox
+                                            ).getTime() &&
+                                          new Date(
+                                            task.task_created_date
+                                          ).getTime() <=
+                                            new Date(
+                                              endDateSelectedForTasksBox
+                                            ).getTime() &&
+                                          task.project ===
+                                            projectSelectedForTasksBox &&
+                                          task.is_active &&
                                           task.task_created_date
                                       )
                                       ?.reverse()
                                       ?.map((task, index) => {
-                                        return(
+                                        return (
                                           <tbody>
-                                          {/*<div className="single__task__Detail">
+                                            {/*<div className="single__task__Detail">
                                               <h3>Task: {task.task}</h3>
                                                 <p>Subproject: {task.subproject}</p>
                                                 <p>Task type: {task.task_type}</p>
@@ -952,16 +1045,83 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                                               </div>*/}
                                             <tr key={task._id}>
                                               <td>{index + 1}.</td>
-                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{new Date(task.task_created_date).toDateString()}</td>
-                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
-                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
-                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task}</td>
-                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.task_type}</td>
-                                              <td className={task.is_active &&  task.is_active === true ? task.approved ? "approved" : "not__Approved" : "deleted"}>{task.approved ? 'Yes' : 'No'}</td>
-                                              <td className={task.is_active &&  task.is_active === true ? "" : "deleted"}>{task.subproject}</td>
+                                              <td
+                                                className={
+                                                  task.is_active &&
+                                                  task.is_active === true
+                                                    ? ""
+                                                    : "deleted"
+                                                }
+                                              >
+                                                {new Date(
+                                                  task.task_created_date
+                                                ).toDateString()}
+                                              </td>
+                                              <td
+                                                className={
+                                                  task.is_active &&
+                                                  task.is_active === true
+                                                    ? ""
+                                                    : "deleted"
+                                                }
+                                              >
+                                                {task.start_time}
+                                              </td>
+                                              <td
+                                                className={
+                                                  task.is_active &&
+                                                  task.is_active === true
+                                                    ? ""
+                                                    : "deleted"
+                                                }
+                                              >
+                                                {task.end_time}
+                                              </td>
+                                              <td
+                                                className={
+                                                  task.is_active &&
+                                                  task.is_active === true
+                                                    ? ""
+                                                    : "deleted"
+                                                }
+                                              >
+                                                {task.task}
+                                              </td>
+                                              <td
+                                                className={
+                                                  task.is_active &&
+                                                  task.is_active === true
+                                                    ? ""
+                                                    : "deleted"
+                                                }
+                                              >
+                                                {task.task_type}
+                                              </td>
+                                              <td
+                                                className={
+                                                  task.is_active &&
+                                                  task.is_active === true
+                                                    ? task.approved
+                                                      ? "approved"
+                                                      : "not__Approved"
+                                                    : "deleted"
+                                                }
+                                              >
+                                                {task.approved ? "Yes" : "No"}
+                                              </td>
+                                              <td
+                                                className={
+                                                  task.is_active &&
+                                                  task.is_active === true
+                                                    ? ""
+                                                    : "deleted"
+                                                }
+                                              >
+                                                {task.subproject}
+                                              </td>
                                             </tr>
                                           </tbody>
-                                        )
+                                        );
                                       })
                                   )}
                                 </table>
@@ -974,7 +1134,8 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
                           <p
                             style={{ fontSize: "0.9rem", textAlign: "center" }}
                           >
-                            Select a project to get a detailed report on work logs added
+                            Select a project to get a detailed report on work
+                            logs added
                           </p>
                         </>
                       )}

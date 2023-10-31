@@ -672,19 +672,6 @@ const AddJobDescription = ({
                   <div className="radio__radio"></div>
                   <p>Freelancer</p>
                 </label>
-                <label htmlFor="internship" className="radio">
-                  <input
-                    className="radio_input"
-                    type={"radio"}
-                    id={"internship"}
-                    name="options"
-                    value={"Internship"}
-                    checked={selectedOption === "Internship"}
-                    onChange={handleOptionChange}
-                  />
-                  <div className="radio__radio"></div>
-                  <p>Internship</p>
-                </label>
                 <label htmlFor="employee" className="radio">
                   <input
                     className="radio_input"
@@ -1377,3 +1364,6 @@ const AddJobDescription = ({
 };
 
 export default AddJobDescription;
+
+
+
