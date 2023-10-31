@@ -4269,6 +4269,7 @@ class sendMailToPublicCandidate(APIView):
         job_role = request.data.get("job_role")
         data_type = request.data.get("data_type")
         date_time = request.data.get("date_time")
+        application_id = request.data.get("application_id")
 
         data = {
             "qr_id": qr_id,
@@ -4321,7 +4322,7 @@ class sendMailToPublicCandidate(APIView):
                 toname, toemail, subject, email_content)
 
             # update the public api by username==================
-            field = {"username": qr_id}
+            field = {"username": qr_id,"_id":application_id}
             update_field = {"signup_mail_sent": True}
             update_public_application = dowellconnection(
                 *candidate_management_reports, "update", field, update_field
