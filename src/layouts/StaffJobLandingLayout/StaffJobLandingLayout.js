@@ -77,14 +77,18 @@ const StaffJobLandingLayout = ({
   const { 
     currentUser, 
     currentAuthSessionExpired, 
-    setCurrentAuthSessionExpired 
+    setCurrentAuthSessionExpired,
+    userRemovalStatusLoading,
+    setUserRemovalStatusLoading,
+    userIsRemoved,
+    setUserIsRemoved,
+    userRemovalStatusChecked,
+    setUserRemovalStatusChecked,
   } = useCurrentUserContext();
   const [isSuperUser, setIsSuperUser] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [userIsRemoved, setUserIsRemoved] = useState(false);
 
   useCheckCurrentAuthStatus(currentUser, setCurrentAuthSessionExpired);
-  useCheckIfUserIsRemoved(currentUser, setUserIsRemoved, setLoading);
+  useCheckIfUserIsRemoved(currentUser, setUserIsRemoved, setUserRemovalStatusLoading, userRemovalStatusChecked, setUserRemovalStatusChecked);
 
   useEffect(() => {
     if (!currentUser) return
@@ -108,7 +112,7 @@ const StaffJobLandingLayout = ({
     setIsSuperUser(true);
   }, [currentUser]);
 
-  if (loading) return <>
+  if (userRemovalStatusLoading) return <>
     <div className="loading__Check__Wrap">
       <HorizontalBarLoader />
       <p>Please hold on a minute...</p>

@@ -22,6 +22,9 @@ export const CurrentUserContextProvider = ({ children }) => {
   const [ isReportsUser, setIsReportsUser ] = useState(false);
   const [ reportsUserDetails, setReportsUserDetails ] = useState({});
   const [ currentAuthSessionExpired, setCurrentAuthSessionExpired ] = useState(false);
+  const [ userRemovalStatusLoading, setUserRemovalStatusLoading ] = useState(true);
+  const [ userRemovalStatusChecked, setUserRemovalStatusChecked ] = useState(false);
+  const [ userIsRemoved, setUserIsRemoved ] = useState(false);
 
   return (
     <CurrentUserContext.Provider value={{ 
@@ -51,6 +54,12 @@ export const CurrentUserContextProvider = ({ children }) => {
       setReportsUserDetails,
       currentAuthSessionExpired,
       setCurrentAuthSessionExpired,
+      userRemovalStatusLoading,
+      setUserRemovalStatusLoading,
+      userIsRemoved,
+      setUserIsRemoved,
+      userRemovalStatusChecked,
+      setUserRemovalStatusChecked,
     }}>
       {children}
     </CurrentUserContext.Provider>
