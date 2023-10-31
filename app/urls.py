@@ -187,7 +187,7 @@ urlpatterns = [
     # total project time
     # path("project_deadline/", project_hours.as_view()),
     path("testing_threads/<str:company_id>/",
-         Testing_Threads.as_view()),  # add company id
+         Testing_Threads.as_view()),  # add company id and status
 
     path("product_services/", Product_Services_API.as_view()),
 ]
