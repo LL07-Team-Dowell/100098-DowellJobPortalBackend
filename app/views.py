@@ -6159,7 +6159,6 @@ class Generate_Report(APIView):
             valid_portfolio_names = []
             for da in serializer.data:
                 for d in da["profile_info"]:
-                    print(d["profile_title"])
                     if "profile_title" in d.keys() and "Role" in d.keys():
                         if d["Role"] == "Proj_Lead":
                             # print(d,"----")
@@ -6265,7 +6264,7 @@ class Generate_Report(APIView):
                 if (
                     "task_approved_by" in task.keys()
                     and task["task_approved_by"] == username
-                    and (
+                    and "status" in task.keys()(
                         task["status"] == "Completed"
                         or task["status"] == "Complete"
                         or task["status"] == "completed"
