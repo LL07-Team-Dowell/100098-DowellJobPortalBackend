@@ -5898,6 +5898,43 @@ class Generate_Report(APIView):
                     {"team_id": payload["team_id"]},
                     update_field,
                 )
+                field = {
+                    "team_id":  payload["team_id"],
+                }
+                update_field = {}
+
+                team_threads = json.loads(dowellconnection(
+                    *thread_report_module, "fetch", field, update_field
+                ))['data']
+
+                threads_report={
+                    "Created": 0,
+                    "Resolved": 0,
+                    "In_progress":0,
+                    "Completed":0,
+                    "total issue raised":0
+                    
+                }
+                
+
+                for threads in team_threads:
+                    threads_report["total issue raised"]+=1
+                    if threads["current_status"]=="Created":
+                        threads_report["Created"]+=1
+                        data["issue Created"]=+1
+                    if threads["current_status"]=="Resolved":
+                        threads_report["resolved"]+=1
+                    if threads["current_status"]=="In progress":
+                        threads_report["In_progress"]+=1
+                    if threads["current_status"]=="Completed":
+                        threads_report["Completed"]+=1
+                data["team threads report"]=threads_report  
+
+            
+                # return Response ({
+                    
+                #     "Testing_Threads":threads_report
+                # })
                 total_tasks = [res for res in json.loads(tasks)["data"]]
 
                 teams = dowellconnection(
