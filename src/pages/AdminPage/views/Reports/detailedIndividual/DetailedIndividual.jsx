@@ -5,6 +5,7 @@ import {
   getAllOnBoardCandidate,
   generateindividualReport,
   generateIndividualTaskReport,
+  getCandidateJobApplication,
 } from "../../../../../services/adminServices";
 import { IoFilterOutline } from "react-icons/io5";
 import { RiH1 } from "react-icons/ri";
@@ -219,6 +220,7 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
           ? reportsUserDetails?.company_id
           : currentUser?.portfolio_info[0].org_id
       ),
+      getCandidateJobApplication(currentUser?.portfolio_info[0].org_id),
       getSettingUserProfileInfo(),
     ])
       .then((promiseRes) => {
@@ -233,13 +235,13 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
           )
         );
         setOptions(
-          promiseRes[0]?.data?.response?.data
+          promiseRes[1]?.data?.response?.data
             ?.filter((candidate) => candidate.status === "hired")
             .map((v) => ({ value: v._id, label: v.applicant }))
         );
 
         const settingsInfo = isPublicReportUser
-          ? promiseRes[1]?.data
+          ? promiseRes[2]?.data
               ?.reverse()
               ?.filter(
                 (item) => item.company_id === reportsUserDetails?.company_id
@@ -247,7 +249,7 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
               ?.filter(
                 (item) => item.data_type === reportsUserDetails?.data_type
               )
-          : promiseRes[1]?.data
+          : promiseRes[2]?.data
               ?.reverse()
               ?.filter(
                 (item) =>

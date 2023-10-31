@@ -119,6 +119,14 @@ export const getAllOnBoardCandidate = async (
     `get_all_onboarded_candidate/${id}/`
   );
 };
+
+export const getCandidateJobApplication = async (
+  CompanyId
+) => {
+  return await currentBackendAxiosInstance.get(
+    `candidate_get_job_application/${CompanyId}/`
+  );
+};
 export const generateindividualReport = async (data) => {
   return await currentBackendAxiosInstance.post(
     `generate_individual_Report/`,
