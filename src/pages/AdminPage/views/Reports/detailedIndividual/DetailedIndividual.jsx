@@ -45,7 +45,10 @@ export const chartOptions = {
   },
 };
 
-export default function DetailedIndividual({ isPublicReportUser, isProjectLead }) {
+export default function DetailedIndividual({
+  isPublicReportUser,
+  isProjectLead,
+}) {
   const { currentUser, setCurrentUser, reportsUserDetails } =
     useCurrentUserContext();
 
@@ -70,28 +73,26 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
     useState(null);
   const [projectSelectedForTasksBox, setProjectSelectedForTasksBox] =
     useState(null);
-  const [ PDFbtnDisabled, setPDFBtnDisabled ] = useState(false);
-  const [ reportDataToDownload, setReportDataToDownload ] = useState([]);
+  const [PDFbtnDisabled, setPDFBtnDisabled] = useState(false);
+  const [reportDataToDownload, setReportDataToDownload] = useState([]);
   const [currentRoleFilter, setCurrentRoleFilter] = useState("all");
   const csvLinkRef = useRef();
   const mainDivRef = useRef();
   const roleFilterRef = useRef();
-  
+
   const date = new Date();
   const yesterdayDate = new Date(new Date().setDate(date.getDate() - 1));
-  
-  const [
-    todayDateFormattedForAPI,
-    yesterdayDateFormattedForAPI,
-  ] = [
+
+  const [todayDateFormattedForAPI, yesterdayDateFormattedForAPI] = [
     formatDateForAPI(date),
     formatDateForAPI(yesterdayDate),
-  ]
+  ];
 
   const [startDateSelectedForTasksBox, setStartDateSelectedForTasksBox] =
     useState(yesterdayDateFormattedForAPI);
-  const [endDateSelectedForTasksBox, setEndDateSelectedForTasksBox] =
-    useState(todayDateFormattedForAPI);
+  const [endDateSelectedForTasksBox, setEndDateSelectedForTasksBox] = useState(
+    todayDateFormattedForAPI
+  );
   const [settingsUserList, setSettingsUserList] = useState([]);
   const [selectedUserRoleSetting, setSelectedUserRoleSetting] = useState(null);
 
@@ -125,12 +126,13 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
     const foundCandidate = candidates2.find((item) => item._id === id);
     const foundUserSettingItem = settingsUserList?.find(
       (value) =>
-        value?.profile_info[value?.profile_info?.length - 1]
-          ?.profile_title === foundCandidate?.portfolio_name
+        value?.profile_info[value?.profile_info?.length - 1]?.profile_title ===
+        foundCandidate?.portfolio_name
     );
-    const currentUserSetting = foundUserSettingItem?.profile_info[
-      foundUserSettingItem?.profile_info?.length - 1
-    ];
+    const currentUserSetting =
+      foundUserSettingItem?.profile_info[
+        foundUserSettingItem?.profile_info?.length - 1
+      ];
 
     console.log(foundCandidate);
     console.log(currentUserSetting);
@@ -140,13 +142,13 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
       year: new Date().getFullYear().toString(),
       applicant_id: id,
       company_id: foundCandidate?.company_id,
-    }
+    };
 
     const payloadForIndividualTaskReport = {
       report_type: "Individual Task",
       username: foundCandidate?.username,
       company_id: foundCandidate?.company_id,
-    }
+    };
 
     if (currentUserSetting?.Role === rolesNamesDict.Teamlead) {
       payloadForIndividualReport.role = "Teamlead";
@@ -197,9 +199,7 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
         setProjectSelectedForTasksBox(null);
 
         if (foundUserSettingItem) {
-          setSelectedUserRoleSetting(
-            currentUserSetting
-          );
+          setSelectedUserRoleSetting(currentUserSetting);
         }
         setSecondLoadng(false);
       })
@@ -215,33 +215,19 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
   useEffect(() => {
     setFirstLoading(true);
     Promise.all([
-      getAllOnBoardCandidate(
+      getCandidateJobApplication(
         isPublicReportUser
           ? reportsUserDetails?.company_id
           : currentUser?.portfolio_info[0].org_id
       ),
-      getCandidateJobApplication(currentUser?.portfolio_info[0].org_id),
       getSettingUserProfileInfo(),
     ])
       .then((promiseRes) => {
-        setcandidates(
-          promiseRes[0]?.data?.response?.data?.filter(
-            (candidate) => candidate.status === "hired"
-          )
-        );
-        setcandidates2(
-          promiseRes[0]?.data?.response?.data?.filter(
-            (candidate) => candidate.status === "hired"
-          )
-        );
-        setOptions(
-          promiseRes[1]?.data?.response?.data
-            ?.filter((candidate) => candidate.status === "hired")
-            .map((v) => ({ value: v._id, label: v.applicant }))
-        );
+        setcandidates(promiseRes[0]?.data?.response?.data);
+        setcandidates2(promiseRes[0]?.data?.response?.data);
 
         const settingsInfo = isPublicReportUser
-          ? promiseRes[2]?.data
+          ? promiseRes[1]?.data
               ?.reverse()
               ?.filter(
                 (item) => item.company_id === reportsUserDetails?.company_id
@@ -249,7 +235,7 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
               ?.filter(
                 (item) => item.data_type === reportsUserDetails?.data_type
               )
-          : promiseRes[2]?.data
+          : promiseRes[1]?.data
               ?.reverse()
               ?.filter(
                 (item) =>
@@ -269,33 +255,51 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
   }, []);
 
   useEffect(() => {
+    setOptions(
+      currentRoleFilter === "currently working"
+        ? candidates
+            ?.filter((candidate) => candidate.status === "hired")
+            .map((v) => ({ value: v._id, label: v.applicant }))
+        : currentRoleFilter === "currently not working"
+        ? candidates
+            ?.filter((candidate) => candidate.status !== "hired")
+            .map((v) => ({ value: v._id, label: v.applicant }))
+        : candidates.map((v) => ({ value: v._id, label: v.applicant }))
+    );
+  }, [currentRoleFilter, candidates]);
 
-    if (
-      !taskReportData ||
-      !projectSelectedForTasksBox
-    ) {
+  useEffect(() => {
+    if (!taskReportData || !projectSelectedForTasksBox) {
       setReportDataToDownload([]);
-      return
+      return;
     }
 
     const currentTabularData = taskReportData
-    ?.find((task) => task.project === projectSelectedForTasksBox)
-    ?.tasks?.filter(
-      (task) =>
-        (
-          new Date(task.task_created_date).getTime() >= new Date(startDateSelectedForTasksBox).getTime() 
-          &&
-            new Date(task.task_created_date).getTime() <= new Date(endDateSelectedForTasksBox).getTime()   
-        ) &&
-        task.project === projectSelectedForTasksBox
-        &&
-        task.is_active
-        &&
-        task.task_created_date
-    ).reverse()
+      ?.find((task) => task.project === projectSelectedForTasksBox)
+      ?.tasks?.filter(
+        (task) =>
+          new Date(task.task_created_date).getTime() >=
+            new Date(startDateSelectedForTasksBox).getTime() &&
+          new Date(task.task_created_date).getTime() <=
+            new Date(endDateSelectedForTasksBox).getTime() &&
+          task.project === projectSelectedForTasksBox &&
+          task.is_active &&
+          task.task_created_date
+      )
+      .reverse();
 
-    const [ reportDataKeys, reportDataVals ] = [
-      ['S/N', 'DATE ADDED', 'TIME STARTED', 'TIME FINISHED', 'WORK LOG', 'WORK LOG TYPE', 'WORK LOG APPROVED', 'SUBPROJECT', 'PROJECT'],
+    const [reportDataKeys, reportDataVals] = [
+      [
+        "S/N",
+        "DATE ADDED",
+        "TIME STARTED",
+        "TIME FINISHED",
+        "WORK LOG",
+        "WORK LOG TYPE",
+        "WORK LOG APPROVED",
+        "SUBPROJECT",
+        "PROJECT",
+      ],
       currentTabularData.map((item, index) => {
         return [
           index + 1,
@@ -304,36 +308,36 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
           item.end_time,
           item.task,
           item.task_type,
-          item.approved ? 'Yes' : 'No',
+          item.approved ? "Yes" : "No",
           item.subproject,
           item.project,
-        ] 
-      })
+        ];
+      }),
     ];
 
-    setReportDataToDownload([
-      reportDataKeys,
-      ...reportDataVals
-    ])
-
-  }, [taskReportData, projectSelectedForTasksBox, startDateSelectedForTasksBox, endDateSelectedForTasksBox])
+    setReportDataToDownload([reportDataKeys, ...reportDataVals]);
+  }, [
+    taskReportData,
+    projectSelectedForTasksBox,
+    startDateSelectedForTasksBox,
+    endDateSelectedForTasksBox,
+  ]);
 
   const handleDateChange = (val) => {
     console.log(val);
   };
 
   const handleDownloadExcelData = () => {
-    
-    if (!csvLinkRef.current) return
+    if (!csvLinkRef.current) return;
 
     csvLinkRef.current?.link?.click();
 
     closeReportCaptureModal();
-    toast.success('Successfully downloaded report!');
-  }
+    toast.success("Successfully downloaded report!");
+  };
 
   const handleDownloadPDFData = (elemRef) => {
-    if (!elemRef.current) return
+    if (!elemRef.current) return;
 
     setPDFBtnDisabled(true);
 
@@ -343,23 +347,23 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
       const doc = new jsPDF({
         orientation: "portrait",
         unit: "px",
-        format: [elemRef.current.scrollHeight, elemRef.current.scrollWidth]
+        format: [elemRef.current.scrollHeight, elemRef.current.scrollWidth],
       });
-      
-      doc.addImage(dataURL, 'PNG',  1, 1);
+
+      doc.addImage(dataURL, "PNG", 1, 1);
       doc.save("report.pdf");
 
       setPDFBtnDisabled(false);
       closeReportCaptureModal();
-      toast.success('Successfully downloaded report!');
+      toast.success("Successfully downloaded report!");
     });
-  }
+  };
 
   if (firstLoading)
     return (
       <StaffJobLandingLayout
         adminView={isProjectLead ? false : true}
-        adminAlternativePageActive={isProjectLead ? false: true}
+        adminAlternativePageActive={isProjectLead ? false : true}
         pageTitle={"Detailed individual report"}
         projectLeadView={isProjectLead}
         hideSearchBar={true}
@@ -437,13 +441,7 @@ export default function DetailedIndividual({ isPublicReportUser, isProjectLead }
         <div className="selction_container">
           <p>Select name</p>
           <Select
-            options={
-              currentRoleFilter === "currently working"
-                ? options.filter((candidate) => candidate.status === "hired")
-                : currentRoleFilter === "currently not working"
-                ? options.filter((candidate) => candidate.status !== "hired")
-                : options
-            }
+            options={options}
             onChange={(e) => handleSelectChange(e?.value)}
           />
           {/* FIX IT */}
