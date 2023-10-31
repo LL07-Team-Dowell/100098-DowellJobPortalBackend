@@ -35,6 +35,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { CSVLink } from "react-csv";
 import { AiOutlineSearch } from "react-icons/ai";
+import { candidateStatuses } from "../../../../CandidatePage/utils/candidateStatuses";
 
 export const chartOptions = {
   responsive: true,
@@ -258,11 +259,11 @@ export default function DetailedIndividual({
     setOptions(
       currentRoleFilter === "currently working"
         ? candidates
-            ?.filter((candidate) => candidate.status === "hired")
+            ?.filter((candidate) => candidate.status === candidateStatuses.ONBOARDING)
             .map((v) => ({ value: v._id, label: v.applicant }))
         : currentRoleFilter === "currently not working"
         ? candidates
-            ?.filter((candidate) => candidate.status !== "hired")
+            ?.filter((candidate) => candidate.status === candidateStatuses.REMOVED)
             .map((v) => ({ value: v._id, label: v.applicant }))
         : candidates.map((v) => ({ value: v._id, label: v.applicant }))
     );
