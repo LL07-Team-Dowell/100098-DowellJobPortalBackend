@@ -9,4 +9,5 @@ export const candidateStatuses = {
     PENDING_SELECTION: "Pending",
     GUEST_PENDING_SELECTION: "Guest_Pending",
     REHIRE: "rehired",
+    REMOVED: 'Removed',
 }

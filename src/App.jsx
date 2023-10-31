@@ -92,6 +92,7 @@ import TeamInfo from "./components/TeamInfo/TeamInfo";
 import TeamScreenInfoAdminTeamLead from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamScreenInfo";
 import TeamInfoCandidate from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamInfoCandidate/TeamInfoCandidate";
 import AdminLogsHomePage from "./pages/AdminPage/views/LogsHomePage/LogsHomePage";
+import CandidateRemovedScreen from "./pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
 
 function App() {
   console.log = () => {};
@@ -116,6 +117,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
   const [candidateShortListed, setCandidateShortListed] = useState(false);
+  const [candidateRemoved, setCandidateRemoved] = useState(false);
   const [assignedProjects, setAssignedProjects] = useState([]);
   const [shorlistedJob, setshorlistedJob] = useState([]);
 
@@ -243,6 +245,7 @@ function App() {
                   setAssignedProjects={setAssignedProjects}
                   setCandidateShortListed={setCandidateShortListed}
                   setshorlistedJob={setshorlistedJob}
+                  setRemoved={setCandidateRemoved}
                 />
               </NewApplicationContextProvider>
             </JobContextProvider>
@@ -1598,6 +1601,7 @@ function App() {
                       setAssignedProjects={setAssignedProjects}
                       setCandidateShortListed={setCandidateShortListed}
                       setshorlistedJob={setshorlistedJob}
+                      setRemoved={setCandidateRemoved}
                     />
                   </ProvertionPeriod>
                 </JobContextProvider>
@@ -1806,7 +1810,13 @@ function App() {
   }
 
   // CANDIDATE PAGE
-  return candidateHired || currentUser.candidateIsHired ? (
+  return candidateRemoved ? (
+    <Routes>
+      <Route path="*" element={<CandidateRemovedScreen />} />
+    </Routes>
+  ) 
+  : 
+  (candidateHired || currentUser.candidateIsHired) ? (
     <Routes>
       <Route
         path='/team-screen-member/:id/team-tasks'
@@ -1911,7 +1921,9 @@ function App() {
       <Route path='/logout' element={<Logout />} />
       <Route path='*' element={<ErrorPage />} />
     </Routes>
-  ) : candidateShortListed ? (
+  ) 
+  : 
+  candidateShortListed ? (
     <Routes>
       <Route
         path='/'
@@ -1965,6 +1977,7 @@ function App() {
                   setAssignedProjects={setAssignedProjects}
                   setCandidateShortListed={setCandidateShortListed}
                   setshorlistedJob={setshorlistedJob}
+                  setRemoved={setCandidateRemoved}
                 />
               </JobContextProvider>
             </CandidateJobsContextProvider>
@@ -2134,6 +2147,9 @@ function App() {
   );
 }
 
+export default App;
+
+
 // return (
 //   <>
 //     <Routes>
@@ -2172,5 +2188,3 @@ function App() {
 //     component: FreelancerJobScreen,
 //   },
 // ];
-
-export default App;

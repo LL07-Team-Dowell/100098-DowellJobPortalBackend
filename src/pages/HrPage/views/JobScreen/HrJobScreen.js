@@ -399,6 +399,7 @@ function HrJobScreen() {
     const copyOfPublicDetail = { ...newPublicAccountDetails }
 
     copyOfPublicDetail.qr_id = currentCandidateData.username;
+    copyOfPublicDetail.application_id = currentCandidateData._id;
     copyOfPublicDetail.org_name = currentUser?.portfolio_info[0]?.org_name;
     copyOfPublicDetail.org_id = currentCandidateData?.company_id;
     copyOfPublicDetail.owner_name = currentUser?.settings_for_profile_info?.fakeSuperUserInfo ? 

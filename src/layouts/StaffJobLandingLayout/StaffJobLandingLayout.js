@@ -21,8 +21,6 @@ import BlurBackground from "../../pages/AdminPage/views/Landingpage/component/bl
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import { useEffect, useState } from "react";
 import { teamManagementProductName } from "../../utils/utils";
-import { hr } from "date-fns/locale";
-import { IoShareSocial } from "react-icons/io5";
 import ShareJobModal from "../../components/ShareJobModal/ShareJobModal";
 import PublicAccountConfigurationModal from "../../pages/HrPage/component/PublicAccountConfigurationModal/PublicAccountConfigurationModal";
 import { testingRoles } from "../../utils/testingRoles";
@@ -31,6 +29,10 @@ import { MdPublic } from "react-icons/md";
 import { projectLeadNavLinks } from "../../pages/ProjectLeadPage/utils/projectLeadNavigationLinks";
 import useCheckCurrentAuthStatus from "../../hooks/useCheckCurrentAuthStatus";
 import AuthOverlay from "../../components/AuthOverlay/AuthOverlay";
+import useCheckIfUserIsRemoved from "../../hooks/useCheckIfUserIsRemoved";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import CandidateRemovedScreen from "../../pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
+import HorizontalBarLoader from "../../components/HorizontalBarLoader/HorizontalBarLoader";
 
 
 const StaffJobLandingLayout = ({
@@ -78,8 +80,11 @@ const StaffJobLandingLayout = ({
     setCurrentAuthSessionExpired 
   } = useCurrentUserContext();
   const [isSuperUser, setIsSuperUser] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [userIsRemoved, setUserIsRemoved] = useState(false);
 
   useCheckCurrentAuthStatus(currentUser, setCurrentAuthSessionExpired);
+  useCheckIfUserIsRemoved(currentUser, setUserIsRemoved, setLoading);
 
   useEffect(() => {
     if (!currentUser) return
@@ -102,6 +107,15 @@ const StaffJobLandingLayout = ({
 
     setIsSuperUser(true);
   }, [currentUser]);
+
+  if (loading) return <>
+    <div className="loading__Check__Wrap">
+      <HorizontalBarLoader />
+      <p>Please hold on a minute...</p>
+    </div>
+  </>
+  
+  if (userIsRemoved) return <CandidateRemovedScreen />
 
   return (
     <>

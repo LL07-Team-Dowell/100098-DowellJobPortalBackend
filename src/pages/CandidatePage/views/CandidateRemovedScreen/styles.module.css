@@ -1,0 +1,25 @@
+.wrapper {
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+}
+
+.wrapper img {
+    max-width: 100%;
+    width: 26rem;
+}
+
+.wrapper h2 {
+    color: #005734;
+    font-weight: 500;
+    font-size: 2rem;
+}
+
+.wrapper p {
+    font-size: 0.9rem;
+}
