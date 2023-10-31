@@ -5922,7 +5922,6 @@ class Generate_Report(APIView):
                     threads_report["total issue raised"]+=1
                     if threads["current_status"]=="Created":
                         threads_report["Created"]+=1
-                        data["issue Created"]=+1
                     if threads["current_status"]=="Resolved":
                         threads_report["resolved"]+=1
                     if threads["current_status"]=="In progress":
@@ -5931,11 +5930,6 @@ class Generate_Report(APIView):
                         threads_report["Completed"]+=1
                 data["team threads report"]=threads_report  
 
-            
-                # return Response ({
-                    
-                #     "Testing_Threads":threads_report
-                # })
                 total_tasks = [res for res in json.loads(tasks)["data"]]
 
                 teams = dowellconnection(
