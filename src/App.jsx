@@ -95,7 +95,7 @@ import AdminLogsHomePage from "./pages/AdminPage/views/LogsHomePage/LogsHomePage
 import CandidateRemovedScreen from "./pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
 
 function App() {
-  // console.log = () => {};
+  console.log = () => {};
 
   const {
     currentUser,
@@ -562,11 +562,68 @@ function App() {
             </JobContextProvider>
           }
         />
+
         <Route
           path='/report'
           element={
             <JobContextProvider>
-              <AdminReports subAdminView={true} />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <ReportPages subAdminView={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/report/organization-report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AdminReports subAdminView={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/report/team-report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <TeamReport subAdminView={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/report/detailed-individual-report'
+          element={<DetailedIndividual subAdminView={true} />}
+        />
+        <Route
+          path='/report/task-report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <TaskReports subAdminView={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/report/leaderboard-report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <LeaderboardReport subAdminView={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
