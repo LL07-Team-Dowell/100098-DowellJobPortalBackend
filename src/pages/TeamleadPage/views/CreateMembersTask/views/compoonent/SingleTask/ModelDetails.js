@@ -8,6 +8,8 @@ import styled from 'styled-components';
 import { editTeamTask } from '../../../../../../../services/teamleadServices';
 import { arrayToObject, objectToArray } from './helper/arrayToObject';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
+import { AiTwotoneEdit } from 'react-icons/ai';
+import './SingleTask.scss'
 export const ModalContainer = styled.div`
   position: fixed;
   top: 0;
@@ -40,17 +42,46 @@ export const CloseButton = styled.button`
   font-size: 18px;
   color: black;
 `;
+export const EditButton = styled.button`
+position: absolute;
+top: 20px;
+right: 40px;
+background-color: transparent;
+border: none;
+cursor: pointer;
+font-size: 18px;
+color: black;
+`;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner }) => {
-    // const subTaskArray = Object.keys(subtasks || {}).map((key, idx) => ({ name: key, value: Object.values(subtasks)[idx][key] }));
+const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, teamId }) => {
     const [subTasks, setSubTask] = useState(objectToArray(subtasks));
-    console.log({ subTasks });
-    const [edit, setEdit] = useState(false)
+    const [edit, setEdit] = useState(false);
+    const initialData = { taskname, description, subtasks: objectToArray(subtasks) }
+    const [editData, setEditData] = useState({ taskname, description, subtasks: objectToArray(subtasks) })
     const [checkedSubtask, setCheckedSubtask] = useState([]);
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
-    const  { currentUser } = useCurrentUserContext();
-
-
+    const { currentUser } = useCurrentUserContext();
+    const EditFunction = () => {
+        const DATA = {
+            ...data,
+            title: editData.taskname,
+            description: editData.description,
+            subtasks: arrayToObject(editData.subtasks),
+        }
+        editTeamTask(taskId, DATA)
+            .then(resp => {
+                toast.success('task updated successfully');
+                setTasks(tasks => tasks.map(task => task._id === taskId ? DATA : task));
+                setEdit(false);
+            })
+            .catch(err => {
+                toast.error("something went wrong")
+            })
+    }
+    const cancelEdit = () => {
+        setEditData(initialData);
+        setEdit(false)
+    }
     const editSubtaskStatus = (name, value) => {
         const newData = {
             ...data,
@@ -96,27 +127,56 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
 
                 <div>
                     <h4>Task</h4>
-                    <p style={{ fontSize: '0.8rem' }}>{taskname}</p>
+                    {
+                        edit ?
+                            <input placeholder='edit task name' value={editData.taskname} onChange={e => setEditData({ ...editData, taskname: e.target.value })} className='input' />
+                            :
+                            <p style={{ fontSize: '0.8rem' }}>{editData.taskname}</p>
+                    }
                 </div>
-                <br />                
+                <br />
                 {
                     subTasks.length > 0 ?
                         <>
                             <div className='subTasks'>
                                 <h4>Subtasks</h4>
                                 {
-                                    subTasks.map(t => <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    editData.subtasks.map((t, ind) => <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                                         {
-                                            teamOwner === currentUser.userinfo.username && <input
-                                                type="checkbox"
-                                                value={t.name}
-                                                key={t.name}
-                                                onChange={() => editSubtaskStatus(t.name, t.value)}
-                                                name={t.name}
-                                                checked={checkedSubtask.includes(t.name)}
-                                            />
+                                            teamOwner === currentUser.userinfo.username && (
+                                                edit
+                                                    ?
+                                                    <input
+                                                        className='input'
+                                                        value={t.name}
+                                                        onChange={(e) => {
+                                                            setEditData({
+                                                                ...editData,
+                                                                subtasks: editData.subtasks.map((v, indx) =>
+                                                                    indx === ind
+                                                                        ?
+                                                                        { ...v, name: e.target.value }
+                                                                        :
+                                                                        v
+                                                                )
+                                                            })
+                                                        }}
+                                                    />
+                                                    :
+                                                    <>
+                                                        <input
+                                                            type="checkbox"
+                                                            value={t.name}
+                                                            key={t.name}
+                                                            onChange={() => editSubtaskStatus(t.name, t.value)}
+                                                            name={t.name}
+                                                            checked={checkedSubtask.includes(t.name)}
+                                                        />
+                                                        <p>{t.name}</p>
+                                                    </>
+
+                                            )
                                         }
-                                        <p>{t.name}</p>
                                     </div>)
                                 }
                             </div>
@@ -127,7 +187,12 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 }
                 <div>
                     <h4>Description</h4>
-                    <p style={{ fontSize: '0.8rem', whiteSpace: 'pre-line' }}>{description}</p>
+                    {
+                        edit ?
+                            <input placeholder='edit task description' onChange={e => setEditData({ ...editData, description: e.target.value })} className='input' value={editData.description} />
+                            :
+                            <p style={{ fontSize: '0.8rem', whiteSpace: 'pre-line' }}>{editData.description}</p>
+                    }
                 </div>
                 <br />
                 <div>
@@ -158,9 +223,48 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                         </div>
                     </>
                 }
+                {
+                    edit
+                    &&
+                    <div style={{ margin: '0 0 0 auto', width: 'fit-content' }}>
+                        <button style={{
+                            marginRight: '10px',
+                            width: '90px',
+                            padding: '7px 4px',
+                            borderRadius: '5px',
+                            outline: 'none',
+                            border: 'none',
+                            fontWeight: 500,
+                            backgroundColor: '#9a9a9a',
+                            color: 'white',
+                            cursor: 'pointer',
+                            fontFamily: 'Poppins'
+                        }}
+                            onClick={cancelEdit}
+                        >Cancel</button>
+                        <button
+                            style={{
+                                width: '90px',
+                                padding: '7px 4px',
+                                borderRadius: '5px',
+                                outline: 'none',
+                                border: 'none',
+                                fontWeight: 500,
+                                backgroundColor: '#005734',
+                                color: 'white',
+                                cursor: 'pointer',
+                                fontFamily: 'Poppins'
+                            }}
+                            onClick={EditFunction}
+                        >Edit</button>
+                    </div>
+                }
                 <CloseButton onClick={onClose}>
                     <FaTimes />
                 </CloseButton>
+                <EditButton onClick={() => { setEdit(true) }}>
+                    <AiTwotoneEdit />
+                </EditButton>
             </ModalContent>
         </ModalContainer>
     );
