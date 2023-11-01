@@ -6150,17 +6150,41 @@ class Generate_Report(APIView):
             profiles = SettingUserProfileInfo.objects.all()
             serializer = SettingUserProfileInfoSerializer(profiles, many=True)
             # print(serializer.data,"----")
-            valid_portfolio_names = []
-            for da in serializer.data:
-                for d in da["profile_info"]:
+            teamleads = []
+            accountleads =[]
+            hrs=[]
+            subadmins=[]
+            groupleads=[]
+            superadmins=[]
+            candidates=[]
+            viewers=[]
+            projectlead=[]
+            freelancers=[]
+            for user in serializer.data:
+                for d in user["profile_info"]:
                     if "profile_title" in d.keys() and "Role" in d.keys():
                         if d["Role"] == "Proj_Lead":
-                            # print(d,"----")
-                            valid_portfolio_names.append(d["profile_title"])
-            if (
-                payload.get("applicant_username")
-                and not portfolio_name in valid_portfolio_names
-            ):
+                            teamleads.append(d["profile_title"])
+                        if d["Role"] == "Dept_Lead":
+                            accountleads.append(d["profile_title"])
+                        if d["Role"] == "Hr":
+                            hrs.append(d["profile_title"])
+                        if d["Role"] == "sub_admin":
+                            subadmins.append(d["profile_title"])
+                        if d["Role"] == "group_lead":
+                            groupleads.append(d["profile_title"])
+                        if d["Role"] == "super_admin":
+                            superadmins.append(d["profile_title"])
+                        if d["Role"] == "candidate":
+                            candidates.append(d["profile_title"])
+                        if d["Role"] == "Project_Lead":
+                            projectlead.append(d["profile_title"])
+                        if d["Role"] == "Viewer":
+                            viewers.append(d["profile_title"])
+                    elif "profile_title" in d.keys():
+                        freelancers.append(d["profile_title"])        
+
+            if (payload.get("applicant_username") and payload.get("role") == "Teamlead" and not portfolio_name in teamleads):
                 return Response(
                     {
                         "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
@@ -6256,27 +6280,13 @@ class Generate_Report(APIView):
                 ):
                     _tasks_you_approved.append(task)
                 if (
-                    "task_approved_by" in task.keys()
-                    and task["task_approved_by"] == username
-                    and "status" in task.keys()(
-                        task["status"] == "Completed"
-                        or task["status"] == "Complete"
-                        or task["status"] == "completed"
-                        or task["status"] == "complete"
-                    )
-                ):
-                    _tasks_you_marked_as_complete.append(task)
-                if (
-                    "task_approved_by" in task.keys()
-                    and task["task_approved_by"] == username
-                    and "status" in task.keys()(
-                        task["status"] == "Incomplete"
-                        or task["status"] == "incompleted"
-                        or task["status"] == "incomplete"
-                        or task["status"] == "Incompleted"
-                    )
-                ):
-                    _tasks_you_marked_as_incomplete.append(task)
+                    "task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
+                    if(task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
+                        _tasks_you_marked_as_complete.append(task)
+
+                if ("task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
+                    if(task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted"):
+                        _tasks_you_marked_as_incomplete.append(task)
 
             teams = dowellconnection(
                 *team_management_modules, "fetch", {}, update_field
