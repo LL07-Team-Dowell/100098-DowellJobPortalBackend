@@ -81,6 +81,7 @@ const SingleTask = ({
               team_name: teamName,
               completed: false,
               task_added_by: currentUser.userinfo.username,
+              subtasks,
             }}
             date={date}
             teamOwner={team?.created_by}

@@ -9,7 +9,6 @@ import { editTeamTask } from '../../../../../../../services/teamleadServices';
 import { arrayToObject, objectToArray } from './helper/arrayToObject';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
 import { AiTwotoneEdit } from 'react-icons/ai';
-import { EditTeam } from '../../../../../../../services/createMembersTasks';
 import './SingleTask.scss'
 export const ModalContainer = styled.div`
   position: fixed;
@@ -57,12 +56,32 @@ color: black;
 const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, teamId }) => {
     const [subTasks, setSubTask] = useState(objectToArray(subtasks));
     const [edit, setEdit] = useState(false);
+    const initialData = { taskname, description, subtasks: objectToArray(subtasks) }
     const [editData, setEditData] = useState({ taskname, description, subtasks: objectToArray(subtasks) })
     const [checkedSubtask, setCheckedSubtask] = useState([]);
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
     const { currentUser } = useCurrentUserContext();
-
-
+    const EditFunction = () => {
+        const DATA = {
+            ...data,
+            title: editData.taskname,
+            description: editData.description,
+            subtasks: arrayToObject(editData.subtasks),
+        }
+        editTeamTask(taskId, DATA)
+            .then(resp => {
+                toast.success('task updated successfully');
+                setTasks(tasks => tasks.map(task => task._id === taskId ? DATA : task));
+                setEdit(false);
+            })
+            .catch(err => {
+                toast.error("something went wrong")
+            })
+    }
+    const cancelEdit = () => {
+        setEditData(initialData);
+        setEdit(false)
+    }
     const editSubtaskStatus = (name, value) => {
         const newData = {
             ...data,
@@ -204,7 +223,42 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                         </div>
                     </>
                 }
-                <div></div>
+                {
+                    edit
+                    &&
+                    <div style={{ margin: '0 0 0 auto', width: 'fit-content' }}>
+                        <button style={{
+                            marginRight: '10px',
+                            width: '90px',
+                            padding: '7px 4px',
+                            borderRadius: '5px',
+                            outline: 'none',
+                            border: 'none',
+                            fontWeight: 500,
+                            backgroundColor: '#9a9a9a',
+                            color: 'white',
+                            cursor: 'pointer',
+                            fontFamily: 'Poppins'
+                        }}
+                            onClick={cancelEdit}
+                        >Cancel</button>
+                        <button
+                            style={{
+                                width: '90px',
+                                padding: '7px 4px',
+                                borderRadius: '5px',
+                                outline: 'none',
+                                border: 'none',
+                                fontWeight: 500,
+                                backgroundColor: '#005734',
+                                color: 'white',
+                                cursor: 'pointer',
+                                fontFamily: 'Poppins'
+                            }}
+                            onClick={EditFunction}
+                        >Edit</button>
+                    </div>
+                }
                 <CloseButton onClick={onClose}>
                     <FaTimes />
                 </CloseButton>
