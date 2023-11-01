@@ -95,7 +95,7 @@ import AdminLogsHomePage from "./pages/AdminPage/views/LogsHomePage/LogsHomePage
 import CandidateRemovedScreen from "./pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => {};
 
   const {
     currentUser,
@@ -563,15 +563,18 @@ function App() {
           }
         />
 
-        <Route path='/report' element={
-          <JobContextProvider>
-            <CandidateTaskContextProvider>
+        <Route
+          path='/report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
                 <ValuesProvider>
                   <ReportPages subAdminView={true} />
                 </ValuesProvider>
               </CandidateTaskContextProvider>
-          </JobContextProvider>
-        } />
+            </JobContextProvider>
+          }
+        />
         <Route
           path='/report/organization-report'
           element={
@@ -739,15 +742,18 @@ function App() {
             </JobContextProvider>
           }
         />
-        <Route path='/report' element={
-          <JobContextProvider>
-            <CandidateTaskContextProvider>
+        <Route
+          path='/report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
                 <ValuesProvider>
                   <ReportPages />
                 </ValuesProvider>
               </CandidateTaskContextProvider>
-          </JobContextProvider>
-        } />
+            </JobContextProvider>
+          }
+        />
         <Route
           path='/report/organization-report'
           element={
@@ -1331,7 +1337,11 @@ function App() {
           path='/create-task/create-new-team/'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} isGrouplead={true} hideSearchBar={true}>
+              <StaffJobLandingLayout
+                teamleadView={true}
+                isGrouplead={true}
+                hideSearchBar={true}
+              >
                 <ValuesProvider>
                   <CreateTeam />
                 </ValuesProvider>
@@ -1866,11 +1876,9 @@ function App() {
   // CANDIDATE PAGE
   return candidateRemoved ? (
     <Routes>
-      <Route path="*" element={<CandidateRemovedScreen />} />
+      <Route path='*' element={<CandidateRemovedScreen />} />
     </Routes>
-  ) 
-  : 
-  (candidateHired || currentUser.candidateIsHired) ? (
+  ) : candidateHired || currentUser.candidateIsHired ? (
     <Routes>
       <Route
         path='/team-screen-member/:id/team-tasks'
@@ -1975,9 +1983,7 @@ function App() {
       <Route path='/logout' element={<Logout />} />
       <Route path='*' element={<ErrorPage />} />
     </Routes>
-  ) 
-  : 
-  candidateShortListed ? (
+  ) : candidateShortListed ? (
     <Routes>
       <Route
         path='/'
@@ -2202,7 +2208,6 @@ function App() {
 }
 
 export default App;
-
 
 // return (
 //   <>

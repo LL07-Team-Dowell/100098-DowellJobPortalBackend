@@ -71,6 +71,7 @@ const AddMemberPopup = ({
         setloading(true);
         EditTeam(team._id, {
           team_name,
+          team_description: team.team_description,
           members: [...inputMembers.map((m) => m.member)],
         })
           .then((resp) => {
