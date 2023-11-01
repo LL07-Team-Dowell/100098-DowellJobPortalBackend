@@ -3,6 +3,7 @@ import requests
 import pprint
 import os
 import bson
+import calendar
 from datetime import datetime, timedelta
 import datetime
 import base64
@@ -325,7 +326,6 @@ def period_check(start_dt, end_dt, data_list, key):
                                             pass
     return items, len(items), items_ids, len(items_ids)
 
-
 def valid_period(start_dt, end_dt):
     start_date = datetime.datetime.strptime(start_dt, "%m/%d/%Y %H:%M:%S")
     end_date = datetime.datetime.strptime(end_dt, "%m/%d/%Y %H:%M:%S")
@@ -333,7 +333,6 @@ def valid_period(start_dt, end_dt):
         return True
     else:
         return False
-
 
 def set_date_format(date):
     try:
@@ -491,3 +490,60 @@ def validate_id(id):
             return None
     except:
         return None
+
+def get_positions(serializer_data):
+    teamleads = []
+    accountleads =[]
+    hrs=[]
+    subadmins=[]
+    groupleads=[]
+    superadmins=[]
+    candidates=[]
+    viewers=[]
+    projectlead=[]
+    leaders=[]
+    for user in serializer_data:
+        for d in user["profile_info"]:
+            if "profile_title" in d.keys():
+                leaders.append(d["profile_title"])
+                if "Role" in d.keys():
+                    if d["Role"] == "Proj_Lead":
+                        teamleads.append(d["profile_title"])
+                    if d["Role"] == "Dept_Lead":
+                        accountleads.append(d["profile_title"])
+                    if d["Role"] == "Hr":
+                        hrs.append(d["profile_title"])
+                    if d["Role"] == "sub_admin":
+                        subadmins.append(d["profile_title"])
+                    if d["Role"] == "group_lead":
+                        groupleads.append(d["profile_title"])
+                    if d["Role"] == "super_admin":
+                        superadmins.append(d["profile_title"])
+                    if d["Role"] == "candidate":
+                        candidates.append(d["profile_title"])
+                    if d["Role"] == "Project_Lead":
+                        projectlead.append(d["profile_title"])
+                    if d["Role"] == "Viewer":
+                        viewers.append(d["profile_title"])
+    positions={
+        "leaders":leaders,
+        "teamleads":teamleads,
+        "accountleads":accountleads,
+        "hrs":hrs,
+        "subadmins":subadmins,
+        "groupleads":groupleads,
+        "superadmins":superadmins,
+        "candidates":candidates,
+        "projectlead":projectlead,
+        "viewers":viewers
+    }
+    return positions
+def get_month_details(date):
+    month_list = calendar.month_name
+    months = []
+    datime = datetime.datetime.strptime(set_date_format(date), "%m/%d/%Y %H:%M:%S")
+    month_name = month_list[datime.month]
+
+    months.append(month_name)
+
+    return (str(datime.year),month_name,months.count(month_name))
