@@ -215,15 +215,6 @@ const AddMemberPopup = ({
           <AiOutlineClose />
         </button>
         <h2>Edit Team Members</h2>
-        {/* <label htmlFor='task_name'>Team Name</label>
-        <input
-          type='text'
-          id='task_name'
-          className=''
-          placeholder='Choose a Team Name'
-          value={name}
-          onChange={(e)=> setname(e.target.value)}
-        /> */}
         <br />
         <label htmlFor=''>Team Members</label>
         <div className='added-members-input'>
