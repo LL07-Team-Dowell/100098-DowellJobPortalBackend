@@ -248,7 +248,8 @@ const LandingPage = ({ subAdminView }) => {
 
     if (!currentSessionId) return;
     const teamManagementProduct = currentUser?.portfolio_info.find(
-      (item) => item.product === teamManagementProductName
+      (item) => item.product === teamManagementProductName &&
+        item.member_type === 'owner'
     );
     if (!teamManagementProduct) return;
 
@@ -324,7 +325,7 @@ const LandingPage = ({ subAdminView }) => {
   return (
     <StaffJobLandingLayout
       adminView={true}
-      handleNavIconClick={() => navigate("/add")}
+      handleNavIconClick={() => subAdminView ? navigate("/add-job") : navigate("/add")}
       searchValue={searchValue}
       setSearchValue={handleSearchChange}
       subAdminView={subAdminView}

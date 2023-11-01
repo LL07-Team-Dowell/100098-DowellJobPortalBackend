@@ -31,7 +31,7 @@ const [
     formatDateForAPI(dateSevenDaysAgo),
 ];
 
-const LeaderboardReport = ({ isPublicReportUser, isProjectLead }) => {
+const LeaderboardReport = ({ isPublicReportUser, isProjectLead, subAdminView }) => {
     const initialDatesSelection = {
         startDate: dateSevenDaysAgoFormattedForAPI,
         endDate: todayDateFormattedForAPI,
@@ -278,6 +278,7 @@ const LeaderboardReport = ({ isPublicReportUser, isProjectLead }) => {
             pageTitle={"Leaderboard report"}
             hideSearchBar={true}
             projectLeadView={isProjectLead}
+            subAdminView={subAdminView}
         >
             <LoadingSpinner />
             <p style={{ textAlign: 'center' }}>
@@ -297,6 +298,7 @@ const LeaderboardReport = ({ isPublicReportUser, isProjectLead }) => {
             pageTitle={"Leaderboard report"}
             hideSearchBar={true}
             projectLeadView={isProjectLead}
+            subAdminView={subAdminView}
         >
             <p style={{ textAlign: 'center', color: 'red', marginTop: 40 }}>An error occured while trying to generate your report</p>
         </StaffJobLandingLayout>
@@ -309,6 +311,7 @@ const LeaderboardReport = ({ isPublicReportUser, isProjectLead }) => {
             pageTitle={"Leaderboard report"}
             hideSearchBar={true}
             projectLeadView={isProjectLead}
+            subAdminView={subAdminView}
         >
             <div className="detailed_indiv_container">
                 <div className="task__report__nav">
