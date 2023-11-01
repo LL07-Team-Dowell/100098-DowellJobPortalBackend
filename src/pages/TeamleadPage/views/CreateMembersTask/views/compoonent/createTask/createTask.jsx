@@ -154,6 +154,9 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
+        <br />
+        <br />
+
         <label htmlFor='task_name'>Task Image (Optional)</label>
         <input
           className='input'
