@@ -137,7 +137,7 @@ const AddIssueScreen = ({
       createIssue.actual_product_behavior.length < 1 ||
       createIssue.thread_type.length < 1
     ) return setDisabled(true);
-    
+
     setDisabled(false);
   }, [createIssue, issueTitle]);
 
@@ -164,12 +164,12 @@ const AddIssueScreen = ({
     //   );
     //   return;
     // } 
-    
+
     if (!createIssue.team_id || createIssue.team_id === "") {
       toast.info("Please select a team you will like to create this issue in");
       return;
-    } 
-    
+    }
+
     if (createIssue.team_alerted_id === "") {
       toast.info("Please select a team you will like to notify about this issue");
       return;
