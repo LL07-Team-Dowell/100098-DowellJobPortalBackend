@@ -8,6 +8,9 @@ import styled from 'styled-components';
 import { editTeamTask } from '../../../../../../../services/teamleadServices';
 import { arrayToObject, objectToArray } from './helper/arrayToObject';
 import { useCurrentUserContext } from '../../../../../../../contexts/CurrentUserContext';
+import { AiTwotoneEdit } from 'react-icons/ai';
+import { EditTeam } from '../../../../../../../services/createMembersTasks';
+import './SingleTask.scss'
 export const ModalContainer = styled.div`
   position: fixed;
   top: 0;
@@ -40,15 +43,24 @@ export const CloseButton = styled.button`
   font-size: 18px;
   color: black;
 `;
+export const EditButton = styled.button`
+position: absolute;
+top: 20px;
+right: 40px;
+background-color: transparent;
+border: none;
+cursor: pointer;
+font-size: 18px;
+color: black;
+`;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner }) => {
-    // const subTaskArray = Object.keys(subtasks || {}).map((key, idx) => ({ name: key, value: Object.values(subtasks)[idx][key] }));
+const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, teamId }) => {
     const [subTasks, setSubTask] = useState(objectToArray(subtasks));
-    console.log({ subTasks });
-    const [edit, setEdit] = useState(false)
+    const [edit, setEdit] = useState(false);
+    const [editData, setEditData] = useState({ taskname, description, subtasks: objectToArray(subtasks) })
     const [checkedSubtask, setCheckedSubtask] = useState([]);
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
-    const  { currentUser } = useCurrentUserContext();
+    const { currentUser } = useCurrentUserContext();
 
 
     const editSubtaskStatus = (name, value) => {
@@ -96,27 +108,56 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
 
                 <div>
                     <h4>Task</h4>
-                    <p style={{ fontSize: '0.8rem' }}>{taskname}</p>
+                    {
+                        edit ?
+                            <input placeholder='edit task name' value={editData.taskname} onChange={e => setEditData({ ...editData, taskname: e.target.value })} className='input' />
+                            :
+                            <p style={{ fontSize: '0.8rem' }}>{editData.taskname}</p>
+                    }
                 </div>
-                <br />                
+                <br />
                 {
                     subTasks.length > 0 ?
                         <>
                             <div className='subTasks'>
                                 <h4>Subtasks</h4>
                                 {
-                                    subTasks.map(t => <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    editData.subtasks.map((t, ind) => <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                                         {
-                                            teamOwner === currentUser.userinfo.username && <input
-                                                type="checkbox"
-                                                value={t.name}
-                                                key={t.name}
-                                                onChange={() => editSubtaskStatus(t.name, t.value)}
-                                                name={t.name}
-                                                checked={checkedSubtask.includes(t.name)}
-                                            />
+                                            teamOwner === currentUser.userinfo.username && (
+                                                edit
+                                                    ?
+                                                    <input
+                                                        className='input'
+                                                        value={t.name}
+                                                        onChange={(e) => {
+                                                            setEditData({
+                                                                ...editData,
+                                                                subtasks: editData.subtasks.map((v, indx) =>
+                                                                    indx === ind
+                                                                        ?
+                                                                        { ...v, name: e.target.value }
+                                                                        :
+                                                                        v
+                                                                )
+                                                            })
+                                                        }}
+                                                    />
+                                                    :
+                                                    <>
+                                                        <input
+                                                            type="checkbox"
+                                                            value={t.name}
+                                                            key={t.name}
+                                                            onChange={() => editSubtaskStatus(t.name, t.value)}
+                                                            name={t.name}
+                                                            checked={checkedSubtask.includes(t.name)}
+                                                        />
+                                                        <p>{t.name}</p>
+                                                    </>
+
+                                            )
                                         }
-                                        <p>{t.name}</p>
                                     </div>)
                                 }
                             </div>
@@ -127,7 +168,12 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 }
                 <div>
                     <h4>Description</h4>
-                    <p style={{ fontSize: '0.8rem', whiteSpace: 'pre-line' }}>{description}</p>
+                    {
+                        edit ?
+                            <input placeholder='edit task description' onChange={e => setEditData({ ...editData, description: e.target.value })} className='input' value={editData.description} />
+                            :
+                            <p style={{ fontSize: '0.8rem', whiteSpace: 'pre-line' }}>{editData.description}</p>
+                    }
                 </div>
                 <br />
                 <div>
@@ -158,9 +204,13 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                         </div>
                     </>
                 }
+                <div></div>
                 <CloseButton onClick={onClose}>
                     <FaTimes />
                 </CloseButton>
+                <EditButton onClick={() => { setEdit(true) }}>
+                    <AiTwotoneEdit />
+                </EditButton>
             </ModalContent>
         </ModalContainer>
     );

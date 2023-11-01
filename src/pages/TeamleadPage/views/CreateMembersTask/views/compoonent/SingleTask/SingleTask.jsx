@@ -84,6 +84,7 @@ const SingleTask = ({
             }}
             date={date}
             teamOwner={team?.created_by}
+            teamId={team?._id}
           />
         )}
         <div className='team-screen-task-progress-detail-content-data'>
@@ -93,15 +94,18 @@ const SingleTask = ({
               {title}
             </p>
             <p className='team-screen-task-progress-detail-content-data-team-start-date'>
-              {
-                taskCompleted && completed_date && typeof new Date(completed_date) != 'Invalid Date' ? <>
-                  Completed on . <span>{new Date(completed_date).toDateString()}</span>
+              {taskCompleted &&
+              completed_date &&
+              typeof new Date(completed_date) != "Invalid Date" ? (
+                <>
+                  Completed on .{" "}
+                  <span>{new Date(completed_date).toDateString()}</span>
                 </>
-                :
+              ) : (
                 <>
                   Started on . <span>{date}</span>
                 </>
-              }
+              )}
             </p>
             <div className='team-screen-task-progress-detail-content-members-and-progress'>
               <div className='team-screen-task-progress-detail-content-members'>
@@ -119,10 +123,9 @@ const SingleTask = ({
               </div>
               <div
                 className={`team-screen-task-progress-data-circle ${
-                  taskCompleted ?
-                  "team-screen-task-progress-data-circle-complete"
-                  :
-                  ''
+                  taskCompleted
+                    ? "team-screen-task-progress-data-circle-complete"
+                    : ""
                 }`}
               >
                 <span>{taskCompleted ? "100" : "00"}%</span>
