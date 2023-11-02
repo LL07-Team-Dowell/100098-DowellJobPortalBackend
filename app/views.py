@@ -710,7 +710,7 @@ class associate_job(APIView):
         }
         update_field = {"status": "nothing to update"}
 
-        serializer=regionalassociateSerializer(data=field)
+        serializer = regionalassociateSerializer(data=field)
         if serializer.is_valid():
             response = dowellconnection(*jobs, "insert", field, update_field)
             if json.loads(response)["isSuccess"] == True:
@@ -2421,6 +2421,7 @@ class task_module(APIView):
             "project": data.get("project"),
             "subproject": data.get("subproject"),
             "applicant": data.get("applicant"),
+            "task_image": data.get("image"),
             "task": data.get("task"),
             "task_added_by": data.get("task_added_by"),
             "data_type": data.get("data_type"),
@@ -2438,6 +2439,7 @@ class task_module(APIView):
             field = {
                 "eventId": get_event_id()["event_id"],
                 "applicant": data.get("applicant"),
+                "task_image": data.get("image"),
                 "task_added_by": data.get("task_added_by"),
                 "data_type": data.get("data_type"),
                 "company_id": data.get("company_id"),
@@ -3023,6 +3025,7 @@ class create_team_task(APIView):
         payload = {
             "title": data.get("title"),
             "description": data.get("description"),
+            "task_image": data.get("image"),
             "assignee": data.get("assignee"),
             "team_id": data.get("team_id"),
             "task_created_date": self.get_current_datetime(datetime.now()),
@@ -3034,6 +3037,7 @@ class create_team_task(APIView):
                 "eventId": get_event_id()["event_id"],
                 "title": data.get("title"),
                 "description": data.get("description"),
+                "task_image": data.get("image"),
                 "assignee": data.get("assignee"),
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
@@ -4155,7 +4159,7 @@ class createPublicApplication(APIView):
             "job_id": request.data.get("job_id"),
             "job_name": request.data.get("job_name"),
             "company_data_type": request.data.get("company_data_type"),
-           
+
         }
         serializer = CreatePublicLinkSerializer(data=field)
         if serializer.is_valid():
@@ -4324,7 +4328,7 @@ class sendMailToPublicCandidate(APIView):
                 toname, toemail, subject, email_content)
 
             # update the public api by username==================
-            field = {"username": qr_id,"_id":application_id}
+            field = {"username": qr_id, "_id": application_id}
             update_field = {"signup_mail_sent": True}
             update_public_application = dowellconnection(
                 *candidate_management_reports, "update", field, update_field
@@ -5910,27 +5914,26 @@ class Generate_Report(APIView):
                     *thread_report_module, "fetch", field, update_field
                 ))['data']
 
-                threads_report={
+                threads_report = {
                     "Created": 0,
                     "Resolved": 0,
-                    "In_progress":0,
-                    "Completed":0,
-                    "total issue raised":0
-                    
+                    "In_progress": 0,
+                    "Completed": 0,
+                    "total issue raised": 0
+
                 }
-                
 
                 for threads in team_threads:
-                    threads_report["total issue raised"]+=1
-                    if threads["current_status"]=="Created":
-                        threads_report["Created"]+=1
-                    if threads["current_status"]=="Resolved":
-                        threads_report["resolved"]+=1
-                    if threads["current_status"]=="In progress":
-                        threads_report["In_progress"]+=1
-                    if threads["current_status"]=="Completed":
-                        threads_report["Completed"]+=1
-                data["team threads report"]=threads_report  
+                    threads_report["total issue raised"] += 1
+                    if threads["current_status"] == "Created":
+                        threads_report["Created"] += 1
+                    if threads["current_status"] == "Resolved":
+                        threads_report["resolved"] += 1
+                    if threads["current_status"] == "In progress":
+                        threads_report["In_progress"] += 1
+                    if threads["current_status"] == "Completed":
+                        threads_report["Completed"] += 1
+                data["team threads report"] = threads_report
 
                 total_tasks = [res for res in json.loads(tasks)["data"]]
 
@@ -6180,73 +6183,152 @@ class Generate_Report(APIView):
                         )
             ##_-------------------------------------------------------------------------------
 
+            # checking if the user is a team lead-----
+            profiles = SettingUserProfileInfo.objects.all()
+            serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+            # print(serializer.data,"----")
+            teamleads = []
+            accountleads = []
+            hrs = []
+            subadmins = []
+            groupleads = []
+            superadmins = []
+            candidates = []
+            viewers = []
+            projectlead = []
+            freelancers = []
+            for user in serializer.data:
+                for d in user["profile_info"]:
+                    if "profile_title" in d.keys() and "Role" in d.keys():
+                        if d["Role"] == "Proj_Lead":
+                            teamleads.append(d["profile_title"])
+                        if d["Role"] == "Dept_Lead":
+                            accountleads.append(d["profile_title"])
+                        if d["Role"] == "Hr":
+                            hrs.append(d["profile_title"])
+                        if d["Role"] == "sub_admin":
+                            subadmins.append(d["profile_title"])
+                        if d["Role"] == "group_lead":
+                            groupleads.append(d["profile_title"])
+                        if d["Role"] == "super_admin":
+                            superadmins.append(d["profile_title"])
+                        if d["Role"] == "candidate":
+                            candidates.append(d["profile_title"])
+                        if d["Role"] == "Project_Lead":
+                            projectlead.append(d["profile_title"])
+                        if d["Role"] == "Viewer":
+                            viewers.append(d["profile_title"])
+                    elif "profile_title" in d.keys():
+                        freelancers.append(d["profile_title"])
+
+            if (payload.get("applicant_username") and payload.get("role") == "Teamlead" and not portfolio_name in teamleads):
+                return Response(
+                    {
+                        "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
+                        "error": f"The User ->{payload.get('applicant_username')}-({portfolio_name}) is not a team lead",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             #initializing the data content as an empty list
             data["data"] = []
 
             #initializing all the months with empty data-------------------------------------------------
             month_list = calendar.month_name
-            #print(calendar.month_name[1:])
-            item = {}
-            for month in month_list[1:]:
-                item[month] = {
-                    "tasks_added": 0,
-                    "tasks_completed": 0,
-                    "tasks_uncompleted": 0,
-                    "tasks_approved": 0,
-                    "percentage_tasks_completed": 0,
-                    "tasks_you_approved": 0,
-                    "tasks_you_marked_as_complete": 0,
-                    "tasks_you_marked_as_incomplete": 0,
-                    "teams": 0,
-                    "team_tasks": 0,
-                    "team_tasks_completed": 0,
-                    "team_tasks_uncompleted": 0,
-                    "percentage_team_tasks_completed": 0,
-                    "team_tasks_approved": 0,
-                    "team_tasks_issues_raised": 0,
-                    "team_tasks_issues_resolved": 0,
-                    "team_tasks_comments_added": 0,
-                }
-                
-            #-----------------------------------------------------------------------------
-            
-            #--calling multiple dowell connections using threads----------------------
-            _tasks_added = []
-            _task_details = []
-            teams = []
-            issues_raised=[]
-            comments_added=[]
+            # print(calendar.month_name[1:])
 
-            def call_dowellconnection(*args):
-                #print(*args)
-                d = dowellconnection(*args)
-                if "task_reports" in args:
-                    _tasks_added.append(d)
-                if "task_details" in args:
-                    _task_details.append(d)
-                if "team_management_report" in args:
-                    teams.append(d)
-                if "ThreadReport" in args:
-                    issues_raised.append(d)
-                if "ThreadCommentReport" in args:
-                    comments_added.append(d)
+            item = {
+                "January": {},
+                "February": {},
+                "March": {},
+                "April": {},
+                "May": {},
+                "June": {},
+                "July": {},
+                "August": {},
+                "September": {},
+                "October": {},
+                "November": {},
+                "December": {},
+            }
+            for key, value in item.items():
+                if payload.get("role") == "Teamlead":
+                    item[key] = {
+                        "tasks_added": 0,
+                        "tasks_completed": 0,
+                        "tasks_uncompleted": 0,
+                        "tasks_approved": 0,
+                        "percentage_tasks_completed": 0,
+                        "tasks_you_approved": 0,
+                        "tasks_you_marked_as_complete": 0,
+                        "tasks_you_marked_as_incomplete": 0,
+                        "teams": 0,
+                        "team_tasks": 0,
+                        "team_tasks_completed": 0,
+                        "team_tasks_uncompleted": 0,
+                        "percentage_team_tasks_completed": 0,
+                        "team_tasks_approved": 0,
+                        "team_tasks_issues_raised": 0,
+                        "team_tasks_issues_resolved": 0,
+                        "team_tasks_comments_added": 0,
+                    }
+                else:
+                    item[key] = {
+                        "tasks_added": 0,
+                        "tasks_completed": 0,
+                        "tasks_uncompleted": 0,
+                        "tasks_approved": 0,
+                        "percentage_tasks_completed": 0,
+                        "teams": 0,
+                        "team_tasks": 0,
+                        "team_tasks_completed": 0,
+                        "team_tasks_uncompleted": 0,
+                        "percentage_team_tasks_completed": 0,
+                        "team_tasks_approved": 0,
+                        "team_tasks_issues_raised": 0,
+                        "team_tasks_issues_resolved": 0,
+                        "team_tasks_comments_added": 0,
+                    }
 
-            _tasks_added_thread = threading.Thread(
-                target=call_dowellconnection,
-                args=(*task_management_reports,
-                        "fetch", {"task_added_by": username}, update_field),
+            _tasks_added = dowellconnection(
+                *task_management_reports,
+                "fetch",
+                {"task_added_by": username},
+                update_field,
             )
-            _tasks_added_thread.start()
 
-            _task_details_thread = threading.Thread(
-                target=call_dowellconnection,
-                args=(*task_details_module,"fetch",{},update_field),
+            _task_details = dowellconnection(
+                *task_details_module, "fetch", {}, update_field
             )
-            _task_details_thread.start()
+            tasks_details = []
+            _tasks_list = []
+            _tasks_completed = []
+            _tasks_uncompleted = []
+            _tasks_approved = []
+            _tasks_you_approved = []
+            _tasks_you_marked_as_complete = []
+            _tasks_you_marked_as_incomplete = []
+            for task in json.loads(_task_details)["data"]:
+                for t in json.loads(_tasks_added)["data"]:
+                    if t["_id"] == task["task_id"]:
+                        _tasks_list.append(t)
+                        tasks_details.append(task)
+                if (
+                    "task_approved_by" in task.keys()
+                    and task["task_approved_by"] == username
+                ):
+                    _tasks_you_approved.append(task)
+                if (
+                    "task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
+                    if(task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
+                        _tasks_you_marked_as_complete.append(task)
 
-            teams_thread = threading.Thread(
-                target=call_dowellconnection,
-                args=(*team_management_modules,"fetch",{},update_field),
+                if ("task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
+                    if(task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted"):
+                        _tasks_you_marked_as_incomplete.append(task)
+
+            teams = dowellconnection(
+                *team_management_modules, "fetch", {}, update_field
             )
             teams_thread.start()
 
@@ -7436,6 +7518,8 @@ class SecureEndPoint(APIView):
         )
 
 # ------------------ Project Time API -----------------------------  #
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class AddTotalTime(APIView):
     def post(self, request):
@@ -7466,18 +7550,18 @@ class AddTotalTime(APIView):
         print(project)
         if project:
             field = {"company_id": company_id,
-                     "project":project}
+                     "project": project}
             response = json.loads(
                 dowellconnection(*time_detail_module, "fetch",
-                                field, update_field=None)
+                                 field, update_field=None)
             )
         return Response(
-                {
-                    "success": True,
-                    "data": response,
-                },
-                status=status.HTTP_200_OK,
-            )
+            {
+                "success": True,
+                "data": response,
+            },
+            status=status.HTTP_200_OK,
+        )
 
     def patch(self, request, company_id):
         data = request.data
@@ -7667,7 +7751,7 @@ class GetbyDocumentIDTotalTime(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class Testing_Threads(APIView):
     def get(self, request, company_id):
-        # remove space 
+        # remove space
         status = request.GET.get("status")
         if status:
             field = {"current_status": status, "company_id": company_id}
@@ -7708,6 +7792,7 @@ class Testing_Threads(APIView):
                 }
             )
 
+
 @method_decorator(csrf_exempt, name="dispatch")
 class GetTotalTimeOfProject(APIView):
     def get(self, request):
@@ -7715,10 +7800,11 @@ class GetTotalTimeOfProject(APIView):
         company_id = request.GET.get("company_id")
         task_field = {
             "project": project_name,
-            "company_id":company_id
+            "company_id": company_id
         }
         task_response = json.loads(
-            dowellconnection(*task_details_module, "fetch", task_field, update_field=None)
+            dowellconnection(*task_details_module, "fetch",
+                             task_field, update_field=None)
         )
         total_duration = timedelta()
 
@@ -7740,7 +7826,6 @@ class GetTotalTimeOfProject(APIView):
                 "total_time": f"{int(total_hours):02d}:{int(total_minutes):02d}",
             }
         )
-      
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -7751,7 +7836,8 @@ class GetAllProjectAndTime(APIView):
             "company_id": company_id
         }
         task_response = json.loads(
-            dowellconnection(*task_details_module, "fetch", task_field, update_field=None)
+            dowellconnection(*task_details_module, "fetch",
+                             task_field, update_field=None)
         )
 
         project_times = {}
