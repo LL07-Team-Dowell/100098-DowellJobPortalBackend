@@ -7875,6 +7875,13 @@ class dashboard_services(APIView):
             return self.update_job_category(request)
         else:
             return self.handle_error(request)
+    def get(self, request):
+        type_request = request.GET.get("type")
+
+        if type_request == "total_worklogs_count":
+            return self.total_worklogs_count(request)
+        else:
+            return self.handle_error(request)
 
     """Update the status of a candidate"""
     def update_status(self,request):
@@ -7950,6 +7957,28 @@ class dashboard_services(APIView):
                 "error":serializer.errors
             })
 
+    """Toatla worklogs for the company"""
+    def total_worklogs_count(self,request):
+        company_id = request.GET.get('company_id')
+        field = {
+            "company_id":company_id
+        }
+        response = json.loads(dowellconnection(*task_details_module, "fetch",field,update_field=None))
+        data = response.get("data",[])
+        if data is not None:
+            total_worklogs = len(data)
+            
+            return Response({
+                "success": True,
+                "message": "Total number of worklogs for the company",
+                "worklogs_count": total_worklogs
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "There are no worklogs for the company or company id is not correct",
+            })
+        
     """HANDLE ERROR"""
     def handle_error(self, request):
         return Response(
