@@ -53,7 +53,7 @@ font-size: 18px;
 color: black;
 `;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, teamId }) => {
+const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, teamId, completeTaskFunction }) => {
     const [subTasks, setSubTask] = useState(objectToArray(subtasks));
     const [edit, setEdit] = useState(false);
     const initialData = { taskname, description, subtasks: objectToArray(subtasks) }
@@ -78,6 +78,12 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 toast.error("something went wrong")
             })
     }
+    useEffect(() => {
+        if (editData.subtasks.find(task => task.value === false) === undefined) {
+            completeTaskFunction();
+            alert('asdasd')
+        }
+    }, [editData])
     const cancelEdit = () => {
         setEditData(initialData);
         setEdit(false)
