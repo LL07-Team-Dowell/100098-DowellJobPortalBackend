@@ -120,7 +120,6 @@ class AdminSerializer(serializers.Serializer):
     country = serializers.CharField(allow_null=True, allow_blank=True)
     city = serializers.CharField(allow_null=True, allow_blank=True)
     continent = serializers.CharField(allow_null=True, allow_blank=True)
-    
 
 
 # candidate serializers__________________________________________________________________
@@ -159,7 +158,8 @@ class CandidateSerializer(serializers.Serializer):
     academic_qualification_type = serializers.CharField(
         allow_null=False, allow_blank=False
     )
-    academic_qualification = serializers.CharField(allow_null=False, allow_blank=False)
+    academic_qualification = serializers.CharField(
+        allow_null=False, allow_blank=False)
     country = serializers.CharField(allow_null=False, allow_blank=False)
     agree_to_all_term = serializers.BooleanField(default=False)
     internet_speed = serializers.CharField(allow_null=False, allow_blank=False)
@@ -175,8 +175,10 @@ class CandidateSerializer(serializers.Serializer):
     job_category = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE
     )
-    freelancePlatform = serializers.CharField(allow_null=False, allow_blank=False)
-    freelancePlatformUrl = serializers.CharField(allow_null=False, allow_blank=False)
+    freelancePlatform = serializers.CharField(
+        allow_null=False, allow_blank=False)
+    freelancePlatformUrl = serializers.CharField(
+        allow_null=False, allow_blank=False)
     portfolio_name = serializers.CharField(allow_null=True, allow_blank=True)
 
     def get_fields(self):
@@ -221,7 +223,8 @@ class LeadSerializer(serializers.Serializer):
         ("Archived_Data", "Archived_Data"),
     )
 
-    teamlead_remarks = serializers.CharField(allow_null=False, allow_blank=False)
+    teamlead_remarks = serializers.CharField(
+        allow_null=False, allow_blank=False)
     status = serializers.CharField(allow_null=False, allow_blank=False)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     company_id = serializers.CharField(allow_null=False, allow_blank=False)
@@ -314,7 +317,8 @@ class SettingUserProfileInfoSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         if isinstance(representation["profile_info"], str):
-            representation["profile_info"] = json.loads(representation["profile_info"])
+            representation["profile_info"] = json.loads(
+                representation["profile_info"])
         return representation
 
 
@@ -336,7 +340,8 @@ class SettingUserProjectSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         if isinstance(representation["project_list"], str):
-            representation["project_list"] = json.loads(representation["project_list"])
+            representation["project_list"] = json.loads(
+                representation["project_list"])
         return representation
 
 
@@ -360,8 +365,8 @@ class CreatePublicLinkSerializer(serializers.Serializer):
     )
     job_company_id = serializers.CharField(allow_null=False, allow_blank=False)
     job_id = serializers.CharField(allow_null=False, allow_blank=False)
-    company_data_type = serializers.CharField(allow_null=False, allow_blank=False)
-
+    company_data_type = serializers.CharField(
+        allow_null=False, allow_blank=False)
 
 
 class SendMailToPublicSerializer(serializers.Serializer):
@@ -405,7 +410,8 @@ class ThreadsSerializer(serializers.Serializer):
     image = serializers.URLField(allow_null=False, allow_blank=True)
     created_by = serializers.CharField(allow_null=False, allow_blank=False)
     team_id = serializers.CharField(allow_null=False, allow_blank=False)
-    team_alerted_id = serializers.CharField(allow_null=False, allow_blank=False)
+    team_alerted_id = serializers.CharField(
+        allow_null=False, allow_blank=False)
     current_status = serializers.CharField(allow_null=False, allow_blank=False)
     previous_status = serializers.ListField(
         child=serializers.ChoiceField(
@@ -418,7 +424,8 @@ class ThreadsSerializer(serializers.Serializer):
     thread_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=THREAD_TYPE
     )
-    actual_product_behavior = serializers.CharField(allow_null=False, allow_blank=False)
+    actual_product_behavior = serializers.CharField(
+        allow_null=False, allow_blank=False)
     expected_product_behavior = serializers.CharField(
         allow_null=False, allow_blank=False
     )
@@ -434,17 +441,20 @@ class CommentsSerializer(serializers.Serializer):
 
 
 class PublicProductURLSerializer(serializers.Serializer):
-    public_link_name = serializers.CharField(allow_null=False, allow_blank=False)
+    public_link_name = serializers.CharField(
+        allow_null=False, allow_blank=False)
     product_url = serializers.URLField(allow_null=False, allow_blank=False)
     qr_ids = serializers.ListField(
         child=serializers.CharField(allow_null=False, allow_blank=False)
     )
     job_company_id = serializers.CharField(allow_null=False, allow_blank=False)
-    company_data_type = serializers.CharField(allow_null=False, allow_blank=False)
+    company_data_type = serializers.CharField(
+        allow_null=False, allow_blank=False)
 
 
 class UpdatePaymentStatusSerializer(serializers.Serializer):
-    payment_requested = serializers.BooleanField(required=True, allow_null=False)
+    payment_requested = serializers.BooleanField(
+        required=True, allow_null=False)
     current_payment_request_status = serializers.CharField(
         allow_null=False, allow_blank=False
     )
@@ -459,6 +469,7 @@ class TaskModuleSerializer(serializers.Serializer):
     task_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=TASK_TYPE
     )
+    task_image = serializers.URLField(allow_null=True)
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     task = serializers.CharField(allow_null=False, allow_blank=False)
     task_added_by = serializers.CharField(allow_null=False, allow_blank=False)
@@ -534,7 +545,8 @@ class githubinfoserializer(serializers.Serializer):
 
 
 class TaskApprovedBySerializer(serializers.Serializer):
-    task_approved_by = serializers.CharField(allow_null=False, allow_blank=False)
+    task_approved_by = serializers.CharField(
+        allow_null=False, allow_blank=False)
 
 
 class ProjectDeadlineSerializer(serializers.Serializer):
@@ -542,6 +554,7 @@ class ProjectDeadlineSerializer(serializers.Serializer):
     company_id = serializers.CharField(allow_null=True, allow_blank=True)
     lead_name = serializers.CharField(allow_null=True, allow_blank=True)
     total_time = serializers.IntegerField()
+
 
 class regionalassociateSerializer(serializers.Serializer):
     JOB_CATEGORY_CHOICE = (
@@ -580,12 +593,15 @@ class regionalassociateSerializer(serializers.Serializer):
         allow_null=False, allow_blank=False, choices=paymentInterval_choice
     )
 
+
 class TeamTaskSerializer(serializers.Serializer):
     title = serializers.CharField(allow_null=False, allow_blank=False)
     description = serializers.CharField(allow_null=False, allow_blank=False)
+    task_image = serializers.URLField(allow_null=True)
     assignee = serializers.ListField(
         child=serializers.CharField(allow_null=False, allow_blank=False)
     )
     team_id = serializers.CharField(allow_null=False, allow_blank=False)
-    task_created_date = serializers.CharField(allow_null=False, allow_blank=False)
+    task_created_date = serializers.CharField(
+        allow_null=False, allow_blank=False)
     subtasks = serializers.DictField(allow_null=True)

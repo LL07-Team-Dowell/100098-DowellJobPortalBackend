@@ -708,7 +708,7 @@ class associate_job(APIView):
         }
         update_field = {"status": "nothing to update"}
 
-        serializer=regionalassociateSerializer(data=field)
+        serializer = regionalassociateSerializer(data=field)
         if serializer.is_valid():
             response = dowellconnection(*jobs, "insert", field, update_field)
             if json.loads(response)["isSuccess"] == True:
@@ -2419,6 +2419,7 @@ class task_module(APIView):
             "project": data.get("project"),
             "subproject": data.get("subproject"),
             "applicant": data.get("applicant"),
+            "task_image": data.get("image"),
             "task": data.get("task"),
             "task_added_by": data.get("task_added_by"),
             "data_type": data.get("data_type"),
@@ -2436,6 +2437,7 @@ class task_module(APIView):
             field = {
                 "eventId": get_event_id()["event_id"],
                 "applicant": data.get("applicant"),
+                "task_image": data.get("image"),
                 "task_added_by": data.get("task_added_by"),
                 "data_type": data.get("data_type"),
                 "company_id": data.get("company_id"),
@@ -3021,6 +3023,7 @@ class create_team_task(APIView):
         payload = {
             "title": data.get("title"),
             "description": data.get("description"),
+            "task_image": data.get("image"),
             "assignee": data.get("assignee"),
             "team_id": data.get("team_id"),
             "task_created_date": self.get_current_datetime(datetime.now()),
@@ -3032,6 +3035,7 @@ class create_team_task(APIView):
                 "eventId": get_event_id()["event_id"],
                 "title": data.get("title"),
                 "description": data.get("description"),
+                "task_image": data.get("image"),
                 "assignee": data.get("assignee"),
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
@@ -4153,7 +4157,7 @@ class createPublicApplication(APIView):
             "job_id": request.data.get("job_id"),
             "job_name": request.data.get("job_name"),
             "company_data_type": request.data.get("company_data_type"),
-           
+
         }
         serializer = CreatePublicLinkSerializer(data=field)
         if serializer.is_valid():
@@ -4322,7 +4326,7 @@ class sendMailToPublicCandidate(APIView):
                 toname, toemail, subject, email_content)
 
             # update the public api by username==================
-            field = {"username": qr_id,"_id":application_id}
+            field = {"username": qr_id, "_id": application_id}
             update_field = {"signup_mail_sent": True}
             update_public_application = dowellconnection(
                 *candidate_management_reports, "update", field, update_field
@@ -5908,27 +5912,26 @@ class Generate_Report(APIView):
                     *thread_report_module, "fetch", field, update_field
                 ))['data']
 
-                threads_report={
+                threads_report = {
                     "Created": 0,
                     "Resolved": 0,
-                    "In_progress":0,
-                    "Completed":0,
-                    "total issue raised":0
-                    
+                    "In_progress": 0,
+                    "Completed": 0,
+                    "total issue raised": 0
+
                 }
-                
 
                 for threads in team_threads:
-                    threads_report["total issue raised"]+=1
-                    if threads["current_status"]=="Created":
-                        threads_report["Created"]+=1
-                    if threads["current_status"]=="Resolved":
-                        threads_report["resolved"]+=1
-                    if threads["current_status"]=="In progress":
-                        threads_report["In_progress"]+=1
-                    if threads["current_status"]=="Completed":
-                        threads_report["Completed"]+=1
-                data["team threads report"]=threads_report  
+                    threads_report["total issue raised"] += 1
+                    if threads["current_status"] == "Created":
+                        threads_report["Created"] += 1
+                    if threads["current_status"] == "Resolved":
+                        threads_report["resolved"] += 1
+                    if threads["current_status"] == "In progress":
+                        threads_report["In_progress"] += 1
+                    if threads["current_status"] == "Completed":
+                        threads_report["Completed"] += 1
+                data["team threads report"] = threads_report
 
                 total_tasks = [res for res in json.loads(tasks)["data"]]
 
@@ -6151,15 +6154,15 @@ class Generate_Report(APIView):
             serializer = SettingUserProfileInfoSerializer(profiles, many=True)
             # print(serializer.data,"----")
             teamleads = []
-            accountleads =[]
-            hrs=[]
-            subadmins=[]
-            groupleads=[]
-            superadmins=[]
-            candidates=[]
-            viewers=[]
-            projectlead=[]
-            freelancers=[]
+            accountleads = []
+            hrs = []
+            subadmins = []
+            groupleads = []
+            superadmins = []
+            candidates = []
+            viewers = []
+            projectlead = []
+            freelancers = []
             for user in serializer.data:
                 for d in user["profile_info"]:
                     if "profile_title" in d.keys() and "Role" in d.keys():
@@ -6182,7 +6185,7 @@ class Generate_Report(APIView):
                         if d["Role"] == "Viewer":
                             viewers.append(d["profile_title"])
                     elif "profile_title" in d.keys():
-                        freelancers.append(d["profile_title"])        
+                        freelancers.append(d["profile_title"])
 
             if (payload.get("applicant_username") and payload.get("role") == "Teamlead" and not portfolio_name in teamleads):
                 return Response(
@@ -6280,12 +6283,12 @@ class Generate_Report(APIView):
                 ):
                     _tasks_you_approved.append(task)
                 if (
-                    "task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
-                    if(task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
+                        "task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
+                    if (task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
                         _tasks_you_marked_as_complete.append(task)
 
                 if ("task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
-                    if(task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted"):
+                    if (task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted"):
                         _tasks_you_marked_as_incomplete.append(task)
 
             teams = dowellconnection(
@@ -7814,6 +7817,8 @@ class SecureEndPoint(APIView):
         )
 
 # ------------------ Project Time API -----------------------------  #
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class AddTotalTime(APIView):
     def post(self, request):
@@ -7844,18 +7849,18 @@ class AddTotalTime(APIView):
         print(project)
         if project:
             field = {"company_id": company_id,
-                     "project":project}
+                     "project": project}
             response = json.loads(
                 dowellconnection(*time_detail_module, "fetch",
-                                field, update_field=None)
+                                 field, update_field=None)
             )
         return Response(
-                {
-                    "success": True,
-                    "data": response,
-                },
-                status=status.HTTP_200_OK,
-            )
+            {
+                "success": True,
+                "data": response,
+            },
+            status=status.HTTP_200_OK,
+        )
 
     def patch(self, request, company_id):
         data = request.data
@@ -8045,7 +8050,7 @@ class GetbyDocumentIDTotalTime(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class Testing_Threads(APIView):
     def get(self, request, company_id):
-        # remove space 
+        # remove space
         status = request.GET.get("status")
         if status:
             field = {"current_status": status, "company_id": company_id}
@@ -8086,6 +8091,7 @@ class Testing_Threads(APIView):
                 }
             )
 
+
 @method_decorator(csrf_exempt, name="dispatch")
 class GetTotalTimeOfProject(APIView):
     def get(self, request):
@@ -8093,10 +8099,11 @@ class GetTotalTimeOfProject(APIView):
         company_id = request.GET.get("company_id")
         task_field = {
             "project": project_name,
-            "company_id":company_id
+            "company_id": company_id
         }
         task_response = json.loads(
-            dowellconnection(*task_details_module, "fetch", task_field, update_field=None)
+            dowellconnection(*task_details_module, "fetch",
+                             task_field, update_field=None)
         )
         total_duration = timedelta()
 
@@ -8118,7 +8125,6 @@ class GetTotalTimeOfProject(APIView):
                 "total_time": f"{int(total_hours):02d}:{int(total_minutes):02d}",
             }
         )
-      
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -8129,7 +8135,8 @@ class GetAllProjectAndTime(APIView):
             "company_id": company_id
         }
         task_response = json.loads(
-            dowellconnection(*task_details_module, "fetch", task_field, update_field=None)
+            dowellconnection(*task_details_module, "fetch",
+                             task_field, update_field=None)
         )
 
         project_times = {}
