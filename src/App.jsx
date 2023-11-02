@@ -94,6 +94,7 @@ import TeamInfoCandidate from "./pages/TeamleadPage/views/CreateMembersTask/view
 import AdminLogsHomePage from "./pages/AdminPage/views/LogsHomePage/LogsHomePage";
 import CandidateRemovedScreen from "./pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
 import AdminDashboard from "./pages/AdminPage/views/AdminDashboard/AdminDashboard";
+import AllApplicationsScreen from "./pages/AdminPage/views/AdminDashboard/views/AllApplicationsScreen/AllApplicationsScreen";
 
 function App() {
   console.log = () => {};
@@ -1005,6 +1006,19 @@ function App() {
               <CandidateTaskContextProvider>
                 <ValuesProvider>
                   <CreateTaskScreen isAdmin={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+
+        <Route
+          path='/all-applications'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AllApplicationsScreen />
                 </ValuesProvider>
               </CandidateTaskContextProvider>
             </JobContextProvider>

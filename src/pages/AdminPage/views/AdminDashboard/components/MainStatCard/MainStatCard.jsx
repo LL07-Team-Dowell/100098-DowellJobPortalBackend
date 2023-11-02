@@ -1,6 +1,7 @@
 import { AiOutlineRight } from 'react-icons/ai';
 import styles from './styles.module.css';
 import { useNavigate } from 'react-router-dom';
+import skeletonStyles from '../../styles/skeleton.module.css';
 
 
 const MainStatCard = ({ 
@@ -23,7 +24,7 @@ const MainStatCard = ({
                     <p className={styles.title}>
                         {title}
                     </p>
-                    <p className={styles.count}>
+                    <p className={`${styles.count} ${dataLoading ? skeletonStyles.skeleton : ''}`}>
                         {
                             dataLoading ? <></> :
                             dataLoaded ? 
@@ -36,7 +37,15 @@ const MainStatCard = ({
                     </p>
                 </div>
                 {
-                    action && <button onClick={() => navigate(action)}>
+                    action && 
+                    <button 
+                        onClick={
+                            dataLoading ? 
+                                () => {} 
+                            : 
+                            () => navigate(action)
+                        }
+                    >
                         <span>View</span>
                         <AiOutlineRight />
                     </button>
