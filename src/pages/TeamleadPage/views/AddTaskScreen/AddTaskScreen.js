@@ -18,6 +18,7 @@ import { formatSubprojectStringItemToHTML } from "../../util/formatSubprojectStr
 import ContentEditable from "react-contenteditable";
 import { formatDateForAPI } from "../../../../helpers/helpers";
 import { getCurrentTimeFromDowell } from "../../../../services/dowellTimeServices";
+import { rolesNamesDict } from "../../../AdminPage/views/Settings/AdminSettings";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -78,6 +79,7 @@ const AddTaskScreen = ({
   const subprojectRef = useRef();
   const [showSubprojectSelections, setShowSubprojectSelections] = useState(false);
   const [formattedTaskName, setFormattedTaskName] = useState('');
+  const [allowedTimeInterval, setAllowedTimeInterval] = useState(15);
 
 
    const handleFileChange = async (e) => {
@@ -186,13 +188,13 @@ const AddTaskScreen = ({
       if (tasks.find(task => compareStrings(task?.task?.toLocaleLowerCase().trim(), taskName.toLocaleLowerCase().trim())) !== undefined) return toast.info('You cannot add the same log');
       if (!isStringValid(taskName)) return toast.info('The log entered should have at least 25 characters and at least 5 words.')
       if (taskEndTime === '00:00') return toast.info("You can only update work logs for today")
-      if (duration <= 15) {
+      if (duration <= allowedTimeInterval) {
         if (taskStartTime > taskEndTime) return toast.info('Work log start time must be less than its end time');
         if (!taskDetailForToday) return addTaskForToday(taskStartTime, taskEndTime, taskName, details);
         updateTasksForToday(taskStartTime, taskEndTime, taskName, details);
       } else {
         toast.info(
-          "The time you finished your work log must be within 15 minutes of its starting time"
+          `The time you finished your work log must be within ${allowedTimeInterval} minutes of its starting time`
         );
         console.log({ taskStartTime, taskEndTime, duration });
       }
@@ -203,7 +205,7 @@ const AddTaskScreen = ({
 
   const updateTask = async () => {
     if (inputsAreFilled) {
-      if (duration <= 15) {
+      if (duration <= allowedTimeInterval) {
         const tasksExcludingCurrentTaskBeingEdited = tasks.filter(task => task._id !== taskId);
         if (tasksExcludingCurrentTaskBeingEdited.find(task => task?.task?.toLocaleLowerCase().trim() === taskName.toLocaleLowerCase().trim() && task.is_active) !== undefined) return toast.info('You cannot add the same log')
         if (!isStringValid(taskName)) return toast.info('The log entered should have at least 25 characters and at least 5 words.')
@@ -248,7 +250,7 @@ const AddTaskScreen = ({
 
       } else {
         toast.info(
-          "The time you finished your work log must be within 15 minutes of its starting time"
+          `The time you finished your work log must be within ${allowedTimeInterval} minutes of its starting time`
         );
         console.log({ taskStartTime, taskEndTime, duration });
       }
@@ -327,14 +329,28 @@ const AddTaskScreen = ({
   useEffect(() => {
     if (taskStartTime) {
       const [hours, minutes] = taskStartTime.split(':').map(Number);
-      const newMinutes = (minutes + 15) % 60;
-      const newHours = hours + Math.floor((minutes + 15) / 60);
+      const newMinutes = (minutes + allowedTimeInterval) % 60;
+      const newHours = hours + Math.floor((minutes + allowedTimeInterval) / 60);
       const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
       setTaskEndTime(newEndTime);
     }
   }, [taskStartTime])
 
   useEffect(() => {
+    const currentUserSetting = currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1];
+
+    // UPDATE TIME INTERVAL FOR TEAMLEADS
+    if (currentUserSetting) {
+      const rolesForUser = currentUserSetting?.other_roles ? 
+        [...new Set([currentUserSetting?.Role, ...currentUserSetting?.other_roles])]
+      :
+        [currentUserSetting?.Role];
+      
+      if (rolesForUser && rolesForUser.includes(rolesNamesDict.Teamlead)) setAllowedTimeInterval(30);
+    } else {
+      setAllowedTimeInterval(15);
+    }
+
     if (taskDetailForToday) {
       setTaskDetailForTodayLoading(false);
       setTaskDetailForTodayLoaded(true);
@@ -597,8 +613,8 @@ const AddTaskScreen = ({
         setTaskId("");
         setTaskStartTime(endTime);
         const [hours, minutes] = endTime.split(':').map(Number);
-        const newMinutes = (minutes + 15) % 60;
-        const newHours = hours + Math.floor((minutes + 15) / 60);
+        const newMinutes = (minutes + allowedTimeInterval) % 60;
+        const newHours = hours + Math.floor((minutes + allowedTimeInterval) / 60);
         const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
         setTaskEndTime(newEndTime);
         return
@@ -881,7 +897,7 @@ const AddTaskScreen = ({
                             <span>You are to enter <b>80/160 work logs</b> per week according to your role/designation</span>
                           </p>
                           <p className="info__Work__Log">
-                            The maximum duration of one work log is <b>15 minutes</b>, You can add work logs spanning between <b>1</b> to <b>15</b> minutes, and your total should be <b>20/40 hours</b> in a week
+                            The maximum duration of one work log is <b>15 or 30 minutes</b>, depending on your designation. You can add work logs spanning between <b>1</b> to <b>30</b> minutes, and your total should be <b>20/40 hours</b> in a week
                           </p>
                           <br />
                           <p className="info__Work__Log"><b>These are some examples of work logs:</b></p>
@@ -978,7 +994,7 @@ const AddTaskScreen = ({
                                       new Date(
                                         `${new Date().toDateString()} ${taskStartTime}`
                                       ).getTime() +
-                                      15 * 60000
+                                      allowedTimeInterval * 60000
                                     ).getHours()
                                   ) < 10
                                     ? "0" +
@@ -986,19 +1002,19 @@ const AddTaskScreen = ({
                                       new Date(
                                         `${new Date().toDateString()} ${taskStartTime}`
                                       ).getTime() +
-                                      15 * 60000
+                                      allowedTimeInterval * 60000
                                     ).getHours()
                                     : new Date(
                                       new Date(
                                         `${new Date().toDateString()} ${taskStartTime}`
                                       ).getTime() +
-                                      15 * 60000
+                                      allowedTimeInterval * 60000
                                     ).getHours()
                                     }:${new Date(
                                       new Date(
                                         `${new Date().toDateString()} ${taskStartTime}`
                                       ).getTime() +
-                                      15 * 60000
+                                      allowedTimeInterval * 60000
                                     ).getMinutes()}`}
                                   readOnly={loading || !taskDetailForTodayLoaded || taskStartTime.length < 1 ? true : false}
                                 />
