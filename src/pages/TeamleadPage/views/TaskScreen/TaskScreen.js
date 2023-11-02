@@ -1,15 +1,13 @@
 import ApplicantIntro from "../../components/ApplicantIntro/ApplicantIntro";
 import AssignedProjectDetails from "../../components/AssignedProjectDetails/AssignedProjectDetails";
 import CustomHr from "../../components/CustomHr/CustomHr";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import CandidateTaskItem from "../../components/CandidateTaskItem/CandidateTaskItem";
 import React, { useEffect, useState } from "react";
 import "./style.css";
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { useCandidateTaskContext } from "../../../../contexts/CandidateTasksContext";
 import { Calendar } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { formatDateAndTime, formatDateForAPI, getDaysInMonth } from "../../../../helpers/helpers";
+import { formatDateForAPI } from "../../../../helpers/helpers";
 import { differenceInCalendarDays } from "date-fns";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getCandidateTask, getCandidateTasksOfTheDayV2 } from "../../../../services/candidateServices";
@@ -20,10 +18,9 @@ import { getSettingUserProject } from "../../../../services/hrServices";
 import { getCandidateTasksV2 } from "../../../../services/teamleadServices";
 import { extractNewTasksAndAddExtraDetail } from "../../util/extractNewTasks";
 import Button from "../../../AdminPage/components/Button/Button";
-import { toast } from "react-toastify";
 import SubprojectSelectWithSearch from "../../../../components/SubprojectSelectWithSearch/SubprojectSelectWithSearch";
 import { getAllCompanyUserSubProject } from "../../../../services/commonServices";
-import { AiOutlineClose, AiOutlineDown, AiOutlineUp } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineDown } from "react-icons/ai";
 import RequestTask from "./components/RequestTask";
 
 const TaskScreen = ({
@@ -79,10 +76,11 @@ const TaskScreen = ({
 
   useEffect(() => {
     setLoading(true);
-    setproject(assignedProject[0]);
+    if (!project) setproject(assignedProject[0]);
     setValue1(new Date());
-    setDatesToStyle([]);
+    setDatesToStyle([[]]);
     setTasksForTheDay(null);
+    settaskdetail2([]);
 
     const dateFormattedForAPI = formatDateForAPI(new Date());
     const dataToPost = {
@@ -170,8 +168,9 @@ const TaskScreen = ({
   useEffect(() => {
     if (!project || tasksForProjectLoading) {
       setTasksForTheDay(null);
-      setDatesToStyle([]);
+      setDatesToStyle([[]]);
       setSubprojectSelected('');
+      settaskdetail2([]);
       return;
     }
 
@@ -450,6 +449,19 @@ const TaskScreen = ({
     setShowModal(true);
   }
 
+  const calculateHours = (logsPassed) => {
+    const hourGapBetweenLogs = logsPassed.map(log => {
+      const [ startTime, endTime ] = [ new Date(`${log.task_created_date} ${log.start_time}`), new Date(`${log.task_created_date} ${log.end_time}`) ]
+      if (startTime == 'Invalid Date' || endTime == 'Invalid Date') return 0
+
+      const diffInMs = Math.abs(endTime - startTime);
+      return  diffInMs / (1000 * 60 * 60);
+    });
+
+    const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y , 0)).toFixed(2)
+    return totalHours
+  }
+
   return (
     <>
       {
@@ -614,7 +626,31 @@ const TaskScreen = ({
                         <>
                           {taskdetail2.length > 0 && (
                             <>
-                              <p className="task__Title">Tasks Added</p>
+                              <p className="task__Title">
+                                Logs Added
+                                {
+                                  !project ? '' 
+                                  :
+                                  taskdetail2.length > 0 && <span style={{ display: 'block', fontSize: '0.75rem' }}>
+                                    {
+                                      tasksForTheDay && Array.isArray(tasksForTheDay) && tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length > 0 ?
+                                        subprojectSelected.length > 0 ?
+                                          tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true).length > 0 ?
+                                          `${tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true).length} logs, ${calculateHours(tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true))} hours`
+                                          :
+                                          '0 logs, 0 hours'
+                                        :
+                                        tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length > 0 ?
+                                          `${tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length} logs, ${calculateHours(tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true))} hours`
+                                        :
+                                          '0 logs, 0 hours'
+                                      :
+                                      `${taskdetail2?.length} logs`
+                                    }
+                                  <>{console.log(taskdetail2)}</>
+                                  </span>
+                                }
+                              </p>
                             </>
                           )}
                           <ul>
@@ -647,6 +683,7 @@ const TaskScreen = ({
                                   </> :
                                     <>
                                       {
+                                        !project ? <></> :
                                         subprojectSelected.length > 0 ?
                                           tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true).length < 1 ?
                                             <p style={{ fontSize: '0.75rem' }}>
@@ -683,7 +720,7 @@ const TaskScreen = ({
                                       }
                                     </>
                                   :
-
+                                  !project ? <></> :
                                   taskdetail2.map((d, i) => (
                                     <div style={{ color: "#000", fontWeight: 500, fontSize: "1rem" }} key={i}>
                                       {new Date(d.task_created_date).toLocaleString(
