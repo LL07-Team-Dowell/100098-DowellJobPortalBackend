@@ -134,19 +134,31 @@ const SingleTask = ({
               {/* <span>{taskCompleted ? "100" : "00"}%</span> */}
               <div
                 className='team-screen-task-progress-data'
-                style={{ width: 70, height: 70 }}
+                style={{ width: 55, height: 55 }}
               >
                 <CircularProgressbar
-                  value={percentage(
-                    Object.keys(subtasks || {}).length,
-                    Object.values(subtasks || {}).filter((s) => s === true)
-                      .length
-                  )}
-                  text={`${percentage(
-                    Object.keys(subtasks || {}).length,
-                    Object.values(subtasks || {}).filter((s) => s === true)
-                      .length
-                  )}%`}
+                  value={
+                    taskCompleted
+                      ? 100
+                      : Number(
+                          percentage(
+                            Object.keys(subtasks || {}).length,
+                            Object.values(subtasks || {}).filter(
+                              (s) => s === true
+                            ).length
+                          )
+                        )
+                  }
+                  text={
+                    taskCompleted
+                      ? "100%"
+                      : `${percentage(
+                          Object.keys(subtasks || {}).length,
+                          Object.values(subtasks || {}).filter(
+                            (s) => s === true
+                          ).length
+                        )}%`
+                  }
                   styles={buildStyles({
                     pathColor: `#005734`,
                     textColor: "#005734",
