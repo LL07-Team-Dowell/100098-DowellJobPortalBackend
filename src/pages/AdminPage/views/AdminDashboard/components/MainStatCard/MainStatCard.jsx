@@ -10,7 +10,8 @@ const MainStatCard = ({
     dataLoaded, 
     title, 
     icon, 
-    action 
+    action,
+    locationState,
 }) => {
     const navigate = useNavigate();
 
@@ -30,7 +31,7 @@ const MainStatCard = ({
                             dataLoaded ? 
                                 !data ? 0 
                                 :
-                                data
+                                Number(data).toLocaleString()
                             :
                             0
                         }
@@ -43,7 +44,7 @@ const MainStatCard = ({
                             dataLoading ? 
                                 () => {} 
                             : 
-                            () => navigate(action)
+                            () => navigate(action, locationState ? { state: { [locationState]: true }} : {})
                         }
                     >
                         <span>View</span>

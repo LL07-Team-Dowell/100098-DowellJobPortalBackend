@@ -2,7 +2,7 @@ import React, {useState,useEffect}from 'react'
 import './Add.scss'
 import StaffJobLandingLayout from '../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout'
 import { MdArrowBackIos } from 'react-icons/md'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { AiOutlineArrowLeft, AiOutlineBarChart, AiOutlineClose, AiOutlineLink, AiOutlinePlusCircle, AiOutlineSearch, AiOutlineTeam } from 'react-icons/ai'
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext'
 import { FaTimes } from 'react-icons/fa'
@@ -25,6 +25,7 @@ const Add = () => {
   const [showSubProjectsPop, setShowSubProjectsPop] = useState(false)
   const [ isReportLink, setIsReportLink ] = useState(false);
   const [ updatedUserDataLoading, setUpdatedUserDataLoading ] = useState(false);
+  const { state } = useLocation();
 
   const jobLinkToShareObj = {
     "product_url": window.location.origin + "/100098-DowellJobPortal/#/",
@@ -54,6 +55,13 @@ const Add = () => {
 
   useEffect(() => {
     
+    if (state && state.showProject && state?.showProject === true) {
+      setShowProjectsPop(true);
+      
+      // RESET STATE TO PREVENT PROJECT MODAL FROM POPPING UP AFTER EVERY RELOAD
+      window.history.replaceState({}, '/100098-DowellJobPortal/#/add');
+    }
+
     if (!projectsLoaded) {
       getSettingUserProject().then(res => {
         setProjectsLoading(false);

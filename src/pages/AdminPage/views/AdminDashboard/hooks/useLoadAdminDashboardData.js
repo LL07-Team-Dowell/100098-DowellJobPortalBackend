@@ -48,12 +48,11 @@ export default function useLoadAdminDashboardData(
                 .reverse()
             );
 
-            
-            updateApplications(
-                res[2]?.data?.response?.data?.filter(
-                    (item) => userDetail?.portfolio_info[0]?.data_type === item.data_type
-                )
-            )
+            const applicationsFetched = res[2]?.data?.response?.data?.filter(
+                (item) => userDetail?.portfolio_info[0]?.data_type === item.data_type
+            )?.reverse()
+
+            updateApplications(applicationsFetched)
 
             updateProjectsLoadingState(false);
             updateProjectsLoadedState(true);

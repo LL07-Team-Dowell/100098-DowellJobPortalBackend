@@ -38,7 +38,7 @@ export default function ApplicationCardItem({ application, loading, greyJobCardC
         </div>
         <Tooltip 
             id={application?._id}
-            style={{ maxWidth: '8rem' }}
+            style={{ maxWidth: '12rem' }}
         />
     </div>
 }
