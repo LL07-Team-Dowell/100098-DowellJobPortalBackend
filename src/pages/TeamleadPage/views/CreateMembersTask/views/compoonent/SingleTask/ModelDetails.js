@@ -53,7 +53,7 @@ font-size: 18px;
 color: black;
 `;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, teamId, completeTaskFunction }) => {
+const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, completeTaskFunction }) => {
     const [subTasks, setSubTask] = useState(objectToArray(subtasks));
     const [edit, setEdit] = useState(false);
     const initialData = { taskname, description, subtasks: objectToArray(subtasks) }
@@ -78,12 +78,6 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                 toast.error("something went wrong")
             })
     }
-    useEffect(() => {
-        if (editData.subtasks.find(task => task.value === false) === undefined) {
-            completeTaskFunction();
-            alert('asdasd')
-        }
-    }, [editData])
     const cancelEdit = () => {
         setEditData(initialData);
         setEdit(false)
@@ -114,7 +108,13 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
     }
     useEffect(() => {
         setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
+        if (subTasks.filter(s => s.value === true).map(s => s.name).length === editData.subtasks.length) {
+            completeTaskFunction()
+        } else {
+            console.log(subTasks.filter(s => s.value === true).map(s => s.name).length, editData.length)
+        }
     }, [subTasks])
+
     return (
         <ModalContainer>
             <ModalContent style={{
