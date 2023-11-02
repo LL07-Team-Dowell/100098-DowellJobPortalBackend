@@ -6170,7 +6170,7 @@ class Generate_Report(APIView):
                 projectlead=positions["projectlead"]
                 leaders=positions["leaders"]  
 
-                # checking if the user is a team lead-----
+                # checking if the user is a team lead--------------------------------------------
 
                 if (payload.get("role") == "Teamlead" or payload.get("role") == "TeamLead"):
                     if portfolio_name not in teamleads:
@@ -6181,7 +6181,7 @@ class Generate_Report(APIView):
                             },
                             status=status.HTTP_400_BAD_REQUEST,
                         )
-            ##_-------------------------------------------------------------------------------
+                ##_-------------------------------------------------------------------------------
 
             # checking if the user is a team lead-----
             profiles = SettingUserProfileInfo.objects.all()
@@ -6232,103 +6232,71 @@ class Generate_Report(APIView):
 
             #initializing the data content as an empty list
             data["data"] = []
+            #-----------------------------------------------------------------------------
 
             #initializing all the months with empty data-------------------------------------------------
             month_list = calendar.month_name
-            # print(calendar.month_name[1:])
+            #print(calendar.month_name[1:])
+            item = {}
+            for month in month_list[1:]:
+                item[month] = {
+                    "tasks_added": 0,
+                    "tasks_completed": 0,
+                    "tasks_uncompleted": 0,
+                    "tasks_approved": 0,
+                    "percentage_tasks_completed": 0,
+                    "tasks_you_approved": 0,
+                    "tasks_you_marked_as_complete": 0,
+                    "tasks_you_marked_as_incomplete": 0,
+                    "teams": 0,
+                    "team_tasks": 0,
+                    "team_tasks_completed": 0,
+                    "team_tasks_uncompleted": 0,
+                    "percentage_team_tasks_completed": 0,
+                    "team_tasks_approved": 0,
+                    "team_tasks_issues_raised": 0,
+                    "team_tasks_issues_resolved": 0,
+                    "team_tasks_comments_added": 0,
+                }
+            #-----------------------------------------------------------------------------
+            
+            #--calling multiple dowell connections using threads----------------------
+            _tasks_added = []
+            _task_details = []
+            teams = []
+            issues_raised=[]
+            comments_added=[]
 
-            item = {
-                "January": {},
-                "February": {},
-                "March": {},
-                "April": {},
-                "May": {},
-                "June": {},
-                "July": {},
-                "August": {},
-                "September": {},
-                "October": {},
-                "November": {},
-                "December": {},
-            }
-            for key, value in item.items():
-                if payload.get("role") == "Teamlead":
-                    item[key] = {
-                        "tasks_added": 0,
-                        "tasks_completed": 0,
-                        "tasks_uncompleted": 0,
-                        "tasks_approved": 0,
-                        "percentage_tasks_completed": 0,
-                        "tasks_you_approved": 0,
-                        "tasks_you_marked_as_complete": 0,
-                        "tasks_you_marked_as_incomplete": 0,
-                        "teams": 0,
-                        "team_tasks": 0,
-                        "team_tasks_completed": 0,
-                        "team_tasks_uncompleted": 0,
-                        "percentage_team_tasks_completed": 0,
-                        "team_tasks_approved": 0,
-                        "team_tasks_issues_raised": 0,
-                        "team_tasks_issues_resolved": 0,
-                        "team_tasks_comments_added": 0,
-                    }
-                else:
-                    item[key] = {
-                        "tasks_added": 0,
-                        "tasks_completed": 0,
-                        "tasks_uncompleted": 0,
-                        "tasks_approved": 0,
-                        "percentage_tasks_completed": 0,
-                        "teams": 0,
-                        "team_tasks": 0,
-                        "team_tasks_completed": 0,
-                        "team_tasks_uncompleted": 0,
-                        "percentage_team_tasks_completed": 0,
-                        "team_tasks_approved": 0,
-                        "team_tasks_issues_raised": 0,
-                        "team_tasks_issues_resolved": 0,
-                        "team_tasks_comments_added": 0,
-                    }
+            def call_dowellconnection(*args):
+                #print(*args)
+                d = dowellconnection(*args)
+                if "task_reports" in args:
+                    _tasks_added.append(d)
+                if "task_details" in args:
+                    _task_details.append(d)
+                if "team_management_report" in args:
+                    teams.append(d)
+                if "ThreadReport" in args:
+                    issues_raised.append(d)
+                if "ThreadCommentReport" in args:
+                    comments_added.append(d)
 
-            _tasks_added = dowellconnection(
-                *task_management_reports,
-                "fetch",
-                {"task_added_by": username},
-                update_field,
+            _tasks_added_thread = threading.Thread(
+                target=call_dowellconnection,
+                args=(*task_management_reports,
+                        "fetch", {"task_added_by": username}, update_field),
             )
+            _tasks_added_thread.start()
 
-            _task_details = dowellconnection(
-                *task_details_module, "fetch", {}, update_field
+            _task_details_thread = threading.Thread(
+                target=call_dowellconnection,
+                args=(*task_details_module,"fetch",{},update_field),
             )
-            tasks_details = []
-            _tasks_list = []
-            _tasks_completed = []
-            _tasks_uncompleted = []
-            _tasks_approved = []
-            _tasks_you_approved = []
-            _tasks_you_marked_as_complete = []
-            _tasks_you_marked_as_incomplete = []
-            for task in json.loads(_task_details)["data"]:
-                for t in json.loads(_tasks_added)["data"]:
-                    if t["_id"] == task["task_id"]:
-                        _tasks_list.append(t)
-                        tasks_details.append(task)
-                if (
-                    "task_approved_by" in task.keys()
-                    and task["task_approved_by"] == username
-                ):
-                    _tasks_you_approved.append(task)
-                if (
-                    "task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
-                    if(task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
-                        _tasks_you_marked_as_complete.append(task)
+            _task_details_thread.start()
 
-                if ("task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
-                    if(task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted"):
-                        _tasks_you_marked_as_incomplete.append(task)
-
-            teams = dowellconnection(
-                *team_management_modules, "fetch", {}, update_field
+            teams_thread = threading.Thread(
+                target=call_dowellconnection,
+                args=(*team_management_modules,"fetch",{},update_field),
             )
             teams_thread.start()
 
