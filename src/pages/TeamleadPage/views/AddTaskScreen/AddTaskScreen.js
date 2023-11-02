@@ -544,6 +544,7 @@ const AddTaskScreen = ({
         // If the request is successful, parse the JSON response
         const data = await response.json();
         imageUrl = data.file_url;
+        setSelectedFile(null)
       } else {
         // Handle the case where the request is not successful
         toast.error("Error uploading image");
@@ -924,6 +925,29 @@ const AddTaskScreen = ({
                                 style={{ margin: 0, marginBottom: "0.8rem" }}
                                 readOnly={true}
                               />
+                              {
+                                isCreatingTask ?
+                                <>
+                                <div className="task__Item">
+                                  <span className="selectProject">Add Log Image (OPTIONAL)</span>
+                                  <input
+                                    type={"file"}
+                                    placeholder={"add log image"}
+                                    style={{ margin: 0, marginBottom: "0.8rem" }}
+                                    onChange={handleFileChange}
+                                  />
+                                  {selectedFile && (
+                                    <img
+                                      src={URL.createObjectURL(selectedFile)}
+                                      alt="Uploaded Preview"
+                                      style={{ display: "block" }}
+                                    />
+                                  )}
+                                </div>
+                                </>
+                                :
+                                null
+                              }
                             </>
                         }
                         {
@@ -1027,22 +1051,6 @@ const AddTaskScreen = ({
                                     </div>
                                   } */}
                                 </div>
-                              </div>
-                              <div className="task__Item">
-                                <span className="selectProject">Add Log Image (OPTIONAL)</span>
-                                <input
-                                  type={"file"}
-                                  placeholder={"add log image"}
-                                  style={{ margin: 0, marginBottom: "0.8rem" }}
-                                  onChange={handleFileChange}
-                                />
-                                {selectedFile && (
-                                  <img
-                                    src={URL.createObjectURL(selectedFile)}
-                                    alt="Uploaded Preview"
-                                    style={{ display: "block", width: "10rem", height: "10rem", objectFit: "contain", margin: 0 }}
-                                  />
-                                )}
                               </div>
                               <div className="task__Item">
                                 <span className="selectProject">Work log type</span>
