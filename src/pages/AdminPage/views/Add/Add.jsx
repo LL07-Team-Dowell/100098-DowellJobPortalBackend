@@ -105,7 +105,7 @@ const Add = () => {
 
     if (!currentSessionId) return;
     const teamManagementProduct = currentUser?.portfolio_info.find(
-      (item) => item.product === teamManagementProductName
+      (item) => item.product === teamManagementProductName && item.member_type === 'owner'
     );
     if (!teamManagementProduct) return;
 

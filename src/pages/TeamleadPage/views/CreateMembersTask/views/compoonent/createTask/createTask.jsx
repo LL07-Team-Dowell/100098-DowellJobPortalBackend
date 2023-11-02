@@ -23,7 +23,11 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
     members.map((member, index) => ({ id: index, member }))
   );
   const [query, setquery] = useState("");
-
+  const [selectedFile, setSelectedFile] = useState(null);
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    setSelectedFile(selectedFile);
+  };
   const AddedMember = (id) => {
     if (!singleTask) {
       setInputMembers([
@@ -150,7 +154,17 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
           value={date}
           onChange={(e) => setDate(e.target.value)}
         />
+        <br />
+        <br />
 
+        <label htmlFor='task_name'>Task Image (Optional)</label>
+        <input
+          className='input'
+          type='file'
+          id='task_name'
+          placeholder='Choose an image file'
+          onChange={handleFileChange}
+        />
         {/*  */}
         {name && description && subTask && date ? (
           <div>

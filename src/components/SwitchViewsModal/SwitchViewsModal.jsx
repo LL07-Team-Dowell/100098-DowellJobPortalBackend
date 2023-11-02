@@ -85,7 +85,7 @@ const SwitchViewsModal = ({ handleCloseModal, restrictedRoles, otherPermittedRol
             <ul>
                 {
                     restrictedRoles ?
-                    React.Children.toArray(otherPermittedRoles.map(role => {
+                    React.Children.toArray(otherPermittedRoles.filter(role => role !== defaultRole).map(role => {
                         if (!rolesDict[role]) return <></>
                         return <li onClick={() => handleItemClick(role)}>
                             {rolesDict[role]}

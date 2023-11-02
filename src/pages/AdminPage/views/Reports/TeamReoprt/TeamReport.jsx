@@ -27,7 +27,7 @@ import './index.scss'
 
 
 
-export default function TeamReport({ isPublicReportUser, isProjectLead }) {
+export default function TeamReport({ isPublicReportUser, isProjectLead, subAdminView }) {
     const navigate = useNavigate();
     const [candidates, setcandidates] = useState([]);
     const [project, setProject] = useState({})
@@ -124,6 +124,7 @@ export default function TeamReport({ isPublicReportUser, isProjectLead }) {
                 pageTitle={"Team Report"}
                 projectLeadView={isProjectLead}
                 hideSearchBar={true}
+                subAdminView={subAdminView}
             >
                 <div className="detailed_indiv_container">
                     <div className="task__report__nav">
@@ -155,6 +156,7 @@ export default function TeamReport({ isPublicReportUser, isProjectLead }) {
             pageTitle={"Team Report"}
             projectLeadView={isProjectLead}
             hideSearchBar={true}
+            subAdminView={subAdminView}
         >
             <div className="detailed_indiv_container">
                 <div className="task__report__nav">

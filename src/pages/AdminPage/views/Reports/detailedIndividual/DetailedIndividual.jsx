@@ -49,6 +49,7 @@ export const chartOptions = {
 export default function DetailedIndividual({
   isPublicReportUser,
   isProjectLead,
+  subAdminView,
 }) {
   const { currentUser, setCurrentUser, reportsUserDetails } =
     useCurrentUserContext();
@@ -368,6 +369,7 @@ export default function DetailedIndividual({
         pageTitle={"Detailed individual report"}
         projectLeadView={isProjectLead}
         hideSearchBar={true}
+        subAdminView={subAdminView}
       >
         <div className="detailed_indiv_container">
           <div className="task__report__nav">
@@ -399,6 +401,7 @@ export default function DetailedIndividual({
       pageTitle={"Detailed individual report"}
       projectLeadView={isProjectLead}
       hideSearchBar={true}
+      subAdminView={subAdminView}
     >
       <div className="detailed_indiv_container" ref={mainDivRef}>
         <div className="task__report__nav">

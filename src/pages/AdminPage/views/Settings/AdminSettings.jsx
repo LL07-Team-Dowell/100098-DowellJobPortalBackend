@@ -101,7 +101,7 @@ const AdminSettings = () => {
     const currentSessionId = sessionStorage.getItem("session_id");
 
     if (!currentSessionId) return setLoading2(false)
-    const teamManagementProduct = currentUser?.portfolio_info.find(item => item.product === teamManagementProductName);
+    const teamManagementProduct = currentUser?.portfolio_info.find(item => item.product === teamManagementProductName && item.member_type === 'owner');
     if (!teamManagementProduct) return setLoading2(false)
 
     const dataToPost = {

@@ -6,7 +6,7 @@ import { useState } from "react";
 import './index.scss';
 import { FaRankingStar } from 'react-icons/fa6'
 
-const ReportPages = () => {
+const ReportPages = ({ subAdminView }) => {
   const navigate = useNavigate();
   const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
 
@@ -16,6 +16,7 @@ const ReportPages = () => {
       adminAlternativePageActive={true}
       pageTitle={"Reports"}
       hideSideBar={showCustomTimeModal}
+      subAdminView={subAdminView}
     >
       <div className="create_team_parent report" style={{ padding: '20px 20px 200px' }}>
         <div

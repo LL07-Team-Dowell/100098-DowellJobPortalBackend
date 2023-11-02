@@ -562,11 +562,68 @@ function App() {
             </JobContextProvider>
           }
         />
+
         <Route
           path='/report'
           element={
             <JobContextProvider>
-              <AdminReports subAdminView={true} />
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <ReportPages subAdminView={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/report/organization-report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AdminReports subAdminView={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/report/team-report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <TeamReport subAdminView={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/report/detailed-individual-report'
+          element={<DetailedIndividual subAdminView={true} />}
+        />
+        <Route
+          path='/report/task-report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <TaskReports subAdminView={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/report/leaderboard-report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <LeaderboardReport subAdminView={true} />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
             </JobContextProvider>
           }
         />
@@ -685,15 +742,18 @@ function App() {
             </JobContextProvider>
           }
         />
-        <Route path='/report' element={
-          <JobContextProvider>
-            <CandidateTaskContextProvider>
+        <Route
+          path='/report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
                 <ValuesProvider>
                   <ReportPages />
                 </ValuesProvider>
               </CandidateTaskContextProvider>
-          </JobContextProvider>
-        } />
+            </JobContextProvider>
+          }
+        />
         <Route
           path='/report/organization-report'
           element={
@@ -1277,7 +1337,11 @@ function App() {
           path='/create-task/create-new-team/'
           element={
             <CandidateTaskContextProvider>
-              <StaffJobLandingLayout teamleadView={true} isGrouplead={true} hideSearchBar={true}>
+              <StaffJobLandingLayout
+                teamleadView={true}
+                isGrouplead={true}
+                hideSearchBar={true}
+              >
                 <ValuesProvider>
                   <CreateTeam />
                 </ValuesProvider>
@@ -1812,11 +1876,9 @@ function App() {
   // CANDIDATE PAGE
   return candidateRemoved ? (
     <Routes>
-      <Route path="*" element={<CandidateRemovedScreen />} />
+      <Route path='*' element={<CandidateRemovedScreen />} />
     </Routes>
-  ) 
-  : 
-  (candidateHired || currentUser.candidateIsHired) ? (
+  ) : candidateHired || currentUser.candidateIsHired ? (
     <Routes>
       <Route
         path='/team-screen-member/:id/team-tasks'
@@ -1921,9 +1983,7 @@ function App() {
       <Route path='/logout' element={<Logout />} />
       <Route path='*' element={<ErrorPage />} />
     </Routes>
-  ) 
-  : 
-  candidateShortListed ? (
+  ) : candidateShortListed ? (
     <Routes>
       <Route
         path='/'
@@ -2148,7 +2208,6 @@ function App() {
 }
 
 export default App;
-
 
 // return (
 //   <>
