@@ -56,6 +56,7 @@ const AddTaskScreen = ({
   const [taskName, setTaskName] = useState("");
   const [details, setDetails] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
   // console.log({ tasks });
   const [taskId, setTaskId] = useState("");
   const [isCreatingTask, setIsCreatingTask] = useState(true);
@@ -78,6 +79,11 @@ const AddTaskScreen = ({
   const [showSubprojectSelections, setShowSubprojectSelections] = useState(false);
   const [formattedTaskName, setFormattedTaskName] = useState('');
 
+
+   const handleFileChange = async (e) => {
+     const selectedFile = e.target.files[0];
+     setSelectedFile(selectedFile);
+   };
 
   //   var conditions
   const inputsAreFilled = taskStartTime && taskEndTime && taskName && taskType;
@@ -518,6 +524,32 @@ const AddTaskScreen = ({
         today
     );
 
+    const formData = new FormData();
+
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
+
+    let imageUrl = "";
+    if (selectedFile) {
+      const response = await fetch(
+        "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (response.ok) {
+        // If the request is successful, parse the JSON response
+        const data = await response.json();
+        imageUrl = data.file_url;
+      } else {
+        // Handle the case where the request is not successful
+        toast.error("Error uploading image");
+      }
+    }
+
     const dataToPost = {
       "project": optionValue,
       "applicant": currentUser.userinfo.username,
@@ -530,7 +562,8 @@ const AddTaskScreen = ({
       "start_time": startTime,
       "end_time": endTime,
       "user_id": currentUser.userinfo.userID,
-      "subproject": subprojectSelected
+      "subproject": subprojectSelected,
+      "image": imageUrl,
     }
 
     const dataToPost2 = {
@@ -994,6 +1027,22 @@ const AddTaskScreen = ({
                                     </div>
                                   } */}
                                 </div>
+                              </div>
+                              <div className="task__Item">
+                                <span className="selectProject">Add Log Image (OPTIONAL)</span>
+                                <input
+                                  type={"file"}
+                                  placeholder={"add log image"}
+                                  style={{ margin: 0, marginBottom: "0.8rem" }}
+                                  onChange={handleFileChange}
+                                />
+                                {selectedFile && (
+                                  <img
+                                    src={URL.createObjectURL(selectedFile)}
+                                    alt="Uploaded Preview"
+                                    style={{ display: "block", width: "10rem", height: "10rem", objectFit: "contain", margin: 0 }}
+                                  />
+                                )}
                               </div>
                               <div className="task__Item">
                                 <span className="selectProject">Work log type</span>
