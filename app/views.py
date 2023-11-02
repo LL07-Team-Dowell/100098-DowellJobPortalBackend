@@ -75,6 +75,8 @@ from .serializers import (
     ProjectDeadlineSerializer,
     regionalassociateSerializer,
     TeamTaskSerializer,
+    DashBoardStatusSerializer,
+    DashBoardJobCategorySerializer
 )
 from .authorization import (
     verify_user_token,
@@ -8184,4 +8186,97 @@ class Product_Services_API(APIView):
                 "data": response,
             },
             status=status.HTTP_200_OK,
+        )
+
+@method_decorator(csrf_exempt, name="dispatch")
+class dashboard_services(APIView):
+    def post(self, request):
+        type_request = request.GET.get("type")
+
+        if type_request == "update_status":
+            return self.update_status(request)
+        elif type_request == "update_job_category":
+            return self.update_job_category(request)
+        else:
+            return self.handle_error(request)
+
+    """Update the status of a candidate"""
+    def update_status(self,request):
+        
+        candidate_id = request.GET.get('candidate_id')
+        status = request.data.get('status')
+
+        field = {
+            "candidate_id": candidate_id,
+            "status": status
+        }
+
+        serializer = DashBoardStatusSerializer(data=field)
+        if serializer.is_valid():
+            field = {
+                "_id":candidate_id
+            }
+            update_field = {
+                "status":status
+            }
+            response = json.loads(dowellconnection(*candidate_management_reports,"update",field, update_field))
+            if response["isSuccess"]:
+                return Response({
+                    "success":True,
+                    "message":"Status updated successfully"
+                })
+            else:
+                return Response({
+                    "success":False,
+                    "message":"Failed to update status"
+                })
+        else: 
+            return Response({
+                "success": False,
+                "message": "Posting wrong data",
+                "error":serializer.errors
+            })
+    
+    """Update the jab category of a candidate"""
+    def update_job_category(self,request):
+        
+        candidate_id = request.GET.get('candidate_id')
+        job_category = request.data.get('job_category')
+
+        field = {
+            "candidate_id": candidate_id,
+            "job_category": job_category
+        }
+
+        serializer = DashBoardJobCategorySerializer(data=field)
+        if serializer.is_valid():
+            field = {
+                "_id":candidate_id
+            }
+            update_field = {
+                "job_category":job_category
+            }
+            response = json.loads(dowellconnection(*candidate_management_reports,"update",field, update_field))
+            if response["isSuccess"]:
+                return Response({
+                    "success":True,
+                    "message":"Job Category updated successfully"
+                })
+            else:
+                return Response({
+                    "success":False,
+                    "message":"Failed to update job category"
+                })
+        else: 
+            return Response({
+                "success": False,
+                "message": "Posting wrong data",
+                "error":serializer.errors
+            })
+
+    """HANDLE ERROR"""
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
         )

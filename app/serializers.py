@@ -589,3 +589,33 @@ class TeamTaskSerializer(serializers.Serializer):
     team_id = serializers.CharField(allow_null=False, allow_blank=False)
     task_created_date = serializers.CharField(allow_null=False, allow_blank=False)
     subtasks = serializers.DictField(allow_null=True)
+
+
+class DashBoardStatusSerializer(serializers.Serializer):
+    STATUS_CATEGORY_CHOICE = (
+        ("hired", "hired"),
+        ("Removed", "Removed"),
+        ("shortlisted", "Shortlisted"),
+        ("selected", "Selected"),
+        ("Rejected", "Rejected"),
+        ("to_rehire", "to_rehire"),
+        ("teamlead_hire", "teamlead_hire"),
+        ("teamlead_rehire", "teamlead_rehire"),
+        ("Pending", "Pending"),
+        ("Guest_Pending","Guest_Pending"),
+        ("rehired","rehired")
+    )
+    candidate_id = serializers.CharField(allow_null=False, allow_blank=False)
+    status = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=STATUS_CATEGORY_CHOICE
+    )
+class DashBoardJobCategorySerializer(serializers.Serializer):
+    JOB_CATEGORY_CHOICE = (
+        ("Freelancer", "Freelancer"),
+        ("Internship", "Internship"),
+        ("Employee", "Employee"),
+    )
+    candidate_id = serializers.CharField(allow_null=False, allow_blank=False)
+    job_category = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE
+    )

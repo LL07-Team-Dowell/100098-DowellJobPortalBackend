@@ -190,4 +190,7 @@ urlpatterns = [
          Testing_Threads.as_view()),  # add company id
 
     path("product_services/",Product_Services_API.as_view()),
+
+    # DashBoard Services 
+    path("dashboard_services/",dashboard_services.as_view()),
 ]
