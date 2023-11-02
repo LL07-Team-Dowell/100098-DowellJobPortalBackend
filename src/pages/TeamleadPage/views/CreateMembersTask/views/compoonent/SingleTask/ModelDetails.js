@@ -107,11 +107,13 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
             })
     }
     useEffect(() => {
-        setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
-        if (subTasks.filter(s => s.value === true).map(s => s.name).length === editData.subtasks.length) {
-            completeTaskFunction()
-        } else {
-            console.log(subTasks.filter(s => s.value === true).map(s => s.name).length, editData.length)
+        if (subtasks !== undefined) {
+            setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
+            if (subTasks.filter(s => s.value === true).map(s => s.name).length === editData.subtasks.length) {
+                completeTaskFunction()
+            } else {
+                console.log(subTasks.filter(s => s.value === true).map(s => s.name).length, editData.length)
+            }
         }
     }, [subTasks])
 

@@ -148,11 +148,29 @@ const SingleTask = ({
                               (s) => s === true
                             ).length
                           )
+                        ) === NaN
+                      ? 0
+                      : Number(
+                          percentage(
+                            Object.keys(subtasks || {}).length,
+                            Object.values(subtasks || {}).filter(
+                              (s) => s === true
+                            ).length
+                          )
                         )
                   }
                   text={
                     taskCompleted
                       ? "100%"
+                      : Number(
+                          percentage(
+                            Object.keys(subtasks || {}).length,
+                            Object.values(subtasks || {}).filter(
+                              (s) => s === true
+                            ).length
+                          )
+                        ) === NaN
+                      ? "00%"
                       : `${percentage(
                           Object.keys(subtasks || {}).length,
                           Object.values(subtasks || {}).filter(
