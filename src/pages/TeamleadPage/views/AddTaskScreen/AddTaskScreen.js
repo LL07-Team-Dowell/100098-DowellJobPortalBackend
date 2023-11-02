@@ -564,8 +564,9 @@ const AddTaskScreen = ({
       "end_time": endTime,
       "user_id": currentUser.userinfo.userID,
       "subproject": subprojectSelected,
-      "image": imageUrl,
     }
+
+    if (imageUrl.length > 0) dataToPost.image = imageUrl;
 
     const dataToPost2 = {
       "company_id": currentUser.portfolio_info[0].org_id,
