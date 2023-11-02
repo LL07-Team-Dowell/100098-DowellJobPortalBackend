@@ -38,6 +38,8 @@ from .helper import (
     update_task_status,
     valid_period,
     validate_id,
+    get_positions,
+    get_month_details,
 )
 from .serializers import (
     AccountSerializer,
@@ -6100,22 +6102,18 @@ class Generate_Report(APIView):
         payload = request.data
         company_id = payload.get("company_id")
         if payload:
-            if payload.get("role") and payload.get("role") == "Teamlead":
-                field = {
-                    "username": payload.get("applicant_username"),
-                    "_id": payload.get("applicant_id"),
-                    "company_id": payload.get("company_id"),
-                    "status": "hired",
-                }
-            else:
-                field = {
+            #intializing query parameters-----------------------------------------------------
+            field = {
                     "_id": payload.get("applicant_id"),
                     "company_id": payload.get("company_id"),
                 }
-
             year = payload.get("year")
+            update_field = {}
+            data = {}
+            #----------------------------------------------------------------------------------
 
-            if not int(year) <= datetime.today().year:
+            # ensuring the given year is a valid year------------------------------------------
+            if int(year) > datetime.today().year:
                 return Response(
                     {
                         "message": "You cannot get a report on a future date",
@@ -6123,22 +6121,19 @@ class Generate_Report(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            #-------------------------------------------------------------------------------
 
-            update_field = {}
-            data = {}
+            # add fields values if role has been given--------------------------------------
+            if payload.get("role"):
+                field["username"]=payload.get("applicant_username")
+                field["status"]= "hired"
+            #-------------------------------------------------------------------------------
+
+            # check if the user has any data------------------------------------------------
             info = dowellconnection(
                 *candidate_management_reports, "fetch", field, update_field
             )
-            # print(len(json.loads(info)["data"]),"==========")
-            if len(json.loads(info)["data"]) > 0:
-                data["personal_info"] = json.loads(info)["data"][0]
-                username = json.loads(info)["data"][0]["username"]
-                portfolio_name = json.loads(info)["data"][0]["portfolio_name"]
-                # get the task report based on project for the user
-                data["personal_info"]["task_report"] = self.itr_function(
-                    username, company_id
-                )
-            else:
+            if len(json.loads(info)["data"]) <=0:
                 data["personal_info"] = {}
                 username = "None"
                 return Response(
@@ -6148,6 +6143,45 @@ class Generate_Report(APIView):
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
+            data["personal_info"] = json.loads(info)["data"][0]
+            username = json.loads(info)["data"][0]["username"]
+            portfolio_name = json.loads(info)["data"][0]["portfolio_name"]
+
+            # get the task report based on project for the user----------------------------------------
+            data["personal_info"]["task_report"] = self.itr_function(
+                username, company_id
+            )
+            #-------------------------------------------------------------------------------------------
+
+            # if a position is given, check within any of the contained positions-------------------
+            if payload.get("role"):
+                profiles = SettingUserProfileInfo.objects.all()
+                serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+                # print(serializer.data,"----")
+                positions = get_positions(serializer.data)
+                teamleads = positions["teamleads"]
+                accountleads =positions["accountleads"]
+                hrs=positions["hrs"]
+                subadmins=positions["subadmins"]
+                groupleads=positions["groupleads"]
+                superadmins=positions["superadmins"]
+                candidates=positions["candidates"]
+                viewers=positions["viewers"]
+                projectlead=positions["projectlead"]
+                leaders=positions["leaders"]  
+
+                # checking if the user is a team lead--------------------------------------------
+
+                if (payload.get("role") == "Teamlead" or payload.get("role") == "TeamLead"):
+                    if portfolio_name not in teamleads:
+                        return Response(
+                            {
+                                "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
+                                "error": f"The User ->{payload.get('applicant_username')}-({portfolio_name}) is not a team lead",
+                            },
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                ##_-------------------------------------------------------------------------------
 
             # checking if the user is a team lead-----
             profiles = SettingUserProfileInfo.objects.all()
@@ -6196,632 +6230,267 @@ class Generate_Report(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
+            #initializing the data content as an empty list
             data["data"] = []
+            #-----------------------------------------------------------------------------
 
+            #initializing all the months with empty data-------------------------------------------------
             month_list = calendar.month_name
-            # print(calendar.month_name[1:])
+            #print(calendar.month_name[1:])
+            item = {}
+            for month in month_list[1:]:
+                item[month] = {
+                    "tasks_added": 0,
+                    "tasks_completed": 0,
+                    "tasks_uncompleted": 0,
+                    "tasks_approved": 0,
+                    "percentage_tasks_completed": 0,
+                    "tasks_you_approved": 0,
+                    "tasks_you_marked_as_complete": 0,
+                    "tasks_you_marked_as_incomplete": 0,
+                    "teams": 0,
+                    "team_tasks": 0,
+                    "team_tasks_completed": 0,
+                    "team_tasks_uncompleted": 0,
+                    "percentage_team_tasks_completed": 0,
+                    "team_tasks_approved": 0,
+                    "team_tasks_issues_raised": 0,
+                    "team_tasks_issues_resolved": 0,
+                    "team_tasks_comments_added": 0,
+                }
+            #-----------------------------------------------------------------------------
+            
+            #--calling multiple dowell connections using threads----------------------
+            _tasks_added = []
+            _task_details = []
+            teams = []
+            issues_raised=[]
+            comments_added=[]
 
-            item = {
-                "January": {},
-                "February": {},
-                "March": {},
-                "April": {},
-                "May": {},
-                "June": {},
-                "July": {},
-                "August": {},
-                "September": {},
-                "October": {},
-                "November": {},
-                "December": {},
-            }
-            for key, value in item.items():
-                if payload.get("role") == "Teamlead":
-                    item[key] = {
-                        "tasks_added": 0,
-                        "tasks_completed": 0,
-                        "tasks_uncompleted": 0,
-                        "tasks_approved": 0,
-                        "percentage_tasks_completed": 0,
-                        "tasks_you_approved": 0,
-                        "tasks_you_marked_as_complete": 0,
-                        "tasks_you_marked_as_incomplete": 0,
-                        "teams": 0,
-                        "team_tasks": 0,
-                        "team_tasks_completed": 0,
-                        "team_tasks_uncompleted": 0,
-                        "percentage_team_tasks_completed": 0,
-                        "team_tasks_approved": 0,
-                        "team_tasks_issues_raised": 0,
-                        "team_tasks_issues_resolved": 0,
-                        "team_tasks_comments_added": 0,
-                    }
-                else:
-                    item[key] = {
-                        "tasks_added": 0,
-                        "tasks_completed": 0,
-                        "tasks_uncompleted": 0,
-                        "tasks_approved": 0,
-                        "percentage_tasks_completed": 0,
-                        "teams": 0,
-                        "team_tasks": 0,
-                        "team_tasks_completed": 0,
-                        "team_tasks_uncompleted": 0,
-                        "percentage_team_tasks_completed": 0,
-                        "team_tasks_approved": 0,
-                        "team_tasks_issues_raised": 0,
-                        "team_tasks_issues_resolved": 0,
-                        "team_tasks_comments_added": 0,
-                    }
+            def call_dowellconnection(*args):
+                #print(*args)
+                d = dowellconnection(*args)
+                if "task_reports" in args:
+                    _tasks_added.append(d)
+                if "task_details" in args:
+                    _task_details.append(d)
+                if "team_management_report" in args:
+                    teams.append(d)
+                if "ThreadReport" in args:
+                    issues_raised.append(d)
+                if "ThreadCommentReport" in args:
+                    comments_added.append(d)
 
-            _tasks_added = dowellconnection(
-                *task_management_reports,
-                "fetch",
-                {"task_added_by": username},
-                update_field,
+            _tasks_added_thread = threading.Thread(
+                target=call_dowellconnection,
+                args=(*task_management_reports,
+                        "fetch", {"task_added_by": username}, update_field),
             )
+            _tasks_added_thread.start()
 
-            _task_details = dowellconnection(
-                *task_details_module, "fetch", {}, update_field
+            _task_details_thread = threading.Thread(
+                target=call_dowellconnection,
+                args=(*task_details_module,"fetch",{},update_field),
             )
-            tasks_details = []
-            _tasks_list = []
-            _tasks_completed = []
-            _tasks_uncompleted = []
-            _tasks_approved = []
-            _tasks_you_approved = []
-            _tasks_you_marked_as_complete = []
-            _tasks_you_marked_as_incomplete = []
-            for task in json.loads(_task_details)["data"]:
-                for t in json.loads(_tasks_added)["data"]:
-                    if t["_id"] == task["task_id"]:
-                        _tasks_list.append(t)
-                        tasks_details.append(task)
-                if (
-                    "task_approved_by" in task.keys()
-                    and task["task_approved_by"] == username
-                ):
-                    _tasks_you_approved.append(task)
-                if (
+            _task_details_thread.start()
+
+            teams_thread = threading.Thread(
+                target=call_dowellconnection,
+                args=(*team_management_modules,"fetch",{},update_field),
+            )
+            teams_thread.start()
+
+            issues_raised_thread = threading.Thread(
+                target=call_dowellconnection,
+                args=(*thread_report_module,"fetch",{},update_field),
+            )
+            issues_raised_thread.start()
+
+            comments_added_thread = threading.Thread(
+                target=call_dowellconnection,
+                args=(*comment_report_module,"fetch",{},update_field),
+            )
+            comments_added_thread.start()
+
+
+            _tasks_added_thread.join()
+            _task_details_thread.join()
+            teams_thread.join()
+            issues_raised_thread.join()
+            comments_added_thread.join()
+            #-----------------------------------------------------------------------------
+
+            ## if all the threads are finished  continue------------------------
+
+            if (not _tasks_added_thread.is_alive() and not _task_details_thread.is_alive() and not teams_thread.is_alive()
+                 and not issues_raised_thread.is_alive() and not comments_added_thread.is_alive()):
+
+                ## teams-------------------------
+                _teams_ids = []
+                for team in json.loads(teams[0])["data"]:
+                    if ("members" in team.keys() and username in team["members"]):
+                        try:
+                            t_year,t_month_name,t_months_cnt =get_month_details(team["date_created"])
+                            if (t_year == year):
+                                item[t_month_name]["teams"]+=t_months_cnt
+                        except Exception as e:
+                            pass
+                        _teams_ids.append(team["_id"])
+                ## -------------------------------
+
+                ## comment and issues-------------------------
+                _teams_tasks_issues_raised_ids=[]
+                if len(json.loads(issues_raised[0])["data"]) != 0:
+                    for issue in json.loads(issues_raised[0])["data"]:
+                        if ("team_id" in issue.keys() and issue["team_id"] in _teams_ids):
+                            try:
+                                t_year,t_month_name,t_months_cnt =get_month_details(issue["created_date"])
+                                if (t_year == year):
+                                    item[t_month_name]["team_tasks_issues_raised"]+=t_months_cnt
+                            except Exception as e:
+                                pass
+                            _teams_tasks_issues_raised_ids.append(issue["_id"])
+
+                        if ("team_id" in issue.keys() and issue["team_id"] in _teams_ids) and ("current_status" in issue.keys() and issue["current_status"] == "Resolved"):
+                            try:
+                                t_year,t_month_name,t_months_cnt =get_month_details(issue["created_date"])
+                                if (t_year == year):
+                                    item[t_month_name]["team_tasks_issues_resolved"]+=t_months_cnt
+                            except Exception as e:
+                                pass
+                
+                if len(json.loads(comments_added[0])["data"]) != 0:
+                    for comment in json.loads(comments_added[0])["data"]:
+                        if comment["thread_id"] in _teams_tasks_issues_raised_ids:
+                            try:
+                                t_year,t_month_name,t_months_cnt =get_month_details(comment["created_date"])
+                                if (t_year == year):
+                                    item[t_month_name]["team_tasks_comments_added"]+=t_months_cnt
+                            except Exception as e:
+                                pass
+                ## -------------------------------------------------------
+                
+                ## tasks-------------------------------------------------
+                
+                for task in json.loads(_task_details[0])["data"]:
+                    for t in json.loads(_tasks_added[0])["data"]:
+                        if t["_id"] == task["task_id"]:
+                            t_year,t_month_name,t_months_cnt =get_month_details(t["task_created_date"])
+                            if (t_year == year):
+                                item[t_month_name]["tasks_added"]+=t_months_cnt
+                            
+                            if ("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True):
+                                t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                if (t_year == year):
+                                    item[t_month_name]["tasks_approved"]+=t_months_cnt
+
+                            if "status" in task.keys():
+                                if (
+                                    task["status"] == "Completed"
+                                    or task["status"] == "Complete"
+                                    or task["status"] == "completed"
+                                    or task["status"] == "complete"
+                                    or task["status"] == "Mark as complete"
+                                ):
+                                    t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                    if (t_year == year):
+                                        item[t_month_name]["tasks_completed"]+=t_months_cnt
+                                        try:
+                                            percentage_tasks_completed = (
+                                                item[t_month_name]["tasks_completed"]
+                                                / item[t_month_name]["tasks_added"]
+                                            ) * 100
+                                            item[t_month_name].update(
+                                                {
+                                                    "percentage_tasks_completed": percentage_tasks_completed
+                                                }
+                                            )
+                                        except Exception:
+                                            item[t_month_name].update(
+                                                {"percentage_tasks_completed": 0}
+                                            )
+                                if (
+                                    task["status"] == "Incomplete"
+                                    or task["status"] == "incompleted"
+                                    or task["status"] == "incomplete"
+                                    or task["status"] == "Incompleted"
+                                ):
+                                    t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                    if (t_year == year):
+                                        item[t_month_name]["tasks_uncompleted"]+=t_months_cnt
+
+                            if ("team_id" in task.keys() and task["team_id"] in _teams_ids):
+                                try:
+                                    t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                    if (t_year == year):
+                                        item[t_month_name]["team_tasks"]+=t_months_cnt
+                                except Exception as e:
+                                    pass
+
+                            if ("team_id" in task.keys() and "completed" in task.keys()) and (
+                                task["team_id"] in _teams_ids and task["completed"] == "True"
+                            ):
+                                try:
+                                    t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                    if (t_year == year):
+                                        item[t_month_name]["team_tasks_completed"]+=t_months_cnt
+                                        try:
+                                            item[t_month_name].update(
+                                                {
+                                                    "percentage_team_tasks_completed": (
+                                                        len(_teams_tasks_completed)
+                                                        / len(_teams_tasks)
+                                                    )
+                                                    * 100
+                                                }
+                                            )
+                                        except Exception:
+                                            item[t_month_name].update(
+                                                {"percentage_team_tasks_completed": 0}
+                                            )
+                                except Exception as e:
+                                    pass
+
+                            if ("team_id" in task.keys() and "completed" in task.keys()) and (
+                                task["team_id"] in _teams_ids and task["completed"] == "False"
+                            ):
+                                try:
+                                    t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                    if (t_year == year):
+                                        item[t_month_name]["team_tasks_uncompleted"]+=t_months_cnt
+                                except Exception as e:
+                                    pass
+
+                            if ("team_id" in task.keys() and task["team_id"] in _teams_ids):
+                                if ("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True):
+                                    try:
+                                        t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                        if (t_year == year):
+                                            item[t_month_name]["team_tasks_approved"]+=t_months_cnt
+                                    except Exception as e:
+                                        pass
+                    if (
+                        "task_approved_by" in task.keys()
+                        and task["task_approved_by"] == username
+                    ):
+                        t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                        if (t_year == year):
+                            item[t_month_name]["tasks_you_approved"]+=t_months_cnt
+                    if (
                         "task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
-                    if (task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
-                        _tasks_you_marked_as_complete.append(task)
+                        if(task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
+                            t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                            if (t_year == year):
+                                item[t_month_name]["tasks_you_marked_as_complete"]+=t_months_cnt
 
-                if ("task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
-                    if (task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted"):
-                        _tasks_you_marked_as_incomplete.append(task)
+                    if ("task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
+                        if(task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted"):
+                            t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                            if (t_year == year):
+                                item[t_month_name]["tasks_you_marked_as_incomplete"]+=t_months_cnt
 
-            teams = dowellconnection(
-                *team_management_modules, "fetch", {}, update_field
-            )
-            issues_raised = dowellconnection(
-                *thread_report_module, "fetch", {}, update_field
-            )
-            comments_added = dowellconnection(
-                *comment_report_module, "fetch", {}, update_field
-            )
+                ## --------------------------------------------------
 
-            _teams_list = []
-            _teams_ids = []
-
-            for team in json.loads(teams)["data"]:
-                if ("members" in team.keys() and username in team["members"]):
-                    _teams_list.append(team)
-                    _teams_ids.append(team["_id"])
-
-            _teams_tasks = []
-            _teams_tasks_completed = []
-            _teams_tasks_uncompleted = []
-            _teams_tasks_approved = []
-            _teams_tasks_issues_raised = []
-            _teams_tasks_issues_raised_ids = []
-            _teams_tasks_issues_resolved = []
-            _teams_tasks_comments_added = []
-            if len(tasks_details) != 0:
-                for task in tasks_details:
-                    if ("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True):
-                        _tasks_approved.append(task)
-
-                    if "status" in task.keys():
-                        if (
-                            task["status"] == "Completed"
-                            or task["status"] == "Complete"
-                            or task["status"] == "completed"
-                            or task["status"] == "complete"
-                            or task["status"] == "Mark as complete"
-                        ):
-                            _tasks_completed.append(task)
-                        if (
-                            task["status"] == "Incomplete"
-                            or task["status"] == "incompleted"
-                            or task["status"] == "incomplete"
-                            or task["status"] == "Incompleted"
-                        ):
-                            _tasks_uncompleted.append(task)
-
-                    if ("team_id" in task.keys() and task["team_id"] in _teams_ids):
-                        _teams_tasks.append(task)
-
-                    if ("team_id" in task.keys() and "completed" in task.keys()) and (
-                        task["team_id"] in _teams_ids and task["completed"] == "True"
-                    ):
-                        _teams_tasks_completed.append(task)
-
-                    if ("team_id" in task.keys() and "completed" in task.keys()) and (
-                        task["team_id"] in _teams_ids and task["completed"] == "False"
-                    ):
-                        _teams_tasks_uncompleted.append(task)
-
-                    if ("team_id" in task.keys() and task["team_id"] in _teams_ids):
-                        if ("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True):
-                            _teams_tasks_approved.append(task)
-
-            if len(json.loads(issues_raised)["data"]) != 0:
-                for issue in json.loads(issues_raised)["data"]:
-                    if ("team_id" in issue.keys() and issue["team_id"] in _teams_ids):
-                        _teams_tasks_issues_raised.append(issue)
-                        _teams_tasks_issues_raised_ids.append(issue["_id"])
-
-                    if ("team_id" in issue.keys() and issue["team_id"] in _teams_ids) and (
-                        "current_status" in issue.keys(
-                        ) and issue["current_status"] == "Resolved"
-                    ):
-                        _teams_tasks_issues_resolved.append(issue)
-
-            if len(json.loads(comments_added)["data"]) != 0:
-                for comment in json.loads(comments_added)["data"]:
-                    if comment["thread_id"] in _teams_tasks_issues_raised_ids:
-                        _teams_tasks_comments_added.append(comment)
-
-            if len(_tasks_list) != 0:
-                months = []
-                for task in _tasks_list:
-                    datime = datetime.strptime(set_date_format(
-                        task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
-                    month_name = month_list[datime.month]
-                    months.append(month_name)
-                    if (str(datime.year) == year):
-                        item[month_name].update(
-                            {"tasks_added": months.count(month_name)})
-            else:
-                for key, value in item.items():
-                    item[key].update({"tasks_added": 0})
-            # tasks approved----------------------
-            if len(_tasks_approved) != 0:
-                months = []
-                for task in _tasks_approved:
-                    datime = datetime.strptime(set_date_format(
-                        task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
-                    month_name = month_list[datime.month]
-
-                    months.append(month_name)
-                    if (str(datime.year) == year):
-                        item[month_name].update(
-                            {"tasks_approved": months.count(month_name)}
-                        )
-            else:
-                for key, value in item.items():
-                    item[key].update({"tasks_approved": 0})
-
-            # tasks completed-----------------------------
-            if len(_tasks_completed) != 0:
-                months = []
-                for task in _tasks_completed:
-                    month_name = month_list[
-                        datetime.strptime(
-                            set_date_format(task["task_created_date"]),
-                            "%m/%d/%Y %H:%M:%S",
-                        ).month
-                    ]
-                    months.append(month_name)
-                    if month_name in item.keys():
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"tasks_completed": months.count(month_name)}
-                            )
-                            try:
-                                percentage_tasks_completed = (
-                                    item[month_name]["tasks_completed"]
-                                    / item[month_name]["tasks_added"]
-                                ) * 100
-                                item[month_name].update(
-                                    {
-                                        "percentage_tasks_completed": percentage_tasks_completed
-                                    }
-                                )
-                            except Exception:
-                                item[month_name].update(
-                                    {"percentage_tasks_completed": 0}
-                                )
-            else:
-                for key, value in item.items():
-                    item[key].update({"tasks_completed": 0})
-                    item[key].update({"percentage_tasks_completed": 0})
-
-            # tasks uncompleted---------------------
-            if len(_tasks_uncompleted) != 0:
-                months = []
-                for task in _tasks_uncompleted:
-                    month_name = month_list[
-                        datetime.strptime(
-                            set_date_format(task["task_created_date"]),
-                            "%m/%d/%Y %H:%M:%S",
-                        ).month
-                    ]
-                    # print(month_name,"=====",task["task_created_date"],"====",item.keys())
-                    months.append(month_name)
-                    if month_name in item.keys():
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"tasks_uncompleted": months.count(month_name)}
-                            )
-            else:
-                for key, value in item.items():
-                    item[key].update({"tasks_uncompleted": 0})
-            # tasks you approved ---------------------
-            if len(_tasks_you_approved) != 0:
-                months = []
-                for task in _tasks_you_approved:
-                    month_name = month_list[
-                        datetime.strptime(
-                            set_date_format(task["task_created_date"]),
-                            "%m/%d/%Y %H:%M:%S",
-                        ).month
-                    ]
-                    # print(month_name,"=====",task["task_created_date"],"====",item.keys())
-                    months.append(month_name)
-                    if month_name in item.keys():
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"tasks_you_approved": months.count(
-                                    month_name)}
-                            )
-            else:
-                for key, value in item.items():
-                    item[key].update({"tasks_you_approved": 0})
-
-            # tasks you marked as complete ---------------------
-            if len(_tasks_you_marked_as_complete) != 0:
-                months = []
-                for task in _tasks_you_marked_as_complete:
-                    month_name = month_list[
-                        datetime.strptime(
-                            set_date_format(task["task_created_date"]),
-                            "%m/%d/%Y %H:%M:%S",
-                        ).month
-                    ]
-                    # print(month_name,"=====",task["task_created_date"],"====",item.keys())
-                    months.append(month_name)
-                    if month_name in item.keys():
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {
-                                    "tasks_you_marked_as_complete": months.count(
-                                        month_name
-                                    )
-                                }
-                            )
-            else:
-                for key, value in item.items():
-                    item[key].update({"tasks_you_marked_as_complete": 0})
-
-            # tasks you marked as incomplete ---------------------
-            if len(_tasks_you_marked_as_incomplete) != 0:
-                months = []
-                for task in _tasks_you_marked_as_incomplete:
-                    month_name = month_list[
-                        datetime.strptime(
-                            set_date_format(task["task_created_date"]),
-                            "%m/%d/%Y %H:%M:%S",
-                        ).month
-                    ]
-                    # print(month_name,"=====",task["task_created_date"],"====",item.keys())
-                    months.append(month_name)
-                    if month_name in item.keys():
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {
-                                    "tasks_you_marked_as_incomplete": months.count(
-                                        month_name
-                                    )
-                                }
-                            )
-            else:
-                for key, value in item.items():
-                    item[key].update({"tasks_you_marked_as_incomplete": 0})
-
-            # teams----------------------------------------
-            if len(_teams_list) != 0:
-                months = []
-                for team in _teams_list:
-                    try:
-                        month_name = month_list[
-                            datetime.strptime(
-                                set_date_format(team["date_created"]),
-                                "%m/%d/%Y %H:%M:%S",
-                            ).month
-                        ]
-                        months.append(month_name)
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(team["date_created"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"teams": months.count(month_name)})
-                    except Exception as e:
-                        pass
-            else:
-                for key, value in item.items():
-                    item[key].update({"teams": 0})
-            # team tasks-------------------------------------------------
-            if len(_teams_tasks) != 0:
-                months = []
-                for task in _teams_tasks:
-                    try:
-                        month_name = month_list[
-                            datetime.strptime(
-                                set_date_format(task["task_created_date"]),
-                                "%m/%d/%Y %H:%M:%S",
-                            ).month
-                        ]
-                        months.append(month_name)
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"team_tasks": months.count(month_name)}
-                            )
-                    except Exception as e:
-                        pass
-            else:
-                for key, value in item.items():
-                    item[key].update({"team_tasks": 0})
-            # completed team tasks------------------------------------
-            if len(_teams_tasks_completed) != 0:
-                months = []
-                for task in _teams_tasks_completed:
-                    try:
-                        month_name = month_list[
-                            datetime.strptime(
-                                set_date_format(task["task_created_date"]),
-                                "%m/%d/%Y %H:%M:%S",
-                            ).month
-                        ]
-                        months.append(month_name)
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"team_tasks_completed": months.count(
-                                    month_name)}
-                            )
-                            try:
-                                item[month_name].update(
-                                    {
-                                        "percentage_team_tasks_completed": (
-                                            len(_teams_tasks_completed)
-                                            / len(_teams_tasks)
-                                        )
-                                        * 100
-                                    }
-                                )
-                            except Exception:
-                                item[month_name].update(
-                                    {"percentage_team_tasks_completed": 0}
-                                )
-                    except Exception as e:
-                        pass
-            else:
-                for key, value in item.items():
-                    item[key].update({"team_tasks_completed": 0})
-                    item[key].update({"percentage_team_tasks_completed": 0})
-
-            if len(_teams_tasks_uncompleted) != 0:
-                months = []
-                for task in _teams_tasks_uncompleted:
-                    try:
-                        month_name = month_list[
-                            datetime.strptime(
-                                set_date_format(task["task_created_date"]),
-                                "%m/%d/%Y %H:%M:%S",
-                            ).month
-                        ]
-                        months.append(month_name)
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"team_tasks_uncompleted": months.count(
-                                    month_name)}
-                            )
-                    except Exception as e:
-                        pass
-            else:
-                for key, value in item.items():
-                    item[key].update({"team_tasks_uncompleted": 0})
-
-            if len(_teams_tasks_approved) != 0:
-                months = []
-                for task in _teams_tasks_approved:
-                    try:
-                        month_name = month_list[
-                            datetime.strptime(
-                                set_date_format(task["task_created_date"]),
-                                "%m/%d/%Y %H:%M:%S",
-                            ).month
-                        ]
-                        months.append(month_name)
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(task["task_created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"team_tasks_approved": months.count(
-                                    month_name)}
-                            )
-                    except Exception as e:
-                        pass
-            else:
-                for key, value in item.items():
-                    item[key].update({"team_tasks_approved": 0})
-
-            if len(_teams_tasks_issues_raised) != 0:
-                months = []
-                for thread in _teams_tasks_issues_raised:
-                    try:
-                        month_name = month_list[
-                            datetime.strptime(
-                                set_date_format(thread["created_date"]),
-                                "%m/%d/%Y %H:%M:%S",
-                            ).month
-                        ]
-                        months.append(month_name)
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(thread["created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"team_tasks_issues_raised": months.count(
-                                    month_name)}
-                            )
-                    except Exception as e:
-                        pass
-            else:
-                for key, value in item.items():
-                    item[key].update({"team_tasks_issues_raised": 0})
-
-            if len(_teams_tasks_issues_resolved) != 0:
-                months = []
-                for thread in _teams_tasks_issues_resolved:
-                    try:
-                        month_name = month_list[
-                            datetime.strptime(
-                                set_date_format(thread["created_date"]),
-                                "%m/%d/%Y %H:%M:%S",
-                            ).month
-                        ]
-                        months.append(month_name)
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(thread["created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"team_tasks_issues_resolved": months.count(
-                                    month_name)}
-                            )
-                    except Exception as e:
-                        pass
-            else:
-                for key, value in item.items():
-                    item[key].update({"team_tasks_issues_resolved": 0})
-
-            if len(_teams_tasks_comments_added) != 0:
-                months = []
-                for comment in _teams_tasks_comments_added:
-                    try:
-                        month_name = month_list[
-                            datetime.strptime(
-                                set_date_format(comment["created_date"]),
-                                "%m/%d/%Y %H:%M:%S",
-                            ).month
-                        ]
-                        months.append(month_name)
-                        if (
-                            str(
-                                datetime.strptime(
-                                    set_date_format(comment["created_date"]),
-                                    "%m/%d/%Y %H:%M:%S",
-                                ).year
-                            )
-                            == year
-                        ):
-                            item[month_name].update(
-                                {"team_tasks_comments_added": months.count(
-                                    month_name)}
-                            )
-                    except Exception as e:
-                        pass
-            else:
-                for key, value in item.items():
-                    item[key].update({"team_tasks_comments_added": 0})
             data["data"].append(item)
             return Response(data, status=status.HTTP_201_CREATED)
         else:
@@ -6836,12 +6505,12 @@ class Generate_Report(APIView):
         tasks = dowellconnection(
             *task_management_reports, "fetch", field, update_field=None
         )
-        res = dowellconnection(*task_details_module,
+        task_details = dowellconnection(*task_details_module,
                                "fetch", {}, update_field=None)
         response = {}
         d = []
         for task in json.loads(tasks)["data"]:
-            for t in json.loads(res)["data"]:
+            for t in json.loads(task_details)["data"]:
                 if t["task_id"] == task["_id"]:
                     d.append(t)
         response["data"] = d
