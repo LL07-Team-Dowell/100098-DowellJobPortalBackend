@@ -647,7 +647,6 @@ const TaskScreen = ({
                                       :
                                       `${taskdetail2?.length} logs`
                                     }
-                                  <>{console.log(taskdetail2)}</>
                                   </span>
                                 }
                               </p>

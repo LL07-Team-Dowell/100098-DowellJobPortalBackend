@@ -81,7 +81,7 @@ const AdminLogsHomePage = () => {
     };
 
     const handleViewTaskBtnClick = (data) => {
-        navigate(`/new-task-screen?applicant=${data.applicant}&project=${data.project}`);
+        navigate(`/new-task-screen?applicant=${data.applicant}&project=${data.project}&name=${data.applicantName}`);
     };
 
 
