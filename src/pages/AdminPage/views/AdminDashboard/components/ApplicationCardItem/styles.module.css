@@ -1,0 +1,79 @@
+.application__item {
+    width: 100%;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Poppins', sans-serif;
+}
+
+.profile {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    object-fit: contain;
+}
+
+.profile__Wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.detail__skeleton {
+    width: 10rem;
+    height: 1.5rem;
+}
+
+.job__skeleton {
+    width: 3rem;
+    height: 0.5rem;
+}
+
+.detail p:first-child {
+    font-size: 0.8rem;
+    text-transform: capitalize;
+}
+
+.detail p:last-child {
+    font-size: 0.6rem;
+    color: #808080;
+    text-transform: capitalize;
+}
+
+.job {
+    border-radius: 10px;
+    padding: 0.2rem 0.6rem;
+}
+
+.job p {
+    font-size: 0.6rem;
+}
+
+.skeleton {
+    opacity: 0.3;
+    -webkit-animation: skeleton-loading 0.6s linear infinite alternate;
+    animation: skeleton-loading 0.6s linear infinite alternate;
+}
+
+.skeleton.overlay {
+    opacity: 0.1;
+}
+
+@-webkit-keyframes skeleton-loading {
+    0% {
+      background-color: #808080;
+    }
+    100% {
+      background-color: #f0f3f5;
+    }
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-color: #808080;
+    }
+    100% {
+        background-color: #f0f3f5;
+    }
+}

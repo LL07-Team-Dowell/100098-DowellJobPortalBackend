@@ -1,0 +1,50 @@
+.main__Stat {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 1.8rem;
+    background-color: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border-radius: 15px;
+    min-width: 17rem;
+    padding: 2rem;
+}
+
+.stat__Icon__Wrap {
+    background-color: rgb(225, 251, 226);
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.5rem;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat__Info__Wrap {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.title {
+    font-size: 0.875rem;
+}
+
+.count {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.stat__Info__Wrap button {
+    font-family: 'Poppins', sans-serif;
+    background: none;
+    color: #005734;
+    outline: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+}

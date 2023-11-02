@@ -1,0 +1,193 @@
+.admin__Dash {
+    font-family: 'Poppins', sans-serif;
+    width: 84%;
+    margin: 1rem auto 20rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem 1.5rem;
+}
+
+.top__Nav__Content, .top__Stats__Wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex-direction: row;
+}
+
+.top__Nav__Content h2 {
+    color: #005734;
+    font-weight: 600;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    font-size: 1.7rem;
+    letter-spacing: 0.04em;
+}
+
+.top__Nav__Content h2 .user__Title {
+    font-size: 0.95rem;
+    color: #000;
+    letter-spacing: normal;
+    font-weight: normal;
+}
+
+.top__Nav__Content button {
+    background-color: #005734;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    outline: none;
+    border: none;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.top__Nav__Content button:hover {
+    filter: brightness(0.85);
+}
+
+.stat__overview,
+.stat__overview h2 {
+    width: 100%;
+}
+
+.stat__lg__Title {
+    color: #005734;
+}
+
+.stat__overview,
+.application__Wrap,
+.company__Wrap,
+.project__Wrap {
+    background-color: white;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border-radius: 8px;
+    padding: 2rem 1.5rem;
+}
+
+.stat__mini__Title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    width: 100%;
+}
+
+.log__Filter {
+    background-color: #fff;
+    outline: none;
+    border: none;
+    border: 1px solid #005734;
+    font-family: 'Poppins', sans-serif;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    display: block;
+    margin: 0 0 1.5rem auto;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.log__Filter:hover {
+    filter: brightness(0.98);
+}
+
+.bottom__Stats__Nav {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    width: 100%;
+    flex-direction: row;
+}
+
+.company__Wrap {
+    flex: 50%;
+}
+
+.application__Wrap {
+    flex: 30%;
+}
+
+.project__Wrap {
+    flex: 20%;
+}
+
+.applications__WRap__Items {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.company__Overview__Wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    margin: 1.5rem 0;
+}
+
+.comp__mini__Title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    width: 100%;   
+    margin-bottom: 0.7rem;
+}
+
+.project__item {
+    background-color:  rgb(225, 251, 226);
+    width: 100%;
+    border-radius: 8px;
+    margin: 1.5rem 0 0;
+    padding: 1rem;
+}
+
+.project__item h3 {
+    font-size: 1.4rem;
+    font-weight: 500;
+    margin-bottom: 0.2rem;
+}
+
+.project__item p {
+    font-size: 0.75rem;
+}
+
+
+
+@media screen and (max-width: 767px) {
+    .admin__Dash {
+        width: 90%;
+        margin-bottom: 10rem;
+    }
+
+    .top__Nav__Content {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+    }
+
+    .top__Nav__Content button {
+        margin-left: auto;
+    }
+
+    .top__Stats__Wrap, .bottom__Stats__Nav, .company__Overview__Wrap {
+        flex-direction: column;
+    }
+
+    .company__Overview__Wrap h2 {
+        text-align: center;
+    }
+
+    .company__Overview__Wrap, .top__Stats__Wrap {
+        gap: 1.8rem;
+    }
+
+    .company__Wrap, .application__Wrap, .project__Wrap {
+        flex: 100%;
+        width: 100%;
+    }
+}

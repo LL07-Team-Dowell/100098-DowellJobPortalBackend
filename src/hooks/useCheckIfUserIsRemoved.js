@@ -10,8 +10,10 @@ export default function useCheckIfUserIsRemoved (
   updateRemovalStatusChecked,
 ) {
   useEffect(() => {
-    if (removalStatusChecked) return
+    if (removalStatusChecked || !userDetails) return updateLoadingStatus(false);
 
+    updateLoadingStatus(true);
+    
     getAppliedJobs(userDetails?.portfolio_info[0]?.org_id).then(res => {
         const currentUserAppliedJobs = res.data.response.data.filter(
           (application) => application.data_type === userDetails?.portfolio_info[0]?.data_type

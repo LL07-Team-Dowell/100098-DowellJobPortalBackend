@@ -3,17 +3,18 @@ import { FiHome } from "react-icons/fi";
 import { TbBrandGoogleAnalytics } from "react-icons/tb";
 import { GiTeamIdea } from "react-icons/gi";
 import { ImStack } from "react-icons/im";
+import { MdOutlineSpaceDashboard, MdOutlineWorkOutline } from "react-icons/md";
 
 export const adminNavigationLinks = [
   {
     linkAddress: "/",
-    icon: <FiHome />,
-    text: "Home",
+    icon: <MdOutlineSpaceDashboard />,
+    text: "Dashboard",
   },
   {
-    linkAddress: "/add",
-    icon: <AiOutlinePlus />,
-    text: "Add",
+    linkAddress: "/jobs",
+    icon: <MdOutlineWorkOutline />,
+    text: "Jobs",
   },
   {
     linkAddress: "/report",
@@ -38,19 +39,19 @@ export const adminNavigationLinks = [
 ];
 
 export const subAdminNavigationLinks = [
-    {
-        linkAddress: "/",
-        icon: <FiHome />,
-        text: "Home",
-    },
-    {
-        linkAddress: "/add-job",
-        icon: <AiOutlinePlus />,
-        text: "Add job",
-    },
-    {
-        linkAddress: "/report",
-        icon: <TbBrandGoogleAnalytics />,
-        text: "Report",
-    },
+  {
+    linkAddress: "/",
+    icon: <MdOutlineSpaceDashboard />,
+    text: "Dashboard",
+  },
+  {
+    linkAddress: "/jobs",
+    icon: <MdOutlineWorkOutline />,
+    text: "Jobs",
+  },
+  {
+      linkAddress: "/report",
+      icon: <TbBrandGoogleAnalytics />,
+      text: "Report",
+  },
 ]

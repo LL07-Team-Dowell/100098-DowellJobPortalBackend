@@ -93,6 +93,7 @@ import TeamScreenInfoAdminTeamLead from "./pages/TeamleadPage/views/CreateMember
 import TeamInfoCandidate from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamInfoCandidate/TeamInfoCandidate";
 import AdminLogsHomePage from "./pages/AdminPage/views/LogsHomePage/LogsHomePage";
 import CandidateRemovedScreen from "./pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
+import AdminDashboard from "./pages/AdminPage/views/AdminDashboard/AdminDashboard";
 
 function App() {
   console.log = () => {};
@@ -517,6 +518,15 @@ function App() {
           element={
             <JobContextProvider>
               {" "}
+              <AdminDashboard subAdminView={true} />
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/jobs'
+          element={
+            <JobContextProvider>
+              {" "}
               <LandingPage subAdminView={true} />
             </JobContextProvider>
           }
@@ -660,6 +670,18 @@ function App() {
       <Routes>
         <Route
           path='/'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AdminDashboard />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/jobs'
           element={
             <JobContextProvider>
               <CandidateTaskContextProvider>

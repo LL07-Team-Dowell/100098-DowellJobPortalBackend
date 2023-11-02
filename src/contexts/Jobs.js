@@ -21,6 +21,9 @@ export const JobContextProvider = ({ children }) => {
   const [subProjectsLoaded, setSubProjectsLoaded] = useState(false);
   const [subProjectsLoading, setSubProjectsLoading] = useState(true);
   const [reportLinks, setReportLinks] = useState([]);
+  const [applications, setApplications] = useState([]);
+  const [applicationsLoaded, setApplicationsLoaded] = useState([]);
+  const [dashboardDataLoaded, setDashboardDataLoaded] = useState(false);
 
   return (
     <JobContext.Provider
@@ -53,6 +56,12 @@ export const JobContextProvider = ({ children }) => {
         setSubProjectsLoading,
         reportLinks,
         setReportLinks,
+        applications,
+        setApplications,
+        applicationsLoaded,
+        setApplicationsLoaded,
+        dashboardDataLoaded,
+        setDashboardDataLoaded,
       }}
     >
       {children}
