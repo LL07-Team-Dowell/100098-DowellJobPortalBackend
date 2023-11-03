@@ -4830,11 +4830,33 @@ class Thread_Apis(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            if data.get("current_status")=="Resolved":
+                update_field = {
+                    "current_status": data.get("current_status"),
+                    "previous_status": previous_status,
+                    "resolved_on":str(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+                }
 
-            update_field = {
-                "current_status": data.get("current_status"),
-                "previous_status": previous_status,
-            }
+            elif data.get("current_status")=="Completed":
+                update_field = {
+                    "current_status": data.get("current_status"),
+                    "previous_status": previous_status,
+                    "completed_on":str(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+                }
+
+            elif data.get("current_status")=="In progress":
+                update_field = {
+                    "current_status": data.get("current_status"),
+                    "previous_status": previous_status,
+                    "started_on":str(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+                }
+
+            elif data.get("current_status")=="Created":
+                update_field = {
+                    "current_status": data.get("current_status"),
+                    "previous_status": previous_status,
+                    "created_date":str(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+                }
 
             update_response = dowellconnection(
                 *thread_report_module, "update", field, update_field
@@ -5908,42 +5930,73 @@ class Generate_Report(APIView):
                     {"team_id": payload["team_id"]},
                     update_field,
                 )
-                field = {
-                    "team_id":  payload["team_id"],
-                }
+
+                comments = dowellconnection(
+                    *comment_report_module, "fetch", {}, update_field
+                )
                 update_field = {}
 
                 team_threads = json.loads(dowellconnection(
-                    *thread_report_module, "fetch", field, update_field
-                ))['data']
+                    *thread_report_module, "fetch", {"team_id":  payload["team_id"],}, update_field))['data']
 
-                threads_report = {
-                    "Created": 0,
-                    "Resolved": 0,
-                    "In_progress": 0,
-                    "Completed": 0,
-                    "total issue raised": 0
+                Threads_Resolved= []
+                Threads_In_pending=[]
+                Threads_Completed=[]
+                total_threads_raised=[]
+                all_issue_resolved_time=timedelta()
 
-                }
-
+                total_comments=0
                 for threads in team_threads:
-                    threads_report["total issue raised"] += 1
-                    if threads["current_status"] == "Created":
-                        threads_report["Created"] += 1
-                    if threads["current_status"] == "Resolved":
-                        threads_report["resolved"] += 1
-                    if threads["current_status"] == "In progress":
-                        threads_report["In_progress"] += 1
-                    if threads["current_status"] == "Completed":
-                        threads_report["Completed"] += 1
-                data["team threads report"] = threads_report
+                    
+                    total_threads_raised.append(threads)
+                    if threads["current_status"]=="Created":  
+                        Threads_In_pending.append(threads)
+                    if threads["current_status"]=="Resolved":
+                        Threads_Resolved.append(threads)
+                    if threads["current_status"]=="In progress":
+                        Threads_In_pending.append(threads)
+                    if threads["current_status"]=="Completed":
+                        Threads_Completed.append(threads)
 
+                    for comment in json.loads(comments)["data"]:
+                        if comment["thread_id"]==threads["_id"]:
+                            total_comments +=1
+                if len(total_threads_raised) > 0:
+                    average_comment_count_per_issue=total_comments/len(total_threads_raised)
+                else:
+                    average_comment_count_per_issue=0
+
+                for threads in Threads_Resolved:
+                    # print(threads)
+                    if threads["resolved_on"]:
+                        threads_created_on=threads["created_date"]
+                        threads_resolved_on=threads["resolved_on"]
+                        date_format = '%m/%d/%Y %H:%M:%S'
+                        created_date = datetime.strptime(threads_created_on,date_format )
+                        resolved_date = datetime.strptime(threads_resolved_on,date_format )
+                        time_to_solve_issue=resolved_date-created_date
+                        all_issue_resolved_time +=time_to_solve_issue   
+                if len(Threads_Resolved) > 0:
+                    average_time_taken_to_resolve=all_issue_resolved_time/len(Threads_Resolved)
+                else:
+                    average_time_taken_to_resolve=0
+        
+                data["total_issues_raised"]=len(total_threads_raised)
+                data["total_issues_pending"]=len(Threads_In_pending)
+                data["total_issues_resolved"]=len(Threads_Resolved)
+                data["total_issues_completed"]=len(Threads_Completed)
+                data["average_time_to_resolve_issues"] = average_time_taken_to_resolve
+                data["total_comments"]=total_comments
+                data["average_comment_count_per_issue"]=average_comment_count_per_issue
+                
+                
                 total_tasks = [res for res in json.loads(tasks)["data"]]
 
                 teams = dowellconnection(
                     *team_management_modules, "fetch", field, update_field
                 )
                 total_teams = [res for res in json.loads(teams)["data"]]
+                # print(total_teams)
                 data["teams"] = len(total_teams)
 
                 res_team_tasks = period_check(
@@ -5979,6 +6032,7 @@ class Generate_Report(APIView):
                 data["team_tasks_completed"] = len(team_tasks_completed)
                 team_tasks_uncompleted = []
                 for t in res_team_tasks[0]:
+                    # print(t)
                     try:
                         if t["status"] == "Incomplete" or t["status"] == "Incompleted":
                             team_tasks_uncompleted.append(t)
@@ -5986,6 +6040,7 @@ class Generate_Report(APIView):
                         try:
                             if t["Incompleted"] == True or t["Incomplete"] == True:
                                 team_tasks_uncompleted.append(t)
+                                # print(team_tasks_uncompleted)
                         except Exception:
                             pass
                 data["team_tasks_uncompleted"] = len(team_tasks_uncompleted)
