@@ -24,6 +24,7 @@ import { Bar } from 'react-chartjs-2';
 import ApplicationCardItem from "./components/ApplicationCardItem/ApplicationCardItem";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 import CompanyProgressOverview from "./components/CompanyProgressOverview/CompanyProgressOverview";
+import skeletonStyles from "./styles/skeleton.module.css";
 
 
 ChartJS.register(
@@ -68,10 +69,11 @@ const AdminDashboard = ({ subAdminView }) => {
         projectsAdded,
         subProjectsAdded,
         setSubProjectsAdded,
-        subProjectsLoaded,
         setSubProjectsLoaded,
         subProjectsLoading,
         setSubProjectsLoading,
+        totalWorklogCountInOrg,
+        setTotalWorklogCountInOrg,
     } = useJobContext();
     const { currentUser } = useCurrentUserContext();
     const navigate = useNavigate();
@@ -92,6 +94,7 @@ const AdminDashboard = ({ subAdminView }) => {
         setApplications,
         setApplicationsLoaded,
         setJobs,
+        setTotalWorklogCountInOrg,
         setDashboardDataLoaded
     )
 
@@ -159,11 +162,11 @@ const AdminDashboard = ({ subAdminView }) => {
                 <section className={styles.top__Stats__Wrap}>
                     <MainStatCard 
                         icon={<FaUsers />}
-                        title={'Total Users'}
-                        dataLoading={!dashboardDataLoaded}
+                        title={'Total Applications'}
+                        dataLoading={!applicationsLoaded}
                         dataLoaded={applicationsLoaded}
                         data={applications?.length}
-                        action={subAdminView ? null : '/all-users'}
+                        action={subAdminView ? null : '/all-applications'}
                     />
                     <MainStatCard 
                         icon={<MdOutlineWorkOutline />}
@@ -180,11 +183,15 @@ const AdminDashboard = ({ subAdminView }) => {
                         dataLoaded={projectsLoaded}
                         data={projectsAdded[0]?.project_list?.length}
                         action={'/add'}
+                        locationState={'showProject'}
                     />
                     <MainStatCard 
                         icon={<ImStack />}
                         title={'Total Logs'}
                         action={'/logs'}
+                        dataLoading={!dashboardDataLoaded}
+                        dataLoaded={dashboardDataLoaded}
+                        data={totalWorklogCountInOrg}
                     />
                 </section>
                 <section className={styles.stat__overview}>
@@ -223,7 +230,7 @@ const AdminDashboard = ({ subAdminView }) => {
                         <div className={styles.applications__WRap__Items}>
                             {
                                 applicationsLoaded ?
-                                    React.Children.toArray(applications.reverse().slice(0, 3).map((application, index) => {
+                                    React.Children.toArray(applications.slice(0, 4).map((application, index) => {
                                         return <ApplicationCardItem 
                                             application={application}
                                             greyJobCardColor={(index + 1) % 2 === 0 ? true : false}
@@ -231,41 +238,48 @@ const AdminDashboard = ({ subAdminView }) => {
                                     }))
                                 :
                                     <ApplicationCardItem 
-                                        loading={applicationsLoaded}
+                                        loading={!applicationsLoaded}
                                     />
                             }
                         </div>
                     </section>
                     <section className={styles.company__Wrap}>
                         <h2 className={styles.stat__mini__Title}>Company Overview</h2>
-                        <div className={styles.company__Overview__Wrap}>
-                            <div>
-                                <h2 className={styles.comp__mini__Title}>Active jobs</h2>
-                                <CompanyProgressOverview 
-                                    tooltipId={'active_jobs'}
-                                    toolTipContent={`You currently have ${jobs?.filter(job => job.is_active)?.length} active jobs out of ${jobs?.length} jobs`}
-                                    value={jobs?.length < 1 ? 0 : Number(jobs?.filter(job => job.is_active)?.length) / ( Number(jobs?.length) ) * 100}
-                                />
-                            </div>
-                            <div>
-                                <h2 className={styles.comp__mini__Title}>Active Users</h2>
-                                <CompanyProgressOverview 
-                                    tooltipId={'active_users'}
-                                    toolTipContent={`You currently have ${applications?.filter(application => application.status === candidateStatuses.ONBOARDING)?.length} active users out of ${applications?.length} users`}
-                                    value={applications?.length < 1 ? 0 : Number(applications?.filter(application => application.status === candidateStatuses.ONBOARDING)?.length) / ( Number(applications?.length) ) * 100}
-                                />
-                            </div>
+                        <div className={`${styles.company__Overview__Wrap} ${!dashboardDataLoaded ? skeletonStyles.skeleton : ''}`}>
+                            {
+                                !dashboardDataLoaded ? <>
+                                    <div style={{ width: '100%', height: '10rem', borderRadius: 8}}></div>
+                                </> :
+                                <>
+                                    <div>
+                                        <h2 className={styles.comp__mini__Title}>Active jobs</h2>
+                                        <CompanyProgressOverview 
+                                            tooltipId={'active_jobs'}
+                                            toolTipContent={`You currently have ${jobs?.filter(job => job.is_active)?.length} active jobs out of ${jobs?.length} jobs`}
+                                            value={jobs?.length < 1 ? 0 : Number(jobs?.filter(job => job.is_active)?.length) / ( Number(jobs?.length) ) * 100}
+                                        />
+                                    </div>
+                                    <div>
+                                        <h2 className={styles.comp__mini__Title}>Active Applicants</h2>
+                                        <CompanyProgressOverview 
+                                            tooltipId={'active_users'}
+                                            toolTipContent={`You currently have ${applications?.filter(application => application.status === candidateStatuses.ONBOARDING)?.length} hired users out of ${applications?.length} applications`}
+                                            value={applications?.length < 1 ? 0 : Number(applications?.filter(application => application.status === candidateStatuses.ONBOARDING)?.length) / ( Number(applications?.length) ) * 100}
+                                        />
+                                    </div>    
+                                </>
+                            }
                         </div>
                     </section>
                     <section className={styles.project__Wrap}>
                         <h2 className={styles.stat__mini__Title}>Project Overview</h2>
-                        <div className={styles.project__item}>
-                            <h3>{projectsAdded[0]?.project_list?.length}</h3>
-                            <p>total projects</p>
+                        <div className={`${styles.project__item} ${projectsLoading ? skeletonStyles.skeleton : ''}`}>
+                            <h3>{projectsLoading ? '' : projectsAdded[0]?.project_list?.length}</h3>
+                            <p>{projectsLoading ? '' : 'total projects'}</p>
                         </div>
-                        <div className={styles.project__item}>
-                            <h3>{subProjectsAdded?.length}</h3>
-                            <p>total subprojects</p>
+                        <div className={`${styles.project__item} ${styles.grey__Bg} ${subProjectsLoading ? skeletonStyles.skeleton : ''}`}>
+                            <h3>{subProjectsLoading ? '' : subProjectsAdded?.length}</h3>
+                            <p>{subProjectsLoading ? '' : 'total subprojects'}</p>
                         </div>
                     </section>
                 </section>

@@ -1,6 +1,6 @@
 .admin__Dash {
     font-family: 'Poppins', sans-serif;
-    width: 84%;
+    width: 85%;
     margin: 1rem auto 20rem;
     display: flex;
     flex-direction: column;
@@ -147,6 +147,10 @@
     padding: 1rem;
 }
 
+.project__item.grey__Bg {
+    background-color: #f2f2f2;
+}
+
 .project__item h3 {
     font-size: 1.4rem;
     font-weight: 500;
@@ -156,8 +160,6 @@
 .project__item p {
     font-size: 0.75rem;
 }
-
-
 
 @media screen and (max-width: 767px) {
     .admin__Dash {

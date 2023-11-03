@@ -39,6 +39,7 @@ const CreateTaskScreen = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const applicant = searchParams.get("applicant");
   const projectPassed = searchParams.get("project");
+  const nameOfApplicant = searchParams.get("name");
   const { userTasks, setUserTasks } = useCandidateTaskContext();
   const [selectedProject, setSelectedProject] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -414,7 +415,7 @@ const CreateTaskScreen = ({
     >
       <>
         <TitleNavigationBar
-          title={`Work logs for ${applicant}`}
+          title={`Work logs for ${nameOfApplicant ? nameOfApplicant : applicant}`}
           className="task-bar teamleadView"
           handleBackBtnClick={() => navigate(-1)}
         />

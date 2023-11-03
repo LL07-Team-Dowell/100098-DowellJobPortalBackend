@@ -55,6 +55,10 @@ const LandingPage = ({ subAdminView }) => {
     setSubProjectsLoading,
     setReportLinks,
     reportLinks,
+    applicationsLoaded,
+    setApplicationsLoaded,
+    applications,
+    dashboardDataLoaded,
   } = useJobContext();
   const [showShareModal, setShowShareModal] = useState(false);
   const [jobLinkToShareObj, setJobLinkToShareObj] = useState({});
@@ -109,6 +113,8 @@ const LandingPage = ({ subAdminView }) => {
   };
 
   useEffect(() => {
+    if (applicationsLoaded) return setlist(applications)
+
     getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
       .then((resp) => {
         setlist(
@@ -116,6 +122,7 @@ const LandingPage = ({ subAdminView }) => {
             (j) => currentUser.portfolio_info[0].data_type === j.data_type
           )
         );
+        setApplicationsLoaded(true)
       })
       .catch((err) => console.log(err));
   }, []);
@@ -127,7 +134,49 @@ const LandingPage = ({ subAdminView }) => {
   // console.log("jobs", jobs);
 
   useEffect(() => {
-    if (jobs?.length === 0 && !resp) {
+    if (dashboardDataLoaded) {
+      setJobs(jobs)
+      setjobs2(jobs)
+
+      Promise.all([
+        getMasterLinks(currentUser.portfolio_info[0].org_id),
+        getCreatedProductLinks(currentUser.portfolio_info[0].org_id),
+      ]).then(response => {
+        setJobLinks([
+          ...new Map(
+            response[0]?.data?.data
+              ?.reverse()
+              .map((link) => [link.master_link, link])
+          ).values(),
+        ]);
+
+        setProductLinks([
+          ...new Map(
+            response[1]?.data?.response
+              ?.reverse()
+              .filter((link) => link.type === "product")
+              .map((link) => [link.master_link, link])
+          ).values(),
+        ]);
+
+        setReportLinks([
+          ...new Map(
+            response[1]?.data?.response
+              ?.reverse()
+              .filter((link) => link.type === "report")
+              .map((link) => [link.master_link, link])
+          ).values(),
+        ]);
+
+        setresponse(true);
+        
+      }).catch((error) => {
+        console.log(error);
+        setresponse(true);
+      });
+    }
+
+    if (jobs?.length === 0 && !resp && !dashboardDataLoaded) {
       Promise.all([
         getJobsFromAdmin(currentUser.portfolio_info[0].org_id),
         getMasterLinks(currentUser.portfolio_info[0].org_id),
@@ -242,6 +291,7 @@ const LandingPage = ({ subAdminView }) => {
           setresponse(true);
         });
     }
+
     if (currentUser?.userportfolio?.length > 0) return;
 
     const currentSessionId = sessionStorage.getItem("session_id");

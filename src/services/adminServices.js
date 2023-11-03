@@ -154,3 +154,11 @@ export const fetchTeamThreadsForAdmin = async (teamId) => {
 export const adminAddNewSettingProfile = async (data) => {
   return await currentBackendAxiosInstance.post('/settinguserprofileinfo/', data)
 }
+
+export const getTotalWorklogCountInOrganization = async (companyId) => {
+  return await currentBackendAxiosInstance.get(`/dashboard_services/?type=total_worklogs_count&company_id=${companyId}`)
+}
+
+export const updateCandidateApplicationDetail = async (updateType, applicationId) => {
+  return await currentBackendAxiosInstance.post(`/dashboard_services/?type=${updateType}&candidate_id=${applicationId}`)
+}

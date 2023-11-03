@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { getSettingUserProject } from "../../../../../services/hrServices";
-import { getApplicationForAdmin, getJobsFromAdmin, getSettingUserSubProject } from "../../../../../services/adminServices";
+import { getApplicationForAdmin, getJobsFromAdmin, getSettingUserSubProject, getTotalWorklogCountInOrganization } from "../../../../../services/adminServices";
 
 export default function useLoadAdminDashboardData(
     dataLoaded, 
@@ -14,6 +14,7 @@ export default function useLoadAdminDashboardData(
     updateApplications,
     updateApplicationsLoadedState,
     updateJobs,
+    updateWorklogCountInOrganization,
     updateDataLoaded,
 ) {
     useEffect(() => {
@@ -24,6 +25,7 @@ export default function useLoadAdminDashboardData(
             getSettingUserSubProject(),
             getApplicationForAdmin(userDetail?.portfolio_info[0]?.org_id),
             getJobsFromAdmin(userDetail?.portfolio_info[0]?.org_id),
+            getTotalWorklogCountInOrganization(userDetail?.portfolio_info[0]?.org_id),
         ]).then(res => {
 
             const projectsGotten = res[0]?.data
@@ -41,25 +43,23 @@ export default function useLoadAdminDashboardData(
             if (projectsGotten.length > 0) {
                 updateProjects(projectsGotten);
             }
+            updateProjectsLoadingState(false);
+            updateProjectsLoadedState(true);
       
             updateSubprojects(
                 res[1]?.data?.data?.filter(item => item.company_id === userDetail?.portfolio_info[0]?.org_id)
                 .filter(item => item.data_type === userDetail?.portfolio_info[0]?.data_type)
                 .reverse()
             );
-
-            
-            updateApplications(
-                res[2]?.data?.response?.data?.filter(
-                    (item) => userDetail?.portfolio_info[0]?.data_type === item.data_type
-                )
-            )
-
-            updateProjectsLoadingState(false);
-            updateProjectsLoadedState(true);
-            
             updateSubProjectsLoadingState(false);
             updateSubProjectsLoadedState(true);
+
+            const applicationsFetched = res[2]?.data?.response?.data?.filter(
+                (item) => userDetail?.portfolio_info[0]?.data_type === item.data_type
+            )?.reverse()
+
+            updateApplications(applicationsFetched)
+            updateApplicationsLoadedState(true);
 
             updateJobs(
                 res[3]?.data?.response?.data
@@ -78,7 +78,7 @@ export default function useLoadAdminDashboardData(
                 : []
             );
 
-            updateApplicationsLoadedState(true);
+            updateWorklogCountInOrganization(res[4]?.data?.worklogs_count);
 
             updateDataLoaded(true);
 

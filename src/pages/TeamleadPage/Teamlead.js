@@ -663,7 +663,7 @@ const Teamlead = ({ isGrouplead }) => {
   };
 
   const handleViewTaskBtnClick = (data) => {
-    navigate(`/new-task-screen?applicant=${data.applicant}&project=${data.project}`);
+    navigate(`/new-task-screen?applicant=${data.applicant}&project=${data.project}&name=${data.applicantName}`);
     // setCurrentTeamMember(data.user);
     // setShowCandidateTask(true);
   };
