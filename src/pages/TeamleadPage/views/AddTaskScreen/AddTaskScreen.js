@@ -1181,6 +1181,7 @@ const AddTaskScreen = ({
                                 <th>Time started</th>
                                 <th>Time finished</th>
                                 <th>Work log</th>
+                                <th>Work log Image</th>
                                 <th>Work log type</th>
                                 <th>sub project</th>
                                 <th>project</th>
@@ -1193,6 +1194,7 @@ const AddTaskScreen = ({
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task}</td>
+                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{ selectedFile ? task.image : "None"}</td> 
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task_type}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.subproject}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.project}</td>
