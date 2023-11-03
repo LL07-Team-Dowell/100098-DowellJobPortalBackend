@@ -2466,6 +2466,7 @@ class task_module(APIView):
                     "project": data.get("project"),
                     "subproject": data.get("subproject"),
                     "user_id": data.get("user_id"),
+                    "task_image": data.get("image"),
                     "task_type": data.get("task_type"),
                     "company_id": data.get("company_id"),
                     "start_time": data.get("start_time"),
@@ -6104,15 +6105,15 @@ class Generate_Report(APIView):
         payload = request.data
         company_id = payload.get("company_id")
         if payload:
-            #intializing query parameters-----------------------------------------------------
+            # intializing query parameters-----------------------------------------------------
             field = {
-                    "_id": payload.get("applicant_id"),
-                    "company_id": payload.get("company_id"),
-                }
+                "_id": payload.get("applicant_id"),
+                "company_id": payload.get("company_id"),
+            }
             year = payload.get("year")
             update_field = {}
             data = {}
-            #----------------------------------------------------------------------------------
+            # ----------------------------------------------------------------------------------
 
             # ensuring the given year is a valid year------------------------------------------
             if int(year) > datetime.today().year:
@@ -6123,19 +6124,19 @@ class Generate_Report(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            #-------------------------------------------------------------------------------
+            # -------------------------------------------------------------------------------
 
             # add fields values if role has been given--------------------------------------
             if payload.get("role"):
-                field["username"]=payload.get("applicant_username")
-                field["status"]= "hired"
-            #-------------------------------------------------------------------------------
+                field["username"] = payload.get("applicant_username")
+                field["status"] = "hired"
+            # -------------------------------------------------------------------------------
 
             # check if the user has any data------------------------------------------------
             info = dowellconnection(
                 *candidate_management_reports, "fetch", field, update_field
             )
-            if len(json.loads(info)["data"]) <=0:
+            if len(json.loads(info)["data"]) <= 0:
                 data["personal_info"] = {}
                 username = "None"
                 return Response(
@@ -6153,24 +6154,25 @@ class Generate_Report(APIView):
             data["personal_info"]["task_report"] = self.itr_function(
                 username, company_id
             )
-            #-------------------------------------------------------------------------------------------
+            # -------------------------------------------------------------------------------------------
 
             # if a position is given, check within any of the contained positions-------------------
             if payload.get("role"):
                 profiles = SettingUserProfileInfo.objects.all()
-                serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+                serializer = SettingUserProfileInfoSerializer(
+                    profiles, many=True)
                 # print(serializer.data,"----")
                 positions = get_positions(serializer.data)
                 teamleads = positions["teamleads"]
-                accountleads =positions["accountleads"]
-                hrs=positions["hrs"]
-                subadmins=positions["subadmins"]
-                groupleads=positions["groupleads"]
-                superadmins=positions["superadmins"]
-                candidates=positions["candidates"]
-                viewers=positions["viewers"]
-                projectlead=positions["projectlead"]
-                leaders=positions["leaders"]  
+                accountleads = positions["accountleads"]
+                hrs = positions["hrs"]
+                subadmins = positions["subadmins"]
+                groupleads = positions["groupleads"]
+                superadmins = positions["superadmins"]
+                candidates = positions["candidates"]
+                viewers = positions["viewers"]
+                projectlead = positions["projectlead"]
+                leaders = positions["leaders"]
 
                 # checking if the user is a team lead--------------------------------------------
 
@@ -6183,7 +6185,7 @@ class Generate_Report(APIView):
                             },
                             status=status.HTTP_400_BAD_REQUEST,
                         )
-                ##_-------------------------------------------------------------------------------
+                # _-------------------------------------------------------------------------------
 
             # checking if the user is a team lead-----
             profiles = SettingUserProfileInfo.objects.all()
@@ -6232,13 +6234,13 @@ class Generate_Report(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            #initializing the data content as an empty list
+            # initializing the data content as an empty list
             data["data"] = []
-            #-----------------------------------------------------------------------------
+            # -----------------------------------------------------------------------------
 
-            #initializing all the months with empty data-------------------------------------------------
+            # initializing all the months with empty data-------------------------------------------------
             month_list = calendar.month_name
-            #print(calendar.month_name[1:])
+            # print(calendar.month_name[1:])
             item = {}
             for month in month_list[1:]:
                 item[month] = {
@@ -6260,17 +6262,17 @@ class Generate_Report(APIView):
                     "team_tasks_issues_resolved": 0,
                     "team_tasks_comments_added": 0,
                 }
-            #-----------------------------------------------------------------------------
-            
-            #--calling multiple dowell connections using threads----------------------
+            # -----------------------------------------------------------------------------
+
+            # --calling multiple dowell connections using threads----------------------
             _tasks_added = []
             _task_details = []
             teams = []
-            issues_raised=[]
-            comments_added=[]
+            issues_raised = []
+            comments_added = []
 
             def call_dowellconnection(*args):
-                #print(*args)
+                # print(*args)
                 d = dowellconnection(*args)
                 if "task_reports" in args:
                     _tasks_added.append(d)
@@ -6286,105 +6288,110 @@ class Generate_Report(APIView):
             _tasks_added_thread = threading.Thread(
                 target=call_dowellconnection,
                 args=(*task_management_reports,
-                        "fetch", {"task_added_by": username}, update_field),
+                      "fetch", {"task_added_by": username}, update_field),
             )
             _tasks_added_thread.start()
 
             _task_details_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*task_details_module,"fetch",{},update_field),
+                args=(*task_details_module, "fetch", {}, update_field),
             )
             _task_details_thread.start()
 
             teams_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*team_management_modules,"fetch",{},update_field),
+                args=(*team_management_modules, "fetch", {}, update_field),
             )
             teams_thread.start()
 
             issues_raised_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*thread_report_module,"fetch",{},update_field),
+                args=(*thread_report_module, "fetch", {}, update_field),
             )
             issues_raised_thread.start()
 
             comments_added_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*comment_report_module,"fetch",{},update_field),
+                args=(*comment_report_module, "fetch", {}, update_field),
             )
             comments_added_thread.start()
-
 
             _tasks_added_thread.join()
             _task_details_thread.join()
             teams_thread.join()
             issues_raised_thread.join()
             comments_added_thread.join()
-            #-----------------------------------------------------------------------------
+            # -----------------------------------------------------------------------------
 
-            ## if all the threads are finished  continue------------------------
+            # if all the threads are finished  continue------------------------
 
             if (not _tasks_added_thread.is_alive() and not _task_details_thread.is_alive() and not teams_thread.is_alive()
-                 and not issues_raised_thread.is_alive() and not comments_added_thread.is_alive()):
+                    and not issues_raised_thread.is_alive() and not comments_added_thread.is_alive()):
 
-                ## teams-------------------------
+                # teams-------------------------
                 _teams_ids = []
                 for team in json.loads(teams[0])["data"]:
                     if ("members" in team.keys() and username in team["members"]):
                         try:
-                            t_year,t_month_name,t_months_cnt =get_month_details(team["date_created"])
+                            t_year, t_month_name, t_months_cnt = get_month_details(
+                                team["date_created"])
                             if (t_year == year):
-                                item[t_month_name]["teams"]+=t_months_cnt
+                                item[t_month_name]["teams"] += t_months_cnt
                         except Exception as e:
                             pass
                         _teams_ids.append(team["_id"])
-                ## -------------------------------
+                # -------------------------------
 
-                ## comment and issues-------------------------
-                _teams_tasks_issues_raised_ids=[]
+                # comment and issues-------------------------
+                _teams_tasks_issues_raised_ids = []
                 if len(json.loads(issues_raised[0])["data"]) != 0:
                     for issue in json.loads(issues_raised[0])["data"]:
                         if ("team_id" in issue.keys() and issue["team_id"] in _teams_ids):
                             try:
-                                t_year,t_month_name,t_months_cnt =get_month_details(issue["created_date"])
+                                t_year, t_month_name, t_months_cnt = get_month_details(
+                                    issue["created_date"])
                                 if (t_year == year):
-                                    item[t_month_name]["team_tasks_issues_raised"]+=t_months_cnt
+                                    item[t_month_name]["team_tasks_issues_raised"] += t_months_cnt
                             except Exception as e:
                                 pass
                             _teams_tasks_issues_raised_ids.append(issue["_id"])
 
                         if ("team_id" in issue.keys() and issue["team_id"] in _teams_ids) and ("current_status" in issue.keys() and issue["current_status"] == "Resolved"):
                             try:
-                                t_year,t_month_name,t_months_cnt =get_month_details(issue["created_date"])
+                                t_year, t_month_name, t_months_cnt = get_month_details(
+                                    issue["created_date"])
                                 if (t_year == year):
-                                    item[t_month_name]["team_tasks_issues_resolved"]+=t_months_cnt
+                                    item[t_month_name]["team_tasks_issues_resolved"] += t_months_cnt
                             except Exception as e:
                                 pass
-                
+
                 if len(json.loads(comments_added[0])["data"]) != 0:
                     for comment in json.loads(comments_added[0])["data"]:
                         if comment["thread_id"] in _teams_tasks_issues_raised_ids:
                             try:
-                                t_year,t_month_name,t_months_cnt =get_month_details(comment["created_date"])
+                                t_year, t_month_name, t_months_cnt = get_month_details(
+                                    comment["created_date"])
                                 if (t_year == year):
-                                    item[t_month_name]["team_tasks_comments_added"]+=t_months_cnt
+                                    item[t_month_name]["team_tasks_comments_added"] += t_months_cnt
                             except Exception as e:
                                 pass
-                ## -------------------------------------------------------
-                
-                ## tasks-------------------------------------------------
-                
+                # -------------------------------------------------------
+
+                # tasks-------------------------------------------------
+
                 for task in json.loads(_task_details[0])["data"]:
                     for t in json.loads(_tasks_added[0])["data"]:
                         if t["_id"] == task["task_id"]:
-                            t_year,t_month_name,t_months_cnt =get_month_details(t["task_created_date"])
+                            t_year, t_month_name, t_months_cnt = get_month_details(
+                                t["task_created_date"])
                             if (t_year == year):
-                                item[t_month_name]["tasks_added"]+=t_months_cnt
-                            
+                                item[t_month_name]["tasks_added"] += t_months_cnt
+
                             if ("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True):
-                                t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                t_year, t_month_name, t_months_cnt = get_month_details(
+                                    task["task_created_date"])
                                 if (t_year == year):
-                                    item[t_month_name]["tasks_approved"]+=t_months_cnt
+                                    item[t_month_name]["tasks_approved"] += t_months_cnt
 
                             if "status" in task.keys():
                                 if (
@@ -6394,9 +6401,10 @@ class Generate_Report(APIView):
                                     or task["status"] == "complete"
                                     or task["status"] == "Mark as complete"
                                 ):
-                                    t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                    t_year, t_month_name, t_months_cnt = get_month_details(
+                                        task["task_created_date"])
                                     if (t_year == year):
-                                        item[t_month_name]["tasks_completed"]+=t_months_cnt
+                                        item[t_month_name]["tasks_completed"] += t_months_cnt
                                         try:
                                             percentage_tasks_completed = (
                                                 item[t_month_name]["tasks_completed"]
@@ -6417,15 +6425,17 @@ class Generate_Report(APIView):
                                     or task["status"] == "incomplete"
                                     or task["status"] == "Incompleted"
                                 ):
-                                    t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                    t_year, t_month_name, t_months_cnt = get_month_details(
+                                        task["task_created_date"])
                                     if (t_year == year):
-                                        item[t_month_name]["tasks_uncompleted"]+=t_months_cnt
+                                        item[t_month_name]["tasks_uncompleted"] += t_months_cnt
 
                             if ("team_id" in task.keys() and task["team_id"] in _teams_ids):
                                 try:
-                                    t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                    t_year, t_month_name, t_months_cnt = get_month_details(
+                                        task["task_created_date"])
                                     if (t_year == year):
-                                        item[t_month_name]["team_tasks"]+=t_months_cnt
+                                        item[t_month_name]["team_tasks"] += t_months_cnt
                                 except Exception as e:
                                     pass
 
@@ -6433,9 +6443,10 @@ class Generate_Report(APIView):
                                 task["team_id"] in _teams_ids and task["completed"] == "True"
                             ):
                                 try:
-                                    t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                    t_year, t_month_name, t_months_cnt = get_month_details(
+                                        task["task_created_date"])
                                     if (t_year == year):
-                                        item[t_month_name]["team_tasks_completed"]+=t_months_cnt
+                                        item[t_month_name]["team_tasks_completed"] += t_months_cnt
                                         try:
                                             item[t_month_name].update(
                                                 {
@@ -6457,41 +6468,46 @@ class Generate_Report(APIView):
                                 task["team_id"] in _teams_ids and task["completed"] == "False"
                             ):
                                 try:
-                                    t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                    t_year, t_month_name, t_months_cnt = get_month_details(
+                                        task["task_created_date"])
                                     if (t_year == year):
-                                        item[t_month_name]["team_tasks_uncompleted"]+=t_months_cnt
+                                        item[t_month_name]["team_tasks_uncompleted"] += t_months_cnt
                                 except Exception as e:
                                     pass
 
                             if ("team_id" in task.keys() and task["team_id"] in _teams_ids):
                                 if ("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True):
                                     try:
-                                        t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                                        t_year, t_month_name, t_months_cnt = get_month_details(
+                                            task["task_created_date"])
                                         if (t_year == year):
-                                            item[t_month_name]["team_tasks_approved"]+=t_months_cnt
+                                            item[t_month_name]["team_tasks_approved"] += t_months_cnt
                                     except Exception as e:
                                         pass
                     if (
                         "task_approved_by" in task.keys()
                         and task["task_approved_by"] == username
                     ):
-                        t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                        t_year, t_month_name, t_months_cnt = get_month_details(
+                            task["task_created_date"])
                         if (t_year == year):
-                            item[t_month_name]["tasks_you_approved"]+=t_months_cnt
+                            item[t_month_name]["tasks_you_approved"] += t_months_cnt
                     if (
-                        "task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
-                        if(task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
-                            t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                            "task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
+                        if (task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
+                            t_year, t_month_name, t_months_cnt = get_month_details(
+                                task["task_created_date"])
                             if (t_year == year):
-                                item[t_month_name]["tasks_you_marked_as_complete"]+=t_months_cnt
+                                item[t_month_name]["tasks_you_marked_as_complete"] += t_months_cnt
 
                     if ("task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
-                        if(task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted"):
-                            t_year,t_month_name,t_months_cnt =get_month_details(task["task_created_date"])
+                        if (task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted"):
+                            t_year, t_month_name, t_months_cnt = get_month_details(
+                                task["task_created_date"])
                             if (t_year == year):
-                                item[t_month_name]["tasks_you_marked_as_incomplete"]+=t_months_cnt
+                                item[t_month_name]["tasks_you_marked_as_incomplete"] += t_months_cnt
 
-                ## --------------------------------------------------
+                # --------------------------------------------------
 
             data["data"].append(item)
             return Response(data, status=status.HTTP_201_CREATED)
@@ -6508,7 +6524,7 @@ class Generate_Report(APIView):
             *task_management_reports, "fetch", field, update_field=None
         )
         task_details = dowellconnection(*task_details_module,
-                               "fetch", {}, update_field=None)
+                                        "fetch", {}, update_field=None)
         response = {}
         d = []
         for task in json.loads(tasks)["data"]:
@@ -7864,6 +7880,7 @@ class Product_Services_API(APIView):
             status=status.HTTP_200_OK,
         )
 
+
 @method_decorator(csrf_exempt, name="dispatch")
 class dashboard_services(APIView):
     def post(self, request):
@@ -7875,6 +7892,7 @@ class dashboard_services(APIView):
             return self.update_job_category(request)
         else:
             return self.handle_error(request)
+
     def get(self, request):
         type_request = request.GET.get("type")
 
@@ -7884,8 +7902,9 @@ class dashboard_services(APIView):
             return self.handle_error(request)
 
     """Update the status of a candidate"""
-    def update_status(self,request):
-        
+
+    def update_status(self, request):
+
         candidate_id = request.GET.get('candidate_id')
         status = request.data.get('status')
 
@@ -7897,32 +7916,34 @@ class dashboard_services(APIView):
         serializer = DashBoardStatusSerializer(data=field)
         if serializer.is_valid():
             field = {
-                "_id":candidate_id
+                "_id": candidate_id
             }
             update_field = {
-                "status":status
+                "status": status
             }
-            response = json.loads(dowellconnection(*candidate_management_reports,"update",field, update_field))
+            response = json.loads(dowellconnection(
+                *candidate_management_reports, "update", field, update_field))
             if response["isSuccess"]:
                 return Response({
-                    "success":True,
-                    "message":"Status updated successfully"
+                    "success": True,
+                    "message": "Status updated successfully"
                 })
             else:
                 return Response({
-                    "success":False,
-                    "message":"Failed to update status"
+                    "success": False,
+                    "message": "Failed to update status"
                 })
-        else: 
+        else:
             return Response({
                 "success": False,
                 "message": "Posting wrong data",
-                "error":serializer.errors
+                "error": serializer.errors
             })
-    
+
     """Update the jab category of a candidate"""
-    def update_job_category(self,request):
-        
+
+    def update_job_category(self, request):
+
         candidate_id = request.GET.get('candidate_id')
         job_category = request.data.get('job_category')
 
@@ -7934,40 +7955,43 @@ class dashboard_services(APIView):
         serializer = DashBoardJobCategorySerializer(data=field)
         if serializer.is_valid():
             field = {
-                "_id":candidate_id
+                "_id": candidate_id
             }
             update_field = {
-                "job_category":job_category
+                "job_category": job_category
             }
-            response = json.loads(dowellconnection(*candidate_management_reports,"update",field, update_field))
+            response = json.loads(dowellconnection(
+                *candidate_management_reports, "update", field, update_field))
             if response["isSuccess"]:
                 return Response({
-                    "success":True,
-                    "message":"Job Category updated successfully"
+                    "success": True,
+                    "message": "Job Category updated successfully"
                 })
             else:
                 return Response({
-                    "success":False,
-                    "message":"Failed to update job category"
+                    "success": False,
+                    "message": "Failed to update job category"
                 })
-        else: 
+        else:
             return Response({
                 "success": False,
                 "message": "Posting wrong data",
-                "error":serializer.errors
+                "error": serializer.errors
             })
 
     """Toatla worklogs for the company"""
-    def total_worklogs_count(self,request):
+
+    def total_worklogs_count(self, request):
         company_id = request.GET.get('company_id')
         field = {
-            "company_id":company_id
+            "company_id": company_id
         }
-        response = json.loads(dowellconnection(*task_details_module, "fetch",field,update_field=None))
-        data = response.get("data",[])
+        response = json.loads(dowellconnection(
+            *task_details_module, "fetch", field, update_field=None))
+        data = response.get("data", [])
         if data is not None:
             total_worklogs = len(data)
-            
+
             return Response({
                 "success": True,
                 "message": "Total number of worklogs for the company",
@@ -7978,8 +8002,9 @@ class dashboard_services(APIView):
                 "success": False,
                 "message": "There are no worklogs for the company or company id is not correct",
             })
-        
+
     """HANDLE ERROR"""
+
     def handle_error(self, request):
         return Response(
             {"success": False, "message": "Invalid request type"},
