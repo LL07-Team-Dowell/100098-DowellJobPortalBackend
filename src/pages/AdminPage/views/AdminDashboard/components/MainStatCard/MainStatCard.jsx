@@ -25,7 +25,7 @@ const MainStatCard = ({
                     <p className={styles.title}>
                         {title}
                     </p>
-                    <p className={`${styles.count} ${dataLoading ? skeletonStyles.skeleton : ''}`}>
+                    <p className={`${styles.count} ${dataLoading ? skeletonStyles.skeleton : ''}`} style={{ height: dataLoading ? '2rem' : 'max-content' }}>
                         {
                             dataLoading ? <></> :
                             dataLoaded ? 

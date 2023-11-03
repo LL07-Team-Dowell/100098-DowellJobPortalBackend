@@ -72,6 +72,8 @@ const AdminDashboard = ({ subAdminView }) => {
         setSubProjectsLoaded,
         subProjectsLoading,
         setSubProjectsLoading,
+        totalWorklogCountInOrg,
+        setTotalWorklogCountInOrg,
     } = useJobContext();
     const { currentUser } = useCurrentUserContext();
     const navigate = useNavigate();
@@ -92,6 +94,7 @@ const AdminDashboard = ({ subAdminView }) => {
         setApplications,
         setApplicationsLoaded,
         setJobs,
+        setTotalWorklogCountInOrg,
         setDashboardDataLoaded
     )
 
@@ -186,6 +189,9 @@ const AdminDashboard = ({ subAdminView }) => {
                         icon={<ImStack />}
                         title={'Total Logs'}
                         action={'/logs'}
+                        dataLoading={!dashboardDataLoaded}
+                        dataLoaded={dashboardDataLoaded}
+                        data={totalWorklogCountInOrg}
                     />
                 </section>
                 <section className={styles.stat__overview}>
@@ -232,7 +238,7 @@ const AdminDashboard = ({ subAdminView }) => {
                                     }))
                                 :
                                     <ApplicationCardItem 
-                                        loading={applicationsLoaded}
+                                        loading={!applicationsLoaded}
                                     />
                             }
                         </div>
