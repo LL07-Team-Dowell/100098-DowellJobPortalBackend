@@ -5947,17 +5947,49 @@ class Generate_Report(APIView):
 
                 total_comments=0
                 for threads in team_threads:
-                    threads_report["total issue raised"]+=1
-                    if threads["current_status"]=="Created":
-                        threads_report["Created"]+=1
+                    
+                    total_threads_raised.append(threads)
+                    if threads["current_status"]=="Created":  
+                        Threads_In_pending.append(threads)
                     if threads["current_status"]=="Resolved":
-                        threads_report["resolved"]+=1
+                        Threads_Resolved.append(threads)
                     if threads["current_status"]=="In progress":
-                        threads_report["In_progress"]+=1
+                        Threads_In_pending.append(threads)
                     if threads["current_status"]=="Completed":
-                        threads_report["Completed"]+=1
-                data["team threads report"]=threads_report  
+                        Threads_Completed.append(threads)
 
+                    for comment in json.loads(comments)["data"]:
+                        if comment["thread_id"]==threads["_id"]:
+                            total_comments +=1
+                if len(total_threads_raised) > 0:
+                    average_comment_count_per_issue=total_comments/len(total_threads_raised)
+                else:
+                    average_comment_count_per_issue=0
+
+                for threads in Threads_Resolved:
+                    # print(threads)
+                    if threads["resolved_on"]:
+                        threads_created_on=threads["created_date"]
+                        threads_resolved_on=threads["resolved_on"]
+                        date_format = '%m/%d/%Y %H:%M:%S'
+                        created_date = datetime.strptime(threads_created_on,date_format )
+                        resolved_date = datetime.strptime(threads_resolved_on,date_format )
+                        time_to_solve_issue=resolved_date-created_date
+                        all_issue_resolved_time +=time_to_solve_issue   
+                if len(Threads_Resolved) > 0:
+                    average_time_taken_to_resolve=all_issue_resolved_time/len(Threads_Resolved)
+                else:
+                    average_time_taken_to_resolve=0
+        
+                data["total_issues_raised"]=len(total_threads_raised)
+                data["total_issues_pending"]=len(Threads_In_pending)
+                data["total_issues_resolved"]=len(Threads_Resolved)
+                data["total_issues_completed"]=len(Threads_Completed)
+                data["average_time_to_resolve_issues"] = average_time_taken_to_resolve
+                data["total_comments"]=total_comments
+                data["average_comment_count_per_issue"]=average_comment_count_per_issue
+                
+                
                 total_tasks = [res for res in json.loads(tasks)["data"]]
 
                 teams = dowellconnection(
