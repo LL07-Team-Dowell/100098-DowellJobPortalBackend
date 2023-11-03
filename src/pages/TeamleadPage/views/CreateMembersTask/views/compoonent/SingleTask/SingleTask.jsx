@@ -59,7 +59,12 @@ const SingleTask = ({
   };
 
   if (!members || !Array.isArray(members)) return <></>;
-
+  console.log({
+    percentage: percentage(
+      Object.keys(subtasks || {}).length,
+      Object.values(subtasks || { a: true }).filter((s) => s === true).length
+    ),
+  });
   return (
     <>
       <div
@@ -144,7 +149,7 @@ const SingleTask = ({
                       : Number(
                           percentage(
                             Object.keys(subtasks || {}).length,
-                            Object.values(subtasks || {}).filter(
+                            Object.values(subtasks || { a: true }).filter(
                               (s) => s === true
                             ).length
                           )
@@ -153,7 +158,7 @@ const SingleTask = ({
                       : Number(
                           percentage(
                             Object.keys(subtasks || {}).length,
-                            Object.values(subtasks || {}).filter(
+                            Object.values(subtasks || { a: true }).filter(
                               (s) => s === true
                             ).length
                           )
@@ -165,7 +170,7 @@ const SingleTask = ({
                       : Number(
                           percentage(
                             Object.keys(subtasks || {}).length,
-                            Object.values(subtasks || {}).filter(
+                            Object.values(subtasks || { a: true }).filter(
                               (s) => s === true
                             ).length
                           )
@@ -173,7 +178,7 @@ const SingleTask = ({
                       ? "00%"
                       : `${percentage(
                           Object.keys(subtasks || {}).length,
-                          Object.values(subtasks || {}).filter(
+                          Object.values(subtasks || { a: true }).filter(
                             (s) => s === true
                           ).length
                         )}%`

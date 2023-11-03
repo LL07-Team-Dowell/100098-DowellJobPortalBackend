@@ -97,7 +97,7 @@ import AdminDashboard from "./pages/AdminPage/views/AdminDashboard/AdminDashboar
 import AllApplicationsScreen from "./pages/AdminPage/views/AdminDashboard/views/AllApplicationsScreen/AllApplicationsScreen";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => {};
 
   const {
     currentUser,
