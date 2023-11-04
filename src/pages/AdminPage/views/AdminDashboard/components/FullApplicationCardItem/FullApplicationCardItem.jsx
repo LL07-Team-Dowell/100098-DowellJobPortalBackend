@@ -175,7 +175,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
             <div className={styles.applicant__Details}>
                 <p>Email: {application.applicant_email}</p>
                 <p>Country: {application.country}</p>
-                <p>Current Status: {application.status}</p>
+                <p>Current Status: {changeToTitleCase(application?.status?.replace('_', ' '))}</p>
                 <p>Job: {application.job_title}</p>
                 {
                     application.project && Array.isArray(application.project) && 
