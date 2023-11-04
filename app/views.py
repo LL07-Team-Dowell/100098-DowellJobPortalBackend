@@ -3,7 +3,7 @@ import requests
 import datetime
 import threading
 import calendar
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
 import jwt
 from collections import Counter
@@ -7953,6 +7953,10 @@ class dashboard_services(APIView):
 
         if type_request == "total_worklogs_count":
             return self.total_worklogs_count(request)
+        elif type_request == "logs_for_today":
+            return self.logs_for_today(request)
+        elif type_request == "logs_for_month":
+            return self.logs_for_month(request)
         else:
             return self.handle_error(request)
 
@@ -8065,3 +8069,89 @@ class dashboard_services(APIView):
             {"success": False, "message": "Invalid request type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    """TOTAL WORKLOGS FOR TODAY"""
+
+    def logs_for_today(self, request):
+        company_id = request.GET.get('company_id')
+        today = date.today()
+        today_str = today.strftime('%Y-%m-%d')
+        field = {
+            "company_id": company_id,
+            "task_created_date": today_str
+        }
+
+        print("Today field", field)
+
+        response = dowellconnection(
+            *task_details_module, "fetch", field, update_field=None)
+        response = json.loads(response)
+
+        if response["isSuccess"]:
+            log_counts = {}
+
+            for item in response["data"]:
+                project_name = item["project"]
+                if project_name in log_counts:
+                    log_counts[project_name] += 1
+                else:
+                    log_counts[project_name] = 1
+
+            return Response({
+                "success": True,
+                "message": "Total number of worklogs for today by project",
+                "logs_for_today": log_counts
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "Failed to fetch logs"
+            })
+
+    """TOTAL WORKLOGS FOR MONTH"""
+
+    def logs_for_month(self, request):
+        company_id = request.GET.get('company_id')
+        today = date.today()
+        first_day_of_month = today.replace(day=1)
+        last_day_of_month = today.replace(day=1) + timedelta(days=32)
+        last_day_of_month = last_day_of_month.replace(day=1) - timedelta(days=1)
+
+        field = {
+            "company_id": company_id
+        }
+
+        response_str = dowellconnection(*task_details_module, "fetch", field, update_field=None)
+        try:
+            response = json.loads(response_str)
+        except json.JSONDecodeError as e:
+            return Response({
+                "success": False,
+                "message": f"Failed to parse response: {str(e)}"
+            })
+
+        if response["isSuccess"]:
+            log_counts = {}
+
+            first_day_date = first_day_of_month
+            last_day_date = last_day_of_month
+
+            for item in response["data"]:
+                task_date = date.fromisoformat(item["task_created_date"])
+                if first_day_date <= task_date <= last_day_date:
+                    project_name = item["project"]
+                    if project_name in log_counts:
+                        log_counts[project_name] += 1
+                    else:
+                        log_counts[project_name] = 1
+
+            return Response({
+                "success": True,
+                "message": "Total number of worklogs for the month",
+                "logs_for_month": log_counts
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "Failed to fetch logs or logs not available"
+            })
