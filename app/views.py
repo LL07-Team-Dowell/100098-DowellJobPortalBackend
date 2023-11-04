@@ -868,7 +868,7 @@ class candidate_apply_job(APIView):
         data = self.request.data
         field = {
             "applicant": data.get("applicant"),
-            "applicant_email": data.get("applicant_email"),
+            "applicant_email": applicant_email,
             "username": data.get("username"),
         }
         update_field = {"status": "nothing to update"}
@@ -876,6 +876,17 @@ class candidate_apply_job(APIView):
             *hr_management_reports, "fetch", field, update_field
         )
 
+        candidate_field = {
+            "job_number": data.get("job_number"),
+            "applicant_email": applicant_email,
+        }
+        update_field = {"status": "nothing to update"}
+        candidate_report = json.loads(dowellconnection(
+            *candidate_management_reports, "fetch", candidate_field, update_field
+        ))['data']
+        # print(candidate_report)    
+        if len(candidate_report) > 0:
+           return False
         # Check if applicant is present in rejected_reports_modules
         if applicant is not None:
             rejected_dates = [
