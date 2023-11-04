@@ -4,6 +4,8 @@ import { useCurrentUserContext } from "../../../../../../../contexts/CurrentUser
 import LoadingSpinner from "../../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { editTeamTask } from "../../../../../../../services/teamleadServices";
 import { Tooltip } from "react-tooltip";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { percentage } from "../../../../../../../assets/percentage";
 
 const SingleTask = ({
   title,
@@ -83,6 +85,7 @@ const SingleTask = ({
               task_added_by: currentUser.userinfo.username,
               subtasks,
             }}
+            completeTaskFunction={completeTaskFunction}
             date={date}
             teamOwner={team?.created_by}
             teamId={team?._id}
@@ -122,14 +125,69 @@ const SingleTask = ({
                   </>
                 ))}
               </div>
-              <div
+              {/* <div
                 className={`team-screen-task-progress-data-circle ${
                   taskCompleted
                     ? "team-screen-task-progress-data-circle-complete"
                     : ""
                 }`}
+              > */}
+              {/* <span>{taskCompleted ? "100" : "00"}%</span> */}
+              <div
+                className='team-screen-task-progress-data'
+                style={{ width: 55, height: 55 }}
               >
-                <span>{taskCompleted ? "100" : "00"}%</span>
+                <CircularProgressbar
+                  value={
+                    taskCompleted
+                      ? 100
+                      : Number(
+                          percentage(
+                            Object.keys(subtasks || {}).length,
+                            Object.values(subtasks || {}).filter(
+                              (s) => s === true
+                            ).length
+                          )
+                        ) === NaN
+                      ? 0
+                      : Number(
+                          percentage(
+                            Object.keys(subtasks || {}).length,
+                            Object.values(subtasks || {}).filter(
+                              (s) => s === true
+                            ).length
+                          )
+                        )
+                  }
+                  text={
+                    taskCompleted
+                      ? "100%"
+                      : Number(
+                          percentage(
+                            Object.keys(subtasks || {}).length,
+                            Object.values(subtasks || {}).filter(
+                              (s) => s === true
+                            ).length
+                          )
+                        ) === NaN
+                      ? "00%"
+                      : `${percentage(
+                          Object.keys(subtasks || {}).length,
+                          Object.values(subtasks || {}).filter(
+                            (s) => s === true
+                          ).length
+                        )}%`
+                  }
+                  styles={buildStyles({
+                    pathColor: `#005734`,
+                    textColor: "#005734",
+                    trailColor: "#efefef",
+                    backgroundColor: "#005734",
+                    width: "100%",
+                    height: "100%",
+                  })}
+                />
+                {/* </div> */}
               </div>
             </div>
           </div>

@@ -53,7 +53,7 @@ font-size: 18px;
 color: black;
 `;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, teamId }) => {
+const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, completeTaskFunction }) => {
     const [subTasks, setSubTask] = useState(objectToArray(subtasks));
     const [edit, setEdit] = useState(false);
     const initialData = { taskname, description, subtasks: objectToArray(subtasks) }
@@ -107,8 +107,16 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
             })
     }
     useEffect(() => {
-        setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
+        if (subtasks !== undefined) {
+            setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
+            if (subTasks.filter(s => s.value === true).map(s => s.name).length === editData.subtasks.length) {
+                completeTaskFunction()
+            } else {
+                console.log(subTasks.filter(s => s.value === true).map(s => s.name).length, editData.length)
+            }
+        }
     }, [subTasks])
+
     return (
         <ModalContainer>
             <ModalContent style={{
