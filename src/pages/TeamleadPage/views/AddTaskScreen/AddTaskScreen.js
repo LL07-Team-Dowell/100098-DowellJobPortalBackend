@@ -582,7 +582,7 @@ const AddTaskScreen = ({
       "subproject": subprojectSelected,
     }
 
-    if (imageUrl.length > 0) dataToPost.Task_image = imageUrl;
+    if (imageUrl.length > 0) dataToPost.task_image = imageUrl;
 
     const dataToPost2 = {
       "company_id": currentUser.portfolio_info[0].org_id,
@@ -1194,7 +1194,7 @@ const AddTaskScreen = ({
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task}</td>
-                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.Task_image ? selectedFile : "None"}</td> 
+                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task_image ? task.task_image : 'None'}</td> 
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task_type}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.subproject}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.project}</td>
