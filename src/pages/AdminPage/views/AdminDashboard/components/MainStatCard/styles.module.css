@@ -48,3 +48,9 @@
     gap: 0.3rem;
     cursor: pointer;
 }
+
+@media screen and (max-width: 500px)  {
+    .main__Stat {
+        gap: 4rem;
+    }
+}

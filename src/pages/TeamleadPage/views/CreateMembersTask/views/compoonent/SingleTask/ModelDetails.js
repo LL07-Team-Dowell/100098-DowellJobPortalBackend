@@ -53,7 +53,7 @@ font-size: 18px;
 color: black;
 `;
 
-const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, teamId }) => {
+const ModalDetails = ({ taskname, status, memberassign, onClose, description, subtasks, taskId, data, setTasks, date, teamOwner, completeTaskFunction }) => {
     const [subTasks, setSubTask] = useState(objectToArray(subtasks));
     const [edit, setEdit] = useState(false);
     const initialData = { taskname, description, subtasks: objectToArray(subtasks) }
@@ -61,6 +61,8 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
     const [checkedSubtask, setCheckedSubtask] = useState([]);
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
     const { currentUser } = useCurrentUserContext();
+    const [ subtasksBeingEdited, setSubtasksBeingEdited ] = useState([]);
+
     const EditFunction = () => {
         const DATA = {
             ...data,
@@ -83,6 +85,13 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
         setEdit(false)
     }
     const editSubtaskStatus = (name, value) => {
+        setSubtasksBeingEdited((prev) => {
+            return [
+                ...prev, 
+                name
+            ]
+        })
+
         const newData = {
             ...data,
             subtasks: {
@@ -100,15 +109,25 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                     }
                 } : t
                 ))
-                toast.success(`updated the task status`);
+                toast.success(`Updated the status of ${name}`);
+                setSubtasksBeingEdited(subtasksBeingEdited.filter(item => item !== name));
             })
             .catch(err => {
                 toast.error(err.message)
+                setSubtasksBeingEdited(subtasksBeingEdited.filter(item => item !== name));
             })
     }
     useEffect(() => {
-        setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
+        if (subtasks !== undefined) {
+            setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
+            if (subTasks.filter(s => s.value === true).map(s => s.name).length === editData.subtasks.length) {
+                completeTaskFunction()
+            } else {
+                console.log(subTasks.filter(s => s.value === true).map(s => s.name).length, editData.length)
+            }
+        }
     }, [subTasks])
+
     return (
         <ModalContainer>
             <ModalContent style={{
@@ -171,8 +190,16 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                                                             onChange={() => editSubtaskStatus(t.name, t.value)}
                                                             name={t.name}
                                                             checked={checkedSubtask.includes(t.name)}
+                                                            disabled={subtasksBeingEdited.includes(t.name) ? true : false}
                                                         />
-                                                        <p>{t.name}</p>
+                                                        <p>
+                                                            {
+                                                                subtasksBeingEdited.includes(t.name) ?
+                                                                    'Updating....'
+                                                                :
+                                                                t.name
+                                                            }
+                                                        </p>
                                                     </>
 
                                             )

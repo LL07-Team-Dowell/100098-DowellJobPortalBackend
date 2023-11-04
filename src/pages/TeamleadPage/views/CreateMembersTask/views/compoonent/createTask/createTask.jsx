@@ -19,6 +19,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   const [inputMembers, setInputMembers] = useState([]);
   const [date, setDate] = useState(undefined);
   const [subTask, setSubTask] = useState([]);
+  const [loadingImage, setLoadingImage] = useState(false);
   const [displaidMembers, setDesplaidMembers] = useState(
     members.map((member, index) => ({ id: index, member }))
   );
@@ -26,7 +27,24 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
-    setSelectedFile(selectedFile);
+    setLoadingImage(true);
+    const response = await fetch(
+      "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
+      {
+        method: "POST",
+        body: e.target.files[0],
+      }
+    );
+    if (response.ok) {
+      const data = await response.json();
+      const imageUrl = data.file_url;
+      setSelectedFile(imageUrl);
+      setLoadingImage(false);
+    } else {
+      toast.error("Error uploading image");
+      setSelectedFile(selectedFile);
+      setLoadingImage(false);
+    }
   };
   const AddedMember = (id) => {
     if (!singleTask) {
@@ -164,6 +182,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
           id='task_name'
           placeholder='Choose an image file'
           onChange={handleFileChange}
+          disabled={loadingImage}
         />
         {/*  */}
         {name && description && subTask && date ? (

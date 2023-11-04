@@ -17,9 +17,10 @@ export default function ApplicationCardItem({ application, loading, greyJobCardC
                     <></> 
                 :
                 <Avatar 
-                    name={application.applicant}
-                    className={styles.profile}
+                    name={application.applicant.slice(0, 1) + ' ' + application.applicant.split(' ')[application.applicant.split(' ').length - 1]?.slice(0, 1)}
+                    // className={styles.profile}
                     size='2rem'
+                    round={true}
                 /> 
             }
             <div className={`${loading ? skeletonStyles.skeleton : ''} ${loading ? styles.detail__skeleton : ''} ${styles.detail}`}>
