@@ -13,6 +13,12 @@ export const availableJobCategories = [
     "Freelancer",
 ]
 
+export const JOB_APPLICATION_CATEGORIES = [
+    'Freelancer',
+    'Employee',
+    'Internship',
+]
+
 export const availableInternJobStreams = [
     {
         title: "Stream 1",

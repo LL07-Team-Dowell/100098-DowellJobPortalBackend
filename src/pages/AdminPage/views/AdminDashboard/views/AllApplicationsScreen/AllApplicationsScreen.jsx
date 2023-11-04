@@ -13,12 +13,9 @@ import { changeToTitleCase } from "../../../../../../helpers/helpers";
 import { candidateStatuses } from "../../../../../CandidatePage/utils/candidateStatuses";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { createArrayWithLength } from "../../../Landingpage/LandingPage";
-
-const JOB_APPLICATION_CATEGORIES = [
-    'Freelancer',
-    'Employee',
-    'Internship',
-]
+import { JOB_APPLICATION_CATEGORIES } from "../../../../../CandidatePage/utils/jobCategories";
+import { ArrowBackIos } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 
 const AllApplicationsScreen = () => {
@@ -42,6 +39,7 @@ const AllApplicationsScreen = () => {
     const [cardPagination, setCardPagination] = useState(0);
     const [cardIndex, setCardIndex] = useState(0);
     const [cardGroupNumber, setCardGroupNumber] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!applicationsLoaded) {
@@ -107,8 +105,14 @@ const AllApplicationsScreen = () => {
             pageTitle={'Applications'}
         >
             <div className={styles.wrapper}>
+                
                 <div className={styles.header__item}>
-                    <h2>Users</h2>
+                    <div className={styles.header__Content}>
+                        <div className={styles.back__Icon} onClick={() => navigate(-1)}>
+                            <ArrowBackIos fontSize="1.2rem" />
+                        </div>
+                        <h2>Users</h2>
+                    </div>
                     <SearchBar 
                         searchValue={searchValue}
                         handleSearchChange={setSearchValue}
