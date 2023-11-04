@@ -25,17 +25,23 @@ const WorkLogRequest = ({ cardData }) => {
   const { error } = useGetAllUpdateTask(currentUser);
   const [reducerReuest, forceUpdate] = useReducer((x) => x + 1, 0);
   const [reducerRequest, forceUpdateRequest] = useReducer((x) => x + 1, 0);
-  const [showDenyPopup, setShowDenyPopup] = useState(false);
+  const [showDenyPopup, setShowDenyPopup] = useState({});
   const [ projectsForLead, setProjectsForLead ] = useState([]);
   const [ currentProjectSelected, setCurrentProjectSelected ] = useState('');
   // asdsad
 
-  const unshowDenyPopup = () => {
-    setShowDenyPopup(false);
+  const unshowDenyPopup = (elementId) => {
+    setShowDenyPopup((prevShowModal) => ({
+      ...prevShowModal,
+      [elementId]: false,
+    }));
   };
 
-  const showDenyPopupFunction = (element) => {
-    setShowDenyPopup(true);
+  const showDenyPopupFunction = (elementId) => {
+    setShowDenyPopup((prevShowModal) => ({
+      ...prevShowModal,
+      [elementId]: true,
+    }));
   };
 
   useEffect(() => {
@@ -211,7 +217,7 @@ const WorkLogRequest = ({ cardData }) => {
                         'Approve'
                       }
                     </button>
-                    {showDenyPopup && (
+                    {showDenyPopup[element._id] && (
                       <div className="overlay log_req">
                         <div className="delete_confirmation_container delete__logRequest__teams">
                           <h2>Enter Reason For Denying</h2>
@@ -242,14 +248,14 @@ const WorkLogRequest = ({ cardData }) => {
                                   'Deny'
                               }
                             </button>
-                            <button onClick={unshowDenyPopup}>Cancel</button>
+                            <button onClick={() => unshowDenyPopup(element._id)}>Cancel</button>
                           </div>
                         </div>
                       </div>
                     )}
                     <button
                       className="req__act__btn deny"
-                      onClick={showDenyPopupFunction}
+                      onClick={() => showDenyPopupFunction(element._id)}
                     >
                       Deny
                     </button>
