@@ -61,6 +61,8 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
     const [checkedSubtask, setCheckedSubtask] = useState([]);
     const isSmallScreen = useMediaQuery('(max-width: 767px)');
     const { currentUser } = useCurrentUserContext();
+    const [ subtasksBeingEdited, setSubtasksBeingEdited ] = useState([]);
+
     const EditFunction = () => {
         const DATA = {
             ...data,
@@ -83,6 +85,13 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
         setEdit(false)
     }
     const editSubtaskStatus = (name, value) => {
+        setSubtasksBeingEdited((prev) => {
+            return [
+                ...prev, 
+                name
+            ]
+        })
+
         const newData = {
             ...data,
             subtasks: {
@@ -100,10 +109,12 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                     }
                 } : t
                 ))
-                toast.success(`updated the task status`);
+                toast.success(`Updated the status of ${name}`);
+                setSubtasksBeingEdited(subtasksBeingEdited.filter(item => item !== name));
             })
             .catch(err => {
                 toast.error(err.message)
+                setSubtasksBeingEdited(subtasksBeingEdited.filter(item => item !== name));
             })
     }
     useEffect(() => {
@@ -179,8 +190,16 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
                                                             onChange={() => editSubtaskStatus(t.name, t.value)}
                                                             name={t.name}
                                                             checked={checkedSubtask.includes(t.name)}
+                                                            disabled={subtasksBeingEdited.includes(t.name) ? true : false}
                                                         />
-                                                        <p>{t.name}</p>
+                                                        <p>
+                                                            {
+                                                                subtasksBeingEdited.includes(t.name) ?
+                                                                    'Updating....'
+                                                                :
+                                                                t.name
+                                                            }
+                                                        </p>
                                                     </>
 
                                             )

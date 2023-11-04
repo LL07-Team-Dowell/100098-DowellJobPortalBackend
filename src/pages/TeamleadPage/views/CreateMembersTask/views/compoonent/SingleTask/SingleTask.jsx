@@ -6,6 +6,7 @@ import { editTeamTask } from "../../../../../../../services/teamleadServices";
 import { Tooltip } from "react-tooltip";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { percentage } from "../../../../../../../assets/percentage";
+import { toast } from "react-toastify";
 
 const SingleTask = ({
   title,
@@ -48,6 +49,7 @@ const SingleTask = ({
               return task;
             })
           );
+          toast.success('Successfully marked task as completed');
         })
         .catch((err) => console.log(err));
     }
