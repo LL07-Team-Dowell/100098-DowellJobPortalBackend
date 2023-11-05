@@ -215,6 +215,7 @@ export default function DetailedIndividual({
   };
 
   useEffect(() => {
+    return
     setFirstLoading(true);
     Promise.all([
       getCandidateJobApplication(
@@ -225,8 +226,17 @@ export default function DetailedIndividual({
       getSettingUserProfileInfo(),
     ])
       .then((promiseRes) => {
-        setcandidates(promiseRes[0]?.data?.response?.data);
-        setcandidates2(promiseRes[0]?.data?.response?.data);
+        const candidatesRes = isPublicReportUser ?
+          promiseRes[0]?.data?.response?.data?.filter(
+            item => item.data_type === reportsUserDetails?.data_type
+          )?.reverse()
+        :
+          promiseRes[0]?.data?.response?.data?.filter(
+            item => item.data_type === currentUser?.portfolio_info[0]?.data_type
+          )?.reverse()
+
+        setcandidates(candidatesRes);
+        setcandidates2(candidatesRes);
 
         const settingsInfo = isPublicReportUser
           ? promiseRes[1]?.data
@@ -360,6 +370,19 @@ export default function DetailedIndividual({
       toast.success("Successfully downloaded report!");
     });
   };
+
+  const calculateHours = (logsPassed) => {
+    const hourGapBetweenLogs = logsPassed.map(log => {
+      const [ startTime, endTime ] = [ new Date(`${log.task_created_date} ${log.start_time}`), new Date(`${log.task_created_date} ${log.end_time}`) ]
+      if (startTime == 'Invalid Date' || endTime == 'Invalid Date') return 0
+
+      const diffInMs = Math.abs(endTime - startTime);
+      return  diffInMs / (1000 * 60 * 60);
+    });
+
+    const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y , 0)).toFixed(2)
+    return totalHours
+  }
 
   if (firstLoading)
     return (
@@ -893,17 +916,50 @@ export default function DetailedIndividual({
                                         projectSelectedForTasksBox &&
                                       task.is_active
                                   ).length
-                              }{" "}
-                              work logs added by {candidateName} under the{" "}
-                              {projectSelectedForTasksBox} project between{" "}
-                              {new Date(
-                                startDateSelectedForTasksBox
-                              ).toDateString()}{" "}
-                              and{" "}
-                              {new Date(
-                                endDateSelectedForTasksBox
-                              ).toDateString()}
+                              }
                             </b>
+                            {" "}
+                            work logs totaling {" "}
+                            <b>
+                              {
+                                calculateHours(
+                                  taskReportData
+                                  .find(
+                                    (task) =>
+                                      task.project ===
+                                      projectSelectedForTasksBox
+                                  )
+                                  ?.tasks?.filter(
+                                    (task) =>
+                                      new Date(
+                                        task.task_created_date
+                                      ).getTime() >=
+                                        new Date(
+                                          startDateSelectedForTasksBox
+                                        ).getTime() &&
+                                      new Date(
+                                        task.task_created_date
+                                      ).getTime() <=
+                                        new Date(
+                                          endDateSelectedForTasksBox
+                                        ).getTime() &&
+                                      task.project ===
+                                        projectSelectedForTasksBox &&
+                                      task.is_active
+                                  )
+                                )
+                              }
+                            </b>
+                            {" "}
+                            hours were added by <b>{candidateName}</b> under the{" "}
+                            <b>{projectSelectedForTasksBox}</b> project between{" "}
+                            <b>{new Date(
+                              startDateSelectedForTasksBox
+                            ).toDateString()}</b>{" "}
+                            and<b>{" "}
+                            {new Date(
+                              endDateSelectedForTasksBox
+                            ).toDateString()}</b>
                           </p>
                           {reportDataToDownload.length > 0 && (
                             <>
