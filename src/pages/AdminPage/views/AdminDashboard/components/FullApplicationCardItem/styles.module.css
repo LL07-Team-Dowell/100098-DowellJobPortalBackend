@@ -44,6 +44,10 @@
     line-height: 2;
 }
 
+.applicant__Details p {
+    word-wrap: break-word;
+}
+
 .active {
     background-color: rgb(225, 251, 226);
     padding: 0.3rem 1rem;

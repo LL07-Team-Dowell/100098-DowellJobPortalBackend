@@ -134,7 +134,12 @@ const AllApplicationsScreen = () => {
                                 { label: 'Rejected', value: 'Rejected'},
                                 { label: 'Removed', value: 'Removed'},
                             ]}
-                            onChange={(val) => setStatusFilter(val.value)}
+                            onChange={(val) => {
+                                    setStatusFilter(val.value);
+                                    setCardPagination(0);
+                                    setCardIndex(0);
+                                }
+                            }
                             className={styles.item__Filter}
                         />
                     </div>
