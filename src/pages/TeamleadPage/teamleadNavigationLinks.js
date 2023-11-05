@@ -44,6 +44,11 @@ export const groupLeadNavigationLinks = [
     text: "Work logs",
   },
   {
+    linkAddress: "/log-requests",
+    icon: <RiFileList3Line />,
+    text: "Log requests",
+  },
+  {
     linkAddress: "/create-task",
     icon: <GiTeamIdea />,
     text: "Teams",

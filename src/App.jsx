@@ -95,6 +95,7 @@ import AdminLogsHomePage from "./pages/AdminPage/views/LogsHomePage/LogsHomePage
 import CandidateRemovedScreen from "./pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
 import AdminDashboard from "./pages/AdminPage/views/AdminDashboard/AdminDashboard";
 import AllApplicationsScreen from "./pages/AdminPage/views/AdminDashboard/views/AllApplicationsScreen/AllApplicationsScreen";
+import WorkLogRequestGrouplead from "./pages/GroupLeadPage/views/WorklogRequests/WorkLogRequest";
 
 function App() {
   console.log = () => {};
@@ -1369,6 +1370,18 @@ function App() {
             </CandidateTaskContextProvider>
           }
         />
+
+        <Route 
+          path="/log-requests"
+          element={
+            <CandidateContextProvider>
+              <ValuesProvider>
+                <WorkLogRequestGrouplead />
+              </ValuesProvider>
+            </CandidateContextProvider>
+          }
+        />
+        
         <Route
           path='/create-task/create-new-team/'
           element={
