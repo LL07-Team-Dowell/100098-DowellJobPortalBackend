@@ -115,7 +115,8 @@ const AccountPage = () => {
           (job) =>
             job.data_type === currentUser?.portfolio_info[0].data_type &&
             job.is_active
-        );
+        )
+        .filter(job => !job.is_internal);
         setJobs(jobsMatchingCurrentCompany);
 
         const applicationForMatching = res[1].data.response.data

@@ -330,7 +330,8 @@ const Teamlead = ({ isGrouplead }) => {
           (job) =>
             job.data_type === currentUser?.portfolio_info[0].data_type &&
             job.is_active
-        );
+        )
+        .filter(job => !job.is_internal);
         console.log(jobsMatchingCurrentCompany);
         setJobs(jobsMatchingCurrentCompany);
 

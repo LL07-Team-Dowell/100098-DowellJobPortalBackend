@@ -140,7 +140,11 @@ function HrJobScreen() {
       setCandidateData(filteredData.filter(application => application.status === candidateStatuses.SHORTLISTED));
       setHiredCandidates(filteredData.filter(application => application.status === candidateStatuses.ONBOARDING));
 
-      setJobs(res[1]?.data?.response?.data?.reverse()?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type && job.is_active));
+      setJobs(
+        res[1]?.data?.response?.data?.reverse()
+        ?.filter(job => job.data_type === currentUser.portfolio_info[0].data_type && job.is_active)
+        .filter(job => !job.is_internal)
+      );
 
 
       const usersWithTasks = [

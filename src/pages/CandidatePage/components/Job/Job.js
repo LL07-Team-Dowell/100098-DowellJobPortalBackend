@@ -213,7 +213,9 @@ function JobScreen() {
                 ]
 
             getJobs(companyIdToUse).then(res => {
-                const filterJob = res.data.response.data.filter(job => job.data_type === dataTypeToUse);
+                const filterJob = res.data.response.data
+                .filter(job => job.data_type === dataTypeToUse)
+                .filter(job => !job.is_internal);
                 setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
 
             }).catch(err => {
@@ -232,7 +234,9 @@ function JobScreen() {
             getJobs(datass),
             getAppliedJobs(datass)
         ]).then(([jobsResponse, appliedJobsResponse]) => {
-            const filterJob = jobsResponse.data.response.data.filter(job => job.data_type === currentUser?.portfolio_info[0].data_type);
+            const filterJob = jobsResponse.data.response.data
+            .filter(job => job.data_type === currentUser?.portfolio_info[0].data_type)
+            .filter(job => !job.is_internal);
             setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
 
             setJobsLoading(false);
@@ -281,7 +285,9 @@ function JobScreen() {
                 ]
 
             getJobs(companyIdToUse).then(res => {
-                const filterJob = res.data.response.data.filter(job => job.data_type === dataTypeToUse);
+                const filterJob = res.data.response.data
+                .filter(job => job.data_type === dataTypeToUse)
+                .filter(job => !job.is_internal);
                 setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
                 setJobsLoading(false);
                 setAllRequestsDone(true);
@@ -300,7 +306,9 @@ function JobScreen() {
             getJobs(datass),
             getAppliedJobs(datass)
         ]).then(([jobsResponse, appliedJobsResponse]) => {
-            const filterJob = jobsResponse.data.response.data.filter(job => job.data_type === currentUser?.portfolio_info[0].data_type);
+            const filterJob = jobsResponse.data.response.data
+            .filter(job => job.data_type === currentUser?.portfolio_info[0].data_type)
+            .filter(job => !job.is_internal);
             setJobs(filterJob.sort((a, b) => new Date(b.created_on) - new Date(a.created_on)));
 
             setJobsLoading(false);

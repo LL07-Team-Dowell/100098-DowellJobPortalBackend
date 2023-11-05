@@ -141,7 +141,7 @@ const JobApplicationScreen = () => {
         .then((res) => {
           const filterJob = res.data.response.data.filter(
             (job) => job.data_type === dataTypeToUse
-          );
+          ).filter(job => !job.is_internal);
           setJobs(
             filterJob.sort(
               (a, b) => new Date(b.created_on) - new Date(a.created_on)
@@ -162,7 +162,7 @@ const JobApplicationScreen = () => {
       .then((res) => {
         const userAppliedJobs = res.data.response.data.filter(
           (job) => job.data_type === currentUser?.portfolio_info[0].data_type
-        );
+        ).filter(job => !job.is_internal);
         // setjobs(res.data);
         setJobs(userAppliedJobs);
         setJobsLoading(false);
