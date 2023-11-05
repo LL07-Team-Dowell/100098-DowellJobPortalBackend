@@ -405,7 +405,7 @@ const AddJob = ({ subAdminView }) => {
               <Link to={"/add-job?tab=Internal"}>Internal</Link>
               <span></span>
             </div>
-            <div
+            {/*<div
               className={`landing_Nav_Item ${
                 currentTab === "Regional Associate" ? "active" : ""
               }`}
@@ -414,7 +414,7 @@ const AddJob = ({ subAdminView }) => {
                 Regional Associate
               </Link>
               <span></span>
-            </div>
+            </div>*/}
           </div>
         </div>
         <AddJobDescription

@@ -1223,7 +1223,7 @@ const AddJobDescription = ({
           </div>
         </div>
       )}
-      {activeLinkTab === "Regional Associate" && (
+      {/*{activeLinkTab === "Regional Associate" && (
         <div className="job_details_bg">
           <div>
             <h3 className="title">Job Details</h3>
@@ -1358,7 +1358,7 @@ const AddJobDescription = ({
             </div>
           </div>
         </div>
-      )}
+      )}*/}
     </>
   );
 };
