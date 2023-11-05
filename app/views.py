@@ -3,7 +3,7 @@ import requests
 import datetime
 import threading
 import calendar
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
 import jwt
 from collections import Counter
@@ -6218,10 +6218,8 @@ class Generate_Report(APIView):
             portfolio_name = json.loads(info)["data"][0]["portfolio_name"]
 
             # get the task report based on project for the user----------------------------------------
-            data["personal_info"]["task_report"] = self.itr_function(
-                username, company_id
-            )
-            # -------------------------------------------------------------------------------------------
+            data["personal_info"]["task_report"]=[]
+            #-------------------------------------------------------------------------------------------
 
             # if a position is given, check within any of the contained positions-------------------
             if payload.get("role"):
@@ -6355,7 +6353,7 @@ class Generate_Report(APIView):
             _tasks_added_thread = threading.Thread(
                 target=call_dowellconnection,
                 args=(*task_management_reports,
-                      "fetch", {"task_added_by": username}, update_field),
+                        "fetch", {"task_added_by": username,"company_id":company_id}, update_field),
             )
             _tasks_added_thread.start()
 
@@ -6442,9 +6440,33 @@ class Generate_Report(APIView):
                                     item[t_month_name]["team_tasks_comments_added"] += t_months_cnt
                             except Exception as e:
                                 pass
-                # -------------------------------------------------------
-
-                # tasks-------------------------------------------------
+                ## -------------------------------------------------------
+                
+                ## tasks-------------------------------------------------
+                # intializing total hours, seconds and minutes----------
+                projects = []
+                i_t = {}
+                total_tasks = []
+                total_tasks_last_one_day = []
+                total_tasks_last_one_week = []
+                week_details = []
+                subprojects = {}
+                total_hours = {}
+                total_mins = {}
+                total_secs = {}
+                
+                today = datetime.today()
+                start = today - timedelta(days=today.weekday())
+                end = start + timedelta(days=6)
+                today = datetime.strptime(
+                    set_date_format(str(today)), "%m/%d/%Y %H:%M:%S"
+                )
+                start = datetime.strptime(
+                    set_date_format(str(start)), "%m/%d/%Y %H:%M:%S"
+                )
+                end = datetime.strptime(
+                    set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
+                #---------------------------------------------------------
 
                 for task in json.loads(_task_details[0])["data"]:
                     for t in json.loads(_tasks_added[0])["data"]:
@@ -6551,6 +6573,8 @@ class Generate_Report(APIView):
                                             item[t_month_name]["team_tasks_approved"] += t_months_cnt
                                     except Exception as e:
                                         pass
+                            
+                            
                     if (
                         "task_approved_by" in task.keys()
                         and task["task_approved_by"] == username
@@ -6572,9 +6596,91 @@ class Generate_Report(APIView):
                             t_year, t_month_name, t_months_cnt = get_month_details(
                                 task["task_created_date"])
                             if (t_year == year):
-                                item[t_month_name]["tasks_you_marked_as_incomplete"] += t_months_cnt
+                                item[t_month_name]["tasks_you_marked_as_incomplete"]+=t_months_cnt
+                    
 
-                # --------------------------------------------------
+                    try:
+                        if not task["project"] in i_t.keys():
+                            if task["project"] not in projects:
+                                projects.append(task["project"])
+                                subprojects[task["project"]] = []
+                                total_hours[task["project"]] = 0
+                                total_mins[task["project"]] = 0
+                                total_secs[task["project"]] = 0
+                    except KeyError:
+                        task["project"] = "None"
+                        if task["project"] not in projects:
+                            projects.append(task["project"])
+                            subprojects[task["project"]] = []
+                            total_hours[task["project"]] = 0
+                            total_mins[task["project"]] = 0
+                            total_secs[task["project"]] = 0
+
+                    try:
+                        if "task_created_date" in task.keys():
+                            task_created_date = datetime.strptime(
+                                set_date_format(
+                                    task["task_created_date"]), "%m/%d/%Y %H:%M:%S"
+                            )
+                            if task_created_date >= start and task_created_date <= end:
+                                week_details.append(task["project"])
+                            if task_created_date >= today - timedelta(days=1):
+                                total_tasks_last_one_day.append(task["project"])
+                            if task_created_date >= today - timedelta(days=7):
+                                total_tasks_last_one_week.append(task["project"])
+                        try:
+                            start_time = datetime.strptime(
+                                task["start_time"], "%H:%M")
+                        except ValueError:
+                            start_time = datetime.strptime(
+                                task["start_time"], "%H:%M:%S"
+                            )
+                        try:
+                            end_time = datetime.strptime(
+                                task["end_time"], "%H:%M")
+                        except ValueError:
+                            end_time = datetime.strptime(
+                                task["end_time"], "%H:%M:%S")
+                        duration = end_time - start_time
+                        dur_secs = (duration).total_seconds()
+                        dur_mins = dur_secs / 60
+                        dur_hrs = dur_mins / 60
+                        total_hours[task["project"]] += dur_hrs
+                        total_mins[task["project"]] += dur_mins
+                        total_secs[task["project"]] += dur_secs
+                        # print(dur_secs, dur_mins, dur_hrs)
+                    except KeyError:
+                        pass
+
+                    if "subproject" in task.keys():
+                        if not task["subproject"] == None or not task["subproject"] == "None":
+                            if type(task["subproject"]) == list:
+                                for sp in task["subproject"]:
+                                    if "," in sp:
+                                        for s in sp.split(","):
+                                            subprojects[task["project"]].append(s)
+                                    else:
+                                        subprojects[task["project"]].append(sp)
+                            elif task["subproject"] == None:
+                                subprojects[task["project"]].append("None")
+                            else:
+                                subprojects[task["project"]].append(task["subproject"])
+                ## --------------------------------------------------
+                
+                for p in set(sorted(projects)):
+                    task_r = {
+                        "project": p,
+                        "subprojects": {sp: subprojects[p].count(sp) for sp in subprojects[p]},
+                        "total_hours": total_hours[p],
+                        "total_min": total_mins[p],
+                        "total_secs": total_secs[p],
+                        "total_tasks": projects.count(p),
+                        "tasks_uploaded_this_week": week_details.count(p),
+                        "total_tasks_last_one_day": total_tasks_last_one_day.count(p),
+                        "total_tasks_last_one_week": total_tasks_last_one_week.count(p),
+                        "tasks": total_tasks,
+                    }
+                    data["personal_info"]["task_report"].append(task_r)
 
             data["data"].append(item)
             return Response(data, status=status.HTTP_201_CREATED)
@@ -7965,6 +8071,10 @@ class dashboard_services(APIView):
 
         if type_request == "total_worklogs_count":
             return self.total_worklogs_count(request)
+        elif type_request == "logs_for_today":
+            return self.logs_for_today(request)
+        elif type_request == "logs_for_month":
+            return self.logs_for_month(request)
         else:
             return self.handle_error(request)
 
@@ -8077,3 +8187,89 @@ class dashboard_services(APIView):
             {"success": False, "message": "Invalid request type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    """TOTAL WORKLOGS FOR TODAY"""
+
+    def logs_for_today(self, request):
+        company_id = request.GET.get('company_id')
+        today = date.today()
+        today_str = today.strftime('%Y-%m-%d')
+        field = {
+            "company_id": company_id,
+            "task_created_date": today_str
+        }
+
+        print("Today field", field)
+
+        response = dowellconnection(
+            *task_details_module, "fetch", field, update_field=None)
+        response = json.loads(response)
+
+        if response["isSuccess"]:
+            log_counts = {}
+
+            for item in response["data"]:
+                project_name = item["project"]
+                if project_name in log_counts:
+                    log_counts[project_name] += 1
+                else:
+                    log_counts[project_name] = 1
+
+            return Response({
+                "success": True,
+                "message": "Total number of worklogs for today by project",
+                "logs_for_today": log_counts
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "Failed to fetch logs"
+            })
+
+    """TOTAL WORKLOGS FOR MONTH"""
+
+    def logs_for_month(self, request):
+        company_id = request.GET.get('company_id')
+        today = date.today()
+        first_day_of_month = today.replace(day=1)
+        last_day_of_month = today.replace(day=1) + timedelta(days=32)
+        last_day_of_month = last_day_of_month.replace(day=1) - timedelta(days=1)
+
+        field = {
+            "company_id": company_id
+        }
+
+        response_str = dowellconnection(*task_details_module, "fetch", field, update_field=None)
+        try:
+            response = json.loads(response_str)
+        except json.JSONDecodeError as e:
+            return Response({
+                "success": False,
+                "message": f"Failed to parse response: {str(e)}"
+            })
+
+        if response["isSuccess"]:
+            log_counts = {}
+
+            first_day_date = first_day_of_month
+            last_day_date = last_day_of_month
+
+            for item in response["data"]:
+                task_date = date.fromisoformat(item["task_created_date"])
+                if first_day_date <= task_date <= last_day_date:
+                    project_name = item["project"]
+                    if project_name in log_counts:
+                        log_counts[project_name] += 1
+                    else:
+                        log_counts[project_name] = 1
+
+            return Response({
+                "success": True,
+                "message": "Total number of worklogs for the month",
+                "logs_for_month": log_counts
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "Failed to fetch logs or logs not available"
+            })
