@@ -879,6 +879,7 @@ class candidate_apply_job(APIView):
         candidate_field = {
             "job_number": data.get("job_number"),
             "applicant_email": applicant_email,
+            "username":data.get("username")
         }
         update_field = {"status": "nothing to update"}
         candidate_report = json.loads(dowellconnection(
