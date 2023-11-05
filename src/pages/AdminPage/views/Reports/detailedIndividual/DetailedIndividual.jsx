@@ -215,7 +215,6 @@ export default function DetailedIndividual({
   };
 
   useEffect(() => {
-    return
     setFirstLoading(true);
     Promise.all([
       getCandidateJobApplication(
