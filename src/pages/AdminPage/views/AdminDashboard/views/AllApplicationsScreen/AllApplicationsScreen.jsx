@@ -177,7 +177,7 @@ const AllApplicationsScreen = () => {
                     {
                         React.Children.toArray(
                             applications
-                            .filter(application => {
+                            ?.filter(application => {
                                 if (currentApplicationCategory.length < 1) return true
                                 return currentApplicationCategory.includes(application.job_category)
                             })
@@ -215,7 +215,7 @@ const AllApplicationsScreen = () => {
                     {createArrayWithLength(
                         Math.ceil(
                             applications
-                            .filter(application => {
+                            ?.filter(application => {
                                 if (currentApplicationCategory.length < 1) return true
                                 return currentApplicationCategory.includes(application.job_category)
                             })
@@ -256,7 +256,7 @@ const AllApplicationsScreen = () => {
                                 8,
                                 Math.ceil(
                                     applications
-                                    .filter(application => {
+                                    ?.filter(application => {
                                         if (currentApplicationCategory.length < 1) return true
                                         return currentApplicationCategory.includes(application.job_category)
                                     })

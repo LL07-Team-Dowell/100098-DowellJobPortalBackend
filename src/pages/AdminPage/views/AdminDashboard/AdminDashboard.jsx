@@ -230,7 +230,7 @@ const AdminDashboard = ({ subAdminView }) => {
                         <div className={styles.applications__WRap__Items}>
                             {
                                 applicationsLoaded ?
-                                    React.Children.toArray(applications.slice(0, 4).map((application, index) => {
+                                    React.Children.toArray(applications?.slice(0, 4)?.map((application, index) => {
                                         return <ApplicationCardItem 
                                             application={application}
                                             greyJobCardColor={(index + 1) % 2 === 0 ? true : false}
@@ -263,8 +263,14 @@ const AdminDashboard = ({ subAdminView }) => {
                                         <h2 className={styles.comp__mini__Title}>Active Applicants</h2>
                                         <CompanyProgressOverview 
                                             tooltipId={'active_users'}
-                                            toolTipContent={`You currently have ${applications?.filter(application => application.status === candidateStatuses.ONBOARDING)?.length} hired users out of ${applications?.length} applications`}
-                                            value={applications?.length < 1 ? 0 : Number(applications?.filter(application => application.status === candidateStatuses.ONBOARDING)?.length) / ( Number(applications?.length) ) * 100}
+                                            toolTipContent={`You currently have ${!applications ? 0 : applications?.filter(application => application.status === candidateStatuses.ONBOARDING)?.length} hired users out of ${!applications ? 0 : applications?.length} applications`}
+                                            value={
+                                                !applications ? 0 
+                                                : 
+                                                applications?.length < 1 ? 0 
+                                                : 
+                                                Number(applications?.filter(application => application.status === candidateStatuses.ONBOARDING)?.length) / ( Number(applications?.length) ) * 100
+                                            }
                                         />
                                     </div>    
                                 </>
@@ -274,7 +280,7 @@ const AdminDashboard = ({ subAdminView }) => {
                     <section className={styles.project__Wrap}>
                         <h2 className={styles.stat__mini__Title}>Project Overview</h2>
                         <div className={`${styles.project__item} ${projectsLoading ? skeletonStyles.skeleton : ''}`}>
-                            <h3>{projectsLoading ? '' : projectsAdded[0]?.project_list?.length}</h3>
+                            <h3>{projectsLoading ? '' : projectsAdded[0]?.project_list?.length ? projectsAdded[0]?.project_list?.length : 0}</h3>
                             <p>{projectsLoading ? '' : 'total projects'}</p>
                         </div>
                         <div className={`${styles.project__item} ${styles.grey__Bg} ${subProjectsLoading ? skeletonStyles.skeleton : ''}`}>

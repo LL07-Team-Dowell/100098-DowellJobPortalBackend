@@ -30,6 +30,7 @@ export default function useCheckIfUserIsRemoved (
     }).catch(err => {
       console.log('Failed to fetch applications in staff layout');
       updateLoadingStatus(false);
+      updateRemovalStatusChecked(true);
     })
   }, [])
 }

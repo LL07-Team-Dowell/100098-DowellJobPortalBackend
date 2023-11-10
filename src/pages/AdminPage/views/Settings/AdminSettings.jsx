@@ -73,7 +73,7 @@ const AdminSettings = () => {
 
   useEffect(() => {
     if (firstSelection.length > 0) {
-      const status = list.reverse().find(p => p.portfolio_name === firstSelection)?.status;
+      const status = list?.reverse()?.find(p => p.portfolio_name === firstSelection)?.status;
       const selectedPortfolioIsOwner = currentUser?.userportfolio?.find(user => user.portfolio_name === firstSelection && user.role === 'owner');
 
       if (selectedPortfolioIsOwner) return setuserstatus(candidateStatuses.ONBOARDING);
@@ -200,7 +200,7 @@ const AdminSettings = () => {
 
     if (!Array.isArray(list)) return
 
-    setHiredCandidates([...new Set(list.filter(item => item.status === candidateStatuses.ONBOARDING && item.portfolio_name).map(user => user.portfolio_name))])
+    setHiredCandidates([...new Set(list?.filter(item => item.status === candidateStatuses.ONBOARDING && item.portfolio_name)?.map(user => user.portfolio_name))])
   }, [list])
 
   const handleFirstSelectionChange = (event) => {
@@ -248,7 +248,7 @@ const AdminSettings = () => {
       setLoading(false);
     })
 
-    if (list.length < 1) {
+    if (list?.length < 1) {
       getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
         .then(resp => {
           setlist(resp.data.response.data?.filter(j => currentUser.portfolio_info[0].data_type === j.data_type));
