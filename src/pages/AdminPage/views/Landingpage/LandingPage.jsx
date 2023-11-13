@@ -1,19 +1,12 @@
 import React, { useContext, useEffect } from "react";
 import { useJobContext } from "../../../../contexts/Jobs";
 import "./index.scss";
-import backpage from "./assets/backpage.svg";
-import plus from "./assets/plus.svg";
-import search from "./assets/search.svg";
 import Card from "./component/Card";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Loading from "../../../CandidatePage/views/ResearchAssociatePage/Loading";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
-import {
-  s,
-  useCurrentUserContext,
-} from "../../../../contexts/CurrentUserContext";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import {
   getApplicationForAdmin,
   getCreatedProductLinks,
