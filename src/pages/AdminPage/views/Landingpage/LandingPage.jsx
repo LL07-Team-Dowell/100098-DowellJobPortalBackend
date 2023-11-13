@@ -113,7 +113,7 @@ const LandingPage = ({ subAdminView }) => {
   };
 
   useEffect(() => {
-    if (applicationsLoaded) return setlist(applications)
+    if (applicationsLoaded) return setlist(applications);
 
     getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
       .then((resp) => {
@@ -122,7 +122,7 @@ const LandingPage = ({ subAdminView }) => {
             (j) => currentUser.portfolio_info[0].data_type === j.data_type
           )
         );
-        setApplicationsLoaded(true)
+        setApplicationsLoaded(true);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -135,45 +135,46 @@ const LandingPage = ({ subAdminView }) => {
 
   useEffect(() => {
     if (dashboardDataLoaded) {
-      setJobs(jobs)
-      setjobs2(jobs)
+      setJobs(jobs);
+      setjobs2(jobs);
 
       Promise.all([
         getMasterLinks(currentUser.portfolio_info[0].org_id),
         getCreatedProductLinks(currentUser.portfolio_info[0].org_id),
-      ]).then(response => {
-        setJobLinks([
-          ...new Map(
-            response[0]?.data?.data
-              ?.reverse()
-              .map((link) => [link.master_link, link])
-          ).values(),
-        ]);
+      ])
+        .then((response) => {
+          setJobLinks([
+            ...new Map(
+              response[0]?.data?.data
+                ?.reverse()
+                .map((link) => [link.master_link, link])
+            ).values(),
+          ]);
 
-        setProductLinks([
-          ...new Map(
-            response[1]?.data?.response
-              ?.reverse()
-              .filter((link) => link.type === "product")
-              .map((link) => [link.master_link, link])
-          ).values(),
-        ]);
+          setProductLinks([
+            ...new Map(
+              response[1]?.data?.response
+                ?.reverse()
+                .filter((link) => link.type === "product")
+                .map((link) => [link.master_link, link])
+            ).values(),
+          ]);
 
-        setReportLinks([
-          ...new Map(
-            response[1]?.data?.response
-              ?.reverse()
-              .filter((link) => link.type === "report")
-              .map((link) => [link.master_link, link])
-          ).values(),
-        ]);
+          setReportLinks([
+            ...new Map(
+              response[1]?.data?.response
+                ?.reverse()
+                .filter((link) => link.type === "report")
+                .map((link) => [link.master_link, link])
+            ).values(),
+          ]);
 
-        setresponse(true);
-        
-      }).catch((error) => {
-        console.log(error);
-        setresponse(true);
-      });
+          setresponse(true);
+        })
+        .catch((error) => {
+          console.log(error);
+          setresponse(true);
+        });
     }
 
     if (jobs?.length === 0 && !resp && !dashboardDataLoaded) {
@@ -298,8 +299,9 @@ const LandingPage = ({ subAdminView }) => {
 
     if (!currentSessionId) return;
     const teamManagementProduct = currentUser?.portfolio_info.find(
-      (item) => item.product === teamManagementProductName &&
-        item.member_type === 'owner'
+      (item) =>
+        item.product === teamManagementProductName &&
+        item.member_type === "owner"
     );
     if (!teamManagementProduct) return;
 
@@ -375,7 +377,9 @@ const LandingPage = ({ subAdminView }) => {
   return (
     <StaffJobLandingLayout
       adminView={true}
-      handleNavIconClick={() => subAdminView ? navigate("/add-job") : navigate("/add")}
+      handleNavIconClick={() =>
+        subAdminView ? navigate("/add-job") : navigate("/add")
+      }
       searchValue={searchValue}
       setSearchValue={handleSearchChange}
       subAdminView={subAdminView}
