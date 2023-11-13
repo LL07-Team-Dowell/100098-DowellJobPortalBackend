@@ -413,24 +413,6 @@ const LandingPage = ({ subAdminView }) => {
           Links
         </p>
       </div>
-      {/* asd */}
-      {/* <div className="JobsChanger_containter">
-        {createArrayWithLength(
-          isActive
-            ? Math.ceil(activeJobsLength / 4)
-            : Math.ceil(inactiveJobsLength / 4)
-        ).map((s, index) => (
-          <button
-            className={s !== cardGroupNumber ? "active" : "desactive"}
-            onClick={() => changeCardGroupNumber(s)}
-            key={`${index}_button${
-              isActive === "active" ? "_active" : "_desactive"
-            }`}
-          >
-            {s + 1}
-          </button>
-        ))}
-      </div> */}
       <div
         className={`landing-page ${
           isActive === "active" || isActive === "inactive" ? "" : "linkss"
