@@ -864,18 +864,9 @@ class admin_delete_job(APIView):
 # api for candidate management starts here______________________
 @method_decorator(csrf_exempt, name="dispatch")
 class candidate_apply_job(APIView):
-    def is_eligible_to_apply(self, applicant_email):
-        data = self.request.data
-        field = {
-            "applicant": data.get("applicant"),
-            "applicant_email": applicant_email,
-            "username": data.get("username"),
-        }
-        update_field = {"status": "nothing to update"}
-        applicant = dowellconnection(
-            *hr_management_reports, "fetch", field, update_field
-        )
 
+    def duplicate_check(self,applicant_email):
+        data=self.request.data
         candidate_field = {
             "job_number": data.get("job_number"),
             "applicant_email": applicant_email,
@@ -888,7 +879,21 @@ class candidate_apply_job(APIView):
         # print(candidate_report)    
         if len(candidate_report) > 0:
            return False
-        # Check if applicant is present in rejected_reports_modules
+        else: 
+            return True
+
+    def is_eligible_to_apply(self, applicant_email):
+        data = self.request.data
+        field = {
+            "applicant": data.get("applicant"),
+            "applicant_email": applicant_email,
+            "username": data.get("username"),
+        }
+        update_field = {"status": "nothing to update"}
+        applicant = dowellconnection(
+            *hr_management_reports, "fetch", field, update_field
+        )
+
         if applicant is not None:
             rejected_dates = [
                 datetime.strptime(
@@ -918,6 +923,19 @@ class candidate_apply_job(APIView):
             return Response(
                 {
                     "message": "Not eligible to apply yet.",
+                    "response": {
+                        "applicant": data.get("applicant"),
+                        "applicant_email": data.get("applicant_email"),
+                        "username": data.get("username"),
+                    },
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not self.duplicate_check(applicant_email):
+            return Response(
+                {
+                    "message": "You have already applied for the job",
+                    "Success":False,
                     "response": {
                         "applicant": data.get("applicant"),
                         "applicant_email": data.get("applicant_email"),
@@ -4137,9 +4155,39 @@ class get_discord_server_members(APIView):
 # public api for job creation__________________________
 @method_decorator(csrf_exempt, name="dispatch")
 class Public_apply_job(APIView):
+    def duplicate_check(self,applicant_email):
+        data=self.request.data
+        candidate_field = {
+            "job_number": data.get("job_number"),
+            "applicant_email": applicant_email,
+            "username":data.get("username")
+        }
+        update_field = {"status": "nothing to update"}
+        candidate_report = json.loads(dowellconnection(
+            *candidate_management_reports, "fetch", candidate_field, update_field
+        ))['data']
+        # print(candidate_report)    
+        if len(candidate_report) > 0:
+           return False
+        else: 
+            return True
     def post(self, request):
         link_id = request.GET.get("link_id")
         data = request.data
+        applicant_email = data.get("applicant_email")
+        if not self.duplicate_check(applicant_email):
+            return Response(
+                {
+                    "message": "You have already applied for the job",
+                    "Success":False,
+                    "response": {
+                        "applicant": data.get("applicant"),
+                        "applicant_email": data.get("applicant_email"),
+                        "username": data.get("username"),
+                    },
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         field = {
             "eventId": get_event_id()["event_id"],
             "job_number": data.get("job_number"),
@@ -4182,7 +4230,7 @@ class Public_apply_job(APIView):
         }
         update_field = {"status": "nothing to update"}
         update_field = {"status": "nothing to update"}
-
+        
         serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
             response = dowellconnection(
