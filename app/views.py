@@ -84,7 +84,7 @@ from .authorization import (
     verify_user_token,
     sign_token,
 )
-from .models import UsersubProject
+from .models import UsersubProject, TaskReportdata, MonthlyTaskData, PersonalInfo
 from django.views.decorators.csrf import csrf_protect
 
 # Create your views here.
@@ -1112,7 +1112,51 @@ class get_all_onboarded_candidate(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+@method_decorator(csrf_exempt, name="dispatch")
+class get_all_removed_candidate(APIView):
+    def get(self, request, company_id):
+        data = company_id
+        if data:
+            field = {"company_id": company_id, "status": "Removed"}
+            response = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field=None
+            )
 
+            if json.loads(response)["isSuccess"] == True:
+                if len(json.loads(response)["data"]) == 0:
+                    return Response(
+                        {
+                            "message": f"There is no Removed Candidates with this company id",
+                            "response": json.loads(response),
+                        },
+                        status=status.HTTP_204_NO_CONTENT,
+                    )
+                else:
+                    candidates=[{"_id":res["_id"],
+                        "applicant":res["applicant"],
+                        "username":res["username"],
+                        "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
+                    
+                    return Response(
+                        {
+                            "message": f"List of Removed Candidates",
+                            "response": candidates,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+            else:
+                return Response(
+                    {
+                        "message": f"There are no {field['status']} Candidates",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_candidate_application(APIView):
@@ -2397,8 +2441,8 @@ class task_module(APIView):
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
 
-    @verify_user_token
-    def post(self, request, user):
+    ##@verify_user_tokendef post(self, request, user):
+    def post(self, request):
         type_request = request.GET.get("type")
 
         if type_request == "add_task":
@@ -2427,13 +2471,14 @@ class task_module(APIView):
         else:
             return self.handle_error(request)
 
-    @verify_user_token
-    def add_task(self, request, user):
+    ##@verify_user_token
+    def add_task(self, request):
         data = request.data
         payload = {
             "project": data.get("project"),
             "subproject": data.get("subproject"),
             "applicant": data.get("applicant"),
+            "applicant_id":data.get("applicant_id"),
             "task_image": data.get("image"),
             "task": data.get("task"),
             "task_added_by": data.get("task_added_by"),
@@ -2452,17 +2497,13 @@ class task_module(APIView):
             field = {
                 "eventId": get_event_id()["event_id"],
                 "applicant": data.get("applicant"),
+                "applicant_id":data.get("applicant_id"),
                 "task_image": data.get("image"),
                 "task_added_by": data.get("task_added_by"),
                 "data_type": data.get("data_type"),
                 "company_id": data.get("company_id"),
                 "task_created_date": data.get("task_created_date"),
                 "user_id": data.get("user_id"),
-                # "max_updated_date": self.max_updated_date(
-                #     data.get("task_created_date")
-                # ),
-                # "status": "Incomplete",
-                # "approval": False,
                 "task_saved": False,
             }
 
@@ -2477,6 +2518,7 @@ class task_module(APIView):
                     "project": data.get("project"),
                     "subproject": data.get("subproject"),
                     "user_id": data.get("user_id"),
+                    "applicant_id":data.get("applicant_id"),
                     "task_image": data.get("image"),
                     "task_type": data.get("task_type"),
                     "company_id": data.get("company_id"),
@@ -2497,6 +2539,17 @@ class task_module(APIView):
                     )
                 )
                 if response["isSuccess"]:
+                    """
+                    year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                    if MonthlyTaskData.objects.filter(applicant_id=data.get("applicant_id"), username=data.get("task_added_by"), year=year, month=monthname, company_id=data.get("company_id")).exists():
+                        taskmodelobj = MonthlyTaskData.objects.get(applicant_id="", username=data.get("task_added_by"), year=year, month=monthname, company_id=data.get("company_id"))
+                        taskmodelobj.task_added+=1
+                        taskmodelobj.save()
+                    else:
+                        taskmodelobj = MonthlyTaskData.objects.create(applicant_id=data.get("applicant_id"), username=data.get("task_added_by"), 
+                                                                      year=year, month=monthname, company_id=data.get("company_id"),
+                                                                      task_added = 1)
+                        print(taskmodelobj,"==")"""
                     return Response(
                         {
                             "success": True,
@@ -6467,6 +6520,7 @@ class Generate_Report(APIView):
                     set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
                 #---------------------------------------------------------
 
+                start_now = datetime.now()
                 for task in json.loads(_task_details[0])["data"]:
                     for t in json.loads(_tasks_added[0])["data"]:
                         if t["_id"] == task["task_id"]:
@@ -6680,7 +6734,8 @@ class Generate_Report(APIView):
                         "tasks": total_tasks,
                     }
                     data["personal_info"]["task_report"].append(task_r)
-
+                end_now = datetime.now()
+                print("time taken for task :",end_now-start_now)
             data["data"].append(item)
             return Response(data, status=status.HTTP_201_CREATED)
         else:
@@ -8272,3 +8327,49 @@ class dashboard_services(APIView):
                 "success": False,
                 "message": "Failed to fetch logs or logs not available"
             })
+@method_decorator(csrf_exempt, name="dispatch")       
+class ReportDB(APIView):
+    def get_individual_report(self,request):
+        year= request.data["year"]
+        company_id =request.data["company_id"]
+        applicant_id =request.data["applicant_id"]
+        #username =request.data["username"]
+        NotRequired =["applicant_id","id","company_id","username","year","month"]
+        d= MonthlyTaskData.objects.filter(applicant_id=applicant_id, year=year, company_id=company_id)
+        if d.exists():
+            res ={}
+            for taskmodelobj in d:#scan through all the months available---
+                data={field.name: str(getattr(taskmodelobj, field.name)) for field in taskmodelobj._meta.fields if field.name not in NotRequired}
+                res[taskmodelobj.month]=data
+            return Response(res,status=status.HTTP_200_OK)
+        
+        months= calendar.month_name[1:]
+        res={}
+        for m in months:
+            res[m]={
+                "task_added": "0",
+                "tasks_completed": "0",
+                "tasks_uncompleted": "0",
+                "tasks_approved": "0",
+                "percentage_tasks_completed": "0",
+                "tasks_you_approved": "0",
+                "tasks_you_marked_as_complete": "0",
+                "tasks_you_marked_as_incomplete": "0",
+                "teams": "0",
+                "team_tasks": "0",
+                "team_tasks_completed": "0",
+                "team_tasks_uncompleted": "0",
+                "percentage_team_tasks_completed": "0",
+                "team_tasks_approved": "0",
+                "team_tasks_issues_raised": "0",
+                "team_tasks_issues_resolved": "0",
+                "team_tasks_comments_added": "0"
+            }
+        return Response(res,status=status.HTTP_200_OK)
+    def post(self, request):
+        if request.data["report_type"] == "Individual":
+
+            return self.get_individual_report(request)
+        else:
+            error={"success":False,"error":"Specify the type of report"}
+            return Response(error,status=status.HTTP_400_BAD_REQUEST)

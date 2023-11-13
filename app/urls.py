@@ -34,6 +34,10 @@ urlpatterns = [
         get_all_onboarded_candidate.as_view(),
     ),
     path(
+        "get_all_removed_candidate/<str:company_id>/",
+        get_all_removed_candidate.as_view(),
+    ),
+    path(
         "get_candidate_application/<str:document_id>/",
         get_candidate_application.as_view(),
     ),
@@ -146,6 +150,10 @@ urlpatterns = [
     path("update_comment/", Comment_Apis.as_view()),
     # Generate Report -------------------------------------
     path("generate_report/", Generate_Report.as_view()),
+
+    ######
+    path("generate_reportdb/", ReportDB.as_view()),
+    ######
     path("get_all_qrcode/<str:job_company_id>/", GetQRCode.as_view()),
     path(
         "generate_candidate_duplicates/<str:company_id>/",
