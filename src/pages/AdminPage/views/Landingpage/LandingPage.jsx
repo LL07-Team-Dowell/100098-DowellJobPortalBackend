@@ -56,6 +56,7 @@ const LandingPage = ({ subAdminView }) => {
   } = useJobContext();
   const [showShareModal, setShowShareModal] = useState(false);
   const [jobLinkToShareObj, setJobLinkToShareObj] = useState({});
+  const [selectValue, setSelectValue] = useState("");
   const [activeLinkTab, setActiveLinkTab] = useState("jobs");
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
@@ -414,6 +415,17 @@ const LandingPage = ({ subAdminView }) => {
           Links
         </p>
       </div>
+      <Select
+        className='select__jobs'
+        options={[
+          { label: "internal", value: "is_internal" },
+          { label: "not internal", value: "not_internal" },
+          { label: "Regional", value: "Regional" },
+        ]}
+        onChange={(val) => {
+          setSelectValue(val.value);
+        }}
+      />
       <div
         className={`landing-page ${
           isActive === "active" || isActive === "inactive" ? "" : "linkss"
