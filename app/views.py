@@ -870,7 +870,6 @@ class candidate_apply_job(APIView):
         candidate_field = {
             "job_number": data.get("job_number"),
             "applicant_email": applicant_email,
-            "username":data.get("username")
         }
         update_field = {"status": "nothing to update"}
         candidate_report = json.loads(dowellconnection(
@@ -4160,7 +4159,6 @@ class Public_apply_job(APIView):
         candidate_field = {
             "job_number": data.get("job_number"),
             "applicant_email": applicant_email,
-            "username":data.get("username")
         }
         update_field = {"status": "nothing to update"}
         candidate_report = json.loads(dowellconnection(
@@ -8166,6 +8164,8 @@ class dashboard_services(APIView):
             return self.update_status(request)
         elif type_request == "update_job_category":
             return self.update_job_category(request)
+        elif type_request == "update_job_category":
+            return self.update_job_category(request)
         else:
             return self.handle_error(request)
 
@@ -8376,6 +8376,9 @@ class dashboard_services(APIView):
                 "success": False,
                 "message": "Failed to fetch logs or logs not available"
             })
+        
+
+    
 @method_decorator(csrf_exempt, name="dispatch")       
 class ReportDB(APIView):
     def get_individual_report(self,request):
