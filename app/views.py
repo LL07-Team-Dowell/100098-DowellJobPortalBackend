@@ -40,6 +40,8 @@ from .helper import (
     validate_id,
     get_positions,
     get_month_details,
+    datacube_operation,
+    datacube_operation_retrieve
 )
 from .serializers import (
     AccountSerializer,
@@ -79,6 +81,7 @@ from .serializers import (
     TeamTaskSerializer,
     DashBoardStatusSerializer,
     DashBoardJobCategorySerializer,
+    GroupLeadAgendaSerializer,
     TaskDetailsInputSerializer
 )
 from .authorization import (
@@ -8209,14 +8212,15 @@ class Product_Services_API(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class dashboard_services(APIView):
     def post(self, request):
+        print()
         type_request = request.GET.get("type")
 
         if type_request == "update_status":
             return self.update_status(request)
         elif type_request == "update_job_category":
             return self.update_job_category(request)
-        elif type_request == "update_job_category":
-            return self.update_job_category(request)
+        elif type_request == "leave_approve":
+            return self.candidate_leave_approve(request)
         else:
             return self.handle_error(request)
 
@@ -8428,6 +8432,34 @@ class dashboard_services(APIView):
                 "message": "Failed to fetch logs or logs not available"
             })
         
+    def candidate_leave_approve(self, request):
+        applicant_id=request.data.get("applicant_id")
+        field={
+            "_id":applicant_id
+        }
+        update_field={
+            "leave_start":request.data.get("leave_start"),
+            "leave_end":request.data.get("leave_end")
+            }
+        candidate_report=dowellconnection(
+                *candidate_management_reports, "update", field, update_field)
+        
+        res=json.loads(candidate_report)
+
+        if res["isSuccess"]:
+            return Response({
+                    "success": True,
+                    "message": "candidate leave has been approved",
+                })
+        else:
+            return Response({
+                    "success": False,
+                    "message": "candidate leave could not be added please check the aplicant id and try again",
+                })
+
+
+
+        
 
     
 @method_decorator(csrf_exempt, name="dispatch")       
@@ -8476,3 +8508,42 @@ class ReportDB(APIView):
         else:
             error={"success":False,"error":"Specify the type of report"}
             return Response(error,status=status.HTTP_400_BAD_REQUEST)
+
+
+class GroupLeadAgendaAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        data=request.data
+        project=data.get("project")
+        res=datacube_operation_retrieve(coll_name=project,operation="fetch",data={})
+        res_json=json.loads(res)
+        return Response({
+                    "success":True,
+                    "data":res_json  
+                },status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        data=request.data
+        project=data.get("project")
+        serializer = GroupLeadAgendaSerializer(data=request.data)
+        if serializer.is_valid():
+            samanta_payload={
+                "title":data.get("agenda_title"),
+                "content":data.get("agenda_detail"),
+            }
+            url="https://100085.pythonanywhere.com/uxlivinglab/v1/content-scan/df48d655-a42d-4bcf-ae89-9cfa0e67f36c/"
+            req = requests.post(url, json=samanta_payload)
+            json_res=req.json()
+            if json_res['success']:
+                res=datacube_operation(coll_name=project,operation="insert",data=data)
+                res_json=json.loads(res)
+                if res_json['success']:
+                    return Response({
+                        "message":"group lead agenda has been successfully evaluated",
+                        "data":json.loads(res)}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({
+                    "success":False,
+                    "error":json_res['message']
+                },)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

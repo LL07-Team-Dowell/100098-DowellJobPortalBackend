@@ -119,3 +119,4 @@ class MonthlyTaskData(models.Model):
     team_tasks_comments_added =models.IntegerField(default=0)
     def __str__(self):
         return f"{self.username}, {self.applicant_id}"
+    

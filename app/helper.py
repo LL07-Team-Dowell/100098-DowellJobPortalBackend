@@ -547,3 +547,36 @@ def get_month_details(date):
     months.append(month_name)
 
     return (str(datime.year),month_name,months.count(month_name))
+
+
+def datacube_operation(coll_name,operation,data):
+
+    url = "https://datacube.uxlivinglab.online/db_api/crud/"
+
+    data = {
+        "api_key": "df48d655-a42d-4bcf-ae89-9cfa0e67f36c",
+        "db_name": "teammanagement_db",
+        "coll_name": coll_name,
+        "operation": operation,
+        "data":data
+        
+    }
+
+    response = requests.post(url, json=data)
+    return response.text
+
+def datacube_operation_retrieve(coll_name,operation,data):
+
+    url = "https://datacube.uxlivinglab.online/db_api/get_data/"
+
+    data = {
+        "api_key": "df48d655-a42d-4bcf-ae89-9cfa0e67f36c",
+        "db_name": "teammanagement_db",
+        "coll_name": coll_name,
+        "operation": operation,
+        "data":data
+        
+    }
+
+    response = requests.post(url, json=data)
+    return response.text
