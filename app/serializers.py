@@ -647,3 +647,8 @@ class GroupLeadAgendaSerializer(serializers.Serializer):
     created_on=serializers.DateTimeField()
     updated_on=serializers.DateTimeField()
 
+class TaskDetailsInputSerializer(serializers.Serializer):
+    task_created_date = serializers.DateField()
+    end_date = serializers.DateField()
+    user_id = serializers.IntegerField()
+    company_id = serializers.IntegerField()
