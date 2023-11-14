@@ -634,3 +634,16 @@ class DashBoardJobCategorySerializer(serializers.Serializer):
     job_category = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE
     )
+
+
+class GroupLeadAgendaSerializer(serializers.Serializer):
+    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    grouplead_username = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    grouplead_portfolio_name = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    agenda_title=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    agenda_detail=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
+    week_start=serializers.DateField(allow_null=False)
+    week_end=serializers.DateField(allow_null=False)
+    created_on=serializers.DateTimeField()
+    updated_on=serializers.DateTimeField()
+

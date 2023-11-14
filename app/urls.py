@@ -18,7 +18,7 @@ urlpatterns = [
     path("reject_candidate/", accounts_reject_candidate.as_view()),
     # admin management-------------------------------------------
     path("admin_create_jobs/", admin_create_jobs.as_view()),
-    path("research_associate_jobs/", associate_job.as_view()),
+    path("regional_associate_jobs/", associate_job.as_view()),
     path("admin_get_job/<str:document_id>/", admin_get_job.as_view()),
     path("admin_get_all_jobs/<str:company_id>/", admin_get_all_jobs.as_view()),
     path("admin_update_jobs/", admin_update_jobs.as_view()),
@@ -201,4 +201,11 @@ urlpatterns = [
 
     # DashBoard Services 
     path("dashboard_services/",dashboard_services.as_view()),
+    path("candidate_leave_approve/",dashboard_services.as_view()),
+
+
+    #group lead agenda
+
+    path('group_lead_agenda/', GroupLeadAgendaAPIView.as_view(), name='group_lead_agenda'),
+
 ]
