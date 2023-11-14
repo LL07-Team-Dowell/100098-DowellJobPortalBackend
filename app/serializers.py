@@ -634,3 +634,9 @@ class DashBoardJobCategorySerializer(serializers.Serializer):
     job_category = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE
     )
+
+class TaskDetailsInputSerializer(serializers.Serializer):
+    task_created_date = serializers.DateField()
+    end_date = serializers.DateField()
+    user_id = serializers.IntegerField()
+    company_id = serializers.IntegerField()
