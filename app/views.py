@@ -8387,8 +8387,8 @@ class dashboard_services(APIView):
             "_id":applicant_id
         }
         update_field={
-            "leave_start":"2023-11-11T08:29:56.913000Z",
-            "leave_end":"2023-11-14T08:29:56.913000Z"
+            "leave_start":request.data.get("leave_start"),
+            "leave_end":request.data.get("leave_end")
             }
         candidate_report=dowellconnection(
                 *candidate_management_reports, "update", field, update_field)
@@ -8468,10 +8468,7 @@ class GroupLeadAgendaAPIView(APIView):
         return Response({
                     "success":True,
                     "data":res_json  
-                },)
-
-        
-        return Response(serializer.data)
+                },status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         data=request.data
