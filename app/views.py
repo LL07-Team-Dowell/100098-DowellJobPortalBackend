@@ -78,7 +78,8 @@ from .serializers import (
     regionalassociateSerializer,
     TeamTaskSerializer,
     DashBoardStatusSerializer,
-    DashBoardJobCategorySerializer
+    DashBoardJobCategorySerializer,
+    TaskDetailsInputSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -2475,6 +2476,8 @@ class task_module(APIView):
             return self.update_single_task(request)
         elif type_request == "get_all_candidate_tasks":
             return self.get_all_candidate_tasks(request)
+        elif type_request == "task_details":
+            return self.get_all_task_details(request)
         else:
             return self.handle_error(request)
 
@@ -2868,7 +2871,55 @@ class task_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    """HANDLE ERROR"""
+    
+    def get_all_task_details(self, request):    
+        company_id = request.GET.get('company_id')
+        user_id = request.GET.get('user_id')
+        start_date_str = request.GET.get('start_date')
+        end_date_str = request.GET.get('end_date')
+
+        task_details_query = {
+            "task_created_date": start_date_str,
+            # "end_date_str": end_date_str,
+            "user_id": user_id,
+            "company_id": company_id,
+        }
+
+        try:
+
+            start_date = date.fromisoformat(start_date_str)
+            end_date = date.fromisoformat(end_date_str)
+
+            response_json = dowellconnection(*task_details_module, "fetch", task_details_query, update_field=None)
+            response = json.loads(response_json)
+
+            if response.get("isSuccess"):
+                filtered_tasks = []
+                for item in response["data"]:
+                    if start_date <= date.fromisoformat(item["task_created_date"]) <= end_date:
+                        filtered_tasks.append(item)
+
+                    #item for item in response["data"]
+                    #if start_date <= date.fromisoformat(item["task_created_date"]) <= end_date
+                
+                return Response({
+                    "success": True,
+                    "message": "Get all task details",
+                    "task_details": filtered_tasks
+                })
+
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError) as e:
+            error_message = f"Error processing task details: {e}"
+            print(error_message)
+            return Response({
+                "success": False,
+                "message": error_message
+            })
+
+        return Response({
+            "success": False,
+            "message": "Failed to fetch logs or logs not available"
+        })
 
     def handle_error(self, request):
         return Response(
