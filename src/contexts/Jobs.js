@@ -25,6 +25,14 @@ export const JobContextProvider = ({ children }) => {
   const [applicationsLoaded, setApplicationsLoaded] = useState(false);
   const [dashboardDataLoaded, setDashboardDataLoaded] = useState(false);
   const [totalWorklogCountInOrg, setTotalWorklogCountInOrg] = useState(0);
+  const [dashboardLogDataForToday, setDashboardLogDataForToday] = useState({
+    datasets: [],
+    labels: []
+  });
+  const [dashboardLogDataForMonth, setDashboardLogDataForMonth] = useState({
+    datasets: [],
+    labels: []
+  });
 
   return (
     <JobContext.Provider
@@ -65,6 +73,10 @@ export const JobContextProvider = ({ children }) => {
         setDashboardDataLoaded,
         totalWorklogCountInOrg,
         setTotalWorklogCountInOrg,
+        dashboardLogDataForToday,
+        setDashboardLogDataForToday,
+        dashboardLogDataForMonth,
+        setDashboardLogDataForMonth,
       }}
     >
       {children}

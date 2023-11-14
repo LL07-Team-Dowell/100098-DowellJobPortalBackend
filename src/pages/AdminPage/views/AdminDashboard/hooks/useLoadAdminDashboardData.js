@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { getSettingUserProject } from "../../../../../services/hrServices";
-import { getApplicationForAdmin, getJobsFromAdmin, getSettingUserSubProject, getTotalWorklogCountInOrganization } from "../../../../../services/adminServices";
+import { getApplicationForAdmin, getJobsFromAdmin, getSettingUserSubProject, getTotalWorklogCountInOrganization, getWorklogDetailInOrganization } from "../../../../../services/adminServices";
 
 export default function useLoadAdminDashboardData(
     dataLoaded, 
@@ -15,6 +15,8 @@ export default function useLoadAdminDashboardData(
     updateApplicationsLoadedState,
     updateJobs,
     updateWorklogCountInOrganization,
+    updateWorklogLogDataForToday,
+    updateWorklogLogDataForMonth,
     updateDataLoaded,
 ) {
     useEffect(() => {
@@ -26,6 +28,8 @@ export default function useLoadAdminDashboardData(
             getApplicationForAdmin(userDetail?.portfolio_info[0]?.org_id),
             getJobsFromAdmin(userDetail?.portfolio_info[0]?.org_id),
             getTotalWorklogCountInOrganization(userDetail?.portfolio_info[0]?.org_id),
+            getWorklogDetailInOrganization('logs_for_today', userDetail?.portfolio_info[0]?.org_id),
+            getWorklogDetailInOrganization('logs_for_month', userDetail?.portfolio_info[0]?.org_id),
         ]).then(res => {
 
             const projectsGotten = res[0]?.data
@@ -79,6 +83,44 @@ export default function useLoadAdminDashboardData(
             );
 
             updateWorklogCountInOrganization(res[4]?.data?.worklogs_count);
+
+            const [ 
+                projectLabelsForToday,
+                projectLabelsForMonth, 
+                projectCountForToday,
+                projectCountForMonth, 
+            ] = [
+                Object.keys(res[5]?.data?.logs_for_today || {}),
+                Object.keys(res[6]?.data?.logs_for_month || {}),
+                Object.values(res[5]?.data?.logs_for_today || {}),
+                Object.values(res[6]?.data?.logs_for_month || {}),
+            ];
+
+            updateWorklogLogDataForToday({
+                labels: projectLabelsForToday,
+                datasets: [
+                    {
+                        label: 'Logs Count',
+                        data: projectCountForToday,
+                        backgroundColor: '#005734',
+                        maxBarThickness: 40,
+                        borderRadius: 5,
+                    },
+                ]
+            });
+
+            updateWorklogLogDataForMonth({
+                labels: projectLabelsForMonth,
+                datasets: [
+                    {
+                        label: 'Logs Count',
+                        data: projectCountForMonth,
+                        backgroundColor: '#005734',
+                        maxBarThickness: 40,
+                        borderRadius: 5,
+                    },
+                ]
+            });
 
             updateDataLoaded(true);
 
