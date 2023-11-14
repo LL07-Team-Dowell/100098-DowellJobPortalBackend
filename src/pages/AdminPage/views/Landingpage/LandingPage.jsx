@@ -363,9 +363,27 @@ const LandingPage = ({ subAdminView }) => {
   }
   const activeJobsLength = jobs
     .filter((job) => job.data_type === currentUser.portfolio_info[0].data_type)
+    .filter((v) =>
+      selectValue !== ""
+        ? selectValue === "is_internal"
+          ? v?.is_internal === true
+          : selectValue === "not_internal"
+          ? v?.is_internal === false
+          : false
+        : true
+    )
     .filter((v) => v.is_active === true).length;
   const inactiveJobsLength = jobs
     ?.filter((job) => job.data_type === currentUser.portfolio_info[0].data_type)
+    ?.filter((v) =>
+      selectValue !== ""
+        ? selectValue === "is_internal"
+          ? v?.is_internal === true
+          : selectValue === "not_internal"
+          ? v?.is_internal === false
+          : false
+        : true
+    )
     ?.filter((v) => v.is_active === false).length;
   console.log({ activeJobsLength, inactiveJobsLength });
 
@@ -476,6 +494,15 @@ const LandingPage = ({ subAdminView }) => {
                     job.data_type === currentUser.portfolio_info[0].data_type
                 )
                 .filter((v) => v.is_active === true)
+                .filter((v) =>
+                  selectValue !== ""
+                    ? selectValue === "is_internal"
+                      ? v?.is_internal === true
+                      : selectValue === "not_internal"
+                      ? v?.is_internal === false
+                      : false
+                    : true
+                )
                 .slice(cardGroupNumber, cardGroupNumber + 4)
                 .map((job, index) => (
                   <Card
@@ -498,6 +525,15 @@ const LandingPage = ({ subAdminView }) => {
                     job.data_type === currentUser.portfolio_info[0].data_type
                 )
                 ?.filter((v) => v.is_active === false)
+                .filter((v) =>
+                  selectValue !== ""
+                    ? selectValue === "is_internal"
+                      ? v?.is_internal === true
+                      : selectValue === "not_internal"
+                      ? v?.is_internal === false
+                      : false
+                    : true
+                )
                 .slice(cardGroupNumber, cardGroupNumber + 4)
                 ?.map((job, index) => (
                   <Card
