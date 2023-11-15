@@ -1,19 +1,12 @@
 import React, { useContext, useEffect } from "react";
 import { useJobContext } from "../../../../contexts/Jobs";
 import "./index.scss";
-import backpage from "./assets/backpage.svg";
-import plus from "./assets/plus.svg";
-import search from "./assets/search.svg";
 import Card from "./component/Card";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Loading from "../../../CandidatePage/views/ResearchAssociatePage/Loading";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
-import {
-  s,
-  useCurrentUserContext,
-} from "../../../../contexts/CurrentUserContext";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import {
   getApplicationForAdmin,
   getCreatedProductLinks,
@@ -21,6 +14,7 @@ import {
   getMasterLinks,
   getSettingUserSubProject,
 } from "../../../../services/adminServices";
+import Select from "react-select";
 import { useState } from "react";
 import { IoCopyOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
@@ -62,6 +56,7 @@ const LandingPage = ({ subAdminView }) => {
   } = useJobContext();
   const [showShareModal, setShowShareModal] = useState(false);
   const [jobLinkToShareObj, setJobLinkToShareObj] = useState({});
+  const [selectValue, setSelectValue] = useState("");
   const [activeLinkTab, setActiveLinkTab] = useState("jobs");
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
@@ -113,7 +108,7 @@ const LandingPage = ({ subAdminView }) => {
   };
 
   useEffect(() => {
-    if (applicationsLoaded) return setlist(applications)
+    if (applicationsLoaded) return setlist(applications);
 
     getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
       .then((resp) => {
@@ -122,7 +117,7 @@ const LandingPage = ({ subAdminView }) => {
             (j) => currentUser.portfolio_info[0].data_type === j.data_type
           )
         );
-        setApplicationsLoaded(true)
+        setApplicationsLoaded(true);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -135,45 +130,46 @@ const LandingPage = ({ subAdminView }) => {
 
   useEffect(() => {
     if (dashboardDataLoaded) {
-      setJobs(jobs)
-      setjobs2(jobs)
+      setJobs(jobs);
+      setjobs2(jobs);
 
       Promise.all([
         getMasterLinks(currentUser.portfolio_info[0].org_id),
         getCreatedProductLinks(currentUser.portfolio_info[0].org_id),
-      ]).then(response => {
-        setJobLinks([
-          ...new Map(
-            response[0]?.data?.data
-              ?.reverse()
-              .map((link) => [link.master_link, link])
-          ).values(),
-        ]);
+      ])
+        .then((response) => {
+          setJobLinks([
+            ...new Map(
+              response[0]?.data?.data
+                ?.reverse()
+                .map((link) => [link.master_link, link])
+            ).values(),
+          ]);
 
-        setProductLinks([
-          ...new Map(
-            response[1]?.data?.response
-              ?.reverse()
-              .filter((link) => link.type === "product")
-              .map((link) => [link.master_link, link])
-          ).values(),
-        ]);
+          setProductLinks([
+            ...new Map(
+              response[1]?.data?.response
+                ?.reverse()
+                .filter((link) => link.type === "product")
+                .map((link) => [link.master_link, link])
+            ).values(),
+          ]);
 
-        setReportLinks([
-          ...new Map(
-            response[1]?.data?.response
-              ?.reverse()
-              .filter((link) => link.type === "report")
-              .map((link) => [link.master_link, link])
-          ).values(),
-        ]);
+          setReportLinks([
+            ...new Map(
+              response[1]?.data?.response
+                ?.reverse()
+                .filter((link) => link.type === "report")
+                .map((link) => [link.master_link, link])
+            ).values(),
+          ]);
 
-        setresponse(true);
-        
-      }).catch((error) => {
-        console.log(error);
-        setresponse(true);
-      });
+          setresponse(true);
+        })
+        .catch((error) => {
+          console.log(error);
+          setresponse(true);
+        });
     }
 
     if (jobs?.length === 0 && !resp && !dashboardDataLoaded) {
@@ -298,8 +294,9 @@ const LandingPage = ({ subAdminView }) => {
 
     if (!currentSessionId) return;
     const teamManagementProduct = currentUser?.portfolio_info.find(
-      (item) => item.product === teamManagementProductName &&
-        item.member_type === 'owner'
+      (item) =>
+        item.product === teamManagementProductName &&
+        item.member_type === "owner"
     );
     if (!teamManagementProduct) return;
 
@@ -366,16 +363,36 @@ const LandingPage = ({ subAdminView }) => {
   }
   const activeJobsLength = jobs
     .filter((job) => job.data_type === currentUser.portfolio_info[0].data_type)
+    .filter((v) =>
+      selectValue !== ""
+        ? selectValue === "is_internal"
+          ? v?.is_internal === true
+          : selectValue === "not_internal"
+          ? v?.is_internal === false
+          : false
+        : true
+    )
     .filter((v) => v.is_active === true).length;
   const inactiveJobsLength = jobs
     ?.filter((job) => job.data_type === currentUser.portfolio_info[0].data_type)
+    ?.filter((v) =>
+      selectValue !== ""
+        ? selectValue === "is_internal"
+          ? v?.is_internal === true
+          : selectValue === "not_internal"
+          ? v?.is_internal === false
+          : false
+        : true
+    )
     ?.filter((v) => v.is_active === false).length;
   console.log({ activeJobsLength, inactiveJobsLength });
 
   return (
     <StaffJobLandingLayout
       adminView={true}
-      handleNavIconClick={() => subAdminView ? navigate("/add-job") : navigate("/add")}
+      handleNavIconClick={() =>
+        subAdminView ? navigate("/add-job") : navigate("/add")
+      }
       searchValue={searchValue}
       setSearchValue={handleSearchChange}
       subAdminView={subAdminView}
@@ -416,24 +433,17 @@ const LandingPage = ({ subAdminView }) => {
           Links
         </p>
       </div>
-      {/* asd */}
-      {/* <div className="JobsChanger_containter">
-        {createArrayWithLength(
-          isActive
-            ? Math.ceil(activeJobsLength / 4)
-            : Math.ceil(inactiveJobsLength / 4)
-        ).map((s, index) => (
-          <button
-            className={s !== cardGroupNumber ? "active" : "desactive"}
-            onClick={() => changeCardGroupNumber(s)}
-            key={`${index}_button${
-              isActive === "active" ? "_active" : "_desactive"
-            }`}
-          >
-            {s + 1}
-          </button>
-        ))}
-      </div> */}
+      <Select
+        className='select__jobs'
+        options={[
+          { label: "internal", value: "is_internal" },
+          { label: "not internal", value: "not_internal" },
+          { label: "Regional", value: "Regional" },
+        ]}
+        onChange={(val) => {
+          setSelectValue(val.value);
+        }}
+      />
       <div
         className={`landing-page ${
           isActive === "active" || isActive === "inactive" ? "" : "linkss"
@@ -484,6 +494,15 @@ const LandingPage = ({ subAdminView }) => {
                     job.data_type === currentUser.portfolio_info[0].data_type
                 )
                 .filter((v) => v.is_active === true)
+                .filter((v) =>
+                  selectValue !== ""
+                    ? selectValue === "is_internal"
+                      ? v?.is_internal === true
+                      : selectValue === "not_internal"
+                      ? v?.is_internal === false
+                      : false
+                    : true
+                )
                 .slice(cardGroupNumber, cardGroupNumber + 4)
                 .map((job, index) => (
                   <Card
@@ -506,6 +525,15 @@ const LandingPage = ({ subAdminView }) => {
                     job.data_type === currentUser.portfolio_info[0].data_type
                 )
                 ?.filter((v) => v.is_active === false)
+                .filter((v) =>
+                  selectValue !== ""
+                    ? selectValue === "is_internal"
+                      ? v?.is_internal === true
+                      : selectValue === "not_internal"
+                      ? v?.is_internal === false
+                      : false
+                    : true
+                )
                 .slice(cardGroupNumber, cardGroupNumber + 4)
                 ?.map((job, index) => (
                   <Card
