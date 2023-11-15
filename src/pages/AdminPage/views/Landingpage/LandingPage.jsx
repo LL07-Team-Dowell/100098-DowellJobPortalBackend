@@ -443,6 +443,7 @@ const LandingPage = ({ subAdminView }) => {
         onChange={(val) => {
           setSelectValue(val.value);
         }}
+        placeholder={'Filter job'}
       />
       <div
         className={`landing-page ${
@@ -650,7 +651,7 @@ const LandingPage = ({ subAdminView }) => {
       </div>
       {(isActive === "active" || isActive === "inactive") &&
         (activeJobsLength !== 0 || inactiveJobsLength !== 0) && (
-          <div className='JobsChanger_containter'>
+          <div className='JobsChanger_containter admin'>
             <button
               onClick={() =>
                 decrementStepPagination(isActive === "active" ? true : false)

@@ -463,6 +463,9 @@ $red__color: #fe0000;
   align-items: center;
   justify-content: center;
   margin: 3.5rem 0 15rem;
+  &.admin {
+    margin-bottom: 15rem;
+  }
   button {
     background-color: #0e0e0e;
     color: white;
@@ -497,4 +500,5 @@ $red__color: #fe0000;
   margin-right: 0;
   margin-left: 70%;
   margin-top: 20px;
+  font-size: 0.8rem;
 }
