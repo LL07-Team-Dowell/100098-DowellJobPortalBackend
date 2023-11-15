@@ -652,3 +652,14 @@ class TaskDetailsInputSerializer(serializers.Serializer):
     end_date = serializers.DateField()
     user_id = serializers.IntegerField()
     company_id = serializers.IntegerField()
+
+class AddProjectTimeSerializer(serializers.Serializer):
+    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    total_time = serializers.IntegerField(allow_null=False)
+    lead_name = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    data_type = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    editing_enabled = serializers.BooleanField(allow_null=False)
+class UpdateProjectTimeEnabledSerializer(serializers.Serializer):
+    document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    editing_enabled = serializers.BooleanField(allow_null=False)

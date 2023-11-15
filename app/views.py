@@ -82,7 +82,9 @@ from .serializers import (
     DashBoardStatusSerializer,
     DashBoardJobCategorySerializer,
     GroupLeadAgendaSerializer,
-    TaskDetailsInputSerializer
+    TaskDetailsInputSerializer,
+    AddProjectTimeSerializer,
+    UpdateProjectTimeEnabledSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -5330,7 +5332,7 @@ class Comment_Apis(APIView):
                     "message": "Failed to update Comment",
                     "data": json.loads(insert_response),
                 },
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_304_NOT_MODIFIED,
             )
 
 
@@ -7791,7 +7793,7 @@ class AddUserGithubInfo(APIView):
                     "success": False,
                     "message": serializer.errors,
                 },
-                status=status.HTTP_200_OK,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
     def put(self, request):
@@ -7883,44 +7885,54 @@ class SecureEndPoint(APIView):
 
 
 @method_decorator(csrf_exempt, name="dispatch")
-class AddTotalTime(APIView):
+class ProjectTotalTime(APIView):
     def post(self, request):
         data = request.data
-        field = {
-            "project": data.get("project"),
-            "company_id": data.get("company_id"),
-            "total_time": data.get("total_time"),
-            "lead_name": data.get("lead_name"),
-            "editing_enabled": data.get("editing_enabled"),
-            "left_time": data.get("left_time"),
-        }
-        response = json.loads(
-            dowellconnection(*time_detail_module, "insert",
-                             field, update_field=None)
-        )
-        return Response(
-            {
-                "success": True,
-                "message": "Created",
-                "data": response,
-            },
-            status=status.HTTP_200_OK,
-        )
-
-    def get(self, request, company_id):
-        project = request.GET.get('project')
-        print(project)
-        if project:
-            field = {"company_id": company_id,
-                     "project": project}
+        serializer =AddProjectTimeSerializer(data=data)
+        if serializer.is_valid():
+            spent_time=20
+            field = {
+                "project": data.get("project"),
+                "company_id": data.get("company_id"),
+                "total_time": data.get("total_time"),
+                "lead_name": data.get("lead_name"),
+                "editing_enabled": data.get("editing_enabled"),
+                "data_type": "Real_Data",
+                "spent_time":spent_time,
+                "left_time": data.get("total_time")-spent_time,
+            }
             response = json.loads(
-                dowellconnection(*time_detail_module, "fetch",
-                                 field, update_field=None)
+                dowellconnection(*time_detail_module, "insert",
+                                field, update_field=None)
             )
+            return Response(
+                {
+                    "success": True,
+                    "message": "Created",
+                    "data": response,
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    def get(self, request, document_id):
+
+        field = {"_id": document_id}
+        response = json.loads(
+            dowellconnection(*time_detail_module, "fetch",
+                                field, update_field=None)
+        )
         return Response(
             {
-                "success": True,
-                "data": response,
+                "message": True,
+                "data": response["data"],
             },
             status=status.HTTP_200_OK,
         )
@@ -7963,10 +7975,9 @@ class AddTotalTime(APIView):
             status=status.HTTP_200_OK,
         )
 
-
-class GetbyDocumentIDTotalTime(APIView):
-    def get(self, request, document_id):
-        field = {"_id": document_id}
+class AllProjectTotalTime(APIView):
+    def get(self, request, company_id):
+        field = {"company_id": company_id}
         response = json.loads(
             dowellconnection(*time_detail_module, "fetch",
                              field, update_field=None)
@@ -7974,140 +7985,50 @@ class GetbyDocumentIDTotalTime(APIView):
         return Response(
             {
                 "success": True,
-                "data": response,
+                "data": response["data"],
             },
             status=status.HTTP_200_OK,
         )
-
-
-# """Total time for project hours"""
-
-
-# @method_decorator(csrf_exempt, name="dispatch")
-# class project_hours(APIView):
-#     def post(self, request):
-#         type_request = request.GET.get("type")
-
-#         if type_request == "add_total_project_hours":
-#             return self.add_total_project_hours(request)
-#         elif type_request == "enable_edit_project_hours":
-#             return self.enable_edit_project_hours(request)
-#         else:
-#             return self.handle_error(request)
-
-#     def get(self, request):
-#         type_request = request.GET.get("type")
-
-#         if type_request == "get_project_hours_details":
-#             return self.get_project_hours_details(request)
-#         elif type_request == "get_project_hours_detail":
-#             return self.get_project_hours_detail(request)
-#         else:
-#             return self.handle_error(request)
-
-#     """Add total project hours"""
-
-#     def add_total_project_hours(self, request):
-#         field = {
-#             "project": request.data.get("project"),
-#             "company_id": request.data.get("company_id"),
-#             "total_time": request.data.get("total_time"),
-#             "lead_name": request.data.get("lead_name"),
-#         }
-
-#         """ADD SERIALIZER HERE"""
-#         serializer = ProjectDeadlineSerializer(data=field)
-#         if serializer.is_valid():
-#             field = {
-#                 "project": field["project"],
-#                 "company_id": field["company_id"],
-#                 "total_time": field["total_time"],
-#                 "lead_name": field["lead_name"],
-#                 "enabale_modification": False,
-#                 "left_time": 0,
-#             }
-#             response = json.loads(
-#                 dowellconnection(
-#                     *time_detail_module, "insert", field, update_field=None
-#                 )
-#             )
-#             if response["isSuccess"]:
-#                 return Response(
-#                     {
-#                         "success": True,
-#                         "message": "Total project time added successfully",
-#                         "response": field,
-#                         "_id": response["inserted_id"],
-#                     }
-#                 )
-#             else:
-#                 return Response(
-#                     {"success": False, "message": "Failed to add total project time"}
-#                 )
-
-#         else:
-#             return Response(
-#                 {
-#                     "success": False,
-#                     "message": "Posting wrong data to API",
-#                     "error": serializer.errors,
-#                 }
-#             )
-
-#     """Enable edit option for the team lead"""
-
-#     def enable_edit_project_hours(self, request):
-#         field = {"_id": request.data.get("document_id")}
-#         update_field = {
-#             "enabale_modification": request.data.get("enabale_modification")
-#         }
-
-#         response = json.loads(
-#             dowellconnection(*time_detail_module,
-#                              "update", field, update_field)
-#         )
-
-#         return Response({"success": True, "message": "Status updated successfully"})
-
-#     """Get project hour details for company"""
-
-#     def get_project_hours_details(self, request):
-#         field = {"company_id": request.GET.get("company_id")}
-#         response = json.loads(
-#             dowellconnection(*time_detail_module, "fetch",
-#                              field, update_field=None)
-#         )
-#         return Response(
-#             {
-#                 "success": True,
-#                 "message": "List project hour details for company",
-#                 "response": response["data"],
-#             }
-#         )
-
-#     """Get project hour detail for company"""
-
-#     def get_project_hours_detail(self, request):
-#         field = {"_id": request.GET.get("document_id")}
-#         response = json.loads(
-#             dowellconnection(*time_detail_module, "find",
-#                              field, update_field=None)
-#         )
-#         return Response(
-#             {
-#                 "success": True,
-#                 "message": "List project hour details for company",
-#                 "response": response["data"],
-#             }
-#         )
-
-#     """HANDLE ERROR"""
-
-#     def handle_error(self, request):
-#         return Response(
-#             {"success": False, "message": "Invalid request type"},
-#             status=status.HTTP_400_BAD_REQUEST,
-#         )
+class EnabledProjectTotalTime(APIView):
+    def patch(self, request):
+        data = request.data
+        serializer = UpdateProjectTimeEnabledSerializer(data=data)
+        if serializer.is_valid():
+            field = {
+                "_id": data.get("document_id"),
+            }
+            update_field = {
+                "editing_enabled": data.get("editing_enabled"),
+            }
+            response = json.loads(
+                dowellconnection(*time_detail_module, "update", field, update_field)
+            )
+            print(response)
+            if json.loads(response)["isSuccess"] == True:
+                return Response(
+                    {
+                        "success":True,
+                        "message": f"editing_enabled has been updated successfully"
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {
+                        "success":False,
+                        "message": "Failed to update editing_enabled",
+                        "data": response,
+                    },
+                    status=status.HTTP_304_NOT_MODIFIED,
+                )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 @method_decorator(csrf_exempt, name="dispatch")
