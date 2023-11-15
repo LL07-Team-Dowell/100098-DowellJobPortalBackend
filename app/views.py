@@ -7888,6 +7888,12 @@ class SecureEndPoint(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class ProjectTotalTime(APIView):
+    def get_current_datetime(self, date):
+        _date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
+            "%m/%d/%Y %H:%M:%S"
+        )
+        return str(_date)
+
     def post(self, request):
         data = request.data
         serializer =AddProjectTimeSerializer(data=data)
@@ -7895,15 +7901,16 @@ class ProjectTotalTime(APIView):
 
             response = json.loads(
                 dowellconnection(*time_detail_module, "fetch",
-                                    {"project":data.get("project")}, update_field=None)
+                                    {"project":data.get("project"),
+                                     "company_id":data.get("company_id")}, update_field=None)
             )
             if len(response["data"])>0:
                 return Response(
                     {
                         "success":False,
-                        "error": "A Project time with this project already exists",
+                        "error": f"A Project time has been set for this project with company_id-{company_id}",
                     },
-                    status=status.HTTP_204_NO_CONTENT,
+                    status=status.HTTP_409_CONFLICT,
                 )
             field = {
                 "project": data.get("project"),
