@@ -550,7 +550,7 @@ def get_month_details(date):
     return (str(datime.year),month_name,months.count(month_name))
 
 def updatereportdb(filter_params,task_params):
-    applicant_id=filter_params["applicant_id"]
+    """applicant_id=filter_params["applicant_id"]
     username=filter_params["username"]
     month=filter_params["month"]
     year=filter_params["year"]
@@ -558,7 +558,7 @@ def updatereportdb(filter_params,task_params):
 
     default_dict = {i: int(task_params[i]) for i in task_params}
 
-    """taskmodelobj, created = MonthlyTaskData.objects.get_or_create(
+    taskmodelobj, created = MonthlyTaskData.objects.get_or_create(
                             applicant_id=applicant_id,
                             username=username,year=year,month=month,
                             company_id=company_id,defaults=default_dict  # Set the default value for task_added when creating a new instance
