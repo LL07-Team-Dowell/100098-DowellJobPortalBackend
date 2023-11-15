@@ -368,8 +368,8 @@ const LandingPage = ({ subAdminView }) => {
         ? selectValue === "is_internal"
           ? v?.is_internal === true
           : selectValue === "not_internal"
-          ? v?.is_internal === false
-          : false
+          ? !v?.is_internal
+          : v?.is_regional
         : true
     )
     .filter((v) => v.is_active === true).length;
@@ -380,8 +380,8 @@ const LandingPage = ({ subAdminView }) => {
         ? selectValue === "is_internal"
           ? v?.is_internal === true
           : selectValue === "not_internal"
-          ? v?.is_internal === false
-          : false
+          ? !v?.is_internal
+          : v?.is_regional
         : true
     )
     ?.filter((v) => v.is_active === false).length;
@@ -436,14 +436,14 @@ const LandingPage = ({ subAdminView }) => {
       <Select
         className='select__jobs'
         options={[
-          { label: "internal", value: "is_internal" },
-          { label: "not internal", value: "not_internal" },
+          { label: "Internal", value: "is_internal" },
+          { label: "Public", value: "not_internal" },
           { label: "Regional", value: "Regional" },
         ]}
         onChange={(val) => {
           setSelectValue(val.value);
         }}
-        placeholder={'Filter job'}
+        placeholder={"Filter job"}
       />
       <div
         className={`landing-page ${
@@ -500,8 +500,8 @@ const LandingPage = ({ subAdminView }) => {
                     ? selectValue === "is_internal"
                       ? v?.is_internal === true
                       : selectValue === "not_internal"
-                      ? v?.is_internal === false
-                      : false
+                      ? !v?.is_internal
+                      : v?.is_regional
                     : true
                 )
                 .slice(cardGroupNumber, cardGroupNumber + 4)
@@ -531,8 +531,8 @@ const LandingPage = ({ subAdminView }) => {
                     ? selectValue === "is_internal"
                       ? v?.is_internal === true
                       : selectValue === "not_internal"
-                      ? v?.is_internal === false
-                      : false
+                      ? !v?.is_internal
+                      : v?.is_regional
                     : true
                 )
                 .slice(cardGroupNumber, cardGroupNumber + 4)
