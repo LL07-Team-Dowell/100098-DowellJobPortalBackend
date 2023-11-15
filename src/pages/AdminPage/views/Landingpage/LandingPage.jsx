@@ -368,8 +368,8 @@ const LandingPage = ({ subAdminView }) => {
         ? selectValue === "is_internal"
           ? v?.is_internal === true
           : selectValue === "not_internal"
-          ? v?.is_internal === false
-          : false
+          ? !v?.is_internal
+          : v?.is_regional
         : true
     )
     .filter((v) => v.is_active === true).length;
@@ -380,8 +380,8 @@ const LandingPage = ({ subAdminView }) => {
         ? selectValue === "is_internal"
           ? v?.is_internal === true
           : selectValue === "not_internal"
-          ? v?.is_internal === false
-          : false
+          ? !v?.is_internal
+          : v?.is_regional
         : true
     )
     ?.filter((v) => v.is_active === false).length;
@@ -443,7 +443,7 @@ const LandingPage = ({ subAdminView }) => {
         onChange={(val) => {
           setSelectValue(val.value);
         }}
-        placeholder={'Filter job'}
+        placeholder={"Filter job"}
       />
       <div
         className={`landing-page ${
@@ -500,8 +500,8 @@ const LandingPage = ({ subAdminView }) => {
                     ? selectValue === "is_internal"
                       ? v?.is_internal === true
                       : selectValue === "not_internal"
-                      ? v?.is_internal === false
-                      : false
+                      ? !v?.is_internal
+                      : v?.is_regional
                     : true
                 )
                 .slice(cardGroupNumber, cardGroupNumber + 4)
@@ -531,8 +531,8 @@ const LandingPage = ({ subAdminView }) => {
                     ? selectValue === "is_internal"
                       ? v?.is_internal === true
                       : selectValue === "not_internal"
-                      ? v?.is_internal === false
-                      : false
+                      ? !v?.is_internal
+                      : v?.is_regional
                     : true
                 )
                 .slice(cardGroupNumber, cardGroupNumber + 4)
