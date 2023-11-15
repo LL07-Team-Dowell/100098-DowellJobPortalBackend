@@ -1,29 +1,159 @@
-from datetime import datetime, timedelta
+import requests
+from datetime import datetime, timedelta, date
 import json
-from app.helper import dowellconnection
-from .constant import *
+import threading
 
-def get_total_time(project_name,company_id):
+task_management_reports = [
+    "jobportal",
+    "jobportal",
+    "task_reports",
+    "task_reports",
+    "100098007",
+    "ABCDE",
+]
+task_details_module = [
+    "jobportal",
+    "jobportal",
+    "task_details",
+    "task_details",
+    "1000981019",
+    "ABCDE",
+]
+"""Dowell Connection"""
+def dowellconnection(cluster,database,collection,document,team_member_ID,function_ID,command,field,update_field):
+    url = "http://uxlivinglab.pythonanywhere.com"
+    # url = "http://100002.pythonanywhere.com/"
+    payload = json.dumps({
+        "cluster": cluster,
+        "database": database,
+        "collection": collection,
+        "document": document,
+        "team_member_ID": team_member_ID,
+        "function_ID": function_ID,
+        "command": command,
+        "field": field,
+        "update_field": update_field,
+        "platform": "bangalore"
+        })
+    headers = {
+        'Content-Type': 'application/json'
+        }
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    res= json.loads(response.text)
+
+    return res
+"""ensuring the date time format is always valid"""
+def set_date_format(date):
+    try:
+        iso_format = datetime.strptime(date, "%m/%d/%Y %H:%M:%S").strftime(
+            "%m/%d/%Y %H:%M:%S"
+        )
+        return iso_format
+    except Exception:
+        try:
+            iso_format = datetime.strptime(
+                date, "%Y-%m-%d %H:%M:%S.%f"
+            ).strftime("%m/%d/%Y %H:%M:%S")
+            return iso_format
+        except Exception:
+            try:
+                iso_format = datetime.strptime(
+                    date, "%Y-%m-%dT%H:%M:%S.%fZ"
+                ).strftime("%m/%d/%Y %H:%M:%S")
+                return iso_format
+            except Exception:
+                try:
+                    iso_format = datetime.strptime(date, "%m/%d/%Y").strftime(
+                        "%m/%d/%Y %H:%M:%S"
+                    )
+                    return iso_format
+                except Exception:
+                    try:
+                        date_string = date.replace(
+                            "(West Africa Standard Time)", ""
+                        ).rstrip()
+                        iso_format = datetime.strptime(
+                            date_string, "%a %b %d %Y %H:%M:%S %Z%z"
+                        ).strftime("%m/%d/%Y %H:%M:%S")
+                        return iso_format
+                    except Exception:
+                        try:
+                            iso_format = datetime.strptime(
+                                date, "%d/%m/%Y"
+                            ).strftime("%m/%d/%Y %H:%M:%S")
+                            return iso_format
+                        except Exception:
+                            try:
+                                iso_format = datetime.strptime(
+                                    date, "%d/%m/%Y %H:%M:%S"
+                                ).strftime("%m/%d/%Y %H:%M:%S")
+                                return iso_format
+                            except Exception:
+                                try:
+                                    iso_format = datetime.strptime(
+                                        date, "%Y-%m-%d"
+                                    ).strftime("%m/%d/%Y %H:%M:%S")
+                                    return iso_format
+                                except Exception as e:
+                                    try:
+                                        iso_format = datetime.strptime(
+                                            date, "%d/%m/%Y  %H:%M:%S"
+                                        ).strftime("%m/%d/%Y %H:%M:%S")
+                                        return iso_format
+                                    except Exception:
+                                        return ""
+
+def get_projects_spent_total_time(company_id, search_date):
+    datetime_obj = datetime.strptime(search_date, '%Y-%m-%d')
+
+    start_date = datetime_obj.date() 
+    end_date = start_date + timedelta(days=1)#-----the start date minus 7 days ago which is the upper monday
+
+    data={}
     task_field = {
-        "project": project_name,
         "company_id":company_id
     }
-    task_response = json.loads(
-        dowellconnection(*task_details_module, "fetch", task_field, update_field=None)
-    )
+    task_details = json.loads(dowellconnection(*task_details_module, "fetch", task_field, update_field=None))["data"]
+    for task in task_details:
+        if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
+            if str(start_date) in task["task_created_date"]:
+                try:
+                    task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S").date()
+                    #print(task_created_date,start_date, end_date)                   
+                    if task_created_date >= start_date and task_created_date <= end_date:                     
+                        if "start_time" in task.keys() and "end_time" in task.keys():
+                            try:
+                                start_time = datetime.strptime(task["start_time"], "%H:%M")
+                            except ValueError:
+                                start_time = datetime.strptime(task["start_time"], "%H:%M:%S")
+                            try:
+                                end_time = datetime.strptime(task["end_time"], "%H:%M")
+                            except ValueError:
+                                end_time = datetime.strptime(task["end_time"], "%H:%M:%S")
+                            duration = end_time - start_time
+                            dur_secs = (duration).total_seconds()
+                            dur_mins = dur_secs / 60
+                            dur_hrs = dur_mins / 60
+                            
+                            if task["project"] in data.keys():
+                                data[task["project"]]+=dur_hrs  
+                            else:
+                                data[task["project"]]=dur_hrs
+                except ValueError:
+                    pass
+    print("total hours used by each projects\n",data)
+    return data
 
-    total_duration = timedelta()
+def main():
 
-    for task in task_response["data"]:
-        start_time_str = task["start_time"]
-        end_time_str = task["end_time"]
+    #get time spent------------------------------
+    company_id = "6385c0f18eca0fb652c94561"
+    search_date='2023-11-14'
+    get_projects_spent_total_time(company_id, search_date=search_date)
 
-        start_time = datetime.strptime(start_time_str, "%H:%M")
-        end_time = datetime.strptime(end_time_str, "%H:%M")
-
-        task_duration = end_time - start_time
-        total_duration += task_duration
-
-    total_duration_str = str(total_duration)
-
-    return total_duration_str
+    #get total project time------------------------------
+    #get_projects_time()
+if __name__ == "__main__":
+    ##call main-----
+    main()
