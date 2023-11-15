@@ -8445,16 +8445,18 @@ class dashboard_services(APIView):
                 *candidate_management_reports, "update", field, update_field)
         
         res=json.loads(candidate_report)
+        # print(res)
 
         if res["isSuccess"]:
             return Response({
                     "success": True,
                     "message": "candidate leave has been approved",
-                })
+                },status=status.HTTP_201_CREATED)
         else:
             return Response({
                     "success": False,
                     "message": "candidate leave could not be added please check the aplicant id and try again",
+                    "error":res["error"]
                 })
 
 
