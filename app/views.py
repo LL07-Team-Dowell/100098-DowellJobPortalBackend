@@ -84,6 +84,8 @@ from .serializers import (
     GroupLeadAgendaSerializer,
     TaskDetailsInputSerializer,
     AddProjectTimeSerializer,
+    UpdateProjectTimeSerializer,
+    UpdateProjectSpentTimeSerializer,
     UpdateProjectTimeEnabledSerializer
 )
 from .authorization import (
@@ -7890,7 +7892,19 @@ class ProjectTotalTime(APIView):
         data = request.data
         serializer =AddProjectTimeSerializer(data=data)
         if serializer.is_valid():
-            spent_time=20
+
+            response = json.loads(
+                dowellconnection(*time_detail_module, "fetch",
+                                    {"project":data.get("project")}, update_field=None)
+            )
+            if len(response["data"])>0:
+                return Response(
+                    {
+                        "success":False,
+                        "error": "A Project time with this project already exists",
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
             field = {
                 "project": data.get("project"),
                 "company_id": data.get("company_id"),
@@ -7898,8 +7912,9 @@ class ProjectTotalTime(APIView):
                 "lead_name": data.get("lead_name"),
                 "editing_enabled": data.get("editing_enabled"),
                 "data_type": "Real_Data",
-                "spent_time":spent_time,
-                "left_time": data.get("total_time")-spent_time,
+                "spent_time":0,
+                "left_time": data.get("total_time"),
+                "date_created":self.get_current_datetime(datetime.now())
             }
             response = json.loads(
                 dowellconnection(*time_detail_module, "insert",
@@ -7924,7 +7939,8 @@ class ProjectTotalTime(APIView):
 
     def get(self, request, document_id):
 
-        field = {"_id": document_id}
+        field = {"_id": document_id,
+                 "data_type": "Real_Data"}
         response = json.loads(
             dowellconnection(*time_detail_module, "fetch",
                                 field, update_field=None)
@@ -7937,47 +7953,101 @@ class ProjectTotalTime(APIView):
             status=status.HTTP_200_OK,
         )
 
-    def patch(self, request, company_id):
+    def patch(self, request):
         data = request.data
-        field = {"company_id": company_id}
-        response = json.loads(
-            dowellconnection(*time_detail_module, "fetch",
-                             field, update_field=None)
-        )
-        response2_data = []
+        serializer = UpdateProjectTimeSerializer(data=data)
+        if serializer.is_valid():
+            field = {
+                "_id": data.get("document_id"),
+            }
+            
+            get_response = json.loads(dowellconnection(*time_detail_module, "fetch",
+                                field, update_field=None))
+            if len(get_response["data"])>0:
+                spent_time=get_response["data"][0]["spent_time"]
 
-        for item in response["data"]:
-            project = item["project"]
-            company_id = item["company_id"]
-            time_gotten = get_total_time(project, company_id)
-
-            left_time_str = item["left_time"]
-            if left_time_str and time_gotten:
-                left_time = float(left_time_str) - float(time_gotten)
-            else:
-                left_time = 0.0
-
-            field2 = {"left_time": left_time}
-            response2 = json.loads(
-                dowellconnection(
-                    *time_detail_module, "update", field=field, update_field=field2
+                update_field = {
+                    "total_time": data.get("total_time"),
+                    "left_time": data.get("total_time")-spent_time
+                }
+                response = json.loads(
+                    dowellconnection(*time_detail_module, "update", field, update_field)
                 )
+                if response["isSuccess"] == True:
+                    return Response(
+                        {
+                            "success":True,
+                            "message": f"total_time has been updated successfully"
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+                else:
+                    return Response(
+                        {
+                            "success":False,
+                            "message": "Failed to update total_time",
+                            "data": response,
+                        },
+                        status=status.HTTP_304_NOT_MODIFIED,
+                    )
+            return Response(
+                    {
+                        "success":False,
+                        "message": "No Project time with this id exists",
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+    def delete(self, request,document_id):
+        data = request.data
+        field = {
+            "_id": document_id,
+        }
+        
+        get_response = json.loads(dowellconnection(*time_detail_module, "fetch",
+                            field, update_field=None))
+        if len(get_response["data"])>0:
+            update_field = {"data_type": "Archived_Data"}
+            response = json.loads(
+                dowellconnection(*time_detail_module, "update", field, update_field)
+            )
+            if response["isSuccess"] == True:
+                return Response(
+                    {
+                        "success":True,
+                        "message": f"Project time has been deleted successfully"
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {
+                        "success":False,
+                        "message": "Failed to delete Project time",
+                        "data": response,
+                    },
+                    status=status.HTTP_304_NOT_MODIFIED,
+                )
+        return Response(
+                {
+                    "success":False,
+                    "message": "No Project time with this id exists",
+                },
+                status=status.HTTP_204_NO_CONTENT,
             )
 
-            response2_data.append(response2)
-
-        return Response(
-            {
-                "success": True,
-                "message": "Created",
-                "data": response2_data,
-            },
-            status=status.HTTP_200_OK,
-        )
 
 class AllProjectTotalTime(APIView):
     def get(self, request, company_id):
-        field = {"company_id": company_id}
+        field = {"company_id": company_id,
+                 "data_type": "Real_Data"}
         response = json.loads(
             dowellconnection(*time_detail_module, "fetch",
                              field, update_field=None)
@@ -7990,36 +8060,46 @@ class AllProjectTotalTime(APIView):
             status=status.HTTP_200_OK,
         )
 class EnabledProjectTotalTime(APIView):
-    def patch(self, request):
+    def patch(self,request):
         data = request.data
         serializer = UpdateProjectTimeEnabledSerializer(data=data)
         if serializer.is_valid():
             field = {
                 "_id": data.get("document_id"),
             }
-            update_field = {
-                "editing_enabled": data.get("editing_enabled"),
-            }
-            response = json.loads(
-                dowellconnection(*time_detail_module, "update", field, update_field)
-            )
-            print(response)
-            if json.loads(response)["isSuccess"] == True:
-                return Response(
-                    {
-                        "success":True,
-                        "message": f"editing_enabled has been updated successfully"
-                    },
-                    status=status.HTTP_200_OK,
+            
+            get_response = json.loads(dowellconnection(*time_detail_module, "fetch",
+                                field, update_field=None))
+            if len(get_response["data"])>0:
+                update_field = {
+                    "editing_enabled": data.get("editing_enabled"),
+                }
+                response = json.loads(
+                    dowellconnection(*time_detail_module, "update", field, update_field)
                 )
-            else:
-                return Response(
+                if response["isSuccess"] == True:
+                    return Response(
+                        {
+                            "success":True,
+                            "message": f"editing_enabled has been updated successfully"
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+                else:
+                    return Response(
+                        {
+                            "success":False,
+                            "message": "Failed to update editing_enabled",
+                            "data": response,
+                        },
+                        status=status.HTTP_304_NOT_MODIFIED,
+                    )
+            return Response(
                     {
                         "success":False,
-                        "message": "Failed to update editing_enabled",
-                        "data": response,
+                        "message": "No Project time with this id exists",
                     },
-                    status=status.HTTP_304_NOT_MODIFIED,
+                    status=status.HTTP_204_NO_CONTENT,
                 )
         else:
             return Response(
@@ -8029,7 +8109,61 @@ class EnabledProjectTotalTime(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+    
+class UpdateProjectSpentTime(APIView):
+    def patch(self, request):
+        data = request.data
+        serializer = UpdateProjectSpentTimeSerializer(data=data)
+        if serializer.is_valid():
+            field = {
+                "_id": data.get("document_id"),
+            }
+            
+            get_response = json.loads(dowellconnection(*time_detail_module, "fetch",
+                                field, update_field=None))
+            if len(get_response["data"])>0:
+                total_time=get_response["data"][0]["total_time"]
 
+                update_field = {
+                    "spent_time": data.get("spent_time"),
+                    "left_time": total_time-data.get("spent_time")
+                }
+                response = json.loads(
+                    dowellconnection(*time_detail_module, "update", field, update_field)
+                )
+                if response["isSuccess"] == True:
+                    return Response(
+                        {
+                            "success":True,
+                            "message": f"spent_time has been updated successfully"
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+                else:
+                    return Response(
+                        {
+                            "success":False,
+                            "message": "Failed to update spent_time",
+                            "data": response,
+                        },
+                        status=status.HTTP_304_NOT_MODIFIED,
+                    )
+            return Response(
+                    {
+                        "success":False,
+                        "message": "No Project time with this id exists",
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+            
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Testing_Threads(APIView):
@@ -8074,92 +8208,6 @@ class Testing_Threads(APIView):
                     "data": [],
                 }
             )
-
-
-@method_decorator(csrf_exempt, name="dispatch")
-class GetTotalTimeOfProject(APIView):
-    def get(self, request):
-        project_name = request.GET.get("project_name")
-        company_id = request.GET.get("company_id")
-        task_field = {
-            "project": project_name,
-            "company_id": company_id
-        }
-        task_response = json.loads(
-            dowellconnection(*task_details_module, "fetch",
-                             task_field, update_field=None)
-        )
-        total_duration = timedelta()
-
-        for task in task_response["data"]:
-            start_time_str = task["start_time"]
-            end_time_str = task["end_time"]
-
-            start_time = datetime.strptime(start_time_str, "%H:%M")
-            end_time = datetime.strptime(end_time_str, "%H:%M")
-
-            task_duration = end_time - start_time
-            total_duration += task_duration
-
-        total_hours, remainder = divmod(total_duration.total_seconds(), 3600)
-        total_minutes = remainder / 60
-
-        return Response(
-            {
-                "total_time": f"{int(total_hours):02d}:{int(total_minutes):02d}",
-            }
-        )
-
-
-@method_decorator(csrf_exempt, name="dispatch")
-class GetAllProjectAndTime(APIView):
-    def get(self, request):
-        company_id = request.GET.get("company_id")
-        task_field = {
-            "company_id": company_id
-        }
-        task_response = json.loads(
-            dowellconnection(*task_details_module, "fetch",
-                             task_field, update_field=None)
-        )
-
-        project_times = {}
-
-        for task in task_response["data"]:
-            project_name = task.get("project")
-            if project_name is None:
-                continue
-
-            start_time_str = task["start_time"]
-            end_time_str = task["end_time"]
-
-            # Function to handle various time string formats
-            def parse_time(time_str):
-                formats = ["%H:%M:%S", "%H:%M"]
-                for fmt in formats:
-                    try:
-                        return datetime.strptime(time_str, fmt)
-                    except ValueError:
-                        continue
-                raise ValueError("Time format not recognized")
-
-            start_time = parse_time(start_time_str)
-            end_time = parse_time(end_time_str)
-
-            task_duration = end_time - start_time
-
-            if project_name in project_times:
-                project_times[project_name] += task_duration
-            else:
-                project_times[project_name] = task_duration
-
-        project_time_data = {
-            project_name: f"{int(project_duration.total_seconds() // 3600):02d}:{int((project_duration.total_seconds() % 3600) // 60):02d}"
-            for project_name, project_duration in project_times.items()
-        }
-
-        return Response(project_time_data)
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Product_Services_API(APIView):
