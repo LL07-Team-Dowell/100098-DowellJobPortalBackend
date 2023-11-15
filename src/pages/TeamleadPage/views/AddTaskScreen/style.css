@@ -413,6 +413,7 @@
   color: white;
   text-transform: capitalize;
   font-size: 0.875rem;
+  font-weight: 600;
 }
 
 #customers button {

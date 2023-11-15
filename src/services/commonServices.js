@@ -43,3 +43,7 @@ export const generateCommonAdminReport = async (data) => {
 export const getAllUpdateTaskRequests = async (companyId) => {
     return await currentBackendAxiosInstance.get(`/get_all_update_task/${companyId}`)
 }
+
+export const getWorklogDetailsWithinTimeframe = async (startDate, endDate, userID, companyId) => {
+    return await currentBackendAxiosInstance.post(`/task_module/?type=task_details&start_date=${startDate}&end_date=${endDate}&user_id=${userID}&company_id=${companyId}`)
+}

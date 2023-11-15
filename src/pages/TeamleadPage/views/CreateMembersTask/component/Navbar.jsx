@@ -11,6 +11,7 @@ const Navbar = ({
   addTeamTaskTitle,
   handleAddTeamTaskFunction,
   adminTeams,
+  fontWeight,
 }) => {
   const navigate = useNavigate();
   return (
@@ -23,7 +24,13 @@ const Navbar = ({
             </button>
           )}
           {title !== undefined && (
-            <h1 style={{ color: color ? color : "#000" }}>{title}</h1>
+            <h1 style={{ 
+              color: color ? color : "#000", 
+              fontFamily: "Poppins, 'sans-serif", 
+              fontWeight: fontWeight ? fontWeight : 'bold' 
+            }}>
+              {title}
+            </h1>
           )}
         </div>
         {!removeButton && (

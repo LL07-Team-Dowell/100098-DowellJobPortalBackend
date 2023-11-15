@@ -22,6 +22,7 @@ import SubprojectSelectWithSearch from "../../../../components/SubprojectSelectW
 import { getAllCompanyUserSubProject } from "../../../../services/commonServices";
 import { AiOutlineClose, AiOutlineDown } from "react-icons/ai";
 import RequestTask from "./components/RequestTask";
+import WeeklogsCount from "../../../../components/WeeksLogCount/WeeklogsCount";
 
 const TaskScreen = ({
   handleAddTaskBtnClick,
@@ -337,7 +338,7 @@ const TaskScreen = ({
     align-items: center;
     justify-content: space-around;
     gap: 2rem;
-    padding-top: 30px;
+    padding-top: 10px;
     flex-direction: row;
     width: 32%;
     margin-right: auto;
@@ -467,14 +468,20 @@ const TaskScreen = ({
       {
         showBackBtn && <>
           <Navbar
-            title={'Your tasks'}
+            title={'Your logs'}
             removeButton={true}
+            fontWeight={600}
           />
         </>
       }
       {showModal ? <Wrappen>
         <RequestTask project={project} updatetaskdate={updatetaskdate} setShowModal={setShowModal} />
       </Wrappen > : <>
+      
+        <WeeklogsCount
+          user={currentUser}
+          className={'candidate__Week__Log__Detail'}
+        />
         <Wrappen>
           <NavLink
             className={`${panding ? "link-isActive" : "link-notactive"}`}

@@ -237,6 +237,11 @@
     .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select .task__Select__Subproject .task__Search__Sub:focus-within {
         border-color: #fff;
     }
+
+    .candidate__Week__Log__Detail {
+        width: 82%;
+        margin: 1.5rem auto 2rem;
+    }
 }
 
 
