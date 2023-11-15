@@ -24,10 +24,11 @@
     align-items: center;
     gap: 1rem;
     font-family: 'Poppins', sans-serif;
+    overflow: hidden;
 }
 
 .auth__Container img {
-    width: 15rem;
+    width: 75%;
     display: block;
     margin: 0 auto;
 }
