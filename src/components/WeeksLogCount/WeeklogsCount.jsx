@@ -46,10 +46,8 @@ const WeeklogsCount = ({ user, className }) => {
         const sundayOfNextWeek = new Date(new Date().setDate(mondayOfThisWeek.getDate() + 6));
 
         getWorklogDetailsWithinTimeframe(
-            '2023-11-01',
-            '2023-11-15',
-            // formatDateForAPI(mondayOfThisWeek),
-            // formatDateForAPI(sundayOfNextWeek),
+            formatDateForAPI(mondayOfThisWeek),
+            formatDateForAPI(sundayOfNextWeek),
             user?.userinfo?.userID,
             user?.portfolio_info[0]?.org_id,
         ).then(res => {
