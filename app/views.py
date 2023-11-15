@@ -39,8 +39,9 @@ from .helper import (
     get_positions,
     get_month_details,
     updatereportdb,
-    datacube_operation,
-    datacube_operation_retrieve
+    datacube_data_insertion,
+    datacube_data_retrival,
+    samanta_content_evaluator,
 
 )
 from .serializers import (
@@ -86,7 +87,9 @@ from .serializers import (
     AddProjectTimeSerializer,
     UpdateProjectTimeSerializer,
     UpdateProjectSpentTimeSerializer,
-    UpdateProjectTimeEnabledSerializer
+    UpdateProjectTimeEnabledSerializer,
+    GetWeeklyAgendaByIdSerializer,
+    GetWeeklyAgendasSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -95,6 +98,12 @@ from .authorization import (
 from .models import UsersubProject, TaskReportdata, MonthlyTaskData, PersonalInfo
 from django.views.decorators.csrf import csrf_protect
 
+from dotenv import load_dotenv
+import os 
+
+load_dotenv()
+# load_dotenv("/home/100085/100085-dowellmailapi/.env")
+API_KEY = str(os.getenv('API_KEY'))
 # Create your views here.
 
 INVERVIEW_CALL = """
@@ -8679,40 +8688,228 @@ class UpdateReportDB(APIView):
     def post(self, request):
         pass
 
-class GroupLeadAgendaAPIView(APIView):
-    def get(self, request, *args, **kwargs):
-        data=request.data
-        project=data.get("project")
-        res=datacube_operation_retrieve(coll_name=project,operation="fetch",data={})
-        res_json=json.loads(res)
+# class GroupLeadAgendaAPIView(APIView):
+#     def get(self, request, *args, **kwargs):
+#         data=request.data
+#         project=data.get("project")
+#         res=datacube_operation_retrieve(coll_name=project,operation="fetch",data={})
+#         res_json=json.loads(res)
+#         return Response({
+#                     "success":True,
+#                     "data":res_json  
+#                 },status=status.HTTP_200_OK)
+
+#     def post(self, request, *args, **kwargs):
+#         data=request.data
+#         project=data.get("project")
+#         serializer = GroupLeadAgendaSerializer(data=request.data)
+#         if serializer.is_valid():
+#             samanta_payload={
+#                 "title":data.get("agenda_title"),
+#                 "content":data.get("agenda_detail"),
+#             }
+#             url="https://100085.pythonanywhere.com/uxlivinglab/v1/content-scan/df48d655-a42d-4bcf-ae89-9cfa0e67f36c/"
+#             req = requests.post(url, json=samanta_payload)
+#             json_res=req.json()
+#             if json_res['success']:
+#                 res=datacube_operation(coll_name=project,operation="insert",data=data)
+#                 res_json=json.loads(res)
+#                 if res_json['success']:
+#                     return Response({
+#                         "message":"group lead agenda has been successfully evaluated",
+#                         "data":json.loads(res)}, status=status.HTTP_201_CREATED)
+#             else:
+#                 return Response({
+#                     "success":False,
+#                     "error":json_res['message']
+#                 },)
+
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@method_decorator(csrf_exempt, name='dispatch')
+class WeeklyAgenda(APIView):
+    def post(self, request):
+        type_request = request.GET.get('type')
+
+        if type_request == "add_weekly_update":
+            return self.add_weekly_update(request)
+        elif type_request == "weekly_agenda_by_id":
+            return self.weekly_agenda_by_id(request)
+        elif type_request == "all_weekly_agendas":
+            return self.all_weekly_agendas(request)
+        else:
+            return self.handle_error(request)
+        
+
+    def add_weekly_update(self, request):
+        project = request.data.get('project')
+        lead_name = request.data.get('lead_name')
+        agenda_title = request.data.get('agenda_title')
+        agenda_description = request.data.get('agenda_description')
+        week_start = request.data.get('week_start')
+        week_end = request.data.get('week_end')
+        company_id = request.data.get('company_id')
+
+        field = {
+            "project": project,
+            "lead_name": lead_name,
+            "agenda_title": agenda_title,
+            "agenda_description": agenda_description,
+            "week_start": week_start,
+            "week_end": week_end,
+            "company_id": company_id,
+        }
+
+        serializer = GroupLeadAgendaSerializer(data=field)
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Posting wrong data",
+                "error": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+        evaluator_response = json.loads(samanta_content_evaluator(API_KEY, agenda_title, agenda_description))
+        if not evaluator_response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to evaluate agenda",
+                "evaluator_response": {
+                    "success": evaluator_response["success"],
+                    "message": evaluator_response["message"],
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        data = {
+            "lead_name": lead_name,
+            "agenda_title": agenda_title,
+            "agenda_description": agenda_description,
+            "week_start": week_start,
+            "week_end": week_end,
+            "company_id": company_id,
+            "active": True,
+            "status": True,
+            "records": [{"record": "1", "type": "overall"}]
+        }
+       
+        response = json.loads(datacube_data_insertion(API_KEY, "MetaDataTest", project, data))
+        if not response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to create weekly agenda",
+                "database_response": {
+                    "success": response["success"],
+                    "message": response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+       
         return Response({
-                    "success":True,
-                    "data":res_json  
-                },status=status.HTTP_200_OK)
+            "success": True,
+            "message": "Weekly agenda was successfully created",
+            "database_response": {
+                "success": response["success"],
+                "message": response["message"],
+                "inserted_id": response["data"]["inserted_id"],
+            },
+            "evaluator_response": {
+                "success": evaluator_response["success"],
+                "message": evaluator_response["message"],
+                **{key: evaluator_response.get(key, None) for key in ["Confidence level created by AI", "Confidence level created by Human", "AI Check", "Plagiarised", "Creative", "Total characters", "Total sentences"]}
+            },
+            "weekly_agenda_details": data
+        }, status=status.HTTP_201_CREATED)
 
-    def post(self, request, *args, **kwargs):
-        data=request.data
-        project=data.get("project")
-        serializer = GroupLeadAgendaSerializer(data=request.data)
-        if serializer.is_valid():
-            samanta_payload={
-                "title":data.get("agenda_title"),
-                "content":data.get("agenda_detail"),
-            }
-            url="https://100085.pythonanywhere.com/uxlivinglab/v1/content-scan/df48d655-a42d-4bcf-ae89-9cfa0e67f36c/"
-            req = requests.post(url, json=samanta_payload)
-            json_res=req.json()
-            if json_res['success']:
-                res=datacube_operation(coll_name=project,operation="insert",data=data)
-                res_json=json.loads(res)
-                if res_json['success']:
-                    return Response({
-                        "message":"group lead agenda has been successfully evaluated",
-                        "data":json.loads(res)}, status=status.HTTP_201_CREATED)
-            else:
-                return Response({
-                    "success":False,
-                    "error":json_res['message']
-                },)
+    def weekly_agenda_by_id(self,request):
+        document_id = request.GET.get('document_id')
+        limit = request.GET.get('limit')
+        offset = request.GET.get('offset')
+        project = request.data.get('project')
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        field = {
+            "document_id": document_id,
+            "limit": limit,
+            "offset": offset,
+            "project": project
+        }
+
+        serializer = GetWeeklyAgendaByIdSerializer(data=field)
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Posting wrong data",
+                "error": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        data = {
+            "_id": document_id,
+        }
+        response = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest",project,data,limit,offset))
+        
+        if not response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve weekly agenda",
+                "database_response": {
+                    "success": response["success"],
+                    "message": response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Weekly agenda was retrived successfully",
+            "database_response": {
+                "success": response["success"],
+                "message": response["message"]
+            },
+            "response": response["data"]
+        }, status=status.HTTP_200_OK)
+
+    def all_weekly_agendas(self,request):
+        limit = request.GET.get('limit')
+        offset = request.GET.get('offset')
+        project = request.data.get('project')
+
+        field = {
+            "limit": limit,
+            "offset": offset,
+            "project": project
+        }
+
+        serializer = GetWeeklyAgendasSerializer(data=field)
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Posting wrong data",
+                "error": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        data = {}
+        response = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest",project,data,limit,offset))
+        if not response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve weekly agenda",
+                "database_response": {
+                    "success": response["success"],
+                    "message": response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Weekly agenda was retrived successfully",
+            "database_response": {
+                "success": response["success"],
+                "message": response["message"]
+            },
+            "response": response["data"]
+        }, status=status.HTTP_200_OK)
+
+    
+    """HANDLE ERROR"""
+    def handle_error(self, request): 
+        return Response({
+            "success": False,
+            "message": "Invalid request type"
+        }, status=status.HTTP_400_BAD_REQUEST)
