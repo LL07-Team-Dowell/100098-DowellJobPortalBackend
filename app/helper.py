@@ -12,6 +12,7 @@ from rest_framework import status
 from discord.ext import commands
 from discord import Intents
 from .constant import *
+from .models import MonthlyTaskData, PersonalInfo, TaskReportdata
 
 
 def dowellconnection(
@@ -548,6 +549,26 @@ def get_month_details(date):
 
     return (str(datime.year),month_name,months.count(month_name))
 
+def updatereportdb(filter_params,task_params):
+    applicant_id=filter_params["applicant_id"]
+    username=filter_params["username"]
+    month=filter_params["month"]
+    year=filter_params["year"]
+    company_id=filter_params["company_id"]
+
+    default_dict = {i: int(task_params[i]) for i in task_params}
+
+    """taskmodelobj, created = MonthlyTaskData.objects.get_or_create(
+                            applicant_id=applicant_id,
+                            username=username,year=year,month=month,
+                            company_id=company_id,defaults=default_dict  # Set the default value for task_added when creating a new instance
+                        )
+
+    if not created:
+        # If the instance already existed, increment the task_added field
+        taskmodelobj.task_added += 1
+        taskmodelobj.save()"""
+    print("taskmodelobj","==")
 
 def datacube_operation(coll_name,operation,data):
 
@@ -580,3 +601,4 @@ def datacube_operation_retrieve(coll_name,operation,data):
 
     response = requests.post(url, json=data)
     return response.text
+

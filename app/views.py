@@ -13,8 +13,6 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from app.time_functon import get_total_time
 from .constant import *
 from .helper import (
     get_event_id,
@@ -40,8 +38,10 @@ from .helper import (
     validate_id,
     get_positions,
     get_month_details,
+    updatereportdb,
     datacube_operation,
     datacube_operation_retrieve
+
 )
 from .serializers import (
     AccountSerializer,
@@ -2563,17 +2563,19 @@ class task_module(APIView):
                     )
                 )
                 if response["isSuccess"]:
-                    """
+                    ##adding to sqlite--------------------------------
                     year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                    if MonthlyTaskData.objects.filter(applicant_id=data.get("applicant_id"), username=data.get("task_added_by"), year=year, month=monthname, company_id=data.get("company_id")).exists():
-                        taskmodelobj = MonthlyTaskData.objects.get(applicant_id="", username=data.get("task_added_by"), year=year, month=monthname, company_id=data.get("company_id"))
-                        taskmodelobj.task_added+=1
-                        taskmodelobj.save()
-                    else:
-                        taskmodelobj = MonthlyTaskData.objects.create(applicant_id=data.get("applicant_id"), username=data.get("task_added_by"), 
-                                                                      year=year, month=monthname, company_id=data.get("company_id"),
-                                                                      task_added = 1)
-                        print(taskmodelobj,"==")"""
+                    filter_params={
+                        "applicant_id":data.get("applicant_id"),
+                        "username":data.get("task_added_by"), 
+                        "year":year, 
+                        "month":monthname, 
+                        "company_id":data.get("company_id")
+                    }
+                    task_params={"task_added"}
+                    report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                    ##------------------------------------------------
+                    
                     return Response(
                         {
                             "success": True,
@@ -2876,53 +2878,60 @@ class task_module(APIView):
 
     
     def get_all_task_details(self, request):    
-        company_id = request.GET.get('company_id')
-        user_id = request.GET.get('user_id')
-        start_date_str = request.GET.get('start_date')
-        end_date_str = request.GET.get('end_date')
+        data = request.data
+        company_id = data.get("company_id")
+        user_id = data.get('user_id')
+        start_date_str = data.get('start_date')
+        end_date_str = data.get('end_date')
 
-        task_details_query = {
-            "task_created_date": start_date_str,
-            # "end_date_str": end_date_str,
+        if not data.get("company_id"):
+            return Response(
+                {"success": False, "error": "please specify the company id"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not data.get('user_id'):
+            return Response(
+                {"success": False, "error": "please specify the user id"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not data.get('start_date'):
+            return Response(
+                {"success": False, "error": "please specify the start date"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not data.get('end_date'):
+            return Response(
+                {"success": False, "error": "please specify the end date"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        field = {
             "user_id": user_id,
             "company_id": company_id,
         }
-
-        try:
-
-            start_date = date.fromisoformat(start_date_str)
-            end_date = date.fromisoformat(end_date_str)
-
-            response_json = dowellconnection(*task_details_module, "fetch", task_details_query, update_field=None)
-            response = json.loads(response_json)
-
-            if response.get("isSuccess"):
-                filtered_tasks = []
-                for item in response["data"]:
-                    if start_date <= date.fromisoformat(item["task_created_date"]) <= end_date:
-                        filtered_tasks.append(item)
-
-                    #item for item in response["data"]
-                    #if start_date <= date.fromisoformat(item["task_created_date"]) <= end_date
-                
-                return Response({
-                    "success": True,
-                    "message": "Get all task details",
-                    "task_details": filtered_tasks
-                })
-
-        except (json.JSONDecodeError, KeyError, TypeError, ValueError) as e:
-            error_message = f"Error processing task details: {e}"
-            print(error_message)
-            return Response({
-                "success": False,
-                "message": error_message
-            })
-
+        filtered_tasks=[]
+        response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
+        response = json.loads(response_json)
+        for task in response["data"]:
+            if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
+                try:
+                    task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
+                    start_date =datetime.strptime(set_date_format(start_date_str), "%m/%d/%Y %H:%M:%S")
+                    end_date =datetime.strptime(set_date_format(end_date_str), "%m/%d/%Y %H:%M:%S")
+                    
+                    if task_created_date >= start_date and task_created_date <= end_date:
+                        print(task_created_date, start_date, end_date)
+                        filtered_tasks.append(task)
+                        pass
+                except Exception as error:
+                    print(error)
         return Response({
-            "success": False,
-            "message": "Failed to fetch logs or logs not available"
-        })
+                "success": True,
+                "message": "Get all task details",
+                "num_of_tasks":len(filtered_tasks),
+                "task_details": filtered_tasks
+            })           
+
 
     def handle_error(self, request):
         return Response(
@@ -2966,6 +2975,19 @@ class create_team(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
+                ##adding to sqlite--------------------------------
+                year,monthname, monthcount = get_month_details(data.get("date_created"))
+                filter_params={
+                    "applicant_id":data.get("applicant_id"),
+                    "username":data.get("task_added_by"), 
+                    "year":year, 
+                    "month":monthname, 
+                    "company_id":data.get("company_id")
+                }
+                task_params={"teams"}
+                report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ##------------------------------------------------
+                    
                 return Response(
                     {
                         "message": "Team created successfully",
@@ -3194,6 +3216,19 @@ class create_team_task(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
+                ##adding to sqlite--------------------------------
+                year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                filter_params={
+                    "applicant_id":data.get("applicant_id"),
+                    "username":data.get("task_added_by"), 
+                    "year":year, 
+                    "month":monthname, 
+                    "company_id":data.get("company_id")
+                }
+                task_params={"team_tasks"}
+                report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ##------------------------------------------------
+                    
                 return Response(
                     {
                         "message": "Task created successfully",
@@ -4861,6 +4896,19 @@ class Thread_Apis(APIView):
                     )
                     send_mail_thread.start()
                     send_mail_thread.join()
+                ##adding to sqlite--------------------------------
+                year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                filter_params={
+                    "applicant_id":data.get("applicant_id"),
+                    "username":data.get("task_added_by"), 
+                    "year":year, 
+                    "month":monthname, 
+                    "company_id":data.get("company_id")
+                }
+                task_params={"team_tasks_issues_raised"}
+                report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ##------------------------------------------------
+                    
                 return Response(
                     {
                         "message": "Thread created successfully",
@@ -8465,42 +8513,183 @@ class dashboard_services(APIView):
 @method_decorator(csrf_exempt, name="dispatch")       
 class ReportDB(APIView):
     def get_individual_report(self,request):
+        payload = request.data
         year= request.data["year"]
         company_id =request.data["company_id"]
         applicant_id =request.data["applicant_id"]
-        #username =request.data["username"]
-        NotRequired =["applicant_id","id","company_id","username","year","month"]
-        d= MonthlyTaskData.objects.filter(applicant_id=applicant_id, year=year, company_id=company_id)
-        if d.exists():
-            res ={}
-            for taskmodelobj in d:#scan through all the months available---
-                data={field.name: str(getattr(taskmodelobj, field.name)) for field in taskmodelobj._meta.fields if field.name not in NotRequired}
-                res[taskmodelobj.month]=data
-            return Response(res,status=status.HTTP_200_OK)
-        
-        months= calendar.month_name[1:]
-        res={}
-        for m in months:
-            res[m]={
-                "task_added": "0",
-                "tasks_completed": "0",
-                "tasks_uncompleted": "0",
-                "tasks_approved": "0",
-                "percentage_tasks_completed": "0",
-                "tasks_you_approved": "0",
-                "tasks_you_marked_as_complete": "0",
-                "tasks_you_marked_as_incomplete": "0",
-                "teams": "0",
-                "team_tasks": "0",
-                "team_tasks_completed": "0",
-                "team_tasks_uncompleted": "0",
-                "percentage_team_tasks_completed": "0",
-                "team_tasks_approved": "0",
-                "team_tasks_issues_raised": "0",
-                "team_tasks_issues_resolved": "0",
-                "team_tasks_comments_added": "0"
+        if payload:
+            # intializing query parameters-----------------------------------------------------
+            field = {
+                "_id": applicant_id,
+                "company_id": company_id,
             }
-        return Response(res,status=status.HTTP_200_OK)
+            year = year
+            update_field = {}
+            data = {}
+            # ----------------------------------------------------------------------------------
+
+            # ensuring the given year is a valid year------------------------------------------
+            if int(year) > datetime.today().year:
+                return Response(
+                    {
+                        "message": "You cannot get a report on a future date",
+                        "error": f"{year} is bigger than current year {datetime.today().year}",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            # -------------------------------------------------------------------------------
+
+            # add fields values if role has been given--------------------------------------
+            if payload.get("role"):
+                field["username"] = payload.get("applicant_username")
+                field["status"] = "hired"
+            # -------------------------------------------------------------------------------
+
+            # check if the user has any data------------------------------------------------
+            info = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field
+            )
+            print(info,"====")
+            if json.loads(info)["isSuccess"] is True:
+                info_data=json.loads(info)["data"]
+            else:
+                info_data =[]
+            if len(info_data) <= 0:
+                data["personal_info"] = {}
+                username = "None"
+                return Response(
+                    {
+                        "message": f"There is no candidate with such parameters --> "
+                        + " ".join([va for va in field.values()])
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+            data["personal_info"] = json.loads(info)["data"][0]
+            username = json.loads(info)["data"][0]["username"]
+            portfolio_name = json.loads(info)["data"][0]["portfolio_name"]
+
+            # get the task report based on project for the user----------------------------------------
+            data["personal_info"]["task_report"]=[]
+            #-------------------------------------------------------------------------------------------
+
+            # if a position is given, check within any of the contained positions-------------------
+            if payload.get("role"):
+                profiles = SettingUserProfileInfo.objects.all()
+                serializer = SettingUserProfileInfoSerializer(
+                    profiles, many=True)
+                # print(serializer.data,"----")
+                positions = get_positions(serializer.data)
+                teamleads = positions["teamleads"]
+                accountleads = positions["accountleads"]
+                hrs = positions["hrs"]
+                subadmins = positions["subadmins"]
+                groupleads = positions["groupleads"]
+                superadmins = positions["superadmins"]
+                candidates = positions["candidates"]
+                viewers = positions["viewers"]
+                projectlead = positions["projectlead"]
+                leaders = positions["leaders"]
+
+                # checking if the user is a team lead--------------------------------------------
+
+                if (payload.get("role") == "Teamlead" or payload.get("role") == "TeamLead"):
+                    if portfolio_name not in teamleads:
+                        return Response(
+                            {
+                                "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
+                                "error": f"The User ->{payload.get('applicant_username')}-({portfolio_name}) is not a team lead",
+                            },
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                # _-------------------------------------------------------------------------------
+
+            # checking if the user is a team lead-----
+            profiles = SettingUserProfileInfo.objects.all()
+            serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+            # print(serializer.data,"----")
+            teamleads = []
+            accountleads = []
+            hrs = []
+            subadmins = []
+            groupleads = []
+            superadmins = []
+            candidates = []
+            viewers = []
+            projectlead = []
+            freelancers = []
+            for user in serializer.data:
+                for d in user["profile_info"]:
+                    if "profile_title" in d.keys() and "Role" in d.keys():
+                        if d["Role"] == "Proj_Lead":
+                            teamleads.append(d["profile_title"])
+                        if d["Role"] == "Dept_Lead":
+                            accountleads.append(d["profile_title"])
+                        if d["Role"] == "Hr":
+                            hrs.append(d["profile_title"])
+                        if d["Role"] == "sub_admin":
+                            subadmins.append(d["profile_title"])
+                        if d["Role"] == "group_lead":
+                            groupleads.append(d["profile_title"])
+                        if d["Role"] == "super_admin":
+                            superadmins.append(d["profile_title"])
+                        if d["Role"] == "candidate":
+                            candidates.append(d["profile_title"])
+                        if d["Role"] == "Project_Lead":
+                            projectlead.append(d["profile_title"])
+                        if d["Role"] == "Viewer":
+                            viewers.append(d["profile_title"])
+                    elif "profile_title" in d.keys():
+                        freelancers.append(d["profile_title"])
+
+            if (payload.get("applicant_username") and payload.get("role") == "Teamlead" and not portfolio_name in teamleads):
+                return Response(
+                    {
+                        "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
+                        "error": f"The User ->{payload.get('applicant_username')}-({portfolio_name}) is not a team lead",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # -----------------------------------------------------------------------------
+            
+            #username =request.data["username"]
+            NotRequired =["applicant_id","id","company_id","username","year","month"]
+            months= calendar.month_name[1:]
+            res={}
+            for m in months:
+                res[m]={
+                    "task_added": "0",
+                    "tasks_completed": "0",
+                    "tasks_uncompleted": "0",
+                    "tasks_approved": "0",
+                    "percentage_tasks_completed": "0",
+                    "tasks_you_approved": "0",
+                    "tasks_you_marked_as_complete": "0",
+                    "tasks_you_marked_as_incomplete": "0",
+                    "teams": "0",
+                    "team_tasks": "0",
+                    "team_tasks_completed": "0",
+                    "team_tasks_uncompleted": "0",
+                    "percentage_team_tasks_completed": "0",
+                    "team_tasks_approved": "0",
+                    "team_tasks_issues_raised": "0",
+                    "team_tasks_issues_resolved": "0",
+                    "team_tasks_comments_added": "0"
+                }
+            #--get the monthly tasks from the sqlite db
+            d= MonthlyTaskData.objects.filter(applicant_id=applicant_id, year=year, company_id=company_id)
+            if d.exists():
+                for taskmodelobj in reversed(d):#scan through all the months available---
+                    data={field.name: str(getattr(taskmodelobj, field.name)) for field in taskmodelobj._meta.fields if field.name not in NotRequired}
+                    res[taskmodelobj.month]=data
+            data["personal_info"]["data"]=res
+
+            return Response(data,status=status.HTTP_200_OK)
+        
+        return Response(
+            {"success": False, "message": "Invalid parameters"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     def post(self, request):
         if request.data["report_type"] == "Individual":
 
@@ -8508,7 +8697,11 @@ class ReportDB(APIView):
         else:
             error={"success":False,"error":"Specify the type of report"}
             return Response(error,status=status.HTTP_400_BAD_REQUEST)
-
+       
+@method_decorator(csrf_exempt, name="dispatch")       
+class UpdateReportDB(APIView):
+    def post(self, request):
+        pass
 
 class GroupLeadAgendaAPIView(APIView):
     def get(self, request, *args, **kwargs):
