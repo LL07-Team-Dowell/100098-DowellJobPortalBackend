@@ -101,9 +101,13 @@ from django.views.decorators.csrf import csrf_protect
 from dotenv import load_dotenv
 import os 
 
-load_dotenv()
-# load_dotenv("/home/100085/100085-dowellmailapi/.env")
-API_KEY = str(os.getenv('API_KEY'))
+load_dotenv(f"{os.getcwd()}/.env")
+if os.getenv('API_KEY'):
+    API_KEY = str(os.getenv('API_KEY'))
+else:
+    load_dotenv(f"{os.getcwd()}/env")
+    API_KEY = str(os.getenv('API_KEY'))
+
 # Create your views here.
 
 INVERVIEW_CALL = """
