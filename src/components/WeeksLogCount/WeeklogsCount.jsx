@@ -45,12 +45,14 @@ const WeeklogsCount = ({ user, className }) => {
         const mondayOfThisWeek = new Date(new Date(today.setDate(today.getDate() - today.getDay() + 1)).setHours(0, 0, 0, 0));
         const sundayOfNextWeek = new Date(new Date().setDate(mondayOfThisWeek.getDate() + 6));
 
-        getWorklogDetailsWithinTimeframe(
-            formatDateForAPI(mondayOfThisWeek),
-            formatDateForAPI(sundayOfNextWeek),
-            user?.userinfo?.userID,
-            user?.portfolio_info[0]?.org_id,
-        ).then(res => {
+        const data = {
+            start_date: formatDateForAPI(mondayOfThisWeek),
+            end_date: formatDateForAPI(sundayOfNextWeek),
+            user_id: user?.userinfo?.userID,
+            company_id: user?.portfolio_info[0]?.org_id,
+        }
+
+        getWorklogDetailsWithinTimeframe(data).then(res => {
             console.log(res.data);
             setLogData(res.data?.task_details);
             setLoading(false);
@@ -82,8 +84,15 @@ const WeeklogsCount = ({ user, className }) => {
 
         setCustomDataLoading(true);
 
+        const data = {
+            start_date: formatDateForAPI(startDateCopy),
+            end_date: formatDateForAPI(endDateCopy),
+            user_id: user?.userinfo?.userID,
+            company_id: user?.portfolio_info[0]?.org_id,
+        }
+
         try {
-            const res = (await getWorklogDetailsWithinTimeframe(startDateCopy, endDateCopy, user?.userinfo?.userID, user?.portfolio_info[0]?.org_id)).data;
+            const res = (await getWorklogDetailsWithinTimeframe(data)).data;
             
             setCustomData(res?.task_details);
             setCustomDataLoading(false);
@@ -194,7 +203,7 @@ const WeeklogsCount = ({ user, className }) => {
                                     </div>
 
                                 :
-                                    logData && logData?.length < 1 ?
+                                    logData && !customLogData && logData?.length < 1 ?
                                     <div className={styles.load__text}>
                                         <p>You have no logs between {new Date(startDateCopy).toDateString()} and {new Date(endDateCopy).toDateString()}</p>
                                     </div>
@@ -211,14 +220,108 @@ const WeeklogsCount = ({ user, className }) => {
                                             <th>Work log type</th>
                                             <th>Work log approved</th>
                                             <th>sub project</th>
+                                            <th>project</th>
                                         </tr>
                                         <tbody>
                                         {
+                                            customLogData ?
+                                                React.Children.toArray(
+                                                    customLogData
+                                                    ?.reverse()
+                                                    ?.map((task, index) => {
+                                                    return (
+                                                        <tr>
+                                                            <td>{index + 1}.</td>
+                                                            <td
+                                                                className={
+                                                                    task.is_active &&
+                                                                    task.is_active === true
+                                                                    ? ""
+                                                                    : "deleted"
+                                                                }
+                                                            >
+                                                                {new Date(
+                                                                    task.task_created_date
+                                                                ).toDateString()}
+                                                            </td>
+                                                            <td
+                                                                className={
+                                                                    task.is_active &&
+                                                                    task.is_active === true
+                                                                    ? ""
+                                                                    : "deleted"
+                                                                }
+                                                            >
+                                                                {task.start_time}
+                                                            </td>
+                                                            <td
+                                                                className={
+                                                                    task.is_active &&
+                                                                    task.is_active === true
+                                                                    ? ""
+                                                                    : "deleted"
+                                                                }
+                                                            >
+                                                                {task.end_time}
+                                                            </td>
+                                                            <td
+                                                                className={
+                                                                    task.is_active &&
+                                                                    task.is_active === true
+                                                                    ? ""
+                                                                    : "deleted"
+                                                                }
+                                                            >
+                                                                {task.task}
+                                                            </td>
+                                                            <td
+                                                                className={
+                                                                    task.is_active &&
+                                                                    task.is_active === true
+                                                                    ? ""
+                                                                    : "deleted"
+                                                                }
+                                                            >
+                                                                {task.task_type}
+                                                            </td>
+                                                            <td
+                                                                className={
+                                                                    task.is_active &&
+                                                                    task.is_active === true
+                                                                    ? task.approved
+                                                                        ? "approved"
+                                                                        : "not__Approved"
+                                                                    : "deleted"
+                                                                }
+                                                            >
+                                                                {task.approved ? "Yes" : "No"}
+                                                            </td>
+                                                            <td
+                                                                className={
+                                                                    task.is_active &&
+                                                                    task.is_active === true
+                                                                    ? ""
+                                                                    : "deleted"
+                                                                }
+                                                            >
+                                                                {task.subproject}
+                                                            </td>
+                                                            <td
+                                                                className={
+                                                                    task.is_active &&
+                                                                    task.is_active === true
+                                                                    ? ""
+                                                                    : "deleted"
+                                                                }
+                                                            >
+                                                                {task.project}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                }))
+                                            :
                                             React.Children.toArray(
-                                                customLogData ? 
-                                                    customLogData 
-                                                    : 
-                                                    logData
+                                                logData
                                                 ?.reverse()
                                                 ?.map((task, index) => {
                                                 return (
@@ -298,10 +401,20 @@ const WeeklogsCount = ({ user, className }) => {
                                                         >
                                                             {task.subproject}
                                                         </td>
+                                                        <td
+                                                            className={
+                                                                task.is_active &&
+                                                                task.is_active === true
+                                                                ? ""
+                                                                : "deleted"
+                                                            }
+                                                        >
+                                                            {task.project}
+                                                        </td>
                                                     </tr>
                                                 );
-                                            })
-                                        )}
+                                            }))
+                                        }
                                         </tbody>
                                     </table>
                                 </>
