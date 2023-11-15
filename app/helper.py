@@ -570,15 +570,15 @@ def updatereportdb(filter_params,task_params):
         taskmodelobj.save()"""
     print("taskmodelobj","==")
 
-def datacube_operation(coll_name,operation,data):
+def datacube_data_insertion(api_key,database_name,collection_name,data):
 
     url = "https://datacube.uxlivinglab.online/db_api/crud/"
 
     data = {
-        "api_key": "df48d655-a42d-4bcf-ae89-9cfa0e67f36c",
-        "db_name": "teammanagement_db",
-        "coll_name": coll_name,
-        "operation": operation,
+        "api_key": api_key,
+        "db_name": database_name,
+        "coll_name": collection_name,
+        "operation": "insert",
         "data":data
         
     }
@@ -586,19 +586,29 @@ def datacube_operation(coll_name,operation,data):
     response = requests.post(url, json=data)
     return response.text
 
-def datacube_operation_retrieve(coll_name,operation,data):
+def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offset):
 
     url = "https://datacube.uxlivinglab.online/db_api/get_data/"
 
     data = {
-        "api_key": "df48d655-a42d-4bcf-ae89-9cfa0e67f36c",
-        "db_name": "teammanagement_db",
-        "coll_name": coll_name,
-        "operation": operation,
-        "data":data
+        "api_key": api_key,
+        "db_name": database_name,
+        "coll_name": collection_name,
+        "operation": "fetch",
+        "filters":data,
+        "limit": limit,
+        "offset": offset
         
     }
 
     response = requests.post(url, json=data)
     return response.text
 
+def samanta_content_evaluator(api_key,title,description):
+    url=f"https://100085.pythonanywhere.com/uxlivinglab/v1/content-scan/{api_key}/"
+    payload={
+        "title":title,
+        "content":description
+    }
+    response = requests.post(url, json=payload)
+    return response.text

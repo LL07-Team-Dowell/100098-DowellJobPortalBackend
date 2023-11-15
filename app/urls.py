@@ -203,6 +203,6 @@ urlpatterns = [
 
     #group lead agenda
 
-    path('group_lead_agenda/', GroupLeadAgendaAPIView.as_view(), name='group_lead_agenda'),
+    path('weekly_agenda/', WeeklyAgenda.as_view(), name='group_lead_agenda'),
 
 ]
