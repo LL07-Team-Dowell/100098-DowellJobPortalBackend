@@ -7917,7 +7917,7 @@ class ProjectTotalTime(APIView):
                 return Response(
                     {
                         "success":False,
-                        "error": f"A Project time has been set for this project with company_id-{company_id}",
+                        "error": f"A Project time has been set for this project with company_id-{data.get('company_id')}",
                     },
                     status=status.HTTP_409_CONFLICT,
                 )
@@ -8132,26 +8132,30 @@ class UpdateProjectSpentTime(APIView):
         serializer = UpdateProjectSpentTimeSerializer(data=data)
         if serializer.is_valid():
             field = {
-                "_id": data.get("document_id"),
+                "project": data.get("project"),
+                "company_id":data.get("company_id"),
+                'data_type': 'Real_Data'
             }
             
             get_response = json.loads(dowellconnection(*time_detail_module, "fetch",
                                 field, update_field=None))
-            if len(get_response["data"])>0:
+            if get_response["isSuccess"] is True:
                 total_time=get_response["data"][0]["total_time"]
+                print(total_time,"==========",get_response["data"])
 
                 update_field = {
                     "spent_time": data.get("spent_time"),
                     "left_time": total_time-data.get("spent_time")
                 }
                 response = json.loads(
-                    dowellconnection(*time_detail_module, "update", field, update_field)
+                    dowellconnection(*time_detail_module, "update", {"_id":get_response["data"][0]["_id"]}, update_field)
                 )
+                print(response,"===")
                 if response["isSuccess"] == True:
                     return Response(
                         {
                             "success":True,
-                            "message": f"spent_time has been updated successfully"
+                            "message": f"spent_time has been updated successfully for id-{get_response['data'][0]['_id']}"
                         },
                         status=status.HTTP_200_OK,
                     )
@@ -8167,7 +8171,7 @@ class UpdateProjectSpentTime(APIView):
             return Response(
                     {
                         "success":False,
-                        "message": "No Project time with this id exists",
+                        "message": "No Project time with these details exists",
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )

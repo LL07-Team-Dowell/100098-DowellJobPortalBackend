@@ -138,15 +138,33 @@ def get_projects_spent_total_time(company_id, search_date):
     print("total hours used by each projects\n",data)
     return data
 
+def update_spent_time(document_id, spent_time):
+    url="https://100098.pythonanywhere.com/update_project_spent_time/"
+    payload = json.dumps(
+            {
+                "document_id":document_id,
+                "spent_time": spent_time
+            }
+        )
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.request("POST", url, headers=headers, data=payload)
+    res = json.loads(response.text)
+
+    return res 
+
 def main():
 
     #get time spent------------------------------
-    company_id = "6385c0f18eca0fb652c94561"
-    search_date='2023-11-15'
-    get_projects_spent_total_time(company_id, search_date=search_date)
+    company_id = "63a2b3fb2be81449d3a30d3f"#"6385c0f18eca0fb652c94561"
+    search_date=str(date.today())#'2023-11-15'
+    #print(date.today(), search_date)
+    spent_time = get_projects_spent_total_time(company_id, search_date=search_date)
+    for s in spent_time:
+        print(s,spent_time[s])
 
-    #get total project time------------------------------
-    #get_projects_time()
+    #update total project time------------------------------
+     
 if __name__ == "__main__":
     ##call main-----
     main()

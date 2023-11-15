@@ -675,7 +675,8 @@ class UpdateProjectTimeSerializer(serializers.Serializer):
     total_time = serializers.IntegerField(allow_null=False)
 
 class UpdateProjectSpentTimeSerializer(serializers.Serializer):
-    document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     spent_time = serializers.IntegerField(allow_null=False)
        
 class UpdateProjectTimeEnabledSerializer(serializers.Serializer):
