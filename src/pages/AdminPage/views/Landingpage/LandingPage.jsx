@@ -436,8 +436,8 @@ const LandingPage = ({ subAdminView }) => {
       <Select
         className='select__jobs'
         options={[
-          { label: "internal", value: "is_internal" },
-          { label: "not internal", value: "not_internal" },
+          { label: "Internal", value: "is_internal" },
+          { label: "Public", value: "not_internal" },
           { label: "Regional", value: "Regional" },
         ]}
         onChange={(val) => {
