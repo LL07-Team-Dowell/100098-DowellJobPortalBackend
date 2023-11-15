@@ -101,10 +101,12 @@ from django.views.decorators.csrf import csrf_protect
 from dotenv import load_dotenv
 import os 
 
-load_dotenv(f"{os.getcwd()}/.env")
+"""for linux server"""
+load_dotenv("/home/100098/100098-DowellJobPortal/.env")
 if os.getenv('API_KEY'):
     API_KEY = str(os.getenv('API_KEY'))
 else:
+    """for windows local"""
     load_dotenv(f"{os.getcwd()}/env")
     API_KEY = str(os.getenv('API_KEY'))
 
