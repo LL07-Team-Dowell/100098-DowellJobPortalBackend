@@ -101,8 +101,8 @@ from django.views.decorators.csrf import csrf_protect
 from dotenv import load_dotenv
 import os 
 
-load_dotenv()
-# load_dotenv("/home/100085/100085-dowellmailapi/.env")
+# load_dotenv()
+load_dotenv("/home/100098/100098-DowellJobPortal/.env")
 API_KEY = str(os.getenv('API_KEY'))
 # Create your views here.
 
