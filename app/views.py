@@ -8149,10 +8149,11 @@ class UpdateProjectSpentTime(APIView):
             if get_response["isSuccess"] is True:
                 total_time=get_response["data"][0]["total_time"]
                 print(total_time,"==========",get_response["data"])
+                spent_time=get_response["data"][0]["spent_time"]+data.get("spent_time")
 
                 update_field = {
-                    "spent_time": data.get("spent_time"),
-                    "left_time": total_time-data.get("spent_time")
+                    "spent_time": spent_time,
+                    "left_time": total_time-spent_time
                 }
                 response = json.loads(
                     dowellconnection(*time_detail_module, "update", {"_id":get_response["data"][0]["_id"]}, update_field)

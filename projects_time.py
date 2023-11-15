@@ -138,17 +138,18 @@ def get_projects_spent_total_time(company_id, search_date):
     print("total hours used by each projects\n",data)
     return data
 
-def update_spent_time(document_id, spent_time):
+def update_spent_time(project,company_id, spent_time):
     url="https://100098.pythonanywhere.com/update_project_spent_time/"
     payload = json.dumps(
             {
-                "document_id":document_id,
+                "project":project,
+                "company_id":company_id,
                 "spent_time": spent_time
             }
         )
     headers = {"Content-Type": "application/json"}
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("PATCH", url, headers=headers, data=payload)
     res = json.loads(response.text)
 
     return res 
@@ -161,7 +162,8 @@ def main():
     #print(date.today(), search_date)
     spent_time = get_projects_spent_total_time(company_id, search_date=search_date)
     for s in spent_time:
-        print(s,spent_time[s])
+        response = update_spent_time(s,company_id, spent_time[s])
+        print(s,spent_time[s], response)
 
     #update total project time------------------------------
      
