@@ -136,7 +136,12 @@
         gap: 1rem;
     }
 
+    .info__Item span {
+        margin-right: auto;
+    }
+
     .modal__Container {
         max-height: 70%;
+        max-width: 94%;
     }
 }

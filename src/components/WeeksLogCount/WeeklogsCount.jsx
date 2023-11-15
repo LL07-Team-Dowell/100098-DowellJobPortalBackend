@@ -54,7 +54,14 @@ const WeeklogsCount = ({ user, className }) => {
 
         getWorklogDetailsWithinTimeframe(data).then(res => {
             console.log(res.data);
-            setLogData(res.data?.task_details);
+            setLogData(
+                res.data?.task_details
+                ?.filter(task => 
+                    task.is_active &&
+                    task.is_active === true
+                )
+                ?.reverse()
+            );
             setLoading(false);
             
             setStartDate(mondayOfThisWeek);
@@ -94,7 +101,14 @@ const WeeklogsCount = ({ user, className }) => {
         try {
             const res = (await getWorklogDetailsWithinTimeframe(data)).data;
             
-            setCustomData(res?.task_details);
+            setCustomData(
+                res?.task_details
+                ?.filter(task => 
+                    task.is_active &&
+                    task.is_active === true
+                )
+                ?.reverse()
+            );
             setCustomDataLoading(false);
 
             setShowSecondPage(false);
@@ -151,6 +165,9 @@ const WeeklogsCount = ({ user, className }) => {
                             {
                                 showSecondPage ? 
                                     'Get your log details between date range' 
+                                :
+                                customLogData ?
+                                    `You added ${customLogData?.length} logs between ${new Date(startDateCopy).toDateString()} and ${new Date(endDateCopy).toDateString()}`
                                 :
                                 `Log details from ${new Date(startDateCopy).toDateString()} to ${new Date(endDateCopy).toDateString()}`
                             }

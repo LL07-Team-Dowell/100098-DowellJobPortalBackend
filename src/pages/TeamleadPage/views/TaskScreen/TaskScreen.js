@@ -77,9 +77,9 @@ const TaskScreen = ({
 
   useEffect(() => {
     setLoading(true);
-    if (!project) setproject(assignedProject[0]);
+    // if (!project) setproject(assignedProject[0]);
     setValue1(new Date());
-    setDatesToStyle([[]]);
+    setDatesToStyle([]);
     setTasksForTheDay(null);
     settaskdetail2([]);
 
@@ -169,9 +169,10 @@ const TaskScreen = ({
   useEffect(() => {
     if (!project || tasksForProjectLoading) {
       setTasksForTheDay(null);
-      setDatesToStyle([[]]);
+      setDatesToStyle([]);
       setSubprojectSelected('');
       settaskdetail2([]);
+      setproject(assignedProject[0]);
       return;
     }
 
