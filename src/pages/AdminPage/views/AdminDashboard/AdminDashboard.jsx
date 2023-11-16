@@ -25,6 +25,7 @@ import ApplicationCardItem from "./components/ApplicationCardItem/ApplicationCar
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 import CompanyProgressOverview from "./components/CompanyProgressOverview/CompanyProgressOverview";
 import skeletonStyles from "./styles/skeleton.module.css";
+import noLogIllus from "../../../../assets/images/4380.jpg";
 
 
 ChartJS.register(
@@ -74,13 +75,15 @@ const AdminDashboard = ({ subAdminView }) => {
         setSubProjectsLoading,
         totalWorklogCountInOrg,
         setTotalWorklogCountInOrg,
+        dashboardLogDataForToday,
+        setDashboardLogDataForToday,
+        dashboardLogDataForMonth,
+        setDashboardLogDataForMonth,
     } = useJobContext();
     const { currentUser } = useCurrentUserContext();
     const navigate = useNavigate();
     const [ greeting, setGreeting ] = useState('');
     const [ logOverviewDataFilter, setLogOverviewDataFilter ] = useState('today');
-    const [ logOverviewData, setLogOverviewData ] = useState(null)
-    const [ logOverviewData2, setLogOverviewData2 ] = useState(null)
 
     useLoadAdminDashboardData(
         dashboardDataLoaded,
@@ -95,35 +98,12 @@ const AdminDashboard = ({ subAdminView }) => {
         setApplicationsLoaded,
         setJobs,
         setTotalWorklogCountInOrg,
-        setDashboardDataLoaded
+        setDashboardLogDataForToday,
+        setDashboardLogDataForMonth,
+        setDashboardDataLoaded,
     )
 
     useEffect(() => {
-        setLogOverviewData({
-            labels: ['Project 1', 'Project 2', 'Project 3', 'Project 4', 'Project 5', 'Project 6', 'Project 7', 'Project 8', 'Project 9', 'Project 10'],
-            datasets: [
-                {
-                    label: 'Logs Count',
-                    data: [129, 50, 150, 300, 39, 45, 200, 63, 80, 33, 290],
-                    backgroundColor: '#005734',
-                    maxBarThickness: 40,
-                    borderRadius: 8,
-                },
-            ]
-        })
-
-        setLogOverviewData2({
-            labels: ['Project 1', 'Project 2', 'Project 3', 'Project 4', 'Project 5', 'Project 6', 'Project 7', 'Project 8', 'Project 9', 'Project 10'],
-            datasets: [
-                {
-                    label: 'Logs Count',
-                    data: [19, 10, 10, 50, 19, 15, 20, 23, 20, 3, 90],
-                    backgroundColor: '#005734',
-                    maxBarThickness: 40,
-                    borderRadius: 8,
-                },
-            ]
-        })
 
         // set greeting
         const time = new Date().getHours();
@@ -205,16 +185,34 @@ const AdminDashboard = ({ subAdminView }) => {
                         <option value={'this month'}>This Month</option>
                     </select>
                     {
-                        (!logOverviewData || !logOverviewData2) ? <></> 
+                        !dashboardDataLoaded ? <div className={`${styles.project_Overview_Loading} ${skeletonStyles.skeleton}`}></div>
+                        :
+                        !(
+                            logOverviewDataFilter === 'today' ||
+                            logOverviewDataFilter === 'this month'
+                        ) ? 
+                            <></>
+                        :
+                            logOverviewDataFilter === 'today' && dashboardLogDataForToday?.labels?.length < 1 ?
+                        <>
+                            <img src={noLogIllus} className={styles.no__Log__Img} alt="" />
+                            <p className={styles.no__Log__Content}>No logs have been added {logOverviewDataFilter} yet.</p>
+                        </> 
+                        :
+                            logOverviewDataFilter === 'this month' && dashboardLogDataForMonth?.labels?.length < 1 ?
+                        <>
+                            <img src={noLogIllus} className={styles.no__Log__Img} alt="" />
+                            <p className={styles.no__Log__Content}>No logs have been added {logOverviewDataFilter} yet.</p>
+                        </> 
                         :
                         <Bar 
                             options={generateOptionObj(`Log Overview for ${logOverviewDataFilter}`)} 
                             data={
                                 logOverviewDataFilter === 'today' ?
-                                    logOverviewData2
+                                    dashboardLogDataForToday
                                 :
                                 logOverviewDataFilter === 'this month' ?
-                                    logOverviewData
+                                    dashboardLogDataForMonth
                                 :
                                 {
                                     datasets: [],

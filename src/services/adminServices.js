@@ -162,3 +162,7 @@ export const getTotalWorklogCountInOrganization = async (companyId) => {
 export const updateCandidateApplicationDetail = async (updateType, applicationId, dataToPost) => {
   return await currentBackendAxiosInstance.post(`/dashboard_services/?type=${updateType}&candidate_id=${applicationId}`, dataToPost)
 }
+
+export const getWorklogDetailInOrganization = async (type, companyId) => {
+  return await currentBackendAxiosInstance.get(`/dashboard_services/?type=${type}&company_id=${companyId}`)
+}

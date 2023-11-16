@@ -161,6 +161,22 @@
     font-size: 0.75rem;
 }
 
+.project_Overview_Loading {
+    width: 100%;
+    height: 10rem;
+    border-radius: 10px;
+}
+
+.no__Log__Content {
+    margin-bottom: 2rem;
+}
+
+.no__Log__Img {
+    max-width: 100%;
+    width: 30rem;
+    margin-bottom: 1rem;
+}
+
 @media screen and (max-width: 767px) {
     .admin__Dash {
         width: 90%;

@@ -100,7 +100,7 @@ import LogRequestLanding from "./pages/TeamleadPage/views/WorkLogRequest/LogRequ
 import WorkLogRequestTeamLead from "./pages/TeamleadPage/views/WorkLogRequest/WorklogRequestTeamLead";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => {};
 
   const {
     currentUser,
@@ -1392,8 +1392,8 @@ function App() {
           }
         />
 
-        <Route 
-          path="/log-requests"
+        <Route
+          path='/log-requests'
           element={
             <CandidateContextProvider>
               <ValuesProvider>
@@ -1402,7 +1402,7 @@ function App() {
             </CandidateContextProvider>
           }
         />
-        
+
         <Route
           path='/create-task/create-new-team/'
           element={

@@ -1,5 +1,5 @@
 .candidate__After__Selection__Screen .candidate-task-screen-container .project-details-container {
-    margin-top: 3%;
+    margin-top: 2rem;
 }
 
 .new__task__container {
@@ -108,6 +108,11 @@
         font-size: 0.8rem;
         font-weight: 500;
     } */
+    .candidate-task-screen-container {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {

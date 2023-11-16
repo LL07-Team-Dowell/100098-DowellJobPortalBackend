@@ -150,6 +150,11 @@
     .candidate-task-screen-container .all__Tasks__Container .task__Details__Item .month__Title {
         margin: 0 0 2.5%;
     }
+
+    .candidate__Week__Log__Detail {
+        width: 82%;
+        margin: 1.5rem auto 2rem;
+    }
 }
 
 @media (min-width: 992px) {
@@ -237,6 +242,11 @@
     .candidate-task-screen-container .subproject__Div__Wrapper .subproject__Div .subproject__Custom__Select .task__Select__Subproject .task__Search__Sub:focus-within {
         border-color: #fff;
     }
+
+    .candidate__Week__Log__Detail {
+        width: 82%;
+        margin: 1.5rem auto 2rem;
+    }
 }
 
 
@@ -246,7 +256,7 @@
     }
 
     .candidate-task-screen-container .project-details-container {
-        margin-top: 3%;
+        margin-top: 2rem;
         width: 100%;
         margin: 2rem auto;
         /* padding-bottom: 2rem; */
@@ -271,6 +281,13 @@
 
     .candidate-task-screen-container .all__Tasks__Container .tasks__Wrapper p {
         margin-bottom: 0;
+    }
+
+    .candidate__Week__Log__Detail {
+        width: 90%;
+        margin-bottom: 2rem;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
