@@ -2592,8 +2592,8 @@ class task_module(APIView):
                     #    "month":monthname, 
                     #    "company_id":data.get("company_id")
                     #}
-                    task_params={"task_added"}
-                    report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                    #task_params={"task_added"}
+                    #report =updatereportdb(filter_params=filter_params,task_params=task_params)
                     ##------------------------------------------------
                     
                     return Response(
@@ -3004,8 +3004,8 @@ class create_team(APIView):
                 #    "month":monthname, 
                 #    "company_id":data.get("company_id")
                 #}
-                task_params={"teams"}
-                report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                #task_params={"teams"}
+                #report =updatereportdb(filter_params=filter_params,task_params=task_params)
                 ##------------------------------------------------
                     
                 return Response(
