@@ -52,3 +52,9 @@
     justify-content: center;
     cursor: pointer;
 }
+
+@media screen and (max-width: 380px){
+    .auth__Container{
+        width: 90%;
+    }
+}
