@@ -65,12 +65,16 @@ const WorkLogRequest = ({ cardData }) => {
 
         setProjectsForLead(projects);
           
-        const sortedRequest = request.filter(
-          (applicant) =>
-            applicant?.company_id === currentUser.portfolio_info[0].org_id
-        ).filter(applicant => 
-          projects.includes(applicant.project)  
-        );
+        const sortedRequest = request
+          .filter(
+            (applicant) =>
+              applicant?.company_id === currentUser.portfolio_info[0].org_id
+          )
+          .filter((applicant) => projects.includes(applicant.project))
+          .filter(
+            (applicant) =>
+              applicant?.username !== currentUser.userinfo.username
+          );
         setData(sortedRequest);
 
         const approveRequest = sortedRequest?.filter(

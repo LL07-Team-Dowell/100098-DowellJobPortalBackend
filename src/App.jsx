@@ -96,6 +96,8 @@ import CandidateRemovedScreen from "./pages/CandidatePage/views/CandidateRemoved
 import AdminDashboard from "./pages/AdminPage/views/AdminDashboard/AdminDashboard";
 import AllApplicationsScreen from "./pages/AdminPage/views/AdminDashboard/views/AllApplicationsScreen/AllApplicationsScreen";
 import WorkLogRequestGrouplead from "./pages/GroupLeadPage/views/WorklogRequests/WorkLogRequest";
+import LogRequestLanding from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestLanding";
+import WorkLogRequestTeamLead from "./pages/TeamleadPage/views/WorkLogRequest/WorklogRequestTeamLead";
 
 function App() {
   console.log = () => {};
@@ -1158,12 +1160,31 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
+                <LogRequestLanding />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path='/log-requests'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
                 <LogRequest />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
         />
-
+        <Route
+          path='/lead-log-requests'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <WorkLogRequestTeamLead />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
         <Route
           path='/create-task'
           element={

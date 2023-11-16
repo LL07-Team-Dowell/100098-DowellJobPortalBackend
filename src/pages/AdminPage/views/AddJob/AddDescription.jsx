@@ -6,6 +6,7 @@ import { MdOutlineAddCircle } from "react-icons/md";
 import { MdCancel } from "react-icons/md";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import DropdownButton from "../../../TeamleadPage/components/DropdownButton/Dropdown";
+import { continentsData } from "../../../CandidatePage/utils/continentsData";
 
 const AddJobDescription = ({
   newJob,
@@ -36,6 +37,12 @@ const AddJobDescription = ({
   isLoading,
   handleSubmit,
   activeLinkTab,
+  handleSixthOptionChange,
+  sixthOption,
+  setSixthOption,
+  continents,
+  countryState,
+  setCountryState,
 }) => {
   return (
     <>
@@ -1223,7 +1230,7 @@ const AddJobDescription = ({
           </div>
         </div>
       )}
-      {/*{activeLinkTab === "Regional Associate" && (
+      {activeLinkTab === "Regional Associate" && (
         <div className="job_details_bg">
           <div>
             <h3 className="title">Job Details</h3>
@@ -1238,6 +1245,33 @@ const AddJobDescription = ({
                 required
                 ref={jobTitleRef}
               />
+
+              <label htmlFor="continent">Continent</label>
+              <select
+                className="module"
+                value={sixthOption}
+                onChange={({ target }) => setSixthOption(target.value)}
+              >
+                <option value="">Select Continent</option>
+                {React.Children.toArray(
+                  continents.map((continent) => {
+                    return (
+                      <option value={continent.name}>{continent.name}</option>
+                    );
+                  })
+                )}
+              </select>
+              <label htmlFor="country">Country</label>
+              <select
+                className="module"
+                value={countryState}
+                onChange={({ target }) => setCountryState(target.value)}
+              >
+                <option value="">Select Country</option>
+                <option value={countryState}>
+                  continentsData[`${countryState}`]
+                </option>
+              </select>
 
               <label htmlFor="skills">Skills</label>
               <input
@@ -1259,7 +1293,22 @@ const AddJobDescription = ({
                 required
                 ref={qualificationRef}
               />
-
+              <h3>Job Category</h3>
+              <div className="job_category">
+                <label htmlFor="regional associate" className="radio">
+                  <input
+                    className="radio_input"
+                    type={"radio"}
+                    id={"regional associate"}
+                    name="options"
+                    value={"Regional Associates"}
+                    checked={selectedOption === "Regional Associates"}
+                    onChange={handleOptionChange}
+                  />
+                  <div className="radio__radio"></div>
+                  <p>Regional Associates</p>
+                </label>
+              </div>
               <div className="state_of_job">
                 <label htmlFor="is_active">State of Job</label>
                 <div className="is_active">
@@ -1358,12 +1407,9 @@ const AddJobDescription = ({
             </div>
           </div>
         </div>
-      )}*/}
+      )}
     </>
   );
 };
 
 export default AddJobDescription;
-
-
-
