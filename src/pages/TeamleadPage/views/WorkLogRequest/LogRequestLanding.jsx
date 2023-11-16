@@ -38,7 +38,7 @@ const LogRequestLanding = () => {
                 <AiOutlineTeam className="icon" style={{ fontSize: "2rem" }} />
               </div>
               <h4>Check TeamLead Requests</h4>
-              <p style={{ fontSize: "0.8rem" }}>Check your log requests</p>
+              <p style={{ fontSize: "0.8rem" }}>Check log requests made</p>
             </div>
           </div>
           <div
