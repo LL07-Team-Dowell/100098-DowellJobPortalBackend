@@ -158,12 +158,15 @@ def main():
 
     #get time spent------------------------------
     company_id = "63a2b3fb2be81449d3a30d3f"#"6385c0f18eca0fb652c94561"
-    search_date='2023-11-15'#str(date.today())#'2023-11-15'
-    #print(date.today(), search_date)
+    
+    today = datetime.today().date()
+    yesterday = today - timedelta(days=1)
+
+    search_date=yesterday#'2023-11-15'
     spent_time = get_projects_spent_total_time(company_id, search_date=search_date)
-    for s in spent_time:
+    """for s in spent_time:
         response = update_spent_time(project=s,company_id=company_id, spent_time=spent_time[s])
-        print(s,spent_time[s], response)
+        print(s,spent_time[s], response)"""
 
     #update total project time------------------------------
      

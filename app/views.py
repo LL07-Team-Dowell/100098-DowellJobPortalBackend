@@ -2584,14 +2584,14 @@ class task_module(APIView):
                 )
                 if response["isSuccess"]:
                     ##adding to sqlite--------------------------------
-                    year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                    filter_params={
-                        "applicant_id":data.get("applicant_id"),
-                        "username":data.get("task_added_by"), 
-                        "year":year, 
-                        "month":monthname, 
-                        "company_id":data.get("company_id")
-                    }
+                    #year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                    #filter_params={
+                    #    "applicant_id":data.get("applicant_id"),
+                    #    "username":data.get("task_added_by"), 
+                    #    "year":year, 
+                    #    "month":monthname, 
+                    #    "company_id":data.get("company_id")
+                    #}
                     task_params={"task_added"}
                     report =updatereportdb(filter_params=filter_params,task_params=task_params)
                     ##------------------------------------------------
@@ -2996,14 +2996,14 @@ class create_team(APIView):
             # print(response)
             if json.loads(response)["isSuccess"] == True:
                 ##adding to sqlite--------------------------------
-                year,monthname, monthcount = get_month_details(data.get("date_created"))
-                filter_params={
-                    "applicant_id":data.get("applicant_id"),
-                    "username":data.get("task_added_by"), 
-                    "year":year, 
-                    "month":monthname, 
-                    "company_id":data.get("company_id")
-                }
+                #year,monthname, monthcount = get_month_details(data.get("date_created"))
+                #filter_params={
+                #    "applicant_id":data.get("applicant_id"),
+                #    "username":data.get("task_added_by"), 
+                #    "year":year, 
+                #    "month":monthname, 
+                #    "company_id":data.get("company_id")
+                #}
                 task_params={"teams"}
                 report =updatereportdb(filter_params=filter_params,task_params=task_params)
                 ##------------------------------------------------
@@ -3237,16 +3237,16 @@ class create_team_task(APIView):
             # print(response)
             if json.loads(response)["isSuccess"] == True:
                 ##adding to sqlite--------------------------------
-                year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                filter_params={
-                    "applicant_id":data.get("applicant_id"),
-                    "username":data.get("task_added_by"), 
-                    "year":year, 
-                    "month":monthname, 
-                    "company_id":data.get("company_id")
-                }
-                task_params={"team_tasks"}
-                report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                #year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                #filter_params={
+                #    "applicant_id":data.get("applicant_id"),
+                #    "username":data.get("task_added_by"), 
+                #    "year":year, 
+                #    "month":monthname, 
+                #    "company_id":data.get("company_id")
+                #}
+                #task_params={"team_tasks"}
+                #report =updatereportdb(filter_params=filter_params,task_params=task_params)
                 ##------------------------------------------------
                     
                 return Response(
@@ -4893,9 +4893,11 @@ class Thread_Apis(APIView):
                 for user in json.loads(info)["data"]:
                     if "applicant_email" in user.keys():
                         users[user["username"]] = user["applicant_email"]
-                for member in json.loads(get_team)["data"][0]["members"]:
-                    if member in users.keys():
-                        send_to_emails[member] = users[member]
+                
+                if len(json.loads(get_team)["data"])>0:
+                    for member in json.loads(get_team)["data"][0]["members"]:
+                        if member in users.keys():
+                            send_to_emails[member] = users[member]
 
                 # print(send_to_emails)
                 def send_mail(*args):
@@ -4917,16 +4919,16 @@ class Thread_Apis(APIView):
                     send_mail_thread.start()
                     send_mail_thread.join()
                 ##adding to sqlite--------------------------------
-                year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                filter_params={
-                    "applicant_id":data.get("applicant_id"),
-                    "username":data.get("task_added_by"), 
-                    "year":year, 
-                    "month":monthname, 
-                    "company_id":data.get("company_id")
-                }
-                task_params={"team_tasks_issues_raised"}
-                report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                #year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                #filter_params={
+                #    "applicant_id":data.get("applicant_id"),
+                #    "username":data.get("task_added_by"), 
+                #    "year":year, 
+                #    "month":monthname, 
+                #    "company_id":data.get("company_id")
+                #}
+                #task_params={"team_tasks_issues_raised"}
+                #report =updatereportdb(filter_params=filter_params,task_params=task_params)
                 ##------------------------------------------------
                     
                 return Response(
