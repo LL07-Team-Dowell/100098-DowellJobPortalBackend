@@ -644,6 +644,7 @@ class GroupLeadAgendaSerializer(serializers.Serializer):
     agenda_description=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
     week_start=serializers.DateField(allow_null=False)
     week_end=serializers.DateField(allow_null=False)
+    estimated_hours=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
 
 class GetWeeklyAgendaByIdSerializer(serializers.Serializer):
     document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
