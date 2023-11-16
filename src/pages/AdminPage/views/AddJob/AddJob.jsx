@@ -17,6 +17,7 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 import DropdownButton from "../../../TeamleadPage/components/DropdownButton/Dropdown";
 import { useEffect } from "react";
 import AddJobDescription from "./AddDescription";
+import axios from "axios";
 
 const AddJob = ({ subAdminView }) => {
   const { currentUser } = useCurrentUserContext();
@@ -49,6 +50,8 @@ const AddJob = ({ subAdminView }) => {
     other_info: [],
     company_id: currentUser.portfolio_info[0].org_id,
     module: "",
+    country: "",
+    city: "",
     data_type: currentUser.portfolio_info[0].data_type,
     created_by: currentUser.userinfo.username,
     // applicant: currentUser.userinfo.username,
@@ -63,11 +66,14 @@ const AddJob = ({ subAdminView }) => {
   const [thirdOption, setThirdOption] = useState("");
   const [fourthOption, setFourthOption] = useState("");
   const [fifthOption, setFifthOption] = useState("");
+  const [sixthOption, setSixthOption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currency, setCurrency] = useState("Select Currency");
   const [isValidCurrency, setIsValidCurrency] = useState(false);
   const currencyList = ["USD", "NGN", "GBP", "INR"];
   const [activeLinkTab, setActiveLinkTab] = useState("Public");
+  const [continents, setContinents] = useState([]);
+  const [countryState, setCountryState] = useState([]);
 
   const jobTitleRef = useRef(null);
   const skillsRef = useRef(null);
@@ -170,6 +176,23 @@ const AddJob = ({ subAdminView }) => {
       return copyOfPrevValue;
     });
   };
+
+  useEffect(() => {
+    setIsLoading(true);
+    axios
+      .get(
+        "https://100074.pythonanywhere.com/continents/johnDoe123/haikalsb1234/100074/?format=json"
+      )
+      .then((response) => {
+        // console.log(response.data);
+        setContinents(response.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.log(error);
+      });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -405,7 +428,7 @@ const AddJob = ({ subAdminView }) => {
               <Link to={"/add-job?tab=Internal"}>Internal</Link>
               <span></span>
             </div>
-            {/*<div
+            <div
               className={`landing_Nav_Item ${
                 currentTab === "Regional Associate" ? "active" : ""
               }`}
@@ -414,7 +437,7 @@ const AddJob = ({ subAdminView }) => {
                 Regional Associate
               </Link>
               <span></span>
-            </div>*/}
+            </div>
           </div>
         </div>
         <AddJobDescription
@@ -446,6 +469,11 @@ const AddJob = ({ subAdminView }) => {
           handleAddTerms={handleAddTerms}
           isLoading={isLoading}
           handleSubmit={handleSubmit}
+          setSixthOption={setSixthOption}
+          sixthOption={sixthOption}
+          continents={continents}
+          countryState={countryState}
+          setCountryState={setCountryState}
         />
       </div>
     </StaffJobLandingLayout>
