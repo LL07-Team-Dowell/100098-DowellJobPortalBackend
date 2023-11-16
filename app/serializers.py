@@ -638,17 +638,47 @@ class DashBoardJobCategorySerializer(serializers.Serializer):
 
 class GroupLeadAgendaSerializer(serializers.Serializer):
     project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
-    grouplead_username = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
-    grouplead_portfolio_name = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    lead_name = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     agenda_title=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
-    agenda_detail=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
+    agenda_description=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
     week_start=serializers.DateField(allow_null=False)
     week_end=serializers.DateField(allow_null=False)
-    created_on=serializers.DateTimeField()
-    updated_on=serializers.DateTimeField()
+
+class GetWeeklyAgendaByIdSerializer(serializers.Serializer):
+    document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    limit = serializers.IntegerField(allow_null=True)
+    offset = serializers.IntegerField(allow_null=True)
+    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+
+class GetWeeklyAgendasSerializer(serializers.Serializer):
+    limit = serializers.IntegerField(allow_null=True)
+    offset = serializers.IntegerField(allow_null=True)
+    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
 
 class TaskDetailsInputSerializer(serializers.Serializer):
     task_created_date = serializers.DateField()
     end_date = serializers.DateField()
     user_id = serializers.IntegerField()
     company_id = serializers.IntegerField()
+
+class AddProjectTimeSerializer(serializers.Serializer):
+    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    total_time = serializers.FloatField(allow_null=False)
+    lead_name = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    data_type = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    editing_enabled = serializers.BooleanField(allow_null=False)
+    
+class UpdateProjectTimeSerializer(serializers.Serializer):
+    document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    total_time = serializers.FloatField(allow_null=False)
+
+class UpdateProjectSpentTimeSerializer(serializers.Serializer):
+    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    spent_time = serializers.FloatField(allow_null=False)
+       
+class UpdateProjectTimeEnabledSerializer(serializers.Serializer):
+    document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    editing_enabled = serializers.BooleanField(allow_null=False)

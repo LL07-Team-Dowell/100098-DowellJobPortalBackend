@@ -178,17 +178,14 @@ urlpatterns = [
     # secure end point-----------------
     path("secureendpoint/", SecureEndPoint.as_view()),
 
-
     # time endpoint
-    path("get_total_task_time/", GetTotalTimeOfProject.as_view()),
-    path("get_all_project_task_time/", GetAllProjectAndTime.as_view()),
-    path("add_total_time/", AddTotalTime.as_view()),
-    path("get_total_time/<str:company_id>/", AddTotalTime.as_view()),
-    path(
-        "get_individual_total_time/<str:document_id>/",
-        GetbyDocumentIDTotalTime.as_view(),
-    ),
-    path("update_time/<str:company_id>/", AddTotalTime.as_view()),
+    path("add_project_total_time/", ProjectTotalTime.as_view()),
+    path("get_project_time/<str:document_id>/", ProjectTotalTime.as_view()),
+    path("get_all_projects_time/<str:company_id>/", AllProjectTotalTime.as_view()),
+    path("update_project_time/", ProjectTotalTime.as_view()),
+    path("update_project_time_enabled/", EnabledProjectTotalTime.as_view()),
+    path("update_project_spent_time/", UpdateProjectSpentTime.as_view()),
+    path("delete_project_time/<str:document_id>/", ProjectTotalTime.as_view()),
 
 
 
@@ -206,6 +203,6 @@ urlpatterns = [
 
     #group lead agenda
 
-    path('group_lead_agenda/', GroupLeadAgendaAPIView.as_view(), name='group_lead_agenda'),
+    path('weekly_agenda/', WeeklyAgenda.as_view(), name='group_lead_agenda'),
 
 ]

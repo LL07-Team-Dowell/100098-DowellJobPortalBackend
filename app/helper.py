@@ -12,6 +12,7 @@ from rest_framework import status
 from discord.ext import commands
 from discord import Intents
 from .constant import *
+from .models import MonthlyTaskData, PersonalInfo, TaskReportdata
 
 
 def dowellconnection(
@@ -548,16 +549,36 @@ def get_month_details(date):
 
     return (str(datime.year),month_name,months.count(month_name))
 
+def updatereportdb(filter_params,task_params):
+    """applicant_id=filter_params["applicant_id"]
+    username=filter_params["username"]
+    month=filter_params["month"]
+    year=filter_params["year"]
+    company_id=filter_params["company_id"]
 
-def datacube_operation(coll_name,operation,data):
+    default_dict = {i: int(task_params[i]) for i in task_params}
+
+    taskmodelobj, created = MonthlyTaskData.objects.get_or_create(
+                            applicant_id=applicant_id,
+                            username=username,year=year,month=month,
+                            company_id=company_id,defaults=default_dict  # Set the default value for task_added when creating a new instance
+                        )
+
+    if not created:
+        # If the instance already existed, increment the task_added field
+        taskmodelobj.task_added += 1
+        taskmodelobj.save()"""
+    print("taskmodelobj","==")
+
+def datacube_data_insertion(api_key,database_name,collection_name,data):
 
     url = "https://datacube.uxlivinglab.online/db_api/crud/"
 
     data = {
-        "api_key": "df48d655-a42d-4bcf-ae89-9cfa0e67f36c",
-        "db_name": "teammanagement_db",
-        "coll_name": coll_name,
-        "operation": operation,
+        "api_key": api_key,
+        "db_name": database_name,
+        "coll_name": collection_name,
+        "operation": "insert",
         "data":data
         
     }
@@ -565,18 +586,29 @@ def datacube_operation(coll_name,operation,data):
     response = requests.post(url, json=data)
     return response.text
 
-def datacube_operation_retrieve(coll_name,operation,data):
+def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offset):
 
     url = "https://datacube.uxlivinglab.online/db_api/get_data/"
 
     data = {
-        "api_key": "df48d655-a42d-4bcf-ae89-9cfa0e67f36c",
-        "db_name": "teammanagement_db",
-        "coll_name": coll_name,
-        "operation": operation,
-        "data":data
+        "api_key": api_key,
+        "db_name": database_name,
+        "coll_name": collection_name,
+        "operation": "fetch",
+        "filters":data,
+        "limit": limit,
+        "offset": offset
         
     }
 
     response = requests.post(url, json=data)
+    return response.text
+
+def samanta_content_evaluator(api_key,title,description):
+    url=f"https://100085.pythonanywhere.com/uxlivinglab/v1/content-scan/{api_key}/"
+    payload={
+        "title":title,
+        "content":description
+    }
+    response = requests.post(url, json=payload)
     return response.text
