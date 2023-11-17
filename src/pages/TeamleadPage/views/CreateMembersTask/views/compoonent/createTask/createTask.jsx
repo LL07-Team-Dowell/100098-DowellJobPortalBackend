@@ -26,25 +26,25 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
   const [query, setquery] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const handleFileChange = async (e) => {
-    const selectedFile = e.target.files[0];
-    setLoadingImage(true);
-    const response = await fetch(
-      "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
-      {
-        method: "POST",
-        body: e.target.files[0],
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      const imageUrl = data.file_url;
-      setSelectedFile(imageUrl);
-      setLoadingImage(false);
-    } else {
-      toast.error("Error uploading image");
-      setSelectedFile(selectedFile);
-      setLoadingImage(false);
-    }
+    setSelectedFile(e.target.files[0]);
+    // setLoadingImage(true);
+    // const response = await fetch(
+    //   "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
+    //   {
+    //     method: "POST",
+    //     body: e.target.files[0],
+    //   }
+    // );
+    // if (response.ok) {
+    //   const data = await response.json();
+    //   const imageUrl = data.file_url;
+    //   setSelectedFile(imageUrl);
+    //   setLoadingImage(false);
+    // } else {
+    //   toast.error("Error uploading image");
+    //   setSelectedFile(selectedFile);
+    //   setLoadingImage(false);
+    // }
   };
   const AddedMember = (id) => {
     if (!singleTask) {
@@ -89,42 +89,107 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
         undefined
       )
         return toast.error("do not pass the same subtask!");
-      if (name && description && inputMembers.length > 0 && date) {
-        setloading(true);
-        createTeamTask({
-          assignee: inputMembers.map((v) => v.member),
-          title: name,
-          description: description,
-          team_id: id,
-          completed: false,
-          due_date: formatDate(date),
-          subtasks: arrayToObject(subTask),
-        })
-          .then((resp) => {
-            toast.success("task created successfully");
-            unShowCreateTask();
-            setloading(false);
-            setTasks((tasks) => [
-              ...tasks,
-              {
+      if (!selectedFile) {
+        if (name && description && inputMembers.length > 0 && date) {
+          setloading(true);
+          createTeamTask({
+            assignee: inputMembers.map((v) => v.member),
+            title: name,
+            description: description,
+            team_id: id,
+            completed: false,
+            due_date: formatDate(date),
+            subtasks: arrayToObject(subTask),
+          })
+            .then((resp) => {
+              toast.success("task created successfully");
+              unShowCreateTask();
+              setloading(false);
+              setTasks((tasks) => [
+                ...tasks,
+                {
+                  title: name,
+                  description: description,
+                  completed: false,
+                  due_date: new Date().toDateString(),
+                  _id: resp.data.response.inserted_id,
+                  assignee: inputMembers.map((v) => v.member),
+                  subtasks: arrayToObject(subTask),
+                },
+              ]);
+            })
+            // ERROR
+            .catch((err) => {
+              toast.error("task error");
+              setloading(false);
+            });
+        } else {
+          toast.error("Complete all fields before submitting");
+          setloading(false);
+        }
+      } else {
+        const formData = new FormData();
+        if (selectedFile) {
+          formData.append("image", selectedFile);
+        }
+        let imageUrl = "";
+        const sendImage = async () => {
+          const response = await fetch(
+            "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            imageUrl = data.file_url;
+            setSelectedFile(null);
+            if (name && description && inputMembers.length > 0 && date) {
+              setloading(true);
+              createTeamTask({
+                assignee: inputMembers.map((v) => v.member),
                 title: name,
                 description: description,
+                team_id: id,
                 completed: false,
-                due_date: new Date().toDateString(),
-                _id: resp.data.response.inserted_id,
-                assignee: inputMembers.map((v) => v.member),
+                image: imageUrl,
+                due_date: formatDate(date),
                 subtasks: arrayToObject(subTask),
-              },
-            ]);
-          })
-          // ERROR
-          .catch((err) => {
-            toast.error("task error");
-            setloading(false);
-          });
-      } else {
-        toast.error("Complete all fields before submitting");
-        setloading(false);
+              })
+                .then((resp) => {
+                  toast.success("task created successfully");
+                  unShowCreateTask();
+                  setloading(false);
+                  setTasks((tasks) => [
+                    ...tasks,
+                    {
+                      title: name,
+                      description: description,
+                      completed: false,
+                      due_date: new Date().toDateString(),
+                      _id: resp.data.response.inserted_id,
+                      assignee: inputMembers.map((v) => v.member),
+                      subtasks: arrayToObject(subTask),
+                      image: imageUrl,
+                    },
+                  ]);
+                })
+                // ERROR
+                .catch((err) => {
+                  toast.error("task error");
+                  setloading(false);
+                });
+            } else {
+              toast.error("Complete all fields before submitting");
+              setloading(false);
+            }
+          } else {
+            toast.error("Error uploading image");
+          }
+        };
+        sendImage();
       }
     }
   };
