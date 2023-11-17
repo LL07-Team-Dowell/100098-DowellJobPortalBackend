@@ -51,9 +51,9 @@ const GroupLeadTask = () => {
                                 style={{ fontSize: "2rem" }}
                             />
                         </div>
-                        <h4>View Your Added Work logs</h4>
+                        <h4>View your work logs</h4>
                         <p>
-                            View the work logs you have added.
+                            View your tasks given and milestones completed on a project.
                         </p>
                     </div>
                 </div>
@@ -66,9 +66,9 @@ const GroupLeadTask = () => {
                                 style={{ fontSize: "2rem" }}
                             />
                         </div>
-                        <h4>View Your Team's Work logs</h4>
+                        <h4>View team's work logs</h4>
                         <p>
-                            View work logs added by your team members.
+                            View, approve work logs added by your members in your team.
                         </p>
                     </div>
                 </div>

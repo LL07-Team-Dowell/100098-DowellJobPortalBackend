@@ -427,6 +427,8 @@ const AdminLogsHomePage = () => {
                                             handleBtnClick={handleViewTaskBtnClick}
                                             taskView={true}
                                             className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                            externalLinkingEnabled={true}
+                                            externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
                                         />
                                         );
                                     })
@@ -452,6 +454,8 @@ const AdminLogsHomePage = () => {
                                                         handleBtnClick={handleViewTaskBtnClick}
                                                         taskView={true}
                                                         className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                                        externalLinkingEnabled={true}
+                                                        externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
                                                         />
                                                     }))
                                                     }
@@ -476,6 +480,8 @@ const AdminLogsHomePage = () => {
                                                 handleBtnClick={handleViewTaskBtnClick}
                                                 taskView={true}
                                                 className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                                externalLinkingEnabled={true}
+                                                externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
                                                 />
                                             );
                                         })

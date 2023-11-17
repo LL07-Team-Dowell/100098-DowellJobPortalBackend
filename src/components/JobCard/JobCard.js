@@ -6,6 +6,12 @@ import "./style.css";
 import { mutableNewApplicationStateNames } from "../../contexts/NewApplicationContext";
 import { BiTimeFive } from "react-icons/bi";
 import { IoAlertCircleOutline, IoCheckmarkCircle } from "react-icons/io5";
+import { Link } from "react-router-dom";
+import { HiOutlineExternalLink } from "react-icons/hi";
+import { Tooltip } from "react-tooltip";
+import { useState } from "react";
+import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
+import { useEffect } from "react";
 
 
 const JobCard = ({ 
@@ -28,10 +34,55 @@ const JobCard = ({
     taskView,
     className,
     showOnboardingInfo,
+    externalLinkingEnabled,
+    externalLink,
 }) => {
     // console.log(job);
+    const id = crypto.randomUUID();
+    const [ link, setLink ] = useState(null);
+    const { currentUser } = useCurrentUserContext();
+
+    useEffect(() => {
+        if (
+            !taskView ||
+            !externalLink ||
+            !externalLinkingEnabled
+        ) return setLink(null);
+
+        const [
+            session_id,
+            portfolio_id,
+        ] = [
+            sessionStorage.getItem('session_id'),
+            sessionStorage.getItem('portfolio_id'),
+        ]
+
+        if (currentUser?.settings_for_profile_info) return setLink(`${window.location.origin}/100098-DowellJobPortal/#/?session_id=${session_id}&id=${portfolio_id}&redirect_url=${externalLink}`)
+
+        setLink(`${window.location.origin}/100098-DowellJobPortal/#/?session_id=${session_id}&redirect_url=${externalLink}`)
+
+    }, [externalLink, externalLinkingEnabled, taskView])
+
     return <div className={`job__Card__Container ${className ? className : ''}`}>
         <div className="job__Card__Title__Info">
+            {
+                link &&
+                <>
+                    <Link 
+                        className="external__Link" 
+                        to={link} 
+                        target="_blank" 
+                        rel="noreferrer noopener"
+                        data-tooltip-id={id}
+                        data-tooltip-content={'Open in new tab'}
+                    >
+                        <HiOutlineExternalLink />
+                    </Link>
+                    <Tooltip 
+                        id={id}
+                    />
+                </> 
+            }
             <h2>
                 <b>
                     {changeToTitleCase(

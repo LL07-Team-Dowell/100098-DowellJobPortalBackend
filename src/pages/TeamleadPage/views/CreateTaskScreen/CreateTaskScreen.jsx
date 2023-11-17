@@ -415,7 +415,7 @@ const CreateTaskScreen = ({
     >
       <>
         <TitleNavigationBar
-          title={`Work logs for ${nameOfApplicant ? nameOfApplicant : applicant}`}
+          title={`Work logs for ${nameOfApplicant && nameOfApplicant !== 'undefined' ? nameOfApplicant : applicant}`}
           className="task-bar teamleadView"
           handleBackBtnClick={() => navigate(-1)}
         />

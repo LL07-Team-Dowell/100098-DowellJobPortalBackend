@@ -162,6 +162,15 @@
   color: var(--white-color);
 }
 
+.job__Card__Container .external__Link {
+  outline: none;
+  color: #000;
+  text-decoration: none;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-left: auto;
+}
+
 @media (max-width: 767px) {
   .job__Card__Container {
     width: 100%;

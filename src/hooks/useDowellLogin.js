@@ -47,6 +47,7 @@ export default function useDowellLogin(
     const threshold = searchParams.get("threshold");
     const startDate = searchParams.get("start_date");
     const endDate = searchParams.get("end_date");
+    const redirectUrl = searchParams.get("redirect_url");
 
     // FOR LOGGED IN PUBLIC USERS
     if (currentPublicSession && currentPublicUserDetails) {
@@ -217,6 +218,8 @@ export default function useDowellLogin(
                   updateCurrentUserState(currentUserDetails);
                   updatePageLoading(false);
 
+                  if (redirectUrl) navigate(redirectUrl.replaceAll('~', '&'));
+
                   return;
                 } else {
                   //USER HAS ROLE CONFIGURED
@@ -226,6 +229,10 @@ export default function useDowellLogin(
                     settings_for_profile_info: userHasRoleConfigured,
                   });
                   updatePageLoading(false);
+
+                  if (redirectUrl) navigate(redirectUrl.replaceAll('~', '&'));
+
+                  return
                 }
               } catch (error) {
                 console.log('fetch seetings error: ', error);
@@ -328,6 +335,9 @@ export default function useDowellLogin(
               sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
               updateCurrentUserState(currentUserDetails);
               updatePageLoading(false);
+
+              if (redirectUrl) navigate(redirectUrl.replaceAll('~', '&'));
+
             }).catch(err => {
               console.log('Failed to get token', err);
               sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
@@ -390,6 +400,9 @@ export default function useDowellLogin(
             sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
             updateCurrentUserState(currentUserDetails);
             updatePageLoading(false);
+
+            if (redirectUrl) navigate(redirectUrl.replaceAll('~', '&'));
+
           }).catch(err => {
             console.log('Failed to get token', err);
             sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
@@ -467,6 +480,8 @@ export default function useDowellLogin(
               updateCurrentUserState(currentUserDetails);
               updatePageLoading(false);
 
+              if (redirectUrl) navigate(redirectUrl.replaceAll('~', '&'));
+
               return;
             } else {
               //User has role configured
@@ -476,6 +491,10 @@ export default function useDowellLogin(
                 settings_for_profile_info: userHasRoleConfigured,
               });
               updatePageLoading(false);
+
+              if (redirectUrl) navigate(redirectUrl.replaceAll('~', '&'));
+
+              return
             }
           } catch (error) {
             console.log('fetch settings error: ', error);
