@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { AiFillEdit, AiOutlineClose, AiOutlineFileDone, AiOutlinePlus } from "react-icons/ai";
 import useClickOutside from "../../../../hooks/useClickOutside";
 import { IoIosArrowBack } from "react-icons/io";
-
+import { HiLightBulb } from "react-icons/hi"; 
+import { GoTasklist } from "react-icons/go";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
@@ -82,10 +83,10 @@ const AddTaskScreen = ({
   const [allowedTimeInterval, setAllowedTimeInterval] = useState(15);
 
 
-   const handleFileChange = async (e) => {
-     const selectedFile = e.target.files[0];
-     setSelectedFile(selectedFile);
-   };
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    setSelectedFile(selectedFile);
+  };
 
   //   var conditions
   const inputsAreFilled = taskStartTime && taskEndTime && taskName && taskType;
@@ -341,11 +342,11 @@ const AddTaskScreen = ({
 
     // UPDATE TIME INTERVAL FOR TEAMLEADS
     if (currentUserSetting) {
-      const rolesForUser = currentUserSetting?.other_roles ? 
+      const rolesForUser = currentUserSetting?.other_roles ?
         [...new Set([currentUserSetting?.Role, ...currentUserSetting?.other_roles])]
-      :
+        :
         [currentUserSetting?.Role];
-      
+
       if (rolesForUser && rolesForUser.includes(rolesNamesDict.Teamlead)) setAllowedTimeInterval(30);
     } else {
       setAllowedTimeInterval(15);
@@ -531,11 +532,11 @@ const AddTaskScreen = ({
     const passedRequestDate = logRequestDate && new Date(logRequestDate) != 'Invalid Date' ?
       new Date(logRequestDate)
       :
-    null;
+      null;
 
     const todayDate = formatDateForAPI(
       passedRequestDate ?
-          passedRequestDate
+        passedRequestDate
         :
         today
     );
@@ -773,6 +774,11 @@ const AddTaskScreen = ({
     // }
   };
 
+  const handleSubProjectInfoButtonClick = () => {
+    const subProjectDetailsURL = 'https://sc9rhp.csb.app/';
+    window.open(subProjectDetailsURL, '_blank');
+  };
+
   return (
     <>
       <div className="add__New__Task__Overlay">
@@ -834,49 +840,64 @@ const AddTaskScreen = ({
               </div>
             </> :
               <>
-                <h1 className="title__Item">
-                  {
-                    showInfoModal ? <>Quick note</>
-                      :
-                      showTaskForm ? (
-                        <>
-                          {!afterSelectionScreen && (
-                            <IoIosArrowBack
-                              onClick={
-                                editPage
-                                  ? () => {
-                                    closeTaskScreen();
-                                    setEditPage(false);
-                                  }
-                                  : () => setShowTaskForm(false)
-                              }
-                              style={{ cursor: "pointer" }}
-                            />
-                          )}
-                          {
-                            editPage ?
-                              "Edit Work log"
-                              :
-                              taskDetailForTodayLoading ? "Loading" :
-                                taskDetailForToday?.parentTask?.task_saved ?
-                                  "View Work log Details"
-                                  :
-                                  "New Work log Details"
-                          }
-                        </>
-                      ) : (
-                        <>Add new work log</>
-                      )}
+                  <h1 className="title__Item">
+                    {
+                      showInfoModal ? <>Quick note</>
+                        :
+                        showTaskForm ? (
+                          <>
+                            {!afterSelectionScreen && (
+                              <IoIosArrowBack
+                                onClick={
+                                  editPage
+                                    ? () => {
+                                      closeTaskScreen();
+                                      setEditPage(false);
+                                    }
+                                    : () => setShowTaskForm(false)
+                                }
+                                style={{ cursor: "pointer" }}
+                              />
+                            )}
+                            {
+                              editPage ?
+                                "Edit Work log"
+                                :
+                                taskDetailForTodayLoading ? "Loading" :
+                                  taskDetailForToday?.parentTask?.task_saved ?
+                                    "View Work log Details"
+                                    :
+                                    "New Work log Details"
+                            }
+                          </>
+                        ) : (
+                          <>Add new work log</>
+                        )}
 
-                  <AiOutlineClose
-                    onClick={() => {
-                      closeTaskScreen();
-                      !afterSelectionScreen && setEditPage(false);
-                    }}
-                    style={{ cursor: "pointer" }}
-                    fontSize={"1.2rem"}
-                  />
-                </h1>
+                    <AiOutlineClose
+                      onClick={() => {
+                        closeTaskScreen();
+                        !afterSelectionScreen && setEditPage(false);
+                      }}
+                      style={{ cursor: "pointer" }}
+                      fontSize={"1.2rem"}
+                    />
+                  </h1>
+                  <div className="Information_notes_subprojects">
+                  
+                    <button
+                      type={"button"}
+                      className="Information_notes_subprojects_button"
+                    // onClick={() => handleButtonClick1()}
+                    >
+                      <HiLightBulb fontSize={"0.8rem"}/>Notes</button>
+                    <button
+                      type={"button"}
+                      className="Information_notes_subprojects_button"
+                      onClick={() => handleSubProjectInfoButtonClick()}
+                    >
+                      <GoTasklist fontSize={"1rem"}/>Subproject Info</button>
+                  </div>
                 {
                   taskDetailForTodayLoading && <p className="task__Today__Detail__Loading">
                     <span>
@@ -944,26 +965,26 @@ const AddTaskScreen = ({
                               />
                               {
                                 isCreatingTask ?
-                                <>
-                                <div className="task__Item">
-                                  <span className="selectProject">Add Log Image (OPTIONAL)</span>
-                                  <input
-                                    type={"file"}
-                                    placeholder={"add log image"}
-                                    style={{ margin: 0, marginBottom: "0.8rem" }}
-                                    onChange={handleFileChange}
-                                  />
-                                  {selectedFile && (
-                                    <img
-                                      src={URL.createObjectURL(selectedFile)}
-                                      alt="Uploaded Preview"
-                                      style={{ display: "block" }}
-                                    />
-                                  )}
-                                </div>
-                                </>
-                                :
-                                null
+                                  <>
+                                    <div className="task__Item">
+                                      <span className="selectProject">Add Log Image (OPTIONAL)</span>
+                                      <input
+                                        type={"file"}
+                                        placeholder={"add log image"}
+                                        style={{ margin: 0, marginBottom: "0.8rem" }}
+                                        onChange={handleFileChange}
+                                      />
+                                      {selectedFile && (
+                                        <img
+                                          src={URL.createObjectURL(selectedFile)}
+                                          alt="Uploaded Preview"
+                                          style={{ display: "block" }}
+                                        />
+                                      )}
+                                    </div>
+                                  </>
+                                  :
+                                  null
                               }
                             </>
                         }
@@ -1194,7 +1215,7 @@ const AddTaskScreen = ({
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.start_time}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.end_time}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task}</td>
-                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task_image ? task.task_image : 'None'}</td> 
+                                    <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task_image ? task.task_image : 'None'}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.task_type}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.subproject}</td>
                                     <td className={task.is_active && task.is_active === true ? "" : "deleted"}>{task.project}</td>
