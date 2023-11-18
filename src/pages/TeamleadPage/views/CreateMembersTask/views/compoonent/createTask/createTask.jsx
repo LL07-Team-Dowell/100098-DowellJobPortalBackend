@@ -89,6 +89,9 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
         undefined
       )
         return toast.error("do not pass the same subtask!");
+      
+      if (new Date(date) < new Date()) return toast.error("Please make sure the 'Due date' selected is not in the past");
+
       if (!selectedFile) {
         if (name && description && inputMembers.length > 0 && date) {
           setloading(true);
@@ -134,6 +137,7 @@ const CreateTask = ({ id, members, unShowCreateTask, setTasks, tasks }) => {
         }
         let imageUrl = "";
         const sendImage = async () => {
+          setloading(true);
           const response = await fetch(
             "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
             {

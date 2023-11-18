@@ -118,7 +118,7 @@ const ModalDetails = ({ taskname, status, memberassign, onClose, description, su
             })
     }
     useEffect(() => {
-        if (subtasks !== undefined) {
+        if (subtasks !== undefined && Object.keys(subtasks).length > 0) {
             setCheckedSubtask(subTasks.filter(s => s.value === true).map(s => s.name))
             if (subTasks.filter(s => s.value === true).map(s => s.name).length === editData.subtasks.length) {
                 completeTaskFunction()
