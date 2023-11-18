@@ -2592,8 +2592,8 @@ class task_module(APIView):
                     #    "month":monthname, 
                     #    "company_id":data.get("company_id")
                     #}
-                    #task_params={"task_added"}
-                    #report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                    # #task_params={"task_added"}
+                    # #report =updatereportdb(filter_params=filter_params,task_params=task_params)
                     ##------------------------------------------------
                     
                     return Response(
@@ -3004,8 +3004,8 @@ class create_team(APIView):
                 #    "month":monthname, 
                 #    "company_id":data.get("company_id")
                 #}
-                #task_params={"teams"}
-                #report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                # #task_params={"teams"}
+                # #report =updatereportdb(filter_params=filter_params,task_params=task_params)
                 ##------------------------------------------------
                     
                 return Response(
@@ -8492,16 +8492,18 @@ class dashboard_services(APIView):
                 *candidate_management_reports, "update", field, update_field)
         
         res=json.loads(candidate_report)
+        # print(res)
 
         if res["isSuccess"]:
             return Response({
                     "success": True,
                     "message": "candidate leave has been approved",
-                })
+                },status=status.HTTP_201_CREATED)
         else:
             return Response({
                     "success": False,
                     "message": "candidate leave could not be added please check the aplicant id and try again",
+                    "error":res["error"]
                 })
 
 
@@ -8763,6 +8765,7 @@ class WeeklyAgenda(APIView):
         week_start = request.data.get('week_start')
         week_end = request.data.get('week_end')
         company_id = request.data.get('company_id')
+        estimated_hours= request.data.get('estimated_hours')
 
         field = {
             "project": project,
@@ -8772,6 +8775,7 @@ class WeeklyAgenda(APIView):
             "week_start": week_start,
             "week_end": week_end,
             "company_id": company_id,
+            "estimated_hours":estimated_hours
         }
 
         serializer = GroupLeadAgendaSerializer(data=field)
@@ -8803,6 +8807,7 @@ class WeeklyAgenda(APIView):
             "company_id": company_id,
             "active": True,
             "status": True,
+            "estimated_time":estimated_hours,
             "records": [{"record": "1", "type": "overall"}]
         }
        
