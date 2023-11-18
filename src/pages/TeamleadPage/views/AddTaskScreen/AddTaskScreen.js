@@ -5,7 +5,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { HiLightBulb } from "react-icons/hi"; 
 import { GoTasklist } from "react-icons/go";
 import "./style.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { addNewCandidateTaskV2, createCandidateTask, deleteSingleCandidateTaskV2, getCandidateTasksOfTheDayV2, saveCandidateTaskV2, updateNewCandidateTaskV2, updateSingleCandidateTaskV2 } from "../../../../services/candidateServices";
 import { toast } from "react-toastify";
@@ -891,12 +891,13 @@ const AddTaskScreen = ({
                     // onClick={() => handleButtonClick1()}
                     >
                       <HiLightBulb fontSize={"0.8rem"}/>Notes</button>
-                    <button
-                      type={"button"}
+                    <Link
+                      to={'https://sc9rhp.csb.app/'}
+                      target="_blank"
                       className="Information_notes_subprojects_button"
-                      onClick={() => handleSubProjectInfoButtonClick()}
                     >
-                      <GoTasklist fontSize={"1rem"}/>Subproject Info</button>
+                      <GoTasklist fontSize={"1rem"}/>Subproject Info
+                    </Link>
                   </div>
                 {
                   taskDetailForTodayLoading && <p className="task__Today__Detail__Loading">
