@@ -1288,7 +1288,7 @@ const Teamlead = ({ isGrouplead }) => {
                                 {
                                   React.Children.toArray(
                                     sortResults
-                                      .slice(cardIndex, cardIndex + 6)
+                                      ?.slice(cardGroupNumber, cardGroupNumber + 6)
                                       .map(result => {
                                         return <>
                                           <p className='lead__sort__Title__Item'><b>{result.name}</b></p>
@@ -1329,7 +1329,7 @@ const Teamlead = ({ isGrouplead }) => {
                               :
                               React.Children.toArray(
                                 tasksToDisplayForLead
-                                  .slice(cardIndex, cardIndex + 6)
+                                  ?.slice(cardGroupNumber, cardGroupNumber + 6)
                                   .map((dataitem, index) => {
                                     return (
                                       <JobCard
@@ -1389,7 +1389,7 @@ const Teamlead = ({ isGrouplead }) => {
                                   <button
                                     className={s !== cardIndex ? "active" : "desactive"}
                                     onClick={() => {
-                                      setCardGroupNumber(index * 4);
+                                      setCardGroupNumber(index * 6);
                                       setCardIndex(index);
                                     }}
                                     key={`${s}_button`}
@@ -1509,7 +1509,7 @@ const Teamlead = ({ isGrouplead }) => {
                           <>
                             {React.Children.toArray(
                               filteredTasks
-                                .slice(cardIndex, cardIndex + 6)
+                                ?.slice(cardGroupNumber, cardGroupNumber + 6)
                                 .map((dataitem, index) => {
                                   return (
                                     <JobCard
@@ -1553,7 +1553,7 @@ const Teamlead = ({ isGrouplead }) => {
                                   <button
                                     className={s !== cardIndex ? "active" : "desactive"}
                                     onClick={() => {
-                                      setCardGroupNumber(index * 4);
+                                      setCardGroupNumber(index * 6);
                                       setCardIndex(index);
                                     }}
                                     key={`${s}_button`}
@@ -1582,7 +1582,7 @@ const Teamlead = ({ isGrouplead }) => {
                                   {
                                     React.Children.toArray(
                                       sortResults
-                                        .slice(cardIndex, cardIndex + 6)
+                                        ?.slice(cardGroupNumber, cardGroupNumber + 6)
                                         .map(result => {
                                           return <>
                                             <p className='lead__sort__Title__Item'><b>{result.name}</b></p>
@@ -1623,7 +1623,7 @@ const Teamlead = ({ isGrouplead }) => {
                                   React.Children.toArray(
                                     // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
                                     tasksToDisplayForLead
-                                      .slice(cardIndex, cardIndex + 6)
+                                      ?.slice(cardGroupNumber, cardGroupNumber + 6)
                                       .map((dataitem, index) => {
                                         return (
                                           <JobCard
@@ -1671,7 +1671,7 @@ const Teamlead = ({ isGrouplead }) => {
                                     <button
                                       className={s !== cardIndex ? "active" : "desactive"}
                                       onClick={() => {
-                                        setCardGroupNumber(index * 4);
+                                        setCardGroupNumber(index * 6);
                                         setCardIndex(index);
                                       }}
                                       key={`${s}_button`}

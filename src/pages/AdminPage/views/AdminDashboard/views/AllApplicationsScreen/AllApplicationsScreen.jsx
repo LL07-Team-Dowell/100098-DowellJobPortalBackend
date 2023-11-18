@@ -16,6 +16,7 @@ import { createArrayWithLength } from "../../../Landingpage/LandingPage";
 import { JOB_APPLICATION_CATEGORIES } from "../../../../../CandidatePage/utils/jobCategories";
 import { ArrowBackIos } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../../../../../../components/LoadingSpinner/LoadingSpinner";
 
 
 const AllApplicationsScreen = () => {
@@ -175,6 +176,19 @@ const AllApplicationsScreen = () => {
                 </div>
                 <div className={styles.applications__Wrap}>
                     {
+                        !applicationsLoaded ? <div 
+                            style={{ 
+                                display: 'flex', 
+                                flexDirection: 'column', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                width: '100%',
+                            }}
+                        >
+                            <LoadingSpinner width={'1.5rem'} height={'1.5rem'} />
+                            <p>Loading applications...</p>
+                        </div>
+                        :
                         React.Children.toArray(
                             applications
                             ?.filter(application => {
@@ -193,7 +207,7 @@ const AllApplicationsScreen = () => {
                                 if (searchValue.length < 1) return true
                                 return application?.applicant?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
                             })
-                            ?.slice(cardIndex, cardIndex + 8)
+                            ?.slice(cardGroupNumber, cardGroupNumber + 8)
                             .map(application => {
                                 return <FullApplicationCardItem 
                                     application={application} 
@@ -241,7 +255,7 @@ const AllApplicationsScreen = () => {
                         <button
                         className={s !== cardIndex ? "active" : "desactive"}
                         onClick={() => {
-                            setCardGroupNumber(index * 4);
+                            setCardGroupNumber(index * 8);
                             setCardIndex(index);
                         }}
                         key={`${s}_button`}
