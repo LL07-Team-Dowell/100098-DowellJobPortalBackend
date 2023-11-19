@@ -42,7 +42,10 @@ const WeeklogsCount = ({ user, className }) => {
         setLoading(true);
 
         const today = new Date();
-        const mondayOfThisWeek = new Date(new Date(today.setDate(today.getDate() - today.getDay() + 1)).setHours(0, 0, 0, 0));
+        const mondayOfThisWeek = today.getDay() === 0 ? 
+            new Date(new Date(today.setDate(today.getDate() - 6)).setHours(0, 0, 0, 0))
+        : 
+        new Date(new Date(today.setDate(today.getDate() - today.getDay() + 1)).setHours(0, 0, 0, 0));
         const sundayOfNextWeek = new Date(new Date().setDate(mondayOfThisWeek.getDate() + 6));
 
         const data = {
