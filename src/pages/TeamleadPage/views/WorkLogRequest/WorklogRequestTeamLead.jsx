@@ -8,6 +8,7 @@ import { useState } from "react";
 import Card from "../../../CandidatePage/views/WorkLogRequest/component/Card";
 import { useNavigate } from "react-router-dom";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
+import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleNavigationBar";
 
 const WorkLogRequestTeamLead = () => {
   const { currentUser } = useCurrentUserContext();
@@ -19,12 +20,16 @@ const WorkLogRequestTeamLead = () => {
   const navigate = useNavigate();
 
   const handleUpdateTaskForDay = (detail) => {
-    navigate("/", { state: { log_request_date: detail?.update_task_date } });
+    navigate("/task", { state: { log_request_date: detail?.update_task_date } });
   };
 
   if (error) return <h1>{error}</h1>;
   return (
     <StaffJobLandingLayout teamleadView={true} hideSearchBar={true}>
+      <TitleNavigationBar
+        title="Your Log Requests" 
+        handleBackBtnClick={() => navigate(-1)}
+      />
       <div className="work__log__request">
         <Buttons changeCardsStats={changeCardsStats} />
         {!loading ? (

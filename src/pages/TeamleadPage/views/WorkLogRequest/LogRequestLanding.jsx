@@ -18,7 +18,11 @@ const LogRequestLanding = () => {
       handleNavIcon={() => navigate(-1)}
     >
       <div className="new__task__container">
-        <TitleNavigationBar title="Log Requests" hideBackBtn={true} />
+        <TitleNavigationBar 
+          title="Log Requests" 
+          hideBackBtn={true} 
+          className={'team__Lead__NAv'}
+        />
         <div
           style={{
             position: "relative",
@@ -37,8 +41,8 @@ const LogRequestLanding = () => {
               <div>
                 <AiOutlineTeam className="icon" style={{ fontSize: "2rem" }} />
               </div>
-              <h4>Check TeamLead Requests</h4>
-              <p style={{ fontSize: "0.8rem" }}>Check log requests made</p>
+              <h4>Your Requests</h4>
+              <p style={{ fontSize: "0.8rem" }}>Track the progress and status of worklog requests you made</p>
             </div>
           </div>
           <div
@@ -50,10 +54,9 @@ const LogRequestLanding = () => {
               <div>
                 <AiOutlineTeam className="icon" style={{ fontSize: "2rem" }} />
               </div>
-              <h4>Check Team Members Request</h4>
+              <h4>Team Requests</h4>
               <p style={{ fontSize: "0.8rem" }}>
-                Check your team members Worklog requests to approve or decline
-                them
+                View, approve or deny requests of your team members
               </p>
             </div>
           </div>

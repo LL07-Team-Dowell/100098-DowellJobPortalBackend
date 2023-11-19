@@ -82,6 +82,8 @@ const Teamlead = ({ isGrouplead }) => {
   const [cardPagination, setCardPagination] = useState(0);
   const [cardPagination2, setCardPagination2] = useState(0);
   const [cardPagination3, setCardPagination3] = useState(0);
+  const [ logRequestDate, setLogRequestDate ] = useState(null);
+
   useEffect(() => {
     if (cardPagination || cardPagination2 || cardPagination3) {
       console.log("cardPagination " + cardPagination + "cardPagination2 " + cardPagination2 + "cardPagination3 " + cardPagination3)
@@ -471,6 +473,20 @@ const Teamlead = ({ isGrouplead }) => {
 
   useEffect(() => {
     setShowCandidateTask(false);
+
+    if (location.state && location.state?.log_request_date) {
+
+      const validDatePassed = new Date(location.state?.log_request_date);
+      if (typeof validDatePassed == 'Invalid Date') return;
+  
+      setLogRequestDate(location.state?.log_request_date);
+      setShowAddTaskModalForGrouplead(true);
+  
+      // RESET STATE TO PREVENT ADD TASK MODAL FROM POPPING UP AFTER EVERY RELOAD
+      if (isGrouplead) window.history.replaceState({}, document.title, '/100098-DowellJobPortal/#/')
+      if (!isGrouplead) window.history.replaceState({}, document.title, '/100098-DowellJobPortal/#/task')
+    }
+
     const currentPath = location.pathname.split("/")[1];
     const currentTab = searchParams.get("tab");
 
@@ -1071,6 +1087,7 @@ const Teamlead = ({ isGrouplead }) => {
                           showAddTaskModal={showAddTaskModalForGrouplead}
                           setShowAddTaskModal={setShowAddTaskModalForGrouplead}
                           subprojects={allSubProjects}
+                          logRequestDate={logRequestDate}
                         />
                       </> :
                         <div className="jobs-container">
@@ -1428,6 +1445,7 @@ const Teamlead = ({ isGrouplead }) => {
                       isTeamlead={true}
                       handleViewIndividualTaskBtn={() => navigate('/user-tasks')}
                       handleViewTeamTaskBtn={() => navigate('/all-tasks')}
+                      logRequestDate={logRequestDate}
                     />
                 )
               ) : section === "user" ? (

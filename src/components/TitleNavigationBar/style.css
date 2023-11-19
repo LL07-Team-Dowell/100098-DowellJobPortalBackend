@@ -11,6 +11,10 @@
     position: relative;
 }
 
+.title__Navigation__Bar__Container.team__Lead__NAv {
+    width: 100%;
+}
+
 .title__Navigation__Bar__Container,
 .title__Navigation__Bar__Container .title__Item {
     display: flex;
@@ -44,7 +48,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 4rem;
+    width: 4.5rem;
     height: 2.5rem;
 }
 

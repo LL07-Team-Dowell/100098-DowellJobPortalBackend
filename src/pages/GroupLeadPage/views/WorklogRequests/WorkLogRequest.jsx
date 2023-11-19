@@ -8,6 +8,7 @@ import { useState } from "react";
 import Card from "./component/Card";
 import { useNavigate } from "react-router-dom";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
+import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleNavigationBar";
 
 const WorkLogRequestGrouplead = () => {
   const { currentUser } = useCurrentUserContext();
@@ -31,6 +32,10 @@ const WorkLogRequestGrouplead = () => {
       isGrouplead={true}
       hideSearchBar={true}
     >
+      <TitleNavigationBar 
+        title={'Worklog Requests'}
+        hideBackBtn={true}
+      />
       <div className='work__log__request'>
         <Buttons changeCardsStats={changeCardsStats} />
         {!loading ? (

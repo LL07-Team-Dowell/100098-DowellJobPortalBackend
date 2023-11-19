@@ -19,6 +19,7 @@ const AddPage = ({
     isTeamlead,
     handleViewIndividualTaskBtn,
     handleViewTeamTaskBtn,
+    logRequestDate,
 }) => {
     const { currentUser } = useCurrentUserContext();
     const { setUserTasks } = useCandidateTaskContext();
@@ -82,6 +83,7 @@ const AddPage = ({
                     updateTasks={setUserTasks}
                     assignedProject={allProjects}
                     subprojects={subprojects}
+                    logRequestDate={logRequestDate}
                 />
             )}
             {showAddIssueModal && (

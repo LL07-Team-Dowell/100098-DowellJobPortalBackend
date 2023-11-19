@@ -17,7 +17,7 @@ const LogRequest = () => {
         <TitleNavigationBar
           title="Work Log Requests"
           hideBackBtn={false}
-          hideBackBtnClick={() => navigate(-1)}
+          handleBackBtnClick={() => navigate(-1)}
         />
         <Wrappen>
           <NavLink
