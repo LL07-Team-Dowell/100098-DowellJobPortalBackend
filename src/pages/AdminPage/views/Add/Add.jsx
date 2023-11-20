@@ -178,7 +178,7 @@ const Add = () => {
     setIsProductLink(false);
     setIsReportLink(false);
   };
-
+  const Modal = React.useMemo(() => {}, []);
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -511,6 +511,29 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
         >
           Select Projects{" "}
         </h2>
+        <h3>Active Projects</h3>
+        <div className='added-members-input'>
+          {React.Children.toArray(
+            inputProjects?.map((v) => (
+              <div
+                // key={v.id}
+                style={{ cursor: "pointer" }}
+                onClick={() => removeProject(v)}
+              >
+                <p>{v}</p>
+                <FaTimes fontSize={"small"} />
+              </div>
+            ))
+          )}
+          <input
+            type='text'
+            placeholder='Search project'
+            value={query}
+            onChange={(e) => setquery(e.target.value)}
+          />
+        </div>
+        <br />
+        <h3>Inactive Projects</h3>
         <div className='added-members-input'>
           {React.Children.toArray(
             inputProjects?.map((v) => (
