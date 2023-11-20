@@ -19,6 +19,7 @@ class UserProject(models.Model):
     company_id = models.CharField(max_length=400)
     data_type = models.CharField(max_length=100)
     project_list = jsonfield.JSONField()
+    inactive_project_list=jsonfield.JSONField()
 
     def __str__(self):
         return f"{self.id}, {self.company_id}"
