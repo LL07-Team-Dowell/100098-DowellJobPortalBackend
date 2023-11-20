@@ -641,6 +641,7 @@ class DashBoardJobCategorySerializer(serializers.Serializer):
 
 
 class GroupLeadAgendaSerializer(serializers.Serializer):
+<<<<<<< HEAD
     project = serializers.CharField(
         max_length=255, allow_null=False, allow_blank=False)
     lead_name = serializers.CharField(
@@ -654,6 +655,17 @@ class GroupLeadAgendaSerializer(serializers.Serializer):
     week_start = serializers.DateField(allow_null=False)
     week_end = serializers.DateField(allow_null=False)
 
+=======
+    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    lead_name = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    agenda_title=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    agenda_description=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
+    week_start=serializers.DateField(allow_null=False)
+    week_end=serializers.DateField(allow_null=False)
+    estimated_hours=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    lead_approval=serializers.BooleanField(default=False)
+>>>>>>> 2de718a4f825d06a6d8d2cafcd2fddeaac03c2e0
 
 class GetWeeklyAgendaByIdSerializer(serializers.Serializer):
     document_id = serializers.CharField(

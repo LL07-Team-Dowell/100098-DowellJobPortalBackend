@@ -2586,6 +2586,7 @@ class task_module(APIView):
                     )
                 )
                 if response["isSuccess"]:
+<<<<<<< HEAD
                     # adding to sqlite--------------------------------
                     year, monthname, monthcount = get_month_details(
                         data.get("task_created_date"))
@@ -2601,6 +2602,21 @@ class task_module(APIView):
                         filter_params=filter_params, task_params=task_params)
                     # ------------------------------------------------
 
+=======
+                    ##adding to sqlite--------------------------------
+                    #year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                    #filter_params={
+                    #    "applicant_id":data.get("applicant_id"),
+                    #    "username":data.get("task_added_by"), 
+                    #    "year":year, 
+                    #    "month":monthname, 
+                    #    "company_id":data.get("company_id")
+                    #}
+                    # task_params={"task_added"}
+                    # report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                    ##------------------------------------------------
+                    
+>>>>>>> 2de718a4f825d06a6d8d2cafcd2fddeaac03c2e0
                     return Response(
                         {
                             "success": True,
@@ -3004,6 +3020,7 @@ class create_team(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
+<<<<<<< HEAD
                 # adding to sqlite--------------------------------
                 year, monthname, monthcount = get_month_details(
                     data.get("date_created"))
@@ -3019,6 +3036,21 @@ class create_team(APIView):
                     filter_params=filter_params, task_params=task_params)
                 # ------------------------------------------------
 
+=======
+                ##adding to sqlite--------------------------------
+                #year,monthname, monthcount = get_month_details(data.get("date_created"))
+                #filter_params={
+                #    "applicant_id":data.get("applicant_id"),
+                #    "username":data.get("task_added_by"), 
+                #    "year":year, 
+                #    "month":monthname, 
+                #    "company_id":data.get("company_id")
+                #}
+                # task_params={"teams"}
+                # report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ##------------------------------------------------
+                    
+>>>>>>> 2de718a4f825d06a6d8d2cafcd2fddeaac03c2e0
                 return Response(
                     {
                         "message": "Team created successfully",
@@ -3247,6 +3279,7 @@ class create_team_task(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
+<<<<<<< HEAD
                 # adding to sqlite--------------------------------
                 year, monthname, monthcount = get_month_details(
                     data.get("task_created_date"))
@@ -3262,6 +3295,21 @@ class create_team_task(APIView):
                     filter_params=filter_params, task_params=task_params)
                 # ------------------------------------------------
 
+=======
+                ##adding to sqlite--------------------------------
+                #year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                #filter_params={
+                #    "applicant_id":data.get("applicant_id"),
+                #    "username":data.get("task_added_by"), 
+                #    "year":year, 
+                #    "month":monthname, 
+                #    "company_id":data.get("company_id")
+                #}
+                #task_params={"team_tasks"}
+                #report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ##------------------------------------------------
+                    
+>>>>>>> 2de718a4f825d06a6d8d2cafcd2fddeaac03c2e0
                 return Response(
                     {
                         "message": "Task created successfully",
@@ -4907,9 +4955,11 @@ class Thread_Apis(APIView):
                 for user in json.loads(info)["data"]:
                     if "applicant_email" in user.keys():
                         users[user["username"]] = user["applicant_email"]
-                for member in json.loads(get_team)["data"][0]["members"]:
-                    if member in users.keys():
-                        send_to_emails[member] = users[member]
+                
+                if len(json.loads(get_team)["data"])>0:
+                    for member in json.loads(get_team)["data"][0]["members"]:
+                        if member in users.keys():
+                            send_to_emails[member] = users[member]
 
                 # print(send_to_emails)
                 def send_mail(*args):
@@ -4930,6 +4980,7 @@ class Thread_Apis(APIView):
                     )
                     send_mail_thread.start()
                     send_mail_thread.join()
+<<<<<<< HEAD
                 # adding to sqlite--------------------------------
                 year, monthname, monthcount = get_month_details(
                     data.get("task_created_date"))
@@ -4945,6 +4996,21 @@ class Thread_Apis(APIView):
                     filter_params=filter_params, task_params=task_params)
                 # ------------------------------------------------
 
+=======
+                ##adding to sqlite--------------------------------
+                #year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                #filter_params={
+                #    "applicant_id":data.get("applicant_id"),
+                #    "username":data.get("task_added_by"), 
+                #    "year":year, 
+                #    "month":monthname, 
+                #    "company_id":data.get("company_id")
+                #}
+                #task_params={"team_tasks_issues_raised"}
+                #report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ##------------------------------------------------
+                    
+>>>>>>> 2de718a4f825d06a6d8d2cafcd2fddeaac03c2e0
                 return Response(
                     {
                         "message": "Thread created successfully",
@@ -8516,6 +8582,7 @@ class dashboard_services(APIView):
         field = {
             "_id": applicant_id
         }
+<<<<<<< HEAD
         update_field = {
             "leave_start": request.data.get("leave_start"),
             "leave_end": request.data.get("leave_end")
@@ -8535,6 +8602,29 @@ class dashboard_services(APIView):
                 "success": False,
                 "message": "candidate leave could not be added please check the aplicant id and try again",
             })
+=======
+        update_field={
+            "leave_start":request.data.get("leave_start"),
+            "leave_end":request.data.get("leave_end")
+            }
+        candidate_report=dowellconnection(
+                *candidate_management_reports, "update", field, update_field)
+        
+        res=json.loads(candidate_report)
+        # print(res)
+
+        if res["isSuccess"]:
+            return Response({
+                    "success": True,
+                    "message": "candidate leave has been approved",
+                },status=status.HTTP_201_CREATED)
+        else:
+            return Response({
+                    "success": False,
+                    "message": "candidate leave could not be added please check the aplicant id and try again",
+                    "error":res["error"]
+                })
+>>>>>>> 2de718a4f825d06a6d8d2cafcd2fddeaac03c2e0
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -8797,6 +8887,8 @@ class WeeklyAgenda(APIView):
         week_start = request.data.get('week_start')
         week_end = request.data.get('week_end')
         company_id = request.data.get('company_id')
+        estimated_hours= request.data.get('estimated_hours')
+        lead_approval= request.data.get('lead_approval')
 
         field = {
             "project": project,
@@ -8806,6 +8898,8 @@ class WeeklyAgenda(APIView):
             "week_start": week_start,
             "week_end": week_end,
             "company_id": company_id,
+            "estimated_hours":estimated_hours,
+            "lead_approval":lead_approval
         }
 
         serializer = GroupLeadAgendaSerializer(data=field)
@@ -8837,6 +8931,8 @@ class WeeklyAgenda(APIView):
             "company_id": company_id,
             "active": True,
             "status": True,
+            "lead_approval":lead_approval,
+            "estimated_time":estimated_hours,
             "records": [{"record": "1", "type": "overall"}]
         }
 
