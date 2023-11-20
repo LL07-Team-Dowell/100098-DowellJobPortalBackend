@@ -8766,6 +8766,7 @@ class WeeklyAgenda(APIView):
         week_end = request.data.get('week_end')
         company_id = request.data.get('company_id')
         estimated_hours= request.data.get('estimated_hours')
+        lead_approval= request.data.get('lead_approval')
 
         field = {
             "project": project,
@@ -8775,7 +8776,8 @@ class WeeklyAgenda(APIView):
             "week_start": week_start,
             "week_end": week_end,
             "company_id": company_id,
-            "estimated_hours":estimated_hours
+            "estimated_hours":estimated_hours,
+            "lead_approval":lead_approval
         }
 
         serializer = GroupLeadAgendaSerializer(data=field)
@@ -8807,6 +8809,7 @@ class WeeklyAgenda(APIView):
             "company_id": company_id,
             "active": True,
             "status": True,
+            "lead_approval":lead_approval,
             "estimated_time":estimated_hours,
             "records": [{"record": "1", "type": "overall"}]
         }
