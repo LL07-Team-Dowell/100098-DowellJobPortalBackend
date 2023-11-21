@@ -32,6 +32,7 @@ import {
 import { getSettingUserProject } from "../../../../services/hrServices";
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import { testingRoles } from "../../../../utils/testingRoles";
+import Overlay from "../../../../components/Overlay";
 
 const Add = () => {
   const { currentUser, setCurrentUser } = useCurrentUserContext();
@@ -422,6 +423,11 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
       )
       .sort((a, b) => a.project_name.localeCompare(b.project_name));
     setDisplayedProjects(projectsToDisplay);
+    
+    if (projectsAdded[0]?.inactive_project_list && Array.isArray(projectsAdded[0]?.inactive_project_list)) {
+      setInactiveProjects(projectsAdded[0]?.inactive_project_list);
+    }
+
     setInputProjects(
       Array.isArray(projectsAdded[0]?.project_list)
         ? projectsAdded[0]?.project_list.sort((a, b) => a.localeCompare(b))
@@ -476,6 +482,7 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
         company_id: currentUser?.portfolio_info[0].org_id,
         data_type: currentUser.portfolio_info[0].data_type,
         project_list: inputProjects,
+        inactive_project_list: inactiveProjects,
       };
 
       if (projectsAdded[0]?.project_list) {
@@ -535,7 +542,7 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
         >
           Select Projects{" "}
         </h2>
-        <h3>Active Projects</h3>
+        <h3 style={{ marginBottom: '0.4rem '}}>Active Projects</h3>
         <div className='added-members-input'>
           {React.Children.toArray(
             inputProjects?.map((v) => (
@@ -557,7 +564,7 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
           />
         </div>
         <br />
-        <h3>Inactive Projects</h3>
+        <h3 style={{ marginBottom: '0.4rem '}}>Inactive Projects</h3>
         <div className='added-members-input'>
           {React.Children.toArray(
             inactiveProjects?.map((v) => (
@@ -571,12 +578,12 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
               </div>
             ))
           )}
-          <input
+          {/* <input
             type='text'
             placeholder='Search project'
             value={query}
             onChange={(e) => setquery(e.target.value)}
-          />
+          /> */}
         </div>
         <br />
         <label htmlFor='task_name'>Add Projects</label>
@@ -912,12 +919,14 @@ const AddSubProjectPopup = ({ projects, unshowProjectPopup }) => {
 
 const Modal = ({ project, removeFunction, inActiveFunction, showModal }) => {
   return (
-    <div className='modal'>
-      <p>Do You Want to Remove this Project or Render it Inacative</p>
-      <div>
-        <button onClick={() => removeFunction(project)}>Remove</button>
-        <button onClick={() => inActiveFunction(project)}>Make inactive</button>
+    <Overlay className={'remove__Overlay'}>
+      <div className='modal'>
+        <p>Do you want to remove this project or render it inactive?</p>
+        <div>
+          <button onClick={() => removeFunction(project)}>Remove</button>
+          <button onClick={() => inActiveFunction(project)}>Make inactive</button>
+        </div>
       </div>
-    </div>
+    </Overlay>
   );
 };
