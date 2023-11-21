@@ -901,14 +901,18 @@ const AddTaskScreen = ({
                     <Overlay>
                       <div className="overlay_main_div">
                         <div className="notes_overlay_div">
-                          <AiOutlineClose onClick={closeModal} fontSize={"1.2rem"}/>
+                          <AiOutlineClose onClick={closeModal} fontSize={"1.2rem"} cursor={'pointer'} />
                           <p>
                             <b>Notes</b><br />
                             When uploading a log, the following things are necessary:<br />
-                            - Log addition ends at 11:30 PM or 23.30 everyday<br />
-                            - The log entered must have at least 5 words and 25 characters<br />
-                            - The log entered must be unique for that day<br />
-                            - The log entered has to have a maximum time difference of 15mins or 30mins according to your designation</p>
+                            <ul className="log__Notess">
+                              <li>You are to upload <b>20/40 hours</b> of logs weekly according to your designation</li>
+                              <li>Log addition ends at <b>11:30 PM</b> or <b>23.30</b> everyday</li>
+                              <li>Logs entered must have <b>at least 5 words</b> and <b>25 characters</b></li>
+                              <li>Logs entered must be <b>unique</b> for that day</li>
+                              <li>Logs entered must have a <b>maximum time difference</b> of <b>15mins</b> or <b>30mins</b> according to your designation</li>
+                            </ul>
+                          </p>
                         </div>
                       </div>
                     </Overlay>

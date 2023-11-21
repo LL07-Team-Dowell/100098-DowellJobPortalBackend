@@ -486,6 +486,7 @@
   background-color: transparent;
   font-size: 15px;
   color: black;
+  cursor: pointer;
 }
 
 .overlay_main_div {
@@ -525,6 +526,18 @@
   font-size: 0.9rem;
   line-height: 2em;
   /* margin-top: 0.4rem; */
+}
+
+.log__Notess {
+  width: 94%;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 0.875rem;
+  margin-top: 0.2rem;
+}
+
+.log__Notess li b {
+  font-size: 0.875rem;
 }
 
 @media screen and (max-width: 400px) {
