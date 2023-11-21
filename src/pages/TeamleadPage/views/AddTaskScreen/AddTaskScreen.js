@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { AiFillEdit, AiOutlineClose, AiOutlineFileDone, AiOutlinePlus } from "react-icons/ai";
 import useClickOutside from "../../../../hooks/useClickOutside";
 import { IoIosArrowBack } from "react-icons/io";
-import { HiLightBulb } from "react-icons/hi"; 
+import { HiLightBulb } from "react-icons/hi";
 import { GoTasklist } from "react-icons/go";
 import "./style.css";
 import { Link, useNavigate } from "react-router-dom";
@@ -20,6 +20,7 @@ import ContentEditable from "react-contenteditable";
 import { formatDateForAPI } from "../../../../helpers/helpers";
 import { getCurrentTimeFromDowell } from "../../../../services/dowellTimeServices";
 import { rolesNamesDict } from "../../../AdminPage/views/Settings/AdminSettings";
+import Overlay from "../../../../components/Overlay";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -55,6 +56,7 @@ const AddTaskScreen = ({
   const [taskStartTime, setTaskStartTime] = useState("");
   const [taskEndTime, setTaskEndTime] = useState("");
   const [loading, setLoading] = useState(false);
+  const [notesOverlayVisibility, setNotesOverlayVisibility] = useState(false);
   const [taskName, setTaskName] = useState("");
   const [details, setDetails] = useState("");
   const [tasks, setTasks] = useState([]);
@@ -774,9 +776,12 @@ const AddTaskScreen = ({
     // }
   };
 
-  const handleSubProjectInfoButtonClick = () => {
-    const subProjectDetailsURL = 'https://sc9rhp.csb.app/';
-    window.open(subProjectDetailsURL, '_blank');
+  const handleNotesButtonClick = () => {
+    setNotesOverlayVisibility(true);
+  };
+
+  const closeModal = () => {
+    setNotesOverlayVisibility(false);
   };
 
   return (
@@ -840,65 +845,83 @@ const AddTaskScreen = ({
               </div>
             </> :
               <>
-                  <h1 className="title__Item">
-                    {
-                      showInfoModal ? <>Quick note</>
-                        :
-                        showTaskForm ? (
-                          <>
-                            {!afterSelectionScreen && (
-                              <IoIosArrowBack
-                                onClick={
-                                  editPage
-                                    ? () => {
-                                      closeTaskScreen();
-                                      setEditPage(false);
-                                    }
-                                    : () => setShowTaskForm(false)
-                                }
-                                style={{ cursor: "pointer" }}
-                              />
-                            )}
-                            {
-                              editPage ?
-                                "Edit Work log"
-                                :
-                                taskDetailForTodayLoading ? "Loading" :
-                                  taskDetailForToday?.parentTask?.task_saved ?
-                                    "View Work log Details"
-                                    :
-                                    "New Work log Details"
-                            }
-                          </>
-                        ) : (
-                          <>Add new work log</>
-                        )}
+                <h1 className="title__Item">
+                  {
+                    showInfoModal ? <>Quick note</>
+                      :
+                      showTaskForm ? (
+                        <>
+                          {!afterSelectionScreen && (
+                            <IoIosArrowBack
+                              onClick={
+                                editPage
+                                  ? () => {
+                                    closeTaskScreen();
+                                    setEditPage(false);
+                                  }
+                                  : () => setShowTaskForm(false)
+                              }
+                              style={{ cursor: "pointer" }}
+                            />
+                          )}
+                          {
+                            editPage ?
+                              "Edit Work log"
+                              :
+                              taskDetailForTodayLoading ? "Loading" :
+                                taskDetailForToday?.parentTask?.task_saved ?
+                                  "View Work log Details"
+                                  :
+                                  "New Work log Details"
+                          }
+                        </>
+                      ) : (
+                        <>Add new work log</>
+                      )}
 
-                    <AiOutlineClose
-                      onClick={() => {
-                        closeTaskScreen();
-                        !afterSelectionScreen && setEditPage(false);
-                      }}
-                      style={{ cursor: "pointer" }}
-                      fontSize={"1.2rem"}
-                    />
-                  </h1>
-                  <div className="Information_notes_subprojects">
+                  <AiOutlineClose
+                    onClick={() => {
+                      closeTaskScreen();
+                      !afterSelectionScreen && setEditPage(false);
+                    }}
+                    style={{ cursor: "pointer" }}
+                    fontSize={"1.2rem"}
+                  />
+                </h1>
+                {!taskDetailForTodayLoading && (<div className="Information_notes_subprojects">
+
+                  <button
+                    type={"button"}
+                    className="Information_notes_subprojects_button"
+                    onClick={handleNotesButtonClick}
+                  >
+                    <HiLightBulb fontSize={"1rem"} />Notes</button>
+
+                  {notesOverlayVisibility && (
+                    <Overlay>
+                      <div className="overlay_main_div">
+                        <div className="notes_overlay_div">
+                          <AiOutlineClose onClick={closeModal} fontSize={"1.2rem"}/>
+                          <p>
+                            <b>Notes</b><br />
+                            When uploading a log, the following things are necessary:<br />
+                            - Log addition ends at 11:30 PM or 23.30 everyday<br />
+                            - The log entered must have at least 5 words and 25 characters<br />
+                            - The log entered must be unique for that day<br />
+                            - The log entered has to have a maximum time difference of 15mins or 30mins according to your designation</p>
+                        </div>
+                      </div>
+                    </Overlay>
+                  )}
                   
-                    <button
-                      type={"button"}
-                      className="Information_notes_subprojects_button"
-                    // onClick={() => handleButtonClick1()}
-                    >
-                      <HiLightBulb fontSize={"0.8rem"}/>Notes</button>
-                    <Link
-                      to={'https://sc9rhp.csb.app/'}
-                      target="_blank"
-                      className="Information_notes_subprojects_button"
-                    >
-                      <GoTasklist fontSize={"1rem"}/>Subproject Info
-                    </Link>
-                  </div>
+                 <Link
+                    to={'https://sc9rhp.csb.app/'}
+                    target="_blank"
+                    className="Information_notes_subprojects_button"
+                  >
+                    <GoTasklist fontSize={"1rem"} fontWeight={"400"}/>Subproject Info
+                  </Link>
+                </div>)}
                 {
                   taskDetailForTodayLoading && <p className="task__Today__Detail__Loading">
                     <span>
