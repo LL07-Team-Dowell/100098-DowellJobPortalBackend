@@ -8493,8 +8493,7 @@ class dashboard_services(APIView):
                     "error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
         update_field={
             "leave_start":request.data.get("leave_start"),
-            "leave_end":request.data.get("leave_end"),
-            "status":Leave
+            "leave_end":request.data.get("leave_end")
             }
         candidate_report=dowellconnection(
                 *candidate_management_reports, "update", field, update_field)
@@ -8808,14 +8807,7 @@ class WeeklyAgenda(APIView):
                     "message": evaluator_response["message"],
                 }
             }, status=status.HTTP_400_BAD_REQUEST)
-        task_with_time=[]
-        actual_time=0
-        for task in sub_task:
-            actual_time+=int(task["hours"])
-            task_with_time.append({
-                "task":task["subtask"],
-                "estimated_time":task["hours"]
-            })
+        
 
         data = {
             "lead_name": lead_name,
@@ -8827,19 +8819,33 @@ class WeeklyAgenda(APIView):
             "active": True,
             "status": True,
             "lead_approval":lead_approval,
-            "sub_task":task_with_time,
-            "actual_time":actual_time,
+            # "sub_task":task_with_time,
+            # "actual_time":actual_time,
             "records": [{"record": "1", "type": "overall"}]
         }
-       
         response = json.loads(datacube_data_insertion(API_KEY, "MetaDataTest", project, data))
+        task_with_time=[]
+        actual_time=0
+        for task in sub_task:
+            actual_time+=int(task["hours"])
+            task_with_time.append({
+                "task":task["subtask"],
+                "estimated_time":task["hours"],
+                
+            })
+        data2={
+            "sub_tasks":task_with_time,
+            "agenda_id":response["data"]["inserted_id"]
+        }
+        response2 = json.loads(datacube_data_insertion(API_KEY, "MetaDataTest","agenda_subtask", data=data2))
         if not response["success"]:
             return Response({
                 "success": False,
                 "message": "Failed to create weekly agenda",
                 "database_response": {
                     "success": response["success"],
-                    "message": response["message"]
+                    "message": response["message"],
+                    "data":response
                 }
             }, status=status.HTTP_400_BAD_REQUEST)
        
