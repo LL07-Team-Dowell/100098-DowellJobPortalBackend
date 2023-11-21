@@ -43,7 +43,6 @@ const Add = () => {
   const [isReportLink, setIsReportLink] = useState(false);
   const [updatedUserDataLoading, setUpdatedUserDataLoading] = useState(false);
   const { state } = useLocation();
-
   const jobLinkToShareObj = {
     product_url: window.location.origin + "/100098-DowellJobPortal/#/",
     job_company_id: currentUser?.portfolio_info[0]?.org_id,
@@ -178,7 +177,7 @@ const Add = () => {
     setIsProductLink(false);
     setIsReportLink(false);
   };
-  const Modal = React.useMemo(() => {}, []);
+
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -390,7 +389,31 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
   const [displayedProjects, setDisplayedProjects] = useState([]);
   const { projectsAdded, setProjectsAdded } = useJobContext();
   const [btnDisabled, setBtnDisabled] = useState(false);
-
+  const [modal, setModal] = useState(false);
+  const [projectName, setProjectName] = useState(undefined);
+  const [inactiveProjects, setInactiveProjects] = useState([]);
+  const inactiveProjectFunction = (projectName) => {
+    setInputProjects(
+      inputProjects.filter((f) => f !== projectName.trim() && f !== projectName)
+    );
+    setInactiveProjects([...inactiveProjects, projectName]);
+    closeModal();
+  };
+  const openModal = (projectName) => {
+    setProjectName(projectName);
+    setModal(true);
+  };
+  const closeModal = () => {
+    setProjectName(undefined);
+    setModal(false);
+  };
+  const removeInactiveProjects = (projectName) => {
+    setInactiveProjects(inactiveProjects.filter((f) => f !== projectName));
+    setDisplayedProjects([
+      { _id: crypto.randomUUID(), project_name: projectName.trim() },
+      ...displayedProjects,
+    ]);
+  };
   useEffect(() => {
     const projectsToDisplay = dowellProjects
       .filter(
@@ -427,6 +450,7 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
       { _id: crypto.randomUUID(), project_name: projectName.trim() },
       ...displayedProjects,
     ]);
+    closeModal();
   };
 
   const AddedProject = (projectName) => {
@@ -518,7 +542,7 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
               <div
                 // key={v.id}
                 style={{ cursor: "pointer" }}
-                onClick={() => removeProject(v)}
+                onClick={() => openModal(v)}
               >
                 <p>{v}</p>
                 <FaTimes fontSize={"small"} />
@@ -536,11 +560,11 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
         <h3>Inactive Projects</h3>
         <div className='added-members-input'>
           {React.Children.toArray(
-            inputProjects?.map((v) => (
+            inactiveProjects?.map((v) => (
               <div
                 // key={v.id}
                 style={{ cursor: "pointer" }}
-                onClick={() => removeProject(v)}
+                onClick={() => removeInactiveProjects(v)}
               >
                 <p>{v}</p>
                 <FaTimes fontSize={"small"} />
@@ -608,6 +632,14 @@ const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
           )}
         </button>
       </div>
+      {modal && (
+        <Modal
+          showModal={modal}
+          project={projectName}
+          removeFunction={removeProject}
+          inActiveFunction={inactiveProjectFunction}
+        />
+      )}
     </div>
   );
 };
@@ -873,6 +905,18 @@ const AddSubProjectPopup = ({ projects, unshowProjectPopup }) => {
             </ul>
           </>
         )}
+      </div>
+    </div>
+  );
+};
+
+const Modal = ({ project, removeFunction, inActiveFunction, showModal }) => {
+  return (
+    <div className='modal'>
+      <p>Do You Want to Remove this Project or Render it Inacative</p>
+      <div>
+        <button onClick={() => removeFunction(project)}>Remove</button>
+        <button onClick={() => inActiveFunction(project)}>Make inactive</button>
       </div>
     </div>
   );
