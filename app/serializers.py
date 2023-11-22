@@ -641,10 +641,11 @@ class SubtaskSerializer(serializers.Serializer):
 
 class GroupLeadAgendaSerializer(serializers.Serializer):
     project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    sub_project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     lead_name = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     agenda_title=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
-    agenda_description=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
+    agenda_description=serializers.CharField(min_length=60, max_length=10000,allow_null=False,allow_blank=False)
     week_start=serializers.DateField(allow_null=False)
     week_end=serializers.DateField(allow_null=False)
     lead_approval=serializers.BooleanField(allow_null=False)
@@ -654,12 +655,13 @@ class GetWeeklyAgendaByIdSerializer(serializers.Serializer):
     document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     limit = serializers.IntegerField(allow_null=True)
     offset = serializers.IntegerField(allow_null=True)
-    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    # project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
 
 class GetWeeklyAgendasSerializer(serializers.Serializer):
     limit = serializers.IntegerField(allow_null=True)
     offset = serializers.IntegerField(allow_null=True)
-    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    # project = serializers.CharField(max_length=255,allow_null=True,allow_blank=True)
+    sub_project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
 
 class TaskDetailsInputSerializer(serializers.Serializer):
     task_created_date = serializers.DateField()
