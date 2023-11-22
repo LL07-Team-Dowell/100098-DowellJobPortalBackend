@@ -681,6 +681,18 @@ const AddTaskScreen = ({
       }
       const dowellClockResponse = (await getCurrentTimeFromDowell(data)).data;
 
+      let last_time_to_upload_task = new Date(dowellClockResponse?.current_time);
+      // console.log(last_time_to_upload_task);
+      let hours = last_time_to_upload_task.getHours();
+      let minutes = last_time_to_upload_task.getMinutes();
+      // console.log(hours);
+      // console.log(minutes);
+      if(hours === 23 && minutes > 30){
+        setLoading(false);
+        setDisabled(false);
+        return toast.info('Log addition ends at 11:30 PM or 23:30 PM everyday');
+      }
+
       makeAPICallToAddTasks(
         dowellClockResponse?.current_time,
         startTime,
@@ -907,7 +919,7 @@ const AddTaskScreen = ({
                             When uploading a log, the following things are necessary:<br />
                             <ul className="log__Notess">
                               <li>You are to upload <b>20/40 hours</b> of logs weekly according to your designation</li>
-                              <li>Log addition ends at <b>11:30 PM</b> or <b>23.30</b> everyday</li>
+                              <li>Log addition ends at <b>11:30 PM</b> or <b>23:30 PM</b> everyday</li>
                               <li>Logs entered must have <b>at least 5 words</b> and <b>25 characters</b></li>
                               <li>Logs entered must be <b>unique</b> for that day</li>
                               <li>Logs entered must have a <b>maximum time difference</b> of <b>15mins</b> or <b>30mins</b> according to your designation</li>
