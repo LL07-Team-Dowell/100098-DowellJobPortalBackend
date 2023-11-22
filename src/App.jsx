@@ -98,6 +98,7 @@ import AllApplicationsScreen from "./pages/AdminPage/views/AdminDashboard/views/
 import WorkLogRequestGrouplead from "./pages/GroupLeadPage/views/WorklogRequests/WorkLogRequest";
 import LogRequestLanding from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestLanding";
 import WorkLogRequestTeamLead from "./pages/TeamleadPage/views/WorkLogRequest/WorklogRequestTeamLead";
+import ProjectLogRequest from "./pages/ProjectLeadPage/views/LogRequests/ProjectLogRequest";
 
 function App() {
   // console.log = () => {};
@@ -1570,6 +1571,16 @@ function App() {
             <CandidateTaskContextProvider>
               <ValuesProvider>
                 <ProjectLeadHomePage />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path='/log-requests'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <ProjectLogRequest />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
