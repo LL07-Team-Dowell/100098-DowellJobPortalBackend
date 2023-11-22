@@ -561,6 +561,7 @@ class regionalassociateSerializer(serializers.Serializer):
         ("Freelancer", "Freelancer"),
         ("Internship", "Internship"),
         ("Employee", "Employee"),
+        ("regional_associate","regional_associate")
     )
     DATA_TYPE_CHOICE = (
         ("Real_Data", "Real_Data"),
@@ -634,7 +635,9 @@ class DashBoardJobCategorySerializer(serializers.Serializer):
     job_category = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE
     )
-
+class SubtaskSerializer(serializers.Serializer):
+    subtask = serializers.CharField()
+    hours = serializers.FloatField()
 
 class GroupLeadAgendaSerializer(serializers.Serializer):
     project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
@@ -644,8 +647,8 @@ class GroupLeadAgendaSerializer(serializers.Serializer):
     agenda_description=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
     week_start=serializers.DateField(allow_null=False)
     week_end=serializers.DateField(allow_null=False)
-    estimated_hours=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
-    lead_approval=serializers.BooleanField(default=False)
+    lead_approval=serializers.BooleanField(allow_null=False)
+    sub_task = serializers.ListField(child=SubtaskSerializer())
 
 class GetWeeklyAgendaByIdSerializer(serializers.Serializer):
     document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
@@ -684,3 +687,9 @@ class UpdateProjectSpentTimeSerializer(serializers.Serializer):
 class UpdateProjectTimeEnabledSerializer(serializers.Serializer):
     document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     editing_enabled = serializers.BooleanField(allow_null=False)
+
+
+class leaveapproveserializers(serializers.Serializer):
+    leave_start=serializers.DateField(allow_null=False)
+    leave_end=serializers.DateField(allow_null=False)
+    applicant_id=serializers.CharField(allow_null=False)

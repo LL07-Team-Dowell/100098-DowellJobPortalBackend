@@ -89,7 +89,8 @@ from .serializers import (
     UpdateProjectSpentTimeSerializer,
     UpdateProjectTimeEnabledSerializer,
     GetWeeklyAgendaByIdSerializer,
-    GetWeeklyAgendasSerializer
+    GetWeeklyAgendasSerializer,
+    leaveapproveserializers
 )
 from .authorization import (
     verify_user_token,
@@ -724,7 +725,7 @@ class associate_job(APIView):
             "country": data.get('country'),
             "city": data.get("city"),
             "is_active": data.get("is_active"),
-            "job_category": "research_associate",
+            "job_category": "regional_associate",
             "job_number": data.get("job_number"),
             "skills": data.get("skills"),
             "description": data.get("description"),
@@ -8484,6 +8485,12 @@ class dashboard_services(APIView):
         field={
             "_id":applicant_id
         }
+        serializer=leaveapproveserializers(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                    "success": False,
+                    "message": "posting wrong data",
+                    "error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
         update_field={
             "leave_start":request.data.get("leave_start"),
             "leave_end":request.data.get("leave_end")
@@ -8496,8 +8503,9 @@ class dashboard_services(APIView):
 
         if res["isSuccess"]:
             return Response({
+                    "data":res,
                     "success": True,
-                    "message": "candidate leave has been approved",
+                    "message": "candidate leave request has been approved",
                 },status=status.HTTP_201_CREATED)
         else:
             return Response({
@@ -8765,8 +8773,8 @@ class WeeklyAgenda(APIView):
         week_start = request.data.get('week_start')
         week_end = request.data.get('week_end')
         company_id = request.data.get('company_id')
-        estimated_hours= request.data.get('estimated_hours')
         lead_approval= request.data.get('lead_approval')
+        sub_task=request.data.get("subtask")
 
         field = {
             "project": project,
@@ -8776,8 +8784,8 @@ class WeeklyAgenda(APIView):
             "week_start": week_start,
             "week_end": week_end,
             "company_id": company_id,
-            "estimated_hours":estimated_hours,
-            "lead_approval":lead_approval
+            "lead_approval":lead_approval,
+            "sub_task":sub_task
         }
 
         serializer = GroupLeadAgendaSerializer(data=field)
@@ -8799,6 +8807,7 @@ class WeeklyAgenda(APIView):
                     "message": evaluator_response["message"],
                 }
             }, status=status.HTTP_400_BAD_REQUEST)
+        
 
         data = {
             "lead_name": lead_name,
@@ -8810,18 +8819,33 @@ class WeeklyAgenda(APIView):
             "active": True,
             "status": True,
             "lead_approval":lead_approval,
-            "estimated_time":estimated_hours,
+            # "sub_task":task_with_time,
+            # "actual_time":actual_time,
             "records": [{"record": "1", "type": "overall"}]
         }
-       
         response = json.loads(datacube_data_insertion(API_KEY, "MetaDataTest", project, data))
+        task_with_time=[]
+        actual_time=0
+        for task in sub_task:
+            actual_time+=int(task["hours"])
+            task_with_time.append({
+                "task":task["subtask"],
+                "estimated_time":task["hours"],
+                
+            })
+        data2={
+            "sub_tasks":task_with_time,
+            "agenda_id":response["data"]["inserted_id"]
+        }
+        response2 = json.loads(datacube_data_insertion(API_KEY, "MetaDataTest","agenda_subtask", data=data2))
         if not response["success"]:
             return Response({
                 "success": False,
                 "message": "Failed to create weekly agenda",
                 "database_response": {
                     "success": response["success"],
-                    "message": response["message"]
+                    "message": response["message"],
+                    "data":response
                 }
             }, status=status.HTTP_400_BAD_REQUEST)
        
