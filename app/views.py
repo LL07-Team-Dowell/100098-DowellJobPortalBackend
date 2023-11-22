@@ -106,10 +106,13 @@ import os
 load_dotenv("/home/100098/100098-DowellJobPortal/.env")
 if os.getenv('API_KEY'):
     API_KEY = str(os.getenv('API_KEY'))
+if os.getenv('DB_Name'):
+    DB_Name = str(os.getenv('DB_Name'))
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/env")
     API_KEY = str(os.getenv('API_KEY'))
+    DB_Name = str(os.getenv('DB_Name'))
 
 
 # Create your views here.
@@ -8846,7 +8849,7 @@ class WeeklyAgenda(APIView):
             "sub_project":sub_project,
             "records": [{"record": "1", "type": "overall"}]
         }
-        response = json.loads(datacube_data_insertion(API_KEY, "MetaDataTest", sub_project, data))
+        response = json.loads(datacube_data_insertion(API_KEY, DB_Name, sub_project, data))
         
         # data2={
         #     "sub_tasks":task_with_time,
@@ -8905,7 +8908,7 @@ class WeeklyAgenda(APIView):
         data = {
             "_id": document_id,
         }
-        response = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest",sub_project,data,limit,offset))
+        response = json.loads(datacube_data_retrival(API_KEY,DB_Name,sub_project,data,limit,offset))
         # response2 = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest","agenda_subtask",data,limit,offset))
         
         if not response["success"]:
@@ -8932,7 +8935,7 @@ class WeeklyAgenda(APIView):
         limit = request.GET.get('limit')
         offset = request.GET.get('offset')
         project = request.data.get('project')
-        sub_project = request.data.get('sub_project')
+        sub_project = request.GET.get('sub_project')
         if project:
             data = {"project":project}
         else:
@@ -8955,7 +8958,7 @@ class WeeklyAgenda(APIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
         # data={}
-        response = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest",sub_project,data,limit,offset))
+        response = json.loads(datacube_data_retrival(API_KEY,DB_Name,sub_project,data,limit,offset))
         if not response["success"]:
             return Response({
                 "success": False,
