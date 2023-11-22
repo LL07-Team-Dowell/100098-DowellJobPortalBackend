@@ -8775,6 +8775,7 @@ class WeeklyAgenda(APIView):
         company_id = request.data.get('company_id')
         lead_approval= request.data.get('lead_approval')
         sub_task=request.data.get("subtask")
+        sub_project=request.data.get("subproject")
 
         field = {
             "project": project,
@@ -8785,7 +8786,8 @@ class WeeklyAgenda(APIView):
             "week_end": week_end,
             "company_id": company_id,
             "lead_approval":lead_approval,
-            "sub_task":sub_task
+            "sub_task":sub_task,
+            "sub_project":sub_project
         }
 
         serializer = GroupLeadAgendaSerializer(data=field)
@@ -8795,18 +8797,37 @@ class WeeklyAgenda(APIView):
                 "message": "Posting wrong data",
                 "error": serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
+        
+        task_with_time= []
+        combined_task= ""
+        actual_time= 0
+        
+        for i, task in enumerate(sub_task):
+            actual_time += int(task["hours"])
+            combined_task += task["subtask"]
 
+            if i < len(sub_task) - 1: 
+                combined_task += ", "
 
-        evaluator_response = json.loads(samanta_content_evaluator(API_KEY, agenda_title, agenda_description))
-        if not evaluator_response["success"]:
-            return Response({
-                "success": False,
-                "message": "Failed to evaluate agenda",
-                "evaluator_response": {
-                    "success": evaluator_response["success"],
-                    "message": evaluator_response["message"],
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
+            task_with_time.append({
+                "task": task["subtask"],
+                "estimated_time": task["hours"],
+            })
+        combined_task+=", " + agenda_description
+        combined_task_json = json.dumps(combined_task)
+        print(combined_task_json)
+        print(combined_task)
+        evaluator_response= True
+        # evaluator_response = json.loads(samanta_content_evaluator(API_KEY, agenda_title,data=combined_task_json ))
+        # if not evaluator_response["success"]:
+        #     return Response({
+        #         "success": False,
+        #         "message": "Failed to evaluate agenda",
+        #         "evaluator_response": {
+        #             "success": evaluator_response["success"],
+        #             "message": evaluator_response["message"],
+        #         }
+        #     }, status=status.HTTP_400_BAD_REQUEST)
         
 
         data = {
@@ -8819,25 +8840,19 @@ class WeeklyAgenda(APIView):
             "active": True,
             "status": True,
             "lead_approval":lead_approval,
-            # "sub_task":task_with_time,
-            # "actual_time":actual_time,
+            "sub_task":task_with_time,
+            "actual_time":actual_time,
+            "project": project,
+            "sub_project":sub_project,
             "records": [{"record": "1", "type": "overall"}]
         }
-        response = json.loads(datacube_data_insertion(API_KEY, "MetaDataTest", project, data))
-        task_with_time=[]
-        actual_time=0
-        for task in sub_task:
-            actual_time+=int(task["hours"])
-            task_with_time.append({
-                "task":task["subtask"],
-                "estimated_time":task["hours"],
-                
-            })
-        data2={
-            "sub_tasks":task_with_time,
-            "agenda_id":response["data"]["inserted_id"]
-        }
-        response2 = json.loads(datacube_data_insertion(API_KEY, "MetaDataTest","agenda_subtask", data=data2))
+        response = json.loads(datacube_data_insertion(API_KEY, "MetaDataTest", sub_project, data))
+        
+        # data2={
+        #     "sub_tasks":task_with_time,
+        #     "agenda_id":response["data"]["inserted_id"]
+        # }
+        # response2 = json.loads(datacube_data_insertion(API_KEY, "team_management_weekly_agenda_db","reports", data=data2))
         if not response["success"]:
             return Response({
                 "success": False,
@@ -8848,7 +8863,7 @@ class WeeklyAgenda(APIView):
                     "data":response
                 }
             }, status=status.HTTP_400_BAD_REQUEST)
-       
+
         return Response({
             "success": True,
             "message": "Weekly agenda was successfully created",
@@ -8857,11 +8872,11 @@ class WeeklyAgenda(APIView):
                 "message": response["message"],
                 "inserted_id": response["data"]["inserted_id"],
             },
-            "evaluator_response": {
-                "success": evaluator_response["success"],
-                "message": evaluator_response["message"],
-                **{key: evaluator_response.get(key, None) for key in ["Confidence level created by AI", "Confidence level created by Human", "AI Check", "Plagiarised", "Creative", "Total characters", "Total sentences"]}
-            },
+            # "evaluator_response": {
+            #     "success": evaluator_response["success"],
+            #     "message": evaluator_response["message"],
+            #     **{key: evaluator_response.get(key, None) for key in ["Confidence level created by AI", "Confidence level created by Human", "AI Check", "Plagiarised", "Creative", "Total characters", "Total sentences"]}
+            # },
             "weekly_agenda_details": data
         }, status=status.HTTP_201_CREATED)
 
@@ -8869,13 +8884,14 @@ class WeeklyAgenda(APIView):
         document_id = request.GET.get('document_id')
         limit = request.GET.get('limit')
         offset = request.GET.get('offset')
-        project = request.data.get('project')
-
+        sub_project = request.GET.get('sub_project')
+        
+       
         field = {
             "document_id": document_id,
             "limit": limit,
             "offset": offset,
-            "project": project
+            "sub_project": sub_project
         }
 
         serializer = GetWeeklyAgendaByIdSerializer(data=field)
@@ -8889,7 +8905,8 @@ class WeeklyAgenda(APIView):
         data = {
             "_id": document_id,
         }
-        response = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest",project,data,limit,offset))
+        response = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest",sub_project,data,limit,offset))
+        # response2 = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest","agenda_subtask",data,limit,offset))
         
         if not response["success"]:
             return Response({
@@ -8915,12 +8932,19 @@ class WeeklyAgenda(APIView):
         limit = request.GET.get('limit')
         offset = request.GET.get('offset')
         project = request.data.get('project')
-
+        sub_project = request.data.get('sub_project')
+        if project:
+            data = {"project":project}
+        else:
+             data = {}
         field = {
             "limit": limit,
             "offset": offset,
-            "project": project
+            # "project": project,
+            "sub_project":sub_project
         }
+
+        # project=sub_project
 
         serializer = GetWeeklyAgendasSerializer(data=field)
         if not serializer.is_valid():
@@ -8930,8 +8954,8 @@ class WeeklyAgenda(APIView):
                 "error": serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        data = {}
-        response = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest",project,data,limit,offset))
+        # data={}
+        response = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest",sub_project,data,limit,offset))
         if not response["success"]:
             return Response({
                 "success": False,
