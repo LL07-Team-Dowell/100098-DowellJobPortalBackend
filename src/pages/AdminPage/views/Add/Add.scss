@@ -240,6 +240,27 @@
     z-index: 9999;
     button{
         margin: 30px;
-
+        &:first-child{
+            margin-top: 20px;
+            padding: 5px 7px;
+            font-weight: 500;
+            background-color: rgb(0, 87, 52);
+            color: white;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+        &:last-child{
+            margin-top: 20px;
+            padding: 5px 7px;
+            font-weight: 500;
+            background-color: #ececec;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
     }
 }
