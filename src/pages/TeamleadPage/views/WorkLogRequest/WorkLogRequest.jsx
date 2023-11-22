@@ -12,7 +12,11 @@ import {
 import { toast } from "react-toastify";
 import LittleLoading from "../../../CandidatePage/views/ResearchAssociatePage/littleLoading";
 
-const WorkLogRequest = ({ cardData }) => {
+const WorkLogRequest = ({ 
+  cardData,
+  isProjectLead,
+  allProjectsForLeadPassed,
+}) => {
   const { currentUser } = useCurrentUserContext();
   const [loading, setLoading] = useState(false);
   const [approveRequestLoading, setApproveRequestLoading] = useState([]);
@@ -58,9 +62,12 @@ const WorkLogRequest = ({ cardData }) => {
             currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
           );
         
-        const projects = userHasOtherProjects ? 
-          [userMainProject, ...currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects]
-        :
+        const projects = isProjectLead && Array.isArray(allProjectsForLeadPassed) ? 
+            allProjectsForLeadPassed
+          : 
+          userHasOtherProjects ? 
+            [userMainProject, ...currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects]
+          :
         [userMainProject];
 
         setProjectsForLead(projects);
