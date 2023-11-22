@@ -8272,6 +8272,8 @@ class dashboard_services(APIView):
             return self.update_job_category(request)
         elif type_request == "leave_approve":
             return self.candidate_leave_approve(request)
+        elif type_request == "delete_application":
+            return self.delete_application(request)
         else:
             return self.handle_error(request)
 
@@ -8517,7 +8519,25 @@ class dashboard_services(APIView):
                     "error":res["error"]
                 })
 
-
+    def delete_application(self, request):
+        data = request.data
+        application_id = data["application_id"]
+        field = {"_id": application_id}
+        update_field = {"data_type": "Archived_Data"}
+        response = dowellconnection(*candidate_management_reports, "update", field, update_field)
+        # print(response)
+        if json.loads(response)["isSuccess"] == True:
+            return Response(
+                {"message": "application successfully deleted"}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {
+                    "message": "application not successfully deleted",
+                    "response": json.loads(response),
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
 
         
 
