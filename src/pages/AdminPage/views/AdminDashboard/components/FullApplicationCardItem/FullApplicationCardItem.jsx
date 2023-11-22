@@ -13,7 +13,7 @@ import { JOB_APPLICATION_CATEGORIES } from "../../../../../CandidatePage/utils/j
 import Select from "react-select";
 import { getSettingUserProject } from "../../../../../../services/hrServices";
 import { useCurrentUserContext } from "../../../../../../contexts/CurrentUserContext";
-import { updateCandidateApplicationDetail } from "../../../../../../services/adminServices";
+import { adminDeleteApplication, updateCandidateApplicationDetail } from "../../../../../../services/adminServices";
 
 export default function FullApplicationCardItem({ application, activeStatus }) {
     const [ showEditOptions, setShowEditOptions ] = useState(false);
@@ -30,6 +30,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
     } = useJobContext();
     const { currentUser } = useCurrentUserContext();
     const [ editLoading, setEditLoading ] = useState(false);
+    const [ deleteLoading, setDeleteLoading ] = useState(false);
 
     useEffect(() => {
         if (!projectsLoaded) {
@@ -145,6 +146,33 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
         toast.success(`Successfully edited application of ${application?.applicant}`)
     }
 
+    const handleDeleteApplication = async () => {
+        if (deleteLoading) return
+
+        const currentApplications = applications?.slice();
+        setDeleteLoading(true);
+
+        const dataToPost = {
+            application_id: application._id,
+        }
+
+        try {
+            const res = await (await adminDeleteApplication(dataToPost)).data;
+            console.log('delete application response: ', res);
+
+            setApplications(currentApplications.filter(app => app._id !== application._id));
+            toast.success(`Successfully deleted application of ${application?.applicant}`);
+            setDeleteLoading(false);
+
+            setShowEditOptions(false);
+            
+        } catch (error) {
+            console.log('err deleting');
+            setDeleteLoading(false);
+            toast.error(`An error occured while trying to delete application of ${application?.applicant}`)
+        }
+    }
+
 
     return <>
         <div className={styles.full__Application__Item}>
@@ -185,7 +213,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
             {
                 showEditOptions && <ul className={styles.update__Listing}>
                     <li className={styles.item} onClick={handleUpdateItemClick}>Update</li>
-                    <li className={styles.delete} onClick={() => toast.info('feature in development')}>Delete</li>
+                    <li className={styles.delete} onClick={handleDeleteApplication}>{deleteLoading ? 'Deleting..' : 'Delete'}</li>
                 </ul>
             }
             {
