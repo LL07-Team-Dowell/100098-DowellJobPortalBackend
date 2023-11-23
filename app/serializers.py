@@ -645,11 +645,12 @@ class GroupLeadAgendaSerializer(serializers.Serializer):
     lead_name = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     agenda_title=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
-    agenda_description=serializers.CharField(min_length=60, max_length=10000,allow_null=False,allow_blank=False)
+    agenda_description=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
     week_start=serializers.DateField(allow_null=False)
     week_end=serializers.DateField(allow_null=False)
-    lead_approval=serializers.BooleanField(allow_null=False)
-    sub_task = serializers.ListField(child=SubtaskSerializer())
+    total_time=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    aggregate_agenda=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
+    timeline = serializers.ListField(child=serializers.JSONField())
 
 class GetWeeklyAgendaByIdSerializer(serializers.Serializer):
     document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
