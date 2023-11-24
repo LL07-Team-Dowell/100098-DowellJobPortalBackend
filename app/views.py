@@ -8838,17 +8838,17 @@ class WeeklyAgenda(APIView):
                 "message": "Total time does not match with the specified timeline"
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # evaluator_response= True
-        # evaluator_response = json.loads(samanta_content_evaluator(API_KEY, agenda_title,aggregate_agenda ))
-        # if not evaluator_response["success"]:
-        #     return Response({
-        #         "success": False,
-        #         "message": "Failed to evaluate agenda",
-        #         "evaluator_response": {
-        #             "success": evaluator_response["success"],
-        #             "message": evaluator_response["message"],
-        #         }
-        #     }, status=status.HTTP_400_BAD_REQUEST)
+        evaluator_response= True
+        evaluator_response = json.loads(samanta_content_evaluator(API_KEY, agenda_title,aggregate_agenda ))
+        if not evaluator_response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to evaluate agenda",
+                "evaluator_response": {
+                    "success": evaluator_response["success"],
+                    "message": evaluator_response["message"],
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
         
 
         data = {
@@ -8888,11 +8888,11 @@ class WeeklyAgenda(APIView):
                 "message": response["message"],
                 "inserted_id": response["data"]["inserted_id"],
             },
-            # "evaluator_response": {
-            #     "success": evaluator_response["success"],
-            #     "message": evaluator_response["message"],
-            #     **{key: evaluator_response.get(key, None) for key in ["Confidence level created by AI", "Confidence level created by Human", "AI Check", "Plagiarised", "Creative", "Total characters", "Total sentences"]}
-            # },
+            "evaluator_response": {
+                "success": evaluator_response["success"],
+                "message": evaluator_response["message"],
+                **{key: evaluator_response.get(key, None) for key in ["Confidence level created by AI", "Confidence level created by Human", "AI Check", "Plagiarised", "Creative", "Total characters", "Total sentences"]}
+            },
             "weekly_agenda_details": data
         }, status=status.HTTP_201_CREATED)
 
