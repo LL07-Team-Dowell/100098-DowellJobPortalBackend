@@ -204,5 +204,6 @@ urlpatterns = [
     #group lead agenda
 
     path('weekly_agenda/', WeeklyAgenda.as_view(), name='group_lead_agenda'),
+    path('datacube/',Db_operations.as_view())
 
 ]

@@ -42,6 +42,7 @@ from .helper import (
     datacube_data_insertion,
     datacube_data_retrival,
     samanta_content_evaluator,
+    datacube_add_collection
 
 )
 from .serializers import (
@@ -90,7 +91,8 @@ from .serializers import (
     UpdateProjectTimeEnabledSerializer,
     GetWeeklyAgendaByIdSerializer,
     GetWeeklyAgendasSerializer,
-    leaveapproveserializers
+    leaveapproveserializers,
+    AddCollectionSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -8496,7 +8498,8 @@ class dashboard_services(APIView):
                     "error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
         update_field={
             "leave_start":request.data.get("leave_start"),
-            "leave_end":request.data.get("leave_end")
+            "leave_end":request.data.get("leave_end"),
+            "status":"Leave"
             }
         candidate_report=dowellconnection(
                 *candidate_management_reports, "update", field, update_field)
@@ -8858,6 +8861,7 @@ class WeeklyAgenda(APIView):
             "sub_project":sub_project,
             "timeline": timeline,
             "aggregate_agenda": aggregate_agenda,
+            "total_time": total_time,
             "records": [{"record": "1", "type": "overall"}]
         }
         response = json.loads(datacube_data_insertion(API_KEY, DB_Name, sub_project, data))
@@ -8939,7 +8943,7 @@ class WeeklyAgenda(APIView):
     def all_weekly_agendas(self,request):
         limit = request.GET.get('limit')
         offset = request.GET.get('offset')
-        project = request.data.get('project')
+        project = request.GET.get('project')
         sub_project = request.GET.get('sub_project')
         if project:
             data = {"project":project}
@@ -8991,3 +8995,49 @@ class WeeklyAgenda(APIView):
             "success": False,
             "message": "Invalid request type"
         }, status=status.HTTP_400_BAD_REQUEST)
+    
+@method_decorator(csrf_exempt, name='dispatch')
+class Db_operations(APIView):
+    def post(self,request):
+        type_request = request.GET.get('type')
+
+        if type_request == "add_collection":
+            return self.add_collection(request)
+        else:
+            return self.handle_error(request)
+        
+    def add_collection(Self,request):
+
+        coll_names=request.GET.get("coll_names")
+        num_collections=request.GET.get("num_collections")
+        
+        field= {
+ 
+        "db_name":DB_Name,
+        "api_key":API_KEY,
+        "coll_names":request.GET.get("coll_names"),
+        "num_collections":request.GET.get("num_collections")
+
+        }
+        
+        serializer=AddCollectionSerializer(data=field)
+
+        if not serializer.is_valid():
+            return Response({
+            "success":False,
+            "error":serializer.errors
+        },status=status.HTTP_400_BAD_REQUEST)
+
+        response=json.loads(datacube_add_collection(API_KEY,DB_Name,coll_names,num_collections))
+        if not response["success"]:
+            return Response({
+                "success":False,
+                "message":"new collection could not be added",
+                "message":response["message"]
+            },status=status.HTTP_201_CREATED)
+        
+        return Response({
+                "success":False,
+                "message":"new collection has been added",
+                "data":response["data"]
+            },status=status.HTTP_201_CREATED)

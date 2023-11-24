@@ -648,7 +648,7 @@ class GroupLeadAgendaSerializer(serializers.Serializer):
     agenda_description=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
     week_start=serializers.DateField(allow_null=False)
     week_end=serializers.DateField(allow_null=False)
-    total_time=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    total_time=serializers.FloatField(allow_null=False)
     aggregate_agenda=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
     timeline = serializers.ListField(child=serializers.JSONField())
 
@@ -696,3 +696,10 @@ class leaveapproveserializers(serializers.Serializer):
     leave_start=serializers.DateField(allow_null=False)
     leave_end=serializers.DateField(allow_null=False)
     applicant_id=serializers.CharField(allow_null=False)
+
+
+class AddCollectionSerializer(serializers.Serializer):
+    db_name = serializers.CharField(max_length=100)
+    api_key = serializers.CharField(max_length=100)
+    coll_names = serializers.CharField()
+    num_collections = serializers.IntegerField()
