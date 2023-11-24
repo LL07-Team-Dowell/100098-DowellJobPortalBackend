@@ -612,3 +612,17 @@ def samanta_content_evaluator(api_key,title,description):
     }
     response = requests.post(url, json=payload)
     return response.text
+
+def datacube_add_collection(api_key,db_name,coll_names,num_collections):
+
+    url = "https://datacube.uxlivinglab.online/db_api/add_collection/"
+
+    data = {
+        "api_key": api_key,
+        "db_name": db_name,
+        "coll_names": coll_names,
+        "num_collections": num_collections,
+    }
+
+    response = requests.post(url, json=data)
+    return response.text
