@@ -31,20 +31,7 @@ const GroupleadTrackAgenda = () => {
     const [ loading, setLoading ] = useState(false);
     const [ agendasFetchedPreviously, setAgendasFetchedPreviously ] = useState(false);
     const [ agendasFetched, setAgendasFetched ] = useState([]);
-    const [ taskDetailsForPeriod, setTaskDetailsForPeriod ] = useState([
-        {
-            subproject: '',
-            task_created_date: '2023-11-24',
-            start_time: '07:30',
-            end_time: '08: 30',
-        },
-        {
-            subproject: '',
-            task_created_date: '2023-11-25',
-            start_time: '07:30',
-            end_time: '19: 30',
-        }
-    ]);
+    const [ taskDetailsForPeriod, setTaskDetailsForPeriod ] = useState([]);
 
     const handleAgendaDetailUpdate = (keyToUpdate, newVal) => {
         setAgendaDetails((prevDetails) => {
