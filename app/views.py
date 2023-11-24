@@ -110,12 +110,10 @@ if os.getenv('DB_Name'):
     DB_Name = str(os.getenv('DB_Name'))
 else:
     """for windows local"""
-    load_dotenv(f"{os.getcwd()}/env")
+    load_dotenv(f"{os.getcwd()}/.env")
     API_KEY = str(os.getenv('API_KEY'))
     DB_Name = str(os.getenv('DB_Name'))
 
-
-# Create your views here.
 
 INVERVIEW_CALL = """
 <!DOCTYPE html>
@@ -8791,15 +8789,16 @@ class WeeklyAgenda(APIView):
 
     def add_weekly_update(self, request):
         project = request.data.get('project')
+        sub_project=request.data.get("sub_project")
         lead_name = request.data.get('lead_name')
         agenda_title = request.data.get('agenda_title')
+        total_time = request.data.get('total_time')
         agenda_description = request.data.get('agenda_description')
         week_start = request.data.get('week_start')
         week_end = request.data.get('week_end')
         company_id = request.data.get('company_id')
-        lead_approval= request.data.get('lead_approval')
-        sub_task=request.data.get("subtask")
-        sub_project=request.data.get("subproject")
+        timeline=request.data.get("timeline")
+        aggregate_agenda = request.data.get("aggregate_agenda")
 
         field = {
             "project": project,
@@ -8809,9 +8808,10 @@ class WeeklyAgenda(APIView):
             "week_start": week_start,
             "week_end": week_end,
             "company_id": company_id,
-            "lead_approval":lead_approval,
-            "sub_task":sub_task,
-            "sub_project":sub_project
+            "timeline":timeline,
+            "sub_project":sub_project,
+            "total_time": total_time,
+            "aggregate_agenda": aggregate_agenda,
         }
 
         serializer = GroupLeadAgendaSerializer(data=field)
@@ -8822,27 +8822,18 @@ class WeeklyAgenda(APIView):
                 "error": serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        task_with_time= []
-        combined_task= ""
-        actual_time= 0
+        verify_time = field.get("timeline")
+        total_time_timeline = sum(int(task.get("hours").replace("Hr", "")) for task in verify_time)
+        total_time_specified = int(field.get("total_time").replace("Hr", ""))
+
+        if total_time_timeline != total_time_specified:
+            return Response({
+                "success": False,
+                "message": "Total time does not match with the specified timeline"
+            }, status=status.HTTP_400_BAD_REQUEST)
         
-        for i, task in enumerate(sub_task):
-            actual_time += int(task["hours"])
-            combined_task += task["subtask"]
-
-            if i < len(sub_task) - 1: 
-                combined_task += ", "
-
-            task_with_time.append({
-                "task": task["subtask"],
-                "estimated_time": task["hours"],
-            })
-        combined_task+=", " + agenda_description
-        combined_task_json = json.dumps(combined_task)
-        print(combined_task_json)
-        print(combined_task)
-        evaluator_response= True
-        # evaluator_response = json.loads(samanta_content_evaluator(API_KEY, agenda_title,data=combined_task_json ))
+        # evaluator_response= True
+        # evaluator_response = json.loads(samanta_content_evaluator(API_KEY, agenda_title,aggregate_agenda ))
         # if not evaluator_response["success"]:
         #     return Response({
         #         "success": False,
@@ -8863,20 +8854,14 @@ class WeeklyAgenda(APIView):
             "company_id": company_id,
             "active": True,
             "status": True,
-            "lead_approval":lead_approval,
-            "sub_task":task_with_time,
-            "actual_time":actual_time,
+            "lead_approval":False,
             "project": project,
             "sub_project":sub_project,
+            "timeline": timeline,
+            "aggregate_agenda": aggregate_agenda,
             "records": [{"record": "1", "type": "overall"}]
         }
         response = json.loads(datacube_data_insertion(API_KEY, DB_Name, sub_project, data))
-        
-        # data2={
-        #     "sub_tasks":task_with_time,
-        #     "agenda_id":response["data"]["inserted_id"]
-        # }
-        # response2 = json.loads(datacube_data_insertion(API_KEY, "team_management_weekly_agenda_db","reports", data=data2))
         if not response["success"]:
             return Response({
                 "success": False,
