@@ -8498,7 +8498,8 @@ class dashboard_services(APIView):
                     "error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
         update_field={
             "leave_start":request.data.get("leave_start"),
-            "leave_end":request.data.get("leave_end")
+            "leave_end":request.data.get("leave_end"),
+            "status":"Leave"
             }
         candidate_report=dowellconnection(
                 *candidate_management_reports, "update", field, update_field)
@@ -8954,7 +8955,7 @@ class WeeklyAgenda(APIView):
     def all_weekly_agendas(self,request):
         limit = request.GET.get('limit')
         offset = request.GET.get('offset')
-        project = request.data.get('project')
+        project = request.GET.get('project')
         sub_project = request.GET.get('sub_project')
         if project:
             data = {"project":project}
