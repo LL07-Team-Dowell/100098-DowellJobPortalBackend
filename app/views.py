@@ -42,7 +42,8 @@ from .helper import (
     datacube_data_insertion,
     datacube_data_retrival,
     samanta_content_evaluator,
-    datacube_add_collection
+    datacube_add_collection,
+    datacube_data_update
 
 )
 from .serializers import (
@@ -92,7 +93,8 @@ from .serializers import (
     GetWeeklyAgendaByIdSerializer,
     GetWeeklyAgendasSerializer,
     leaveapproveserializers,
-    AddCollectionSerializer
+    AddCollectionSerializer,
+    agendaapproveserializer
 )
 from .authorization import (
     verify_user_token,
@@ -8785,6 +8787,8 @@ class WeeklyAgenda(APIView):
             return self.weekly_agenda_by_id(request)
         elif type_request == "all_weekly_agendas":
             return self.all_weekly_agendas(request)
+        elif type_request == "approve_group_lead_agenda":
+            return self.approve_group_lead_agenda(request)
         else:
             return self.handle_error(request)
         
@@ -8988,6 +8992,63 @@ class WeeklyAgenda(APIView):
             "response": response["data"]
         }, status=status.HTTP_200_OK)
 
+    def approve_group_lead_agenda(self,request):
+        agenda_id = request.GET.get('agenda_id')
+        sub_project = request.GET.get('sub_project')
+        # print(sub_project)
+        # print(agenda_id)
+
+        data={
+            "agenda_id":agenda_id,
+            "sub_project":sub_project
+        }
+
+        field = {
+            "_id": agenda_id,
+        }
+
+        update_data = {
+            "lead_approval": "True",
+        }
+
+        serializer=agendaapproveserializer(data=data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"posting invalid data",
+                "errors":serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)
+
+        
+        response = json.loads(datacube_data_retrival(API_KEY,DB_Name,sub_project,data=field,limit=40,offset=0))
+        
+        if response["data"][0]["lead_approval"]:
+            return Response({
+                "success":False,
+                "message":"Lead agenda is already approved"
+            },status=status.HTTP_400_BAD_REQUEST)
+            
+        datacube_response = json.loads(datacube_data_update(API_KEY,DB_Name,coll_name=sub_project,query=field,update_data=update_data))
+        
+        if not datacube_response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to approve the group lead agenda",
+                "database_response": {
+                    "success": datacube_response["success"],
+                    "message": datacube_response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Weekly agenda was approved successfully",
+            "database_response": {
+                "success": datacube_response["success"],
+                "message": datacube_response["message"]
+            },
+            "response": datacube_response["data"]
+        }, status=status.HTTP_200_OK)
     
     """HANDLE ERROR"""
     def handle_error(self, request): 
@@ -9029,6 +9090,7 @@ class Db_operations(APIView):
         },status=status.HTTP_400_BAD_REQUEST)
 
         response=json.loads(datacube_add_collection(API_KEY,DB_Name,coll_names,num_collections))
+        
         if not response["success"]:
             return Response({
                 "success":False,
