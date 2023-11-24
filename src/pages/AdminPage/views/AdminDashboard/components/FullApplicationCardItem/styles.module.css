@@ -109,7 +109,7 @@
     font-family: 'Poppins', sans-serif;
     display: flex;
     align-items: flex-start;
-    gap: 1.7rem;
+    gap: 1.2rem;
     flex-direction: column;
     max-height: 70%;
     scrollbar-width: thin;
