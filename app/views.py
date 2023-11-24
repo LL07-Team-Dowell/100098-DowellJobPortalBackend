@@ -3002,22 +3002,19 @@ class task_module(APIView):
             if project:
                 field["project"] = project
 
-            print("1111",field)
-
             filtered_tasks = []
             response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
             response = json.loads(response_json)
-            print(response)
             for task in response.get("data", []):
                 if "task_created_date" in task and task["task_created_date"]:
                     try:
                         task_created_date = datetime.strptime(task["task_created_date"], "%Y-%m-%d")
 
-
                         if start_date <= task_created_date <= end_date:
                             filtered_tasks.append(task)
                     except ValueError as error:
                         print("Error parsing task_created_date:", error)
+                        pass
 
             return Response({
                 "success": True,
