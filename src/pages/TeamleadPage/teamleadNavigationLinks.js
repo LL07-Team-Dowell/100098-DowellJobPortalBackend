@@ -3,6 +3,7 @@ import { ImStack } from "react-icons/im";
 import { GiTeamIdea } from "react-icons/gi";
 import { AiOutlinePlus } from "react-icons/ai";
 import { RiFileList3Line } from "react-icons/ri";
+import { TfiAgenda } from "react-icons/tfi";
 
 export const teamleadNavigationLinks = [
   {
@@ -52,6 +53,11 @@ export const groupLeadNavigationLinks = [
     linkAddress: "/create-task",
     icon: <GiTeamIdea />,
     text: "Teams",
+  },
+  {
+    linkAddress: "/agenda",
+    icon: <TfiAgenda />,
+    text: "Agenda",
   },
   // {
   //   linkAddress: "/user",

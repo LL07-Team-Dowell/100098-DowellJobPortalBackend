@@ -128,7 +128,7 @@ const CreateTaskScreen = ({
           usersWithTasks
           .sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date))
         );
-        setAllSubprojects(res[2]);
+        setAllSubprojects(res[2].reverse());
       })
       .catch((err) => {
         console.log(err);

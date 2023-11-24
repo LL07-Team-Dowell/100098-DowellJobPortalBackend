@@ -75,7 +75,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
         list[0]?.project_list
       );
 
-      setAllSubprojects(res[2]);
+      setAllSubprojects(res[2].reverse());
     }).catch(err => {
       console.log(err);
       console.log('An error occured trying to fetch teams or projects for candidate');

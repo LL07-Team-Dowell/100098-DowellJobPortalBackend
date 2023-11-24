@@ -99,6 +99,9 @@ import WorkLogRequestGrouplead from "./pages/GroupLeadPage/views/WorklogRequests
 import LogRequestLanding from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestLanding";
 import WorkLogRequestTeamLead from "./pages/TeamleadPage/views/WorkLogRequest/WorklogRequestTeamLead";
 import ProjectLogRequest from "./pages/ProjectLeadPage/views/LogRequests/ProjectLogRequest";
+import GroupleadAgendaLanding from "./pages/GroupLeadPage/views/Agenda/AgendaLanding";
+import NewGroupleadAgenda from "./pages/GroupLeadPage/views/Agenda/NewAgenda";
+import GroupleadTrackAgenda from "./pages/GroupLeadPage/views/Agenda/TrackAgenda";
 
 function App() {
   // console.log = () => {};
@@ -1404,6 +1407,39 @@ function App() {
           }
         />
 
+        <Route 
+          path='/agenda'
+          element={
+            <CandidateContextProvider>
+              <ValuesProvider>
+                <GroupleadAgendaLanding />
+              </ValuesProvider>
+            </CandidateContextProvider>
+          }
+        />
+
+        <Route 
+          path='/new-agenda'
+          element={
+            <CandidateContextProvider>
+              <ValuesProvider>
+                <NewGroupleadAgenda />
+              </ValuesProvider>
+            </CandidateContextProvider>
+          }
+        />
+
+        <Route 
+          path='/track-agenda'
+          element={
+            <CandidateContextProvider>
+              <ValuesProvider>
+                <GroupleadTrackAgenda />
+              </ValuesProvider>
+            </CandidateContextProvider>
+          }
+        />
+        
         <Route
           path='/create-task/create-new-team/'
           element={
