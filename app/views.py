@@ -2916,7 +2916,6 @@ class task_module(APIView):
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
 
         def try_parse_date(date_str):
-    # List of date formats to try
             date_formats = ["%m/%d/%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%m/%d/%Y", "%Y-%m-%d"]
 
             for date_format in date_formats:
@@ -2988,6 +2987,16 @@ class task_module(APIView):
             subproject = request.GET.get('subproject')
             project = request.GET.get('project')
 
+            def try_parse_date(date_str):
+                date_formats = ["%m/%d/%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%m/%d/%Y", "%Y-%m-%d"]
+
+                for date_format in date_formats:
+                    try:
+                        return datetime.strptime(set_date_format(date_str), date_format)
+                    except ValueError:
+                        pass
+                return None
+
     # Check for required parameters
             if not company_id:
                 return Response(
@@ -3015,22 +3024,20 @@ class task_module(APIView):
             if project:
                 field["project"] = project
 
-            print("1111",field)
+    
 
             filtered_tasks = []
             response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
             response = json.loads(response_json)
             print(response)
-            for task in response.get("data", []):
-                if "task_created_date" in task and task["task_created_date"]:
+            for task in response["data"]:
+                if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
                     try:
-                        task_created_date = datetime.strptime(task["task_created_date"], "%Y-%m-%d ")
-
-
-                        if start_date <= task_created_date <= end_date:
+                        task_created_date = try_parse_date(task["task_created_date"])
+                        if task_created_date is not None and start_date <= task_created_date <= end_date:
                             filtered_tasks.append(task)
-                    except ValueError as error:
-                        print("Error parsing task_created_date:", error)
+                    except Exception as error:
+                        print(error)
 
             return Response({
                 "success": True,
