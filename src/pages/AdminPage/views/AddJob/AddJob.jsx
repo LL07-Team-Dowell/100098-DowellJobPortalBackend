@@ -3,7 +3,11 @@ import { BsFillBookmarkFill } from "react-icons/bs";
 import { MdArrowBackIos } from "react-icons/md";
 import { MdOutlineAddCircle } from "react-icons/md";
 import { MdCancel } from "react-icons/md";
-import { addInternalJob, addNewJob } from "../../../../services/adminServices";
+import {
+  addInternalJob,
+  addNewJob,
+  regionalAssociatesJob,
+} from "../../../../services/adminServices";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
@@ -18,6 +22,10 @@ import DropdownButton from "../../../TeamleadPage/components/DropdownButton/Drop
 import { useEffect } from "react";
 import AddJobDescription from "./AddDescription";
 import axios from "axios";
+import {
+  getContinents,
+  getRegion,
+} from "../../../../services/locationServices";
 
 const AddJob = ({ subAdminView }) => {
   const { currentUser } = useCurrentUserContext();
@@ -66,14 +74,16 @@ const AddJob = ({ subAdminView }) => {
   const [thirdOption, setThirdOption] = useState("");
   const [fourthOption, setFourthOption] = useState("");
   const [fifthOption, setFifthOption] = useState("");
-  const [sixthOption, setSixthOption] = useState("");
+  const [cityOption, setCityOption] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [currency, setCurrency] = useState("Select Currency");
   const [isValidCurrency, setIsValidCurrency] = useState(false);
   const currencyList = ["USD", "NGN", "GBP", "INR"];
   const [activeLinkTab, setActiveLinkTab] = useState("Public");
   const [continents, setContinents] = useState([]);
+  const [continentState, setContinentState] = useState([]);
   const [countryState, setCountryState] = useState([]);
+  const [cityState, setCityState] = useState([]);
 
   const jobTitleRef = useRef(null);
   const skillsRef = useRef(null);
@@ -179,13 +189,12 @@ const AddJob = ({ subAdminView }) => {
 
   useEffect(() => {
     setIsLoading(true);
-    axios
-      .get(
-        "https://100074.pythonanywhere.com/continents/johnDoe123/haikalsb1234/100074/?format=json"
-      )
+    getContinents()
       .then((response) => {
         // console.log(response.data);
-        setContinents(response.data);
+        setContinents(
+          response.data.filter((item) => item.name !== "default continent")
+        );
         setIsLoading(false);
       })
       .catch((error) => {
@@ -193,6 +202,19 @@ const AddJob = ({ subAdminView }) => {
         console.log(error);
       });
   }, []);
+
+  useEffect(() => {
+    if (!countryState) return;
+
+    getRegion(countryState)
+      .then((response) => {
+        console.log(response.data);
+        setCityState(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [countryState]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -209,6 +231,8 @@ const AddJob = ({ subAdminView }) => {
       "job_category",
       "type_of_opening",
       "module",
+      "country",
+      "city",
       "qualification",
       "general_terms",
       "technical_specification",
@@ -217,10 +241,7 @@ const AddJob = ({ subAdminView }) => {
       "other_info",
     ];
 
-    if (newJob.job_category === "research_associate") {
-      return toast.info("Still under development");
-    }
-    if (newJob.job_category === "") {
+    if (newJob.job_category === "" && currentTab !== "Regional Associate") {
       toast.info("Please select a category type");
       return;
     } else if (fields.find((field) => newJob[field] === "")) {
@@ -229,7 +250,7 @@ const AddJob = ({ subAdminView }) => {
       );
       return;
     }
-    if (newJob.type_of_opening === "") {
+    if (newJob.type_of_opening === "" && currentTab !== "Regional Associate") {
       toast.info("Please select type of opening");
       return;
     } else if (fields.find((field) => newJob[field] === "")) {
@@ -238,7 +259,7 @@ const AddJob = ({ subAdminView }) => {
       );
       return;
     }
-    if (newJob.type_of_job === "") {
+    if (newJob.type_of_job === "" && currentTab !== "Regional Associate") {
       toast.info("Please select type of job");
       return;
     } else if (fields.find((field) => newJob[field] === "")) {
@@ -247,7 +268,7 @@ const AddJob = ({ subAdminView }) => {
       );
       return;
     }
-    if (newJob.module === "") {
+    if (newJob.module === "" && currentTab !== "Regional Associate") {
       toast.info("Please select Module");
       return;
     } else if (fields.find((field) => newJob[field] === "")) {
@@ -387,6 +408,33 @@ const AddJob = ({ subAdminView }) => {
       return;
     }
 
+    if (currentTab === "Regional Associate") {
+      try {
+        const response = await regionalAssociatesJob({
+          ...newJob,
+          job_category: "regional_associate",
+          payment: `${newJob.payment} ${currency}`,
+          country: `${newJob.country}`,
+          city: `${newJob.city}`,
+        });
+        console.log(response.data);
+
+        if (response.status === 201) {
+          setJobs((prevValue) => [
+            { ...newJob, newly_created: true },
+            ...prevValue,
+          ]);
+          toast.success("Job created successfully");
+          navigate("/");
+        } else {
+          toast.info("Something went wrong");
+        }
+      } catch (error) {
+        toast.error("Something went wrong");
+      }
+      return;
+    }
+
     setIsLoading(false);
   };
 
@@ -469,11 +517,14 @@ const AddJob = ({ subAdminView }) => {
           handleAddTerms={handleAddTerms}
           isLoading={isLoading}
           handleSubmit={handleSubmit}
-          setSixthOption={setSixthOption}
-          sixthOption={sixthOption}
           continents={continents}
           countryState={countryState}
           setCountryState={setCountryState}
+          cityOption={cityOption}
+          cityState={cityState}
+          continentState={continentState}
+          setContinentState={setContinentState}
+          setCityOption={setCityOption}
         />
       </div>
     </StaffJobLandingLayout>
