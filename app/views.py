@@ -2905,6 +2905,7 @@ class task_module(APIView):
             )
 
     
+    
     def get_all_task_details(self, request):    
         data = request.data
         company_id = data.get("company_id")
@@ -2913,6 +2914,17 @@ class task_module(APIView):
         end_date_str = request.data.get('end_date')
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+        def try_parse_date(date_str):
+    # List of date formats to try
+            date_formats = ["%m/%d/%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%m/%d/%Y", "%Y-%m-%d"]
+
+            for date_format in date_formats:
+                try:
+                    return datetime.strptime(set_date_format(date_str), date_format)
+                except ValueError:
+                    pass
+            return None
 
         if not data.get("company_id"):
             return Response(
@@ -2942,23 +2954,22 @@ class task_module(APIView):
         filtered_tasks=[]
         response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
         response = json.loads(response_json)
+        print(response)
         for task in response["data"]:
             if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
                 try:
-                    task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%Y-%m/%d")
-                    
-                    if task_created_date >= start_date and task_created_date <= end_date:
-                        print(task_created_date, start_date, end_date)
+                    task_created_date = try_parse_date(task["task_created_date"])
+                    if task_created_date is not None and start_date <= task_created_date <= end_date:
                         filtered_tasks.append(task)
-                        pass
                 except Exception as error:
                     print(error)
+
         return Response({
-                "success": True,
-                "message": "Get all task details",
-                "num_of_tasks":len(filtered_tasks),
-                "task_details": filtered_tasks
-            })           
+            "success": True,
+            "message": "Get all task details",
+            "num_of_tasks": len(filtered_tasks),
+            "task_details": filtered_tasks
+        })         
 
     def get_subproject_tasks(self, request):    
             try:
@@ -3013,7 +3024,7 @@ class task_module(APIView):
             for task in response.get("data", []):
                 if "task_created_date" in task and task["task_created_date"]:
                     try:
-                        task_created_date = datetime.strptime(task["task_created_date"], "%Y-%m-%d")
+                        task_created_date = datetime.strptime(task["task_created_date"], "%Y-%m-%d ")
 
 
                         if start_date <= task_created_date <= end_date:
