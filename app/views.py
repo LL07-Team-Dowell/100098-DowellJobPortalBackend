@@ -1761,7 +1761,7 @@ class lead_reject_candidate(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class create_task(APIView):
     def max_updated_date(self, updated_date):
-        print(updated_date)
+        # print(updated_date)
         task_updated_date = datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
         )
@@ -2358,7 +2358,7 @@ class approve_task(APIView):
                     {"_id": id},
                     {"max_updated_date": max_updated_date},
                 )
-                print("response:", res)
+                # print("response:", res)
                 resp = dowellconnection(
                     *task_details_module, "fetch", field, update_field
                 )
@@ -2383,7 +2383,7 @@ class approve_task(APIView):
     @verify_user_token
     def patch(self, request, user):
         data = request.data
-        print(data)
+        # print(data)
         if data:
             field = {"_id": data.get("document_id")}
             update_field = {
@@ -2953,7 +2953,7 @@ class task_module(APIView):
         filtered_tasks=[]
         response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
         response = json.loads(response_json)
-        print(response)
+        # print(response)
         for task in response["data"]:
             if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
                 try:
@@ -3394,7 +3394,7 @@ class edit_team_task(APIView):
                 update_field["completed_on"] = self.get_current_datetime(
                     datetime.now()
                 )
-            print(update_field, "=====")
+            # print(update_field, "=====")
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
@@ -4883,7 +4883,7 @@ class public_product(APIView):
             else:
                 data = []
                 for res in dowellresponse["data"]:
-                    print(res.keys(), "========")
+                    # print(res.keys(), "========")
                     try:
                         if (
                             "public_link_name" in res.keys()
@@ -8351,7 +8351,7 @@ class Product_Services_API(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class dashboard_services(APIView):
     def post(self, request):
-        print()
+        # print()
         type_request = request.GET.get("type")
 
         if type_request == "update_status":
