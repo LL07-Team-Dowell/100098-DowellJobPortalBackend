@@ -703,3 +703,7 @@ class AddCollectionSerializer(serializers.Serializer):
     api_key = serializers.CharField(max_length=100)
     coll_names = serializers.CharField()
     num_collections = serializers.IntegerField()
+
+class agendaapproveserializer(serializers.Serializer):
+    agenda_id=serializers.CharField(max_length=200)
+    sub_project=serializers.CharField(max_length=200)
