@@ -106,7 +106,7 @@ const TaskScreen = ({
         res[0]?.data?.task_details
       );
       setLoading(false);
-      setAllSubprojects(res[1]);
+      setAllSubprojects(res[1].reverse());
 
       if (loadProjects) {
         const list = res[2]?.data

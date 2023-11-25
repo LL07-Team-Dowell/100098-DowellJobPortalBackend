@@ -339,7 +339,7 @@
   .add__New__Task__Container h1.title__Item {
     font-size: 2rem;
   }
-  
+
   .add__New__Task__Container {
     padding: 2%;
     width: 78%;
@@ -467,19 +467,81 @@
 .dio{
   display: none;
 }
-.Information_notes_subprojects{
+
+.Information_notes_subprojects {
   display: flex;
   flex-direction: row;
   justify-content: start;
   gap: 5px;
   font-family: "Inter", sans-serif;
 }
-.Information_notes_subprojects_button{
+
+.Information_notes_subprojects_button {
   border: none;
   border-radius: 10px;
   padding: 10px 10px;
   text-align: center;
-  border-radius: 4px;
-  margin-bottom: 5px;
-  margin-top: 5px;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  background-color: transparent;
+  font-size: 15px;
+  color: black;
+  cursor: pointer;
+}
+
+.overlay_main_div {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notes_overlay_div {
+  width: 40%;
+  margin-top: 0 auto;
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 1rem;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+}
+
+.notes_overlay_div p b {
+  font-weight: 700;
+  color: var(--green-color);
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+}
+
+.notes_overlay_div p {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.9rem;
+  line-height: 2em;
+  /* margin-top: 0.4rem; */
+}
+
+.log__Notess {
+  width: 94%;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 0.875rem;
+  margin-top: 0.2rem;
+}
+
+.log__Notess li b {
+  font-size: 0.875rem;
+}
+
+@media screen and (max-width: 400px) {
+  .notes_overlay_div {
+    width: 90%;
+  }
 }

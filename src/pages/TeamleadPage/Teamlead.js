@@ -306,7 +306,7 @@ const Teamlead = ({ isGrouplead }) => {
           )
           setLoading(false);
           setCandidatesDataLoaded(true);
-          setAllSubprojects(res[2]);
+          setAllSubprojects(res[2].reverse());
         })
         .catch((err) => {
           console.log(err);
@@ -437,7 +437,7 @@ const Teamlead = ({ isGrouplead }) => {
           )
         )
         setLoading(false);
-        setAllSubprojects(res[4]);
+        setAllSubprojects(res[4].reverse());
       })
       .catch((err) => {
         console.log(err);

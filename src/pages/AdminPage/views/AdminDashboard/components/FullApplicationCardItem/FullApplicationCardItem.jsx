@@ -13,14 +13,14 @@ import { JOB_APPLICATION_CATEGORIES } from "../../../../../CandidatePage/utils/j
 import Select from "react-select";
 import { getSettingUserProject } from "../../../../../../services/hrServices";
 import { useCurrentUserContext } from "../../../../../../contexts/CurrentUserContext";
-import { updateCandidateApplicationDetail } from "../../../../../../services/adminServices";
+import { adminDeleteApplication, updateCandidateApplicationDetail } from "../../../../../../services/adminServices";
 
 export default function FullApplicationCardItem({ application, activeStatus }) {
-    const [ showEditOptions, setShowEditOptions ] = useState(false);
-    const [ showEditModal, setShowEditModal ] = useState(false);
-    const [ itemBeignEdited, setItemBeingEdited ] = useState(null);
+    const [showEditOptions, setShowEditOptions] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [itemBeignEdited, setItemBeingEdited] = useState(null);
     const {
-        applications, 
+        applications,
         setApplications,
         setProjectsLoading,
         projectsAdded,
@@ -29,7 +29,9 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
         projectsLoaded,
     } = useJobContext();
     const { currentUser } = useCurrentUserContext();
-    const [ editLoading, setEditLoading ] = useState(false);
+    const [editLoading, setEditLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [leaveOverlayVisibility, setLeaveOverlayVisibility] = useState(false);
 
     useEffect(() => {
         if (!projectsLoaded) {
@@ -37,21 +39,21 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
 
             getSettingUserProject().then(res => {
                 const projectsGotten = res?.data
-                ?.filter(
-                  (project) =>
-                    project?.data_type === currentUser?.portfolio_info[0]?.data_type &&
-                    project?.company_id === currentUser?.portfolio_info[0]?.org_id &&
-                    project.project_list &&
-                    project.project_list.every(
-                      (listing) => typeof listing === "string"
+                    ?.filter(
+                        (project) =>
+                            project?.data_type === currentUser?.portfolio_info[0]?.data_type &&
+                            project?.company_id === currentUser?.portfolio_info[0]?.org_id &&
+                            project.project_list &&
+                            project.project_list.every(
+                                (listing) => typeof listing === "string"
+                            )
                     )
-                )
-                ?.reverse()
-        
+                    ?.reverse()
+
                 if (projectsGotten.length > 0) {
                     setProjectsAdded(projectsGotten);
                 }
-                
+
                 setProjectsLoading(false);
                 setProjectsLoaded(true);
 
@@ -87,9 +89,9 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
 
     const handleUpdateApplication = async () => {
         if (
-            itemBeignEdited?.status === candidateStatuses.ONBOARDING && 
+            itemBeignEdited?.status === candidateStatuses.ONBOARDING &&
             (
-                !itemBeignEdited?.project || 
+                !itemBeignEdited?.project ||
                 !Array.isArray(itemBeignEdited?.project) ||
                 (Array.isArray(itemBeignEdited?.project) && itemBeignEdited?.length < 1)
             )
@@ -102,7 +104,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
             try {
                 const updatedStatRes = (
                     await updateCandidateApplicationDetail(
-                        'update_status', 
+                        'update_status',
                         application._id,
                         {
                             status: itemBeignEdited?.status
@@ -114,21 +116,21 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                 console.log('Err updating status');
             }
         }
-        
+
         if (itemBeignEdited?.job_category !== application.job_category) {
             try {
                 const updatedCategoryRes = (
                     await updateCandidateApplicationDetail(
-                        'update_job_category', 
-                        application._id, 
-                        { 
+                        'update_job_category',
+                        application._id,
+                        {
                             job_category: itemBeignEdited?.job_category
                         }
                     )
                 ).data;
                 console.log(updatedCategoryRes);
             } catch (error) {
-                console.log('Err updating category');   
+                console.log('Err updating category');
             }
         }
 
@@ -145,6 +147,39 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
         toast.success(`Successfully edited application of ${application?.applicant}`)
     }
 
+    const handleDeleteApplication = async () => {
+        if (deleteLoading) return
+
+        const currentApplications = applications?.slice();
+        setDeleteLoading(true);
+
+        const dataToPost = {
+            application_id: application._id,
+        }
+
+        try {
+            const res = await (await adminDeleteApplication(dataToPost)).data;
+            console.log('delete application response: ', res);
+
+            setApplications(currentApplications.filter(app => app._id !== application._id));
+            toast.success(`Successfully deleted application of ${application?.applicant}`);
+            setDeleteLoading(false);
+
+            setShowEditOptions(false);
+
+        } catch (error) {
+            console.log('err deleting');
+            setDeleteLoading(false);
+            toast.error(`An error occured while trying to delete application of ${application?.applicant}`)
+        }
+    }
+
+    const handleLeaveItemClick = () => {
+        setLeaveOverlayVisibility(true);
+    }
+    const handleClosingLeaveItemClick = () => {
+        setLeaveOverlayVisibility(false);
+    }
 
     return <>
         <div className={styles.full__Application__Item}>
@@ -152,7 +187,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                 <HiOutlineDotsVertical />
             </div>
             <div>
-                <Avatar 
+                <Avatar
                     name={application.applicant.slice(0, 1) + ' ' + application.applicant.split(' ')[application.applicant.split(' ').length - 1]?.slice(0, 1)}
                     round={true}
                     size="5rem"
@@ -165,9 +200,9 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
             <div className={activeStatus ? styles.active : styles.inactive}>
                 <p>
                     {
-                        activeStatus ? 
-                            'Active' 
-                        :
+                        activeStatus ?
+                            'Active'
+                            :
                             'Inactive'
                     }
                 </p>
@@ -178,21 +213,49 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                 <p>Current Status: {changeToTitleCase(application?.status?.replace('_', ' '))}</p>
                 <p>Job: {application.job_title}</p>
                 {
-                    application.project && Array.isArray(application.project) && 
+                    application.project && Array.isArray(application.project) &&
                     <p>Project: {application.project[0]}</p>
                 }
             </div>
             {
                 showEditOptions && <ul className={styles.update__Listing}>
                     <li className={styles.item} onClick={handleUpdateItemClick}>Update</li>
-                    <li className={styles.delete} onClick={() => toast.info('feature in development')}>Delete</li>
+                    {
+                        application.status === candidateStatuses.ONBOARDING &&
+                        <li className={styles.item} onClick={handleLeaveItemClick}>Assign leave</li>
+                    }
+                    <li className={styles.delete} onClick={handleDeleteApplication}>{deleteLoading ? 'Deleting..' : 'Delete'}</li>
                 </ul>
+            }
+            {
+                leaveOverlayVisibility && <Overlay>
+                    <div className={styles.edit__Modal}>
+                        <AiOutlineClose
+                            onClick={handleClosingLeaveItemClick}
+                            className={styles.edit__Icon}
+                        />
+                        <h2>Set Leave</h2>
+                        <label>
+                            <span>Start Date:</span>
+                            <input
+                                type="date"
+                            />
+                        </label>
+                        <label>
+                            <span>End Date:</span>
+                            <input
+                                type="date"
+                            />
+                        </label>
+                        <button className={styles.edit__Btn}>Submit</button>
+                    </div>
+                </Overlay>
             }
             {
                 showEditModal && <Overlay>
                     <div className={styles.edit__Modal}>
-                        <AiOutlineClose 
-                            onClick={handleCloseModal} 
+                        <AiOutlineClose
+                            onClick={handleCloseModal}
                             className={styles.edit__Icon}
                         />
                         <h2>Edit Application for {itemBeignEdited?.applicant}</h2>
@@ -202,8 +265,8 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                             <select className={styles.select__Item} value={itemBeignEdited?.status} onChange={({ target }) => handleUpdateApplicationDetail('status', target.value)}>
                                 {
                                     React.Children.toArray(Object.keys(candidateStatuses || {}).map(key => {
-                                        return <option 
-                                            value={candidateStatuses[key]} 
+                                        return <option
+                                            value={candidateStatuses[key]}
                                             selected={itemBeignEdited?.status === candidateStatuses[key]}
                                         >
                                             {changeToTitleCase(candidateStatuses[key].replace('_', ' '))}
@@ -225,26 +288,26 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                                         </option>
                                     }))
                                 }
-                            </select>    
+                            </select>
                         </label>
                         {
-                            itemBeignEdited?.status === candidateStatuses.ONBOARDING && 
+                            itemBeignEdited?.status === candidateStatuses.ONBOARDING &&
                             <label>
                                 <span>Edit project</span>
-                                <Select 
+                                <Select
                                     value={
-                                        itemBeignEdited?.project && Array.isArray(itemBeignEdited?.project) ? 
-                                            itemBeignEdited?.project?.map(item => { return { label: item, value: item }}) 
-                                            : 
+                                        itemBeignEdited?.project && Array.isArray(itemBeignEdited?.project) ?
+                                            itemBeignEdited?.project?.map(item => { return { label: item, value: item } })
+                                            :
                                             []
-                                        }
+                                    }
                                     options={
                                         projectsLoaded && projectsAdded[0] && projectsAdded[0]?.project_list ?
                                             [
-                                                ...projectsAdded[0]?.project_list?.sort((a, b) => a.localeCompare(b))?.map(project => { return { label: project, value: project }})
+                                                ...projectsAdded[0]?.project_list?.sort((a, b) => a.localeCompare(b))?.map(project => { return { label: project, value: project } })
                                             ]
-                                        :
-                                        []
+                                            :
+                                            []
                                     }
                                     isMulti={true}
                                     onChange={(val) => handleUpdateApplicationDetail('project', val.map(item => item.value))}
@@ -252,21 +315,21 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                                 />
                             </label>
                         }
-                        <button 
-                            className={styles.edit__Btn} 
+                        <button
+                            className={styles.edit__Btn}
                             disabled={editLoading ? true : false}
                             onClick={handleUpdateApplication}
                         >
                             <span>
                                 {
-                                    editLoading ? 
-                                        <LoadingSpinner 
+                                    editLoading ?
+                                        <LoadingSpinner
                                             color={'#fff'}
                                             width={'1.3rem'}
                                             height={'1.3rem'}
                                         />
-                                    :
-                                    'Update'
+                                        :
+                                        'Update'
                                 }
                             </span>
                         </button>

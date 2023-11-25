@@ -4,7 +4,7 @@
     border-radius: 8px;
     padding: 2rem 1.5rem;
     width: calc(calc(100% - 3rem) / 4);
-    height: 28rem;   
+    height: 28rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -109,7 +109,7 @@
     font-family: 'Poppins', sans-serif;
     display: flex;
     align-items: flex-start;
-    gap: 1.7rem;
+    gap: 1.2rem;
     flex-direction: column;
     max-height: 70%;
     scrollbar-width: thin;
@@ -117,20 +117,20 @@
 }
 
 .edit__Modal::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+    width: 8px;
+    height: 8px;
 }
 
 .edit__Modal::-webkit-scrollbar-track {
-  background: #efefef;
+    background: #efefef;
 }
 
 .edit__Modal::-webkit-scrollbar-thumb {
-  background: #b8b8b8;
+    background: #b8b8b8;
 }
 
 .edit__Modal::-webkit-scrollbar-thumb:hover {
-  background: #005734;
+    background: #005734;
 }
 
 .edit__Icon {
@@ -157,6 +157,14 @@
     flex-direction: column;
 }
 
+.edit__Modal input {
+    width: 40%;
+    padding: 12px;
+    border: 1px solid #005734;
+    border-radius: 3px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+}
 
 .select__Item {
     background-color: #fff;

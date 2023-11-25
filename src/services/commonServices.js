@@ -47,3 +47,15 @@ export const getAllUpdateTaskRequests = async (companyId) => {
 export const getWorklogDetailsWithinTimeframe = async (data) => {
     return await currentBackendAxiosInstance.post(`/task_module/?type=task_details`, data)
 }
+
+export const addNewAgenda = async (data) => {
+    return await currentBackendAxiosInstance.post('/weekly_agenda/?type=add_weekly_update', data)
+}
+
+export const getWeeklyAgenda = async (start, end, subproject, project, data) => {
+    return await currentBackendAxiosInstance.post(`/weekly_agenda/?type=all_weekly_agendas&limit=${end}&offset=${start}&sub_project=${subproject}&project=${project}`, data)
+}
+
+export const getWorkLogsAddedUnderSubproject = async (company_id, project, subproject, data) => {
+    return await currentBackendAxiosInstance.post(`/task_module/?type=get_subproject_tasks&company_id=${company_id}&project=${encodeURIComponent(project)}&subproject=${encodeURIComponent(subproject)}`, data)
+}
