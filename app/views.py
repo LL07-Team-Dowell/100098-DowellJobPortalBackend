@@ -42,7 +42,8 @@ from .helper import (
     datacube_data_insertion,
     datacube_data_retrival,
     samanta_content_evaluator,
-    datacube_add_collection
+    datacube_add_collection,
+    datacube_data_update
 
 )
 from .serializers import (
@@ -92,7 +93,8 @@ from .serializers import (
     GetWeeklyAgendaByIdSerializer,
     GetWeeklyAgendasSerializer,
     leaveapproveserializers,
-    AddCollectionSerializer
+    AddCollectionSerializer,
+    agendaapproveserializer
 )
 from .authorization import (
     verify_user_token,
@@ -2903,6 +2905,7 @@ class task_module(APIView):
             )
 
     
+    
     def get_all_task_details(self, request):    
         data = request.data
         company_id = data.get("company_id")
@@ -2911,6 +2914,17 @@ class task_module(APIView):
         end_date_str = request.data.get('end_date')
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+        def try_parse_date(date_str):
+    # List of date formats to try
+            date_formats = ["%m/%d/%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%m/%d/%Y", "%Y-%m-%d"]
+
+            for date_format in date_formats:
+                try:
+                    return datetime.strptime(set_date_format(date_str), date_format)
+                except ValueError:
+                    pass
+            return None
 
         if not data.get("company_id"):
             return Response(
@@ -2940,23 +2954,22 @@ class task_module(APIView):
         filtered_tasks=[]
         response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
         response = json.loads(response_json)
+        print(response)
         for task in response["data"]:
             if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
                 try:
-                    task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%Y-%m/%d")
-                    
-                    if task_created_date >= start_date and task_created_date <= end_date:
-                        print(task_created_date, start_date, end_date)
+                    task_created_date = try_parse_date(task["task_created_date"])
+                    if task_created_date is not None and start_date <= task_created_date <= end_date:
                         filtered_tasks.append(task)
-                        pass
                 except Exception as error:
                     print(error)
+
         return Response({
-                "success": True,
-                "message": "Get all task details",
-                "num_of_tasks":len(filtered_tasks),
-                "task_details": filtered_tasks
-            })           
+            "success": True,
+            "message": "Get all task details",
+            "num_of_tasks": len(filtered_tasks),
+            "task_details": filtered_tasks
+        })         
 
     def get_subproject_tasks(self, request):    
             try:
@@ -3008,7 +3021,7 @@ class task_module(APIView):
             for task in response.get("data", []):
                 if "task_created_date" in task and task["task_created_date"]:
                     try:
-                        task_created_date = datetime.strptime(task["task_created_date"], "%Y-%m-%d")
+                        task_created_date = datetime.strptime(task["task_created_date"], "%Y-%m-%d ")
 
                         if start_date <= task_created_date <= end_date:
                             filtered_tasks.append(task)
@@ -8851,6 +8864,8 @@ class WeeklyAgenda(APIView):
             return self.weekly_agenda_by_id(request)
         elif type_request == "all_weekly_agendas":
             return self.all_weekly_agendas(request)
+        elif type_request == "approve_group_lead_agenda":
+            return self.approve_group_lead_agenda(request)
         else:
             return self.handle_error(request)
         
@@ -9054,6 +9069,63 @@ class WeeklyAgenda(APIView):
             "response": response["data"]
         }, status=status.HTTP_200_OK)
 
+    def approve_group_lead_agenda(self,request):
+        agenda_id = request.GET.get('agenda_id')
+        sub_project = request.GET.get('sub_project')
+        # print(sub_project)
+        # print(agenda_id)
+
+        data={
+            "agenda_id":agenda_id,
+            "sub_project":sub_project
+        }
+
+        field = {
+            "_id": agenda_id,
+        }
+
+        update_data = {
+            "lead_approval": "True",
+        }
+
+        serializer=agendaapproveserializer(data=data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"posting invalid data",
+                "errors":serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)
+
+        
+        response = json.loads(datacube_data_retrival(API_KEY,DB_Name,sub_project,data=field,limit=40,offset=0))
+        
+        if response["data"][0]["lead_approval"]:
+            return Response({
+                "success":False,
+                "message":"Lead agenda is already approved"
+            },status=status.HTTP_400_BAD_REQUEST)
+            
+        datacube_response = json.loads(datacube_data_update(API_KEY,DB_Name,coll_name=sub_project,query=field,update_data=update_data))
+        
+        if not datacube_response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to approve the group lead agenda",
+                "database_response": {
+                    "success": datacube_response["success"],
+                    "message": datacube_response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Weekly agenda was approved successfully",
+            "database_response": {
+                "success": datacube_response["success"],
+                "message": datacube_response["message"]
+            },
+            "response": datacube_response["data"]
+        }, status=status.HTTP_200_OK)
     
     """HANDLE ERROR"""
     def handle_error(self, request): 
@@ -9095,6 +9167,7 @@ class Db_operations(APIView):
         },status=status.HTTP_400_BAD_REQUEST)
 
         response=json.loads(datacube_add_collection(API_KEY,DB_Name,coll_names,num_collections))
+        
         if not response["success"]:
             return Response({
                 "success":False,
