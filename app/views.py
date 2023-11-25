@@ -282,7 +282,7 @@ class auth(APIView):
     """get jwt token for authorization"""
 
     def post(self, request):
-        print(request.data.get("company_id"))
+        # print(request.data.get("company_id"))
         if not validate_id(request.data.get("company_id")):
             return Response("something went wrong ok!", status.HTTP_400_BAD_REQUEST)
         user = {
@@ -3029,7 +3029,6 @@ class task_module(APIView):
             filtered_tasks = []
             response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
             response = json.loads(response_json)
-            print(response)
             for task in response["data"]:
                 if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
                     try:
@@ -6999,7 +6998,7 @@ class Generate_Report(APIView):
                     }
                     data["personal_info"]["task_report"].append(task_r)
                 end_now = datetime.now()
-                print("time taken for task :",end_now-start_now)
+                # print("time taken for task :",end_now-start_now)
             data["data"].append(item)
             return Response(data, status=status.HTTP_201_CREATED)
         else:
@@ -8243,7 +8242,7 @@ class UpdateProjectSpentTime(APIView):
                                 field, update_field=None))
             if get_response["isSuccess"] is True:
                 total_time=get_response["data"][0]["total_time"]
-                print(total_time,"==========",get_response["data"])
+                # print(total_time,"==========",get_response["data"])
                 spent_time=get_response["data"][0]["spent_time"]+data.get("spent_time")
 
                 update_field = {
@@ -8253,7 +8252,7 @@ class UpdateProjectSpentTime(APIView):
                 response = json.loads(
                     dowellconnection(*time_detail_module, "update", {"_id":get_response["data"][0]["_id"]}, update_field)
                 )
-                print(response,"===")
+                # print(response,"===")
                 if response["isSuccess"] == True:
                     return Response(
                         {
@@ -8303,7 +8302,7 @@ class Testing_Threads(APIView):
             response = dowellconnection(
                 *thread_report_module, "fetch", field, update_field
             )
-            print(response)
+            # print(response)
             threads_response = json.loads(response)
 
             if threads_response["isSuccess"]:
@@ -8499,7 +8498,7 @@ class dashboard_services(APIView):
             "task_created_date": today_str
         }
 
-        print("Today field", field)
+        # print("Today field", field)
 
         response = dowellconnection(
             *task_details_module, "fetch", field, update_field=None)
@@ -8671,7 +8670,7 @@ class ReportDB(APIView):
             info = dowellconnection(
                 *candidate_management_reports, "fetch", field, update_field
             )
-            print(info,"====")
+            # print(info,"====")
             if json.loads(info)["isSuccess"] is True:
                 info_data=json.loads(info)["data"]
             else:
