@@ -105,7 +105,6 @@ import GroupleadTrackAgenda from "./pages/GroupLeadPage/views/Agenda/TrackAgenda
 
 function App() {
   // console.log = () => {};
-
   const {
     currentUser,
     isPublicUser,
@@ -123,6 +122,8 @@ function App() {
     reportsUserDetails,
     setReportsUserDetails,
   } = useCurrentUserContext();
+  console.log({ currentUser });
+
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
   const [candidateShortListed, setCandidateShortListed] = useState(false);
@@ -1407,7 +1408,7 @@ function App() {
           }
         />
 
-        <Route 
+        <Route
           path='/agenda'
           element={
             <CandidateContextProvider>
@@ -1418,7 +1419,7 @@ function App() {
           }
         />
 
-        <Route 
+        <Route
           path='/new-agenda'
           element={
             <CandidateContextProvider>
@@ -1429,7 +1430,7 @@ function App() {
           }
         />
 
-        <Route 
+        <Route
           path='/track-agenda'
           element={
             <CandidateContextProvider>
@@ -1439,7 +1440,7 @@ function App() {
             </CandidateContextProvider>
           }
         />
-        
+
         <Route
           path='/create-task/create-new-team/'
           element={
