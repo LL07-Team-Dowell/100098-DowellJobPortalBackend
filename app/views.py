@@ -1761,7 +1761,7 @@ class lead_reject_candidate(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class create_task(APIView):
     def max_updated_date(self, updated_date):
-        print(updated_date)
+        # print(updated_date)
         task_updated_date = datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
         )
@@ -2358,7 +2358,7 @@ class approve_task(APIView):
                     {"_id": id},
                     {"max_updated_date": max_updated_date},
                 )
-                print("response:", res)
+                # print("response:", res)
                 resp = dowellconnection(
                     *task_details_module, "fetch", field, update_field
                 )
@@ -2383,7 +2383,7 @@ class approve_task(APIView):
     @verify_user_token
     def patch(self, request, user):
         data = request.data
-        print(data)
+        # print(data)
         if data:
             field = {"_id": data.get("document_id")}
             update_field = {
@@ -2954,7 +2954,7 @@ class task_module(APIView):
         filtered_tasks=[]
         response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
         response = json.loads(response_json)
-        print(response)
+        # print(response)
         for task in response["data"]:
             if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
                 try:
@@ -3385,7 +3385,7 @@ class edit_team_task(APIView):
                 update_field["completed_on"] = self.get_current_datetime(
                     datetime.now()
                 )
-            print(update_field, "=====")
+            # print(update_field, "=====")
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
@@ -4874,7 +4874,7 @@ class public_product(APIView):
             else:
                 data = []
                 for res in dowellresponse["data"]:
-                    print(res.keys(), "========")
+                    # print(res.keys(), "========")
                     try:
                         if (
                             "public_link_name" in res.keys()
@@ -8342,7 +8342,7 @@ class Product_Services_API(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class dashboard_services(APIView):
     def post(self, request):
-        print()
+        # print()
         type_request = request.GET.get("type")
 
         if type_request == "update_status":
@@ -8866,6 +8866,8 @@ class WeeklyAgenda(APIView):
             return self.all_weekly_agendas(request)
         elif type_request == "approve_group_lead_agenda":
             return self.approve_group_lead_agenda(request)
+        elif type_request == "grouplead_agenda_check":
+            return self.grouplead_agenda_check(request)
         else:
             return self.handle_error(request)
         
@@ -9134,6 +9136,44 @@ class WeeklyAgenda(APIView):
             "response": datacube_response["data"]
         }, status=status.HTTP_200_OK)
     
+    def grouplead_agenda_check(self, request):
+        data=request.GET
+        project=data.get("project")
+
+
+        subprojects=UsersubProject.objects.filter(parent_project=project)
+        subproject_serializer=settingUsersubProjectSerializer(subprojects,many=True)
+
+        unique_subprojects=set()
+
+        for subproject in subproject_serializer.data:
+            unique_subprojects.update(subproject["sub_project_list"])
+        
+            
+        subproject_agenda=[]
+        subproject_without_agenda=[]
+        # "Role": "Team Lead",
+        for subproject in unique_subprojects:
+            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data={},limit=100,offset=0))
+            if subprojectcheck["success"]:
+                if len(subprojectcheck["data"]) > 0:
+                    subproject_agenda.append({
+                        "subproject_name":subproject,
+                        "data_present":len(subprojectcheck["data"]),
+                        "agenda":subprojectcheck["data"]})
+                else:
+                    subproject_without_agenda.append(subproject)
+            
+
+        return Response({
+            "success":True,
+            "message":"Report for group lead agenda created successfully",
+            "data":{"project":project,
+                    "subprojects_list":unique_subprojects,
+                    "subproject_without_agenda":subproject_without_agenda,
+                    "agenda":subproject_agenda}
+        },status=status.HTTP_200_OK)
+
     """HANDLE ERROR"""
     def handle_error(self, request): 
         return Response({
