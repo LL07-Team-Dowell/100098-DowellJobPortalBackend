@@ -9140,15 +9140,7 @@ class WeeklyAgenda(APIView):
     
     def grouplead_agenda_check(self, request):
         data=request.GET
-        company_id=data.get("company_id")
-        group_lead=data.get("applicant")
-        sub_project=data.get("sub_project")
         project=data.get("project")
-
-        field={
-            "company_id":company_id,
-            # "project":project
-        }
 
         update_field={}
 
@@ -9159,7 +9151,6 @@ class WeeklyAgenda(APIView):
         subproject_serializer=settingUsersubProjectSerializer(subprojects,many=True)
 
         unique_subprojects=set()
-        subprojects_text = ', '.join(unique_subprojects)
 
         for subproject in subproject_serializer.data:
             unique_subprojects.update(subproject["sub_project_list"])
@@ -9177,9 +9168,7 @@ class WeeklyAgenda(APIView):
         subproject_without_agenda=[]
         # "Role": "Team Lead",
         for subproject in unique_subprojects:
-            print(subproject)
             subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data={},limit=100,offset=0))
-            print(subprojectcheck)
             if subprojectcheck["success"]:
                 subproject_agenda.append({
                     "subproject_name":subproject,
