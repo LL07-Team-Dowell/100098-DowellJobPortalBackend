@@ -10,4 +10,5 @@ export const candidateStatuses = {
     GUEST_PENDING_SELECTION: "Guest_Pending",
     REHIRE: "rehired",
     REMOVED: 'Removed',
+    RENEWCONTRACT: "renew_contract",
 }

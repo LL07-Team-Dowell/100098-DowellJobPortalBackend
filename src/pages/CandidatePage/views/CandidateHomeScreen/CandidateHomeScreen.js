@@ -13,12 +13,13 @@ import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getAppliedJobs } from '../../../../services/candidateServices';
 import { Tooltip } from 'react-tooltip';
 
-function Home({ 
-  setHired, 
-  setAssignedProjects, 
-  setCandidateShortListed, 
-  setshorlistedJob, 
+function Home({
+  setHired,
+  setAssignedProjects,
+  setCandidateShortListed,
+  setshorlistedJob,
   setRemoved,
+  setRenewContract,
 }) {
 
   const [loading, setLoading] = useState(true);
@@ -49,7 +50,11 @@ function Home({
         setLoading(false);
         return
       }
-
+      if (currentUserAppliedJobs.find(application => application.status === candidateStatuses.RENEWCONTRACT)) {
+        setRenewContract(true);
+        setLoading(false);
+        return
+      }
       if (userShortlistedJobs.length >= 1) {
         setCandidateShortListed(true);
         setshorlistedJob(userShortlistedJobs);
@@ -60,7 +65,7 @@ function Home({
       if (userSelectedJobs.length >= 1) {
         setAssignedProjects(userSelectedJobs.map((job) => job.project))
         setHired(true);
-        
+
         const currentUserDetails = structuredClone(currentUser);
         currentUserDetails.candidateIsHired = true;
         currentUserDetails.candidateAssignmentDetails = {
@@ -70,7 +75,7 @@ function Home({
 
         setCurrentUser(currentUserDetails);
         sessionStorage.setItem('user', JSON.stringify(currentUserDetails));
-        
+
         setLoading(false);
         return;
       }

@@ -102,10 +102,10 @@ import ProjectLogRequest from "./pages/ProjectLeadPage/views/LogRequests/Project
 import GroupleadAgendaLanding from "./pages/GroupLeadPage/views/Agenda/AgendaLanding";
 import NewGroupleadAgenda from "./pages/GroupLeadPage/views/Agenda/NewAgenda";
 import GroupleadTrackAgenda from "./pages/GroupLeadPage/views/Agenda/TrackAgenda";
+import CandidateRenewContract from "./pages/CandidatePage/views/CandidateRenewContract/CandidateRenewContract";
 
 function App() {
   // console.log = () => {};
-
   const {
     currentUser,
     isPublicUser,
@@ -123,10 +123,13 @@ function App() {
     reportsUserDetails,
     setReportsUserDetails,
   } = useCurrentUserContext();
+  console.log({ currentUser });
+
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
   const [candidateShortListed, setCandidateShortListed] = useState(false);
   const [candidateRemoved, setCandidateRemoved] = useState(false);
+  const [candidateRenewContract, setRenewContract] = useState(false);
   const [assignedProjects, setAssignedProjects] = useState([]);
   const [shorlistedJob, setshorlistedJob] = useState([]);
 
@@ -1407,7 +1410,7 @@ function App() {
           }
         />
 
-        <Route 
+        <Route
           path='/agenda'
           element={
             <CandidateContextProvider>
@@ -1418,7 +1421,7 @@ function App() {
           }
         />
 
-        <Route 
+        <Route
           path='/new-agenda'
           element={
             <CandidateContextProvider>
@@ -1429,7 +1432,7 @@ function App() {
           }
         />
 
-        <Route 
+        <Route
           path='/track-agenda'
           element={
             <CandidateContextProvider>
@@ -1439,7 +1442,7 @@ function App() {
             </CandidateContextProvider>
           }
         />
-        
+
         <Route
           path='/create-task/create-new-team/'
           element={
@@ -1995,6 +1998,10 @@ function App() {
     <Routes>
       <Route path='*' element={<CandidateRemovedScreen />} />
     </Routes>
+  ) : candidateRenewContract ? (
+    <Routes>
+      <Route path='*' element={<CandidateRenewContract />} />
+    </Routes>
   ) : candidateHired || currentUser.candidateIsHired ? (
     <Routes>
       <Route
@@ -2155,6 +2162,7 @@ function App() {
                   setCandidateShortListed={setCandidateShortListed}
                   setshorlistedJob={setshorlistedJob}
                   setRemoved={setCandidateRemoved}
+                  setRenewContract={setRenewContract}
                 />
               </JobContextProvider>
             </CandidateJobsContextProvider>
