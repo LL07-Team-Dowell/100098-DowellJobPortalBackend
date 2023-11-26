@@ -9142,10 +9142,6 @@ class WeeklyAgenda(APIView):
         data=request.GET
         project=data.get("project")
 
-        update_field={}
-
-        profiles = SettingUserProfileInfo.objects.all()
-        serializer = SettingUserProfileInfoSerializer(profiles, many=True)
 
         subprojects=UsersubProject.objects.filter(parent_project=project)
         subproject_serializer=settingUsersubProjectSerializer(subprojects,many=True)
@@ -9155,14 +9151,6 @@ class WeeklyAgenda(APIView):
         for subproject in subproject_serializer.data:
             unique_subprojects.update(subproject["sub_project_list"])
         
-
-        json_profile=serializer.data
-        grouplead_info=[]
-        for profile in json_profile:
-            grouplead_info.append({
-                "user_role":profile["profile_info"][0]["Role"],
-                "user":profile["owner"]
-            })
             
         subproject_agenda=[]
         subproject_without_agenda=[]
@@ -9170,20 +9158,23 @@ class WeeklyAgenda(APIView):
         for subproject in unique_subprojects:
             subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data={},limit=100,offset=0))
             if subprojectcheck["success"]:
-                subproject_agenda.append({
-                    "subproject_name":subproject,
-                    "data_present":len(subprojectcheck["data"]),
-                    "agenda":subprojectcheck["data"]})
-            else:
-                subproject_without_agenda.append(subproject)
+                if len(subprojectcheck["data"]) > 0:
+                    subproject_agenda.append({
+                        "subproject_name":subproject,
+                        "data_present":len(subprojectcheck["data"]),
+                        "agenda":subprojectcheck["data"]})
+                else:
+                    subproject_without_agenda.append(subproject)
             
 
         return Response({
+            "success":True,
+            "message":"Report for group lead agenda created successfully",
             "data":{"project":project,
                     "subprojects_list":unique_subprojects,
                     "subproject_without_agenda":subproject_without_agenda,
                     "agenda":subproject_agenda}
-        })
+        },status=status.HTTP_200_OK)
 
     """HANDLE ERROR"""
     def handle_error(self, request): 
