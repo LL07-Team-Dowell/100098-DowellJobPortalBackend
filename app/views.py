@@ -8875,6 +8875,8 @@ class WeeklyAgenda(APIView):
             return self.all_weekly_agendas(request)
         elif type_request == "approve_group_lead_agenda":
             return self.approve_group_lead_agenda(request)
+        elif type_request == "grouplead_agenda_check":
+            return self.grouplead_agenda_check(request)
         else:
             return self.handle_error(request)
         
@@ -9136,6 +9138,44 @@ class WeeklyAgenda(APIView):
             "response": datacube_response["data"]
         }, status=status.HTTP_200_OK)
     
+    def grouplead_agenda_check(self, request):
+        data=request.GET
+        project=data.get("project")
+
+
+        subprojects=UsersubProject.objects.filter(parent_project=project)
+        subproject_serializer=settingUsersubProjectSerializer(subprojects,many=True)
+
+        unique_subprojects=set()
+
+        for subproject in subproject_serializer.data:
+            unique_subprojects.update(subproject["sub_project_list"])
+        
+            
+        subproject_agenda=[]
+        subproject_without_agenda=[]
+        # "Role": "Team Lead",
+        for subproject in unique_subprojects:
+            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data={},limit=100,offset=0))
+            if subprojectcheck["success"]:
+                if len(subprojectcheck["data"]) > 0:
+                    subproject_agenda.append({
+                        "subproject_name":subproject,
+                        "data_present":len(subprojectcheck["data"]),
+                        "agenda":subprojectcheck["data"]})
+                else:
+                    subproject_without_agenda.append(subproject)
+            
+
+        return Response({
+            "success":True,
+            "message":"Report for group lead agenda created successfully",
+            "data":{"project":project,
+                    "subprojects_list":unique_subprojects,
+                    "subproject_without_agenda":subproject_without_agenda,
+                    "agenda":subproject_agenda}
+        },status=status.HTTP_200_OK)
+
     """HANDLE ERROR"""
     def handle_error(self, request): 
         return Response({
