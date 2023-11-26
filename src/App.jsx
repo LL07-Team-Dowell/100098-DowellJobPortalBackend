@@ -102,6 +102,7 @@ import ProjectLogRequest from "./pages/ProjectLeadPage/views/LogRequests/Project
 import GroupleadAgendaLanding from "./pages/GroupLeadPage/views/Agenda/AgendaLanding";
 import NewGroupleadAgenda from "./pages/GroupLeadPage/views/Agenda/NewAgenda";
 import GroupleadTrackAgenda from "./pages/GroupLeadPage/views/Agenda/TrackAgenda";
+import CandidateRenewContract from "./pages/CandidatePage/views/CandidateRenewContract/CandidateRenewContract";
 
 function App() {
   // console.log = () => {};
@@ -1996,6 +1997,10 @@ function App() {
   return candidateRemoved ? (
     <Routes>
       <Route path='*' element={<CandidateRemovedScreen />} />
+    </Routes>
+  ) : candidateRenewContract ? (
+    <Routes>
+      <Route path='*' element={<CandidateRenewContract />} />
     </Routes>
   ) : candidateHired || currentUser.candidateIsHired ? (
     <Routes>

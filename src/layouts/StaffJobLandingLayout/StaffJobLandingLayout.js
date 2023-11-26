@@ -33,6 +33,7 @@ import useCheckIfUserIsRemoved from "../../hooks/useCheckIfUserIsRemoved";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import CandidateRemovedScreen from "../../pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
 import HorizontalBarLoader from "../../components/HorizontalBarLoader/HorizontalBarLoader";
+import CandidateRenewContract from "../../pages/CandidatePage/views/CandidateRenewContract/CandidateRenewContract";
 
 
 const StaffJobLandingLayout = ({
@@ -74,9 +75,9 @@ const StaffJobLandingLayout = ({
   projectLeadView,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
-  const { 
-    currentUser, 
-    currentAuthSessionExpired, 
+  const {
+    currentUser,
+    currentAuthSessionExpired,
     setCurrentAuthSessionExpired,
     userRemovalStatusLoading,
     setUserRemovalStatusLoading,
@@ -84,11 +85,13 @@ const StaffJobLandingLayout = ({
     setUserIsRemoved,
     userRemovalStatusChecked,
     setUserRemovalStatusChecked,
+    userNewContract,
+    setNewContract
   } = useCurrentUserContext();
   const [isSuperUser, setIsSuperUser] = useState(false);
 
   useCheckCurrentAuthStatus(currentUser, setCurrentAuthSessionExpired);
-  useCheckIfUserIsRemoved(currentUser, setUserIsRemoved, setUserRemovalStatusLoading, userRemovalStatusChecked, setUserRemovalStatusChecked);
+  useCheckIfUserIsRemoved(currentUser, setUserIsRemoved, setUserRemovalStatusLoading, userRemovalStatusChecked, setUserRemovalStatusChecked, setNewContract);
 
   useEffect(() => {
     if (!currentUser) return
@@ -118,13 +121,13 @@ const StaffJobLandingLayout = ({
       <p>Please hold on a minute...</p>
     </div>
   </>
-  
-  if (userIsRemoved) return <CandidateRemovedScreen />
 
+  if (userIsRemoved) return <CandidateRemovedScreen />
+  if (userNewContract) return <CandidateRenewContract />
   return (
     <>
       {
-        currentAuthSessionExpired && 
+        currentAuthSessionExpired &&
         <AuthOverlay />
       }
       <nav style={{ display: hideTitleBar ? "none" : "block" }}>
@@ -151,9 +154,8 @@ const StaffJobLandingLayout = ({
           </p>
         </div>
         <div
-          className={`staff__Jobs__Layout__Navigation__Container ${
-            adminView ? "admin" : ""
-          }`}
+          className={`staff__Jobs__Layout__Navigation__Container ${adminView ? "admin" : ""
+            }`}
         >
           {!adminView && isLargeScreen && (
             <Link to={"/"} className="jobs__Layout__Link__Item">
@@ -163,56 +165,56 @@ const StaffJobLandingLayout = ({
           {adminView ? (
             !currentUser ? (
               <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem'}}>
-                  <img 
-                    src={teamManagementLogo} 
-                    alt="team management" 
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <img
+                    src={teamManagementLogo}
+                    alt="team management"
                     style={{ width: '8rem' }}
-                  />  
+                  />
                   {
-                    isLargeScreen ? 
-                      <h2>{teamManagementProductName}</h2> 
-                    :
-                    <></>
+                    isLargeScreen ?
+                      <h2>{teamManagementProductName}</h2>
+                      :
+                      <></>
                   }
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <MdPublic className="icon" />
                   <span style={{ fontSize: 13 }}>Public user</span>
                 </div>
               </>
             )
-            :
-            adminAlternativePageActive ? (
-              <div
-                className="admin__View__Title__Container"
-                onClick={handleNavIconClick ? handleNavIconClick : () => {}}
-              >
-                {showAnotherBtn ? (
-                  <>
-                    <div
-                      className="add__Icon__Container"
-                      onClick={handleNavIcon}
-                    >
-                      {btnIcon}
-                    </div>
-                  </>
-                ) : (
-                  <></>
-                )}
-                {pageTitle ? <h2>{pageTitle}</h2> : <></>}
-              </div>
-            ) : (
-              <div
-                className="admin__View__Title__Container"
-                onClick={handleNavIconClick ? handleNavIconClick : () => {}}
-              >
-                <div className="add__Icon__Container">
-                  <AiOutlinePlus />
+              :
+              adminAlternativePageActive ? (
+                <div
+                  className="admin__View__Title__Container"
+                  onClick={handleNavIconClick ? handleNavIconClick : () => { }}
+                >
+                  {showAnotherBtn ? (
+                    <>
+                      <div
+                        className="add__Icon__Container"
+                        onClick={handleNavIcon}
+                      >
+                        {btnIcon}
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                  {pageTitle ? <h2>{pageTitle}</h2> : <></>}
                 </div>
-                {isLargeScreen && <h2>All Jobs</h2>}
-              </div>
-            )
+              ) : (
+                <div
+                  className="admin__View__Title__Container"
+                  onClick={handleNavIconClick ? handleNavIconClick : () => { }}
+                >
+                  <div className="add__Icon__Container">
+                    <AiOutlinePlus />
+                  </div>
+                  {isLargeScreen && <h2>All Jobs</h2>}
+                </div>
+              )
           ) : (
             <></>
           )}
@@ -227,8 +229,8 @@ const StaffJobLandingLayout = ({
                 searchTeam
                   ? "Search for Team"
                   : adminView
-                  ? "Search by skill, job"
-                  : `Search for job/${searchPlaceHolder}`
+                    ? "Search by skill, job"
+                    : `Search for job/${searchPlaceHolder}`
               }
               searchValue={searchValue}
               handleSearchChange={setSearchValue}
@@ -263,9 +265,8 @@ const StaffJobLandingLayout = ({
       </nav>
       <main>
         <div
-          className={`staff__Jobs__Layout__Content__Container ${
-            accountView ? "account" : ""
-          }`}
+          className={`staff__Jobs__Layout__Content__Container ${accountView ? "account" : ""
+            }`}
         >
           {!hideSideBar && currentUser && (
             <NewSideNavigationBar
@@ -274,19 +275,19 @@ const StaffJobLandingLayout = ({
                 hrView
                   ? hrNavigationLinks
                   : accountView
-                  ? accountNavigationLinks
-                  : teamleadView
-                  ? isGrouplead
-                    ? groupLeadNavigationLinks
-                    : teamleadNavigationLinks
-                  : adminView
-                  ? subAdminView
-                    ? subAdminNavigationLinks
-                    : adminNavigationLinks
-                  : projectLeadView ?
-                    projectLeadNavLinks
-                  :
-                  []
+                    ? accountNavigationLinks
+                    : teamleadView
+                      ? isGrouplead
+                        ? groupLeadNavigationLinks
+                        : teamleadNavigationLinks
+                      : adminView
+                        ? subAdminView
+                          ? subAdminNavigationLinks
+                          : adminNavigationLinks
+                        : projectLeadView ?
+                          projectLeadNavLinks
+                          :
+                          []
               }
               runExtraFunctionOnNavItemClick={runExtraFunctionOnNavItemClick}
               superUser={isSuperUser}
@@ -302,17 +303,17 @@ const StaffJobLandingLayout = ({
               }
               otherPermittedRoles={
                 currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles &&
-                Array.isArray(currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles) ?
+                  Array.isArray(currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles) ?
                   currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles
-                :
-                []
+                  :
+                  []
               }
               otherPermittedProjects={
                 currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects &&
-                Array.isArray(currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects) ?
+                  Array.isArray(currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects) ?
                   currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects
-                :
-                []
+                  :
+                  []
               }
             />
           )}
@@ -327,9 +328,9 @@ const StaffJobLandingLayout = ({
               linkToShareObj={jobLinkToShareObj}
               handleCloseModal={
                 handleCloseShareJobModal &&
-                typeof handleCloseShareJobModal === "function"
+                  typeof handleCloseShareJobModal === "function"
                   ? () => handleCloseShareJobModal()
-                  : () => {}
+                  : () => { }
               }
               isProductLink={isProductLink}
               isReportLink={isReportLink}
@@ -347,12 +348,10 @@ const StaffJobLandingLayout = ({
           )}
 
           <div
-            className={`jobs__Layout__Content ${
-              adminView ? "full__Width" : ""
-            }
-            ${
-              !currentUser ? "no__User" : ""
-            }
+            className={`jobs__Layout__Content ${adminView ? "full__Width" : ""
+              }
+            ${!currentUser ? "no__User" : ""
+              }
             `}
             style={{
               backgroundColor: layoutBgColor ? layoutBgColor : "#fff",
