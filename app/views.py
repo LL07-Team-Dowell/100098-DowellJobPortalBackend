@@ -8875,6 +8875,8 @@ class WeeklyAgenda(APIView):
             return self.all_weekly_agendas(request)
         elif type_request == "approve_group_lead_agenda":
             return self.approve_group_lead_agenda(request)
+        elif type_request == "grouplead_agenda_check":
+            return self.grouplead_agenda_check(request)
         else:
             return self.handle_error(request)
         
@@ -9136,6 +9138,64 @@ class WeeklyAgenda(APIView):
             "response": datacube_response["data"]
         }, status=status.HTTP_200_OK)
     
+    def grouplead_agenda_check(self, request):
+        data=request.GET
+        company_id=data.get("company_id")
+        group_lead=data.get("applicant")
+        sub_project=data.get("sub_project")
+        project=data.get("project")
+
+        field={
+            "company_id":company_id,
+            # "project":project
+        }
+
+        update_field={}
+
+        profiles = SettingUserProfileInfo.objects.all()
+        serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+
+        subprojects=UsersubProject.objects.filter(parent_project=project)
+        subproject_serializer=settingUsersubProjectSerializer(subprojects,many=True)
+
+        unique_subprojects=set()
+        subprojects_text = ', '.join(unique_subprojects)
+
+        for subproject in subproject_serializer.data:
+            unique_subprojects.update(subproject["sub_project_list"])
+        
+
+        json_profile=serializer.data
+        grouplead_info=[]
+        for profile in json_profile:
+            grouplead_info.append({
+                "user_role":profile["profile_info"][0]["Role"],
+                "user":profile["owner"]
+            })
+            
+        subproject_agenda=[]
+        subproject_without_agenda=[]
+        # "Role": "Team Lead",
+        for subproject in unique_subprojects:
+            print(subproject)
+            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data={},limit=100,offset=0))
+            print(subprojectcheck)
+            if subprojectcheck["success"]:
+                subproject_agenda.append({
+                    "subproject_name":subproject,
+                    "data_present":len(subprojectcheck["data"]),
+                    "agenda":subprojectcheck["data"]})
+            else:
+                subproject_without_agenda.append(subproject)
+            
+
+        return Response({
+            "data":{"project":project,
+                    "subprojects_list":unique_subprojects,
+                    "subproject_without_agenda":subproject_without_agenda,
+                    "agenda":subproject_agenda}
+        })
+
     """HANDLE ERROR"""
     def handle_error(self, request): 
         return Response({
