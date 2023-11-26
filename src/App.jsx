@@ -128,6 +128,7 @@ function App() {
   const [candidateHired, setCandidateHired] = useState(false);
   const [candidateShortListed, setCandidateShortListed] = useState(false);
   const [candidateRemoved, setCandidateRemoved] = useState(false);
+  const [candidateRenewContract, setRenewContract] = useState(false);
   const [assignedProjects, setAssignedProjects] = useState([]);
   const [shorlistedJob, setshorlistedJob] = useState([]);
 
@@ -2156,6 +2157,7 @@ function App() {
                   setCandidateShortListed={setCandidateShortListed}
                   setshorlistedJob={setshorlistedJob}
                   setRemoved={setCandidateRemoved}
+                  setRenewContract={setRenewContract}
                 />
               </JobContextProvider>
             </CandidateJobsContextProvider>
