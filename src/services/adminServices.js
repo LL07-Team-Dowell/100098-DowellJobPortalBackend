@@ -16,6 +16,13 @@ export const addInternalJob = async (dataToPost) => {
   return response;
 };
 
+export const regionalAssociatesJob = async (dataToPost) => {
+  return await currentBackendAxiosInstance.post(
+    "regional_associate_jobs/",
+    dataToPost
+  );
+};
+
 export const deleteJob = async (data, document_id) => {
   return await currentBackendAxiosInstance.delete(
     `admin_delete_job/${document_id}/`,
@@ -112,17 +119,13 @@ export const editSettingUserSubProject = async (id, data) => {
     data
   );
 };
-export const getAllOnBoardCandidate = async (
-  id
-) => {
+export const getAllOnBoardCandidate = async (id) => {
   return await currentBackendAxiosInstance.get(
     `get_all_onboarded_candidate/${id}/`
   );
 };
 
-export const getCandidateJobApplication = async (
-  CompanyId
-) => {
+export const getCandidateJobApplication = async (CompanyId) => {
   return await currentBackendAxiosInstance.get(
     `candidate_get_job_application/${CompanyId}/`
   );
@@ -147,21 +150,33 @@ export const createNewReportsLink = async (data) => {
 
 export const fetchTeamThreadsForAdmin = async (teamId) => {
   return await currentBackendAxiosInstance.get(
-  `fetch_team_alerted_id_thread/${teamId}/`
-  ) 
-}
+    `fetch_team_alerted_id_thread/${teamId}/`
+  );
+};
 
 export const adminAddNewSettingProfile = async (data) => {
-  return await currentBackendAxiosInstance.post('/settinguserprofileinfo/', data)
-}
+  return await currentBackendAxiosInstance.post(
+    "/settinguserprofileinfo/",
+    data
+  );
+};
 
 export const getTotalWorklogCountInOrganization = async (companyId) => {
-  return await currentBackendAxiosInstance.get(`/dashboard_services/?type=total_worklogs_count&company_id=${companyId}`)
-}
+  return await currentBackendAxiosInstance.get(
+    `/dashboard_services/?type=total_worklogs_count&company_id=${companyId}`
+  );
+};
 
-export const updateCandidateApplicationDetail = async (updateType, applicationId, dataToPost) => {
-  return await currentBackendAxiosInstance.post(`/dashboard_services/?type=${updateType}&candidate_id=${applicationId}`, dataToPost)
-}
+export const updateCandidateApplicationDetail = async (
+  updateType,
+  applicationId,
+  dataToPost
+) => {
+  return await currentBackendAxiosInstance.post(
+    `/dashboard_services/?type=${updateType}&candidate_id=${applicationId}`,
+    dataToPost
+  );
+};
 
 export const getWorklogDetailInOrganization = async (type, companyId) => {
   return await currentBackendAxiosInstance.get(`/dashboard_services/?type=${type}&company_id=${companyId}`)

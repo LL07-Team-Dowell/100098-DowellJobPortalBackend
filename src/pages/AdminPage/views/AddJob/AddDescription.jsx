@@ -37,12 +37,14 @@ const AddJobDescription = ({
   isLoading,
   handleSubmit,
   activeLinkTab,
-  handleSixthOptionChange,
-  sixthOption,
-  setSixthOption,
   continents,
   countryState,
   setCountryState,
+  cityOption,
+  cityState,
+  continentState,
+  setContinentState,
+  setCityOption,
 }) => {
   return (
     <>
@@ -1249,8 +1251,8 @@ const AddJobDescription = ({
               <label htmlFor="continent">Continent</label>
               <select
                 className="module"
-                value={sixthOption}
-                onChange={({ target }) => setSixthOption(target.value)}
+                value={continentState}
+                onChange={({ target }) => setContinentState(target.value)}
               >
                 <option value="">Select Continent</option>
                 {React.Children.toArray(
@@ -1264,13 +1266,37 @@ const AddJobDescription = ({
               <label htmlFor="country">Country</label>
               <select
                 className="module"
-                value={countryState}
                 onChange={({ target }) => setCountryState(target.value)}
               >
                 <option value="">Select Country</option>
-                <option value={countryState}>
-                  continentsData[`${countryState}`]
-                </option>
+                {React.Children.toArray(
+                  continentsData[`${continentState}`]
+                )?.map((country) => {
+                  return (
+                    <option value={country} selected={countryState === country}>
+                      {country}
+                    </option>
+                  );
+                })}
+              </select>
+              <label htmlFor="city">City</label>
+              <select
+                className="module"
+                onChange={({ target }) => setCityOption(target.value)}
+              >
+                <option value="">Select City</option>
+                {React.Children.toArray(
+                  cityState?.map((city) => {
+                    return (
+                      <option
+                        value={city.name}
+                        selected={cityOption === city.name}
+                      >
+                        {city.name}
+                      </option>
+                    );
+                  })
+                )}
               </select>
 
               <label htmlFor="skills">Skills</label>
@@ -1293,22 +1319,6 @@ const AddJobDescription = ({
                 required
                 ref={qualificationRef}
               />
-              <h3>Job Category</h3>
-              <div className="job_category">
-                <label htmlFor="regional associate" className="radio">
-                  <input
-                    className="radio_input"
-                    type={"radio"}
-                    id={"regional associate"}
-                    name="options"
-                    value={"Regional Associates"}
-                    checked={selectedOption === "Regional Associates"}
-                    onChange={handleOptionChange}
-                  />
-                  <div className="radio__radio"></div>
-                  <p>Regional Associates</p>
-                </label>
-              </div>
               <div className="state_of_job">
                 <label htmlFor="is_active">State of Job</label>
                 <div className="is_active">
@@ -1324,7 +1334,6 @@ const AddJobDescription = ({
                   />
                 </div>
               </div>
-
               <div>
                 <label htmlFor="payment">Payment</label>
                 <div className="payment_section">
