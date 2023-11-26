@@ -8372,7 +8372,7 @@ class dashboard_services(APIView):
 
     def update_status(self, request):
 
-        candidate_id = request.GET.get('candidate_id')
+        candidate_id = request.data.get('candidate_id')
         status = request.data.get('status')
 
         field = {
@@ -8869,7 +8869,14 @@ class WeeklyAgenda(APIView):
         else:
             return self.handle_error(request)
         
-
+    def get(self, request):
+        type_request = request.GET.get("type")
+        
+        if type_request == "agenda_status":
+            return self.agenda_status(request)
+        else:
+            return self.handle_error(request)
+    
     def add_weekly_update(self, request):
         project = request.data.get('project')
         sub_project=request.data.get("sub_project")
@@ -9133,6 +9140,65 @@ class WeeklyAgenda(APIView):
             "success": False,
             "message": "Invalid request type"
         }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    def agenda_status(self,request):
+        lead_name = request.GET.get('lead_name')
+        subproject = request.GET.get('subproject')
+        field = {
+            "lead_name": lead_name,
+            "subproject": subproject
+        }
+
+        response = json.loads(dowellconnection(
+            *task_details_module, "fetch", field, update_field=None))
+        data = response.get("data", [])
+        if data:
+            # Separate leads into two lists based on agenda submission
+            updated_leads = [
+                {
+                    "lead_name": worklog.get("group_leads"),
+                    "subproject": worklog.get("subproject"),
+                    "assignee": worklog.get("assignee")  # Replace with the actual field name
+                }
+                for worklog in data if worklog.get("success")
+            ]
+
+            not_updated_leads = [
+                {
+                    "lead_name": worklog.get("group_leads"),
+                    "subproject": worklog.get("subproject"),
+                    "assignee": worklog.get("assignee")  # Replace with the actual field name
+                }
+                for worklog in data if not worklog.get("success")
+            ]
+            print(data)
+            response_data = {
+                "updated_leads": updated_leads,
+                "not_updated_leads": not_updated_leads
+            }
+
+            return Response({
+                "success": True,
+                "message": "Agenda submission status for leads",
+                "data": response_data
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "There are no worklogs for the given lead and subproject",
+                "data": {
+                    "updated_leads": [],
+                    "not_updated_leads": []
+                }
+            })
+
+        
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     
 @method_decorator(csrf_exempt, name='dispatch')
 class Db_operations(APIView):
