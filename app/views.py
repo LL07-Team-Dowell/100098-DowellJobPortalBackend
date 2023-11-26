@@ -8372,7 +8372,7 @@ class dashboard_services(APIView):
 
     def update_status(self, request):
 
-        candidate_id = request.data.get('candidate_id')
+        candidate_id = request.GET.get('candidate_id')
         status = request.data.get('status')
 
         field = {
