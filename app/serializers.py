@@ -619,7 +619,8 @@ class DashBoardStatusSerializer(serializers.Serializer):
         ("teamlead_rehire", "teamlead_rehire"),
         ("Pending", "Pending"),
         ("Guest_Pending","Guest_Pending"),
-        ("rehired","rehired")
+        ("rehired","rehired"),
+        ("renew_contract","renew_contract")
     )
     candidate_id = serializers.CharField(allow_null=False, allow_blank=False)
     status = serializers.ChoiceField(
