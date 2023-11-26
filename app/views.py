@@ -2916,6 +2916,7 @@ class task_module(APIView):
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
 
         def try_parse_date(date_str):
+    # List of date formats to try
             date_formats = ["%m/%d/%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%m/%d/%Y", "%Y-%m-%d"]
 
             for date_format in date_formats:
@@ -2987,16 +2988,6 @@ class task_module(APIView):
             subproject = request.GET.get('subproject')
             project = request.GET.get('project')
 
-            def try_parse_date(date_str):
-                date_formats = ["%m/%d/%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%m/%d/%Y", "%Y-%m-%d"]
-
-                for date_format in date_formats:
-                    try:
-                        return datetime.strptime(set_date_format(date_str), date_format)
-                    except ValueError:
-                        pass
-                return None
-
     # Check for required parameters
             if not company_id:
                 return Response(
@@ -3024,19 +3015,19 @@ class task_module(APIView):
             if project:
                 field["project"] = project
 
-    
-
             filtered_tasks = []
             response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
             response = json.loads(response_json)
             for task in response["data"]:
                 if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
                     try:
-                        task_created_date = try_parse_date(task["task_created_date"])
-                        if task_created_date is not None and start_date <= task_created_date <= end_date:
+                        task_created_date = datetime.strptime(task["task_created_date"], "%Y-%m-%d ")
+
+                        if start_date <= task_created_date <= end_date:
                             filtered_tasks.append(task)
-                    except Exception as error:
-                        print(error)
+                    except ValueError as error:
+                        print("Error parsing task_created_date:", error)
+                        pass
 
             return Response({
                 "success": True,
@@ -8381,7 +8372,7 @@ class dashboard_services(APIView):
 
     def update_status(self, request):
 
-        candidate_id = request.GET.get('candidate_id')
+        candidate_id = request.data.get('candidate_id')
         status = request.data.get('status')
 
         field = {
@@ -8880,7 +8871,14 @@ class WeeklyAgenda(APIView):
         else:
             return self.handle_error(request)
         
-
+    def get(self, request):
+        type_request = request.GET.get("type")
+        
+        if type_request == "agenda_status":
+            return self.agenda_status(request)
+        else:
+            return self.handle_error(request)
+    
     def add_weekly_update(self, request):
         project = request.data.get('project')
         sub_project=request.data.get("sub_project")
@@ -9182,6 +9180,65 @@ class WeeklyAgenda(APIView):
             "success": False,
             "message": "Invalid request type"
         }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    def agenda_status(self,request):
+        lead_name = request.GET.get('lead_name')
+        subproject = request.GET.get('subproject')
+        field = {
+            "lead_name": lead_name,
+            "subproject": subproject
+        }
+
+        response = json.loads(dowellconnection(
+            *task_details_module, "fetch", field, update_field=None))
+        data = response.get("data", [])
+        if data:
+            # Separate leads into two lists based on agenda submission
+            updated_leads = [
+                {
+                    "lead_name": worklog.get("group_leads"),
+                    "subproject": worklog.get("subproject"),
+                    "assignee": worklog.get("assignee")  # Replace with the actual field name
+                }
+                for worklog in data if worklog.get("success")
+            ]
+
+            not_updated_leads = [
+                {
+                    "lead_name": worklog.get("group_leads"),
+                    "subproject": worklog.get("subproject"),
+                    "assignee": worklog.get("assignee")  # Replace with the actual field name
+                }
+                for worklog in data if not worklog.get("success")
+            ]
+            print(data)
+            response_data = {
+                "updated_leads": updated_leads,
+                "not_updated_leads": not_updated_leads
+            }
+
+            return Response({
+                "success": True,
+                "message": "Agenda submission status for leads",
+                "data": response_data
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "There are no worklogs for the given lead and subproject",
+                "data": {
+                    "updated_leads": [],
+                    "not_updated_leads": []
+                }
+            })
+
+        
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     
 @method_decorator(csrf_exempt, name='dispatch')
 class Db_operations(APIView):
