@@ -4,6 +4,7 @@ import { TbBrandGoogleAnalytics } from "react-icons/tb";
 import { GiTeamIdea } from "react-icons/gi";
 import { ImStack } from "react-icons/im";
 import { MdOutlineSpaceDashboard, MdOutlineWorkOutline } from "react-icons/md";
+import { TfiAgenda } from "react-icons/tfi";
 
 export const adminNavigationLinks = [
   {
@@ -25,6 +26,11 @@ export const adminNavigationLinks = [
     linkAddress: "/logs",
     icon: <ImStack />,
     text: "Work Logs",
+  },
+  {
+    linkAddress: "/agenda",
+    icon: <TfiAgenda />,
+    text: "Agenda",
   },
   {
     linkAddress: "/teams",

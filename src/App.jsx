@@ -103,6 +103,9 @@ import GroupleadAgendaLanding from "./pages/GroupLeadPage/views/Agenda/AgendaLan
 import NewGroupleadAgenda from "./pages/GroupLeadPage/views/Agenda/NewAgenda";
 import GroupleadTrackAgenda from "./pages/GroupLeadPage/views/Agenda/TrackAgenda";
 import CandidateRenewContract from "./pages/CandidatePage/views/CandidateRenewContract/CandidateRenewContract";
+import ProjectLeadAgendaPage from "./pages/ProjectLeadPage/views/Agenda/ProjectLeadAgendaPage";
+import TeamLeadAgendaPage from "./pages/TeamleadPage/views/Agenda/TeamLeadAgendaPage";
+import AdminAgendaPage from "./pages/AdminPage/views/Agenda/AdminAgendaPage";
 
 function App() {
   // console.log = () => {};
@@ -788,6 +791,18 @@ function App() {
           }
         />
         <Route
+          path='/agenda'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AdminAgendaPage />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
           path='/report/organization-report'
           element={
             <JobContextProvider>
@@ -1158,6 +1173,16 @@ function App() {
             <CandidateTaskContextProvider>
               <ValuesProvider>
                 <CreateTaskScreen />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path='/agenda'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <TeamLeadAgendaPage />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
@@ -1620,6 +1645,16 @@ function App() {
             <CandidateTaskContextProvider>
               <ValuesProvider>
                 <ProjectLogRequest />
+              </ValuesProvider>
+            </CandidateTaskContextProvider>
+          }
+        />
+        <Route
+          path='/agenda'
+          element={
+            <CandidateTaskContextProvider>
+              <ValuesProvider>
+                <ProjectLeadAgendaPage />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
