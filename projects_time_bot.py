@@ -110,8 +110,12 @@ def get_projects_spent_total_time(company_id, search_date):
         "company_id":company_id,
         "task_created_date":search_date
     }
+    print("-----------------------------------")
+    print("----------Processing total time spent for projects (Started)----------")
     task_details = json.loads(dowellconnection(*task_details_module, "fetch", task_field, update_field=None))["data"]
+    count=1
     for task in task_details:
+        print(f"--checking task--{count}--of--{len(task_details)}--")
         if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
             try:                  
                 if "start_time" in task.keys() and "end_time" in task.keys():
@@ -135,7 +139,9 @@ def get_projects_spent_total_time(company_id, search_date):
             except Exception as error:
                 print(error)
                 pass
-    print("total hours used by each projects\n",data)
+            print(f"--retrieved project time--of--{task['_id']}--")
+        count+=1
+    print("----------Processing total time spent for projects (Done)----------")
     return data
 
 def update_spent_time(project,company_id, spent_time):
@@ -155,7 +161,8 @@ def update_spent_time(project,company_id, spent_time):
     return res 
 
 def main():
-
+    print("-----------------------------------")
+    print("----------Process started----------")
     #get time spent------------------------------
     company_id = "63a2b3fb2be81449d3a30d3f"#"6385c0f18eca0fb652c94561"
     
@@ -167,9 +174,12 @@ def main():
     """for s in spent_time:
         response = update_spent_time(project=s,company_id=company_id, spent_time=spent_time[s])
         print(s,spent_time[s], response)"""
+    print("---Done getting spent time---------")
 
     #update total project time------------------------------
-     
+    print("----------Process done-------------")
+    print("-----------------------------------")
+      
 if __name__ == "__main__":
     ##call main-----
     main()

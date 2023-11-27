@@ -153,6 +153,7 @@ urlpatterns = [
 
     ######
     path("generate_reportdb/", ReportDB.as_view()),
+    path("update_reportdb/", ReportDB.as_view()),
     ######
     path("get_all_qrcode/<str:job_company_id>/", GetQRCode.as_view()),
     path(

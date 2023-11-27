@@ -549,27 +549,279 @@ def get_month_details(date):
 
     return (str(datime.year),month_name,months.count(month_name))
 
-def updatereportdb(filter_params,task_params):
-    """applicant_id=filter_params["applicant_id"]
-    username=filter_params["username"]
-    month=filter_params["month"]
+def updatetaskreportdb(filter_params,project_params, remove=None):
+    applicant_id=filter_params["applicant_id"]
     year=filter_params["year"]
     company_id=filter_params["company_id"]
 
-    default_dict = {i: int(task_params[i]) for i in task_params}
+    taskmodelobj, created = TaskReportdata.objects.get_or_create(
+                            applicant_id=applicant_id,year=year,company_id=company_id)
+    if not created:
+        if "project" in project_params:
+            taskmodelobj.project=project_params["project"]
+        if "subproject" in project_params:
+            try:
+                if type(project_params["subproject"])=="list":
+                    for sb in project_params["subproject"]:
+                        if sb in taskmodelobj.subprojects.keys():
+                            if taskmodelobj.subprojects[sb] >= 0 :
+                                taskmodelobj.subprojects[sb] +=1
+                        else:
+                            taskmodelobj.subprojects[sb]=0
+                elif type(project_params["subproject"]) =="str":
+                    if project_params["subproject"] in taskmodelobj.subprojects.keys():
+                        if taskmodelobj.subprojects[project_params["subproject"]] >= 0 :
+                            taskmodelobj.subprojects[project_params["subproject"]] +=1
+                    else:
+                        taskmodelobj.subprojects[project_params["subproject"]]=0
+            except Exception:
+                pass
+        if "total_hours" in project_params:
+            taskmodelobj.total_hours+=project_params["total_hours"]
+        if "total_mins" in project_params:
+            taskmodelobj.total_mins+=project_params["total_mins"]
+        if "total_secs" in project_params:
+            taskmodelobj.total_secs+=project_params["total_secs"]
+        if "tasks_uploaded_this_week" in project_params.keys():
+            taskmodelobj.tasks_uploaded_this_week+=project_params["tasks_uploaded_this_week"]
+        if "total_tasks_last_one_day" in project_params.keys():
+            taskmodelobj.total_tasks_last_one_day+=project_params["total_tasks_last_one_day"]
+        if "total_tasks_last_one_week" in project_params.keys():
+            taskmodelobj.total_tasks_last_one_week+=project_params["total_tasks_last_one_week"]
+        if "total_tasks" in project_params:
+            taskmodelobj.total_tasks+=project_params["total_tasks"]     
+        if "task" in project_params:
+            try:
+                if project_params["task"] in taskmodelobj.tasks.keys():
+                    if taskmodelobj.tasks[project_params["task"]] >= 0:
+                        taskmodelobj.tasks[project_params["task"]] +=1
+                    else:
+                        taskmodelobj.tasks[project_params["task"]]=0
+            except Exception:
+                pass
+        taskmodelobj.save()
+    elif created:
+        if "project" in project_params:
+            taskmodelobj.project=project_params["project"]
+        if "subproject" in project_params:
+            try:
+                if type(project_params["subproject"])=="list":
+                    for sb in project_params["subproject"]:
+                        if sb in taskmodelobj.subprojects.keys():
+                            if taskmodelobj.subprojects[sb] >= 0 :
+                                taskmodelobj.subprojects[sb] +=1
+                        else:
+                            taskmodelobj.subprojects[sb]=0
+                elif type(project_params["subproject"]) =="str":
+                    if project_params["subproject"] in taskmodelobj.subprojects.keys():
+                        if taskmodelobj.subprojects[project_params["subproject"]] >= 0 :
+                            taskmodelobj.subprojects[project_params["subproject"]] +=1
+                    else:
+                        taskmodelobj.subprojects[project_params["subproject"]]=0
+            except Exception:
+                pass
+        if "total_hours" in project_params:
+            taskmodelobj.total_hours+=project_params["total_hours"]
+        if "total_mins" in project_params:
+            taskmodelobj.total_mins+=project_params["total_mins"]
+        if "total_secs" in project_params:
+            taskmodelobj.total_secs+=project_params["total_secs"]
+        if "tasks_uploaded_this_week" in project_params.keys():
+            taskmodelobj.tasks_uploaded_this_week+=project_params["tasks_uploaded_this_week"]
+        if "total_tasks_last_one_day" in project_params.keys():
+            taskmodelobj.total_tasks_last_one_day+=project_params["total_tasks_last_one_day"]
+        if "total_tasks_last_one_week" in project_params.keys():
+            taskmodelobj.total_tasks_last_one_week+=project_params["total_tasks_last_one_week"]
+        if "total_tasks" in project_params:
+            taskmodelobj.total_tasks+=project_params["total_tasks"]
+        if "task" in project_params:
+            try:
+                if project_params["task"] in taskmodelobj.tasks.keys():
+                    if taskmodelobj.tasks[project_params["task"]] >= 0:
+                        taskmodelobj.tasks[project_params["task"]] +=1
+                    else:
+                        taskmodelobj.tasks[project_params["task"]]=0
+            except Exception:
+                pass
+        taskmodelobj.save()
+
+def updatereportdb(filter_params,task_params, remove=None):
+    
+    applicant_id=filter_params["applicant_id"]
+    month=filter_params["month"]
+    year=filter_params["year"]
+    company_id=filter_params["company_id"]
+    task_params=list(task_params)
+    default_dict = {i: task_params.count(i) for i in set(task_params)}
 
     taskmodelobj, created = MonthlyTaskData.objects.get_or_create(
-                            applicant_id=applicant_id,
-                            username=username,year=year,month=month,
-                            company_id=company_id,defaults=default_dict  # Set the default value for task_added when creating a new instance
+                            applicant_id=applicant_id,year=year,month=month,
+                            company_id=company_id# Set the default value for task_added when creating a new instance
                         )
-
     if not created:
         # If the instance already existed, increment the task_added field
-        taskmodelobj.task_added += 1
-        taskmodelobj.save()"""
-    print("taskmodelobj","==")
+        if "task_added" in task_params:
+            taskmodelobj.task_added += 1
+        if "tasks_completed" in task_params:
+            taskmodelobj.tasks_completed+=1
+            taskmodelobj.tasks_uncompleted-=1 if taskmodelobj.tasks_uncompleted >0 else 0
+        if "tasks_uncompleted" in task_params:
+            taskmodelobj.tasks_uncompleted+=1
+        if "tasks_approved" in task_params:
+            taskmodelobj.tasks_approved+=1
+        if "tasks_you_approved" in task_params:
+            taskmodelobj.tasks_you_approved+=1
+        if "tasks_you_marked_as_complete" in task_params:
+            taskmodelobj.tasks_you_marked_as_complete+=1
+            taskmodelobj.tasks_you_marked_as_incomplete-=1 if taskmodelobj.tasks_you_marked_as_incomplete >0 else 0
+        if "tasks_you_marked_as_incomplete" in task_params:
+            taskmodelobj.tasks_you_marked_as_incomplete+=1
+        if "teams" in task_params:
+            if remove==True:
+                taskmodelobj.teams-=1 if taskmodelobj.teams > 0  else 0
+            else:
+                taskmodelobj.teams+=1
+        if "team_tasks" in task_params:
+            if remove==True:
+                taskmodelobj.team_tasks-=1 if taskmodelobj.team_tasks > 0  else 0
+            else:
+                taskmodelobj.team_tasks+=1
+        if "team_tasks_completed" in task_params:
+            if remove==True:
+                taskmodelobj.team_tasks_completed-=1 if taskmodelobj.team_tasks_completed >0 else 0
+            else:
+                taskmodelobj.team_tasks_completed+=1
+                taskmodelobj.team_tasks_uncompleted-=1 if taskmodelobj.team_tasks_uncompleted >0 else 0
+        if "team_tasks_uncompleted" in task_params:
+            taskmodelobj.team_tasks_uncompleted+=1
+        if "team_tasks_approved" in task_params:
+            taskmodelobj.team_tasks_approved+=1
+        if "team_tasks_issues_raised" in task_params:
+            taskmodelobj.team_tasks_issues_raised+=1
+        if "team_tasks_issues_resolved" in task_params:
+            print("resolving")
+            taskmodelobj.team_tasks_issues_resolved+=1
+        if "team_tasks_comments_added" in task_params:
+            taskmodelobj.team_tasks_comments_added+=1
+        
+        taskmodelobj.save()
 
+        if taskmodelobj.task_added == 0:
+            taskmodelobj.percentage_tasks_completed=0
+        else:
+            taskmodelobj.percentage_tasks_completed=(taskmodelobj.tasks_completed/taskmodelobj.task_added)*100
+        if taskmodelobj.team_tasks == 0:
+            taskmodelobj.percentage_team_tasks_completed=0
+        else:
+            taskmodelobj.percentage_team_tasks_completed=(taskmodelobj.team_tasks_completed/taskmodelobj.team_tasks)*100
+        taskmodelobj.save()
+    else:
+        taskmodelobj= MonthlyTaskData.objects.get(
+                            applicant_id=applicant_id,year=year,month=month,
+                            company_id=company_id)
+        # If the instance already existed, increment the task_added field
+        if "task_added" in task_params:
+            taskmodelobj.task_added += 1
+        if "tasks_completed" in task_params:
+            taskmodelobj.tasks_completed+=1
+            taskmodelobj.tasks_uncompleted-=1 if taskmodelobj.tasks_uncompleted >0 else 0
+        if "tasks_uncompleted" in task_params:
+            taskmodelobj.tasks_uncompleted+=1
+        if "tasks_approved" in task_params:
+            taskmodelobj.tasks_approved+=1
+        if "tasks_you_approved" in task_params:
+            taskmodelobj.tasks_you_approved+=1
+        if "tasks_you_marked_as_complete" in task_params:
+            taskmodelobj.tasks_you_marked_as_complete+=1
+            taskmodelobj.tasks_you_marked_as_incomplete-=1 if taskmodelobj.tasks_you_marked_as_incomplete >0 else 0
+        if "tasks_you_marked_as_incomplete" in task_params:
+            taskmodelobj.tasks_you_marked_as_incomplete+=1
+        if "teams" in task_params:
+            if remove==True:
+                taskmodelobj.teams-=1 if taskmodelobj.teams > 0  else 0
+            else:
+                taskmodelobj.teams+=1
+        if "team_tasks" in task_params:
+            if remove==True:
+                taskmodelobj.team_tasks-=1 if taskmodelobj.team_tasks > 0  else 0
+            else:
+                taskmodelobj.team_tasks+=1
+        if "team_tasks_completed" in task_params:
+            if remove==True:
+                taskmodelobj.team_tasks_completed-=1 if taskmodelobj.team_tasks_completed >0 else 0
+            else:
+                taskmodelobj.team_tasks_completed+=1
+                taskmodelobj.team_tasks_uncompleted-=1 if taskmodelobj.team_tasks_uncompleted >0 else 0
+        if "team_tasks_uncompleted" in task_params:
+            taskmodelobj.team_tasks_uncompleted+=1
+        if "team_tasks_approved" in task_params:
+            taskmodelobj.team_tasks_approved+=1
+        if "team_tasks_issues_raised" in task_params:
+            taskmodelobj.team_tasks_issues_raised+=1
+        if "team_tasks_issues_resolved" in task_params:
+            print("resolving")
+            taskmodelobj.team_tasks_issues_resolved+=1
+        if "team_tasks_comments_added" in task_params:
+            taskmodelobj.team_tasks_comments_added+=1
+        
+        taskmodelobj.save()
+
+        if taskmodelobj.task_added == 0:
+            taskmodelobj.percentage_tasks_completed=0
+        else:
+            taskmodelobj.percentage_tasks_completed=(taskmodelobj.tasks_completed/taskmodelobj.task_added)*100
+        if taskmodelobj.team_tasks == 0:
+            taskmodelobj.percentage_team_tasks_completed=0
+        else:
+            taskmodelobj.percentage_team_tasks_completed=(taskmodelobj.team_tasks_completed/taskmodelobj.team_tasks)*100
+        taskmodelobj.save()
+
+    print("taskmodelobj","==")
+    
+def updatepersonalinfo(params_dicts):
+    space=" "
+    for params_dict in params_dicts:
+        pinfo = PersonalInfo.objects.create(
+            _id = params_dict["_id"] if "_id" in params_dict.keys() else space,
+            eventId = params_dict["eventId"] if "eventId" in params_dict.keys() else space,
+            job_number = params_dict["job_number"] if "job_number" in params_dict.keys() else space,
+            job_title = params_dict["job_title"] if "job_title" in params_dict.keys() else space,
+            applicant = params_dict["applicant"] if "applicant" in params_dict.keys() else space,
+            applicant_email = params_dict["applicant_email"] if "applicant_email" in params_dict.keys() else space,
+            feedBack = params_dict["feedBack"] if "feedBack" in params_dict.keys() else space,
+            freelancePlatform = params_dict["freelancePlatform"] if "freelancePlatform" in params_dict.keys() else space,
+            freelancePlatformUrl = params_dict["freelancePlatformUrl"] if "freelancePlatformUrl" in params_dict.keys() else space,
+            academic_qualification_type = params_dict["academic_qualification_type"] if "academic_qualification_type" in params_dict.keys() else space,
+            academic_qualification = params_dict["academic_qualification"] if "academic_qualification" in params_dict.keys() else space,
+            country = params_dict["country"] if "country" in params_dict.keys() else space,
+            job_category = params_dict["job_category"] if "job_category" in params_dict.keys() else space,
+            agree_to_all_terms = params_dict["agree_to_all_terms"] if "agree_to_all_terms" in params_dict.keys() else space,
+            internet_speed = params_dict["internet_speed"] if "internet_speed" in params_dict.keys() else space,
+            other_info = params_dict["other_info"] if "other_info" in params_dict.keys() else space,
+            project = params_dict["project"] if "project" in params_dict.keys() else space,
+            status = params_dict["status"] if "status" in params_dict.keys() else space,
+            hr_remarks = params_dict["hr_remarks"] if "hr_remarks" in params_dict.keys() else space,
+            teamlead_remarks = params_dict["teamlead_remarks"] if "teamlead_remarks" in params_dict.keys() else space,
+            rehire_remarks = params_dict["rehire_remarks"] if "rehire_remarks" in params_dict.keys() else space,
+            server_discord_link = params_dict["server_discord_link"] if "server_discord_link" in params_dict.keys() else space,
+            product_discord_link = params_dict["product_discord_link"] if "product_discord_link" in params_dict.keys() else space,
+            payment = params_dict["payment"] if "payment" in params_dict.keys() else space,
+            company_id = params_dict["company_id"] if "company_id" in params_dict.keys() else space,
+            company_name = params_dict["company_name"] if "company_name" in params_dict.keys() else space,
+            username = params_dict["username"] if "username" in params_dict.keys() else space,
+            portfolio_name = params_dict["portfolio_name"] if "portfolio_name" in params_dict.keys() else space,
+            data_type = params_dict["data_type"] if "data_type" in params_dict.keys() else space,
+            user_type = params_dict["user_type"] if "user_type" in params_dict.keys() else space,
+            scheduled_interview_date = params_dict["scheduled_interview_date"] if "scheduled_interview_date" in params_dict.keys() else space,
+            application_submitted_on = params_dict["application_submitted_on"] if "application_submitted_on" in params_dict.keys() else space,
+            shortlisted_on = params_dict["shortlisted_on"] if "shortlisted_on" in params_dict.keys() else space,
+            selected_on = params_dict["selected_on"] if "selected_on" in params_dict.keys() else space,
+            hired_on = params_dict["hired_on"] if "hired_on" in params_dict.keys() else space,
+            onboarded_on = params_dict["onboarded_on"] if "onboarded_on" in params_dict.keys() else space,
+            module = params_dict["module"] if "module" in params_dict.keys() else space,
+            is_public = params_dict["is_public"] if "is_public" in params_dict.keys() else space,
+            signup_mail_sent = params_dict["signup_mail_sent"] if "signup_mail_sent" in params_dict.keys() else space,
+        )
 def datacube_data_insertion(api_key,database_name,collection_name,data):
 
     url = "https://datacube.uxlivinglab.online/db_api/crud/"

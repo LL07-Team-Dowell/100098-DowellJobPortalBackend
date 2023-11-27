@@ -39,6 +39,8 @@ from .helper import (
     get_positions,
     get_month_details,
     updatereportdb,
+    updatetaskreportdb,
+    updatepersonalinfo,
     datacube_data_insertion,
     datacube_data_retrival,
     samanta_content_evaluator,
@@ -114,10 +116,12 @@ if os.getenv('DB_Name'):
     DB_Name = str(os.getenv('DB_Name'))
 else:
     """for windows local"""
-    load_dotenv(f"{os.getcwd()}/.env")
+    load_dotenv(f"{os.getcwd()}/env")
     API_KEY = str(os.getenv('API_KEY'))
     DB_Name = str(os.getenv('DB_Name'))
 
+
+# Create your views here.
 
 INVERVIEW_CALL = """
 <!DOCTYPE html>
@@ -261,7 +265,6 @@ ISSUES_MAIL = """
   </body>
 </html>
 """
-
 
 # api for job portal begins here---------------------------
 @method_decorator(csrf_exempt, name="dispatch")
@@ -1837,7 +1840,7 @@ class create_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_task(APIView):
     @verify_user_token
-    def get(self, request, user, company_id):
+    def get(self, request,user,company_id):
         field = {"company_id": company_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1869,8 +1872,8 @@ class get_task(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_candidate_task(APIView):
-    @verify_user_token
-    def get(self, request, user, document_id):
+    #@verify_user_token
+    def get(self, request,document_id):
         field = {"_id": document_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -1927,6 +1930,30 @@ class update_task(APIView):
                         status=status.HTTP_404_NOT_FOUND,
                     )
                 else:
+                    check = dowellconnection(
+                            *task_details_module, "fetch", field, update_field)
+                    iscompleted=["Completed","Complete","completed","complete","Mark as complete"]
+                    
+                    if not json.loads(check)["data"][0]['status'] in iscompleted:
+                        task_created_date=json.loads(check)["data"][0]["task_created_date"]
+                        company_id=json.loads(check)["data"][0]['company_id']
+                        applicant_id=json.loads(check)["data"][0]['applicant_id']
+                        year,monthname, monthcount = get_month_details(task_created_date)
+                        filter_params={
+                            "applicant_id":applicant_id,
+                            "year":year, 
+                            "month":monthname, 
+                            "company_id":company_id
+                        }
+                        task_params=set()
+                        if (update_field["status"] == "Completed"
+                                    or update_field["status"] == "Complete"
+                                    or update_field["status"] == "completed"
+                                    or update_field["status"] == "complete"
+                                    or update_field["status"] == "Mark as complete"):
+                            task_params.add("tasks_completed")
+                        report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                        ##------------------------------------------------
                     response = dowellconnection(
                         *task_details_module, "update", field, update_field
                     )
@@ -2310,13 +2337,14 @@ class approve_task(APIView):
         if len(json.loads(info)["data"]) > 0:
             username = json.loads(info)["data"][0]["username"]
             portfolio_name = [
-                names["portfolio_name"] for names in json.loads(info)["data"]
+                names["portfolio_name"] for names in json.loads(info)["data"] if "portfolio_name" in names.keys()
             ]
-
+            
             valid_profiles = []
             for data in serializer.data:
                 for d in data["profile_info"]:
                     if "profile_title" in d.keys():
+                        print(d["profile_title"])
                         if d["profile_title"] in portfolio_name:
                             if (d["Role"] == "Project_Lead" or d["Role"] == "Proj_Lead" or d["Role"] == "super_admin"):
                                 valid_profiles.append(d["profile_title"])
@@ -2406,6 +2434,37 @@ class approve_task(APIView):
                         )
                     update_field["approved"] = check_approvable
                     update_field["approval"] = check_approvable
+                    check = dowellconnection(
+                            *task_details_module, "fetch", field, update_field)
+                    
+                    a=json.loads(check)["data"][0]
+                    if ("approval" in a.keys() and a['approval'] == False) or ("approved" in a.keys() and a['approved'] == False):
+                        task_created_date=json.loads(check)["data"][0]["task_created_date"]
+                        company_id=json.loads(check)["data"][0]['company_id']
+                        applicant_id=json.loads(check)["data"][0]['applicant_id']
+                        year,monthname, monthcount = get_month_details(task_created_date)
+                        filter_params={
+                            "applicant_id":applicant_id,
+                            "year":year, 
+                            "month":monthname, 
+                            "company_id":company_id
+                        }
+                        task_params=set()
+                        task_params.add("tasks_approved")
+                        info = dowellconnection(*candidate_management_reports, "fetch", {"_id":applicant_id}, update_field)
+                        if len(json.loads(check)["data"])>0:
+                            dat_info = json.loads(check)["data"][0]
+                            if dat_info["username"] == data.get("lead_username"):
+                                task_params.add("tasks_you_approved")
+                                if (dat_info["status"] == "Completed" or dat_info["status"] == "Complete"
+                                    or dat_info["status"] == "completed" or dat_info["status"] == "complete" 
+                                    or dat_info["status"] == "Mark as complete"):
+                                    task_params.add("tasks_you_marked_as_complete")
+                                else:
+                                    task_params.add("tasks_you_marked_as_incomplete")
+                                
+                        report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                        ##------------------------------------------------
                     response = dowellconnection(
                         *task_details_module, "update", field, update_field
                     )
@@ -2489,7 +2548,7 @@ class task_module(APIView):
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
 
-    ##@verify_user_tokendef post(self, request, user):
+    #@verify_user_token
     def post(self, request):
         type_request = request.GET.get("type")
 
@@ -2523,7 +2582,7 @@ class task_module(APIView):
         else:
             return self.handle_error(request)
 
-    ##@verify_user_token
+    #@verify_user_token
     def add_task(self, request):
         data = request.data
         payload = {
@@ -2591,19 +2650,71 @@ class task_module(APIView):
                     )
                 )
                 if response["isSuccess"]:
+                    #print(response)
                     ##adding to sqlite--------------------------------
-                    #year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                    #filter_params={
-                    #    "applicant_id":data.get("applicant_id"),
-                    #    "username":data.get("task_added_by"), 
-                    #    "year":year, 
-                    #    "month":monthname, 
-                    #    "company_id":data.get("company_id")
-                    #}
-                    # #task_params={"task_added"}
-                    # #report =updatereportdb(filter_params=filter_params,task_params=task_params)
-                    ##------------------------------------------------
+                    year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                    filter_params={
+                        "applicant_id":data.get("applicant_id"),
+                        "username":data.get("task_added_by"), 
+                        "year":year, 
+                        "month":monthname, 
+                        "company_id":data.get("company_id")
+                    }
+                    task_params={"task_added","tasks_uncompleted"}
+                    report =updatereportdb(filter_params=filter_params,task_params=task_params)
+
+                    ##updatetaskdb-------------------------
+                    project_params={
+                        "project":data.get("project"),
+                        "subproject":data.get("subproject"),
+                        "total_tasks":1
+                    }
+                    try:
+                        start_time = datetime.strptime(
+                            data.get("start_time"), "%H:%M")
+                    except ValueError:
+                        start_time = datetime.strptime(
+                            data.get("start_time"), "%H:%M:%S"
+                        )
+                    try:
+                        end_time = datetime.strptime(
+                            data.get("end_time"), "%H:%M")
+                    except ValueError:
+                        end_time = datetime.strptime(
+                            data.get("end_time"), "%H:%M:%S")
+                    duration = end_time - start_time
+                    project_params["total_secs"]=(duration).total_seconds()
+                    project_params["total_mins"]=project_params["total_secs"] / 60
+                    project_params["total_hours"]=project_params["total_mins"] / 60
+
+                    today = datetime.today()
+                    start = today - timedelta(days=today.weekday())
+                    end = start + timedelta(days=6)
+                    today = datetime.strptime(
+                        set_date_format(str(today)), "%m/%d/%Y %H:%M:%S"
+                    )
+                    start = datetime.strptime(
+                        set_date_format(str(start)), "%m/%d/%Y %H:%M:%S"
+                    )
+                    end = datetime.strptime(
+                        set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
                     
+                    task_created_date = datetime.strptime(
+                        set_date_format(data.get("task_created_date")), "%m/%d/%Y %H:%M:%S"
+                    )
+                    
+                    if task_created_date >= start and task_created_date <= end:
+                        project_params["tasks_uploaded_this_week"]=1
+                    if task_created_date >= today - timedelta(days=1):
+                        project_params["total_tasks_last_one_day"]=1
+                    if task_created_date >= today - timedelta(days=7):
+                        project_params["total_tasks_last_one_week"]=1
+                    
+                    project_params["task"]=response["inserted_id"]
+                    taskreport = updatetaskreportdb(filter_params=filter_params, project_params=project_params)
+
+                    ##------------------------------------------------
+                    field["_id"]=response["inserted_id"]
                     return Response(
                         {
                             "success": True,
@@ -3079,18 +3190,22 @@ class create_team(APIView):
             # print(response)
             if json.loads(response)["isSuccess"] == True:
                 ##adding to sqlite--------------------------------
-                #year,monthname, monthcount = get_month_details(data.get("date_created"))
-                #filter_params={
-                #    "applicant_id":data.get("applicant_id"),
-                #    "username":data.get("task_added_by"), 
-                #    "year":year, 
-                #    "month":monthname, 
-                #    "company_id":data.get("company_id")
-                #}
-                # #task_params={"teams"}
-                # #report =updatereportdb(filter_params=filter_params,task_params=task_params)
-                ##------------------------------------------------
+                for username in field["members"]:
+                    check = dowellconnection(
+                                *candidate_management_reports, "fetch", {"username":username}, update_field)
                     
+                    year,monthname, monthcount = get_month_details(field["date_created"])
+                    filter_params={
+                        "applicant_id":json.loads(check)["data"][0]["_id"],
+                        "year":year, 
+                        "month":monthname, 
+                        "company_id":field["company_id"]
+                    }
+                    task_params=set()
+                    task_params.add("teams")
+                    report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                    ##------------------------------------------------
+                        
                 return Response(
                     {
                         "message": "Team created successfully",
@@ -3216,6 +3331,44 @@ class edit_team(APIView):
                     status=status.HTTP_204_NO_CONTENT,
                 )
             else:
+                ##adding to sqlite--------------------------------
+                check = dowellconnection(
+                        *team_management_modules, "fetch", field, update_field
+                    )
+                #remove members------------------------------------------------------------
+                for member in json.loads(check)["data"][0]["members"]:
+                    if not member in update_field["members"]:
+                        details = dowellconnection(
+                                    *candidate_management_reports, "fetch", {"username":member}, update_field)
+                        if len(json.loads(details)["data"])>0:
+                            year,monthname, monthcount = get_month_details(json.loads(check)["data"][0]["date_created"])
+                            filter_params={
+                                "applicant_id":json.loads(details)["data"][0]["_id"],
+                                "year":year, 
+                                "month":monthname, 
+                                "company_id":json.loads(check)["data"][0]["company_id"]
+                            }
+                            task_params=set()
+                            task_params.add("teams")
+                            report =updatereportdb(filter_params=filter_params,task_params=task_params, remove=True)
+                ###add members-------------------------------------------------------------
+                for username in update_field["members"]:
+                    if not username in json.loads(check)["data"][0]["members"]:
+                        details = dowellconnection(
+                                    *candidate_management_reports, "fetch", {"username":username}, update_field)
+                        if len(json.loads(details)["data"])>0:
+                            year,monthname, monthcount = get_month_details(json.loads(check)["data"][0]["date_created"])
+                            filter_params={
+                                "applicant_id":json.loads(details)["data"][0]["_id"],
+                                "year":year, 
+                                "month":monthname, 
+                                "company_id":json.loads(check)["data"][0]["company_id"]
+                            }
+                            task_params=set()
+                            task_params.add("teams")
+                            report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                    ##------------------------------------------------
+
                 response = dowellconnection(
                     *team_management_modules, "update", field, update_field
                 )
@@ -3314,24 +3467,29 @@ class create_team_task(APIView):
                 # "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.now())),
             }
             update_field = {"status": "nothing to update"}
+            ##adding to sqlite--------------------------------
+            check = dowellconnection(
+                    *team_management_modules, "fetch", {"_id":data.get("team_id")}, update_field
+                )
+            for username in json.loads(check)["data"][0]["members"]:
+                if username in field["assignee"]:
+                    details = dowellconnection(*candidate_management_reports, "fetch", {"username":username}, update_field)
+                    if len(json.loads(details)["data"])>0:
+                        year,monthname, monthcount = get_month_details(field["task_created_date"])
+                        filter_params={
+                            "applicant_id":json.loads(details)["data"][0]["_id"],
+                            "year":year, 
+                            "month":monthname, 
+                            "company_id":json.loads(check)["data"][0]["company_id"]
+                        }
+                        task_params={"team_tasks","team_tasks_uncompleted"}
+                        report =updatereportdb(filter_params=filter_params,task_params=task_params)
+            ##------------------------------------------------
             response = dowellconnection(
                 *task_management_reports, "insert", field, update_field
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
-                ##adding to sqlite--------------------------------
-                #year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                #filter_params={
-                #    "applicant_id":data.get("applicant_id"),
-                #    "username":data.get("task_added_by"), 
-                #    "year":year, 
-                #    "month":monthname, 
-                #    "company_id":data.get("company_id")
-                #}
-                #task_params={"team_tasks"}
-                #report =updatereportdb(filter_params=filter_params,task_params=task_params)
-                ##------------------------------------------------
-                    
                 return Response(
                     {
                         "message": "Task created successfully",
@@ -3376,6 +3534,7 @@ class edit_team_task(APIView):
                 "team_name": data.get("team_name"),
                 "subtasks": data.get("subtasks"),
             }
+            iscomplete=False
             if (
                 data.get("completed") == "True"
                 or data.get("completed") == "true"
@@ -3385,11 +3544,14 @@ class edit_team_task(APIView):
                 update_field["completed_on"] = self.get_current_datetime(
                     datetime.now()
                 )
-            # print(update_field, "=====")
+
+                iscomplete= True
+
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
             )
+            print(check,"+++++++")
             if len(json.loads(check)["data"]) == 0:
                 return Response(
                     {
@@ -3399,6 +3561,41 @@ class edit_team_task(APIView):
                     status=status.HTTP_204_NO_CONTENT,
                 )
             else:
+                ##adding to sqlite--------------------------------
+                team_details = dowellconnection(
+                        *team_management_modules, "fetch", {"_id":json.loads(check)["data"][0]["team_id"]}, update_field
+                    )
+                #remove members------------------------------------------------------------
+                for username in json.loads(team_details)["data"][0]["members"]:
+                    details = dowellconnection(
+                                *candidate_management_reports, "fetch", {"username":username}, update_field)
+                    if len(json.loads(details)["data"])>0:
+                        year,monthname, monthcount = get_month_details(json.loads(check)["data"][0]["task_created_date"])
+                        filter_params={
+                            "applicant_id":json.loads(details)["data"][0]["_id"],
+                            "year":year, 
+                            "month":monthname, 
+                            "company_id":json.loads(team_details)["data"][0]["company_id"]
+                        }
+                        task_params =set()
+                        if not username in update_field["assignee"]:
+                            task_params.add("team_tasks")
+                            if iscomplete== True:
+                                task_params.add("team_tasks_completed")
+                            else:
+                                task_params.add("team_tasks_uncompleted")
+                            report =updatereportdb(filter_params=filter_params,task_params=task_params, remove=True)
+                        else:
+                            if not username in json.loads(check)["data"][0]["assignee"]:
+                                task_params.add("team_tasks")
+                                if iscomplete== True:
+                                    task_params.add("team_tasks_completed")
+                                else:
+                                    task_params.add("team_tasks_uncompleted")
+                            if ("approval" in json.loads(check)["data"][0].keys() and json.loads(check)["data"][0]["approval"]==True) or ("approved" in json.loads(check)["data"][0].keys() and json.loads(check)["data"][0]["approved"]==True):
+                                task_params.add("team_tasks_approved")
+                            report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ###------------------------------------
                 response = dowellconnection(
                     *task_management_reports, "update", field, update_field
                 )
@@ -5002,16 +5199,19 @@ class Thread_Apis(APIView):
                     send_mail_thread.start()
                     send_mail_thread.join()
                 ##adding to sqlite--------------------------------
-                #year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                #filter_params={
-                #    "applicant_id":data.get("applicant_id"),
-                #    "username":data.get("task_added_by"), 
-                #    "year":year, 
-                #    "month":monthname, 
-                #    "company_id":data.get("company_id")
-                #}
-                #task_params={"team_tasks_issues_raised"}
-                #report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                check = dowellconnection(
+                                *candidate_management_reports, "fetch", {"username":field["created_by"]}, update_field)
+                    
+                year,monthname, monthcount = get_month_details(field["created_date"])
+                filter_params={
+                    "applicant_id":json.loads(check)["data"][0]["_id"],
+                    "username":field["created_by"], 
+                    "year":year, 
+                    "month":monthname, 
+                    "company_id":field["company_id"]
+                }
+                task_params={"team_tasks_issues_raised"}
+                report =updatereportdb(filter_params=filter_params,task_params=task_params)
                 ##------------------------------------------------
                     
                 return Response(
@@ -5182,6 +5382,28 @@ class Thread_Apis(APIView):
 
             # print(update_response)
             if json.loads(update_response)["isSuccess"] == True:
+                ##adding to sqlite--------------------------------
+                thread_info = dowellconnection(*thread_report_module, "fetch", field, update_field=None)
+                created_by =json.loads(thread_info)["data"][0]["created_by"]
+                company_id = json.loads(thread_info)["data"][0]["company_id"]
+                created_date = json.loads(thread_info)["data"][0]["created_date"]
+                print(json.loads(thread_info)["data"][0])
+                check = dowellconnection(
+                                *candidate_management_reports, "fetch", {"username":created_by}, update_field)
+                    
+                year,monthname, monthcount = get_month_details(created_date)
+                filter_params={
+                    "applicant_id":json.loads(check)["data"][0]["_id"],
+                    "username":created_by, 
+                    "year":year, 
+                    "month":monthname, 
+                    "company_id":company_id
+                }
+                task_params=set()
+                if "Resolved" in json.loads(thread_info)["data"][0]["previous_status"] or json.loads(thread_info)["data"][0]["current_status"]=="Resolved":
+                    task_params.add("team_tasks_issues_resolved")
+                report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ##------------------------------------------------
                 return Response(
                     {
                         "message": f"Thread with id-{data.get('document_id')} has been successfully updated",
@@ -5355,6 +5577,22 @@ class Comment_Apis(APIView):
             )
             # print(insert_response)
             if json.loads(insert_response)["isSuccess"] == True:
+                ##adding to sqlite--------------------------------
+                thread_info = dowellconnection(*thread_report_module, "fetch", {"_id":data.get("thread_id")}, update_field=None)
+                check = dowellconnection(
+                                *candidate_management_reports, "fetch", {"username":field["created_by"]}, update_field)
+                    
+                year,monthname, monthcount = get_month_details(field["created_date"])
+                filter_params={
+                    "applicant_id":json.loads(check)["data"][0]["_id"],
+                    "username":field["created_by"], 
+                    "year":year, 
+                    "month":monthname, 
+                    "company_id":json.loads(thread_info)["data"][0]["company_id"]
+                }
+                task_params={"team_tasks_comments_added"}
+                report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ##------------------------------------------------
                 return Response(
                     {
                         "message": "Comment created successfully",
@@ -8595,8 +8833,7 @@ class dashboard_services(APIView):
         else:
             return Response({
                     "success": False,
-                    "message": "candidate leave could not be added please check the aplicant id and try again",
-                    "error":res["error"]
+                    "message": "candidate leave could not be added please check the applicant id and try again",
                 })
 
     def delete_application(self, request):
@@ -8619,28 +8856,21 @@ class dashboard_services(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-        
-
-    
 @method_decorator(csrf_exempt, name="dispatch")       
 class ReportDB(APIView):
     def get_individual_report(self,request):
         payload = request.data
-        year= request.data["year"]
-        company_id =request.data["company_id"]
-        applicant_id =request.data["applicant_id"]
         if payload:
             # intializing query parameters-----------------------------------------------------
-            field = {
-                "_id": applicant_id,
-                "company_id": company_id,
-            }
-            year = year
-            update_field = {}
-            data = {}
-            # ----------------------------------------------------------------------------------
 
-            # ensuring the given year is a valid year------------------------------------------
+            if not payload["year"]:
+                return Response(
+                    {"success": False, "message": "Specify the year"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            year = payload["year"]
+
+            # ensuring the given year is a valid year--------
             if int(year) > datetime.today().year:
                 return Response(
                     {
@@ -8649,151 +8879,76 @@ class ReportDB(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            # -------------------------------------------------------------------------------
+            #------------------------------------------------
+            if not payload["applicant_id"]:
+                return Response(
+                    {"success": False, "message": "Specify the Applicant Id"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            applicant_id = payload["applicant_id"]
+            if not payload["company_id"]:
+                return Response(
+                    {"success": False, "message": "Specify the Company Id"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            company_id = payload["company_id"]
+            #-------------------------------------------------------------------------------------------
 
-            # add fields values if role has been given--------------------------------------
-            if payload.get("role"):
-                field["username"] = payload.get("applicant_username")
-                field["status"] = "hired"
-            # -------------------------------------------------------------------------------
+            #defining the object 
+            data = {}
+            # ------------------------------------------------------------------------------------------
 
-            # check if the user has any data------------------------------------------------
-            info = dowellconnection(
-                *candidate_management_reports, "fetch", field, update_field
-            )
-            # print(info,"====")
-            if json.loads(info)["isSuccess"] is True:
-                info_data=json.loads(info)["data"]
-            else:
-                info_data =[]
-            if len(info_data) <= 0:
-                data["personal_info"] = {}
-                username = "None"
+            #--get the personal info from the sqlite db
+            d= PersonalInfo.objects.filter(_id=applicant_id, company_id=company_id)
+            if not d.exists():
                 return Response(
                     {
-                        "message": f"There is no candidate with such parameters --> "
-                        + " ".join([va for va in field.values()])
+                        "message": f"There is no candidate with such parameters --> Applicant Id {applicant_id} + Company Id {company_id}"
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
-            data["personal_info"] = json.loads(info)["data"][0]
-            username = json.loads(info)["data"][0]["username"]
-            portfolio_name = json.loads(info)["data"][0]["portfolio_name"]
-
-            # get the task report based on project for the user----------------------------------------
-            data["personal_info"]["task_report"]=[]
-            #-------------------------------------------------------------------------------------------
-
-            # if a position is given, check within any of the contained positions-------------------
-            if payload.get("role"):
-                profiles = SettingUserProfileInfo.objects.all()
-                serializer = SettingUserProfileInfoSerializer(
-                    profiles, many=True)
-                # print(serializer.data,"----")
-                positions = get_positions(serializer.data)
-                teamleads = positions["teamleads"]
-                accountleads = positions["accountleads"]
-                hrs = positions["hrs"]
-                subadmins = positions["subadmins"]
-                groupleads = positions["groupleads"]
-                superadmins = positions["superadmins"]
-                candidates = positions["candidates"]
-                viewers = positions["viewers"]
-                projectlead = positions["projectlead"]
-                leaders = positions["leaders"]
-
-                # checking if the user is a team lead--------------------------------------------
-
-                if (payload.get("role") == "Teamlead" or payload.get("role") == "TeamLead"):
-                    if portfolio_name not in teamleads:
-                        return Response(
-                            {
-                                "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
-                                "error": f"The User ->{payload.get('applicant_username')}-({portfolio_name}) is not a team lead",
-                            },
-                            status=status.HTTP_400_BAD_REQUEST,
-                        )
-                # _-------------------------------------------------------------------------------
-
-            # checking if the user is a team lead-----
-            profiles = SettingUserProfileInfo.objects.all()
-            serializer = SettingUserProfileInfoSerializer(profiles, many=True)
-            # print(serializer.data,"----")
-            teamleads = []
-            accountleads = []
-            hrs = []
-            subadmins = []
-            groupleads = []
-            superadmins = []
-            candidates = []
-            viewers = []
-            projectlead = []
-            freelancers = []
-            for user in serializer.data:
-                for d in user["profile_info"]:
-                    if "profile_title" in d.keys() and "Role" in d.keys():
-                        if d["Role"] == "Proj_Lead":
-                            teamleads.append(d["profile_title"])
-                        if d["Role"] == "Dept_Lead":
-                            accountleads.append(d["profile_title"])
-                        if d["Role"] == "Hr":
-                            hrs.append(d["profile_title"])
-                        if d["Role"] == "sub_admin":
-                            subadmins.append(d["profile_title"])
-                        if d["Role"] == "group_lead":
-                            groupleads.append(d["profile_title"])
-                        if d["Role"] == "super_admin":
-                            superadmins.append(d["profile_title"])
-                        if d["Role"] == "candidate":
-                            candidates.append(d["profile_title"])
-                        if d["Role"] == "Project_Lead":
-                            projectlead.append(d["profile_title"])
-                        if d["Role"] == "Viewer":
-                            viewers.append(d["profile_title"])
-                    elif "profile_title" in d.keys():
-                        freelancers.append(d["profile_title"])
-
-            if (payload.get("applicant_username") and payload.get("role") == "Teamlead" and not portfolio_name in teamleads):
-                return Response(
-                    {
-                        "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
-                        "error": f"The User ->{payload.get('applicant_username')}-({portfolio_name}) is not a team lead",
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            # -----------------------------------------------------------------------------
+            for taskmodelobj in reversed(d):#scan through all the months available---
+                data["personal_info"] = {field.name: getattr(taskmodelobj, field.name) for field in taskmodelobj._meta.fields}
             
-            #username =request.data["username"]
+            #--get the tasks from the sqlite db
             NotRequired =["applicant_id","id","company_id","username","year","month"]
-            months= calendar.month_name[1:]
-            res={}
-            for m in months:
-                res[m]={
-                    "task_added": "0",
-                    "tasks_completed": "0",
-                    "tasks_uncompleted": "0",
-                    "tasks_approved": "0",
-                    "percentage_tasks_completed": "0",
-                    "tasks_you_approved": "0",
-                    "tasks_you_marked_as_complete": "0",
-                    "tasks_you_marked_as_incomplete": "0",
-                    "teams": "0",
-                    "team_tasks": "0",
-                    "team_tasks_completed": "0",
-                    "team_tasks_uncompleted": "0",
-                    "percentage_team_tasks_completed": "0",
-                    "team_tasks_approved": "0",
-                    "team_tasks_issues_raised": "0",
-                    "team_tasks_issues_resolved": "0",
-                    "team_tasks_comments_added": "0"
-                }
-            #--get the monthly tasks from the sqlite db
-            d= MonthlyTaskData.objects.filter(applicant_id=applicant_id, year=year, company_id=company_id)
+            task_reports=[]
+            d= TaskReportdata.objects.filter(year=year, applicant_id=applicant_id, company_id=company_id)
             if d.exists():
                 for taskmodelobj in reversed(d):#scan through all the months available---
-                    data={field.name: str(getattr(taskmodelobj, field.name)) for field in taskmodelobj._meta.fields if field.name not in NotRequired}
-                    res[taskmodelobj.month]=data
+                    t_data={field.name: getattr(taskmodelobj, field.name) for field in taskmodelobj._meta.fields if field.name not in NotRequired}
+                    task_reports.append(t_data)
+            
+            data["personal_info"]["task_report"]=task_reports
+            
+            res={}
+            for m in calendar.month_name[1:]:
+                res[m]={
+                    "task_added": 0,
+                    "tasks_completed": 0,
+                    "tasks_uncompleted": 0,
+                    "tasks_approved": 0,
+                    "percentage_tasks_completed": 0.0,
+                    "tasks_you_approved": 0,
+                    "tasks_you_marked_as_complete": 0,
+                    "tasks_you_marked_as_incomplete": 0,
+                    "teams": 0,
+                    "team_tasks": 0,
+                    "team_tasks_completed": 0,
+                    "team_tasks_uncompleted": 0,
+                    "percentage_team_tasks_completed": 0,
+                    "team_tasks_approved": 0,
+                    "team_tasks_issues_raised": 0,
+                    "team_tasks_issues_resolved": 0,
+                    "team_tasks_comments_added": 0
+                }
+            #--get the monthly tasks from the sqlite db
+            d= MonthlyTaskData.objects.filter(year=year, applicant_id=applicant_id, company_id=company_id)
+            if d.exists():
+                for taskmodelobj in reversed(d):#scan through all the months available---
+                    t_data={field.name: getattr(taskmodelobj, field.name) for field in taskmodelobj._meta.fields if field.name not in NotRequired}
+                    res[taskmodelobj.month]=t_data
+            
             data["personal_info"]["data"]=res
 
             return Response(data,status=status.HTTP_200_OK)
@@ -8803,17 +8958,292 @@ class ReportDB(APIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
     def post(self, request):
-        if request.data["report_type"] == "Individual":
+        if request.data["report_type"]:
+            if request.data["report_type"] == "Individual":
+                return self.get_individual_report(request)
+        
+        error={"success":False,"error":"Specify the type of report"}
+        return Response(error,status=status.HTTP_400_BAD_REQUEST)
+    def patch(self, request):
+        data =request.data
+        report_type = data["report_type"]
+        print("-------------------------------------------------------------------------------") 
+        print("Process Started")  
+        print("-------------------------------------------------------------------------------") 
 
-            return self.get_individual_report(request)
-        else:
-            error={"success":False,"error":"Specify the type of report"}
-            return Response(error,status=status.HTTP_400_BAD_REQUEST)
+        """Updating personal details details"""
+        # personal info-------------------------
+        print("clearing personal data ------------------------------------------------------")
+        personaldata =PersonalInfo.objects.all()
+        personaldata.delete()
+        print("personal data cleared ------------------------------------------------------")
+        print("updating personal data ------------------------------------------------------")
+        get_usernames={}
+        info=dowellconnection(*candidate_management_reports, "fetch", {}, update_field=None)
+        if "data" in json.loads(info).keys():
+            if len(json.loads(info)["data"])>0:
+                pinfo = updatepersonalinfo(params_dicts=json.loads(info)["data"])
+                for i in json.loads(info)["data"]:
+                    if "username" in i.keys():
+                        if "status" in i.keys():
+                            if i["status"] == "hired" or i["status"] == "Removed":
+                                get_usernames[i['_id']]=i["username"]
+
+        print("updated personal data ------------------------------------------------------")
+
+
+        """Updating monthly and task report details"""
+        # teams-------------------------
+        print("clearing monthly data ------------------------------------------------------")
+        taskmodelobj = MonthlyTaskData.objects.all()
+        taskmodelobj.delete() 
+        print("monthly data cleared ------------------------------------------------------") 
+        print("updating monthly data ------------------------------------------------------") 
+
+        print("processing teams ------------------------------------------------------")
+        teams = dowellconnection(*team_management_modules, "fetch", {}, {})
+        for team in json.loads(teams)["data"]:
+            '''teams--------------------------------'''
+            if "date_created" in team.keys():
+                try:
+                    t_year, t_month_name, t_months_cnt = get_month_details(team["date_created"])
+                except Exception as error:
+                    t_year, t_month_name, t_months_cnt = None, None, None
+                if not(t_year==None and t_month_name==None and t_months_cnt==None):
+                    if "members" in team.keys():
+                        for member in team["members"]:
+                            info=dowellconnection(*candidate_management_reports, "fetch", {"username":member}, update_field=None)
+                            if "data" in json.loads(info).keys():
+                                if len(json.loads(info)["data"])>0:
+                                    #print(json.loads(info)["data"][0]["_id"], member)
+                                    filter_params={
+                                        "applicant_id":json.loads(info)["data"][0]["_id"],
+                                        "username":member, 
+                                        "year":t_year, 
+                                        "month":t_month_name, 
+                                        "company_id":team["company_id"]
+                                    }
+                                    task_params={"teams"}
+                                    report =updatereportdb(filter_params=filter_params,task_params=task_params,task=task)
+            ##'''teamtasks------------------------------------'''
+            teamtasks = dowellconnection(*team_management_modules, "fetch", {"team_id":team["_id"]}, {})
+            print("processing team tasks ------------------------------------------------------")
+            for teamtask in json.loads(teamtasks)["data"]:
+                if "task_created_date" in teamtask.keys():
+                    try:
+                        t_year, t_month_name, t_months_cnt = get_month_details(teamtask["task_created_date"])
+                    except Exception as error:
+                        t_year, t_month_name, t_months_cnt = None, None, None
+                    if not(t_year==None and t_month_name==None and t_months_cnt==None):
+                        if "assignee" in teamtask.keys():
+                            for assignee in teamtask["assignee"]:
+                                info=dowellconnection(*candidate_management_reports, "fetch", {"username":assignee}, update_field=None)
+                                if "data" in json.loads(info).keys():
+                                    if len(json.loads(info)["data"])>0:
+                                        #print(json.loads(info)["data"][0]["_id"], member)
+                                        filter_params={
+                                            "applicant_id":json.loads(info)["data"][0]["_id"],
+                                            "username":assignee, 
+                                            "year":t_year, 
+                                            "month":t_month_name, 
+                                            "company_id":team["company_id"]
+                                        }
+                                        task_params=set()
+                                        task_params.add("team_tasks")
+                                        if "completed" in teamtask.keys() and (teamtask["completed"] ==True or teamtask["completed"] =='True' or teamtask["completed"] =="true"):
+                                            task_params.add("team_tasks_completed")
+                                        else:
+                                            task_params.add("team_tasks_uncompleted")
+                                        if ("approval" in teamtask.keys() and teamtask["approval"] == True) or ("approved" in teamtask.keys() and teamtask["approved"] == True):
+                                            task_params.add("team_tasks_approved")
+                                        report =updatereportdb(filter_params=filter_params,task_params=task_params,task=task)
+            #'''teamtasks issues created------------------------------------'''
+            
+            teamissues = dowellconnection(*thread_report_module, "fetch", {"team_id":team["_id"]}, {})
+            print("processing team issues ------------------------------------------------------")
+            for issue in json.loads(teamissues)["data"]:
+                if "created_date" in issue.keys():
+                    try:
+                        t_year, t_month_name, t_months_cnt = get_month_details(issue["created_date"])
+                    except Exception as error:
+                        t_year, t_month_name, t_months_cnt = None, None, None
+                    if not(t_year==None and t_month_name==None and t_months_cnt==None):
+                        info=dowellconnection(*candidate_management_reports, "fetch", {"username":issue["created_by"]}, update_field=None)
+                        if "data" in json.loads(info).keys():
+                            if len(json.loads(info)["data"])>0:
+                                #print(json.loads(info)["data"][0]["_id"], member)
+                                filter_params={
+                                    "applicant_id":json.loads(info)["data"][0]["_id"],
+                                    "username":issue["created_by"], 
+                                    "year":t_year, 
+                                    "month":t_month_name, 
+                                    "company_id":team["company_id"]
+                                }
+                                task_params=set()
+                                task_params.add("team_tasks_issues_raised")
+                                if ("current_status" in issue.keys() and issue["current_status"] =="Resolved") or ("previous_status" in issue.keys() and "Resolved" in issue["previous_status"]):
+                                    task_params.add("team_tasks_issues_resolved")
+                                report =updatereportdb(filter_params=filter_params,task_params=task_params,task=task)
+                
+                #'''teamtasks comments created------------------------------------'''
+                teamcomments = dowellconnection(*comment_report_module, "fetch", {"thread_id":issue["_id"]}, {})
+                print("processing team comments ------------------------------------------------------")
+                for comment in json.loads(teamcomments)["data"]:
+                    if "created_date" in comment.keys():
+                        try:
+                            t_year, t_month_name, t_months_cnt = get_month_details(comment["created_date"])
+                        except Exception as error:
+                            t_year, t_month_name, t_months_cnt = None, None, None
+                        if not(t_year==None and t_month_name==None and t_months_cnt==None):
+                            info=dowellconnection(*candidate_management_reports, "fetch", {"username":comment["created_by"], "status":"hired"}, update_field=None)
+                            if "data" in json.loads(info).keys():
+                                if len(json.loads(info)["data"])>0:
+                                    #print(json.loads(info)["data"][0]["_id"], member)
+                                    filter_params={
+                                        "applicant_id":json.loads(info)["data"][0]["_id"],
+                                        "username":comment["created_by"], 
+                                        "year":t_year, 
+                                        "month":t_month_name, 
+                                        "company_id":team["company_id"]
+                                    }
+                                    task_params={"team_tasks_comments_added"}
+                                    report =updatereportdb(filter_params=filter_params,task_params=task_params,task=task)         
+        # tasks
+        print("processing tasks ------------------------------------------------------")
+        for applicant_id,username in get_usernames.items():
+            if username != "None":
+                print("processing tasks for :", username, "started----------------------------")
+                count =0
+                daily_tasks = json.loads(dowellconnection(*task_management_reports,"fetch",field={"task_added_by":username},update_field=None))["data"]
+                for t in daily_tasks:
+                    task_details = json.loads(dowellconnection(*task_details_module, "fetch", {"task_id":t["_id"]}, update_field=None))["data"]
+                    for task in task_details:
+                        if "task_added_by" in task.keys():
+                            """tasks added completed, uncompleted and approved, task you approved, task you marked as completed and task you marked as incompleted------------------------------------"""
+                            if "task_created_date" in task.keys():
+                                try:
+                                    t_year, t_month_name, t_months_cnt = get_month_details(task["task_created_date"])
+                                except Exception as error:
+                                    t_year, t_month_name, t_months_cnt = None, None, None
+                                if not(t_year==None and t_month_name==None and t_months_cnt==None):
+                                    #info=dowellconnection(*candidate_management_reports, "fetch", {"username":username, "status":"hired"}, update_field=None)
+                                    
+                                    filter_params={
+                                        "applicant_id":applicant_id,
+                                        "username":username, #or --t["task_added_by"] 
+                                        "year":t_year, 
+                                        "month":t_month_name, 
+                                        "company_id":task["company_id"]
+                                    }
+                                    task_params=set()
+                                    task_params.add("task_added")
+                                    print(f"task added for {t['task_added_by']} ----------------------------------")
+                                    if "status" in task.keys():
+                                        if (task["status"]=="Completed" or task["status"]=="Complete" or task["status"]=="completed" or task["status"]=="complete" or task["status"]=="Mark as complete"):
+                                            task_params.add("tasks_completed")
+                                            print("task completed added for ",t["task_added_by"])
+
+                                        if "task_approved_by" in task.keys():# t
+                                            if task["task_approved_by"] == t["task_added_by"]:
+                                                task_params.add("tasks_you_approved")
+                                                print(f"task you approved added for {t['task_added_by']} ----------------------------------")
+                                            if task["task_approved_by"] == t["task_added_by"]:
+                                                if (task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
+                                                    task_params.add("tasks_you_marked_as_complete")
+                                                    print(f"tasks you marked as complete added for {t['task_added_by']} ----------------------------------")
+                                                else:
+                                                    task_params.add("tasks_you_marked_as_incomplete")
+                                                    print(f"tasks you marked as incomplete added for {t['task_added_by']} ----------------------------------")
+                                    else:
+                                        task_params.add("tasks_uncompleted")
+                                        print(f"task uncompleted added for {t['task_added_by']} ----------------------------------")
+
+                                    if ("approval" in task.keys() and task["approval"] == True) or ("approved" in task.keys() and task["approved"] == True):
+                                        task_params.add("tasks_approved")
+                                        print(f"task approved added for {t['task_added_by']} ----------------------------------")
+                                    
+                                    report =updatereportdb(filter_params=filter_params,task_params=task_params, task=task)
+
+                                    ##updatetaskdb-------------------------
+                                    project_params={
+                                        "total_tasks":1
+                                    }
+                                    if "project" in task.keys(): 
+                                        project_params["project"]=task["project"]
+                                    if "subproject" in task.keys():
+                                        project_params["subproject"]=task["subproject"]
+                                    if "start_time" in task.keys():
+                                        try:
+                                            start_time = datetime.strptime(
+                                                task["start_time"], "%H:%M")
+                                        except ValueError:
+                                            start_time = datetime.strptime(
+                                                task["start_time"], "%H:%M:%S"
+                                            )
+                                    else:
+                                        start_time=0   
+                                    if "end_time" in task.keys(): 
+                                        try:
+                                            end_time = datetime.strptime(
+                                                task["end_time"], "%H:%M")
+                                        except ValueError:
+                                            end_time = datetime.strptime(
+                                                task["end_time"], "%H:%M:%S"
+                                            )
+                                    else:
+                                        end_time=0  
+                                    
+                                    duration = end_time - start_time
+                                    if type(duration) == int:
+                                        project_params["total_secs"]=duration
+                                    else:
+                                        project_params["total_secs"]=(duration).total_seconds()
+                                    project_params["total_mins"]=project_params["total_secs"] / 60
+                                    project_params["total_hours"]=project_params["total_mins"] / 60
+
+                                    
+                                    today = datetime.today()
+                                    start = today - timedelta(days=today.weekday())
+                                    end = start + timedelta(days=6)
+                                    today = datetime.strptime(
+                                        set_date_format(str(today)), "%m/%d/%Y %H:%M:%S"
+                                    )
+                                    start = datetime.strptime(
+                                        set_date_format(str(start)), "%m/%d/%Y %H:%M:%S"
+                                    )
+                                    end = datetime.strptime(
+                                        set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
+                                    
+                                    try:
+                                        task_created_date = datetime.strptime(
+                                            set_date_format(data.get("task_created_date")), "%m/%d/%Y %H:%M:%S"
+                                        )
+                                        
+                                        if task_created_date >= start and task_created_date <= end:
+                                            project_params["tasks_uploaded_this_week"]=1
+                                        if task_created_date >= today - timedelta(days=1):
+                                            project_params["total_tasks_last_one_day"]=1
+                                        if task_created_date >= today - timedelta(days=7):
+                                            project_params["total_tasks_last_one_week"]=1
+                                    except ValueError:
+                                        pass
+
+                                    taskreport = updatetaskreportdb(filter_params=filter_params, project_params=project_params)
+                                        
+                        count+=1
+                print("processing for :", username, f"{count} done----------------------------")
+        print("updated monthly data ------------------------------------------------------") 
+
+        print("-------------------------------------------------------------------------------") 
+        print("Process Ended")  
+        print("-------------------------------------------------------------------------------") 
+        ##-----------------------------------------------------------------------------------------------------
+
+        
+
+        return Response({"success":True,"message":f"Successfully updated {report_type} report in database"},status=status.HTTP_200_OK)
        
-@method_decorator(csrf_exempt, name="dispatch")       
-class UpdateReportDB(APIView):
-    def post(self, request):
-        pass
+
 
 # class GroupLeadAgendaAPIView(APIView):
 #     def get(self, request, *args, **kwargs):
