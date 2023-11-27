@@ -42,6 +42,8 @@ from .helper import (
     datacube_data_insertion,
     datacube_data_retrival,
     samanta_content_evaluator,
+    datacube_add_collection,
+    datacube_data_update
 
 )
 from .serializers import (
@@ -89,7 +91,10 @@ from .serializers import (
     UpdateProjectSpentTimeSerializer,
     UpdateProjectTimeEnabledSerializer,
     GetWeeklyAgendaByIdSerializer,
-    GetWeeklyAgendasSerializer
+    GetWeeklyAgendasSerializer,
+    leaveapproveserializers,
+    AddCollectionSerializer,
+    agendaapproveserializer
 )
 from .authorization import (
     verify_user_token,
@@ -105,13 +110,14 @@ import os
 load_dotenv("/home/100098/100098-DowellJobPortal/.env")
 if os.getenv('API_KEY'):
     API_KEY = str(os.getenv('API_KEY'))
+if os.getenv('DB_Name'):
+    DB_Name = str(os.getenv('DB_Name'))
 else:
     """for windows local"""
-    load_dotenv(f"{os.getcwd()}/env")
+    load_dotenv(f"{os.getcwd()}/.env")
     API_KEY = str(os.getenv('API_KEY'))
+    DB_Name = str(os.getenv('DB_Name'))
 
-
-# Create your views here.
 
 INVERVIEW_CALL = """
 <!DOCTYPE html>
@@ -276,7 +282,7 @@ class auth(APIView):
     """get jwt token for authorization"""
 
     def post(self, request):
-        print(request.data.get("company_id"))
+        # print(request.data.get("company_id"))
         if not validate_id(request.data.get("company_id")):
             return Response("something went wrong ok!", status.HTTP_400_BAD_REQUEST)
         user = {
@@ -724,7 +730,7 @@ class associate_job(APIView):
             "country": data.get('country'),
             "city": data.get("city"),
             "is_active": data.get("is_active"),
-            "job_category": "research_associate",
+            "job_category": "regional_associate",
             "job_number": data.get("job_number"),
             "skills": data.get("skills"),
             "description": data.get("description"),
@@ -1755,7 +1761,7 @@ class lead_reject_candidate(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class create_task(APIView):
     def max_updated_date(self, updated_date):
-        print(updated_date)
+        # print(updated_date)
         task_updated_date = datetime.strptime(
             updated_date, "%m/%d/%Y %H:%M:%S"
         )
@@ -2352,7 +2358,7 @@ class approve_task(APIView):
                     {"_id": id},
                     {"max_updated_date": max_updated_date},
                 )
-                print("response:", res)
+                # print("response:", res)
                 resp = dowellconnection(
                     *task_details_module, "fetch", field, update_field
                 )
@@ -2377,7 +2383,7 @@ class approve_task(APIView):
     @verify_user_token
     def patch(self, request, user):
         data = request.data
-        print(data)
+        # print(data)
         if data:
             field = {"_id": data.get("document_id")}
             update_field = {
@@ -2501,6 +2507,8 @@ class task_module(APIView):
             return self.get_all_candidate_tasks(request)
         elif type_request == "task_details":
             return self.get_all_task_details(request)
+        elif type_request == "get_subproject_tasks":
+            return self.get_subproject_tasks(request)
         else:
             return self.handle_error(request)
 
@@ -2897,12 +2905,26 @@ class task_module(APIView):
             )
 
     
+    
     def get_all_task_details(self, request):    
         data = request.data
         company_id = data.get("company_id")
         user_id = data.get('user_id')
-        start_date_str = data.get('start_date')
-        end_date_str = data.get('end_date')
+        start_date_str = request.data.get('start_date')
+        end_date_str = request.data.get('end_date')
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+
+        def try_parse_date(date_str):
+    # List of date formats to try
+            date_formats = ["%m/%d/%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%m/%d/%Y", "%Y-%m-%d"]
+
+            for date_format in date_formats:
+                try:
+                    return datetime.strptime(set_date_format(date_str), date_format)
+                except ValueError:
+                    pass
+            return None
 
         if not data.get("company_id"):
             return Response(
@@ -2932,26 +2954,87 @@ class task_module(APIView):
         filtered_tasks=[]
         response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
         response = json.loads(response_json)
+        # print(response)
         for task in response["data"]:
             if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
                 try:
-                    task_created_date = datetime.strptime(set_date_format(task["task_created_date"]), "%m/%d/%Y %H:%M:%S")
-                    start_date =datetime.strptime(set_date_format(start_date_str), "%m/%d/%Y %H:%M:%S")
-                    end_date =datetime.strptime(set_date_format(end_date_str), "%m/%d/%Y %H:%M:%S")
-                    
-                    if task_created_date >= start_date and task_created_date <= end_date:
-                        print(task_created_date, start_date, end_date)
+                    task_created_date = try_parse_date(task["task_created_date"])
+                    if task_created_date is not None and start_date <= task_created_date <= end_date:
                         filtered_tasks.append(task)
-                        pass
                 except Exception as error:
                     print(error)
+
         return Response({
+            "success": True,
+            "message": "Get all task details",
+            "num_of_tasks": len(filtered_tasks),
+            "task_details": filtered_tasks
+        })         
+
+    def get_subproject_tasks(self, request):    
+            try:
+        # Parse dates at the beginning
+                start_date_str = request.data.get('start_date')
+                end_date_str = request.data.get('end_date')
+                start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+            except ValueError as ve:
+                return Response(
+                    {"success": False, "error": f"Error parsing dates: {ve}"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )   
+
+            company_id = request.GET.get("company_id")
+            subproject = request.GET.get('subproject')
+            project = request.GET.get('project')
+
+    # Check for required parameters
+            if not company_id:
+                return Response(
+                    {"success": False, "error": "Please specify the company id"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not start_date_str:
+                return Response(
+                    {"success": False, "error": "Please specify the start date"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not end_date_str:
+                return Response(
+                    {"success": False, "error": "Please specify the end date"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            field = {
+                "company_id": company_id                
+            }
+
+            if subproject:
+                field["subproject"] = subproject
+
+            if project:
+                field["project"] = project
+
+            filtered_tasks = []
+            response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
+            response = json.loads(response_json)
+            for task in response["data"]:
+                if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
+                    try:
+                        task_created_date = datetime.strptime(task["task_created_date"], "%Y-%m-%d ")
+
+                        if start_date <= task_created_date <= end_date:
+                            filtered_tasks.append(task)
+                    except ValueError as error:
+                        print("Error parsing task_created_date:", error)
+                        pass
+
+            return Response({
                 "success": True,
                 "message": "Get all task details",
-                "num_of_tasks":len(filtered_tasks),
+                "num_of_tasks": len(filtered_tasks),
                 "task_details": filtered_tasks
-            })           
-
+            })   
 
     def handle_error(self, request):
         return Response(
@@ -3302,7 +3385,7 @@ class edit_team_task(APIView):
                 update_field["completed_on"] = self.get_current_datetime(
                     datetime.now()
                 )
-            print(update_field, "=====")
+            # print(update_field, "=====")
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
@@ -4791,7 +4874,7 @@ class public_product(APIView):
             else:
                 data = []
                 for res in dowellresponse["data"]:
-                    print(res.keys(), "========")
+                    # print(res.keys(), "========")
                     try:
                         if (
                             "public_link_name" in res.keys()
@@ -6906,7 +6989,7 @@ class Generate_Report(APIView):
                     }
                     data["personal_info"]["task_report"].append(task_r)
                 end_now = datetime.now()
-                print("time taken for task :",end_now-start_now)
+                # print("time taken for task :",end_now-start_now)
             data["data"].append(item)
             return Response(data, status=status.HTTP_201_CREATED)
         else:
@@ -8150,7 +8233,7 @@ class UpdateProjectSpentTime(APIView):
                                 field, update_field=None))
             if get_response["isSuccess"] is True:
                 total_time=get_response["data"][0]["total_time"]
-                print(total_time,"==========",get_response["data"])
+                # print(total_time,"==========",get_response["data"])
                 spent_time=get_response["data"][0]["spent_time"]+data.get("spent_time")
 
                 update_field = {
@@ -8160,7 +8243,7 @@ class UpdateProjectSpentTime(APIView):
                 response = json.loads(
                     dowellconnection(*time_detail_module, "update", {"_id":get_response["data"][0]["_id"]}, update_field)
                 )
-                print(response,"===")
+                # print(response,"===")
                 if response["isSuccess"] == True:
                     return Response(
                         {
@@ -8210,7 +8293,7 @@ class Testing_Threads(APIView):
             response = dowellconnection(
                 *thread_report_module, "fetch", field, update_field
             )
-            print(response)
+            # print(response)
             threads_response = json.loads(response)
 
             if threads_response["isSuccess"]:
@@ -8259,7 +8342,7 @@ class Product_Services_API(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class dashboard_services(APIView):
     def post(self, request):
-        print()
+        # print()
         type_request = request.GET.get("type")
 
         if type_request == "update_status":
@@ -8268,6 +8351,8 @@ class dashboard_services(APIView):
             return self.update_job_category(request)
         elif type_request == "leave_approve":
             return self.candidate_leave_approve(request)
+        elif type_request == "delete_application":
+            return self.delete_application(request)
         else:
             return self.handle_error(request)
 
@@ -8404,7 +8489,7 @@ class dashboard_services(APIView):
             "task_created_date": today_str
         }
 
-        print("Today field", field)
+        # print("Today field", field)
 
         response = dowellconnection(
             *task_details_module, "fetch", field, update_field=None)
@@ -8484,9 +8569,16 @@ class dashboard_services(APIView):
         field={
             "_id":applicant_id
         }
+        serializer=leaveapproveserializers(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                    "success": False,
+                    "message": "posting wrong data",
+                    "error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
         update_field={
             "leave_start":request.data.get("leave_start"),
-            "leave_end":request.data.get("leave_end")
+            "leave_end":request.data.get("leave_end"),
+            "status":"Leave"
             }
         candidate_report=dowellconnection(
                 *candidate_management_reports, "update", field, update_field)
@@ -8496,8 +8588,9 @@ class dashboard_services(APIView):
 
         if res["isSuccess"]:
             return Response({
+                    "data":res,
                     "success": True,
-                    "message": "candidate leave has been approved",
+                    "message": "candidate leave request has been approved",
                 },status=status.HTTP_201_CREATED)
         else:
             return Response({
@@ -8506,7 +8599,25 @@ class dashboard_services(APIView):
                     "error":res["error"]
                 })
 
-
+    def delete_application(self, request):
+        data = request.data
+        application_id = data["application_id"]
+        field = {"_id": application_id}
+        update_field = {"data_type": "Archived_Data"}
+        response = dowellconnection(*candidate_management_reports, "update", field, update_field)
+        # print(response)
+        if json.loads(response)["isSuccess"] == True:
+            return Response(
+                {"message": "application successfully deleted"}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {
+                    "message": "application not successfully deleted",
+                    "response": json.loads(response),
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
 
         
 
@@ -8550,7 +8661,7 @@ class ReportDB(APIView):
             info = dowellconnection(
                 *candidate_management_reports, "fetch", field, update_field
             )
-            print(info,"====")
+            # print(info,"====")
             if json.loads(info)["isSuccess"] is True:
                 info_data=json.loads(info)["data"]
             else:
@@ -8753,19 +8864,33 @@ class WeeklyAgenda(APIView):
             return self.weekly_agenda_by_id(request)
         elif type_request == "all_weekly_agendas":
             return self.all_weekly_agendas(request)
+        elif type_request == "approve_group_lead_agenda":
+            return self.approve_group_lead_agenda(request)
+        elif type_request == "grouplead_agenda_check":
+            return self.grouplead_agenda_check(request)
         else:
             return self.handle_error(request)
         
-
+    def get(self, request):
+        type_request = request.GET.get("type")
+        
+        if type_request == "agenda_status":
+            return self.agenda_status(request)
+        else:
+            return self.handle_error(request)
+    
     def add_weekly_update(self, request):
         project = request.data.get('project')
+        sub_project=request.data.get("sub_project")
         lead_name = request.data.get('lead_name')
         agenda_title = request.data.get('agenda_title')
+        total_time = request.data.get('total_time')
         agenda_description = request.data.get('agenda_description')
         week_start = request.data.get('week_start')
         week_end = request.data.get('week_end')
         company_id = request.data.get('company_id')
-        estimated_hours= request.data.get('estimated_hours')
+        timeline=request.data.get("timeline")
+        aggregate_agenda = request.data.get("aggregate_agenda")
 
         field = {
             "project": project,
@@ -8775,7 +8900,10 @@ class WeeklyAgenda(APIView):
             "week_start": week_start,
             "week_end": week_end,
             "company_id": company_id,
-            "estimated_hours":estimated_hours
+            "timeline":timeline,
+            "sub_project":sub_project,
+            "total_time": total_time,
+            "aggregate_agenda": aggregate_agenda,
         }
 
         serializer = GroupLeadAgendaSerializer(data=field)
@@ -8785,9 +8913,19 @@ class WeeklyAgenda(APIView):
                 "message": "Posting wrong data",
                 "error": serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
+        
+        verify_time = field.get("timeline")
+        total_time_timeline = sum(int(task.get("hours").replace("Hr", "")) for task in verify_time)
+        total_time_specified = int(field.get("total_time").replace("Hr", ""))
 
-
-        evaluator_response = json.loads(samanta_content_evaluator(API_KEY, agenda_title, agenda_description))
+        if total_time_timeline != total_time_specified:
+            return Response({
+                "success": False,
+                "message": "Total time does not match with the specified timeline"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        evaluator_response= True
+        evaluator_response = json.loads(samanta_content_evaluator(API_KEY, agenda_title,aggregate_agenda ))
         if not evaluator_response["success"]:
             return Response({
                 "success": False,
@@ -8797,6 +8935,7 @@ class WeeklyAgenda(APIView):
                     "message": evaluator_response["message"],
                 }
             }, status=status.HTTP_400_BAD_REQUEST)
+        
 
         data = {
             "lead_name": lead_name,
@@ -8807,21 +8946,26 @@ class WeeklyAgenda(APIView):
             "company_id": company_id,
             "active": True,
             "status": True,
-            "estimated_time":estimated_hours,
+            "lead_approval":False,
+            "project": project,
+            "sub_project":sub_project,
+            "timeline": timeline,
+            "aggregate_agenda": aggregate_agenda,
+            "total_time": total_time,
             "records": [{"record": "1", "type": "overall"}]
         }
-       
-        response = json.loads(datacube_data_insertion(API_KEY, "MetaDataTest", project, data))
+        response = json.loads(datacube_data_insertion(API_KEY, DB_Name, sub_project, data))
         if not response["success"]:
             return Response({
                 "success": False,
                 "message": "Failed to create weekly agenda",
                 "database_response": {
                     "success": response["success"],
-                    "message": response["message"]
+                    "message": response["message"],
+                    "data":response
                 }
             }, status=status.HTTP_400_BAD_REQUEST)
-       
+
         return Response({
             "success": True,
             "message": "Weekly agenda was successfully created",
@@ -8842,13 +8986,14 @@ class WeeklyAgenda(APIView):
         document_id = request.GET.get('document_id')
         limit = request.GET.get('limit')
         offset = request.GET.get('offset')
-        project = request.data.get('project')
-
+        sub_project = request.GET.get('sub_project')
+        
+       
         field = {
             "document_id": document_id,
             "limit": limit,
             "offset": offset,
-            "project": project
+            "sub_project": sub_project
         }
 
         serializer = GetWeeklyAgendaByIdSerializer(data=field)
@@ -8862,7 +9007,8 @@ class WeeklyAgenda(APIView):
         data = {
             "_id": document_id,
         }
-        response = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest",project,data,limit,offset))
+        response = json.loads(datacube_data_retrival(API_KEY,DB_Name,sub_project,data,limit,offset))
+        # response2 = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest","agenda_subtask",data,limit,offset))
         
         if not response["success"]:
             return Response({
@@ -8887,13 +9033,20 @@ class WeeklyAgenda(APIView):
     def all_weekly_agendas(self,request):
         limit = request.GET.get('limit')
         offset = request.GET.get('offset')
-        project = request.data.get('project')
-
+        project = request.GET.get('project')
+        sub_project = request.GET.get('sub_project')
+        if project:
+            data = {"project":project}
+        else:
+             data = {}
         field = {
             "limit": limit,
             "offset": offset,
-            "project": project
+            # "project": project,
+            "sub_project":sub_project
         }
+
+        # project=sub_project
 
         serializer = GetWeeklyAgendasSerializer(data=field)
         if not serializer.is_valid():
@@ -8903,8 +9056,8 @@ class WeeklyAgenda(APIView):
                 "error": serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        data = {}
-        response = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest",project,data,limit,offset))
+        # data={}
+        response = json.loads(datacube_data_retrival(API_KEY,DB_Name,sub_project,data,limit,offset))
         if not response["success"]:
             return Response({
                 "success": False,
@@ -8925,10 +9078,328 @@ class WeeklyAgenda(APIView):
             "response": response["data"]
         }, status=status.HTTP_200_OK)
 
+    def approve_group_lead_agenda(self,request):
+        agenda_id = request.GET.get('agenda_id')
+        sub_project = request.GET.get('sub_project')
+        # print(sub_project)
+        # print(agenda_id)
+
+        data={
+            "agenda_id":agenda_id,
+            "sub_project":sub_project
+        }
+
+        field = {
+            "_id": agenda_id,
+        }
+
+        update_data = {
+            "lead_approval": "True",
+        }
+
+        serializer=agendaapproveserializer(data=data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"posting invalid data",
+                "errors":serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)
+
+        
+        response = json.loads(datacube_data_retrival(API_KEY,DB_Name,sub_project,data=field,limit=40,offset=0))
+        
+        if response["data"][0]["lead_approval"]:
+            return Response({
+                "success":False,
+                "message":"Lead agenda is already approved"
+            },status=status.HTTP_400_BAD_REQUEST)
+            
+        datacube_response = json.loads(datacube_data_update(API_KEY,DB_Name,coll_name=sub_project,query=field,update_data=update_data))
+        
+        if not datacube_response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to approve the group lead agenda",
+                "database_response": {
+                    "success": datacube_response["success"],
+                    "message": datacube_response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Weekly agenda was approved successfully",
+            "database_response": {
+                "success": datacube_response["success"],
+                "message": datacube_response["message"]
+            },
+            "response": datacube_response["data"]
+        }, status=status.HTTP_200_OK)
     
+    def grouplead_agenda_check(self, request):
+        data=request.GET
+        project=data.get("project")
+        company_id=data.get("company_id")
+        # print(project)
+
+
+        subprojects=UsersubProject.objects.filter(parent_project=project , company_id=company_id)
+        serializer=settingUsersubProjectSerializer(subprojects,many=True)
+     
+        unique_subprojects=set()
+
+        for subproject in serializer.data:
+            # print(subproject)
+            unique_subprojects.update(subproject["sub_project_list"])
+
+        subproject_list=list(unique_subprojects)
+        
+        for i in range(len(subproject_list)):
+             subproject_list[i] = subproject_list[i].replace(" ", "-")
+
+        subproject_agenda=[]
+        subproject_without_agenda=[]
+        # print(subproject_list)
+        data={
+            "company_id":company_id
+        }
+        print(company_id)
+        for subproject in subproject_list:
+            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data,limit=100,offset=0))
+            print(subprojectcheck)
+            if subprojectcheck["success"]:
+                if len(subprojectcheck["data"]) > 0:
+                    subproject_agenda.append({
+                        "subproject_name":subproject,
+                        "data_present":len(subprojectcheck["data"]),
+                        "agenda":subprojectcheck["data"]})
+                else:
+                    subproject_without_agenda.append(subproject)
+            
+
+        return Response({
+            "success":True,
+            "message":"Report for group lead agenda created successfully",
+            "data":{"project":project,
+                    "subprojects_list":unique_subprojects,
+                    "subproject_without_agenda":subproject_without_agenda,
+                    "agenda":subproject_agenda}
+        },status=status.HTTP_200_OK)
+
     """HANDLE ERROR"""
     def handle_error(self, request): 
         return Response({
             "success": False,
             "message": "Invalid request type"
         }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    def agenda_status(self,request):
+        lead_name = request.GET.get('lead_name')
+        subproject = request.GET.get('subproject')
+        field = {
+            "lead_name": lead_name,
+            "subproject": subproject
+        }
+
+        response = json.loads(dowellconnection(
+            *task_details_module, "fetch", field, update_field=None))
+        data = response.get("data", [])
+        if data:
+            # Separate leads into two lists based on agenda submission
+            updated_leads = [
+                {
+                    "lead_name": worklog.get("group_leads"),
+                    "subproject": worklog.get("subproject"),
+                    "assignee": worklog.get("assignee")  # Replace with the actual field name
+                }
+                for worklog in data if worklog.get("success")
+            ]
+
+            not_updated_leads = [
+                {
+                    "lead_name": worklog.get("group_leads"),
+                    "subproject": worklog.get("subproject"),
+                    "assignee": worklog.get("assignee")  # Replace with the actual field name
+                }
+                for worklog in data if not worklog.get("success")
+            ]
+            print(data)
+            response_data = {
+                "updated_leads": updated_leads,
+                "not_updated_leads": not_updated_leads
+            }
+
+            return Response({
+                "success": True,
+                "message": "Agenda submission status for leads",
+                "data": response_data
+            })
+        else:
+            return Response({
+                "success": False,
+                "message": "There are no worklogs for the given lead and subproject",
+                "data": {
+                    "updated_leads": [],
+                    "not_updated_leads": []
+                }
+            })
+
+        
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+@method_decorator(csrf_exempt, name='dispatch')
+class Db_operations(APIView):
+    def post(self,request):
+        type_request = request.GET.get('type')
+
+        if type_request == "add_collection":
+            return self.add_collection(request)
+        else:
+            return self.handle_error(request)
+        
+    def add_collection(Self,request):
+
+        coll_names=request.GET.get("coll_names")
+        num_collections=request.GET.get("num_collections")
+        
+        field= {
+ 
+        "db_name":DB_Name,
+        "api_key":API_KEY,
+        "coll_names":request.GET.get("coll_names"),
+        "num_collections":request.GET.get("num_collections")
+
+        }
+        
+        serializer=AddCollectionSerializer(data=field)
+
+        if not serializer.is_valid():
+            return Response({
+            "success":False,
+            "error":serializer.errors
+        },status=status.HTTP_400_BAD_REQUEST)
+
+        response=json.loads(datacube_add_collection(API_KEY,DB_Name,coll_names,num_collections))
+        
+        if not response["success"]:
+            return Response({
+                "success":False,
+                "message":"new collection could not be added",
+                "message":response["message"]
+            },status=status.HTTP_201_CREATED)
+        
+        return Response({
+                "success":False,
+                "message":"new collection has been added",
+                "data":response["data"]
+            },status=status.HTTP_201_CREATED)
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class PerticularCandidate(APIView):
+    def post(self, request):
+        status = request.GET.get('status')
+        if status == "hired":
+            return self.get_hired_candidate(request)
+        # elif status == "Removed":
+        #     return self.get_removed_candidate(request)
+        elif status == "renew_contract":
+            return self.get_renew_contract_candidate(request)
+        else:
+            return self.handle_error(request)
+        
+    def get_hired_candidate(self, request):
+        data = request.data
+        company_id = data["company_id"]
+        if data:
+            field = {"company_id": company_id, "status": "hired"}
+            response = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field=None
+            )
+
+            if json.loads(response)["isSuccess"] == True:
+                if len(json.loads(response)["data"]) == 0:
+                    return Response(
+                        {
+                            "message": f"There is no hired Candidates with this company id",
+                            "response": json.loads(response),
+                        },
+                        status=status.HTTP_204_NO_CONTENT,
+                    )
+                else:
+                    candidates=[{"_id":res["_id"],
+                        "applicant":res["applicant"],
+                        "username":res["username"],
+                        "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
+                    
+                    return Response(
+                        {
+                            "message": f"List of hired Candidates",
+                            "response": candidates,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+            else:
+                return Response(
+                    {
+                        "message": f"There are no {field['status']} Candidates",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+    def get_renew_contract_candidate(self, request):
+        data = request.data
+        company_id = data["company_id"]
+        if data:
+            field = {"company_id": company_id, "status": "renew_contract"}
+            response = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field=None
+            )
+
+            if json.loads(response)["isSuccess"] == True:
+                if len(json.loads(response)["data"]) == 0:
+                    return Response(
+                        {
+                            "message": f"There is no renew_contract Candidates with this company id",
+                            "response": json.loads(response),
+                        },
+                        status=status.HTTP_204_NO_CONTENT,
+                    )
+                else:
+                    candidates=[{"_id":res["_id"],
+                        "applicant":res["applicant"],
+                        "username":res["username"],
+                        "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
+                    
+                    return Response(
+                        {
+                            "message": f"List of renew_contract Candidates",
+                            "response": candidates,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+            else:
+                return Response(
+                    {
+                        "message": f"There are no {field['status']} Candidates",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )

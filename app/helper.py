@@ -604,6 +604,23 @@ def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offs
     response = requests.post(url, json=data)
     return response.text
 
+def datacube_data_update(api_key,db_name,coll_name,query,update_data):
+
+    url = "https://datacube.uxlivinglab.online/db_api/crud/"
+
+    data = {
+        "api_key": api_key,
+        "db_name": db_name,
+        "coll_name": coll_name,
+        "operation": "update",
+        "query" : query,
+        "update_data":update_data
+    }
+
+    response = requests.put(url, json=data)
+    return response.text
+
+
 def samanta_content_evaluator(api_key,title,description):
     url=f"https://100085.pythonanywhere.com/uxlivinglab/v1/content-scan/{api_key}/"
     payload={
@@ -611,4 +628,18 @@ def samanta_content_evaluator(api_key,title,description):
         "content":description
     }
     response = requests.post(url, json=payload)
+    return response.text
+
+def datacube_add_collection(api_key,db_name,coll_names,num_collections):
+
+    url = "https://datacube.uxlivinglab.online/db_api/add_collection/"
+
+    data = {
+        "api_key": api_key,
+        "db_name": db_name,
+        "coll_names": coll_names,
+        "num_collections": num_collections,
+    }
+
+    response = requests.post(url, json=data)
     return response.text

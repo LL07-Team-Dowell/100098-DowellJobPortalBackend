@@ -561,6 +561,7 @@ class regionalassociateSerializer(serializers.Serializer):
         ("Freelancer", "Freelancer"),
         ("Internship", "Internship"),
         ("Employee", "Employee"),
+        ("regional_associate","regional_associate")
     )
     DATA_TYPE_CHOICE = (
         ("Real_Data", "Real_Data"),
@@ -618,7 +619,8 @@ class DashBoardStatusSerializer(serializers.Serializer):
         ("teamlead_rehire", "teamlead_rehire"),
         ("Pending", "Pending"),
         ("Guest_Pending","Guest_Pending"),
-        ("rehired","rehired")
+        ("rehired","rehired"),
+        ("renew_contract","renew_contract")
     )
     candidate_id = serializers.CharField(allow_null=False, allow_blank=False)
     status = serializers.ChoiceField(
@@ -634,28 +636,34 @@ class DashBoardJobCategorySerializer(serializers.Serializer):
     job_category = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=JOB_CATEGORY_CHOICE
     )
-
+class SubtaskSerializer(serializers.Serializer):
+    subtask = serializers.CharField()
+    hours = serializers.FloatField()
 
 class GroupLeadAgendaSerializer(serializers.Serializer):
     project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    sub_project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     lead_name = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     agenda_title=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     agenda_description=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
     week_start=serializers.DateField(allow_null=False)
     week_end=serializers.DateField(allow_null=False)
-    estimated_hours=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    total_time=serializers.FloatField(allow_null=False)
+    aggregate_agenda=serializers.CharField(max_length=10000,allow_null=False,allow_blank=False)
+    timeline = serializers.ListField(child=serializers.JSONField())
 
 class GetWeeklyAgendaByIdSerializer(serializers.Serializer):
     document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     limit = serializers.IntegerField(allow_null=True)
     offset = serializers.IntegerField(allow_null=True)
-    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    # project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
 
 class GetWeeklyAgendasSerializer(serializers.Serializer):
     limit = serializers.IntegerField(allow_null=True)
     offset = serializers.IntegerField(allow_null=True)
-    project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    # project = serializers.CharField(max_length=255,allow_null=True,allow_blank=True)
+    sub_project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
 
 class TaskDetailsInputSerializer(serializers.Serializer):
     task_created_date = serializers.DateField()
@@ -683,3 +691,20 @@ class UpdateProjectSpentTimeSerializer(serializers.Serializer):
 class UpdateProjectTimeEnabledSerializer(serializers.Serializer):
     document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     editing_enabled = serializers.BooleanField(allow_null=False)
+
+
+class leaveapproveserializers(serializers.Serializer):
+    leave_start=serializers.DateField(allow_null=False)
+    leave_end=serializers.DateField(allow_null=False)
+    applicant_id=serializers.CharField(allow_null=False)
+
+
+class AddCollectionSerializer(serializers.Serializer):
+    db_name = serializers.CharField(max_length=100)
+    api_key = serializers.CharField(max_length=100)
+    coll_names = serializers.CharField()
+    num_collections = serializers.IntegerField()
+
+class agendaapproveserializer(serializers.Serializer):
+    agenda_id=serializers.CharField(max_length=200)
+    sub_project=serializers.CharField(max_length=200)
