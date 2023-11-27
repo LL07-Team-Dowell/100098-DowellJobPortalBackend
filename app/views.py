@@ -9298,3 +9298,108 @@ class Db_operations(APIView):
                 "message":"new collection has been added",
                 "data":response["data"]
             },status=status.HTTP_201_CREATED)
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class PerticularCandidate(APIView):
+    def post(self, request):
+        status = request.GET.get('status')
+        if status == "hired":
+            return self.get_hired_candidate(request)
+        # elif status == "Removed":
+        #     return self.get_removed_candidate(request)
+        elif status == "renew_contract":
+            return self.get_renew_contract_candidate(request)
+        else:
+            return self.handle_error(request)
+        
+    def get_hired_candidate(self, request):
+        data = request.data
+        company_id = data["company_id"]
+        if data:
+            field = {"company_id": company_id, "status": "hired"}
+            response = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field=None
+            )
+
+            if json.loads(response)["isSuccess"] == True:
+                if len(json.loads(response)["data"]) == 0:
+                    return Response(
+                        {
+                            "message": f"There is no hired Candidates with this company id",
+                            "response": json.loads(response),
+                        },
+                        status=status.HTTP_204_NO_CONTENT,
+                    )
+                else:
+                    candidates=[{"_id":res["_id"],
+                        "applicant":res["applicant"],
+                        "username":res["username"],
+                        "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
+                    
+                    return Response(
+                        {
+                            "message": f"List of hired Candidates",
+                            "response": candidates,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+            else:
+                return Response(
+                    {
+                        "message": f"There are no {field['status']} Candidates",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+    def get_renew_contract_candidate(self, request):
+        data = request.data
+        company_id = data["company_id"]
+        if data:
+            field = {"company_id": company_id, "status": "renew_contract"}
+            response = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field=None
+            )
+
+            if json.loads(response)["isSuccess"] == True:
+                if len(json.loads(response)["data"]) == 0:
+                    return Response(
+                        {
+                            "message": f"There is no renew_contract Candidates with this company id",
+                            "response": json.loads(response),
+                        },
+                        status=status.HTTP_204_NO_CONTENT,
+                    )
+                else:
+                    candidates=[{"_id":res["_id"],
+                        "applicant":res["applicant"],
+                        "username":res["username"],
+                        "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
+                    
+                    return Response(
+                        {
+                            "message": f"List of renew_contract Candidates",
+                            "response": candidates,
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+            else:
+                return Response(
+                    {
+                        "message": f"There are no {field['status']} Candidates",
+                        "response": json.loads(response),
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+        else:
+            return Response(
+                {"message": "Parameters are not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
