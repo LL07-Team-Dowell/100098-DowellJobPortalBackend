@@ -198,7 +198,7 @@ urlpatterns = [
 
     # DashBoard Services 
     path("dashboard_services/",dashboard_services.as_view()),
-    path("candidate_leave_approve/",dashboard_services.as_view()),
+    path("candidate_leave_apply/",candidate_leave.as_view()),
 
 
     #group lead agenda

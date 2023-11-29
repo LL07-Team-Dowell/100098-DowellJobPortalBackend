@@ -692,6 +692,14 @@ class UpdateProjectTimeEnabledSerializer(serializers.Serializer):
     document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
     editing_enabled = serializers.BooleanField(allow_null=False)
 
+class leaveapplyserializers(serializers.Serializer):
+    leave_start_date=serializers.DateField(allow_null=False)
+    leave_end_date=serializers.DateField(allow_null=False)
+    project=serializers.CharField(max_length=255,allow_null=False)
+    applicant_id=serializers.CharField(max_length=255,allow_null=False)
+    applicant=serializers.CharField(max_length=255,allow_null=False)
+    email=serializers.EmailField(allow_null=False)
+    company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
 
 class leaveapproveserializers(serializers.Serializer):
     leave_start=serializers.DateField(allow_null=False)

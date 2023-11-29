@@ -94,7 +94,9 @@ from .serializers import (
     GetWeeklyAgendasSerializer,
     leaveapproveserializers,
     AddCollectionSerializer,
-    agendaapproveserializer
+    agendaapproveserializer,
+    leaveapplyserializers
+    
 )
 from .authorization import (
     verify_user_token,
@@ -117,6 +119,7 @@ else:
     load_dotenv(f"{os.getcwd()}/.env")
     API_KEY = str(os.getenv('API_KEY'))
     DB_Name = str(os.getenv('DB_Name'))
+    leave_report_collection=str(os.getenv('leave_report_collection'))
 
 
 INVERVIEW_CALL = """
@@ -8619,7 +8622,70 @@ class dashboard_services(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
+
+@method_decorator(csrf_exempt,name="dispatch")
+class candidate_leave(APIView):
+
+    def post(self,request):
+        type_request=request.GET.get("type")
+        if type_request == "candidate_leave":
+            return self.leave_apply(request)
+        else:
+            return self.handle_error(request)
+    def leave_apply(self, request):
+        applicant_id=request.data.get("applicant_id")
+        applicant=request.data.get("applicant")
+        company_id=request.data.get("company_id")
+        project=request.data.get("project")
+
+        leave_start_date=request.data.get("leave_start_date")
+        leave_end_date=request.data.get("leave_end_date")
+        email=request.data.get("email")
+
+        field={
+            "applicant_id":applicant_id,
+            "applicant":applicant,
+            "company_id":company_id,
+            "project":project,
+            "leave_start_date":leave_start_date,
+            "leave_end_date":leave_end_date,
+            "email":email
+        }
+        print("heer")
+        print(request.data)
+        serializer=leaveapplyserializers(data=request.data)
+        print("heer")
         
+
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"posting wrog data",
+                "error":serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)
+        
+        response = json.loads(datacube_data_insertion(API_KEY, DB_Name, collection_name=leave_report_collection, data=field))
+        print(response)
+        if not response["success"]:
+            return Response({
+                "success":False,
+                "message":"Sorry your application for leave could not be submitted"
+            })
+
+
+        return Response({
+            "success":True,
+            "message":"Your leave application has been submitted succesfully",
+            "data":response["data"]
+        })
+    
+
+
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     
 @method_decorator(csrf_exempt, name="dispatch")       
@@ -8952,6 +9018,7 @@ class WeeklyAgenda(APIView):
             "timeline": timeline,
             "aggregate_agenda": aggregate_agenda,
             "total_time": total_time,
+            "evaluator_response":evaluator_response,
             "records": [{"record": "1", "type": "overall"}]
         }
         response = json.loads(datacube_data_insertion(API_KEY, DB_Name, sub_project, data))
@@ -9165,8 +9232,7 @@ class WeeklyAgenda(APIView):
         }
         print(company_id)
         for subproject in subproject_list:
-            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data,limit=100,offset=0))
-            print(subprojectcheck)
+            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data,limit=500,offset=0))
             if subprojectcheck["success"]:
                 if len(subprojectcheck["data"]) > 0:
                     subproject_agenda.append({
