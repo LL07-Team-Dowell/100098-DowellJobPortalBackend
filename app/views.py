@@ -119,7 +119,7 @@ else:
     load_dotenv(f"{os.getcwd()}/.env")
     API_KEY = str(os.getenv('API_KEY'))
     DB_Name = str(os.getenv('DB_Name'))
-    leave_report_collection=str(os.getenv('leave_report_collection'))
+    leave_report_collection=str(os.getenv('LEAVE_REPORT_COLLECTION'))
 
 
 INVERVIEW_CALL = """
@@ -8352,8 +8352,6 @@ class dashboard_services(APIView):
             return self.update_status(request)
         elif type_request == "update_job_category":
             return self.update_job_category(request)
-        elif type_request == "leave_approve":
-            return self.candidate_leave_approve(request)
         elif type_request == "delete_application":
             return self.delete_application(request)
         else:
@@ -8567,40 +8565,6 @@ class dashboard_services(APIView):
                 "message": "Failed to fetch logs or logs not available"
             })
         
-    def candidate_leave_approve(self, request):
-        applicant_id=request.data.get("applicant_id")
-        field={
-            "_id":applicant_id
-        }
-        serializer=leaveapproveserializers(data=request.data)
-        if not serializer.is_valid():
-            return Response({
-                    "success": False,
-                    "message": "posting wrong data",
-                    "error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
-        update_field={
-            "leave_start":request.data.get("leave_start"),
-            "leave_end":request.data.get("leave_end"),
-            "status":"Leave"
-            }
-        candidate_report=dowellconnection(
-                *candidate_management_reports, "update", field, update_field)
-        
-        res=json.loads(candidate_report)
-        # print(res)
-
-        if res["isSuccess"]:
-            return Response({
-                    "data":res,
-                    "success": True,
-                    "message": "candidate leave request has been approved",
-                },status=status.HTTP_201_CREATED)
-        else:
-            return Response({
-                    "success": False,
-                    "message": "candidate leave could not be added please check the aplicant id and try again",
-                    "error":res["error"]
-                })
 
     def delete_application(self, request):
         data = request.data
@@ -8630,14 +8594,16 @@ class candidate_leave(APIView):
         type_request=request.GET.get("type")
         if type_request == "candidate_leave":
             return self.leave_apply(request)
+        elif type_request == "approved_leave":
+            return self.candidate_leave_approve(request)
         else:
             return self.handle_error(request)
+        
     def leave_apply(self, request):
         applicant_id=request.data.get("applicant_id")
         applicant=request.data.get("applicant")
         company_id=request.data.get("company_id")
         project=request.data.get("project")
-
         leave_start_date=request.data.get("leave_start_date")
         leave_end_date=request.data.get("leave_end_date")
         email=request.data.get("email")
@@ -8651,11 +8617,8 @@ class candidate_leave(APIView):
             "leave_end_date":leave_end_date,
             "email":email
         }
-        print("heer")
-        print(request.data)
+       
         serializer=leaveapplyserializers(data=request.data)
-        print("heer")
-        
 
         if not serializer.is_valid():
             return Response({
@@ -8665,7 +8628,7 @@ class candidate_leave(APIView):
             },status=status.HTTP_400_BAD_REQUEST)
         
         response = json.loads(datacube_data_insertion(API_KEY, DB_Name, collection_name=leave_report_collection, data=field))
-        print(response)
+
         if not response["success"]:
             return Response({
                 "success":False,
@@ -8679,7 +8642,39 @@ class candidate_leave(APIView):
             "data":response["data"]
         })
     
+    def candidate_leave_approve(self, request):
+        applicant_id=request.data.get("applicant_id")
+        field={
+            "_id":applicant_id
+        }
+        serializer=leaveapproveserializers(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                    "success": False,
+                    "message": "posting wrong data",
+                    "error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+        update_field={
+            "leave_start":request.data.get("leave_start"),
+            "leave_end":request.data.get("leave_end"),
+            "status":"Leave"
+            }
+        candidate_report=dowellconnection(
+                *candidate_management_reports, "update", field, update_field)
+        
+        res=json.loads(candidate_report)
 
+        if res["isSuccess"]:
+            return Response({
+                    "data":res,
+                    "success": True,
+                    "message": "candidate leave request has been approved",
+                },status=status.HTTP_201_CREATED)
+        else:
+            return Response({
+                    "success": False,
+                    "message": "candidate leave could not be added please check the aplicant id and try again",
+                    "error":res["error"]
+                })
 
     def handle_error(self, request):
         return Response(
