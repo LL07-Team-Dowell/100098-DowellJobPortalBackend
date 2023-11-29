@@ -9,6 +9,7 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getAllCompanyUserSubProject, getWeeklyAgenda, getWorkLogsAddedUnderSubproject } from "../../../../services/commonServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
+import { getSettingUserProject } from "../../../../services/hrServices";
 
 
 const AdminAgendaPage = () => {
@@ -64,20 +65,22 @@ const AdminAgendaPage = () => {
 
     }, [])
 
-    useEffect(() => {
-        const mainProjectForLead = currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project;
-        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-            Array.isArray(
-                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-            );
-
-        const projectsForLead = userHasOtherProjects ?
-            [mainProjectForLead, ...currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects]
-            :
-            [mainProjectForLead];
-
-        setProjectsAssignedToLead(projectsForLead);
-    }, [currentUser])
+    getSettingUserProject().then((res) => {
+        const projectsGotten = res.data
+            ?.filter(
+                (project) =>
+                    project?.data_type === currentUser.portfolio_info[0].data_type &&
+                    project?.company_id === currentUser.portfolio_info[0].org_id &&
+                    project.project_list &&
+                    project.project_list.every(
+                        (listing) => typeof listing === "string"
+                    )
+            )
+            ?.reverse()
+        setProjectsAssignedToLead(projectsGotten);
+    }).catch(err => {
+        console.log('err fetching projects for project lead: ', err?.response?.data);
+    })
 
     useEffect(() => {
         if (agendaDetails.project.length < 1) return setSubprojectForProject([]);
@@ -189,11 +192,11 @@ const AdminAgendaPage = () => {
                                 defaultValue={''}
                             >
                                 <option value={''} disabled>Select project</option>
-                                {
-                                    React.Children.toArray(projectsAssignedToLead.map(item => {
-                                        return <option value={item}>{item}</option>
-                                    }))
-                                }
+                                {projectsAssignedToLead.map(item => (
+                                    item.project_list.map(project => (
+                                        <option key={project} value={project}>{project}</option>
+                                    ))
+                                ))}
                             </select>
                         </div>
                     </label>

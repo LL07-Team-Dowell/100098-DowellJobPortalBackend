@@ -9,29 +9,30 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getAllCompanyUserSubProject, getWeeklyAgenda, getWorkLogsAddedUnderSubproject } from "../../../../services/commonServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
+import { getSettingUserProject } from "../../../../services/hrServices";
 
 
 const ProjectLeadAgendaPage = () => {
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext();
 
-    const [ agendaDetails, setAgendaDetails ] = useState({
+    const [agendaDetails, setAgendaDetails] = useState({
         "project": '',
         "sub_project": '',
         "week_start": formatDateForAPI(new Date()),
         "week_end": formatDateForAPI(new Date(new Date().setDate(new Date().getDate() + 7))),
     })
-    const [ projectsAssignedToLead, setProjectsAssignedToLead ] = useState([]);
-    const [ allSubprojects, setAllSubprojects ] = useState([]);
-    const [ subprojectsForProject, setSubprojectForProject ] = useState([]);
-    const [ apiLimits, setApiLimits ] = useState({
+    const [projectsAssignedToLead, setProjectsAssignedToLead] = useState([]);
+    const [allSubprojects, setAllSubprojects] = useState([]);
+    const [subprojectsForProject, setSubprojectForProject] = useState([]);
+    const [apiLimits, setApiLimits] = useState({
         start: 0,
         end: 50,
     })
-    const [ loading, setLoading ] = useState(false);
-    const [ agendasFetchedPreviously, setAgendasFetchedPreviously ] = useState(false);
-    const [ agendasFetched, setAgendasFetched ] = useState([]);
-    const [ taskDetailsForPeriod, setTaskDetailsForPeriod ] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [agendasFetchedPreviously, setAgendasFetchedPreviously] = useState(false);
+    const [agendasFetched, setAgendasFetched] = useState([]);
+    const [taskDetailsForPeriod, setTaskDetailsForPeriod] = useState([]);
 
     const handleAgendaDetailUpdate = (keyToUpdate, newVal) => {
         setAgendaDetails((prevDetails) => {
@@ -44,14 +45,14 @@ const ProjectLeadAgendaPage = () => {
 
     const calculateHours = (logsPassed) => {
         const hourGapBetweenLogs = logsPassed.map(log => {
-          const [ startTime, endTime ] = [ new Date(`${log.task_created_date} ${log.start_time}`), new Date(`${log.task_created_date} ${log.end_time}`) ]
-          if (startTime == 'Invalid Date' || endTime == 'Invalid Date') return 0
-    
-          const diffInMs = Math.abs(endTime - startTime);
-          return  diffInMs / (1000 * 60 * 60);
+            const [startTime, endTime] = [new Date(`${log.task_created_date} ${log.start_time}`), new Date(`${log.task_created_date} ${log.end_time}`)]
+            if (startTime == 'Invalid Date' || endTime == 'Invalid Date') return 0
+
+            const diffInMs = Math.abs(endTime - startTime);
+            return diffInMs / (1000 * 60 * 60);
         });
-    
-        const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y , 0)).toFixed(2)
+
+        const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y, 0)).toFixed(2)
         return totalHours
     }
 
@@ -64,44 +65,46 @@ const ProjectLeadAgendaPage = () => {
 
     }, [])
 
-    useEffect(() => {
-        const mainProjectForLead = currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project;
-        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-            Array.isArray(
-                currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-            );
-        
-        const projectsForLead = userHasOtherProjects ?
-            [ mainProjectForLead, ...currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects ]
-            :
-        [ mainProjectForLead ];
-
-        setProjectsAssignedToLead(projectsForLead);
-    }, [currentUser])
+    getSettingUserProject().then((res) => {
+        const projectsGotten = res.data
+            ?.filter(
+                (project) =>
+                    project?.data_type === currentUser.portfolio_info[0].data_type &&
+                    project?.company_id === currentUser.portfolio_info[0].org_id &&
+                    project.project_list &&
+                    project.project_list.every(
+                        (listing) => typeof listing === "string"
+                    )
+            )
+            ?.reverse()
+        setProjectsAssignedToLead(projectsGotten);
+    }).catch(err => {
+        console.log('err fetching projects for project lead: ', err?.response?.data);
+    })
 
     useEffect(() => {
         if (agendaDetails.project.length < 1) return setSubprojectForProject([]);
 
         const matchingSubprojectsForProject = allSubprojects.find(
             (item) => item.parent_project === agendaDetails.project
-          )?.sub_project_list;
+        )?.sub_project_list;
 
         if (!matchingSubprojectsForProject) return setSubprojectForProject([]);
         setSubprojectForProject(matchingSubprojectsForProject)
 
     }, [agendaDetails.project])
 
-    const handleTrackAgenda = async (increaseLimits=false) => {
+    const handleTrackAgenda = async (increaseLimits = false) => {
         if (loading) return
 
         if (agendaDetails.project.length < 1) return toast.info('Please select a project')
         if (agendaDetails.sub_project.length < 1) return toast.info('Please select a subproject')
         if (agendaDetails.week_start > agendaDetails.week_end) return toast.info('The start date of your agenda must be less than its end date')
-        
-        const differenceBetweenWeekStartAndEnd = ( new Date(agendaDetails.week_end).getTime() - new Date(agendaDetails.week_start).getTime() ) / (1000 * 60 * 60 * 24); 
+
+        const differenceBetweenWeekStartAndEnd = (new Date(agendaDetails.week_end).getTime() - new Date(agendaDetails.week_start).getTime()) / (1000 * 60 * 60 * 24);
         if (differenceBetweenWeekStartAndEnd !== 7) return toast.info('The difference between the start and end date of your agenda must be exactly 7 days')
 
-        const copyOfApiLimits = {...apiLimits};
+        const copyOfApiLimits = { ...apiLimits };
 
         if (increaseLimits) {
             copyOfApiLimits.start = apiLimits.end;
@@ -132,13 +135,13 @@ const ProjectLeadAgendaPage = () => {
                 ...new Map(
                     [
                         ...res[0].data.response
-                        .filter(item => 
-                            item.week_start === agendaDetails.week_start && 
-                            item.week_end === agendaDetails.week_end && 
-                            item.timeline
-                        ),
+                            .filter(item =>
+                                item.week_start === agendaDetails.week_start &&
+                                item.week_end === agendaDetails.week_end &&
+                                item.timeline
+                            ),
                         ...currentAgendasFetched,
-                    ].map((agenda) => [agenda._id, agenda]) 
+                    ].map((agenda) => [agenda._id, agenda])
                 ).values()
             ]
 
@@ -159,13 +162,13 @@ const ProjectLeadAgendaPage = () => {
             projectLeadView={true}
         >
             <div className={styles.wrapper}>
-                
+
                 <p className={styles.hairline}>
                     <IoIosArrowBack
                         cursor={'pointer'}
                         onClick={() => navigate(-1)}
                     />
-                    <span 
+                    <span
                         style={{ cursor: 'pointer' }}
                         onClick={() => navigate(-1)}
                     >
@@ -189,11 +192,11 @@ const ProjectLeadAgendaPage = () => {
                                 defaultValue={''}
                             >
                                 <option value={''} disabled>Select project</option>
-                                {
-                                    React.Children.toArray(projectsAssignedToLead.map(item => {
-                                        return <option value={item}>{item}</option>
-                                    }))
-                                }
+                                {projectsAssignedToLead.map(item => (
+                                    item.project_list.map(project => (
+                                        <option key={project} value={project}>{project}</option>
+                                    ))
+                                ))}
                             </select>
                         </div>
                     </label>
@@ -221,56 +224,56 @@ const ProjectLeadAgendaPage = () => {
                             {/* <BsCalendar2Date /> */}
                             <div className={styles.date__Select}>
                                 <input
-                                    type="date" 
+                                    type="date"
                                     className={styles.date__Input}
                                     value={agendaDetails.week_start}
                                     name="week_start"
-                                    onChange={( { target }) => handleAgendaDetailUpdate(target.name, target.value)}
+                                    onChange={({ target }) => handleAgendaDetailUpdate(target.name, target.value)}
                                 />
                                 <span>-</span>
                                 <input
-                                    type="date" 
+                                    type="date"
                                     className={styles.date__Input}
                                     value={agendaDetails.week_end}
                                     name="week_end"
-                                    onChange={( { target }) => handleAgendaDetailUpdate(target.name, target.value)}
+                                    onChange={({ target }) => handleAgendaDetailUpdate(target.name, target.value)}
                                 />
                             </div>
                         </div>
                     </label>
 
-                    <button 
+                    <button
                         className={styles.track__Btn}
                         onClick={() => handleTrackAgenda()}
                         disabled={loading ? true : false}
                     >
                         {
-                            loading ? 
+                            loading ?
                                 <LoadingSpinner width={'1.3rem'} height={'1.3rem'} color={'#fff'} />
-                            :
-                            'Track'
+                                :
+                                'Track'
                         }
                     </button>
                 </div>
                 {
-                    agendasFetchedPreviously && 
+                    agendasFetchedPreviously &&
                     <div className={styles.load__More__Wrap}>
                         <span>Did not find agenda you are looking for?</span>
-                        <button 
+                        <button
                             className={`${styles.track__Btn} ${styles.load__Btn}`}
                             onClick={() => handleTrackAgenda(true)}
                             disabled={loading ? true : false}
                         >
                             {
-                                loading ? 
+                                loading ?
                                     <LoadingSpinner width={'1.3rem'} height={'1.3rem'} color={'#fff'} />
-                                :
-                                'Load more'
+                                    :
+                                    'Load more'
                             }
                         </button>
                     </div>
                 }
-                
+
                 <div className={styles.track__Agendas__Wrap}>
                     {
                         React.Children.toArray(agendasFetched.map(agenda => {
@@ -286,7 +289,7 @@ const ProjectLeadAgendaPage = () => {
                                         <div className={styles.inner__Marker}></div>
                                     </div>
                                     <div className={styles.progress}>
-                                        <div className={styles.active__Progress} style={{ height: `${timelinesReached}%`}}></div>
+                                        <div className={styles.active__Progress} style={{ height: `${timelinesReached}%` }}></div>
                                         <div style={{ height: `${timeLineRemaining}%` }}></div>
                                     </div>
                                     <div className={styles.inactive}>
@@ -319,26 +322,26 @@ const ProjectLeadAgendaPage = () => {
                                                                 item.timeline_start === formatDateForAPI(new Date()) ? <>
                                                                     <span className={styles.agenda__in__Progress}>In progress</span>
                                                                 </>
-                                                                :
-                                                                new Date(item.timeline_start) < new Date() ? <>
-                                                                    <span className={styles.agenda__To__Do}>To do</span>
-                                                                </>
-                                                                :
-                                                                calculateHours(
-                                                                    taskDetailsForPeriod
-                                                                    .filter(
-                                                                        log => 
-                                                                            log.task_created_date === item.timeline_start || 
-                                                                            log.task_created_date === item.timeline_end
-                                                                    )
-                                                                ) <= item.hours ?
-                                                                    <>
-                                                                        <span className={styles.agenda__On__time}>On time</span>
+                                                                    :
+                                                                    new Date(item.timeline_start) < new Date() ? <>
+                                                                        <span className={styles.agenda__To__Do}>To do</span>
                                                                     </>
-                                                                :
-                                                                    <>
-                                                                        <span className={styles.agenda__Overdue}>Over Due</span>
-                                                                    </>
+                                                                        :
+                                                                        calculateHours(
+                                                                            taskDetailsForPeriod
+                                                                                .filter(
+                                                                                    log =>
+                                                                                        log.task_created_date === item.timeline_start ||
+                                                                                        log.task_created_date === item.timeline_end
+                                                                                )
+                                                                        ) <= item.hours ?
+                                                                            <>
+                                                                                <span className={styles.agenda__On__time}>On time</span>
+                                                                            </>
+                                                                            :
+                                                                            <>
+                                                                                <span className={styles.agenda__Overdue}>Over Due</span>
+                                                                            </>
                                                             }
                                                         </p>
                                                     </div>
