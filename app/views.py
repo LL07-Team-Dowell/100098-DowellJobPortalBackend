@@ -8596,6 +8596,8 @@ class candidate_leave(APIView):
             return self.leave_apply(request)
         elif type_request == "approved_leave":
             return self.candidate_leave_approve(request)
+        elif type_request == "get_leave":
+            return self.get_leave(request)
         else:
             return self.handle_error(request)
         
@@ -8675,6 +8677,40 @@ class candidate_leave(APIView):
                     "message": "candidate leave could not be added please check the aplicant id and try again",
                     "error":res["error"]
                 })
+
+    def get_leave(self, request):
+        applicant_id = request.GET.get('applicant_id')
+        limit = request.GET.get('limit')
+        offset = request.GET.get('offset')
+
+        data = {
+            "_id": applicant_id,
+        }
+
+        response = datacube_data_retrival(API_KEY, DB_Name, leave_report_collection, data, limit, offset)
+
+        if not response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve leave",
+                "database_response": {
+                    "success": response["success"],
+                    "message": response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Leave retrieved successfully",
+            "database_response": {
+                "success": response["success"],
+                "message": response["message"]
+            },
+            "response": response["data"]
+        }, status=status.HTTP_200_OK)
+
+
+
 
     def handle_error(self, request):
         return Response(
