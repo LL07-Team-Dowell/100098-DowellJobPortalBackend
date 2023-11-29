@@ -9207,6 +9207,8 @@ class WeeklyAgenda(APIView):
         data=request.GET
         project=data.get("project")
         company_id=data.get("company_id")
+        limit=data.get("company_id")
+        offset=data.get("offset")
         # print(project)
 
 
@@ -9232,7 +9234,7 @@ class WeeklyAgenda(APIView):
         }
         print(company_id)
         for subproject in subproject_list:
-            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data,limit=500,offset=0))
+            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data,limit,offset))
             if subprojectcheck["success"]:
                 if len(subprojectcheck["data"]) > 0:
                     subproject_agenda.append({
