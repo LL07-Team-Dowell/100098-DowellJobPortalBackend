@@ -9253,7 +9253,6 @@ class WeeklyAgenda(APIView):
             unique_subprojects.update(subproject["sub_project_list"])
 
         subproject_list=list(unique_subprojects)
-        print(subproject)
         
         for i in range(len(subproject_list)):
              subproject_list[i] = subproject_list[i].replace(" ", "-")
@@ -9262,7 +9261,7 @@ class WeeklyAgenda(APIView):
         subproject_without_agenda=[]
         # print(subproject_list)
         data={
-            "company_id":company_id
+            # "company_id":company_id
         }
         for subproject in subproject_list:
             print(subproject)
