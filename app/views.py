@@ -9205,7 +9205,7 @@ class WeeklyAgenda(APIView):
     
     def grouplead_agenda_check(self, request):
         data=request.GET
-        project=data.get("project")
+        project=request.data.get("project")
         company_id=data.get("company_id")
         limit=data.get("limit")
         offset=data.get("offset")
@@ -9222,6 +9222,7 @@ class WeeklyAgenda(APIView):
             unique_subprojects.update(subproject["sub_project_list"])
 
         subproject_list=list(unique_subprojects)
+        print(subproject)
         
         for i in range(len(subproject_list)):
              subproject_list[i] = subproject_list[i].replace(" ", "-")
@@ -9233,7 +9234,9 @@ class WeeklyAgenda(APIView):
             "company_id":company_id
         }
         for subproject in subproject_list:
+            print(subproject)
             subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data,limit,offset))
+            print(subprojectcheck)
             if subprojectcheck["success"]:
                 if len(subprojectcheck["data"]) > 0:
                     subproject_agenda.append({
