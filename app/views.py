@@ -44,6 +44,7 @@ from .helper import (
     samanta_content_evaluator,
     datacube_add_collection,
     datacube_data_update,
+    get_subproject
 )
 from .serializers import (
     AccountSerializer,
@@ -9398,20 +9399,14 @@ class WeeklyAgenda(APIView):
         project=request.data.get("project")
         company_id=data.get("company_id")
         limit=data.get("limit")
-        offset=data.get("offset")
-        # print(project)
-
-        subprojects = UsersubProject.objects.filter(
-            parent_project=project, company_id=company_id
-        )
-        serializer = settingUsersubProjectSerializer(subprojects, many=True)
-
+        offset=data.get("offset")        
         unique_subprojects = set()
 
-        for subproject in serializer.data:
-            # print(subproject)
-            unique_subprojects.update(subproject["sub_project_list"])
-
+        subproject_response=get_subproject()
+        for subproject in subproject_response['data']:
+            if subproject['parent_project'] == project and subproject['company_id'] == company_id:
+                unique_subprojects.update(subproject["sub_project_list"])
+        
         subproject_list = list(unique_subprojects)
 
         for i in range(len(subproject_list)):
@@ -9419,10 +9414,11 @@ class WeeklyAgenda(APIView):
 
         subproject_agenda = []
         subproject_without_agenda = []
-        # print(subproject_list)
+
         data={
             "company_id":company_id
         }
+        
         for subproject in subproject_list:
             subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data,limit,offset))
             if subprojectcheck["success"]:
