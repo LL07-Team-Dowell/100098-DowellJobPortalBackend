@@ -643,3 +643,15 @@ def datacube_add_collection(api_key,db_name,coll_names,num_collections):
 
     response = requests.post(url, json=data)
     return response.text
+
+def get_subproject():
+    url = "https://100098.pythonanywhere.com/settingusersubproject/"
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  
+        data = response.json()  
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        return None
