@@ -35,6 +35,8 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
   const [editLoading, setEditLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [leaveOverlayVisibility, setLeaveOverlayVisibility] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     if (!projectsLoaded) {
@@ -46,9 +48,9 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
             ?.filter(
               (project) =>
                 project?.data_type ===
-                  currentUser?.portfolio_info[0]?.data_type &&
+                currentUser?.portfolio_info[0]?.data_type &&
                 project?.company_id ===
-                  currentUser?.portfolio_info[0]?.org_id &&
+                currentUser?.portfolio_info[0]?.org_id &&
                 project.project_list &&
                 project.project_list.every(
                   (listing) => typeof listing === "string"
@@ -193,8 +195,24 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
     setLeaveOverlayVisibility(true);
   };
   const handleClosingLeaveItemClick = () => {
+    setStartDate('');
+    setEndDate('');
     setLeaveOverlayVisibility(false);
   };
+  const handleSubmitClick = () => {
+    const start_Date = new Date(startDate);
+    const end_Date = new Date(endDate);
+
+    if (!startDate || !endDate) {
+      return toast.info('Please enter both start and end dates');
+    }
+
+    if (start_Date >= end_Date) {
+      setStartDate('');
+      setEndDate('');
+      return toast.info('Start date should be less than end date');
+    }
+  }
 
   return (
     <>
@@ -212,7 +230,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
               " " +
               application.applicant
                 .split(" ")
-                [application.applicant.split(" ").length - 1]?.slice(0, 1)
+              [application.applicant.split(" ").length - 1]?.slice(0, 1)
             }
             round={true}
             size='5rem'
@@ -262,13 +280,19 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
               <h2>Set Leave</h2>
               <label>
                 <span>Start Date:</span>
-                <input type='date' />
+                <input type='date'
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
               </label>
               <label>
                 <span>End Date:</span>
-                <input type='date' />
+                <input type='date'
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
               </label>
-              <button className={styles.edit__Btn}>Submit</button>
+              <button className={styles.edit__Btn} onClick={handleSubmitClick}>Submit</button>
             </div>
           </Overlay>
         )}
@@ -337,23 +361,23 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                   <Select
                     value={
                       itemBeignEdited?.project &&
-                      Array.isArray(itemBeignEdited?.project)
+                        Array.isArray(itemBeignEdited?.project)
                         ? itemBeignEdited?.project?.map((item) => {
-                            return { label: item, value: item };
-                          })
+                          return { label: item, value: item };
+                        })
                         : []
                     }
                     options={
                       projectsLoaded &&
-                      projectsAdded[0] &&
-                      projectsAdded[0]?.project_list
+                        projectsAdded[0] &&
+                        projectsAdded[0]?.project_list
                         ? [
-                            ...projectsAdded[0]?.project_list
-                              ?.sort((a, b) => a.localeCompare(b))
-                              ?.map((project) => {
-                                return { label: project, value: project };
-                              }),
-                          ]
+                          ...projectsAdded[0]?.project_list
+                            ?.sort((a, b) => a.localeCompare(b))
+                            ?.map((project) => {
+                              return { label: project, value: project };
+                            }),
+                        ]
                         : []
                     }
                     isMulti={true}

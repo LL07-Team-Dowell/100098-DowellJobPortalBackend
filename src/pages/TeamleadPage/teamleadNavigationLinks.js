@@ -22,6 +22,11 @@ export const teamleadNavigationLinks = [
     text: "Log requests",
   },
   {
+    linkAddress: "/agenda",
+    icon: <TfiAgenda />,
+    text: "Agenda",
+  },
+  {
     linkAddress: "/create-task",
     icon: <GiTeamIdea />,
     text: "Teams",
