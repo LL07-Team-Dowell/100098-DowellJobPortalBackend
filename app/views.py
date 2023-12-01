@@ -9056,9 +9056,11 @@ class WeeklyAgenda(APIView):
             return self.approve_group_lead_agenda(request)
         elif type_request == "grouplead_agenda_check":
             return self.grouplead_agenda_check(request)
+        elif type_request == "agenda_suprojects":
+            return self.agenda_suprojects(request)
         else:
             return self.handle_error(request)
-
+        
     def get(self, request):
         type_request = request.GET.get("type")
 
@@ -9447,8 +9449,31 @@ class WeeklyAgenda(APIView):
             status=status.HTTP_200_OK,
         )
 
-    """HANDLE ERROR"""
+    
+    def agenda_suprojects(self, request):
+        data=request.GET
+        project=request.data.get("project")
+        company_id=data.get("company_id")       
+        unique_subprojects = set()
 
+        subproject_response=get_subproject()
+
+        for subproject in subproject_response["data"]:
+            if subproject['parent_project'] == project and subproject['company_id'] == company_id:
+                unique_subprojects.update(subproject["sub_project_list"])
+        
+        subproject_list = list(unique_subprojects)
+
+        for i in range(len(subproject_list)):
+            subproject_list[i] = subproject_list[i].replace(" ", "-")
+
+        return Response({
+            "success":True,
+            "message":"Subprojects retrieved successfullly",
+            "subprojects_list":subproject_list
+        },status=status.HTTP_200_OK)
+    
+    """HANDLE ERROR"""
     def handle_error(self, request):
         return Response(
             {"success": False, "message": "Invalid request type"},
