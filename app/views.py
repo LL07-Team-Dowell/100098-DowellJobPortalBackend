@@ -96,6 +96,7 @@ from .serializers import (
     AddCollectionSerializer,
     agendaapproveserializer,
     leaveapplyserializers,
+    SubprojectSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -9453,24 +9454,56 @@ class WeeklyAgenda(APIView):
     def agenda_suprojects(self, request):
         data=request.GET
         project=request.data.get("project")
-        company_id=data.get("company_id")       
-        unique_subprojects = set()
+        company_id=data.get("company_id")
+        collection_name="All_Projects"       
 
-        subproject_response=get_subproject()
 
-        for subproject in subproject_response["data"]:
-            if subproject['parent_project'] == project and subproject['company_id'] == company_id:
-                unique_subprojects.update(subproject["sub_project_list"])
+        data={
+            "parent_project":project,
+            "company_id":company_id
+        }
+
+        serializer=SubprojectSerializer(data=data)
         
-        subproject_list = list(unique_subprojects)
+        if not serializer.is_valid():       
+            return Response({
+                "success":False,
+                'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        for i in range(len(subproject_list)):
-            subproject_list[i] = subproject_list[i].replace(" ", "-")
+        
+
+        # subproject_response=get_subproject()
+
+        # for subproject in subproject_response["data"]:
+        #     if subproject['company_id'] == company_id:
+        #         unique_subprojects.update(subproject["sub_project_list"])
+        #         if subproject["parent_project"] not in new_project_list and subproject["data_type"] != "Archived_Data":
+        #             new_project_list.append(subproject)
+        
+        # subproject_list = list(unique_subprojects)
+
+        # for project in new_project_list:
+        #     project["sub_project_list"]=[subproject.replace(" ","-") for subproject in project["sub_project_list"]]
+
+
+
+
+
+        response=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection_name=collection_name,data=data,limit=0,offset=0))
+
+        if not response["success"]:
+            return Response({
+            "success":False,
+            "message":"Subprojects could not retrieved successfullly",
+            "error":response
+            },status=status.HTTP_400_BAD_REQUEST)
+        
+        sub_project=response["data"]
 
         return Response({
             "success":True,
-            "message":"Subprojects retrieved successfullly",
-            "subprojects_list":subproject_list
+            "message":response["message"],
+            "subprojects_list":sub_project
         },status=status.HTTP_200_OK)
     
     """HANDLE ERROR"""
@@ -9588,7 +9621,7 @@ class Db_operations(APIView):
 
         return Response(
             {
-                "success": False,
+                "success": True,
                 "message": "new collection has been added",
                 "data": response["data"],
             },

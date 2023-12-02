@@ -716,3 +716,7 @@ class AddCollectionSerializer(serializers.Serializer):
 class agendaapproveserializer(serializers.Serializer):
     agenda_id=serializers.CharField(max_length=200)
     sub_project=serializers.CharField(max_length=200)
+
+class SubprojectSerializer(serializers.Serializer):
+    company_id=serializers.CharField(max_length=200)
+    parent_project=serializers.CharField(max_length=200)
