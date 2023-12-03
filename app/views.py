@@ -9468,26 +9468,8 @@ class WeeklyAgenda(APIView):
         if not serializer.is_valid():       
             return Response({
                 "success":False,
+                "message":"posting invaid data",
                 'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-        
-
-        # subproject_response=get_subproject()
-
-        # for subproject in subproject_response["data"]:
-        #     if subproject['company_id'] == company_id:
-        #         unique_subprojects.update(subproject["sub_project_list"])
-        #         if subproject["parent_project"] not in new_project_list and subproject["data_type"] != "Archived_Data":
-        #             new_project_list.append(subproject)
-        
-        # subproject_list = list(unique_subprojects)
-
-        # for project in new_project_list:
-        #     project["sub_project_list"]=[subproject.replace(" ","-") for subproject in project["sub_project_list"]]
-
-
-
-
 
         response=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection_name=collection_name,data=data,limit=0,offset=0))
 
