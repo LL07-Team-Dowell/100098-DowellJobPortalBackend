@@ -9398,22 +9398,25 @@ class WeeklyAgenda(APIView):
         )
 
     def grouplead_agenda_check(self, request):
-        data=request.GET
-        project=request.data.get("project")
-        company_id=data.get("company_id")
-        limit=data.get("limit")
-        offset=data.get("offset")        
-        unique_subprojects = set()
 
-        subproject_response=get_subproject()
+        project=request.data.get("project")
+        company_id=request.GET.get("company_id")
+        limit=request.GET.get("limit")
+        offset=request.GET.get("offset")        
+        unique_subprojects = set()
+        collection_name="All_Projects"
+
+        data={
+            "parent_project":project
+        }
+
+        subproject_response=json.loads(datacube_data_retrival(API_KEY,"WeeklyAgendaReport",collection_name,data,limit,offset))
+        
         for subproject in subproject_response['data']:
             if subproject['parent_project'] == project and subproject['company_id'] == company_id:
                 unique_subprojects.update(subproject["sub_project_list"])
         
         subproject_list = list(unique_subprojects)
-
-        for i in range(len(subproject_list)):
-            subproject_list[i] = subproject_list[i].replace(" ", "-")
 
         subproject_agenda = []
         subproject_without_agenda = []
@@ -9423,7 +9426,7 @@ class WeeklyAgenda(APIView):
         }
         
         for subproject in subproject_list:
-            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data,limit,offset))
+            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,"WeeklyAgendaReport",subproject,data,limit,offset))
             if subprojectcheck["success"]:
                 if len(subprojectcheck["data"]) > 0:
                     subproject_agenda.append(
