@@ -9410,7 +9410,7 @@ class WeeklyAgenda(APIView):
             "parent_project":project
         }
 
-        subproject_response=json.loads(datacube_data_retrival(API_KEY,"WeeklyAgendaReport",collection_name,data,limit,offset))
+        subproject_response=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection_name,data,limit,offset))
 
         for subproject in subproject_response['data']:
             if subproject['parent_project'] == project and subproject['company_id'] == company_id:
