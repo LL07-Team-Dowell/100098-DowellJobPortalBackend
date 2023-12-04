@@ -96,6 +96,7 @@ from .serializers import (
     AddCollectionSerializer,
     agendaapproveserializer,
     leaveapplyserializers,
+    SubprojectSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -9056,9 +9057,11 @@ class WeeklyAgenda(APIView):
             return self.approve_group_lead_agenda(request)
         elif type_request == "grouplead_agenda_check":
             return self.grouplead_agenda_check(request)
+        elif type_request == "agenda_suprojects":
+            return self.agenda_suprojects(request)
         else:
             return self.handle_error(request)
-
+        
     def get(self, request):
         type_request = request.GET.get("type")
 
@@ -9447,8 +9450,45 @@ class WeeklyAgenda(APIView):
             status=status.HTTP_200_OK,
         )
 
-    """HANDLE ERROR"""
+    
+    def agenda_suprojects(self, request):
+        data=request.GET
+        project=request.data.get("project")
+        company_id=data.get("company_id")
+        collection_name="All_Projects"       
 
+
+        data={
+            "parent_project":project,
+            "company_id":company_id
+        }
+
+        serializer=SubprojectSerializer(data=data)
+        
+        if not serializer.is_valid():       
+            return Response({
+                "success":False,
+                "message":"posting invaid data",
+                'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        response=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection_name=collection_name,data=data,limit=0,offset=0))
+
+        if not response["success"]:
+            return Response({
+            "success":False,
+            "message":"Subprojects could not retrieved successfullly",
+            "error":response
+            },status=status.HTTP_400_BAD_REQUEST)
+        
+        sub_project=response["data"]
+
+        return Response({
+            "success":True,
+            "message":response["message"],
+            "subprojects_list":sub_project
+        },status=status.HTTP_200_OK)
+    
+    """HANDLE ERROR"""
     def handle_error(self, request):
         return Response(
             {"success": False, "message": "Invalid request type"},
@@ -9563,7 +9603,7 @@ class Db_operations(APIView):
 
         return Response(
             {
-                "success": False,
+                "success": True,
                 "message": "new collection has been added",
                 "data": response["data"],
             },
