@@ -8735,11 +8735,11 @@ class candidate_leave(APIView):
         if res["isSuccess"]:
             return Response(
                 {
-                    "data": res,
-                    "success": True,
+                    
+                    "isSuccess": True,
                     "message": "candidate leave request has been approved",
                 },
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_200_OK,
             )
         else:
             return Response(
