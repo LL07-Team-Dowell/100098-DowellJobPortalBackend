@@ -45,8 +45,8 @@ from .helper import (
     datacube_data_retrival,
     samanta_content_evaluator,
     datacube_add_collection,
-    datacube_data_update
-
+    datacube_data_update,
+    get_subproject
 )
 from .serializers import (
     AccountSerializer,
@@ -96,7 +96,9 @@ from .serializers import (
     GetWeeklyAgendasSerializer,
     leaveapproveserializers,
     AddCollectionSerializer,
-    agendaapproveserializer
+    agendaapproveserializer,
+    leaveapplyserializers,
+    SubprojectSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -106,19 +108,20 @@ from .models import UsersubProject, TaskReportdata, MonthlyTaskData, PersonalInf
 from django.views.decorators.csrf import csrf_protect
 
 from dotenv import load_dotenv
-import os 
+import os
 
 """for linux server"""
 load_dotenv("/home/100098/100098-DowellJobPortal/.env")
-if os.getenv('API_KEY'):
-    API_KEY = str(os.getenv('API_KEY'))
-if os.getenv('DB_Name'):
-    DB_Name = str(os.getenv('DB_Name'))
+if os.getenv("API_KEY"):
+    API_KEY = str(os.getenv("API_KEY"))
+if os.getenv("DB_Name"):
+    DB_Name = str(os.getenv("DB_Name"))
 else:
     """for windows local"""
-    load_dotenv(f"{os.getcwd()}/env")
-    API_KEY = str(os.getenv('API_KEY'))
-    DB_Name = str(os.getenv('DB_Name'))
+    load_dotenv(f"{os.getcwd()}/.env")
+    API_KEY = str(os.getenv("API_KEY"))
+    DB_Name = str(os.getenv("DB_Name"))
+    leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
 
 
 # Create your views here.
@@ -337,8 +340,7 @@ class accounts_onboard_candidate(APIView):
 
                 update_response_thread = threading.Thread(
                     target=call_dowellconnection,
-                    args=(*candidate_management_reports,
-                          "update", field, update_field),
+                    args=(*candidate_management_reports, "update", field, update_field),
                 )
                 update_response_thread.start()
 
@@ -415,15 +417,13 @@ class accounts_update_project(APIView):
 
             update_response_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*candidate_management_reports,
-                      "update", field, update_field),
+                args=(*candidate_management_reports, "update", field, update_field),
             )
             update_response_thread.start()
 
             insert_response_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*account_management_reports,
-                      "update", field, update_field),
+                args=(*account_management_reports, "update", field, update_field),
             )
 
             insert_response_thread.start()
@@ -444,8 +444,7 @@ class accounts_update_project(APIView):
                     )
                 else:
                     return Response(
-                        {"message": "Failed to update",
-                            "response": json.loads(c_r[0])},
+                        {"message": "Failed to update", "response": json.loads(c_r[0])},
                         status=status.HTTP_204_NO_CONTENT,
                     )
             else:
@@ -487,15 +486,13 @@ class accounts_rehire_candidate(APIView):
 
             update_response_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*candidate_management_reports,
-                      "update", field, update_field),
+                args=(*candidate_management_reports, "update", field, update_field),
             )
             update_response_thread.start()
 
             insert_response_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*account_management_reports,
-                      "update", field, update_field),
+                args=(*account_management_reports, "update", field, update_field),
             )
 
             insert_response_thread.start()
@@ -516,8 +513,7 @@ class accounts_rehire_candidate(APIView):
                     )
                 else:
                     return Response(
-                        {"message": "Operation failed",
-                            "response": json.loads(c_r[0])},
+                        {"message": "Operation failed", "response": json.loads(c_r[0])},
                         status=status.HTTP_204_NO_CONTENT,
                     )
             else:
@@ -572,22 +568,19 @@ class accounts_reject_candidate(APIView):
 
                 candidate_thread = threading.Thread(
                     target=call_dowellconnection,
-                    args=(*candidate_management_reports,
-                          "update", field, update_field),
+                    args=(*candidate_management_reports, "update", field, update_field),
                 )
                 candidate_thread.start()
 
                 hr_thread = threading.Thread(
                     target=call_dowellconnection,
-                    args=(*hr_management_reports,
-                          "update", field, update_field),
+                    args=(*hr_management_reports, "update", field, update_field),
                 )
                 hr_thread.start()
 
                 lead_thread = threading.Thread(
                     target=call_dowellconnection,
-                    args=(*lead_management_reports,
-                          "update", field, update_field),
+                    args=(*lead_management_reports, "update", field, update_field),
                 )
                 lead_thread.start()
                 account_thread = threading.Thread(
@@ -729,8 +722,8 @@ class associate_job(APIView):
         data = request.data
         # continue create job api-----
         field = {
-            "job_title": data.get('job_title'),
-            "country": data.get('country'),
+            "job_title": data.get("job_title"),
+            "country": data.get("country"),
             "city": data.get("city"),
             "is_active": data.get("is_active"),
             "job_category": "regional_associate",
@@ -741,7 +734,7 @@ class associate_job(APIView):
             "payment": data.get("payment"),
             "company_id": data.get("company_id"),
             "data_type": data.get("data_type"),
-            "paymentInterval": data.get("paymentInterval")
+            "paymentInterval": data.get("paymentInterval"),
         }
         update_field = {"status": "nothing to update"}
 
@@ -789,8 +782,7 @@ class admin_get_job(APIView):
                 )
             else:
                 return Response(
-                    {"message": "List of jobs.",
-                        "response": json.loads(response)},
+                    {"message": "List of jobs.", "response": json.loads(response)},
                     status=status.HTTP_200_OK,
                 )
         else:
@@ -822,14 +814,12 @@ class admin_get_all_jobs(APIView):
                 )
             else:
                 return Response(
-                    {"message": "List of jobs.",
-                        "response": json.loads(response)},
+                    {"message": "List of jobs.", "response": json.loads(response)},
                     status=status.HTTP_200_OK,
                 )
         else:
             return Response(
-                {"message": "There is no jobs",
-                    "response": json.loads(response)},
+                {"message": "There is no jobs", "response": json.loads(response)},
                 status=status.HTTP_204_NO_CONTENT,
             )
 
@@ -897,21 +887,22 @@ class admin_delete_job(APIView):
 # api for candidate management starts here______________________
 @method_decorator(csrf_exempt, name="dispatch")
 class candidate_apply_job(APIView):
-
-    def duplicate_check(self,applicant_email):
-        data=self.request.data
+    def duplicate_check(self, applicant_email):
+        data = self.request.data
         candidate_field = {
             "job_number": data.get("job_number"),
             "applicant_email": applicant_email,
         }
         update_field = {"status": "nothing to update"}
-        candidate_report = json.loads(dowellconnection(
-            *candidate_management_reports, "fetch", candidate_field, update_field
-        ))['data']
-        # print(candidate_report)    
+        candidate_report = json.loads(
+            dowellconnection(
+                *candidate_management_reports, "fetch", candidate_field, update_field
+            )
+        )["data"]
+        # print(candidate_report)
         if len(candidate_report) > 0:
-           return False
-        else: 
+            return False
+        else:
             return True
 
     def is_eligible_to_apply(self, applicant_email):
@@ -928,8 +919,7 @@ class candidate_apply_job(APIView):
 
         if applicant is not None:
             rejected_dates = [
-                datetime.strptime(
-                    item["rejected_on"], "%m/%d/%Y %H:%M:%S")
+                datetime.strptime(item["rejected_on"], "%m/%d/%Y %H:%M:%S")
                 for item in json.loads(applicant)["data"]
             ]
             if len(rejected_dates) >= 1:
@@ -967,7 +957,7 @@ class candidate_apply_job(APIView):
             return Response(
                 {
                     "message": "You have already applied for the job",
-                    "Success":False,
+                    "Success": False,
                     "response": {
                         "applicant": data.get("applicant"),
                         "applicant_email": data.get("applicant_email"),
@@ -1163,6 +1153,8 @@ class get_all_onboarded_candidate(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_removed_candidate(APIView):
     def get(self, request, company_id):
@@ -1183,11 +1175,16 @@ class get_all_removed_candidate(APIView):
                         status=status.HTTP_204_NO_CONTENT,
                     )
                 else:
-                    candidates=[{"_id":res["_id"],
-                        "applicant":res["applicant"],
-                        "username":res["username"],
-                        "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
-                    
+                    candidates = [
+                        {
+                            "_id": res["_id"],
+                            "applicant": res["applicant"],
+                            "username": res["username"],
+                            "applicant_email": res["applicant_email"],
+                        }
+                        for res in json.loads(response)["data"]
+                    ]
+
                     return Response(
                         {
                             "message": f"List of Removed Candidates",
@@ -1208,6 +1205,7 @@ class get_all_removed_candidate(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
 
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_candidate_application(APIView):
@@ -1278,8 +1276,7 @@ class hr_shortlisted_candidate(APIView):
 
                 update_response_thread = threading.Thread(
                     target=call_dowellconnection,
-                    args=(*candidate_management_reports,
-                          "update", field, update_field),
+                    args=(*candidate_management_reports, "update", field, update_field),
                 )
                 update_response_thread.start()
 
@@ -1371,8 +1368,7 @@ class hr_selected_candidate(APIView):
 
             update_response_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*candidate_management_reports,
-                      "update", field, update_field),
+                args=(*candidate_management_reports, "update", field, update_field),
             )
             update_response_thread.start()
 
@@ -1466,8 +1462,7 @@ class hr_reject_candidate(APIView):
 
             candidate_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*candidate_management_reports,
-                      "update", field, update_field),
+                args=(*candidate_management_reports, "update", field, update_field),
             )
             candidate_thread.start()
 
@@ -1557,8 +1552,7 @@ class lead_hire_candidate(APIView):
 
                 update_response_thread = threading.Thread(
                     target=call_dowellconnection,
-                    args=(*candidate_management_reports,
-                          "update", field, update_field),
+                    args=(*candidate_management_reports, "update", field, update_field),
                 )
                 update_response_thread.start()
 
@@ -1693,15 +1687,13 @@ class lead_reject_candidate(APIView):
 
                 hr_thread = threading.Thread(
                     target=call_dowellconnection,
-                    args=(*hr_management_reports,
-                          "update", field, update_field),
+                    args=(*hr_management_reports, "update", field, update_field),
                 )
                 hr_thread.start()
 
                 candidate_thread = threading.Thread(
                     target=call_dowellconnection,
-                    args=(*candidate_management_reports,
-                          "update", field, update_field),
+                    args=(*candidate_management_reports, "update", field, update_field),
                 )
                 candidate_thread.start()
 
@@ -1765,9 +1757,7 @@ class lead_reject_candidate(APIView):
 class create_task(APIView):
     def max_updated_date(self, updated_date):
         # print(updated_date)
-        task_updated_date = datetime.strptime(
-            updated_date, "%m/%d/%Y %H:%M:%S"
-        )
+        task_updated_date = datetime.strptime(updated_date, "%m/%d/%Y %H:%M:%S")
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%m/%d/%Y %H:%M:%S")
 
@@ -1858,14 +1848,12 @@ class get_task(APIView):
                 )
             else:
                 return Response(
-                    {"message": f"List of Task",
-                        "response": json.loads(response)},
+                    {"message": f"List of Task", "response": json.loads(response)},
                     status=status.HTTP_200_OK,
                 )
         else:
             return Response(
-                {"message": "There are no tasks",
-                    "response": json.loads(response)},
+                {"message": "There are no tasks", "response": json.loads(response)},
                 status=status.HTTP_204_NO_CONTENT,
             )
 
@@ -1891,14 +1879,12 @@ class get_candidate_task(APIView):
                 )
             else:
                 return Response(
-                    {"message": f"List of the tasks",
-                        "response": json.loads(response)},
+                    {"message": f"List of the tasks", "response": json.loads(response)},
                     status=status.HTTP_200_OK,
                 )
         else:
             return Response(
-                {"message": "There are no tasks",
-                    "response": json.loads(response)},
+                {"message": "There are no tasks", "response": json.loads(response)},
                 status=status.HTTP_204_NO_CONTENT,
             )
 
@@ -1918,8 +1904,7 @@ class update_task(APIView):
                 "task_updated_date": str(datetime.now()),
             }
             # check if task exists---
-            check = dowellconnection(
-                *task_details_module, "fetch", field, update_field)
+            check = dowellconnection(*task_details_module, "fetch", field, update_field)
             if json.loads(check)["isSuccess"] is True:
                 if len(json.loads(check)["data"]) == 0:
                     return Response(
@@ -2313,9 +2298,7 @@ class denied_task_request_update(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class approve_task(APIView):
     def max_updated_date(self, updated_date):
-        task_updated_date = datetime.strptime(
-            updated_date, "%m/%d/%Y %H:%M:%S"
-        )
+        task_updated_date = datetime.strptime(updated_date, "%m/%d/%Y %H:%M:%S")
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%m/%d/%Y %H:%M:%S")
 
@@ -2346,7 +2329,11 @@ class approve_task(APIView):
                     if "profile_title" in d.keys():
                         print(d["profile_title"])
                         if d["profile_title"] in portfolio_name:
-                            if (d["Role"] == "Project_Lead" or d["Role"] == "Proj_Lead" or d["Role"] == "super_admin"):
+                            if (
+                                d["Role"] == "Project_Lead"
+                                or d["Role"] == "Proj_Lead"
+                                or d["Role"] == "super_admin"
+                            ):
                                 valid_profiles.append(d["profile_title"])
             if len(valid_profiles) > 0:
                 if valid_profiles[-1] in portfolio_name:
@@ -2359,8 +2346,7 @@ class approve_task(APIView):
         data = self.request.data
         field = {"_id": data.get("document_id")}
         update_field = {}
-        response = dowellconnection(
-            *task_details_module, "fetch", field, update_field)
+        response = dowellconnection(*task_details_module, "fetch", field, update_field)
         if response is not None:
             for item in json.loads(response)["data"]:
                 if "max_updated_date" not in item:
@@ -2369,9 +2355,7 @@ class approve_task(APIView):
             # print(json.loads(response)["data"],"=========")
             try:
                 max_updated_dates = [
-                    datetime.strptime(
-                        item["max_updated_date"], "%m/%d/%Y %H:%M:%S"
-                    )
+                    datetime.strptime(item["max_updated_date"], "%m/%d/%Y %H:%M:%S")
                     for item in json.loads(response)["data"]
                 ]
             except Exception:
@@ -2391,9 +2375,7 @@ class approve_task(APIView):
                     *task_details_module, "fetch", field, update_field
                 )
                 max_updated_dates = [
-                    datetime.strptime(
-                        item["max_updated_date"], "%m/%d/%Y %H:%M:%S"
-                    )
+                    datetime.strptime(item["max_updated_date"], "%m/%d/%Y %H:%M:%S")
                     for item in json.loads(resp)["data"]
                 ]
 
@@ -2423,8 +2405,7 @@ class approve_task(APIView):
                 check_approvable = self.approvable()
 
                 if check_approvable is True:
-                    validate_teamlead = self.valid_teamlead(
-                        data.get("lead_username"))
+                    validate_teamlead = self.valid_teamlead(data.get("lead_username"))
                     if validate_teamlead is False:
                         return Response(
                             {
@@ -2542,8 +2523,7 @@ class delete_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class task_module(APIView):
     def max_updated_date(self, updated_date):
-        task_updated_date = datetime.strptime(
-            updated_date, "%Y-%m-%d")
+        task_updated_date = datetime.strptime(updated_date, "%Y-%m-%d")
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
@@ -2589,7 +2569,7 @@ class task_module(APIView):
             "project": data.get("project"),
             "subproject": data.get("subproject"),
             "applicant": data.get("applicant"),
-            "applicant_id":data.get("applicant_id"),
+            "applicant_id": data.get("applicant_id"),
             "task_image": data.get("image"),
             "task": data.get("task"),
             "task_added_by": data.get("task_added_by"),
@@ -2608,7 +2588,7 @@ class task_module(APIView):
             field = {
                 "eventId": get_event_id()["event_id"],
                 "applicant": data.get("applicant"),
-                "applicant_id":data.get("applicant_id"),
+                "applicant_id": data.get("applicant_id"),
                 "task_image": data.get("image"),
                 "task_added_by": data.get("task_added_by"),
                 "data_type": data.get("data_type"),
@@ -2629,7 +2609,7 @@ class task_module(APIView):
                     "project": data.get("project"),
                     "subproject": data.get("subproject"),
                     "user_id": data.get("user_id"),
-                    "applicant_id":data.get("applicant_id"),
+                    "applicant_id": data.get("applicant_id"),
                     "task_image": data.get("image"),
                     "task_type": data.get("task_type"),
                     "company_id": data.get("company_id"),
@@ -2715,6 +2695,18 @@ class task_module(APIView):
 
                     ##------------------------------------------------
                     field["_id"]=response["inserted_id"]
+                    # year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                    # filter_params={
+                    #    "applicant_id":data.get("applicant_id"),
+                    #    "username":data.get("task_added_by"),
+                    #    "year":year,
+                    #    "month":monthname,
+                    #    "company_id":data.get("company_id")
+                    # }
+                    # task_params={"task_added"}
+                    # report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                    ##------------------------------------------------
+
                     return Response(
                         {
                             "success": True,
@@ -2774,8 +2766,7 @@ class task_module(APIView):
                     update_field=None,
                 )
             )
-            task_field = {"user_id": user_id,
-                          "task_created_date": task_created_date}
+            task_field = {"user_id": user_id, "task_created_date": task_created_date}
             task_resonse = json.loads(
                 dowellconnection(
                     *task_details_module, "fetch", task_field, update_field=None
@@ -2905,8 +2896,7 @@ class task_module(APIView):
         field = {"_id": task_id}
         update_field = {"task_saved": True}
         response = json.loads(
-            dowellconnection(*task_management_reports,
-                             "update", field, update_field)
+            dowellconnection(*task_management_reports, "update", field, update_field)
         )
         if response["isSuccess"]:
             return Response(
@@ -2928,8 +2918,7 @@ class task_module(APIView):
         update_field = update_task
 
         response = json.loads(
-            dowellconnection(*task_details_module,
-                             "update", field, update_field)
+            dowellconnection(*task_details_module, "update", field, update_field)
         )
         if response["isSuccess"]:
             return Response(
@@ -3015,20 +3004,23 @@ class task_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    
-    
-    def get_all_task_details(self, request):    
+    def get_all_task_details(self, request):
         data = request.data
         company_id = data.get("company_id")
-        user_id = data.get('user_id')
-        start_date_str = request.data.get('start_date')
-        end_date_str = request.data.get('end_date')
+        user_id = data.get("user_id")
+        start_date_str = request.data.get("start_date")
+        end_date_str = request.data.get("end_date")
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
         end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
 
         def try_parse_date(date_str):
-    # List of date formats to try
-            date_formats = ["%m/%d/%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%m/%d/%Y", "%Y-%m-%d"]
+            # List of date formats to try
+            date_formats = [
+                "%m/%d/%Y %H:%M:%S",
+                "%Y-%m-%d %H:%M:%S",
+                "%m/%d/%Y",
+                "%Y-%m-%d",
+            ]
 
             for date_format in date_formats:
                 try:
@@ -3042,17 +3034,17 @@ class task_module(APIView):
                 {"success": False, "error": "please specify the company id"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if not data.get('user_id'):
+        if not data.get("user_id"):
             return Response(
                 {"success": False, "error": "please specify the user id"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if not data.get('start_date'):
+        if not data.get("start_date"):
             return Response(
                 {"success": False, "error": "please specify the start date"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if not data.get('end_date'):
+        if not data.get("end_date"):
             return Response(
                 {"success": False, "error": "please specify the end date"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -3062,90 +3054,107 @@ class task_module(APIView):
             "user_id": user_id,
             "company_id": company_id,
         }
-        filtered_tasks=[]
-        response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
+        filtered_tasks = []
+        response_json = dowellconnection(
+            *task_details_module, "fetch", field, update_field=None
+        )
         response = json.loads(response_json)
         # print(response)
         for task in response["data"]:
-            if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
+            if (
+                "task_created_date" in task.keys()
+                and set_date_format(task["task_created_date"]) != ""
+            ):
                 try:
                     task_created_date = try_parse_date(task["task_created_date"])
-                    if task_created_date is not None and start_date <= task_created_date <= end_date:
+                    if (
+                        task_created_date is not None
+                        and start_date <= task_created_date <= end_date
+                    ):
                         filtered_tasks.append(task)
                 except Exception as error:
                     print(error)
 
-        return Response({
-            "success": True,
-            "message": "Get all task details",
-            "num_of_tasks": len(filtered_tasks),
-            "task_details": filtered_tasks
-        })         
-
-    def get_subproject_tasks(self, request):    
-            try:
-        # Parse dates at the beginning
-                start_date_str = request.data.get('start_date')
-                end_date_str = request.data.get('end_date')
-                start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-                end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-            except ValueError as ve:
-                return Response(
-                    {"success": False, "error": f"Error parsing dates: {ve}"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )   
-
-            company_id = request.GET.get("company_id")
-            subproject = request.GET.get('subproject')
-            project = request.GET.get('project')
-
-    # Check for required parameters
-            if not company_id:
-                return Response(
-                    {"success": False, "error": "Please specify the company id"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            if not start_date_str:
-                return Response(
-                    {"success": False, "error": "Please specify the start date"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            if not end_date_str:
-                return Response(
-                    {"success": False, "error": "Please specify the end date"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            field = {
-                "company_id": company_id                
-            }
-
-            if subproject:
-                field["subproject"] = subproject
-
-            if project:
-                field["project"] = project
-
-            filtered_tasks = []
-            response_json = dowellconnection(*task_details_module, "fetch", field, update_field=None)
-            response = json.loads(response_json)
-            for task in response["data"]:
-                if "task_created_date" in task.keys() and set_date_format(task["task_created_date"]) != "":
-                    try:
-                        task_created_date = datetime.strptime(task["task_created_date"], "%Y-%m-%d ")
-
-                        if start_date <= task_created_date <= end_date:
-                            filtered_tasks.append(task)
-                    except ValueError as error:
-                        print("Error parsing task_created_date:", error)
-                        pass
-
-            return Response({
+        return Response(
+            {
                 "success": True,
                 "message": "Get all task details",
                 "num_of_tasks": len(filtered_tasks),
-                "task_details": filtered_tasks
-            })   
+                "task_details": filtered_tasks,
+            }
+        )
+
+    def get_subproject_tasks(self, request):
+        try:
+            # Parse dates at the beginning
+            start_date_str = request.data.get("start_date")
+            end_date_str = request.data.get("end_date")
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+        except ValueError as ve:
+            return Response(
+                {"success": False, "error": f"Error parsing dates: {ve}"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        company_id = request.GET.get("company_id")
+        subproject = request.GET.get("subproject")
+        project = request.GET.get("project")
+
+        # Check for required parameters
+        if not company_id:
+            return Response(
+                {"success": False, "error": "Please specify the company id"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not start_date_str:
+            return Response(
+                {"success": False, "error": "Please specify the start date"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not end_date_str:
+            return Response(
+                {"success": False, "error": "Please specify the end date"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        field = {"company_id": company_id}
+
+        if subproject:
+            field["subproject"] = subproject
+
+        if project:
+            field["project"] = project
+
+        filtered_tasks = []
+        response_json = dowellconnection(
+            *task_details_module, "fetch", field, update_field=None
+        )
+        response = json.loads(response_json)
+        for task in response["data"]:
+            if (
+                "task_created_date" in task.keys()
+                and set_date_format(task["task_created_date"]) != ""
+            ):
+                try:
+                    task_created_date = datetime.strptime(
+                        task["task_created_date"], "%Y-%m-%d "
+                    )
+
+                    if start_date <= task_created_date <= end_date:
+                        filtered_tasks.append(task)
+                except ValueError as error:
+                    print("Error parsing task_created_date:", error)
+                    pass
+
+        return Response(
+            {
+                "success": True,
+                "message": "Get all task details",
+                "num_of_tasks": len(filtered_tasks),
+                "task_details": filtered_tasks,
+            }
+        )
 
     def handle_error(self, request):
         return Response(
@@ -3190,22 +3199,18 @@ class create_team(APIView):
             # print(response)
             if json.loads(response)["isSuccess"] == True:
                 ##adding to sqlite--------------------------------
-                for username in field["members"]:
-                    check = dowellconnection(
-                                *candidate_management_reports, "fetch", {"username":username}, update_field)
-                    
-                    year,monthname, monthcount = get_month_details(field["date_created"])
-                    filter_params={
-                        "applicant_id":json.loads(check)["data"][0]["_id"],
-                        "year":year, 
-                        "month":monthname, 
-                        "company_id":field["company_id"]
-                    }
-                    task_params=set()
-                    task_params.add("teams")
-                    report =updatereportdb(filter_params=filter_params,task_params=task_params)
-                    ##------------------------------------------------
-                        
+                # year,monthname, monthcount = get_month_details(data.get("date_created"))
+                # filter_params={
+                #    "applicant_id":data.get("applicant_id"),
+                #    "username":data.get("task_added_by"),
+                #    "year":year,
+                #    "month":monthname,
+                #    "company_id":data.get("company_id")
+                # }
+                # task_params={"teams"}
+                # report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ##------------------------------------------------
+
                 return Response(
                     {
                         "message": "Team created successfully",
@@ -3408,8 +3413,7 @@ class delete_team(APIView):
         # print(response)
         if json.loads(response)["isSuccess"] == True:
             return Response(
-                {"message": f"Team has been deleted",
-                    "response": json.loads(response)},
+                {"message": f"Team has been deleted", "response": json.loads(response)},
                 status=status.HTTP_200_OK,
             )
         else:
@@ -3490,6 +3494,19 @@ class create_team_task(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
+                ##adding to sqlite--------------------------------
+                # year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                # filter_params={
+                #    "applicant_id":data.get("applicant_id"),
+                #    "username":data.get("task_added_by"),
+                #    "year":year,
+                #    "month":monthname,
+                #    "company_id":data.get("company_id")
+                # }
+                # task_params={"team_tasks"}
+                # report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                ##------------------------------------------------
+
                 return Response(
                     {
                         "message": "Task created successfully",
@@ -3507,8 +3524,7 @@ class create_team_task(APIView):
                 )
         else:
             return Response(
-                {"message": "Parameters are not valid",
-                    "response": serializer.errors},
+                {"message": "Parameters are not valid", "response": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -3541,12 +3557,8 @@ class edit_team_task(APIView):
                 or data.get("completed") == True
             ):
                 update_field["completed"] = data.get("completed")
-                update_field["completed_on"] = self.get_current_datetime(
-                    datetime.now()
-                )
-
-                iscomplete= True
-
+                update_field["completed_on"] = self.get_current_datetime(datetime.now())
+            # print(update_field, "=====")
             # check if task exists---
             check = dowellconnection(
                 *task_management_reports, "fetch", field, update_field
@@ -4053,8 +4065,7 @@ class update_response(APIView):
 
         update_to_hr_thread = threading.Thread(
             target=call_dowellconnection,
-            args=(*hr_management_reports, "update",
-                  insert_to_hr_report, update_field),
+            args=(*hr_management_reports, "update", insert_to_hr_report, update_field),
         )
 
         update_to_hr_thread.start()
@@ -4151,8 +4162,7 @@ class get_response(APIView):
             "_id": document_id,
         }
         update_field = {"status": "nothing to update"}
-        response = dowellconnection(
-            *response_modules, "fetch", field, update_field)
+        response = dowellconnection(*response_modules, "fetch", field, update_field)
         # print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
@@ -4165,14 +4175,12 @@ class get_response(APIView):
                 )
             else:
                 return Response(
-                    {"message": f"List of responses",
-                        "response": json.loads(response)},
+                    {"message": f"List of responses", "response": json.loads(response)},
                     status=status.HTTP_200_OK,
                 )
         else:
             return Response(
-                {"message": "There is no responses",
-                    "response": json.loads(response)},
+                {"message": "There is no responses", "response": json.loads(response)},
                 status=status.HTTP_204_NO_CONTENT,
             )
 
@@ -4230,8 +4238,7 @@ class get_all_responses(APIView):
         }
         # print(field)
         update_field = {"status": "nothing to update"}
-        response = dowellconnection(
-            *response_modules, "fetch", field, update_field)
+        response = dowellconnection(*response_modules, "fetch", field, update_field)
         # print(response)
         if json.loads(response)["isSuccess"] == True:
             if len(json.loads(response)["data"]) == 0:
@@ -4244,14 +4251,12 @@ class get_all_responses(APIView):
                 )
             else:
                 return Response(
-                    {"message": f"List of responses",
-                        "response": json.loads(response)},
+                    {"message": f"List of responses", "response": json.loads(response)},
                     status=status.HTTP_200_OK,
                 )
         else:
             return Response(
-                {"message": f"There is no responses",
-                    "response": json.loads(response)},
+                {"message": f"There is no responses", "response": json.loads(response)},
                 status=status.HTTP_204_NO_CONTENT,
             )
 
@@ -4290,8 +4295,7 @@ class SettingUserProfileInfoView(APIView):
     def put(self, request, pk, *args, **kwargs):
         data = request.data
         setting = SettingUserProfileInfo.objects.get(pk=pk)
-        serializer = UpdateSettingUserProfileInfoSerializer(
-            setting, data=request.data)
+        serializer = UpdateSettingUserProfileInfoSerializer(setting, data=request.data)
 
         if serializer.is_valid():
             try:
@@ -4394,8 +4398,7 @@ class settingUserSubProject(APIView):
         else:
             model = UsersubProject.objects.all()
 
-        serializer = self.serializer_class(
-            model, many=True if pk is None else False)
+        serializer = self.serializer_class(model, many=True if pk is None else False)
 
         return Response({"success": True, "data": serializer.data})
 
@@ -4416,8 +4419,7 @@ class settingUserSubProject(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        serializer = self.serializer_class(
-            instance=my_model, data=request.data)
+        serializer = self.serializer_class(instance=my_model, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(
@@ -4543,21 +4545,24 @@ class get_discord_server_members(APIView):
 # public api for job creation__________________________
 @method_decorator(csrf_exempt, name="dispatch")
 class Public_apply_job(APIView):
-    def duplicate_check(self,applicant_email):
-        data=self.request.data
+    def duplicate_check(self, applicant_email):
+        data = self.request.data
         candidate_field = {
             "job_number": data.get("job_number"),
             "applicant_email": applicant_email,
         }
         update_field = {"status": "nothing to update"}
-        candidate_report = json.loads(dowellconnection(
-            *candidate_management_reports, "fetch", candidate_field, update_field
-        ))['data']
-        # print(candidate_report)    
+        candidate_report = json.loads(
+            dowellconnection(
+                *candidate_management_reports, "fetch", candidate_field, update_field
+            )
+        )["data"]
+        # print(candidate_report)
         if len(candidate_report) > 0:
-           return False
-        else: 
+            return False
+        else:
             return True
+
     def post(self, request):
         link_id = request.GET.get("link_id")
         data = request.data
@@ -4566,7 +4571,7 @@ class Public_apply_job(APIView):
             return Response(
                 {
                     "message": "You have already applied for the job",
-                    "Success":False,
+                    "Success": False,
                     "response": {
                         "applicant": data.get("applicant"),
                         "applicant_email": data.get("applicant_email"),
@@ -4617,7 +4622,7 @@ class Public_apply_job(APIView):
         }
         update_field = {"status": "nothing to update"}
         update_field = {"status": "nothing to update"}
-        
+
         serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
             response = dowellconnection(
@@ -4662,7 +4667,6 @@ class createPublicApplication(APIView):
             "job_id": request.data.get("job_id"),
             "job_name": request.data.get("job_name"),
             "company_data_type": request.data.get("company_data_type"),
-
         }
         serializer = CreatePublicLinkSerializer(data=field)
         if serializer.is_valid():
@@ -4722,8 +4726,7 @@ class createPublicApplication(APIView):
         # print(company_id)
         field = {"job_company_id": company_id}
         update_field = {"status": "Nothing to update"}
-        responses = dowellconnection(
-            *Publiclink_reports, "fetch", field, update_field)
+        responses = dowellconnection(*Publiclink_reports, "fetch", field, update_field)
         response = json.loads(responses)
         # print(response)
 
@@ -4827,8 +4830,7 @@ class sendMailToPublicCandidate(APIView):
             link = f"https://100014.pythonanywhere.com/?hr_invitation={decodedbytestr}"
             # print("------link new------", link)
             email_content = INVITATION_MAIL.format(toname, job_role, link)
-            mail_response = interview_email(
-                toname, toemail, subject, email_content)
+            mail_response = interview_email(toname, toemail, subject, email_content)
 
             # update the public api by username==================
             field = {"username": qr_id, "_id": application_id}
@@ -4888,8 +4890,7 @@ class updateTheUserDetails(APIView):
                 *candidate_management_reports, "update", field, update_field
             )
             if json.loads(response)["isSuccess"] == True:
-                email_content = INVERVIEW_CALL.format(
-                    username, job_role, date_time)
+                email_content = INVERVIEW_CALL.format(username, job_role, date_time)
                 subject = "Interview call from DoWell UX Living Lab"
                 send_interview_email = interview_email(
                     username, toemail, subject, email_content
@@ -5024,8 +5025,7 @@ class public_product(APIView):
                 fields["report_type"] = report_type
             update_field = {"status": "Nothing to update"}
             dowellresponse = json.loads(
-                dowellconnection(*Publiclink_reports,
-                                 "insert", fields, update_field)
+                dowellconnection(*Publiclink_reports, "insert", fields, update_field)
             )
             if dowellresponse["isSuccess"]:
                 return Response(
@@ -5056,8 +5056,7 @@ class public_product(APIView):
         fields = {"job_company_id": job_company_id}
         update_field = {"status": "Nothing to update"}
         dowellresponse = json.loads(
-            dowellconnection(*Publiclink_reports, "fetch",
-                             fields, update_field)
+            dowellconnection(*Publiclink_reports, "fetch", fields, update_field)
         )
         if dowellresponse["isSuccess"]:
             if len(dowellresponse["data"]) == 0:
@@ -5173,8 +5172,8 @@ class Thread_Apis(APIView):
                 for user in json.loads(info)["data"]:
                     if "applicant_email" in user.keys():
                         users[user["username"]] = user["applicant_email"]
-                
-                if len(json.loads(get_team)["data"])>0:
+
+                if len(json.loads(get_team)["data"]) > 0:
                     for member in json.loads(get_team)["data"][0]["members"]:
                         if member in users.keys():
                             send_to_emails[member] = users[member]
@@ -5199,21 +5198,18 @@ class Thread_Apis(APIView):
                     send_mail_thread.start()
                     send_mail_thread.join()
                 ##adding to sqlite--------------------------------
-                check = dowellconnection(
-                                *candidate_management_reports, "fetch", {"username":field["created_by"]}, update_field)
-                    
-                year,monthname, monthcount = get_month_details(field["created_date"])
-                filter_params={
-                    "applicant_id":json.loads(check)["data"][0]["_id"],
-                    "username":field["created_by"], 
-                    "year":year, 
-                    "month":monthname, 
-                    "company_id":field["company_id"]
-                }
-                task_params={"team_tasks_issues_raised"}
-                report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                # year,monthname, monthcount = get_month_details(data.get("task_created_date"))
+                # filter_params={
+                #    "applicant_id":data.get("applicant_id"),
+                #    "username":data.get("task_added_by"),
+                #    "year":year,
+                #    "month":monthname,
+                #    "company_id":data.get("company_id")
+                # }
+                # task_params={"team_tasks_issues_raised"}
+                # report =updatereportdb(filter_params=filter_params,task_params=task_params)
                 ##------------------------------------------------
-                    
+
                 return Response(
                     {
                         "message": "Thread created successfully",
@@ -5284,8 +5280,7 @@ class Thread_Apis(APIView):
             }
 
             # check for previous status
-            get_response = dowellconnection(
-                *thread_report_module, "fetch", field, {})
+            get_response = dowellconnection(*thread_report_module, "fetch", field, {})
             if json.loads(get_response)["isSuccess"] == True:
                 prev = json.loads(get_response)["data"][0]["previous_status"]
             else:
@@ -5348,32 +5343,32 @@ class Thread_Apis(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            if data.get("current_status")=="Resolved":
+            if data.get("current_status") == "Resolved":
                 update_field = {
                     "current_status": data.get("current_status"),
                     "previous_status": previous_status,
-                    "resolved_on":str(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+                    "resolved_on": str(datetime.now().strftime("%m/%d/%Y %H:%M:%S")),
                 }
 
-            elif data.get("current_status")=="Completed":
+            elif data.get("current_status") == "Completed":
                 update_field = {
                     "current_status": data.get("current_status"),
                     "previous_status": previous_status,
-                    "completed_on":str(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+                    "completed_on": str(datetime.now().strftime("%m/%d/%Y %H:%M:%S")),
                 }
 
-            elif data.get("current_status")=="In progress":
+            elif data.get("current_status") == "In progress":
                 update_field = {
                     "current_status": data.get("current_status"),
                     "previous_status": previous_status,
-                    "started_on":str(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+                    "started_on": str(datetime.now().strftime("%m/%d/%Y %H:%M:%S")),
                 }
 
-            elif data.get("current_status")=="Created":
+            elif data.get("current_status") == "Created":
                 update_field = {
                     "current_status": data.get("current_status"),
                     "previous_status": previous_status,
-                    "created_date":str(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+                    "created_date": str(datetime.now().strftime("%m/%d/%Y %H:%M:%S")),
                 }
 
             update_response = dowellconnection(
@@ -5637,8 +5632,7 @@ class Comment_Apis(APIView):
                 )
             else:
                 return Response(
-                    {"message": "Failed to fetch",
-                        "info": json.loads(insert_response)},
+                    {"message": "Failed to fetch", "info": json.loads(insert_response)},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
@@ -5691,8 +5685,7 @@ class Generate_Report(APIView):
                 else:
                     field = {}
                 update_field = {}
-                response = dowellconnection(
-                    *jobs, "fetch", field, update_field)
+                response = dowellconnection(*jobs, "fetch", field, update_field)
 
                 jbs = [res for res in json.loads(response)["data"]]
                 res_jobs = period_check(
@@ -5771,16 +5764,12 @@ class Generate_Report(APIView):
                     if "application_submitted_on" in res.keys()
                     and res["status"] == "probationary"
                 ]
-                selected = [
-                    res for res in total if "selected_on" in res.keys()]
-                shortlisted = [
-                    res for res in total if "shortlisted_on" in res.keys()]
+                selected = [res for res in total if "selected_on" in res.keys()]
+                shortlisted = [res for res in total if "shortlisted_on" in res.keys()]
                 hired = [res for res in total if "hired_on" in res.keys()]
                 rehired = [res for res in total if "rehired_on" in res.keys()]
-                rejected = [
-                    res for res in total if "rejected_on" in res.keys()]
-                onboarded = [
-                    res for res in total if "onboarded_on" in res.keys()]
+                rejected = [res for res in total if "rejected_on" in res.keys()]
+                onboarded = [res for res in total if "onboarded_on" in res.keys()]
 
                 res_job_application = period_check(
                     start_dt=payload["start_date"],
@@ -5808,8 +5797,7 @@ class Generate_Report(APIView):
                 for res in res_job_application[0]:
                     date = set_date_format(res["application_submitted_on"])
                     month = month_list[
-                        datetime.strptime(
-                            date, "%m/%d/%Y %H:%M:%S").month
+                        datetime.strptime(date, "%m/%d/%Y %H:%M:%S").month
                     ]
                     months.append(
                         {
@@ -5924,8 +5912,7 @@ class Generate_Report(APIView):
                     *team_management_modules, "fetch", field, update_field
                 )
                 total_teams = [res for res in json.loads(teams)["data"]]
-                total_teams_ids = [res["_id"]
-                                   for res in json.loads(teams)["data"]]
+                total_teams_ids = [res["_id"] for res in json.loads(teams)["data"]]
 
                 res_teams = period_check(
                     start_dt=payload["start_date"],
@@ -5995,8 +5982,7 @@ class Generate_Report(APIView):
                             set_date_format(t["due_date"]), "%m/%d/%Y %H:%M:%S"
                         )
                         task_updated_date = datetime.strptime(
-                            set_date_format(
-                                t["task_updated_date"]), "%m/%d/%Y %H:%M:%S"
+                            set_date_format(t["task_updated_date"]), "%m/%d/%Y %H:%M:%S"
                         )
                         if (
                             "due_date" in t.keys()
@@ -6009,8 +5995,7 @@ class Generate_Report(APIView):
                 data["tasks_completed_on_time"] = len(tasks_completed_on_time)
                 try:
                     data["percentage_tasks_completed_on_time"] = (
-                        data["tasks_completed_on_time"] /
-                        data["tasks_completed"]
+                        data["tasks_completed_on_time"] / data["tasks_completed"]
                     ) * 100
                 except Exception:
                     data["percentage_tasks_completed_on_time"] = 0
@@ -6018,8 +6003,7 @@ class Generate_Report(APIView):
                 res_tasks_mod = dowellconnection(
                     *task_details_module, "fetch", field, update_field=None
                 )
-                res_tasks_mod_list = [res for res in json.loads(res_tasks_mod)[
-                    "data"]]
+                res_tasks_mod_list = [res for res in json.loads(res_tasks_mod)["data"]]
 
                 res_t = period_check(
                     start_dt=payload["start_date"],
@@ -6041,16 +6025,14 @@ class Generate_Report(APIView):
                 least_tasked_projects = []
                 for items in set(least_taskeds):
                     count = least_taskeds.count(items)
-                    least_tasked_projects.append(
-                        {"title": items, "tasks_added": count})
+                    least_tasked_projects.append({"title": items, "tasks_added": count})
 
                 m = max(c.values())
                 most_tasked = [x for x in projects if c[x] == m]
                 most_tasked_projects = []
                 for items in set(most_tasked):
                     count = most_tasked.count(items)
-                    most_tasked_projects.append(
-                        {"title": items, "tasks_added": count})
+                    most_tasked_projects.append({"title": items, "tasks_added": count})
 
                 data["project_with_most_tasks"] = most_tasked_projects
                 data["project_with_least_tasks"] = least_tasked_projects
@@ -6083,14 +6065,10 @@ class Generate_Report(APIView):
                     *hr_management_reports, "fetch", field, update_field
                 )
                 total = [res for res in json.loads(response)["data"]]
-                selected = [
-                    res for res in total if "selected_on" in res.keys()]
-                shortlisted = [
-                    res for res in total if "shortlisted_on" in res.keys()]
-                rejected = [
-                    res for res in total if "rejected_on" in res.keys()]
-                response_jbs = dowellconnection(
-                    *jobs, "fetch", field, update_field)
+                selected = [res for res in total if "selected_on" in res.keys()]
+                shortlisted = [res for res in total if "shortlisted_on" in res.keys()]
+                rejected = [res for res in total if "rejected_on" in res.keys()]
+                response_jbs = dowellconnection(*jobs, "fetch", field, update_field)
 
                 jbs = [res for res in json.loads(response_jbs)["data"]]
                 res_jobs = period_check(
@@ -6172,8 +6150,7 @@ class Generate_Report(APIView):
                     if "application_submitted_on" in res.keys()
                     and res["status"] == "probationary"
                 ]
-                hired = [
-                    res for res in total_applications if "hired_on" in res.keys()]
+                hired = [res for res in total_applications if "hired_on" in res.keys()]
 
                 res_job_application = period_check(
                     start_dt=payload["start_date"],
@@ -6240,8 +6217,7 @@ class Generate_Report(APIView):
 
                 try:
                     data["hiring_rate"] = (
-                        str((data["hired"] / data["job_applications"])
-                            * 100) + " %"
+                        str((data["hired"] / data["job_applications"]) * 100) + " %"
                     )
                 except Exception:
                     data["hiring_rate"] = "0 %"
@@ -6276,10 +6252,8 @@ class Generate_Report(APIView):
                 )
                 total = [res for res in json.loads(response)["data"]]
                 rehired = [res for res in total if "rehired_on" in res.keys()]
-                rejected = [
-                    res for res in total if "rejected_on" in res.keys()]
-                onboarded = [
-                    res for res in total if "onboarded_on" in res.keys()]
+                rejected = [res for res in total if "rejected_on" in res.keys()]
+                onboarded = [res for res in total if "onboarded_on" in res.keys()]
 
                 res_rehired = period_check(
                     start_dt=payload["start_date"],
@@ -6356,16 +6330,12 @@ class Generate_Report(APIView):
                     if "application_submitted_on" in res.keys()
                     and res["status"] == "probationary"
                 ]
-                selected = [
-                    res for res in total if "selected_on" in res.keys()]
-                shortlisted = [
-                    res for res in total if "shortlisted_on" in res.keys()]
+                selected = [res for res in total if "selected_on" in res.keys()]
+                shortlisted = [res for res in total if "shortlisted_on" in res.keys()]
                 hired = [res for res in total if "hired_on" in res.keys()]
                 rehired = [res for res in total if "rehired_on" in res.keys()]
-                rejected = [
-                    res for res in total if "rejected_on" in res.keys()]
-                onboarded = [
-                    res for res in total if "onboarded_on" in res.keys()]
+                rejected = [res for res in total if "rejected_on" in res.keys()]
+                onboarded = [res for res in total if "onboarded_on" in res.keys()]
 
                 res_job_application = period_check(
                     start_dt=payload["start_date"],
@@ -6449,8 +6419,7 @@ class Generate_Report(APIView):
 
                 try:
                     data["hiring_rate"] = (
-                        str((data["hired"] / data["job_applications"])
-                            * 100) + " %"
+                        str((data["hired"] / data["job_applications"]) * 100) + " %"
                     )
                 except Exception:
                     data["hiring_rate"] = "0 %"
@@ -6492,60 +6461,76 @@ class Generate_Report(APIView):
                 )
                 update_field = {}
 
-                team_threads = json.loads(dowellconnection(
-                    *thread_report_module, "fetch", {"team_id":  payload["team_id"],}, update_field))['data']
+                team_threads = json.loads(
+                    dowellconnection(
+                        *thread_report_module,
+                        "fetch",
+                        {
+                            "team_id": payload["team_id"],
+                        },
+                        update_field,
+                    )
+                )["data"]
 
-                Threads_Resolved= []
-                Threads_In_pending=[]
-                Threads_Completed=[]
-                total_threads_raised=[]
-                all_issue_resolved_time=timedelta()
+                Threads_Resolved = []
+                Threads_In_pending = []
+                Threads_Completed = []
+                total_threads_raised = []
+                all_issue_resolved_time = timedelta()
 
-                total_comments=0
+                total_comments = 0
                 for threads in team_threads:
-                    
                     total_threads_raised.append(threads)
-                    if threads["current_status"]=="Created":  
+                    if threads["current_status"] == "Created":
                         Threads_In_pending.append(threads)
-                    if threads["current_status"]=="Resolved":
+                    if threads["current_status"] == "Resolved":
                         Threads_Resolved.append(threads)
-                    if threads["current_status"]=="In progress":
+                    if threads["current_status"] == "In progress":
                         Threads_In_pending.append(threads)
-                    if threads["current_status"]=="Completed":
+                    if threads["current_status"] == "Completed":
                         Threads_Completed.append(threads)
 
                     for comment in json.loads(comments)["data"]:
-                        if comment["thread_id"]==threads["_id"]:
-                            total_comments +=1
+                        if comment["thread_id"] == threads["_id"]:
+                            total_comments += 1
                 if len(total_threads_raised) > 0:
-                    average_comment_count_per_issue=total_comments/len(total_threads_raised)
+                    average_comment_count_per_issue = total_comments / len(
+                        total_threads_raised
+                    )
                 else:
-                    average_comment_count_per_issue=0
+                    average_comment_count_per_issue = 0
 
                 for threads in Threads_Resolved:
                     # print(threads)
                     if threads["resolved_on"]:
-                        threads_created_on=threads["created_date"]
-                        threads_resolved_on=threads["resolved_on"]
-                        date_format = '%m/%d/%Y %H:%M:%S'
-                        created_date = datetime.strptime(threads_created_on,date_format )
-                        resolved_date = datetime.strptime(threads_resolved_on,date_format )
-                        time_to_solve_issue=resolved_date-created_date
-                        all_issue_resolved_time +=time_to_solve_issue   
+                        threads_created_on = threads["created_date"]
+                        threads_resolved_on = threads["resolved_on"]
+                        date_format = "%m/%d/%Y %H:%M:%S"
+                        created_date = datetime.strptime(
+                            threads_created_on, date_format
+                        )
+                        resolved_date = datetime.strptime(
+                            threads_resolved_on, date_format
+                        )
+                        time_to_solve_issue = resolved_date - created_date
+                        all_issue_resolved_time += time_to_solve_issue
                 if len(Threads_Resolved) > 0:
-                    average_time_taken_to_resolve=all_issue_resolved_time/len(Threads_Resolved)
+                    average_time_taken_to_resolve = all_issue_resolved_time / len(
+                        Threads_Resolved
+                    )
                 else:
-                    average_time_taken_to_resolve=0
-        
-                data["total_issues_raised"]=len(total_threads_raised)
-                data["total_issues_pending"]=len(Threads_In_pending)
-                data["total_issues_resolved"]=len(Threads_Resolved)
-                data["total_issues_completed"]=len(Threads_Completed)
+                    average_time_taken_to_resolve = 0
+
+                data["total_issues_raised"] = len(total_threads_raised)
+                data["total_issues_pending"] = len(Threads_In_pending)
+                data["total_issues_resolved"] = len(Threads_Resolved)
+                data["total_issues_completed"] = len(Threads_Completed)
                 data["average_time_to_resolve_issues"] = average_time_taken_to_resolve
-                data["total_comments"]=total_comments
-                data["average_comment_count_per_issue"]=average_comment_count_per_issue
-                
-                
+                data["total_comments"] = total_comments
+                data[
+                    "average_comment_count_per_issue"
+                ] = average_comment_count_per_issue
+
                 total_tasks = [res for res in json.loads(tasks)["data"]]
 
                 teams = dowellconnection(
@@ -6615,8 +6600,7 @@ class Generate_Report(APIView):
                             set_date_format(t["due_date"]), "%m/%d/%Y %H:%M:%S"
                         )
                         task_updated_date = datetime.strptime(
-                            set_date_format(
-                                t["task_updated_date"]), "%m/%d/%Y %H:%M:%S"
+                            set_date_format(t["task_updated_date"]), "%m/%d/%Y %H:%M:%S"
                         )
                         if (
                             "due_date" in t.keys()
@@ -6627,8 +6611,7 @@ class Generate_Report(APIView):
                     except Exception as e:
                         # print("error",e)
                         pass
-                data["team_tasks_completed_on_time"] = len(
-                    team_tasks_completed_on_time)
+                data["team_tasks_completed_on_time"] = len(team_tasks_completed_on_time)
                 try:
                     data["percentage_team_tasks_completed_on_time"] = (
                         data["team_tasks_completed_on_time"]
@@ -6667,8 +6650,7 @@ class Generate_Report(APIView):
                 )
                 total = [res for res in json.loads(response)["data"]]
                 rehired = [res for res in total if "rehired_on" in res.keys()]
-                rejected = [
-                    res for res in total if "rejected_on" in res.keys()]
+                rejected = [res for res in total if "rejected_on" in res.keys()]
                 hired = [res for res in total if "hired_on" in res.keys()]
 
                 res_rehired = period_check(
@@ -6762,14 +6744,13 @@ class Generate_Report(APIView):
             portfolio_name = json.loads(info)["data"][0]["portfolio_name"]
 
             # get the task report based on project for the user----------------------------------------
-            data["personal_info"]["task_report"]=[]
-            #-------------------------------------------------------------------------------------------
+            data["personal_info"]["task_report"] = []
+            # -------------------------------------------------------------------------------------------
 
             # if a position is given, check within any of the contained positions-------------------
             if payload.get("role"):
                 profiles = SettingUserProfileInfo.objects.all()
-                serializer = SettingUserProfileInfoSerializer(
-                    profiles, many=True)
+                serializer = SettingUserProfileInfoSerializer(profiles, many=True)
                 # print(serializer.data,"----")
                 positions = get_positions(serializer.data)
                 teamleads = positions["teamleads"]
@@ -6785,7 +6766,10 @@ class Generate_Report(APIView):
 
                 # checking if the user is a team lead--------------------------------------------
 
-                if (payload.get("role") == "Teamlead" or payload.get("role") == "TeamLead"):
+                if (
+                    payload.get("role") == "Teamlead"
+                    or payload.get("role") == "TeamLead"
+                ):
                     if portfolio_name not in teamleads:
                         return Response(
                             {
@@ -6834,7 +6818,11 @@ class Generate_Report(APIView):
                     elif "profile_title" in d.keys():
                         freelancers.append(d["profile_title"])
 
-            if (payload.get("applicant_username") and payload.get("role") == "Teamlead" and not portfolio_name in teamleads):
+            if (
+                payload.get("applicant_username")
+                and payload.get("role") == "Teamlead"
+                and not portfolio_name in teamleads
+            ):
                 return Response(
                     {
                         "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
@@ -6896,8 +6884,12 @@ class Generate_Report(APIView):
 
             _tasks_added_thread = threading.Thread(
                 target=call_dowellconnection,
-                args=(*task_management_reports,
-                        "fetch", {"task_added_by": username,"company_id":company_id}, update_field),
+                args=(
+                    *task_management_reports,
+                    "fetch",
+                    {"task_added_by": username, "company_id": company_id},
+                    update_field,
+                ),
             )
             _tasks_added_thread.start()
 
@@ -6934,17 +6926,22 @@ class Generate_Report(APIView):
 
             # if all the threads are finished  continue------------------------
 
-            if (not _tasks_added_thread.is_alive() and not _task_details_thread.is_alive() and not teams_thread.is_alive()
-                    and not issues_raised_thread.is_alive() and not comments_added_thread.is_alive()):
-
+            if (
+                not _tasks_added_thread.is_alive()
+                and not _task_details_thread.is_alive()
+                and not teams_thread.is_alive()
+                and not issues_raised_thread.is_alive()
+                and not comments_added_thread.is_alive()
+            ):
                 # teams-------------------------
                 _teams_ids = []
                 for team in json.loads(teams[0])["data"]:
-                    if ("members" in team.keys() and username in team["members"]):
+                    if "members" in team.keys() and username in team["members"]:
                         try:
                             t_year, t_month_name, t_months_cnt = get_month_details(
-                                team["date_created"])
-                            if (t_year == year):
+                                team["date_created"]
+                            )
+                            if t_year == year:
                                 item[t_month_name]["teams"] += t_months_cnt
                         except Exception as e:
                             pass
@@ -6955,22 +6952,33 @@ class Generate_Report(APIView):
                 _teams_tasks_issues_raised_ids = []
                 if len(json.loads(issues_raised[0])["data"]) != 0:
                     for issue in json.loads(issues_raised[0])["data"]:
-                        if ("team_id" in issue.keys() and issue["team_id"] in _teams_ids):
+                        if "team_id" in issue.keys() and issue["team_id"] in _teams_ids:
                             try:
                                 t_year, t_month_name, t_months_cnt = get_month_details(
-                                    issue["created_date"])
-                                if (t_year == year):
-                                    item[t_month_name]["team_tasks_issues_raised"] += t_months_cnt
+                                    issue["created_date"]
+                                )
+                                if t_year == year:
+                                    item[t_month_name][
+                                        "team_tasks_issues_raised"
+                                    ] += t_months_cnt
                             except Exception as e:
                                 pass
                             _teams_tasks_issues_raised_ids.append(issue["_id"])
 
-                        if ("team_id" in issue.keys() and issue["team_id"] in _teams_ids) and ("current_status" in issue.keys() and issue["current_status"] == "Resolved"):
+                        if (
+                            "team_id" in issue.keys() and issue["team_id"] in _teams_ids
+                        ) and (
+                            "current_status" in issue.keys()
+                            and issue["current_status"] == "Resolved"
+                        ):
                             try:
                                 t_year, t_month_name, t_months_cnt = get_month_details(
-                                    issue["created_date"])
-                                if (t_year == year):
-                                    item[t_month_name]["team_tasks_issues_resolved"] += t_months_cnt
+                                    issue["created_date"]
+                                )
+                                if t_year == year:
+                                    item[t_month_name][
+                                        "team_tasks_issues_resolved"
+                                    ] += t_months_cnt
                             except Exception as e:
                                 pass
 
@@ -6979,13 +6987,16 @@ class Generate_Report(APIView):
                         if comment["thread_id"] in _teams_tasks_issues_raised_ids:
                             try:
                                 t_year, t_month_name, t_months_cnt = get_month_details(
-                                    comment["created_date"])
-                                if (t_year == year):
-                                    item[t_month_name]["team_tasks_comments_added"] += t_months_cnt
+                                    comment["created_date"]
+                                )
+                                if t_year == year:
+                                    item[t_month_name][
+                                        "team_tasks_comments_added"
+                                    ] += t_months_cnt
                             except Exception as e:
                                 pass
                 ## -------------------------------------------------------
-                
+
                 ## tasks-------------------------------------------------
                 # intializing total hours, seconds and minutes----------
                 projects = []
@@ -6998,7 +7009,7 @@ class Generate_Report(APIView):
                 total_hours = {}
                 total_mins = {}
                 total_secs = {}
-                
+
                 today = datetime.today()
                 start = today - timedelta(days=today.weekday())
                 end = start + timedelta(days=6)
@@ -7008,23 +7019,28 @@ class Generate_Report(APIView):
                 start = datetime.strptime(
                     set_date_format(str(start)), "%m/%d/%Y %H:%M:%S"
                 )
-                end = datetime.strptime(
-                    set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
-                #---------------------------------------------------------
+                end = datetime.strptime(set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
+                # ---------------------------------------------------------
 
                 start_now = datetime.now()
                 for task in json.loads(_task_details[0])["data"]:
                     for t in json.loads(_tasks_added[0])["data"]:
                         if t["_id"] == task["task_id"]:
                             t_year, t_month_name, t_months_cnt = get_month_details(
-                                t["task_created_date"])
-                            if (t_year == year):
+                                t["task_created_date"]
+                            )
+                            if t_year == year:
                                 item[t_month_name]["tasks_added"] += t_months_cnt
 
-                            if ("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True):
+                            if (
+                                "approved" in task.keys() and task["approved"] == True
+                            ) or (
+                                "approval" in task.keys() and task["approval"] == True
+                            ):
                                 t_year, t_month_name, t_months_cnt = get_month_details(
-                                    task["task_created_date"])
-                                if (t_year == year):
+                                    task["task_created_date"]
+                                )
+                                if t_year == year:
                                     item[t_month_name]["tasks_approved"] += t_months_cnt
 
                             if "status" in task.keys():
@@ -7035,10 +7051,15 @@ class Generate_Report(APIView):
                                     or task["status"] == "complete"
                                     or task["status"] == "Mark as complete"
                                 ):
-                                    t_year, t_month_name, t_months_cnt = get_month_details(
-                                        task["task_created_date"])
-                                    if (t_year == year):
-                                        item[t_month_name]["tasks_completed"] += t_months_cnt
+                                    (
+                                        t_year,
+                                        t_month_name,
+                                        t_months_cnt,
+                                    ) = get_month_details(task["task_created_date"])
+                                    if t_year == year:
+                                        item[t_month_name][
+                                            "tasks_completed"
+                                        ] += t_months_cnt
                                         try:
                                             percentage_tasks_completed = (
                                                 item[t_month_name]["tasks_completed"]
@@ -7059,28 +7080,47 @@ class Generate_Report(APIView):
                                     or task["status"] == "incomplete"
                                     or task["status"] == "Incompleted"
                                 ):
-                                    t_year, t_month_name, t_months_cnt = get_month_details(
-                                        task["task_created_date"])
-                                    if (t_year == year):
-                                        item[t_month_name]["tasks_uncompleted"] += t_months_cnt
+                                    (
+                                        t_year,
+                                        t_month_name,
+                                        t_months_cnt,
+                                    ) = get_month_details(task["task_created_date"])
+                                    if t_year == year:
+                                        item[t_month_name][
+                                            "tasks_uncompleted"
+                                        ] += t_months_cnt
 
-                            if ("team_id" in task.keys() and task["team_id"] in _teams_ids):
+                            if (
+                                "team_id" in task.keys()
+                                and task["team_id"] in _teams_ids
+                            ):
                                 try:
-                                    t_year, t_month_name, t_months_cnt = get_month_details(
-                                        task["task_created_date"])
-                                    if (t_year == year):
+                                    (
+                                        t_year,
+                                        t_month_name,
+                                        t_months_cnt,
+                                    ) = get_month_details(task["task_created_date"])
+                                    if t_year == year:
                                         item[t_month_name]["team_tasks"] += t_months_cnt
                                 except Exception as e:
                                     pass
 
-                            if ("team_id" in task.keys() and "completed" in task.keys()) and (
-                                task["team_id"] in _teams_ids and task["completed"] == "True"
+                            if (
+                                "team_id" in task.keys() and "completed" in task.keys()
+                            ) and (
+                                task["team_id"] in _teams_ids
+                                and task["completed"] == "True"
                             ):
                                 try:
-                                    t_year, t_month_name, t_months_cnt = get_month_details(
-                                        task["task_created_date"])
-                                    if (t_year == year):
-                                        item[t_month_name]["team_tasks_completed"] += t_months_cnt
+                                    (
+                                        t_year,
+                                        t_month_name,
+                                        t_months_cnt,
+                                    ) = get_month_details(task["task_created_date"])
+                                    if t_year == year:
+                                        item[t_month_name][
+                                            "team_tasks_completed"
+                                        ] += t_months_cnt
                                         try:
                                             item[t_month_name].update(
                                                 {
@@ -7098,51 +7138,95 @@ class Generate_Report(APIView):
                                 except Exception as e:
                                     pass
 
-                            if ("team_id" in task.keys() and "completed" in task.keys()) and (
-                                task["team_id"] in _teams_ids and task["completed"] == "False"
+                            if (
+                                "team_id" in task.keys() and "completed" in task.keys()
+                            ) and (
+                                task["team_id"] in _teams_ids
+                                and task["completed"] == "False"
                             ):
                                 try:
-                                    t_year, t_month_name, t_months_cnt = get_month_details(
-                                        task["task_created_date"])
-                                    if (t_year == year):
-                                        item[t_month_name]["team_tasks_uncompleted"] += t_months_cnt
+                                    (
+                                        t_year,
+                                        t_month_name,
+                                        t_months_cnt,
+                                    ) = get_month_details(task["task_created_date"])
+                                    if t_year == year:
+                                        item[t_month_name][
+                                            "team_tasks_uncompleted"
+                                        ] += t_months_cnt
                                 except Exception as e:
                                     pass
 
-                            if ("team_id" in task.keys() and task["team_id"] in _teams_ids):
-                                if ("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True):
+                            if (
+                                "team_id" in task.keys()
+                                and task["team_id"] in _teams_ids
+                            ):
+                                if (
+                                    "approved" in task.keys()
+                                    and task["approved"] == True
+                                ) or (
+                                    "approval" in task.keys()
+                                    and task["approval"] == True
+                                ):
                                     try:
-                                        t_year, t_month_name, t_months_cnt = get_month_details(
-                                            task["task_created_date"])
-                                        if (t_year == year):
-                                            item[t_month_name]["team_tasks_approved"] += t_months_cnt
+                                        (
+                                            t_year,
+                                            t_month_name,
+                                            t_months_cnt,
+                                        ) = get_month_details(task["task_created_date"])
+                                        if t_year == year:
+                                            item[t_month_name][
+                                                "team_tasks_approved"
+                                            ] += t_months_cnt
                                     except Exception as e:
                                         pass
-                            
-                            
+
                     if (
                         "task_approved_by" in task.keys()
                         and task["task_approved_by"] == username
                     ):
                         t_year, t_month_name, t_months_cnt = get_month_details(
-                            task["task_created_date"])
-                        if (t_year == year):
+                            task["task_created_date"]
+                        )
+                        if t_year == year:
                             item[t_month_name]["tasks_you_approved"] += t_months_cnt
                     if (
-                            "task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
-                        if (task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
+                        "task_approved_by" in task.keys()
+                        and task["task_approved_by"] == username
+                        and "status" in task.keys()
+                    ):
+                        if (
+                            task["status"] == "Completed"
+                            or task["status"] == "Complete"
+                            or task["status"] == "completed"
+                            or task["status"] == "complete"
+                        ):
                             t_year, t_month_name, t_months_cnt = get_month_details(
-                                task["task_created_date"])
-                            if (t_year == year):
-                                item[t_month_name]["tasks_you_marked_as_complete"] += t_months_cnt
+                                task["task_created_date"]
+                            )
+                            if t_year == year:
+                                item[t_month_name][
+                                    "tasks_you_marked_as_complete"
+                                ] += t_months_cnt
 
-                    if ("task_approved_by" in task.keys() and task["task_approved_by"] == username and "status" in task.keys()):
-                        if (task["status"] == "Incomplete" or task["status"] == "incompleted" or task["status"] == "incomplete" or task["status"] == "Incompleted"):
+                    if (
+                        "task_approved_by" in task.keys()
+                        and task["task_approved_by"] == username
+                        and "status" in task.keys()
+                    ):
+                        if (
+                            task["status"] == "Incomplete"
+                            or task["status"] == "incompleted"
+                            or task["status"] == "incomplete"
+                            or task["status"] == "Incompleted"
+                        ):
                             t_year, t_month_name, t_months_cnt = get_month_details(
-                                task["task_created_date"])
-                            if (t_year == year):
-                                item[t_month_name]["tasks_you_marked_as_incomplete"]+=t_months_cnt
-                    
+                                task["task_created_date"]
+                            )
+                            if t_year == year:
+                                item[t_month_name][
+                                    "tasks_you_marked_as_incomplete"
+                                ] += t_months_cnt
 
                     try:
                         if not task["project"] in i_t.keys():
@@ -7164,8 +7248,8 @@ class Generate_Report(APIView):
                     try:
                         if "task_created_date" in task.keys():
                             task_created_date = datetime.strptime(
-                                set_date_format(
-                                    task["task_created_date"]), "%m/%d/%Y %H:%M:%S"
+                                set_date_format(task["task_created_date"]),
+                                "%m/%d/%Y %H:%M:%S",
                             )
                             if task_created_date >= start and task_created_date <= end:
                                 week_details.append(task["project"])
@@ -7174,18 +7258,15 @@ class Generate_Report(APIView):
                             if task_created_date >= today - timedelta(days=7):
                                 total_tasks_last_one_week.append(task["project"])
                         try:
-                            start_time = datetime.strptime(
-                                task["start_time"], "%H:%M")
+                            start_time = datetime.strptime(task["start_time"], "%H:%M")
                         except ValueError:
                             start_time = datetime.strptime(
                                 task["start_time"], "%H:%M:%S"
                             )
                         try:
-                            end_time = datetime.strptime(
-                                task["end_time"], "%H:%M")
+                            end_time = datetime.strptime(task["end_time"], "%H:%M")
                         except ValueError:
-                            end_time = datetime.strptime(
-                                task["end_time"], "%H:%M:%S")
+                            end_time = datetime.strptime(task["end_time"], "%H:%M:%S")
                         duration = end_time - start_time
                         dur_secs = (duration).total_seconds()
                         dur_mins = dur_secs / 60
@@ -7198,7 +7279,10 @@ class Generate_Report(APIView):
                         pass
 
                     if "subproject" in task.keys():
-                        if not task["subproject"] == None or not task["subproject"] == "None":
+                        if (
+                            not task["subproject"] == None
+                            or not task["subproject"] == "None"
+                        ):
                             if type(task["subproject"]) == list:
                                 for sp in task["subproject"]:
                                     if "," in sp:
@@ -7211,11 +7295,13 @@ class Generate_Report(APIView):
                             else:
                                 subprojects[task["project"]].append(task["subproject"])
                 ## --------------------------------------------------
-                
+
                 for p in set(sorted(projects)):
                     task_r = {
                         "project": p,
-                        "subprojects": {sp: subprojects[p].count(sp) for sp in subprojects[p]},
+                        "subprojects": {
+                            sp: subprojects[p].count(sp) for sp in subprojects[p]
+                        },
                         "total_hours": total_hours[p],
                         "total_min": total_mins[p],
                         "total_secs": total_secs[p],
@@ -7242,8 +7328,9 @@ class Generate_Report(APIView):
         tasks = dowellconnection(
             *task_management_reports, "fetch", field, update_field=None
         )
-        task_details = dowellconnection(*task_details_module,
-                                        "fetch", {}, update_field=None)
+        task_details = dowellconnection(
+            *task_details_module, "fetch", {}, update_field=None
+        )
         response = {}
         d = []
         for task in json.loads(tasks)["data"]:
@@ -7282,21 +7369,15 @@ class Generate_Report(APIView):
         today = datetime.today()
         start = today - timedelta(days=today.weekday())
         end = start + timedelta(days=6)
-        today = datetime.strptime(
-            set_date_format(str(today)), "%m/%d/%Y %H:%M:%S"
-        )
-        start = datetime.strptime(
-            set_date_format(str(start)), "%m/%d/%Y %H:%M:%S"
-        )
-        end = datetime.strptime(
-            set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
+        today = datetime.strptime(set_date_format(str(today)), "%m/%d/%Y %H:%M:%S")
+        start = datetime.strptime(set_date_format(str(start)), "%m/%d/%Y %H:%M:%S")
+        end = datetime.strptime(set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
 
         for res in response["data"]:
             try:
                 if "task_created_date" in res.keys():
                     task_created_date = datetime.strptime(
-                        set_date_format(
-                            res["task_created_date"]), "%m/%d/%Y %H:%M:%S"
+                        set_date_format(res["task_created_date"]), "%m/%d/%Y %H:%M:%S"
                     )
                     if task_created_date >= start and task_created_date <= end:
                         week_details.append(res["project"])
@@ -7305,18 +7386,13 @@ class Generate_Report(APIView):
                     if task_created_date >= today - timedelta(days=7):
                         total_tasks_last_one_week.append(res["project"])
                 try:
-                    start_time = datetime.strptime(
-                        res["start_time"], "%H:%M")
+                    start_time = datetime.strptime(res["start_time"], "%H:%M")
                 except ValueError:
-                    start_time = datetime.strptime(
-                        res["start_time"], "%H:%M:%S"
-                    )
+                    start_time = datetime.strptime(res["start_time"], "%H:%M:%S")
                 try:
-                    end_time = datetime.strptime(
-                        res["end_time"], "%H:%M")
+                    end_time = datetime.strptime(res["end_time"], "%H:%M")
                 except ValueError:
-                    end_time = datetime.strptime(
-                        res["end_time"], "%H:%M:%S")
+                    end_time = datetime.strptime(res["end_time"], "%H:%M:%S")
                 duration = end_time - start_time
                 dur_secs = (duration).total_seconds()
                 dur_mins = dur_secs / 60
@@ -7416,19 +7492,14 @@ class Generate_Report(APIView):
 
                     for time_format in time_formats:
                         try:
-                            start_time = datetime.strptime(
-                                start_time_str, time_format
-                            )
-                            end_time = datetime.strptime(
-                                end_time_str, time_format
-                            )
+                            start_time = datetime.strptime(start_time_str, time_format)
+                            end_time = datetime.strptime(end_time_str, time_format)
                             break
                         except ValueError:
                             continue
 
                     if start_time is not None and end_time is not None:
-                        time_difference = (
-                            end_time - start_time).total_seconds()
+                        time_difference = (end_time - start_time).total_seconds()
                         work_hours = time_difference / 3600
                         user_total_hours.setdefault(user_id1, 0)
                         user_total_hours[user_id1] += work_hours
@@ -7764,8 +7835,7 @@ class GetQRCode(APIView):
             "job_company_id": job_company_id,
         }
         update_field = {}
-        response = dowellconnection(
-            *Publiclink_reports, "fetch", field, update_field)
+        response = dowellconnection(*Publiclink_reports, "fetch", field, update_field)
         data = {}
         count = 0
         for item in json.loads(response)["data"]:
@@ -7820,8 +7890,7 @@ class Generate_candidate_dublicates(APIView):
             else:
                 applicants.append(applicant)
 
-        unique_usernames = set(applicant["username"]
-                               for applicant in applicants)
+        unique_usernames = set(applicant["username"] for applicant in applicants)
         data["unique_applicants"] = unique_usernames
         data["duplicates_applicants"] = duplicates
 
@@ -7949,19 +8018,14 @@ class Generate_project_task_details_Report(APIView):
 
                     for time_format in time_formats:
                         try:
-                            start_time = datetime.strptime(
-                                start_time_str, time_format
-                            )
-                            end_time = datetime.strptime(
-                                end_time_str, time_format
-                            )
+                            start_time = datetime.strptime(start_time_str, time_format)
+                            end_time = datetime.strptime(end_time_str, time_format)
                             break
                         except ValueError:
                             continue
 
                     if start_time is not None and end_time is not None:
-                        time_difference = (
-                            end_time - start_time).total_seconds()
+                        time_difference = (end_time - start_time).total_seconds()
                         work_hours = time_difference / 3600
                         user_total_hours.setdefault(user_id1, 0)
                         user_total_hours[user_id1] += work_hours
@@ -7996,8 +8060,7 @@ class Generate_project_task_details_Report(APIView):
                     task_added_by = user_id_to_name.get(user_id, "Unknown")
                     total_hours = user_total_hours.get(user_id, 0)
                     try:
-                        user_subproject = UsersubProject.objects.get(
-                            link_id=user_id)
+                        user_subproject = UsersubProject.objects.get(link_id=user_id)
                         subprojects = user_subproject.sub_project_list
                     except UsersubProject.DoesNotExist:
                         subprojects = []
@@ -8056,8 +8119,7 @@ class Generate_project_task_details_Report(APIView):
             field1 = {"company_id": company_id, "project": project_name}
             update_field1 = {}
             response1 = json.loads(
-                dowellconnection(*task_details_module,
-                                 "fetch", field1, update_field1)
+                dowellconnection(*task_details_module, "fetch", field1, update_field1)
             )
             field2 = {"company_id": company_id}
             update_field2 = {}
@@ -8073,8 +8135,7 @@ class Generate_project_task_details_Report(APIView):
                     if res["task_id"] == task_id:
                         # print(res)
                         user_task_details.append(
-                            {"user": response["applicant"],
-                                "task_detailds": res}
+                            {"user": response["applicant"], "task_detailds": res}
                         )
         return Response({"data": user_task_details}, status=status.HTTP_201_CREATED)
 
@@ -8082,8 +8143,7 @@ class Generate_project_task_details_Report(APIView):
 class AddUserGithubInfo(APIView):
     def get(self, request):
         response1 = json.loads(
-            dowellconnection(*github_details_module,
-                             "fetch", {}, update_field=None)
+            dowellconnection(*github_details_module, "fetch", {}, update_field=None)
         )
         github_info = response1
         return Response(
@@ -8102,8 +8162,7 @@ class AddUserGithubInfo(APIView):
                 "github_link": payload["github_link"],
             }
             response1 = json.loads(
-                dowellconnection(*github_details_module,
-                                 "fetch", {}, update_field=None)
+                dowellconnection(*github_details_module, "fetch", {}, update_field=None)
             )
             for github_info in response1["data"]:
                 if github_info["username"] == username:
@@ -8147,8 +8206,7 @@ class AddUserGithubInfo(APIView):
         }
 
         response2 = json.loads(
-            dowellconnection(*github_details_module,
-                             "update", {}, update_field)
+            dowellconnection(*github_details_module, "update", {}, update_field)
         )
         return Response(
             {
@@ -8207,8 +8265,7 @@ class SecureEndPoint(APIView):
         email = request.data.get("email")
 
         return Response(
-            {"success": True, "message": "sample output",
-                "name": name, "email": email}
+            {"success": True, "message": "sample output", "name": name, "email": email}
         )
 
     @verify_user_token
@@ -8221,6 +8278,7 @@ class SecureEndPoint(APIView):
                 "email": "manish@gmail.com",
             }
         )
+
 
 # ------------------ Project Time API -----------------------------  #
 
@@ -8235,18 +8293,23 @@ class ProjectTotalTime(APIView):
 
     def post(self, request):
         data = request.data
-        serializer =AddProjectTimeSerializer(data=data)
+        serializer = AddProjectTimeSerializer(data=data)
         if serializer.is_valid():
-
             response = json.loads(
-                dowellconnection(*time_detail_module, "fetch",
-                                    {"project":data.get("project"),
-                                     "company_id":data.get("company_id")}, update_field=None)
+                dowellconnection(
+                    *time_detail_module,
+                    "fetch",
+                    {
+                        "project": data.get("project"),
+                        "company_id": data.get("company_id"),
+                    },
+                    update_field=None,
+                )
             )
-            if len(response["data"])>0:
+            if len(response["data"]) > 0:
                 return Response(
                     {
-                        "success":False,
+                        "success": False,
                         "error": f"A Project time has been set for this project with company_id-{data.get('company_id')}",
                     },
                     status=status.HTTP_409_CONFLICT,
@@ -8258,13 +8321,14 @@ class ProjectTotalTime(APIView):
                 "lead_name": data.get("lead_name"),
                 "editing_enabled": data.get("editing_enabled"),
                 "data_type": "Real_Data",
-                "spent_time":0,
+                "spent_time": 0,
                 "left_time": data.get("total_time"),
-                "date_created":self.get_current_datetime(datetime.now())
+                "date_created": self.get_current_datetime(datetime.now()),
             }
             response = json.loads(
-                dowellconnection(*time_detail_module, "insert",
-                                field, update_field=None)
+                dowellconnection(
+                    *time_detail_module, "insert", field, update_field=None
+                )
             )
             return Response(
                 {
@@ -8284,12 +8348,9 @@ class ProjectTotalTime(APIView):
             )
 
     def get(self, request, document_id):
-
-        field = {"_id": document_id,
-                 "data_type": "Real_Data"}
+        field = {"_id": document_id, "data_type": "Real_Data"}
         response = json.loads(
-            dowellconnection(*time_detail_module, "fetch",
-                                field, update_field=None)
+            dowellconnection(*time_detail_module, "fetch", field, update_field=None)
         )
         return Response(
             {
@@ -8306,15 +8367,16 @@ class ProjectTotalTime(APIView):
             field = {
                 "_id": data.get("document_id"),
             }
-            
-            get_response = json.loads(dowellconnection(*time_detail_module, "fetch",
-                                field, update_field=None))
-            if len(get_response["data"])>0:
-                spent_time=get_response["data"][0]["spent_time"]
+
+            get_response = json.loads(
+                dowellconnection(*time_detail_module, "fetch", field, update_field=None)
+            )
+            if len(get_response["data"]) > 0:
+                spent_time = get_response["data"][0]["spent_time"]
 
                 update_field = {
                     "total_time": data.get("total_time"),
-                    "left_time": data.get("total_time")-spent_time
+                    "left_time": data.get("total_time") - spent_time,
                 }
                 response = json.loads(
                     dowellconnection(*time_detail_module, "update", field, update_field)
@@ -8322,27 +8384,27 @@ class ProjectTotalTime(APIView):
                 if response["isSuccess"] == True:
                     return Response(
                         {
-                            "success":True,
-                            "message": f"total_time has been updated successfully"
+                            "success": True,
+                            "message": f"total_time has been updated successfully",
                         },
                         status=status.HTTP_200_OK,
                     )
                 else:
                     return Response(
                         {
-                            "success":False,
+                            "success": False,
                             "message": "Failed to update total_time",
                             "data": response,
                         },
                         status=status.HTTP_304_NOT_MODIFIED,
                     )
             return Response(
-                    {
-                        "success":False,
-                        "message": "No Project time with this id exists",
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
+                {
+                    "success": False,
+                    "message": "No Project time with this id exists",
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
         else:
             return Response(
                 {
@@ -8351,15 +8413,17 @@ class ProjectTotalTime(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-    def delete(self, request,document_id):
+
+    def delete(self, request, document_id):
         data = request.data
         field = {
             "_id": document_id,
         }
-        
-        get_response = json.loads(dowellconnection(*time_detail_module, "fetch",
-                            field, update_field=None))
-        if len(get_response["data"])>0:
+
+        get_response = json.loads(
+            dowellconnection(*time_detail_module, "fetch", field, update_field=None)
+        )
+        if len(get_response["data"]) > 0:
             update_field = {"data_type": "Archived_Data"}
             response = json.loads(
                 dowellconnection(*time_detail_module, "update", field, update_field)
@@ -8367,36 +8431,34 @@ class ProjectTotalTime(APIView):
             if response["isSuccess"] == True:
                 return Response(
                     {
-                        "success":True,
-                        "message": f"Project time has been deleted successfully"
+                        "success": True,
+                        "message": f"Project time has been deleted successfully",
                     },
                     status=status.HTTP_200_OK,
                 )
             else:
                 return Response(
                     {
-                        "success":False,
+                        "success": False,
                         "message": "Failed to delete Project time",
                         "data": response,
                     },
                     status=status.HTTP_304_NOT_MODIFIED,
                 )
         return Response(
-                {
-                    "success":False,
-                    "message": "No Project time with this id exists",
-                },
-                status=status.HTTP_204_NO_CONTENT,
-            )
+            {
+                "success": False,
+                "message": "No Project time with this id exists",
+            },
+            status=status.HTTP_204_NO_CONTENT,
+        )
 
 
 class AllProjectTotalTime(APIView):
     def get(self, request, company_id):
-        field = {"company_id": company_id,
-                 "data_type": "Real_Data"}
+        field = {"company_id": company_id, "data_type": "Real_Data"}
         response = json.loads(
-            dowellconnection(*time_detail_module, "fetch",
-                             field, update_field=None)
+            dowellconnection(*time_detail_module, "fetch", field, update_field=None)
         )
         return Response(
             {
@@ -8405,18 +8467,21 @@ class AllProjectTotalTime(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
 class EnabledProjectTotalTime(APIView):
-    def patch(self,request):
+    def patch(self, request):
         data = request.data
         serializer = UpdateProjectTimeEnabledSerializer(data=data)
         if serializer.is_valid():
             field = {
                 "_id": data.get("document_id"),
             }
-            
-            get_response = json.loads(dowellconnection(*time_detail_module, "fetch",
-                                field, update_field=None))
-            if len(get_response["data"])>0:
+
+            get_response = json.loads(
+                dowellconnection(*time_detail_module, "fetch", field, update_field=None)
+            )
+            if len(get_response["data"]) > 0:
                 update_field = {
                     "editing_enabled": data.get("editing_enabled"),
                 }
@@ -8426,27 +8491,27 @@ class EnabledProjectTotalTime(APIView):
                 if response["isSuccess"] == True:
                     return Response(
                         {
-                            "success":True,
-                            "message": f"editing_enabled has been updated successfully"
+                            "success": True,
+                            "message": f"editing_enabled has been updated successfully",
                         },
                         status=status.HTTP_200_OK,
                     )
                 else:
                     return Response(
                         {
-                            "success":False,
+                            "success": False,
                             "message": "Failed to update editing_enabled",
                             "data": response,
                         },
                         status=status.HTTP_304_NOT_MODIFIED,
                     )
             return Response(
-                    {
-                        "success":False,
-                        "message": "No Project time with this id exists",
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
+                {
+                    "success": False,
+                    "message": "No Project time with this id exists",
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
         else:
             return Response(
                 {
@@ -8455,7 +8520,8 @@ class EnabledProjectTotalTime(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-    
+
+
 class UpdateProjectSpentTime(APIView):
     def patch(self, request):
         data = request.data
@@ -8463,50 +8529,58 @@ class UpdateProjectSpentTime(APIView):
         if serializer.is_valid():
             field = {
                 "project": data.get("project"),
-                "company_id":data.get("company_id"),
-                'data_type': 'Real_Data'
+                "company_id": data.get("company_id"),
+                "data_type": "Real_Data",
             }
-            
-            get_response = json.loads(dowellconnection(*time_detail_module, "fetch",
-                                field, update_field=None))
+
+            get_response = json.loads(
+                dowellconnection(*time_detail_module, "fetch", field, update_field=None)
+            )
             if get_response["isSuccess"] is True:
-                total_time=get_response["data"][0]["total_time"]
+                total_time = get_response["data"][0]["total_time"]
                 # print(total_time,"==========",get_response["data"])
-                spent_time=get_response["data"][0]["spent_time"]+data.get("spent_time")
+                spent_time = get_response["data"][0]["spent_time"] + data.get(
+                    "spent_time"
+                )
 
                 update_field = {
                     "spent_time": spent_time,
-                    "left_time": total_time-spent_time
+                    "left_time": total_time - spent_time,
                 }
                 response = json.loads(
-                    dowellconnection(*time_detail_module, "update", {"_id":get_response["data"][0]["_id"]}, update_field)
+                    dowellconnection(
+                        *time_detail_module,
+                        "update",
+                        {"_id": get_response["data"][0]["_id"]},
+                        update_field,
+                    )
                 )
                 # print(response,"===")
                 if response["isSuccess"] == True:
                     return Response(
                         {
-                            "success":True,
-                            "message": f"spent_time has been updated successfully for id-{get_response['data'][0]['_id']}"
+                            "success": True,
+                            "message": f"spent_time has been updated successfully for id-{get_response['data'][0]['_id']}",
                         },
                         status=status.HTTP_200_OK,
                     )
                 else:
                     return Response(
                         {
-                            "success":False,
+                            "success": False,
                             "message": "Failed to update spent_time",
                             "data": response,
                         },
                         status=status.HTTP_304_NOT_MODIFIED,
                     )
             return Response(
-                    {
-                        "success":False,
-                        "message": "No Project time with these details exists",
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
-            
+                {
+                    "success": False,
+                    "message": "No Project time with these details exists",
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
         else:
             return Response(
                 {
@@ -8515,6 +8589,7 @@ class UpdateProjectSpentTime(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Testing_Threads(APIView):
@@ -8560,13 +8635,13 @@ class Testing_Threads(APIView):
                 }
             )
 
+
 @method_decorator(csrf_exempt, name="dispatch")
 class Product_Services_API(APIView):
     def get(self, request):
         field = {}
         response = json.loads(
-            dowellconnection(*Product_Services, "fetch",
-                             field, update_field=None)
+            dowellconnection(*Product_Services, "fetch", field, update_field=None)
         )
         return Response(
             {
@@ -8587,8 +8662,6 @@ class dashboard_services(APIView):
             return self.update_status(request)
         elif type_request == "update_job_category":
             return self.update_job_category(request)
-        elif type_request == "leave_approve":
-            return self.candidate_leave_approve(request)
         elif type_request == "delete_application":
             return self.delete_application(request)
         else:
@@ -8609,104 +8682,97 @@ class dashboard_services(APIView):
     """Update the status of a candidate"""
 
     def update_status(self, request):
+        candidate_id = request.GET.get("candidate_id")
+        status = request.data.get("status")
 
-        candidate_id = request.GET.get('candidate_id')
-        status = request.data.get('status')
-
-        field = {
-            "candidate_id": candidate_id,
-            "status": status
-        }
+        field = {"candidate_id": candidate_id, "status": status}
 
         serializer = DashBoardStatusSerializer(data=field)
         if serializer.is_valid():
-            field = {
-                "_id": candidate_id
-            }
-            update_field = {
-                "status": status
-            }
-            response = json.loads(dowellconnection(
-                *candidate_management_reports, "update", field, update_field))
+            field = {"_id": candidate_id}
+            update_field = {"status": status}
+            response = json.loads(
+                dowellconnection(
+                    *candidate_management_reports, "update", field, update_field
+                )
+            )
             if response["isSuccess"]:
-                return Response({
-                    "success": True,
-                    "message": "Status updated successfully"
-                })
+                return Response(
+                    {"success": True, "message": "Status updated successfully"}
+                )
             else:
-                return Response({
-                    "success": False,
-                    "message": "Failed to update status"
-                })
+                return Response(
+                    {"success": False, "message": "Failed to update status"}
+                )
         else:
-            return Response({
-                "success": False,
-                "message": "Posting wrong data",
-                "error": serializer.errors
-            })
+            return Response(
+                {
+                    "success": False,
+                    "message": "Posting wrong data",
+                    "error": serializer.errors,
+                }
+            )
 
     """Update the jab category of a candidate"""
 
     def update_job_category(self, request):
+        candidate_id = request.GET.get("candidate_id")
+        job_category = request.data.get("job_category")
 
-        candidate_id = request.GET.get('candidate_id')
-        job_category = request.data.get('job_category')
-
-        field = {
-            "candidate_id": candidate_id,
-            "job_category": job_category
-        }
+        field = {"candidate_id": candidate_id, "job_category": job_category}
 
         serializer = DashBoardJobCategorySerializer(data=field)
         if serializer.is_valid():
-            field = {
-                "_id": candidate_id
-            }
-            update_field = {
-                "job_category": job_category
-            }
-            response = json.loads(dowellconnection(
-                *candidate_management_reports, "update", field, update_field))
+            field = {"_id": candidate_id}
+            update_field = {"job_category": job_category}
+            response = json.loads(
+                dowellconnection(
+                    *candidate_management_reports, "update", field, update_field
+                )
+            )
             if response["isSuccess"]:
-                return Response({
-                    "success": True,
-                    "message": "Job Category updated successfully"
-                })
+                return Response(
+                    {"success": True, "message": "Job Category updated successfully"}
+                )
             else:
-                return Response({
-                    "success": False,
-                    "message": "Failed to update job category"
-                })
+                return Response(
+                    {"success": False, "message": "Failed to update job category"}
+                )
         else:
-            return Response({
-                "success": False,
-                "message": "Posting wrong data",
-                "error": serializer.errors
-            })
+            return Response(
+                {
+                    "success": False,
+                    "message": "Posting wrong data",
+                    "error": serializer.errors,
+                }
+            )
 
     """Toatla worklogs for the company"""
 
     def total_worklogs_count(self, request):
-        company_id = request.GET.get('company_id')
-        field = {
-            "company_id": company_id
-        }
-        response = json.loads(dowellconnection(
-            *task_details_module, "fetch", field, update_field=None))
+        company_id = request.GET.get("company_id")
+        field = {"company_id": company_id}
+        response = json.loads(
+            dowellconnection(*task_details_module, "fetch", field, update_field=None)
+        )
         data = response.get("data", [])
         if data is not None:
             total_worklogs = len(data)
 
-            return Response({
-                "success": True,
-                "message": "Total number of worklogs for the company",
-                "worklogs_count": total_worklogs
-            })
+            return Response(
+                {
+                    "success": True,
+                    "message": "Total number of worklogs for the company",
+                    "worklogs_count": total_worklogs,
+                }
+            )
         else:
-            return Response({
-                "success": False,
-                "message": "There are no worklogs for the company or company id is not correct",
-            })
+            return Response(
+                {
+                    "success": False,
+                    "message": "There are no worklogs for the company or company id is not correct",
+                }
+            )
 
     """HANDLE ERROR"""
 
@@ -8719,18 +8785,16 @@ class dashboard_services(APIView):
     """TOTAL WORKLOGS FOR TODAY"""
 
     def logs_for_today(self, request):
-        company_id = request.GET.get('company_id')
+        company_id = request.GET.get("company_id")
         today = date.today()
-        today_str = today.strftime('%Y-%m-%d')
-        field = {
-            "company_id": company_id,
-            "task_created_date": today_str
-        }
+        today_str = today.strftime("%Y-%m-%d")
+        field = {"company_id": company_id, "task_created_date": today_str}
 
         # print("Today field", field)
 
         response = dowellconnection(
-            *task_details_module, "fetch", field, update_field=None)
+            *task_details_module, "fetch", field, update_field=None
+        )
         response = json.loads(response)
 
         if response["isSuccess"]:
@@ -8743,38 +8807,36 @@ class dashboard_services(APIView):
                 else:
                     log_counts[project_name] = 1
 
-            return Response({
-                "success": True,
-                "message": "Total number of worklogs for today by project",
-                "logs_for_today": log_counts
-            })
+            return Response(
+                {
+                    "success": True,
+                    "message": "Total number of worklogs for today by project",
+                    "logs_for_today": log_counts,
+                }
+            )
         else:
-            return Response({
-                "success": False,
-                "message": "Failed to fetch logs"
-            })
+            return Response({"success": False, "message": "Failed to fetch logs"})
 
     """TOTAL WORKLOGS FOR MONTH"""
 
     def logs_for_month(self, request):
-        company_id = request.GET.get('company_id')
+        company_id = request.GET.get("company_id")
         today = date.today()
         first_day_of_month = today.replace(day=1)
         last_day_of_month = today.replace(day=1) + timedelta(days=32)
         last_day_of_month = last_day_of_month.replace(day=1) - timedelta(days=1)
 
-        field = {
-            "company_id": company_id
-        }
+        field = {"company_id": company_id}
 
-        response_str = dowellconnection(*task_details_module, "fetch", field, update_field=None)
+        response_str = dowellconnection(
+            *task_details_module, "fetch", field, update_field=None
+        )
         try:
             response = json.loads(response_str)
         except json.JSONDecodeError as e:
-            return Response({
-                "success": False,
-                "message": f"Failed to parse response: {str(e)}"
-            })
+            return Response(
+                {"success": False, "message": f"Failed to parse response: {str(e)}"}
+            )
 
         if response["isSuccess"]:
             log_counts = {}
@@ -8791,61 +8853,34 @@ class dashboard_services(APIView):
                     else:
                         log_counts[project_name] = 1
 
-            return Response({
-                "success": True,
-                "message": "Total number of worklogs for the month",
-                "logs_for_month": log_counts
-            })
-        else:
-            return Response({
-                "success": False,
-                "message": "Failed to fetch logs or logs not available"
-            })
-        
-    def candidate_leave_approve(self, request):
-        applicant_id=request.data.get("applicant_id")
-        field={
-            "_id":applicant_id
-        }
-        serializer=leaveapproveserializers(data=request.data)
-        if not serializer.is_valid():
-            return Response({
-                    "success": False,
-                    "message": "posting wrong data",
-                    "error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
-        update_field={
-            "leave_start":request.data.get("leave_start"),
-            "leave_end":request.data.get("leave_end"),
-            "status":"Leave"
-            }
-        candidate_report=dowellconnection(
-                *candidate_management_reports, "update", field, update_field)
-        
-        res=json.loads(candidate_report)
-        # print(res)
-
-        if res["isSuccess"]:
-            return Response({
-                    "data":res,
+            return Response(
+                {
                     "success": True,
-                    "message": "candidate leave request has been approved",
-                },status=status.HTTP_201_CREATED)
+                    "message": "Total number of worklogs for the month",
+                    "logs_for_month": log_counts,
+                }
+            )
         else:
-            return Response({
+            return Response(
+                {
                     "success": False,
-                    "message": "candidate leave could not be added please check the applicant id and try again",
-                })
+                    "message": "Failed to fetch logs or logs not available",
+                }
+            )
 
     def delete_application(self, request):
         data = request.data
         application_id = data["application_id"]
         field = {"_id": application_id}
         update_field = {"data_type": "Archived_Data"}
-        response = dowellconnection(*candidate_management_reports, "update", field, update_field)
+        response = dowellconnection(
+            *candidate_management_reports, "update", field, update_field
+        )
         # print(response)
         if json.loads(response)["isSuccess"] == True:
             return Response(
-                {"message": "application successfully deleted"}, status=status.HTTP_200_OK
+                {"message": "application successfully deleted"},
+                status=status.HTTP_200_OK,
             )
         else:
             return Response(
@@ -8856,10 +8891,163 @@ class dashboard_services(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-@method_decorator(csrf_exempt, name="dispatch")       
+
+@method_decorator(csrf_exempt, name="dispatch")
+class candidate_leave(APIView):
+    def post(self, request):
+        type_request = request.GET.get("type")
+        if type_request == "leave_apply":
+            return self.leave_apply(request)
+        elif type_request == "approved_leave":
+            return self.candidate_leave_approve(request)
+        elif type_request == "get_leave":
+            return self.get_leave(request)
+        else:
+            return self.handle_error(request)
+
+    def leave_apply(self, request):
+        applicant_id = request.data.get("applicant_id")
+        applicant = request.data.get("applicant")
+        company_id = request.data.get("company_id")
+        project = request.data.get("project")
+        leave_start_date = request.data.get("leave_start_date")
+        leave_end_date = request.data.get("leave_end_date")
+        email = request.data.get("email")
+
+        field = {
+            "applicant_id": applicant_id,
+            "applicant": applicant,
+            "company_id": company_id,
+            "project": project,
+            "leave_start_date": leave_start_date,
+            "leave_end_date": leave_end_date,
+            "email": email,
+        }
+
+        serializer = leaveapplyserializers(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "posting wrog data",
+                    "error": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        response = json.loads(
+            datacube_data_insertion(
+                API_KEY, DB_Name, collection_name=leave_report_collection, data=field
+            )
+        )
+
+        if not response["success"]:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Sorry your application for leave could not be submitted",
+                }
+            )
+
+        return Response(
+            {
+                "success": True,
+                "message": "Your leave application has been submitted succesfully",
+                "data": response["data"],
+            }
+        )
+
+    def candidate_leave_approve(self, request):
+        applicant_id = request.data.get("applicant_id")
+        field = {"_id": applicant_id}
+        serializer = leaveapproveserializers(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "posting wrong data",
+                    "error": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        update_field = {
+            "leave_start": request.data.get("leave_start"),
+            "leave_end": request.data.get("leave_end"),
+            "status": "Leave",
+        }
+        candidate_report = dowellconnection(
+            *candidate_management_reports, "update", field, update_field
+        )
+
+        res = json.loads(candidate_report)
+
+        if res["isSuccess"]:
+            return Response(
+                {
+                    "data": res,
+                    "success": True,
+                    "message": "candidate leave request has been approved",
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": "candidate leave could not be added please check the aplicant id and try again",
+                    "error": res["error"],
+                }
+            )
+
+    def get_leave(self, request):
+        applicant_id = request.GET.get('applicant_id')
+        limit = request.GET.get('limit')
+        offset = request.GET.get('offset')
+
+        data = {
+            "_id": applicant_id,
+        }
+
+        response = datacube_data_retrival(API_KEY, DB_Name, leave_report_collection, data, limit, offset)
+
+        if not response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve leave",
+                "database_response": {
+                    "success": response["success"],
+                    "message": response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Leave retrieved successfully",
+            "database_response": {
+                "success": response["success"],
+                "message": response["message"]
+            },
+            "response": response["data"]
+        }, status=status.HTTP_200_OK)
+
+
+
+
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+@method_decorator(csrf_exempt, name="dispatch")
 class ReportDB(APIView):
-    def get_individual_report(self,request):
+    def get_individual_report(self, request):
         payload = request.data
+        year = request.data["year"]
+        company_id = request.data["company_id"]
+        applicant_id = request.data["applicant_id"]
         if payload:
             # intializing query parameters-----------------------------------------------------
 
@@ -8879,370 +9067,189 @@ class ReportDB(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            #------------------------------------------------
-            if not payload["applicant_id"]:
+            # -------------------------------------------------------------------------------
+
+            # add fields values if role has been given--------------------------------------
+            if payload.get("role"):
+                field["username"] = payload.get("applicant_username")
+                field["status"] = "hired"
+            # -------------------------------------------------------------------------------
+
+            # check if the user has any data------------------------------------------------
+            info = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field
+            )
+            # print(info,"====")
+            if json.loads(info)["isSuccess"] is True:
+                info_data = json.loads(info)["data"]
+            else:
+                info_data = []
+            if len(info_data) <= 0:
+                data["personal_info"] = {}
+                username = "None"
                 return Response(
                     {"success": False, "message": "Specify the Applicant Id"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            applicant_id = payload["applicant_id"]
-            if not payload["company_id"]:
-                return Response(
-                    {"success": False, "message": "Specify the Company Id"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            company_id = payload["company_id"]
-            #-------------------------------------------------------------------------------------------
+            data["personal_info"] = json.loads(info)["data"][0]
+            username = json.loads(info)["data"][0]["username"]
+            portfolio_name = json.loads(info)["data"][0]["portfolio_name"]
 
-            #defining the object 
-            data = {}
-            # ------------------------------------------------------------------------------------------
+            # get the task report based on project for the user----------------------------------------
+            data["personal_info"]["task_report"] = []
+            # -------------------------------------------------------------------------------------------
 
-            #--get the personal info from the sqlite db
-            d= PersonalInfo.objects.filter(_id=applicant_id, company_id=company_id)
-            if not d.exists():
+            # if a position is given, check within any of the contained positions-------------------
+            if payload.get("role"):
+                profiles = SettingUserProfileInfo.objects.all()
+                serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+                # print(serializer.data,"----")
+                positions = get_positions(serializer.data)
+                teamleads = positions["teamleads"]
+                accountleads = positions["accountleads"]
+                hrs = positions["hrs"]
+                subadmins = positions["subadmins"]
+                groupleads = positions["groupleads"]
+                superadmins = positions["superadmins"]
+                candidates = positions["candidates"]
+                viewers = positions["viewers"]
+                projectlead = positions["projectlead"]
+                leaders = positions["leaders"]
+
+                # checking if the user is a team lead--------------------------------------------
+
+                if (
+                    payload.get("role") == "Teamlead"
+                    or payload.get("role") == "TeamLead"
+                ):
+                    if portfolio_name not in teamleads:
+                        return Response(
+                            {
+                                "message": f"You cannot get a report on ->{payload.get('applicant_username')}",
+                                "error": f"The User ->{payload.get('applicant_username')}-({portfolio_name}) is not a team lead",
+                            },
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                # _-------------------------------------------------------------------------------
+
+            # checking if the user is a team lead-----
+            profiles = SettingUserProfileInfo.objects.all()
+            serializer = SettingUserProfileInfoSerializer(profiles, many=True)
+            # print(serializer.data,"----")
+            teamleads = []
+            accountleads = []
+            hrs = []
+            subadmins = []
+            groupleads = []
+            superadmins = []
+            candidates = []
+            viewers = []
+            projectlead = []
+            freelancers = []
+            for user in serializer.data:
+                for d in user["profile_info"]:
+                    if "profile_title" in d.keys() and "Role" in d.keys():
+                        if d["Role"] == "Proj_Lead":
+                            teamleads.append(d["profile_title"])
+                        if d["Role"] == "Dept_Lead":
+                            accountleads.append(d["profile_title"])
+                        if d["Role"] == "Hr":
+                            hrs.append(d["profile_title"])
+                        if d["Role"] == "sub_admin":
+                            subadmins.append(d["profile_title"])
+                        if d["Role"] == "group_lead":
+                            groupleads.append(d["profile_title"])
+                        if d["Role"] == "super_admin":
+                            superadmins.append(d["profile_title"])
+                        if d["Role"] == "candidate":
+                            candidates.append(d["profile_title"])
+                        if d["Role"] == "Project_Lead":
+                            projectlead.append(d["profile_title"])
+                        if d["Role"] == "Viewer":
+                            viewers.append(d["profile_title"])
+                    elif "profile_title" in d.keys():
+                        freelancers.append(d["profile_title"])
+
+            if (
+                payload.get("applicant_username")
+                and payload.get("role") == "Teamlead"
+                and not portfolio_name in teamleads
+            ):
                 return Response(
                     {
                         "message": f"There is no candidate with such parameters --> Applicant Id {applicant_id} + Company Id {company_id}"
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
-            for taskmodelobj in reversed(d):#scan through all the months available---
-                data["personal_info"] = {field.name: getattr(taskmodelobj, field.name) for field in taskmodelobj._meta.fields}
-            
-            #--get the tasks from the sqlite db
-            NotRequired =["applicant_id","id","company_id","username","year","month"]
-            task_reports=[]
-            d= TaskReportdata.objects.filter(year=year, applicant_id=applicant_id, company_id=company_id)
-            if d.exists():
-                for taskmodelobj in reversed(d):#scan through all the months available---
-                    t_data={field.name: getattr(taskmodelobj, field.name) for field in taskmodelobj._meta.fields if field.name not in NotRequired}
-                    task_reports.append(t_data)
-            
-            data["personal_info"]["task_report"]=task_reports
-            
-            res={}
-            for m in calendar.month_name[1:]:
-                res[m]={
-                    "task_added": 0,
-                    "tasks_completed": 0,
-                    "tasks_uncompleted": 0,
-                    "tasks_approved": 0,
-                    "percentage_tasks_completed": 0.0,
-                    "tasks_you_approved": 0,
-                    "tasks_you_marked_as_complete": 0,
-                    "tasks_you_marked_as_incomplete": 0,
-                    "teams": 0,
-                    "team_tasks": 0,
-                    "team_tasks_completed": 0,
-                    "team_tasks_uncompleted": 0,
-                    "percentage_team_tasks_completed": 0,
-                    "team_tasks_approved": 0,
-                    "team_tasks_issues_raised": 0,
-                    "team_tasks_issues_resolved": 0,
-                    "team_tasks_comments_added": 0
-                }
-            #--get the monthly tasks from the sqlite db
-            d= MonthlyTaskData.objects.filter(year=year, applicant_id=applicant_id, company_id=company_id)
-            if d.exists():
-                for taskmodelobj in reversed(d):#scan through all the months available---
-                    t_data={field.name: getattr(taskmodelobj, field.name) for field in taskmodelobj._meta.fields if field.name not in NotRequired}
-                    res[taskmodelobj.month]=t_data
-            
-            data["personal_info"]["data"]=res
 
-            return Response(data,status=status.HTTP_200_OK)
-        
+            # -----------------------------------------------------------------------------
+
+            # username =request.data["username"]
+            NotRequired = [
+                "applicant_id",
+                "id",
+                "company_id",
+                "username",
+                "year",
+                "month",
+            ]
+            months = calendar.month_name[1:]
+            res = {}
+            for m in months:
+                res[m] = {
+                    "task_added": "0",
+                    "tasks_completed": "0",
+                    "tasks_uncompleted": "0",
+                    "tasks_approved": "0",
+                    "percentage_tasks_completed": "0",
+                    "tasks_you_approved": "0",
+                    "tasks_you_marked_as_complete": "0",
+                    "tasks_you_marked_as_incomplete": "0",
+                    "teams": "0",
+                    "team_tasks": "0",
+                    "team_tasks_completed": "0",
+                    "team_tasks_uncompleted": "0",
+                    "percentage_team_tasks_completed": "0",
+                    "team_tasks_approved": "0",
+                    "team_tasks_issues_raised": "0",
+                    "team_tasks_issues_resolved": "0",
+                    "team_tasks_comments_added": "0",
+                }
+            # --get the monthly tasks from the sqlite db
+            d = MonthlyTaskData.objects.filter(
+                applicant_id=applicant_id, year=year, company_id=company_id
+            )
+            if d.exists():
+                for taskmodelobj in reversed(
+                    d
+                ):  # scan through all the months available---
+                    data = {
+                        field.name: str(getattr(taskmodelobj, field.name))
+                        for field in taskmodelobj._meta.fields
+                        if field.name not in NotRequired
+                    }
+                    res[taskmodelobj.month] = data
+            data["personal_info"]["data"] = res
+
+            return Response(data, status=status.HTTP_200_OK)
+
         return Response(
             {"success": False, "message": "Invalid parameters"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
     def post(self, request):
-        if request.data["report_type"]:
-            if request.data["report_type"] == "Individual":
-                return self.get_individual_report(request)
-        
-        error={"success":False,"error":"Specify the type of report"}
-        return Response(error,status=status.HTTP_400_BAD_REQUEST)
-    def patch(self, request):
-        data =request.data
-        report_type = data["report_type"]
-        print("-------------------------------------------------------------------------------") 
-        print("Process Started")  
-        print("-------------------------------------------------------------------------------") 
-
-        """Updating personal details details"""
-        # personal info-------------------------
-        print("clearing personal data ------------------------------------------------------")
-        personaldata =PersonalInfo.objects.all()
-        personaldata.delete()
-        print("personal data cleared ------------------------------------------------------")
-        print("updating personal data ------------------------------------------------------")
-        get_usernames={}
-        info=dowellconnection(*candidate_management_reports, "fetch", {}, update_field=None)
-        if "data" in json.loads(info).keys():
-            if len(json.loads(info)["data"])>0:
-                pinfo = updatepersonalinfo(params_dicts=json.loads(info)["data"])
-                for i in json.loads(info)["data"]:
-                    if "username" in i.keys():
-                        if "status" in i.keys():
-                            if i["status"] == "hired" or i["status"] == "Removed":
-                                get_usernames[i['_id']]=i["username"]
-
-        print("updated personal data ------------------------------------------------------")
+        if request.data["report_type"] == "Individual":
+            return self.get_individual_report(request)
+        else:
+            error = {"success": False, "error": "Specify the type of report"}
+            return Response(error, status=status.HTTP_400_BAD_REQUEST)
 
 
-        """Updating monthly and task report details"""
-        # teams-------------------------
-        print("clearing monthly data ------------------------------------------------------")
-        taskmodelobj = MonthlyTaskData.objects.all()
-        taskmodelobj.delete() 
-        print("monthly data cleared ------------------------------------------------------") 
-        print("updating monthly data ------------------------------------------------------") 
-
-        print("processing teams ------------------------------------------------------")
-        teams = dowellconnection(*team_management_modules, "fetch", {}, {})
-        for team in json.loads(teams)["data"]:
-            '''teams--------------------------------'''
-            if "date_created" in team.keys():
-                try:
-                    t_year, t_month_name, t_months_cnt = get_month_details(team["date_created"])
-                except Exception as error:
-                    t_year, t_month_name, t_months_cnt = None, None, None
-                if not(t_year==None and t_month_name==None and t_months_cnt==None):
-                    if "members" in team.keys():
-                        for member in team["members"]:
-                            info=dowellconnection(*candidate_management_reports, "fetch", {"username":member}, update_field=None)
-                            if "data" in json.loads(info).keys():
-                                if len(json.loads(info)["data"])>0:
-                                    #print(json.loads(info)["data"][0]["_id"], member)
-                                    filter_params={
-                                        "applicant_id":json.loads(info)["data"][0]["_id"],
-                                        "username":member, 
-                                        "year":t_year, 
-                                        "month":t_month_name, 
-                                        "company_id":team["company_id"]
-                                    }
-                                    task_params={"teams"}
-                                    report =updatereportdb(filter_params=filter_params,task_params=task_params,task=task)
-            ##'''teamtasks------------------------------------'''
-            teamtasks = dowellconnection(*team_management_modules, "fetch", {"team_id":team["_id"]}, {})
-            print("processing team tasks ------------------------------------------------------")
-            for teamtask in json.loads(teamtasks)["data"]:
-                if "task_created_date" in teamtask.keys():
-                    try:
-                        t_year, t_month_name, t_months_cnt = get_month_details(teamtask["task_created_date"])
-                    except Exception as error:
-                        t_year, t_month_name, t_months_cnt = None, None, None
-                    if not(t_year==None and t_month_name==None and t_months_cnt==None):
-                        if "assignee" in teamtask.keys():
-                            for assignee in teamtask["assignee"]:
-                                info=dowellconnection(*candidate_management_reports, "fetch", {"username":assignee}, update_field=None)
-                                if "data" in json.loads(info).keys():
-                                    if len(json.loads(info)["data"])>0:
-                                        #print(json.loads(info)["data"][0]["_id"], member)
-                                        filter_params={
-                                            "applicant_id":json.loads(info)["data"][0]["_id"],
-                                            "username":assignee, 
-                                            "year":t_year, 
-                                            "month":t_month_name, 
-                                            "company_id":team["company_id"]
-                                        }
-                                        task_params=set()
-                                        task_params.add("team_tasks")
-                                        if "completed" in teamtask.keys() and (teamtask["completed"] ==True or teamtask["completed"] =='True' or teamtask["completed"] =="true"):
-                                            task_params.add("team_tasks_completed")
-                                        else:
-                                            task_params.add("team_tasks_uncompleted")
-                                        if ("approval" in teamtask.keys() and teamtask["approval"] == True) or ("approved" in teamtask.keys() and teamtask["approved"] == True):
-                                            task_params.add("team_tasks_approved")
-                                        report =updatereportdb(filter_params=filter_params,task_params=task_params,task=task)
-            #'''teamtasks issues created------------------------------------'''
-            
-            teamissues = dowellconnection(*thread_report_module, "fetch", {"team_id":team["_id"]}, {})
-            print("processing team issues ------------------------------------------------------")
-            for issue in json.loads(teamissues)["data"]:
-                if "created_date" in issue.keys():
-                    try:
-                        t_year, t_month_name, t_months_cnt = get_month_details(issue["created_date"])
-                    except Exception as error:
-                        t_year, t_month_name, t_months_cnt = None, None, None
-                    if not(t_year==None and t_month_name==None and t_months_cnt==None):
-                        info=dowellconnection(*candidate_management_reports, "fetch", {"username":issue["created_by"]}, update_field=None)
-                        if "data" in json.loads(info).keys():
-                            if len(json.loads(info)["data"])>0:
-                                #print(json.loads(info)["data"][0]["_id"], member)
-                                filter_params={
-                                    "applicant_id":json.loads(info)["data"][0]["_id"],
-                                    "username":issue["created_by"], 
-                                    "year":t_year, 
-                                    "month":t_month_name, 
-                                    "company_id":team["company_id"]
-                                }
-                                task_params=set()
-                                task_params.add("team_tasks_issues_raised")
-                                if ("current_status" in issue.keys() and issue["current_status"] =="Resolved") or ("previous_status" in issue.keys() and "Resolved" in issue["previous_status"]):
-                                    task_params.add("team_tasks_issues_resolved")
-                                report =updatereportdb(filter_params=filter_params,task_params=task_params,task=task)
-                
-                #'''teamtasks comments created------------------------------------'''
-                teamcomments = dowellconnection(*comment_report_module, "fetch", {"thread_id":issue["_id"]}, {})
-                print("processing team comments ------------------------------------------------------")
-                for comment in json.loads(teamcomments)["data"]:
-                    if "created_date" in comment.keys():
-                        try:
-                            t_year, t_month_name, t_months_cnt = get_month_details(comment["created_date"])
-                        except Exception as error:
-                            t_year, t_month_name, t_months_cnt = None, None, None
-                        if not(t_year==None and t_month_name==None and t_months_cnt==None):
-                            info=dowellconnection(*candidate_management_reports, "fetch", {"username":comment["created_by"], "status":"hired"}, update_field=None)
-                            if "data" in json.loads(info).keys():
-                                if len(json.loads(info)["data"])>0:
-                                    #print(json.loads(info)["data"][0]["_id"], member)
-                                    filter_params={
-                                        "applicant_id":json.loads(info)["data"][0]["_id"],
-                                        "username":comment["created_by"], 
-                                        "year":t_year, 
-                                        "month":t_month_name, 
-                                        "company_id":team["company_id"]
-                                    }
-                                    task_params={"team_tasks_comments_added"}
-                                    report =updatereportdb(filter_params=filter_params,task_params=task_params,task=task)         
-        # tasks
-        print("processing tasks ------------------------------------------------------")
-        for applicant_id,username in get_usernames.items():
-            if username != "None":
-                print("processing tasks for :", username, "started----------------------------")
-                count =0
-                daily_tasks = json.loads(dowellconnection(*task_management_reports,"fetch",field={"task_added_by":username},update_field=None))["data"]
-                for t in daily_tasks:
-                    task_details = json.loads(dowellconnection(*task_details_module, "fetch", {"task_id":t["_id"]}, update_field=None))["data"]
-                    for task in task_details:
-                        if "task_added_by" in task.keys():
-                            """tasks added completed, uncompleted and approved, task you approved, task you marked as completed and task you marked as incompleted------------------------------------"""
-                            if "task_created_date" in task.keys():
-                                try:
-                                    t_year, t_month_name, t_months_cnt = get_month_details(task["task_created_date"])
-                                except Exception as error:
-                                    t_year, t_month_name, t_months_cnt = None, None, None
-                                if not(t_year==None and t_month_name==None and t_months_cnt==None):
-                                    #info=dowellconnection(*candidate_management_reports, "fetch", {"username":username, "status":"hired"}, update_field=None)
-                                    
-                                    filter_params={
-                                        "applicant_id":applicant_id,
-                                        "username":username, #or --t["task_added_by"] 
-                                        "year":t_year, 
-                                        "month":t_month_name, 
-                                        "company_id":task["company_id"]
-                                    }
-                                    task_params=set()
-                                    task_params.add("task_added")
-                                    print(f"task added for {t['task_added_by']} ----------------------------------")
-                                    if "status" in task.keys():
-                                        if (task["status"]=="Completed" or task["status"]=="Complete" or task["status"]=="completed" or task["status"]=="complete" or task["status"]=="Mark as complete"):
-                                            task_params.add("tasks_completed")
-                                            print("task completed added for ",t["task_added_by"])
-
-                                        if "task_approved_by" in task.keys():# t
-                                            if task["task_approved_by"] == t["task_added_by"]:
-                                                task_params.add("tasks_you_approved")
-                                                print(f"task you approved added for {t['task_added_by']} ----------------------------------")
-                                            if task["task_approved_by"] == t["task_added_by"]:
-                                                if (task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete"):
-                                                    task_params.add("tasks_you_marked_as_complete")
-                                                    print(f"tasks you marked as complete added for {t['task_added_by']} ----------------------------------")
-                                                else:
-                                                    task_params.add("tasks_you_marked_as_incomplete")
-                                                    print(f"tasks you marked as incomplete added for {t['task_added_by']} ----------------------------------")
-                                    else:
-                                        task_params.add("tasks_uncompleted")
-                                        print(f"task uncompleted added for {t['task_added_by']} ----------------------------------")
-
-                                    if ("approval" in task.keys() and task["approval"] == True) or ("approved" in task.keys() and task["approved"] == True):
-                                        task_params.add("tasks_approved")
-                                        print(f"task approved added for {t['task_added_by']} ----------------------------------")
-                                    
-                                    report =updatereportdb(filter_params=filter_params,task_params=task_params, task=task)
-
-                                    ##updatetaskdb-------------------------
-                                    project_params={
-                                        "total_tasks":1
-                                    }
-                                    if "project" in task.keys(): 
-                                        project_params["project"]=task["project"]
-                                    if "subproject" in task.keys():
-                                        project_params["subproject"]=task["subproject"]
-                                    if "start_time" in task.keys():
-                                        try:
-                                            start_time = datetime.strptime(
-                                                task["start_time"], "%H:%M")
-                                        except ValueError:
-                                            start_time = datetime.strptime(
-                                                task["start_time"], "%H:%M:%S"
-                                            )
-                                    else:
-                                        start_time=0   
-                                    if "end_time" in task.keys(): 
-                                        try:
-                                            end_time = datetime.strptime(
-                                                task["end_time"], "%H:%M")
-                                        except ValueError:
-                                            end_time = datetime.strptime(
-                                                task["end_time"], "%H:%M:%S"
-                                            )
-                                    else:
-                                        end_time=0  
-                                    
-                                    duration = end_time - start_time
-                                    if type(duration) == int:
-                                        project_params["total_secs"]=duration
-                                    else:
-                                        project_params["total_secs"]=(duration).total_seconds()
-                                    project_params["total_mins"]=project_params["total_secs"] / 60
-                                    project_params["total_hours"]=project_params["total_mins"] / 60
-
-                                    
-                                    today = datetime.today()
-                                    start = today - timedelta(days=today.weekday())
-                                    end = start + timedelta(days=6)
-                                    today = datetime.strptime(
-                                        set_date_format(str(today)), "%m/%d/%Y %H:%M:%S"
-                                    )
-                                    start = datetime.strptime(
-                                        set_date_format(str(start)), "%m/%d/%Y %H:%M:%S"
-                                    )
-                                    end = datetime.strptime(
-                                        set_date_format(str(end)), "%m/%d/%Y %H:%M:%S")
-                                    
-                                    try:
-                                        task_created_date = datetime.strptime(
-                                            set_date_format(data.get("task_created_date")), "%m/%d/%Y %H:%M:%S"
-                                        )
-                                        
-                                        if task_created_date >= start and task_created_date <= end:
-                                            project_params["tasks_uploaded_this_week"]=1
-                                        if task_created_date >= today - timedelta(days=1):
-                                            project_params["total_tasks_last_one_day"]=1
-                                        if task_created_date >= today - timedelta(days=7):
-                                            project_params["total_tasks_last_one_week"]=1
-                                    except ValueError:
-                                        pass
-
-                                    taskreport = updatetaskreportdb(filter_params=filter_params, project_params=project_params)
-                                        
-                        count+=1
-                print("processing for :", username, f"{count} done----------------------------")
-        print("updated monthly data ------------------------------------------------------") 
-
-        print("-------------------------------------------------------------------------------") 
-        print("Process Ended")  
-        print("-------------------------------------------------------------------------------") 
-        ##-----------------------------------------------------------------------------------------------------
-
-        
-
-        return Response({"success":True,"message":f"Successfully updated {report_type} report in database"},status=status.HTTP_200_OK)
-       
+@method_decorator(csrf_exempt, name="dispatch")
+class UpdateReportDB(APIView):
+    def post(self, request):
+        pass
 
 
 # class GroupLeadAgendaAPIView(APIView):
@@ -9253,7 +9260,7 @@ class ReportDB(APIView):
 #         res_json=json.loads(res)
 #         return Response({
 #                     "success":True,
-#                     "data":res_json  
+#                     "data":res_json
 #                 },status=status.HTTP_200_OK)
 
 #     def post(self, request, *args, **kwargs):
@@ -9283,10 +9290,11 @@ class ReportDB(APIView):
 
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@method_decorator(csrf_exempt, name='dispatch')
+
+@method_decorator(csrf_exempt, name="dispatch")
 class WeeklyAgenda(APIView):
     def post(self, request):
-        type_request = request.GET.get('type')
+        type_request = request.GET.get("type")
 
         if type_request == "add_weekly_update":
             return self.add_weekly_update(request)
@@ -9298,28 +9306,30 @@ class WeeklyAgenda(APIView):
             return self.approve_group_lead_agenda(request)
         elif type_request == "grouplead_agenda_check":
             return self.grouplead_agenda_check(request)
+        elif type_request == "agenda_suprojects":
+            return self.agenda_suprojects(request)
         else:
             return self.handle_error(request)
         
     def get(self, request):
         type_request = request.GET.get("type")
-        
+
         if type_request == "agenda_status":
             return self.agenda_status(request)
         else:
             return self.handle_error(request)
-    
+
     def add_weekly_update(self, request):
-        project = request.data.get('project')
-        sub_project=request.data.get("sub_project")
-        lead_name = request.data.get('lead_name')
-        agenda_title = request.data.get('agenda_title')
-        total_time = request.data.get('total_time')
-        agenda_description = request.data.get('agenda_description')
-        week_start = request.data.get('week_start')
-        week_end = request.data.get('week_end')
-        company_id = request.data.get('company_id')
-        timeline=request.data.get("timeline")
+        project = request.data.get("project")
+        sub_project = request.data.get("sub_project")
+        lead_name = request.data.get("lead_name")
+        agenda_title = request.data.get("agenda_title")
+        total_time = request.data.get("total_time")
+        agenda_description = request.data.get("agenda_description")
+        week_start = request.data.get("week_start")
+        week_end = request.data.get("week_end")
+        company_id = request.data.get("company_id")
+        timeline = request.data.get("timeline")
         aggregate_agenda = request.data.get("aggregate_agenda")
 
         field = {
@@ -9330,42 +9340,54 @@ class WeeklyAgenda(APIView):
             "week_start": week_start,
             "week_end": week_end,
             "company_id": company_id,
-            "timeline":timeline,
-            "sub_project":sub_project,
+            "timeline": timeline,
+            "sub_project": sub_project,
             "total_time": total_time,
             "aggregate_agenda": aggregate_agenda,
         }
 
         serializer = GroupLeadAgendaSerializer(data=field)
         if not serializer.is_valid():
-            return Response({
-                "success": False,
-                "message": "Posting wrong data",
-                "error": serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {
+                    "success": False,
+                    "message": "Posting wrong data",
+                    "error": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         verify_time = field.get("timeline")
-        total_time_timeline = sum(int(task.get("hours").replace("Hr", "")) for task in verify_time)
+        total_time_timeline = sum(
+            int(task.get("hours").replace("Hr", "")) for task in verify_time
+        )
         total_time_specified = int(field.get("total_time").replace("Hr", ""))
 
         if total_time_timeline != total_time_specified:
-            return Response({
-                "success": False,
-                "message": "Total time does not match with the specified timeline"
-            }, status=status.HTTP_400_BAD_REQUEST)
-        
-        evaluator_response= True
-        evaluator_response = json.loads(samanta_content_evaluator(API_KEY, agenda_title,aggregate_agenda ))
+            return Response(
+                {
+                    "success": False,
+                    "message": "Total time does not match with the specified timeline",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        evaluator_response = True
+        evaluator_response = json.loads(
+            samanta_content_evaluator(API_KEY, agenda_title, aggregate_agenda)
+        )
         if not evaluator_response["success"]:
-            return Response({
-                "success": False,
-                "message": "Failed to evaluate agenda",
-                "evaluator_response": {
-                    "success": evaluator_response["success"],
-                    "message": evaluator_response["message"],
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {
+                    "success": False,
+                    "message": "Failed to evaluate agenda",
+                    "evaluator_response": {
+                        "success": evaluator_response["success"],
+                        "message": evaluator_response["message"],
+                    },
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         data = {
             "lead_name": lead_name,
@@ -9376,148 +9398,186 @@ class WeeklyAgenda(APIView):
             "company_id": company_id,
             "active": True,
             "status": True,
-            "lead_approval":False,
+            "lead_approval": False,
             "project": project,
-            "sub_project":sub_project,
+            "sub_project": sub_project,
             "timeline": timeline,
             "aggregate_agenda": aggregate_agenda,
             "total_time": total_time,
-            "records": [{"record": "1", "type": "overall"}]
+            "evaluator_response": evaluator_response,
+            "records": [{"record": "1", "type": "overall"}],
         }
-        response = json.loads(datacube_data_insertion(API_KEY, DB_Name, sub_project, data))
+        response = json.loads(
+            datacube_data_insertion(API_KEY, DB_Name, sub_project, data)
+        )
         if not response["success"]:
-            return Response({
-                "success": False,
-                "message": "Failed to create weekly agenda",
+            return Response(
+                {
+                    "success": False,
+                    "message": "Failed to create weekly agenda",
+                    "database_response": {
+                        "success": response["success"],
+                        "message": response["message"],
+                        "data": response,
+                    },
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(
+            {
+                "success": True,
+                "message": "Weekly agenda was successfully created",
                 "database_response": {
                     "success": response["success"],
                     "message": response["message"],
-                    "data":response
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({
-            "success": True,
-            "message": "Weekly agenda was successfully created",
-            "database_response": {
-                "success": response["success"],
-                "message": response["message"],
-                "inserted_id": response["data"]["inserted_id"],
+                    "inserted_id": response["data"]["inserted_id"],
+                },
+                "evaluator_response": {
+                    "success": evaluator_response["success"],
+                    "message": evaluator_response["message"],
+                    **{
+                        key: evaluator_response.get(key, None)
+                        for key in [
+                            "Confidence level created by AI",
+                            "Confidence level created by Human",
+                            "AI Check",
+                            "Plagiarised",
+                            "Creative",
+                            "Total characters",
+                            "Total sentences",
+                        ]
+                    },
+                },
+                "weekly_agenda_details": data,
             },
-            "evaluator_response": {
-                "success": evaluator_response["success"],
-                "message": evaluator_response["message"],
-                **{key: evaluator_response.get(key, None) for key in ["Confidence level created by AI", "Confidence level created by Human", "AI Check", "Plagiarised", "Creative", "Total characters", "Total sentences"]}
-            },
-            "weekly_agenda_details": data
-        }, status=status.HTTP_201_CREATED)
+            status=status.HTTP_201_CREATED,
+        )
 
-    def weekly_agenda_by_id(self,request):
-        document_id = request.GET.get('document_id')
-        limit = request.GET.get('limit')
-        offset = request.GET.get('offset')
-        sub_project = request.GET.get('sub_project')
-        
-       
+    def weekly_agenda_by_id(self, request):
+        document_id = request.GET.get("document_id")
+        limit = request.GET.get("limit")
+        offset = request.GET.get("offset")
+        sub_project = request.GET.get("sub_project")
+
         field = {
             "document_id": document_id,
             "limit": limit,
             "offset": offset,
-            "sub_project": sub_project
+            "sub_project": sub_project,
         }
 
         serializer = GetWeeklyAgendaByIdSerializer(data=field)
         if not serializer.is_valid():
-            return Response({
-                "success": False,
-                "message": "Posting wrong data",
-                "error": serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "success": False,
+                    "message": "Posting wrong data",
+                    "error": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         data = {
             "_id": document_id,
         }
-        response = json.loads(datacube_data_retrival(API_KEY,DB_Name,sub_project,data,limit,offset))
+        response = json.loads(
+            datacube_data_retrival(API_KEY, DB_Name, sub_project, data, limit, offset)
+        )
         # response2 = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest","agenda_subtask",data,limit,offset))
-        
+
         if not response["success"]:
-            return Response({
-                "success": False,
-                "message": "Failed to retrieve weekly agenda",
+            return Response(
+                {
+                    "success": False,
+                    "message": "Failed to retrieve weekly agenda",
+                    "database_response": {
+                        "success": response["success"],
+                        "message": response["message"],
+                    },
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(
+            {
+                "success": True,
+                "message": "Weekly agenda was retrived successfully",
                 "database_response": {
                     "success": response["success"],
-                    "message": response["message"]
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({
-            "success": True,
-            "message": "Weekly agenda was retrived successfully",
-            "database_response": {
-                "success": response["success"],
-                "message": response["message"]
+                    "message": response["message"],
+                },
+                "response": response["data"],
             },
-            "response": response["data"]
-        }, status=status.HTTP_200_OK)
+            status=status.HTTP_200_OK,
+        )
 
-    def all_weekly_agendas(self,request):
-        limit = request.GET.get('limit')
-        offset = request.GET.get('offset')
-        project = request.GET.get('project')
-        sub_project = request.GET.get('sub_project')
+    def all_weekly_agendas(self, request):
+        limit = request.GET.get("limit")
+        offset = request.GET.get("offset")
+        project = request.GET.get("project")
+        sub_project = request.GET.get("sub_project")
         if project:
-            data = {"project":project}
+            data = {"project": project}
         else:
-             data = {}
+            data = {}
         field = {
             "limit": limit,
             "offset": offset,
             # "project": project,
-            "sub_project":sub_project
+            "sub_project": sub_project,
         }
 
         # project=sub_project
 
         serializer = GetWeeklyAgendasSerializer(data=field)
         if not serializer.is_valid():
-            return Response({
-                "success": False,
-                "message": "Posting wrong data",
-                "error": serializer.errors
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "success": False,
+                    "message": "Posting wrong data",
+                    "error": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # data={}
-        response = json.loads(datacube_data_retrival(API_KEY,DB_Name,sub_project,data,limit,offset))
+        response = json.loads(
+            datacube_data_retrival(API_KEY, DB_Name, sub_project, data, limit, offset)
+        )
         if not response["success"]:
-            return Response({
-                "success": False,
-                "message": "Failed to retrieve weekly agenda",
+            return Response(
+                {
+                    "success": False,
+                    "message": "Failed to retrieve weekly agenda",
+                    "database_response": {
+                        "success": response["success"],
+                        "message": response["message"],
+                    },
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(
+            {
+                "success": True,
+                "message": "Weekly agenda was retrived successfully",
                 "database_response": {
                     "success": response["success"],
-                    "message": response["message"]
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({
-            "success": True,
-            "message": "Weekly agenda was retrived successfully",
-            "database_response": {
-                "success": response["success"],
-                "message": response["message"]
+                    "message": response["message"],
+                },
+                "response": response["data"],
             },
-            "response": response["data"]
-        }, status=status.HTTP_200_OK)
+            status=status.HTTP_200_OK,
+        )
 
-    def approve_group_lead_agenda(self,request):
-        agenda_id = request.GET.get('agenda_id')
-        sub_project = request.GET.get('sub_project')
+    def approve_group_lead_agenda(self, request):
+        agenda_id = request.GET.get("agenda_id")
+        sub_project = request.GET.get("sub_project")
         # print(sub_project)
         # print(agenda_id)
 
-        data={
-            "agenda_id":agenda_id,
-            "sub_project":sub_project
-        }
+        data = {"agenda_id": agenda_id, "sub_project": sub_project}
 
         field = {
             "_id": agenda_id,
@@ -9527,113 +9587,171 @@ class WeeklyAgenda(APIView):
             "lead_approval": "True",
         }
 
-        serializer=agendaapproveserializer(data=data)
+        serializer = agendaapproveserializer(data=data)
         if not serializer.is_valid():
-            return Response({
-                "success":False,
-                "message":"posting invalid data",
-                "errors":serializer.errors
-            },status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "success": False,
+                    "message": "posting invalid data",
+                    "errors": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        
-        response = json.loads(datacube_data_retrival(API_KEY,DB_Name,sub_project,data=field,limit=40,offset=0))
-        
+        response = json.loads(
+            datacube_data_retrival(
+                API_KEY, DB_Name, sub_project, data=field, limit=40, offset=0
+            )
+        )
+
         if response["data"][0]["lead_approval"]:
-            return Response({
-                "success":False,
-                "message":"Lead agenda is already approved"
-            },status=status.HTTP_400_BAD_REQUEST)
-            
-        datacube_response = json.loads(datacube_data_update(API_KEY,DB_Name,coll_name=sub_project,query=field,update_data=update_data))
-        
+            return Response(
+                {"success": False, "message": "Lead agenda is already approved"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        datacube_response = json.loads(
+            datacube_data_update(
+                API_KEY,
+                DB_Name,
+                coll_name=sub_project,
+                query=field,
+                update_data=update_data,
+            )
+        )
+
         if not datacube_response["success"]:
-            return Response({
-                "success": False,
-                "message": "Failed to approve the group lead agenda",
+            return Response(
+                {
+                    "success": False,
+                    "message": "Failed to approve the group lead agenda",
+                    "database_response": {
+                        "success": datacube_response["success"],
+                        "message": datacube_response["message"],
+                    },
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(
+            {
+                "success": True,
+                "message": "Weekly agenda was approved successfully",
                 "database_response": {
                     "success": datacube_response["success"],
-                    "message": datacube_response["message"]
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({
-            "success": True,
-            "message": "Weekly agenda was approved successfully",
-            "database_response": {
-                "success": datacube_response["success"],
-                "message": datacube_response["message"]
+                    "message": datacube_response["message"],
+                },
+                "response": datacube_response["data"],
             },
-            "response": datacube_response["data"]
-        }, status=status.HTTP_200_OK)
-    
+            status=status.HTTP_200_OK,
+        )
+
     def grouplead_agenda_check(self, request):
         data=request.GET
-        project=data.get("project")
+        project=request.data.get("project")
         company_id=data.get("company_id")
-        # print(project)
+        limit=data.get("limit")
+        offset=data.get("offset")        
+        unique_subprojects = set()
 
-
-        subprojects=UsersubProject.objects.filter(parent_project=project , company_id=company_id)
-        serializer=settingUsersubProjectSerializer(subprojects,many=True)
-     
-        unique_subprojects=set()
-
-        for subproject in serializer.data:
-            # print(subproject)
-            unique_subprojects.update(subproject["sub_project_list"])
-
-        subproject_list=list(unique_subprojects)
+        subproject_response=get_subproject()
+        for subproject in subproject_response['data']:
+            if subproject['parent_project'] == project and subproject['company_id'] == company_id:
+                unique_subprojects.update(subproject["sub_project_list"])
         
-        for i in range(len(subproject_list)):
-             subproject_list[i] = subproject_list[i].replace(" ", "-")
+        subproject_list = list(unique_subprojects)
 
-        subproject_agenda=[]
-        subproject_without_agenda=[]
-        # print(subproject_list)
+        for i in range(len(subproject_list)):
+            subproject_list[i] = subproject_list[i].replace(" ", "-")
+
+        subproject_agenda = []
+        subproject_without_agenda = []
+
         data={
             "company_id":company_id
         }
-        print(company_id)
+        
         for subproject in subproject_list:
-            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data,limit=100,offset=0))
-            print(subprojectcheck)
+            subprojectcheck=json.loads(datacube_data_retrival(API_KEY,DB_Name,subproject,data,limit,offset))
             if subprojectcheck["success"]:
                 if len(subprojectcheck["data"]) > 0:
-                    subproject_agenda.append({
-                        "subproject_name":subproject,
-                        "data_present":len(subprojectcheck["data"]),
-                        "agenda":subprojectcheck["data"]})
+                    subproject_agenda.append(
+                        {
+                            "subproject_name": subproject,
+                            "data_present": len(subprojectcheck["data"]),
+                            "agenda": subprojectcheck["data"],
+                        }
+                    )
                 else:
                     subproject_without_agenda.append(subproject)
-            
+
+        return Response(
+            {
+                "success": True,
+                "message": "Report for group lead agenda created successfully",
+                "data": {
+                    "project": project,
+                    "subprojects_list": unique_subprojects,
+                    "subproject_without_agenda": subproject_without_agenda,
+                    "agenda": subproject_agenda,
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    
+    def agenda_suprojects(self, request):
+        data=request.GET
+        project=request.data.get("project")
+        company_id=data.get("company_id")
+        collection_name="All_Projects"       
+
+
+        data={
+            "parent_project":project,
+            "company_id":company_id
+        }
+
+        serializer=SubprojectSerializer(data=data)
+        
+        if not serializer.is_valid():       
+            return Response({
+                "success":False,
+                "message":"posting invaid data",
+                'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        response=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection_name=collection_name,data=data,limit=0,offset=0))
+
+        if not response["success"]:
+            return Response({
+            "success":False,
+            "message":"Subprojects could not retrieved successfullly",
+            "error":response
+            },status=status.HTTP_400_BAD_REQUEST)
+        
+        sub_project=response["data"]
 
         return Response({
             "success":True,
-            "message":"Report for group lead agenda created successfully",
-            "data":{"project":project,
-                    "subprojects_list":unique_subprojects,
-                    "subproject_without_agenda":subproject_without_agenda,
-                    "agenda":subproject_agenda}
+            "message":response["message"],
+            "subprojects_list":sub_project
         },status=status.HTTP_200_OK)
-
-    """HANDLE ERROR"""
-    def handle_error(self, request): 
-        return Response({
-            "success": False,
-            "message": "Invalid request type"
-        }, status=status.HTTP_400_BAD_REQUEST)
     
+    """HANDLE ERROR"""
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-    def agenda_status(self,request):
-        lead_name = request.GET.get('lead_name')
-        subproject = request.GET.get('subproject')
-        field = {
-            "lead_name": lead_name,
-            "subproject": subproject
-        }
+    def agenda_status(self, request):
+        lead_name = request.GET.get("lead_name")
+        subproject = request.GET.get("subproject")
+        field = {"lead_name": lead_name, "subproject": subproject}
 
-        response = json.loads(dowellconnection(
-            *task_details_module, "fetch", field, update_field=None))
+        response = json.loads(
+            dowellconnection(*task_details_module, "fetch", field, update_field=None)
+        )
         data = response.get("data", [])
         if data:
             # Separate leads into two lists based on agenda submission
@@ -9641,100 +9759,111 @@ class WeeklyAgenda(APIView):
                 {
                     "lead_name": worklog.get("group_leads"),
                     "subproject": worklog.get("subproject"),
-                    "assignee": worklog.get("assignee")  # Replace with the actual field name
+                    "assignee": worklog.get(
+                        "assignee"
+                    ),  # Replace with the actual field name
                 }
-                for worklog in data if worklog.get("success")
+                for worklog in data
+                if worklog.get("success")
             ]
 
             not_updated_leads = [
                 {
                     "lead_name": worklog.get("group_leads"),
                     "subproject": worklog.get("subproject"),
-                    "assignee": worklog.get("assignee")  # Replace with the actual field name
+                    "assignee": worklog.get(
+                        "assignee"
+                    ),  # Replace with the actual field name
                 }
-                for worklog in data if not worklog.get("success")
+                for worklog in data
+                if not worklog.get("success")
             ]
             print(data)
             response_data = {
                 "updated_leads": updated_leads,
-                "not_updated_leads": not_updated_leads
+                "not_updated_leads": not_updated_leads,
             }
 
-            return Response({
-                "success": True,
-                "message": "Agenda submission status for leads",
-                "data": response_data
-            })
-        else:
-            return Response({
-                "success": False,
-                "message": "There are no worklogs for the given lead and subproject",
-                "data": {
-                    "updated_leads": [],
-                    "not_updated_leads": []
+            return Response(
+                {
+                    "success": True,
+                    "message": "Agenda submission status for leads",
+                    "data": response_data,
                 }
-            })
+            )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": "There are no worklogs for the given lead and subproject",
+                    "data": {"updated_leads": [], "not_updated_leads": []},
+                }
+            )
 
-        
     def handle_error(self, request):
         return Response(
             {"success": False, "message": "Invalid request type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    
-@method_decorator(csrf_exempt, name='dispatch')
+
+
+@method_decorator(csrf_exempt, name="dispatch")
 class Db_operations(APIView):
-    def post(self,request):
-        type_request = request.GET.get('type')
+    def post(self, request):
+        type_request = request.GET.get("type")
 
         if type_request == "add_collection":
             return self.add_collection(request)
         else:
             return self.handle_error(request)
-        
-    def add_collection(Self,request):
 
-        coll_names=request.GET.get("coll_names")
-        num_collections=request.GET.get("num_collections")
-        
-        field= {
- 
-        "db_name":DB_Name,
-        "api_key":API_KEY,
-        "coll_names":request.GET.get("coll_names"),
-        "num_collections":request.GET.get("num_collections")
+    def add_collection(Self, request):
+        coll_names = request.GET.get("coll_names")
+        num_collections = request.GET.get("num_collections")
 
+        field = {
+            "db_name": DB_Name,
+            "api_key": API_KEY,
+            "coll_names": request.GET.get("coll_names"),
+            "num_collections": request.GET.get("num_collections"),
         }
-        
-        serializer=AddCollectionSerializer(data=field)
+
+        serializer = AddCollectionSerializer(data=field)
 
         if not serializer.is_valid():
-            return Response({
-            "success":False,
-            "error":serializer.errors
-        },status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"success": False, "error": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        response=json.loads(datacube_add_collection(API_KEY,DB_Name,coll_names,num_collections))
-        
+        response = json.loads(
+            datacube_add_collection(API_KEY, DB_Name, coll_names, num_collections)
+        )
+
         if not response["success"]:
-            return Response({
-                "success":False,
-                "message":"new collection could not be added",
-                "message":response["message"]
-            },status=status.HTTP_201_CREATED)
-        
-        return Response({
-                "success":False,
-                "message":"new collection has been added",
-                "data":response["data"]
-            },status=status.HTTP_201_CREATED)
+            return Response(
+                {
+                    "success": False,
+                    "message": "new collection could not be added",
+                    "message": response["message"],
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(
+            {
+                "success": True,
+                "message": "new collection has been added",
+                "data": response["data"],
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
-
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name="dispatch")
 class PerticularCandidate(APIView):
     def post(self, request):
-        status = request.GET.get('status')
+        status = request.GET.get("status")
         if status == "hired":
             return self.get_hired_candidate(request)
         # elif status == "Removed":
@@ -9743,7 +9872,7 @@ class PerticularCandidate(APIView):
             return self.get_renew_contract_candidate(request)
         else:
             return self.handle_error(request)
-        
+
     def get_hired_candidate(self, request):
         data = request.data
         company_id = data["company_id"]
@@ -9763,11 +9892,16 @@ class PerticularCandidate(APIView):
                         status=status.HTTP_204_NO_CONTENT,
                     )
                 else:
-                    candidates=[{"_id":res["_id"],
-                        "applicant":res["applicant"],
-                        "username":res["username"],
-                        "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
-                    
+                    candidates = [
+                        {
+                            "_id": res["_id"],
+                            "applicant": res["applicant"],
+                            "username": res["username"],
+                            "applicant_email": res["applicant_email"],
+                        }
+                        for res in json.loads(response)["data"]
+                    ]
+
                     return Response(
                         {
                             "message": f"List of hired Candidates",
@@ -9788,7 +9922,7 @@ class PerticularCandidate(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
     def get_renew_contract_candidate(self, request):
         data = request.data
         company_id = data["company_id"]
@@ -9808,11 +9942,16 @@ class PerticularCandidate(APIView):
                         status=status.HTTP_204_NO_CONTENT,
                     )
                 else:
-                    candidates=[{"_id":res["_id"],
-                        "applicant":res["applicant"],
-                        "username":res["username"],
-                        "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
-                    
+                    candidates = [
+                        {
+                            "_id": res["_id"],
+                            "applicant": res["applicant"],
+                            "username": res["username"],
+                            "applicant_email": res["applicant_email"],
+                        }
+                        for res in json.loads(response)["data"]
+                    ]
+
                     return Response(
                         {
                             "message": f"List of renew_contract Candidates",
