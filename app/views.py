@@ -9521,7 +9521,7 @@ class Datacube_operations(APIView):
                     if coll_name in get_collection['message']:
                         print(get_collection['message'])
                         #creating collection------------------------------
-                        create_collection = json.loads(datacube_add_collection(api_key,db_name,"test",1))
+                        create_collection = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
                         if create_collection['success']==True:
                             print(f'successfully created the collection-{coll_name}')
                             #inserting data into the collection------------------------------
