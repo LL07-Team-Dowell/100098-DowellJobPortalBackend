@@ -9525,7 +9525,6 @@ class Datacube_operations(APIView):
                         if create_collection['success']==True:
                             print(f'successfully created the collection-{coll_name}')
                             #inserting data into the collection------------------------------
-                            print(create_collection,"]]]")
                             data=_c
                             data["task_report"]={}
                             _d={}

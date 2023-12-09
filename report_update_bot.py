@@ -6,6 +6,19 @@ api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f"
 db_name= "Reports"
 num_collections = 1
 
+def datacube_add_collection(api_key,db_name,coll_names,num_collections):
+
+    url = "https://datacube.uxlivinglab.online/db_api/add_collection/"
+
+    data = {
+        "api_key": api_key,
+        "db_name": db_name,
+        "coll_names": coll_names,
+        "num_collections": num_collections,
+    }
+
+    response = requests.post(url, json=data)
+    return response.text
 
 def datacube_data_insertion(api_key,database_name,collection_name,data):
     url = "https://datacube.uxlivinglab.online/db_api/crud/"
@@ -176,8 +189,33 @@ task_details_module = [
     "1000981019",
     "ABCDE",
 ]
+team_management_modules = [
+    "jobportal",
+    "jobportal",
+    "team_management_report",
+    "team_management_report",
+    "1201001",
+    "ABCDE",
+]
+thread_report_module = [
+    "jobportal",
+    "jobportal",
+    "ThreadReport",
+    "ThreadReport",
+    "1000981016",
+    "ABCDE",
+]
 
-def update_report_database(task_created_date,search_year,company_id):
+comment_report_module = [
+    "jobportal",
+    "jobportal",
+    "ThreadCommentReport",
+    "ThreadCommentReport",
+    "1000981017",
+    "ABCDE",
+]
+
+def update_report_database(task_created_date,company_id):
     field = {
             "task_created_date": task_created_date,
             "company_id": company_id
@@ -204,9 +242,87 @@ def update_report_database(task_created_date,search_year,company_id):
                 if get_collection['success']==False:
                     print(f'collection-{coll_name} for {filter_param["year"]} not found')
                     #inserting data collection-------------------------------------- 
-                    _d={}
-                    for month in calendar.month_name[1:]:
-                        _d[month]={
+                    #creating collection------------------------------
+                    create_collection = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+                    if create_collection['success']==True:
+                        print(f'successfully created the collection-{coll_name}')
+                        #inserting data into the collection------------------------------
+                        _d={}
+                        for month in calendar.month_name[1:]:
+                            _d[month]={
+                                "task_added": 1,
+                                "tasks_completed": 1 if (
+                                        task["status"] == "Completed"
+                                        or task["status"] == "Complete"
+                                        or task["status"] == "completed"
+                                        or task["status"] == "complete"
+                                        or task["status"] == "Mark as complete"
+                                    ) else 0,
+                                "tasks_uncompleted": 1 if (
+                                        task["status"] == "Incomplete" 
+                                        or task["status"] == "Incompleted" 
+                                        or task["status"] == "incomplete" 
+                                        or task["status"] == "Incompleted") else 0,
+                                "tasks_approved": 1 if (("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True)) else 0,
+                                "percentage_tasks_completed": 0.0,
+                                "tasks_you_approved": 1 if (("task_approved_by" in task.keys()
+                                                                and task["task_approved_by"] == _t['task_added_by'])) else 0,
+                                "tasks_you_marked_as_complete": 1 if (("task_approved_by" in task.keys() and task["task_approved_by"] == _t['task_added_by'])
+                                                                    and (task["status"] == "Completed"
+                                                                            or task["status"] == "Complete"
+                                                                            or task["status"] == "completed"
+                                                                            or task["status"] == "complete"
+                                                                            or task["status"] == "Mark as complete")) else 0,
+                                "tasks_you_marked_as_incomplete": 1 if (("task_approved_by" in task.keys() and task["task_approved_by"] == _t['task_added_by'])
+                                                                    and (task["status"] == "Incomplete" 
+                                                                            or task["status"] == "Incompleted" 
+                                                                            or task["status"] == "incomplete" 
+                                                                            or task["status"] == "Incompleted")) else 0,
+                                "teams": 0,
+                                "team_tasks": 0,
+                                "team_tasks_completed": 0,
+                                "team_tasks_uncompleted": 0,
+                                "percentage_team_tasks_completed": 0,
+                                "team_tasks_approved": 0,
+                                "team_tasks_issues_raised": 0,
+                                "team_tasks_issues_resolved": 0,
+                                "team_tasks_comments_added": 0
+                            }
+                            for team in json.loads(dowellconnection(*team_management_modules, "fetch", {"date_created":task_created_date}, update_field=None))['data']:
+                                if 'members' in team.keys():
+                                    if _t['task_added_by'] in team['members']:
+                                        _d[month]["teams"]+=1
+                                        if 'team_id' in task.keys():
+                                            if task['team_id']==team['_id']:    
+                                                _d[month]["team_tasks"]+=1
+                                                if task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete" or task["status"] == "Mark as complete":
+                                                    _d[month]["team_tasks_completed"]+=1
+                                                else:
+                                                    _d[month]["team_tasks_uncompleted"]+=1  
+                                                if 'approved' in task.keys() and task['approved']==True:
+                                                    _d[month]["team_tasks_approved"]+=1
+                                                for issue in json.loads(dowellconnection(*thread_report_module, "fetch", {'team_id':team['_id'],"created_date":task_created_date,'created_by':_t['task_added_by']}, update_field=None))['data']:
+                                                    _d[month]["team_tasks_issues_raised"]+=1
+                                                    if issue["current_status"]=="Resolved" or 'Resolved' in issue["previous_status"]:
+                                                        _d[month]["team_tasks_issues_resolved"]+=1
+                                                    for comment in json.loads(dowellconnection(*thread_report_module, "fetch", {"thread_id":issue['_id'],"created_date":task_created_date,'created_by':_t['task_added_by']}, update_field=None))['data']:
+                                                        _d[month]["team_tasks_comments_added"]+=1
+
+                        data =info
+                        data["task_report"]={}
+                        data['data':_d]
+                        insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+                        if insert_collection['success']==True:
+                            print(f'successfully inserted the data the collection- {coll_name}')
+                        else:
+                            print(insert_collection)
+                    
+                else:
+                    #update collection------------------------------
+                    _year,_monthname,_monthcnt=get_month_details(task_created_date)
+                    query={"application_id":info["application_id"],
+                           "year":_year}
+                    _d={
                             "task_added": 1,
                             "tasks_completed": 1 if (
                                     task["status"] == "Completed"
@@ -225,13 +341,13 @@ def update_report_database(task_created_date,search_year,company_id):
                             "tasks_you_approved": 1 if (("task_approved_by" in task.keys()
                                                             and task["task_approved_by"] == _t['task_added_by'])) else 0,
                             "tasks_you_marked_as_complete": 1 if (("task_approved_by" in task.keys() and task["task_approved_by"] == _t['task_added_by'])
-                                                                  and (task["status"] == "Completed"
+                                                                and (task["status"] == "Completed"
                                                                         or task["status"] == "Complete"
                                                                         or task["status"] == "completed"
                                                                         or task["status"] == "complete"
                                                                         or task["status"] == "Mark as complete")) else 0,
                             "tasks_you_marked_as_incomplete": 1 if (("task_approved_by" in task.keys() and task["task_approved_by"] == _t['task_added_by'])
-                                                                  and (task["status"] == "Incomplete" 
+                                                                and (task["status"] == "Incomplete" 
                                                                         or task["status"] == "Incompleted" 
                                                                         or task["status"] == "incomplete" 
                                                                         or task["status"] == "Incompleted")) else 0,
@@ -245,21 +361,34 @@ def update_report_database(task_created_date,search_year,company_id):
                             "team_tasks_issues_resolved": 0,
                             "team_tasks_comments_added": 0
                         }
-                    
-                    data =info
-                    data['data':_d]
-                    #insert_collection = datacube_data_insertion(api_key,db_name,coll_name,data):
-                    
-                else:
-                    #update collection------------------------------
-                    _year,_monthname,_monthcnt=get_month_details(task_created_date)
-                    query={"application_id":info["application_id"],
-                           "year":_year}
-                    _task_data={}
-                    update_data=get_collection['data'][0]['data'][_monthname] #"""incomplete---"""
+                    for team in json.loads(dowellconnection(*team_management_modules, "fetch", {"date_created":task_created_date}, update_field=None))['data']:
+                        if 'members' in team.keys():
+                            if _t['task_added_by'] in team['members']:
+                                _d[month]["teams"]+=1
+                                if 'team_id' in task.keys():
+                                    if task['team_id']==team['_id']:    
+                                        _d[month]["team_tasks"]+=1
+                                        if task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete" or task["status"] == "Mark as complete":
+                                            _d[month]["team_tasks_completed"]+=1
+                                        else:
+                                            _d[month]["team_tasks_uncompleted"]+=1  
+                                        if 'approved' in task.keys() and task['approved']==True:
+                                            _d[month]["team_tasks_approved"]+=1
+                                        for issue in json.loads(dowellconnection(*thread_report_module, "fetch", {'team_id':team['_id'],"created_date":task_created_date,'created_by':_t['task_added_by']}, update_field=None))['data']:
+                                            _d[month]["team_tasks_issues_raised"]+=1
+                                            if issue["current_status"]=="Resolved" or 'Resolved' in issue["previous_status"]:
+                                                _d[month]["team_tasks_issues_resolved"]+=1
+                                            for comment in json.loads(dowellconnection(*thread_report_module, "fetch", {"thread_id":issue['_id'],"created_date":task_created_date,'created_by':_t['task_added_by']}, update_field=None))['data']:
+                                                _d[month]["team_tasks_comments_added"]+=1
+
+                    get_collection['data'][0]['data'][_monthname]=_d
+                    data=get_collection['data'][0]['data']
+                    update_data={"data":data} #"""incomplete---"""
                     update_collection = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
                     if update_collection['success']==True:
-                        success+=1
+                        print(f'successfully updated the data the collection- {coll_name}')
+                    else:
+                        print(insert_collection)
 
 if __name__ == "__main__":
     company_id = "6385c0f18eca0fb652c94561"
@@ -272,4 +401,4 @@ if __name__ == "__main__":
         search_year = str(search_date.year)
         search_date = str(search_date)
     
-    update_report_database(search_date, search_year,company_id)"""
+    update_report_database(search_date,company_id)"""
