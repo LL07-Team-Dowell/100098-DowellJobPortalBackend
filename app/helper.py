@@ -395,7 +395,6 @@ def set_date_format(date):
                                     except Exception:
                                         return ""
 
-
 def targeted_population(
     database, collection, fields, period, column_name, start_point, end_point
 ):
@@ -442,10 +441,8 @@ def targeted_population(
     response = requests.post(url, json=request_data, headers=headers)
     return response.text
 
-
 class CustomValidationError(Exception):
     pass
-
 
 def validate_and_generate_times(
     task_type, task_created_date, start_time=None, end_time=None
@@ -473,7 +470,6 @@ def validate_and_generate_times(
         )
 
     return start_time_dt.strftime(date_format), end_time_dt.strftime(date_format)
-
 
 def update_task_status(self, current_task_id, is_active):
     field = {"_id": current_task_id}
@@ -549,29 +545,7 @@ def get_month_details(date):
 
     return (str(datime.year),month_name,months.count(month_name))
 
-def updatereportdb(filter_params,task_params):
-    """applicant_id=filter_params["applicant_id"]
-    username=filter_params["username"]
-    month=filter_params["month"]
-    year=filter_params["year"]
-    company_id=filter_params["company_id"]
-
-    default_dict = {i: int(task_params[i]) for i in task_params}
-
-    taskmodelobj, created = MonthlyTaskData.objects.get_or_create(
-                            applicant_id=applicant_id,
-                            username=username,year=year,month=month,
-                            company_id=company_id,defaults=default_dict  # Set the default value for task_added when creating a new instance
-                        )
-
-    if not created:
-        # If the instance already existed, increment the task_added field
-        taskmodelobj.task_added += 1
-        taskmodelobj.save()"""
-    print("taskmodelobj","==")
-
 def datacube_data_insertion(api_key,database_name,collection_name,data):
-
     url = "https://datacube.uxlivinglab.online/db_api/crud/"
 
     data = {
@@ -580,16 +554,12 @@ def datacube_data_insertion(api_key,database_name,collection_name,data):
         "coll_name": collection_name,
         "operation": "insert",
         "data":data
-        
     }
-
     response = requests.post(url, json=data)
     return response.text
 
 def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offset):
-
     url = "https://datacube.uxlivinglab.online/db_api/get_data/"
-
     data = {
         "api_key": api_key,
         "db_name": database_name,
@@ -597,17 +567,14 @@ def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offs
         "operation": "fetch",
         "filters":data,
         "limit": limit,
-        "offset": offset
-        
+        "offset": offset     
     }
 
     response = requests.post(url, json=data)
     return response.text
 
 def datacube_data_update(api_key,db_name,coll_name,query,update_data):
-
     url = "https://datacube.uxlivinglab.online/db_api/crud/"
-
     data = {
         "api_key": api_key,
         "db_name": db_name,
@@ -619,7 +586,6 @@ def datacube_data_update(api_key,db_name,coll_name,query,update_data):
 
     response = requests.put(url, json=data)
     return response.text
-
 
 def samanta_content_evaluator(api_key,title,description):
     url=f"https://100085.pythonanywhere.com/uxlivinglab/v1/content-scan/{api_key}/"
