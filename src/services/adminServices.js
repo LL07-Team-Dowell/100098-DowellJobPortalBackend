@@ -185,3 +185,7 @@ export const getWorklogDetailInOrganization = async (type, companyId) => {
 export const adminDeleteApplication = async (data) => {
   return await currentBackendAxiosInstance.post(`/dashboard_services/?type=delete_application`, data)
 }
+
+export const adminLeaveApplication = async (type, data) => {
+  return await currentBackendAxiosInstance.post(`/candidate_leave_apply/?type=${type}`, data)
+}

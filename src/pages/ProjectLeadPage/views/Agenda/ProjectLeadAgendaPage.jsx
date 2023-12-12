@@ -65,22 +65,25 @@ const ProjectLeadAgendaPage = () => {
 
     }, [])
 
-    getSettingUserProject().then((res) => {
-        const projectsGotten = res.data
-            ?.filter(
-                (project) =>
-                    project?.data_type === currentUser.portfolio_info[0].data_type &&
-                    project?.company_id === currentUser.portfolio_info[0].org_id &&
-                    project.project_list &&
-                    project.project_list.every(
-                        (listing) => typeof listing === "string"
-                    )
-            )
-            ?.reverse()
-        setProjectsAssignedToLead(projectsGotten);
-    }).catch(err => {
-        console.log('err fetching projects for project lead: ', err?.response?.data);
-    })
+    useEffect(() => {
+        getSettingUserProject().then((res) => {
+            const projectsGotten = res.data
+                ?.filter(
+                    (project) =>
+                        project?.data_type === currentUser.portfolio_info[0].data_type &&
+                        project?.company_id === currentUser.portfolio_info[0].org_id &&
+                        project.project_list &&
+                        project.project_list.every(
+                            (listing) => typeof listing === "string"
+                        )
+                )
+                ?.reverse()
+            setProjectsAssignedToLead(projectsGotten);
+        }).catch(err => {
+            console.log('err fetching projects for project lead: ', err?.response?.data);
+        })
+    }, [])
+
 
     useEffect(() => {
         if (agendaDetails.project.length < 1) return setSubprojectForProject([]);

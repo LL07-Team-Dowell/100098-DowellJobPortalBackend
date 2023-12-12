@@ -15,6 +15,7 @@ import { getSettingUserProject } from "../../../../../../services/hrServices";
 import { useCurrentUserContext } from "../../../../../../contexts/CurrentUserContext";
 import {
   adminDeleteApplication,
+  adminLeaveApplication,
   updateCandidateApplicationDetail,
 } from "../../../../../../services/adminServices";
 
@@ -199,7 +200,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
     setEndDate('');
     setLeaveOverlayVisibility(false);
   };
-  const handleSubmitClick = () => {
+  const handleSubmitClick = async () => {
     const start_Date = new Date(startDate);
     const end_Date = new Date(endDate);
 
@@ -211,6 +212,19 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
       setStartDate('');
       setEndDate('');
       return toast.info('Start date should be less than end date');
+    }
+
+    const dataToPost = {
+      applicant_id: application._id,
+      leave_start: startDate,
+      leave_end: endDate,
+    };
+
+    try{
+      const res = await (await adminLeaveApplication('approved_leave',dataToPost)).data;
+      console.log("set leave application responseeeeeeeeeeeeeeeeeeeee: ", res);
+    }catch(error){
+      console.log("err setting leave");
     }
   }
 
