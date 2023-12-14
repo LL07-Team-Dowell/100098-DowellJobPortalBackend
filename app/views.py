@@ -676,6 +676,7 @@ class admin_create_jobs(APIView):
             if (
                 data.get("type_of_opening") == "Group_Lead"
                 or data.get("type_of_opening") == "Team_Lead"
+                or data.get("type_of_opening") == None
             ):
                 field["is_internal"] = True
                 field["type_of_opening"] = data.get("type_of_opening")
