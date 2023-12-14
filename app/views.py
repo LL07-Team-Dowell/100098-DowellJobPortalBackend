@@ -8715,7 +8715,11 @@ class candidate_leave(APIView):
         elif type_request == "approved_leave":
             return self.candidate_leave_approve(request)
         elif type_request == "get_leave":
-            return self.get_leave(request)
+            return self.get_leave(request)       
+        elif type_request == "get_all_leave_application":
+            return self.get_all_leave_application(request)    
+        elif type_request == "applicants_on_leave":
+            return self.applicants_on_leave(request)     
         else:
             return self.handle_error(request)
 
@@ -8799,11 +8803,11 @@ class candidate_leave(APIView):
         if res["isSuccess"]:
             return Response(
                 {
-                    "data": res,
-                    "success": True,
+                    
+                    "isSuccess": True,
                     "message": "candidate leave request has been approved",
                 },
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_200_OK,
             )
         else:
             return Response(
@@ -8815,15 +8819,15 @@ class candidate_leave(APIView):
             )
 
     def get_leave(self, request):
-        applicant_id = request.GET.get('applicant_id')
+        leave_id = request.GET.get('leave_id')
         limit = request.GET.get('limit')
         offset = request.GET.get('offset')
 
         data = {
-            "_id": applicant_id,
+            "_id": leave_id,
         }
 
-        response = datacube_data_retrival(API_KEY, DB_Name, leave_report_collection, data, limit, offset)
+        response = json.loads(datacube_data_retrival(API_KEY, DB_Name, leave_report_collection, data=data, limit=limit, offset=offset))
 
         if not response["success"]:
             return Response({
@@ -8845,8 +8849,61 @@ class candidate_leave(APIView):
             "response": response["data"]
         }, status=status.HTTP_200_OK)
 
+    def get_all_leave_application(self, request):
+        limit = request.GET.get('limit')
+        offset = request.GET.get('offset')
 
+        response = json.loads(datacube_data_retrival(API_KEY, DB_Name, leave_report_collection, data={}, limit=limit, offset=offset))
 
+        if not response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve leave",
+                "database_response": {
+                    "success": response["success"],
+                    "message": response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Leave retrieved successfully",
+            "database_response": {
+                "success": response["success"],
+                "message": response["message"]
+            },
+            "response": response["data"]
+        }, status=status.HTTP_200_OK)
+        
+        
+    def applicants_on_leave(self, request):
+
+            field = {"status": "Leave"}
+            
+            update_field={}
+            
+            candidate_report = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field)
+
+            res = json.loads(candidate_report)
+
+            if res["isSuccess"]:
+                return Response(
+                    {   "success": True,
+                        "message": "candidate who are on leave",
+                        "data": res
+                        
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "Could not fetch Leave reports",
+                        "error": res["error"],
+                    }
+                )
 
     def handle_error(self, request):
         return Response(
@@ -9272,22 +9329,25 @@ class WeeklyAgenda(APIView):
         )
 
     def grouplead_agenda_check(self, request):
-        data=request.GET
-        project=request.data.get("project")
-        company_id=data.get("company_id")
-        limit=data.get("limit")
-        offset=data.get("offset")        
-        unique_subprojects = set()
 
-        subproject_response=get_subproject()
+        project=request.data.get("project")
+        company_id=request.GET.get("company_id")
+        limit=request.GET.get("limit")
+        offset=request.GET.get("offset")        
+        unique_subprojects = set()
+        collection_name="All_Projects"
+
+        data={
+            "parent_project":project
+        }
+
+        subproject_response=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection_name,data,limit,offset))
+
         for subproject in subproject_response['data']:
             if subproject['parent_project'] == project and subproject['company_id'] == company_id:
                 unique_subprojects.update(subproject["sub_project_list"])
         
         subproject_list = list(unique_subprojects)
-
-        for i in range(len(subproject_list)):
-            subproject_list[i] = subproject_list[i].replace(" ", "-")
 
         subproject_agenda = []
         subproject_without_agenda = []
