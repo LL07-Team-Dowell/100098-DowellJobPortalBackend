@@ -961,7 +961,6 @@ class candidate_apply_job(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
         speed_test_response= check_speed_test(applicant_email)
         if speed_test_response["success"] == False:
             return Response(
