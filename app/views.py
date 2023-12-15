@@ -43,7 +43,8 @@ from .helper import (
     datacube_data_retrival,
     datacube_add_collection,
     datacube_data_update,
-    get_subproject
+    get_subproject,
+    check_speed_test
 )
 from .serializers import (
     AccountSerializer,
@@ -894,12 +895,7 @@ class candidate_apply_job(APIView):
             "job_number": data.get("job_number"),
             "applicant_email": applicant_email,
         }
-        update_field = {"status": "nothing to update"}
-        candidate_report = json.loads(
-            dowellconnection(
-                *candidate_management_reports, "fetch", candidate_field, update_field
-            )
-        )["data"]
+        candidate_report = json.loads(dowellconnection(*candidate_management_reports, "fetch", candidate_field, update_field=None))["data"]
         # print(candidate_report)
         if len(candidate_report) > 0:
             return False
@@ -913,10 +909,7 @@ class candidate_apply_job(APIView):
             "applicant_email": applicant_email,
             "username": data.get("username"),
         }
-        update_field = {"status": "nothing to update"}
-        applicant = dowellconnection(
-            *hr_management_reports, "fetch", field, update_field
-        )
+        applicant = dowellconnection(*hr_management_reports, "fetch", field, update_field=None)
 
         if applicant is not None:
             rejected_dates = [
@@ -939,6 +932,7 @@ class candidate_apply_job(APIView):
 
         return False
 
+    
     def post(self, request):
         data = request.data
         applicant_email = data.get("applicant_email")
@@ -968,6 +962,12 @@ class candidate_apply_job(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        speed_test_response= check_speed_test(applicant_email)
+        if speed_test_response["success"] == False:
+            return Response(
+                speed_test_response,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         # continue apply api-----
         field = {
             "eventId": get_event_id()["event_id"],
@@ -983,7 +983,7 @@ class candidate_apply_job(APIView):
             "country": data.get("country"),
             "job_category": data.get("job_category"),
             "agree_to_all_terms": data.get("agree_to_all_terms"),
-            "internet_speed": data.get("internet_speed"),
+            "internet_speed": speed_test_response['message'],
             "other_info": data.get("other_info"),
             "project": "",
             "status": "Pending",
@@ -1009,19 +1009,15 @@ class candidate_apply_job(APIView):
             "payment_requested": False,
             "current_payment_request_status": "",
         }
-        update_field = {"status": "nothing to update"}
-
         serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
-            response = dowellconnection(
-                *candidate_management_reports, "insert", field, update_field
-            )
-            if json.loads(response)["isSuccess"] == True:
+            response = json.loads(dowellconnection(*candidate_management_reports, "insert", field, update_field=None))
+            if response["isSuccess"] == True:
                 return Response(
                     {
                         "message": "Application received.",
                         "Eligibility": self.is_eligible_to_apply(applicant_email),
-                        "response": json.loads(response),
+                        "response": response,
                     },
                     status=status.HTTP_201_CREATED,
                 )
@@ -1029,7 +1025,7 @@ class candidate_apply_job(APIView):
                 return Response(
                     {
                         "message": "Application failed to receive.",
-                        "response": json.loads(response),
+                        "response": response,
                     },
                     status=status.HTTP_304_NOT_MODIFIED,
                 )
@@ -2439,8 +2435,8 @@ class approve_task(APIView):
 
         return False
 
-    @verify_user_token
-    def patch(self, request, user):
+    #@verify_user_token
+    def patch(self, request):
         data = request.data
         # print(data)
         if data:
@@ -9578,6 +9574,28 @@ class Datacube_operations(APIView):
                         "year":_c["year"]}
                 get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,1))
                 #print(get_collection,"--"*10)
+                _d={}
+                for month in calendar.month_name[1:]:
+                    _d[month]={
+                        "task_added": 0,
+                        "tasks_completed": 0,
+                        "tasks_uncompleted": 0,
+                        "tasks_approved": 0,
+                        "percentage_tasks_completed": 0.0,
+                        "tasks_you_approved": 0,
+                        "tasks_you_marked_as_complete": 0,
+                        "tasks_you_marked_as_incomplete": 0,
+                        "teams": 0,
+                        "team_tasks": 0,
+                        "team_tasks_completed": 0,
+                        "team_tasks_uncompleted": 0,
+                        "percentage_team_tasks_completed": 0,
+                        "team_tasks_approved": 0,
+                        "team_tasks_issues_raised": 0,
+                        "team_tasks_issues_resolved": 0,
+                        "team_tasks_comments_added": 0
+                    }
+                            
                 if get_collection['success']==False:
                     if coll_name in get_collection['message']:
                         print(get_collection['message'])
@@ -9588,35 +9606,14 @@ class Datacube_operations(APIView):
                             #inserting data into the collection------------------------------
                             data=_c
                             data["task_report"]={}
-                            _d={}
-                            for month in calendar.month_name[1:]:
-                                _d[month]={
-                                    "task_added": 0,
-                                    "tasks_completed": 0,
-                                    "tasks_uncompleted": 0,
-                                    "tasks_approved": 0,
-                                    "percentage_tasks_completed": 0.0,
-                                    "tasks_you_approved": 0,
-                                    "tasks_you_marked_as_complete": 0,
-                                    "tasks_you_marked_as_incomplete": 0,
-                                    "teams": 0,
-                                    "team_tasks": 0,
-                                    "team_tasks_completed": 0,
-                                    "team_tasks_uncompleted": 0,
-                                    "percentage_team_tasks_completed": 0,
-                                    "team_tasks_approved": 0,
-                                    "team_tasks_issues_raised": 0,
-                                    "team_tasks_issues_resolved": 0,
-                                    "team_tasks_comments_added": 0
-                                }
                             data["data"]=_d
                             insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
                             if insert_collection['success']==True:
                                 print(f'successfully inserted the data the collection-{coll_name}')
                             else:
-                                print("failed to insert data")
+                                print(f"failed to insert datafor the collection-{coll_name}")
                         else:
-                            print("failed to create collection")
+                            print(f"failed to create collection for {coll_name}")
                     
                     else:
                         return Response(
@@ -9625,75 +9622,31 @@ class Datacube_operations(APIView):
                                     )
                 
                 else:
-                    print(f'collection-{coll_name} exists')
+                    #print(f'collection-{coll_name} exists')
                     if len(get_collection['data'])<=0:
                         print(f'collection-{coll_name} is empty... inserting data')
                         data=_c
                         data["task_report"]={}
-                        _d={}
-                        for month in calendar.month_name[1:]:
-                            _d[month]={
-                                "task_added": 0,
-                                "tasks_completed": 0,
-                                "tasks_uncompleted": 0,
-                                "tasks_approved": 0,
-                                "percentage_tasks_completed": 0.0,
-                                "tasks_you_approved": 0,
-                                "tasks_you_marked_as_complete": 0,
-                                "tasks_you_marked_as_incomplete": 0,
-                                "teams": 0,
-                                "team_tasks": 0,
-                                "team_tasks_completed": 0,
-                                "team_tasks_uncompleted": 0,
-                                "percentage_team_tasks_completed": 0,
-                                "team_tasks_approved": 0,
-                                "team_tasks_issues_raised": 0,
-                                "team_tasks_issues_resolved": 0,
-                                "team_tasks_comments_added": 0
-                            }
                         data["data"]=_d
                         insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
                         if insert_collection['success']==True:
                             print(f'successfully inserted the data the collection- {coll_name}')
                         else:
-                            print(insert_collection)
+                            print(f'failed to insert the data into the collection- {coll_name}')
                         
                     else:
                         if len(get_collection['data'][0]['data'])<=0:
                             print(f'collection-{coll_name} task data field is empty.. updating')
                             #update collection------------------------------
                             query={"application_id":_c["application_id"]}
-                            _d={}
-                            for month in calendar.month_name[1:]:
-                                _d[month]={
-                                    "task_added": 0,
-                                    "tasks_completed": 0,
-                                    "tasks_uncompleted": 0,
-                                    "tasks_approved": 0,
-                                    "percentage_tasks_completed": 0.0,
-                                    "tasks_you_approved": 0,
-                                    "tasks_you_marked_as_complete": 0,
-                                    "tasks_you_marked_as_incomplete": 0,
-                                    "teams": 0,
-                                    "team_tasks": 0,
-                                    "team_tasks_completed": 0,
-                                    "team_tasks_uncompleted": 0,
-                                    "percentage_team_tasks_completed": 0,
-                                    "team_tasks_approved": 0,
-                                    "team_tasks_issues_raised": 0,
-                                    "team_tasks_issues_resolved": 0,
-                                    "team_tasks_comments_added": 0
-                                }
                             
-                            update_data={"task_report":{},"data":_d}
+                            update_data={"data":_d}
                             update_collection = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
                             if update_collection['success']==True:
                                 print(f'successfully updated the collection-{coll_name}')
                             else:
-                                print(update_collection)
-                        else:
-                            print('passing')
-                    
+                                print(f'failed to update the collection-{coll_name}')
+                        
             return Response({"success":True,"message":f"{count} Collections created successfully"},status=status.HTTP_200_OK)
         else:
             return Response(
