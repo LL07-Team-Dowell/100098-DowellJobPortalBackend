@@ -621,3 +621,48 @@ def get_subproject():
     except requests.exceptions.RequestException as e:
         print(f"Error: {e}")
         return None
+    
+def get_speed_test_data(email):
+    try:
+        url = f"https://dowellresearch.com/livinglab/api.php?email={email}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.json()[0]
+        else:
+            return None
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
+        return None
+
+def speed_test_condition(upload, download, jitter, latency):
+    conditions_met = (upload >= 100) + (download >= 100) + (jitter <= 30) + (latency <= 50)
+    return conditions_met >= 2
+def date_time_operation(date_string):
+    date_info = date_string.split(" GMT")[0]
+    parsed_date = datetime.strptime(date_info, "%a %b %d %Y %H:%M:%S")
+    formatted_date = parsed_date.strftime("%d-%m-%Y")
+    today = datetime.today().strftime("%d-%m-%Y")
+    print(today)
+    if today == formatted_date:
+        return True
+    else:
+        return False
+def check_speed_test(applicant_email):
+        speed_test_result = get_speed_test_data(applicant_email)
+        if not speed_test_result:
+            return False
+        download_speed = float(speed_test_result.get("DOWNLOAD").split()[0])  
+        upload_speed = float(speed_test_result.get("UPLOAD").split()[0]) 
+        latency = float(speed_test_result.get("LATENCY").split()[0]) 
+        jitter = float(speed_test_result.get("JITTER").split()[0]) 
+        device_type = speed_test_result.get("DEVICE")
+        if device_type != "Laptop":
+            return {'success':False,"message":"Device not recognized as a Laptop"}
+        elif not speed_test_condition(download_speed,upload_speed,latency,jitter):
+            return {'success':False,"message":f"Speed test result less for {applicant_email} - Download Speed: {download_speed} Mbps, Upload Speed: {upload_speed} Mbps , Latency: {latency} MS , Jitter: {jitter} MS"}
+        else:
+            date_to_match = date_time_operation(speed_test_result.get("DATETIME"))
+            if date_to_match:
+                return {'success':True,"internet_speed":download_speed}
+            else:
+                return {"success":False,"message":f"Speed test has not been completed yet for {applicant_email}"}
