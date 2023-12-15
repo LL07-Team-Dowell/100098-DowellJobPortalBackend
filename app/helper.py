@@ -650,7 +650,7 @@ def date_time_operation(date_string):
 def check_speed_test(applicant_email):
         speed_test_result = get_speed_test_data(applicant_email)
         if not speed_test_result:
-            return False
+            return {"success":False,"message":f"Speed test has not been completed yet for {applicant_email}"}
         download_speed = float(speed_test_result.get("DOWNLOAD").split()[0])  
         upload_speed = float(speed_test_result.get("UPLOAD").split()[0]) 
         latency = float(speed_test_result.get("LATENCY").split()[0]) 
