@@ -2432,8 +2432,8 @@ class approve_task(APIView):
 
         return False
 
-    @verify_user_token
-    def patch(self, request, user):
+    #@verify_user_token
+    def patch(self, request):
         data = request.data
         # print(data)
         if data:
