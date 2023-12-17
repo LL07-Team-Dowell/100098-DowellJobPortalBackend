@@ -2366,12 +2366,10 @@ class approve_task(APIView):
             portfolio_name = [
                 names["portfolio_name"] for names in json.loads(info)["data"] if "portfolio_name" in names.keys()
             ]
-            
             valid_profiles = []
             for data in serializer.data:
                 for d in data["profile_info"]:
                     if "profile_title" in d.keys():
-                        print(d["profile_title"])
                         if d["profile_title"] in portfolio_name:
                             if (
                                 d["Role"] == "Project_Lead"
