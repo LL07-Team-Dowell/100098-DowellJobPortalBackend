@@ -639,9 +639,9 @@ def speed_test_condition(upload, download, jitter, latency):
     return conditions_met >= 2
 def date_time_operation(date_string):
     date_info = date_string.split(" GMT")[0]
-    parsed_date = datetime.strptime(date_info, "%a %b %d %Y %H:%M:%S")
+    parsed_date = datetime.datetime.strptime(date_info, "%a %b %d %Y %H:%M:%S")
     formatted_date = parsed_date.strftime("%d-%m-%Y")
-    today = datetime.today().strftime("%d-%m-%Y")
+    today = datetime.date.today().strftime("%d-%m-%Y")
     print(today)
     if today == formatted_date:
         return True

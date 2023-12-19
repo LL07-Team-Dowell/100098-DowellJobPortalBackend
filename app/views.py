@@ -961,12 +961,15 @@ class candidate_apply_job(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        """speed_test_response= check_speed_test(applicant_email)
+            
+        speed_test_response= check_speed_test(applicant_email)
+        print(speed_test_response)
         if speed_test_response["success"] == False:
             return Response(
                 speed_test_response,
                 status=status.HTTP_400_BAD_REQUEST,
-            )"""
+            )           
+        
         # continue apply api-----
         field = {
             "eventId": get_event_id()["event_id"],
@@ -982,7 +985,7 @@ class candidate_apply_job(APIView):
             "country": data.get("country"),
             "job_category": data.get("job_category"),
             "agree_to_all_terms": data.get("agree_to_all_terms"),
-            "internet_speed": "",#speed_test_response['message'],
+            "internet_speed": speed_test_response['internet_speed'],
             "other_info": data.get("other_info"),
             "project": "",
             "status": "Pending",
@@ -1007,6 +1010,7 @@ class candidate_apply_job(APIView):
             "module": data.get("module"),
             "payment_requested": False,
             "current_payment_request_status": "",
+            "candidate_certificate":data.get("candidate_certificate")
         }
         serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
