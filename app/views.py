@@ -8623,23 +8623,25 @@ class dashboard_services(APIView):
         month_dates=[f"{today.year}-{today.month}-{d}" for d in range(1,number_of_days+1)]
 
         log_counts = {}
-        
+        def call_dowell(field):
+            res=dowellconnection(*task_details_module, "fetch", field, update_field=None)
+            response_str = json.loads(res)['data']
+            # Process the response_str here or store it in a suitable data structure
+            for item in response_str:
+                if "project" in item.keys():
+                    project_name = item["project"]
+                    if project_name in log_counts.keys():
+                        log_counts[project_name] += 1
+                    else:
+                        log_counts[project_name] = 1
         # Define a function to fetch data using threads
         def fetch_data_for_date(task_created_date, company_id):
             field = {"company_id": company_id, "task_created_date": task_created_date}
             try:
-                res=dowellconnection(*task_details_module, "fetch", field, update_field=None)
-                response_str = json.loads(res)['data']
-                # Process the response_str here or store it in a suitable data structure
-                for item in response_str:
-                    if "project" in item.keys():
-                        project_name = item["project"]
-                        if project_name in log_counts.keys():
-                            log_counts[project_name] += 1
-                        else:
-                            log_counts[project_name] = 1
-            except json.decoder.JSONDecodeError:
-                pass
+                call_dowell(field)
+            except json.decoder.JSONDecodeError as error:
+                call_dowell(field)
+                
         # Create threads for each date
         threads = []
         for task_created_date in month_dates:
