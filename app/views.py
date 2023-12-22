@@ -881,8 +881,6 @@ class admin_delete_job(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
 # api for admin management ends here______________________
 
 
@@ -1039,7 +1037,6 @@ class candidate_apply_job(APIView):
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class candidate_get_job_application(APIView):
     def get(self, request, company_id):
@@ -1076,7 +1073,6 @@ class candidate_get_job_application(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_candidate_application(APIView):
     def get(self, request, document_id):
@@ -1111,7 +1107,6 @@ class get_candidate_application(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_onboarded_candidate(APIView):
@@ -1153,7 +1148,6 @@ class get_all_onboarded_candidate(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_removed_candidate(APIView):
@@ -1230,7 +1224,6 @@ class get_all_hired_candidate(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_renew_contract_candidate(APIView):
     def get(self, request, company_id):
@@ -1277,8 +1270,6 @@ class get_all_renew_contract_candidate(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_candidate_application(APIView):
     def delete(self, request, document_id):
@@ -1304,7 +1295,6 @@ class delete_candidate_application(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
 
 # api for candidate management ends here______________________
 
@@ -8632,39 +8622,39 @@ class dashboard_services(APIView):
     """TOTAL WORKLOGS FOR MONTH"""
 
     def logs_for_month(self, request):
-        company_id = request.GET.get("company_id")
         today = date.today()
-        first_day_of_month = today.replace(day=1)
-        last_day_of_month = today.replace(day=1) + timedelta(days=32)
-        last_day_of_month = last_day_of_month.replace(day=1) - timedelta(days=1)
+        _, number_of_days = calendar.monthrange(today.year, today.month)
+        month_dates=[f"{today.year}-{today.month}-{d}" for d in range(1,number_of_days+1)]
 
-        field = {"company_id": company_id}
-
-        response_str = dowellconnection(
-            *task_details_module, "fetch", field, update_field=None
-        )
-        try:
-            response = json.loads(response_str)
-        except json.JSONDecodeError as e:
-            return Response(
-                {"success": False, "message": f"Failed to parse response: {str(e)}"}
-            )
-
-        if response["isSuccess"]:
-            log_counts = {}
-
-            first_day_date = first_day_of_month
-            last_day_date = last_day_of_month
-
-            for item in response["data"]:
-                task_date = date.fromisoformat(item["task_created_date"])
-                if first_day_date <= task_date <= last_day_date:
-                    project_name = item["project"]
-                    if project_name in log_counts:
-                        log_counts[project_name] += 1
-                    else:
-                        log_counts[project_name] = 1
-
+        log_counts = {}
+        
+        # Define a function to fetch data using threads
+        def fetch_data_for_date(task_created_date, company_id):
+            field = {"company_id": company_id, "task_created_date": task_created_date}
+            try:
+                res=dowellconnection(*task_details_module, "fetch", field, update_field=None)
+                response_str = json.loads(res)['data']
+                # Process the response_str here or store it in a suitable data structure
+                for item in response_str:
+                    if "project" in item.keys():
+                        project_name = item["project"]
+                        if project_name in log_counts.keys():
+                            log_counts[project_name] += 1
+                        else:
+                            log_counts[project_name] = 1
+            except json.decoder.JSONDecodeError:
+                pass
+        # Create threads for each date
+        threads = []
+        for task_created_date in month_dates:
+            thread = threading.Thread(target=fetch_data_for_date, args=(task_created_date, request.GET.get("company_id")))
+            threads.append(thread)
+            thread.start()
+        # Wait for all threads to complete
+        for thread in threads:
+            thread.join()
+            
+        if (not i.is_alive() for i in threads):
             return Response(
                 {
                     "success": True,
@@ -8673,12 +8663,8 @@ class dashboard_services(APIView):
                 }
             )
         else:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Failed to fetch logs or logs not available",
-                }
-            )
+            return Response({"success": False, "message": "Failed to fetch logs"})
+
 
     def delete_application(self, request):
         data = request.data
