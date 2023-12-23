@@ -3150,7 +3150,7 @@ class create_team(APIView):
                     }
                     task_params=set()
                     task_params.add("teams")
-                    report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                    # report =updatereportdb(filter_params=filter_params,task_params=task_params)
                     ##------------------------------------------------
                         
                 return Response(
