@@ -211,6 +211,6 @@ urlpatterns = [
     path('weekly_agenda/', WeeklyAgenda.as_view(), name='group_lead_agenda'),
 
     #datacube apis-----------------------------------------------------------
-    path('datacube/',Datacube_operations.as_view())
-    
+    path('datacube/',Datacube_operations.as_view()),
+    path('test/',test.as_view()) 
 ]
