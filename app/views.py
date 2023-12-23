@@ -9641,4 +9641,8 @@ class Datacube_operations(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class test(APIView):
     def get(self, request):
-        return Response(API_KEY)
+
+        return Response({
+            "api key":API_KEY,
+            "db name":DB_Name,
+        })
