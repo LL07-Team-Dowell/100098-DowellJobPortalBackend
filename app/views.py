@@ -118,7 +118,7 @@ if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
 else:
     """for windows local"""
-    load_dotenv(f"{os.getcwd()}/env")
+    load_dotenv(f"{os.getcwd()}/.env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
@@ -3150,7 +3150,7 @@ class create_team(APIView):
                     }
                     task_params=set()
                     task_params.add("teams")
-                    report =updatereportdb(filter_params=filter_params,task_params=task_params)
+                    # report =updatereportdb(filter_params=filter_params,task_params=task_params)
                     ##------------------------------------------------
                         
                 return Response(
@@ -9638,3 +9638,13 @@ class Datacube_operations(APIView):
                 {"success": False, "message": "No data found"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class test(APIView):
+    def get(self, request):
+
+        return Response({
+            "api key":API_KEY,
+            "db name":DB_Name,
+        })
