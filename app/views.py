@@ -3136,23 +3136,7 @@ class create_team(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
-                ##adding to sqlite--------------------------------
-                for username in field["members"]:
-                    check = dowellconnection(
-                                *candidate_management_reports, "fetch", {"username":username}, update_field)
-                    
-                    year,monthname, monthcount = get_month_details(field["date_created"])
-                    filter_params={
-                        "applicant_id":json.loads(check)["data"][0]["_id"],
-                        "year":year, 
-                        "month":monthname, 
-                        "company_id":field["company_id"]
-                    }
-                    task_params=set()
-                    task_params.add("teams")
-                    # report =updatereportdb(filter_params=filter_params,task_params=task_params)
-                    ##------------------------------------------------
-                        
+                
                 return Response(
                     {
                         "message": "Team created successfully",
@@ -9638,8 +9622,6 @@ class Datacube_operations(APIView):
                 {"success": False, "message": "No data found"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-
 @method_decorator(csrf_exempt, name='dispatch')
 class test(APIView):
     def get(self, request):
