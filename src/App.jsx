@@ -106,6 +106,7 @@ import CandidateRenewContract from "./pages/CandidatePage/views/CandidateRenewCo
 import ProjectLeadAgendaPage from "./pages/ProjectLeadPage/views/Agenda/ProjectLeadAgendaPage";
 import TeamLeadAgendaPage from "./pages/TeamleadPage/views/Agenda/TeamLeadAgendaPage";
 import AdminAgendaPage from "./pages/AdminPage/views/Agenda/AdminAgendaPage";
+import AgendaReport from "./pages/AdminPage/views/Agenda/AgendaReportPage/AgendaReport";
 
 function App() {
   // console.log = () => {};
@@ -809,6 +810,18 @@ function App() {
               <CandidateTaskContextProvider>
                 <ValuesProvider>
                   <AdminReports />
+                </ValuesProvider>
+              </CandidateTaskContextProvider>
+            </JobContextProvider>
+          }
+        />
+        <Route
+          path='/report/agenda-report'
+          element={
+            <JobContextProvider>
+              <CandidateTaskContextProvider>
+                <ValuesProvider>
+                  <AgendaReport />
                 </ValuesProvider>
               </CandidateTaskContextProvider>
             </JobContextProvider>
