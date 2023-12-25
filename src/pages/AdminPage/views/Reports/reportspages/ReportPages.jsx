@@ -29,7 +29,7 @@ const ReportPages = ({ subAdminView }) => {
             </div>
             <h4>Organization report</h4>
             <p>
-            Unlock the power of data by gaining valuable insights with our organization report. 
+              Unlock the power of data by gaining valuable insights with our organization report.
 
             </p>
           </div>
@@ -44,7 +44,7 @@ const ReportPages = ({ subAdminView }) => {
             </div>
             <h4>Individual report</h4>
             <p>
-            Get well-detailed actionable insights on hired individuals in your organization
+              Get well-detailed actionable insights on hired individuals in your organization
             </p>
           </div>
         </div>
@@ -99,6 +99,20 @@ const ReportPages = ({ subAdminView }) => {
             <h4>Leaderboard report</h4>
             <p>
               Get insights into the top performers in your organization
+            </p>
+          </div>
+        </div>
+        <div
+          className="Create_Team"
+          onClick={() => navigate("agenda-report")}
+        >
+          <div>
+            <div>
+              <AiOutlinePlusCircle className="icon" />
+            </div>
+            <h4>Agenda report</h4>
+            <p>
+              Get insights into the agenda items and weekly progress in your organization
             </p>
           </div>
         </div>
