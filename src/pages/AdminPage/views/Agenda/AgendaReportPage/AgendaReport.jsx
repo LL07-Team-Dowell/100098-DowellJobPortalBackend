@@ -8,6 +8,8 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { Bar } from 'react-chartjs-2';
 import { getSettingUserProject } from "../../../../../services/hrServices";
 import { getSettingUserSubProject } from "../../../../../services/adminServices";
+import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
+import { getWeeklyAgenda } from "../../../../../services/commonServices";
 
 const AgendaReport = () => {
     //dummy data
@@ -81,20 +83,20 @@ const AgendaReport = () => {
     const [totalSubTasks, setTotalSubTasks] = useState("");
     const [evaluatorResponse, setEvaluatorResponse] = useState([]);
     const [noResultFound, setNoResultFound] = useState(false);
+    const { currentUser } = useCurrentUserContext();
 
-    const companyId = "6385c0f18eca0fb652c94561";
+    // const companyId = "6385c0f18eca0fb652c94561";
 
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                const response = await axios.get(
-                    "https://100098.pythonanywhere.com/settinguserproject/",
-                );
-                const data = response.data;
+                const data = (await getSettingUserProject()).data;
                 const companyProjects = data.filter(
-                    (project) => project.company_id === companyId,
-                );
-
+                    (project) => 
+                        project.company_id === currentUser?.portfolio_info[0]?.org_id
+                        &&
+                        project.data_type === currentUser?.portfolio_info[0]?.data_type
+                ).reverse();
                 if (companyProjects.length > 0) {
                     const projectList = companyProjects[0].project_list || [];
                     setProjects(projectList);
@@ -109,9 +111,7 @@ const AgendaReport = () => {
 
     const fetchSubProjects = async (selectedProjectId) => {
         try {
-            const response = await axios.get(
-                "https://100098.pythonanywhere.com/settingusersubproject/",
-            );
+            const response = await getSettingUserSubProject()
 
             if (response.data && Array.isArray(response.data.data)) {
                 const data = response.data.data;
@@ -218,7 +218,7 @@ const AgendaReport = () => {
         //         console.error('Errorrrrrrrrrrr:', error);
         //     });
 
-        axios.post(`https://100098.pythonanywhere.com/weekly_agenda/?type=all_weekly_agendas&limit=1&offset=1&sub_project=${processedSubProject}&project=${selectedProject}`)
+        getWeeklyAgenda(1, 1, processedSubProject, selectedProject)
             .then(response => {
                 console.log("testinggggggggggggg", response.data);
 
@@ -385,7 +385,7 @@ const AgendaReport = () => {
 
                             </div>
                             <div className="progress_main_div">
-                                <div className="report">
+                                <div className="agenda_report_wrap">
                                     <div className="report_agenda">
                                         <h2>{agendaTitle}</h2>
                                         <p>{agendaDescription}</p>

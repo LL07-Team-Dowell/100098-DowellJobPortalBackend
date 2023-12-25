@@ -282,7 +282,7 @@ const AdminDashboard = ({ subAdminView }) => {
                             <p>{projectsLoading ? '' : 'total projects'}</p>
                         </div>
                         <div className={`${styles.project__item} ${styles.grey__Bg} ${subProjectsLoading ? skeletonStyles.skeleton : ''}`}>
-                            <h3>{subProjectsLoading ? '' : subProjectsAdded?.length}</h3>
+                            <h3>{subProjectsLoading ? '' : subProjectsAdded?.reduce((a, b) => a + b.sub_project_list.length, 0)}</h3>
                             <p>{subProjectsLoading ? '' : 'total subprojects'}</p>
                         </div>
                     </section>

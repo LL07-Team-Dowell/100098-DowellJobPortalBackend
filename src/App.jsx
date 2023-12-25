@@ -109,7 +109,8 @@ import AdminAgendaPage from "./pages/AdminPage/views/Agenda/AdminAgendaPage";
 import AgendaReport from "./pages/AdminPage/views/Agenda/AgendaReportPage/AgendaReport";
 
 function App() {
-  // console.log = () => {};
+  console.log = () => {};
+
   const {
     currentUser,
     isPublicUser,
@@ -127,7 +128,6 @@ function App() {
     reportsUserDetails,
     setReportsUserDetails,
   } = useCurrentUserContext();
-  console.log({ currentUser });
 
   const [loading, setLoading] = useState(true);
   const [candidateHired, setCandidateHired] = useState(false);
