@@ -251,10 +251,7 @@ const LandingPage = ({ subAdminView }) => {
             response[4]?.data?.data
               ?.filter(
                 (item) =>
-                  item.company_id === currentUser.portfolio_info[0].org_id
-              )
-              .filter(
-                (item) =>
+                  item.company_id === currentUser.portfolio_info[0].org_id &&
                   item.data_type === currentUser.portfolio_info[0].data_type
               )
               .reverse()

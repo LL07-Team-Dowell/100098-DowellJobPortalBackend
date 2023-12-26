@@ -51,9 +51,12 @@ export default function useLoadAdminDashboardData(
             updateProjectsLoadedState(true);
       
             updateSubprojects(
-                res[1]?.data?.data?.filter(item => item.company_id === userDetail?.portfolio_info[0]?.org_id)
-                .filter(item => item.data_type === userDetail?.portfolio_info[0]?.data_type)
-                .reverse()
+                res[1]?.data?.data
+                ?.filter(item => 
+                    item.company_id === userDetail?.portfolio_info[0]?.org_id &&
+                    item.data_type === userDetail?.portfolio_info[0]?.data_type
+                )
+                ?.reverse()
             );
             updateSubProjectsLoadingState(false);
             updateSubProjectsLoadedState(true);

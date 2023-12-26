@@ -114,7 +114,11 @@ const AgendaReport = () => {
             const response = await getSettingUserSubProject()
 
             if (response.data && Array.isArray(response.data.data)) {
-                const data = response.data.data;
+                const data = response.data.data?.filter(
+                    item => 
+                    item.company_id === currentUser?.portfolio_info[0]?.org_id &&
+                    item.data_type === currentUser?.portfolio_info[0]?.data_type
+                )?.reverse();
 
                 const selectedProjectData = data.find(
                     (projectData) => projectData.parent_project === selectedProjectId,
