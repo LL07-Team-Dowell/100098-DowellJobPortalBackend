@@ -405,6 +405,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                   />
                 </label>
               )}
+              <br />
               <button
                 className={styles.edit__Btn}
                 disabled={editLoading ? true : false}

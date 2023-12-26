@@ -9,7 +9,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    gap: 1.3rem;
+    gap: 1rem;
     font-family: 'Poppins', sans-serif;
     position: relative;
 }

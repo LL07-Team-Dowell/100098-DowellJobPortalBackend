@@ -133,6 +133,7 @@ const AllApplicationsScreen = () => {
                                 { label: 'Selected', value: 'selected'},
                                 { label: 'Hired', value: 'hired'},
                                 { label: 'Rejected', value: 'Rejected'},
+                                { label: 'Leave', value: 'Leave'},
                                 { label: 'Removed', value: 'Removed'},
                             ]}
                             onChange={(val) => {

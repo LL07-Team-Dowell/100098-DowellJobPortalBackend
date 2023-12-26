@@ -11,4 +11,5 @@ export const candidateStatuses = {
     REHIRE: "rehired",
     REMOVED: 'Removed',
     RENEWCONTRACT: "renew_contract",
+    LEAVE: "Leave",
 }
