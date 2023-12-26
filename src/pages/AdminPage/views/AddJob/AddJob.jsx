@@ -66,7 +66,6 @@ const AddJob = ({ subAdminView }) => {
     // user_type: currentUser.userinfo.User_type,
     // company_name: currentUser.portfolio_info[0].org_name,
     created_on: new Date(),
-    rejected_on: new Date(),
   });
 
   const [selectedOption, setSelectedOption] = useState("");
@@ -216,11 +215,84 @@ const AddJob = ({ subAdminView }) => {
       });
   }, [countryState]);
 
+  const jobPassedValidationChecks = (jobToCheck={}, fieldsToCheckAgainst=[], checkJobTerms=false) => {    
+    const validationScrollActions = {
+      job_title: () => jobTitleRef.current.scrollIntoView({ behavior: "smooth" }),
+      skills: () => skillsRef.current.scrollIntoView({ behavior: "smooth" }),
+      time_interval: () => timeIntervalRef.current.scrollIntoView({ behavior: "smooth" }),
+      payment: () => paymentRef.current.scrollIntoView({ behavior: "smooth" }),
+      description: () => descriptionRef.current.scrollIntoView({ behavior: "smooth" }),
+      qualification: () => qualificationRef.current.scrollIntoView({ behavior: "smooth" }),
+    }
+
+    const foundMissingValidation = fieldsToCheckAgainst.find((field) => jobToCheck[field] === "");
+
+    if (foundMissingValidation) {
+      toast.info(
+        `Please input ${foundMissingValidation?.replaceAll('_', ' ')}`
+      );
+      
+      const jobHasValidationAction = validationScrollActions[`${foundMissingValidation}`];
+      if (jobHasValidationAction) jobHasValidationAction();
+
+      return false
+    }
+    
+    if (!isValidCurrency) {
+      toast.info("Please select a currency");
+      return false;
+    }
+
+    if (checkJobTerms) {
+      const isEveryGeneralTermFilled = jobToCheck.general_terms.every(
+        (term) => term.length > 0
+      );
+      if (!isEveryGeneralTermFilled) {
+        toast.info("No general term can be left empty");
+        return false
+      }
+
+      const isEveryTechnicalTermFilled = jobToCheck.technical_specification.every(
+        (term) => term.length > 0
+      );
+      if (!isEveryTechnicalTermFilled) {
+        toast.info("No technical term can be left empty");
+        return false
+      }
+  
+      const isEveryPaymentTermFilled = jobToCheck.payment_terms.every(
+        (term) => term.length > 0
+      );
+      if (!isEveryPaymentTermFilled) {
+        toast.info("No payment term can be left empty");
+        return false
+      }
+  
+      const isEveryWorkflowTermFilled = jobToCheck.workflow_terms.every(
+        (term) => term.length > 0
+      );
+      if (!isEveryWorkflowTermFilled) {
+        toast.info("No workflow term can be left empty");
+        return false
+      }
+  
+      const isEveryOtherInfoTermFilled = jobToCheck.other_info.every(
+        (term) => term.length > 0
+      );
+      if (!isEveryOtherInfoTermFilled) {
+        toast.info("No other info term can be left empty");
+        return false
+      }
+    }
+
+    return true
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // console.log(newJob);
 
-    const fields = [
+    const publicFields = [
       "job_title",
       "skills",
       "type_of_job",
@@ -229,10 +301,7 @@ const AddJob = ({ subAdminView }) => {
       "paymentInterval",
       "description",
       "job_category",
-      "type_of_opening",
       "module",
-      "country",
-      "city",
       "qualification",
       "general_terms",
       "technical_specification",
@@ -241,126 +310,31 @@ const AddJob = ({ subAdminView }) => {
       "other_info",
     ];
 
-    if (newJob.job_category === "" && currentTab !== "Regional Associate") {
-      toast.info("Please select a category type");
-      return;
-    } else if (fields.find((field) => newJob[field] === "")) {
-      toast.info(
-        `Please select ${fields.find((field) => newJob[field] === "")} field`
-      );
-      return;
-    }
-    if (newJob.type_of_opening === "" && currentTab !== "Regional Associate") {
-      toast.info("Please select type of opening");
-      return;
-    } else if (fields.find((field) => newJob[field] === "")) {
-      toast.info(
-        `Please select ${fields.find((field) => newJob[field] === "")} field`
-      );
-      return;
-    }
-    if (newJob.type_of_job === "" && currentTab !== "Regional Associate") {
-      toast.info("Please select type of job");
-      return;
-    } else if (fields.find((field) => newJob[field] === "")) {
-      toast.info(
-        `Please select ${fields.find((field) => newJob[field] === "")} field`
-      );
-      return;
-    }
-    if (newJob.module === "" && currentTab !== "Regional Associate") {
-      toast.info("Please select Module");
-      return;
-    } else if (fields.find((field) => newJob[field] === "")) {
-      toast.info(
-        `Please select ${fields.find((field) => newJob[field] === "")} field`
-      );
-      return;
-    }
+    const internalFields = [
+      ...publicFields,
+      "type_of_opening",
+    ]
 
-    if (newJob.paymentInterval === "") {
-      toast.info("Please select payment interval");
-      return;
-    } else if (fields.find((field) => newJob[field] === "")) {
-      toast.info(
-        `Please select ${fields.find((field) => newJob[field] === "")} field`
-      );
-      return;
-    }
+    const regionalFields = [
+      "job_title",
+      "job_category",
+      "skills",
+      "country",
+      "city",
+      "description",
+      "qualification",
+      "payment",
+      "paymentInterval",
+    ]
 
-    if (newJob.job_title === "") {
-      toast.info("Please input job title");
-      jobTitleRef.current.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
-    if (newJob.skills === "") {
-      toast.info("Please input skills");
-      skillsRef.current.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
-    if (newJob.time_interval === "") {
-      toast.info("Please input time interval");
-      timeIntervalRef.current.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
-    if (newJob.payment === "") {
-      toast.info("Please input payment");
-      paymentRef.current.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
-    if (!isValidCurrency) {
-      toast.info("Please select a currency");
-      return;
-    }
-
-    if (newJob.description === "") {
-      toast.info("Please input description");
-      descriptionRef.current.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
-    if (newJob.qualification === "") {
-      toast.info("Please input qualification");
-      qualificationRef.current.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
-    const isEveryGeneralTermFilled = newJob.general_terms.every(
-      (term) => term.length > 0
-    );
-    if (!isEveryGeneralTermFilled)
-      return toast.info("No general term can be left empty");
-
-    const isEveryTechnicalTermFilled = newJob.technical_specification.every(
-      (term) => term.length > 0
-    );
-    if (!isEveryTechnicalTermFilled)
-      return toast.info("No technical term can be left empty");
-
-    const isEveryPaymentTermFilled = newJob.payment_terms.every(
-      (term) => term.length > 0
-    );
-    if (!isEveryPaymentTermFilled)
-      return toast.info("No payment term can be left empty");
-
-    const isEveryWorkflowTermFilled = newJob.workflow_terms.every(
-      (term) => term.length > 0
-    );
-    if (!isEveryWorkflowTermFilled)
-      return toast.info("No workflow term can be left empty");
-
-    const isEveryOtherInfoTermFilled = newJob.other_info.every(
-      (term) => term.length > 0
-    );
-    if (!isEveryOtherInfoTermFilled)
-      return toast.info("No other info term can be left empty");
-
-    setIsLoading(true);
+    // PUBLIC JOB CREATION
     if (!currentTab) {
+      const jobIsValid = jobPassedValidationChecks(newJob, publicFields, true);
+
+      if (!jobIsValid) return
+
+      setIsLoading(true);
+
       try {
         const response = await addNewJob({
           ...newJob,
@@ -377,14 +351,24 @@ const AddJob = ({ subAdminView }) => {
           navigate("/");
         } else {
           toast.info("Something went wrong");
+          setIsLoading(false);
         }
       } catch (error) {
         toast.error("Something went wrong");
+        setIsLoading(false);
       }
-      return;
+
+      return
     }
 
-    if (currentTab === "Internal") {
+    // INTERNAL JOB CREATION
+    if (currentTab === 'Internal') {
+      const jobIsValid = jobPassedValidationChecks(newJob, internalFields, true);
+
+      if (!jobIsValid) return
+
+      setIsLoading(true);
+
       try {
         const response = await addInternalJob({
           ...newJob,
@@ -401,14 +385,22 @@ const AddJob = ({ subAdminView }) => {
           navigate("/");
         } else {
           toast.info("Something went wrong");
+          setIsLoading(false);
         }
       } catch (error) {
         toast.error("Something went wrong");
+        setIsLoading(false);
       }
-      return;
     }
 
-    if (currentTab === "Regional Associate") {
+    // REGIONAL JOB CREATION
+    if (currentTab === 'Regional Associate') {
+      const jobIsValid = jobPassedValidationChecks(newJob, regionalFields);
+
+      if (!jobIsValid) return
+
+      setIsLoading(true);
+
       try {
         const response = await regionalAssociatesJob({
           ...newJob,
@@ -428,14 +420,13 @@ const AddJob = ({ subAdminView }) => {
           navigate("/");
         } else {
           toast.info("Something went wrong");
+          setIsLoading(false);
         }
       } catch (error) {
         toast.error("Something went wrong");
+        setIsLoading(false);
       }
-      return;
     }
-
-    setIsLoading(false);
   };
 
   return (
