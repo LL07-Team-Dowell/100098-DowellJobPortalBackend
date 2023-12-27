@@ -8384,6 +8384,8 @@ class ProjectDetails(APIView):
             return self.update_month_project(request)
         elif type_request == "update_year_project":
             return self.update_year_project(request)
+        else:
+            return self.handle_error(request,"'update_day_project'|'update_month_project'|'update_year_project'")
         
     def get(self, request):
         type_request = request.GET.get("type")
@@ -8391,8 +8393,14 @@ class ProjectDetails(APIView):
             return self.get_day_project(request)
         elif type_request == "custom":
             return self.get_custom_project(request)
+        else:
+            return self.handle_error(request,"'day'|'custom'")
     
     def get_day_project(self, request):
+        if not request.GET.get("date"):
+            return Response({"success": False,"message": "Please provide date"},status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get("company_id"):
+            return Response({"success": False,"message": "Please provide company_id"},status=status.HTTP_400_BAD_REQUEST)
         _date=request.GET.get("date")#e.g 2023-12-24
         api_key = API_KEY
         db_name= PROJECT_DB_NAME
@@ -8413,29 +8421,84 @@ class ProjectDetails(APIView):
             return Response({"success": False, "message": f"Failed to fetch project details,{get_collection['message']}"}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_custom_project(self, request):
-        """res=[]
-        today = date.today()
-        st_date = datetime.strptime(request.GET.get("st_date"), "%Y-%m-%d")
-        ed_date = datetime.strptime(request.GET.get("ed_date"), "%Y-%m-%d")
-        print(st_date,ed_date)
-        _, number_of_days = calendar.monthrange(today.year, today.month)
-        custom_dates=[f"{today.year}-{today.month}-{d}" for d in range(1,number_of_days+1)]
+        if not request.GET.get("start_date"):
+            return Response({"success": False, "message": "Please provide start date"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get("end_date"):
+            return Response({"success": False, "message": "Please provide end date"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get("company_id"):
+            return Response({"success": False, "message": "Please provide company id"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        st_date = datetime.strptime(request.GET.get("start_date"), "%Y-%m-%d")
+        ed_date = datetime.strptime(request.GET.get("end_date"), "%Y-%m-%d")
+        delta = timedelta(days=1)
 
-        log_counts = {}
+        if st_date > ed_date:
+            return Response({"success": False, "message": "Start date should be less than end date"}, status=status.HTTP_400_BAD_REQUEST)
+        if st_date.date() > datetime.now().date():
+            return Response({"success": False, "message": "Start date should be less than or equal to today's date"}, status=status.HTTP_400_BAD_REQUEST)
+        if ed_date.date() > datetime.now().date():
+            return Response({"success": False, "message": "End date should be less than or equal to today's date"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        res={'company_id':request.GET.get('company_id'),
+             'data':[]}
+        _d={'data':{}}
+        
+        custom_dates =[]
+        while st_date <= ed_date:
+            custom_dates.append(f"{st_date.year}-{st_date.month}-{st_date.day}")
+            st_date += delta
+
         def call_datacube(field):
-            _date=request.GET.get("date")#2023-12-24
+            _date=field['task_created_date']
             api_key = API_KEY
             db_name= PROJECT_DB_NAME
             coll_name =_date
-            query={"company_id":request.GET.get("company_id")}
-            res=datacube_data_retrival(api_key,db_name,coll_name,query,10,1)
-            response_str = json.loads(res)['data']
+            query={'company_id':request.GET.get('company_id')}
+            get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,0))
+            
             # Process the response_str here or store it in a suitable data structure
-            for item in response_str:
-                res.append(item)
+            for item in get_collection['data']:
+                for i in item['data']:
+                    if i['project'] not in _d['data'].keys():
+                        _d['data'][i['project']]={}
+                    if 'total time (hrs)' not in _d['data'][i['project']].keys():
+                        _d['data'][i['project']]["total time (hrs)"]=0
+                    _d['data'][i['project']]["total time (hrs)"]+=i["total time (hrs)"]
+                    
+                    if 'total tasks' not in _d['data'][i['project']].keys():
+                        _d['data'][i['project']]["total tasks"]=0
+                    _d['data'][i['project']]["total tasks"]+=i['total tasks']
+                    
+                    if "subprojects" not in _d['data'][i['project']].keys():
+                        _d['data'][i['project']]['subprojects'] = {}
+                    for x in i['subprojects']:
+                        if x["subproject"] not in _d['data'][i['project']]['subprojects'].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]={}
+                        if "time added (hrs)" not in _d['data'][i['project']]['subprojects'][x["subproject"]].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["time added (hrs)"]=0
+                        _d['data'][i['project']]['subprojects'][x["subproject"]]["time added (hrs)"]+=x["time added (hrs)"]
+                        
+                        if "total_tasks" not in _d['data'][i['project']]['subprojects'][x["subproject"]].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["total_tasks"]=0
+                        _d['data'][i['project']]['subprojects'][x["subproject"]]["total_tasks"]+=x["total_tasks"]
+                        
+                        if "candidates" not in _d['data'][i['project']]['subprojects'][x["subproject"]].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"]={}
+                        for y in x["candidates"]:
+                            if y["candidate"] not in _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"].keys():
+                                _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]={}
+                            if "time added (hrs)" not in _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]].keys():
+                                _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["time added (hrs)"]=0
+                            
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["time added (hrs)"]+=y["time added (hrs)"]
+                            if "total_tasks" not in _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]].keys():
+                                _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["total_tasks"]=0
+                            
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["total_tasks"]+=y["total_tasks"]
+  
         # Define a function to fetch data using threads
         def fetch_data_for_date(task_created_date, company_id):
-            field = {"company_id": company_id, "task_created_date": task_created_date}
+            field = {'company_id': company_id, 'task_created_date': task_created_date}
             try:
                 call_datacube(field)
             except json.decoder.JSONDecodeError as error:
@@ -8444,7 +8507,7 @@ class ProjectDetails(APIView):
         # Create threads for each date
         threads = []
         for task_created_date in custom_dates:
-            thread = threading.Thread(target=fetch_data_for_date, args=(task_created_date, request.GET.get("company_id")))
+            thread = threading.Thread(target=fetch_data_for_date, args=(task_created_date, request.GET.get('company_id')))
             threads.append(thread)
             thread.start()
         # Wait for all threads to complete
@@ -8452,18 +8515,42 @@ class ProjectDetails(APIView):
             thread.join()
             
         if (not i.is_alive() for i in threads):
+            for k,v in _d['data'].items():
+                item={'project':k,
+                      'total time (hrs)':v['total time (hrs)'],
+                      'total tasks':v['total tasks'],
+                      'subprojects':[]
+                      }
+                for k1,v1 in v['subprojects'].items():
+                    subitem={'total tasks':k1,
+                             'time added (hrs)':v1['time added (hrs)'],
+                             'total_tasks':v1['total_tasks'],
+                             'candidates':[]
+                             }
+                    for k2,v2 in v1['candidates'].items():
+                        subsubitem={'candidate':k2,
+                                    'time added (hrs)':v2['time added (hrs)'],
+                                    'total_tasks':v2['total_tasks']
+                                    }
+                        subitem['candidates'].append(subsubitem)
+                    item['subprojects'].append(subitem)
+                res["data"].append(item)
             return Response(
                 {
                     "success": True,
                     "message": "Total number of worklogs for the month",
-                    "logs_for_month": log_counts,
+                    "data": res,
                 }
             )
         else:
-            return Response({"success": False, "message": "Failed to fetch logs"})"""
-        return Response({"success": False, "message": "incomplete api"})
-
+            return Response({"success": False, "message": "Failed to fetch logs"})
+        
     def update_day_project(self,request): 
+        if not request.GET.get('date'):
+            return Response({"success": False, "message": "Date is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('company_id'):
+            return Response({"success": False, "message": "Company id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
         res=[]
         item={}
         
@@ -8578,13 +8665,19 @@ class ProjectDetails(APIView):
                         },status=status.HTTP_200_OK)
             return Response({"success": False, "message": response['message']}, status=status.HTTP_400_BAD_REQUEST)
     
-    def update_month_projects(self,request):
+    def update_month_project(self,request):
+        if not request.GET.get('company_id'):
+            return Response({"success": False, "message": "please provide the company_id"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('month'):
+            return Response({"success": False, "message": "please provide the month"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('year'):
+            return Response({"success": False, "message": "please provide the year"}, status=status.HTTP_400_BAD_REQUEST)
         month = request.GET.get('month')
         year = request.GET.get('year')
         
-        _, number_of_days = calendar.monthrange(int(year), month)
+        _, number_of_days = calendar.monthrange(int(year), int(month))
         _month_dates = [f"{year}-{month}-{d}" for d in range(1, number_of_days + 1)]
-        print(_month_dates)
+        #print(_month_dates)
         res=[]
         item={}
         for day in _month_dates:
@@ -8689,7 +8782,12 @@ class ProjectDetails(APIView):
                 'message': f'successfully inserted the data '
             },status=status.HTTP_200_OK)
         
-    def update_year_projects(self, request):
+    def update_year_project(self, request):
+        if not request.GET.get('year'):
+            return Response({"success": False, "message": "please provide the year"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('company_id'):
+             return Response({"success": False, "message": "please provide the company_id"}, status=status.HTTP_400_BAD_REQUEST)
+        
         year = request.GET.get('year')
         _year_dates=[]
         for month in range(1, 13):
@@ -8803,6 +8901,15 @@ class ProjectDetails(APIView):
                 
             },status=status.HTTP_200_OK)
 
+    def handle_error(self, request,exc):
+        return Response(
+            {
+                "success": False,
+                "message": f"Specify the type -> {exc}",
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
 @method_decorator(csrf_exempt, name="dispatch")
 class Testing_Threads(APIView):
     def get(self, request, company_id):
@@ -8846,7 +8953,6 @@ class Testing_Threads(APIView):
                     "data": [],
                 }
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Product_Services_API(APIView):
@@ -9332,9 +9438,9 @@ class ReportDB(APIView):
                 )
             # -------------------------------------------------------------------------------
             coll_name = payload['username']
-            query ={"username":payload['username'],
-                    "year":year,
-                    "company_id":payload['company_id']
+            query ={'username':payload['username'],
+                    'year':year,
+                    'company_id':payload['company_id']
                     }
             get_collection = json.loads(datacube_data_retrival(API_KEY,REPORT_DB_NAME,coll_name,query,10,1))
             
