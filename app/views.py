@@ -124,6 +124,7 @@ else:
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
+    PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
 
 # Create your views here.
 
@@ -8394,8 +8395,7 @@ class ProjectDetails(APIView):
         db_name= PROJECT_DB_NAME
         coll_name =_date
         query={"company_id":request.GET.get("company_id")}
-        get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,1))
-        print(get_collection)
+        get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,0))
         if get_collection['success']==True:
             res= get_collection['data']
             return Response(
