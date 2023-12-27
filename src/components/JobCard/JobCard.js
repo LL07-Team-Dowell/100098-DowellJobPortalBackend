@@ -106,7 +106,7 @@ const JobCard = ({
                 {
                     showIndicatorForHR &&
                     <div>
-                        <FaCircle color='#005734' />
+                        <FaCircle color='#005734' size={'0.7rem'} />
                     </div>
                 }
             </h2>

@@ -647,7 +647,7 @@ function HrJobScreen() {
                           viewJobApplicationDetails={true}
                           applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
                           handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job_number === job.job_number))}
-                          showIndicatorForHR = {appliedJobs.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
+                          showIndicatorForHR = {guestApplications.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
                         />
                       </>
                     })) :
@@ -661,7 +661,7 @@ function HrJobScreen() {
                           viewJobApplicationDetails={true}
                           applicationsCount={guestApplications.filter(application => application.job_number === job.job_number).length}
                           handleBtnClick={() => goToGuestJobDetails(job, guestApplications.filter(application => application.job_number === job.job_number))}
-                          showIndicatorForHR = {appliedJobs.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
+                          showIndicatorForHR = {guestApplications.filter(application => application.job_number === job.job_number).length > 0 ? true : false}
                         />
                       </>
                     }))
