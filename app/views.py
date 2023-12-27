@@ -117,12 +117,15 @@ if os.getenv("DB_Name"):
     DB_Name = str(os.getenv("DB_Name"))
 if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
+if os.getenv("PROJECT_DB_NAME"):
+    PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
+    PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
 
 # Create your views here.
@@ -8393,8 +8396,8 @@ class ProjectDetails(APIView):
         api_key = API_KEY
         db_name= PROJECT_DB_NAME
         coll_name =_date
-        query={"company_id":request.GET.get("company_id")}
-        get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,1))
+        query={'company_id':request.GET.get('company_id')} #{"company_id":'6385c0f18eca0fb652c94561'}
+        get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,2))
         print(get_collection)
         if get_collection['success']==True:
             res= get_collection['data']
