@@ -423,9 +423,9 @@ def update_report_database(task_created_date,company_id):
                         update_data={"data":data} #'''incomplete---'''
                         update_collection = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
                         if update_collection['success']==True:
-                            print(f'successfully updated the data the collection- {coll_name}')
+                            print(f"successfully updated the data the collection- {coll_name}")
                         else:
-                            print(f'failed to update the data the collection- {coll_name}----{update_collection['message']}')
+                            print(f"failed to update the data the collection- {coll_name}----{update_collection['message']}")
 
 if __name__ == "__main__":
     company_id = "6385c0f18eca0fb652c94561"

@@ -8546,6 +8546,7 @@ class ProjectDetails(APIView):
             return Response({"success": False, "message": "Failed to fetch logs"})
         
     def update_day_project(self,request): 
+        print("------------checking paramaters------------")
         if not request.GET.get('date'):
             return Response({"success": False, "message": "Date is required"}, status=status.HTTP_400_BAD_REQUEST)
         if not request.GET.get('company_id'):
@@ -8562,6 +8563,7 @@ class ProjectDetails(APIView):
         field={"company_id":request.GET.get("company_id"), "task_created_date":task_created_date}
         tasks=json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
         if (tasks['isSuccess'] == True):
+            print("tasks exists, processing projects details-------------------")
             for task in tasks['data']:
                 if 'task_id' in task.keys():
                     c=json.loads(dowellconnection(*task_management_reports, "fetch", {"task_created_date":task_created_date, "_id":task["task_id"]}, update_field=None))['data']
@@ -8633,7 +8635,6 @@ class ProjectDetails(APIView):
                         "total_tasks":v1["total_tasks"] if 'total_tasks' in v1.keys() else 0,
                         "candidates":[]
                     }
-                    print(v1, "==========================")
                     if 'candidates' in v1.keys():
                         for k2, v2 in v1['candidates'].items():
                             _d2 ={
@@ -8651,18 +8652,19 @@ class ProjectDetails(APIView):
             data={"date":task_created_date, 'company_id':request.GET.get("company_id"), "data":res}
             response = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
             if response['success']==True:
-                print(f'successfully created the collection-{coll_name}')
+                print(f'successfully created the collection-{coll_name}-------------')
                 #inserting data into the collection------------------------------
                 
                 response = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
                 if response['success']==True:
-                    print(f'successfully inserted the data the collection-{coll_name}')
+                    print(f'successfully inserted the data the collection-{coll_name}---------------')
                     return Response(
                         {
                             "success": True,
                             'message': f'successfully inserted the data the collection-{coll_name}',
                             "data": data,
                         },status=status.HTTP_200_OK)
+            print(f"error in inserting the data -> {response['message']}--------------------")
             return Response({"success": False, "message": response['message']}, status=status.HTTP_400_BAD_REQUEST)
     
     def update_month_project(self,request):
