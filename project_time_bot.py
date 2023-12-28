@@ -1,6 +1,6 @@
-import requests
-from datetime import datetime, timedelta, date
 import json
+from datetime import datetime, timedelta, date
+import requests
 import threading
 
 task_management_reports = [
@@ -19,6 +19,7 @@ task_details_module = [
     "1000981019",
     "ABCDE",
 ]
+
 """Dowell Connection"""
 def dowellconnection(cluster,database,collection,document,team_member_ID,function_ID,command,field,update_field):
     url = "http://uxlivinglab.pythonanywhere.com"
@@ -160,23 +161,25 @@ def update_spent_time(project,company_id, spent_time):
 
     return res 
 
-def main():
-    print("-----------------------------------")
-    print("----------Process started----------")
-    #get time spent------------------------------
-    company_id = "63a2b3fb2be81449d3a30d3f"#"6385c0f18eca0fb652c94561"
-    
-    today = datetime.today().date()
-    yesterday = today - timedelta(days=1)
-
-    search_date=yesterday#'2023-11-15'
-    spent_time = get_projects_spent_total_time(company_id, search_date=search_date)
+def update_project_time(company_id,_date):
+    spent_time = get_projects_spent_total_time(company_id, search_date=_date)
     """for s in spent_time:
         response = update_spent_time(project=s,company_id=company_id, spent_time=spent_time[s])
         print(s,spent_time[s], response)"""
-    print("---Done getting spent time---------")
+    res ="done"
+    return res
 
-    #update total project time------------------------------
+def main():
+    print("-----------------------------------")
+    print("----------Process started----------")
+
+    company_id='6385c0f18eca0fb652c94561'
+    _date = datetime.today().date()-timedelta(days=1)
+    _date = _date.strftime("%Y-%m-%d")
+
+    """project time"""
+    project_time = update_project_time(company_id=company_id,_date=_date)
+
     print("----------Process done-------------")
     print("-----------------------------------")
       
