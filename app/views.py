@@ -8563,8 +8563,9 @@ class ProjectDetails(APIView):
         field={"company_id":request.GET.get("company_id"), "task_created_date":task_created_date}
         tasks=json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
         if (tasks['isSuccess'] == True):
-            print("tasks exists, processing projects details-------------------")
-            for task in tasks['data']:
+            print("tasks exists, processing projects details-------------------",len(tasks['data']))
+            for i,task in enumerate(tasks['data']):
+                print(f"----------processing details for task {i}/{len(tasks['data'])}----------")
                 if 'task_id' in task.keys():
                     c=json.loads(dowellconnection(*task_management_reports, "fetch", {"task_created_date":task_created_date, "_id":task["task_id"]}, update_field=None))['data']
                     if len(c) > 0:
