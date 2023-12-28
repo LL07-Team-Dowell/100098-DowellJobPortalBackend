@@ -12,6 +12,8 @@ const MainStatCard = ({
     icon, 
     action,
     locationState,
+    hasLoadingAction,
+    loadingAction,
 }) => {
     const navigate = useNavigate();
 
@@ -44,11 +46,28 @@ const MainStatCard = ({
                             dataLoading ? 
                                 () => {} 
                             : 
+                            !dataLoaded && hasLoadingAction && typeof loadingAction === 'function' ?
+                                () => loadingAction()
+                            :
                             () => navigate(action, locationState ? { state: { [locationState]: true }} : {})
                         }
                     >
-                        <span>View</span>
-                        <AiOutlineRight />
+                        <span>
+                            {
+                                dataLoading ?
+                                    'Generating...'
+                                :
+                                !dataLoaded ? 
+                                    'Generate' 
+                                :
+                                    'View'
+                            }
+                        </span>
+                        {
+                            dataLoading ? <></>
+                            :
+                            <AiOutlineRight />
+                        }
                     </button>
                 }
             </div>
