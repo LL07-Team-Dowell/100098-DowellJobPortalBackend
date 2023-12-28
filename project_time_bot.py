@@ -163,11 +163,10 @@ def update_spent_time(project,company_id, spent_time):
 
 def update_project_time(company_id,_date):
     spent_time = get_projects_spent_total_time(company_id, search_date=_date)
-    """for s in spent_time:
+    for s in spent_time:
         response = update_spent_time(project=s,company_id=company_id, spent_time=spent_time[s])
-        print(s,spent_time[s], response)"""
-    res ="done"
-    return res
+        print(response,"--------------------------------")
+    return True
 
 def main():
     print("-----------------------------------")
