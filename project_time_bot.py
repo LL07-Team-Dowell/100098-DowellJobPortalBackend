@@ -19,6 +19,14 @@ task_details_module = [
     "1000981019",
     "ABCDE",
 ]
+time_detail_module = [
+    "jobportal",
+    "jobportal",
+    "ProjectTarget",
+    "ProjectTarget",
+    "1248001",
+    "ABCDE",
+]
 
 """Dowell Connection"""
 def dowellconnection(cluster,database,collection,document,team_member_ID,function_ID,command,field,update_field):
@@ -146,27 +154,53 @@ def get_projects_spent_total_time(company_id, search_date):
     return data
 
 def update_spent_time(project,company_id, spent_time):
-    url="https://100098.pythonanywhere.com/update_project_spent_time/"
-    payload = {
-                "project":project,
-                "company_id":company_id,
-                "spent_time": spent_time
-            }
-    headers = {"Content-Type": "application/json"}
+    field = {
+            "project": project,
+            "company_id": company_id,
+            "data_type": "Real_Data",
+        }
 
-    response = requests.request("PATCH", url, headers=headers, json=payload)
-    if response.status_code == 200:
-        res = {'status':f'success-{response.status_code}','message':'project time updated', 'data': response.text}
-        return res
-    elif response.status_code == 204:
-        res = {'status':f'error-{response.status_code}','message':"No Project time with these details exists"}
-        return res
-    elif response.status_code == 304:
-        res = {'status':f'error-{response.status_code}','message':'project time not updated'}
-        return res
-    else:
-        res = {'status':f'error-{response.status_code}','message':'project time not updated'}
-        return res
+    get_response = json.loads(
+        dowellconnection(*time_detail_module, "fetch", field, update_field=None)
+    )
+    if get_response["isSuccess"] is True:
+        if len(get_response["data"]) > 0:
+            total_time = get_response["data"][0]["total_time"]
+            # print(total_time,"==========",get_response["data"])
+            spent_time = get_response["data"][0]["spent_time"] + spent_time
+
+            update_field = {
+                "spent_time": spent_time,
+                "left_time": total_time - spent_time,
+            }
+            response = json.loads(
+                dowellconnection(
+                    *time_detail_module,
+                    "update",
+                    {"_id": get_response["data"][0]["_id"]},
+                    update_field,
+                )
+            )
+            if response["isSuccess"] == True:
+                return {
+                        "success": True,
+                        "message": f"spent_time has been updated successfully for id-{get_response['data'][0]['_id']}",
+                    }
+            else:
+                return {
+                        "success": False,
+                        "message": "Failed to update spent_time",
+                        "data": response,
+                    }
+        return {
+                "success": False,
+                "message": "No Project time with these details exists"
+            }
+    return {
+            "success": False,
+            "message": "No Project time with these details exists"
+        }
+
 
 def update_project_time(company_id,_date):
     spent_time = get_projects_spent_total_time(company_id, search_date=_date)
@@ -187,7 +221,7 @@ def main():
     """project time"""
     project_time = update_project_time(company_id=company_id,_date=_date)
 
-    print("\n")
+    print("---------",project_time,"----------\n")
     print("----------Process done-------------")
     print("-----------------------------------")
       
