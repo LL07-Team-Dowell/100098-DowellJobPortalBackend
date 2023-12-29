@@ -180,7 +180,7 @@ class CandidateSerializer(serializers.Serializer):
     freelancePlatformUrl = serializers.CharField(
         allow_null=False, allow_blank=False)
     portfolio_name = serializers.CharField(allow_null=True, allow_blank=True)
-    candidate_certificate=serializers.URLField(allow_null=False)
+    candidate_certificate=serializers.URLField(allow_null=True,allow_blank=True)
 
     def get_fields(self):
         fields = super().get_fields()

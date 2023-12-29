@@ -555,7 +555,9 @@ def datacube_data_insertion(api_key,database_name,collection_name,data):
         "operation": "insert",
         "data":data
     }
+    print(data)
     response = requests.post(url, json=data)
+    print(respone.text)
     return response.text
 
 def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offset):
