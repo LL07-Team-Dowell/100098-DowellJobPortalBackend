@@ -8555,8 +8555,10 @@ class ProjectDetails(APIView):
     def update_day_project(self,request): 
         print("------------checking paramaters------------")
         if not request.GET.get('date'):
+            print("------------date is required------------")
             return Response({"success": False, "message": "Date is required"}, status=status.HTTP_400_BAD_REQUEST)
         if not request.GET.get('company_id'):
+            print("------------company id is required------------")
             return Response({"success": False, "message": "Company id is required"}, status=status.HTTP_400_BAD_REQUEST)
         
         res=[]
