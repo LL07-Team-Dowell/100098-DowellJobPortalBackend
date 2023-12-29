@@ -83,10 +83,16 @@ const JobApplicationScreen = () => {
   const [jobSaved, setJobSaved] = useState(false);
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const [formPage, setFormPage] = useState(1);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const addToRefsArray = (elem, arrayToAddTo) => {
     if (elem && !arrayToAddTo.current.includes(elem))
       arrayToAddTo.current.push(elem);
+  };
+
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    setSelectedFile(selectedFile);
   };
 
   const [testResult, setTestResult] = useState(null);
@@ -659,8 +665,35 @@ const JobApplicationScreen = () => {
       return;
     }
 
+    let formData = new FormData();
+
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
+
+     let imageUrl = "";
+     if (selectedFile) {
+       const response = await fetch(
+         "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
+         {
+           method: "POST",
+           body: formData,
+         }
+       );
+
+       if (response.ok) {
+         const data = await response.json();
+         imageUrl = data.file_url;
+       } else {
+         toast.error("Error uploading image");
+       }
+     }
+
     try {
-      await submitNewApplication(newApplicationData);
+      await submitNewApplication({
+        ...newApplicationData,
+        candidate_certificate: imageUrl,
+      });
       toast.success("Successfully submitted job application!");
       navigate("/applied");
     } catch (error) {
@@ -1086,6 +1119,25 @@ const JobApplicationScreen = () => {
                     )}
 
                     <div className="job__Application__Item">
+                      <h2>Add Certification if any</h2>
+                      <label className="input__Text__Container">
+                        <input
+                          aria-label="Add Certification"
+                          type={"file"}
+                          placeholder={"Add Certification"}
+                          onChange={handleFileChange}
+                        />
+                        {selectedFile && (
+                          <img
+                            src={URL.createObjectURL(selectedFile)}
+                            alt="Uploaded Preview"
+                            style={{ display: "block" }}
+                          />
+                        )}
+                      </label>
+                    </div>
+
+                    <div className="job__Application__Item">
                       <h2>
                         Academic Qualifications
                         <span className="required-indicator">*</span>
@@ -1176,7 +1228,14 @@ const JobApplicationScreen = () => {
                                         </label>
                                     </div> */}
 
-                    {currentJob.other_info && Array.isArray(currentJob.other_info) && currentJob.other_info.length > 0 && React.Children.toArray(Object.keys(currentJob.other_info || {}).map((key) => createInputData(key, currentJob.other_info[key])))}
+                    {currentJob.other_info &&
+                      Array.isArray(currentJob.other_info) &&
+                      currentJob.other_info.length > 0 &&
+                      React.Children.toArray(
+                        Object.keys(currentJob.other_info || {}).map((key) =>
+                          createInputData(key, currentJob.other_info[key])
+                        )
+                      )}
 
                     <label
                       className="form__Label__Accept__All"
