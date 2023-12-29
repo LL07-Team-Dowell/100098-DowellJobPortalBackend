@@ -666,3 +666,29 @@ def check_speed_test(applicant_email):
                 return {'success':True,"internet_speed":download_speed}
             else:
                 return {"success":False,"message":f"Speed test has not been completed yet for {applicant_email}"}
+            
+
+def get_projects():
+    p_url ="https://100098.pythonanywhere.com/settinguserproject/"
+    sp_url ="https://100098.pythonanywhere.com/settingusersubproject/"
+
+    headers = {"Content-Type": "application/json"}
+
+    proj_response = json.loads(requests.request("GET", p_url, headers=headers).text)
+    _projects =[]
+    proj_list = [i["project_list"] for i in proj_response if "project_list" in i.keys()]
+    for proj in proj_list:
+        for p in proj:
+            if type(p)== str:
+                _projects.append(p)
+
+    sproj_response = json.loads(requests.request("GET", sp_url, headers=headers).text)['data']
+    data={}
+    for i in sproj_response:
+        if ("parent_project" in i.keys() and i["parent_project"] in _projects):
+            if i["parent_project"] not in data.keys():
+                data[i["parent_project"]]=i["sub_project_list"]
+            else:
+                data[i["parent_project"]]+=i["sub_project_list"]
+    
+    return data           

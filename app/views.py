@@ -44,7 +44,8 @@ from .helper import (
     datacube_add_collection,
     datacube_data_update,
     get_subproject,
-    check_speed_test
+    check_speed_test, 
+    get_projects,
 )
 from .serializers import (
     AccountSerializer,
@@ -116,14 +117,17 @@ if os.getenv("DB_Name"):
     DB_Name = str(os.getenv("DB_Name"))
 if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
+if os.getenv("PROJECT_DB_NAME"):
+    PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
 else:
     """for windows local"""
-    load_dotenv(f"{os.getcwd()}/env")
+    load_dotenv(f"{os.getcwd()}/.env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
+    PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
-
+    PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
 
 # Create your views here.
 
@@ -881,8 +885,6 @@ class admin_delete_job(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
 # api for admin management ends here______________________
 
 
@@ -1039,7 +1041,6 @@ class candidate_apply_job(APIView):
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class candidate_get_job_application(APIView):
     def get(self, request, company_id):
@@ -1076,7 +1077,6 @@ class candidate_get_job_application(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_candidate_application(APIView):
     def get(self, request, document_id):
@@ -1111,7 +1111,6 @@ class get_candidate_application(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_onboarded_candidate(APIView):
@@ -1153,7 +1152,6 @@ class get_all_onboarded_candidate(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_removed_candidate(APIView):
@@ -1230,7 +1228,6 @@ class get_all_hired_candidate(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_renew_contract_candidate(APIView):
     def get(self, request, company_id):
@@ -1277,8 +1274,6 @@ class get_all_renew_contract_candidate(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_candidate_application(APIView):
     def delete(self, request, document_id):
@@ -1304,7 +1299,6 @@ class delete_candidate_application(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
 
 # api for candidate management ends here______________________
 
@@ -3150,23 +3144,7 @@ class create_team(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
-                ##adding to sqlite--------------------------------
-                for username in field["members"]:
-                    check = dowellconnection(
-                                *candidate_management_reports, "fetch", {"username":username}, update_field)
-                    
-                    year,monthname, monthcount = get_month_details(field["date_created"])
-                    filter_params={
-                        "applicant_id":json.loads(check)["data"][0]["_id"],
-                        "year":year, 
-                        "month":monthname, 
-                        "company_id":field["company_id"]
-                    }
-                    task_params=set()
-                    task_params.add("teams")
-                    report =updatereportdb(filter_params=filter_params,task_params=task_params)
-                    ##------------------------------------------------
-                        
+                
                 return Response(
                     {
                         "message": "Team created successfully",
@@ -8265,7 +8243,6 @@ class ProjectTotalTime(APIView):
             status=status.HTTP_204_NO_CONTENT,
         )
 
-
 class AllProjectTotalTime(APIView):
     def get(self, request, company_id):
         field = {"company_id": company_id, "data_type": "Real_Data"}
@@ -8279,7 +8256,6 @@ class AllProjectTotalTime(APIView):
             },
             status=status.HTTP_200_OK,
         )
-
 
 class EnabledProjectTotalTime(APIView):
     def patch(self, request):
@@ -8332,7 +8308,6 @@ class EnabledProjectTotalTime(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 
 class UpdateProjectSpentTime(APIView):
     def patch(self, request):
@@ -8402,6 +8377,545 @@ class UpdateProjectSpentTime(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+@method_decorator(csrf_exempt, name="dispatch")
+class ProjectDetails(APIView):
+    def post(self,request):
+        type_request = request.GET.get("type")
+
+        if type_request == "update_day_project":
+            return self.update_day_project(request)
+        elif type_request == "update_month_project":
+            return self.update_month_project(request)
+        elif type_request == "update_year_project":
+            return self.update_year_project(request)
+        else:
+            return self.handle_error(request,"'update_day_project'|'update_month_project'|'update_year_project'")
+        
+    def get(self, request):
+        type_request = request.GET.get("type")
+        if type_request == "day":
+            return self.get_day_project(request)
+        elif type_request == "custom":
+            return self.get_custom_project(request)
+        else:
+            return self.handle_error(request,"'day'|'custom'")
+    
+    def get_day_project(self, request):
+        if not request.GET.get("date"):
+            return Response({"success": False,"message": "Please provide date"},status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get("company_id"):
+            return Response({"success": False,"message": "Please provide company_id"},status=status.HTTP_400_BAD_REQUEST)
+        _date=request.GET.get("date")#e.g 2023-12-24
+        api_key = API_KEY
+        db_name= PROJECT_DB_NAME
+        coll_name =_date
+        query={'company_id':request.GET.get('company_id')} #{"company_id":'6385c0f18eca0fb652c94561'}
+        get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,0))
+        if get_collection['success']==True:
+            res= get_collection['data']
+            return Response(
+                {
+                    "success": get_collection['success'],
+                    'message': f'Successfully fetched project details for {_date}',
+                    "data": res,
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response({"success": False, "message": f"Failed to fetch project details,{get_collection['message']}"}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_custom_project(self, request):
+        if not request.GET.get("start_date"):
+            return Response({"success": False, "message": "Please provide start date"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get("end_date"):
+            return Response({"success": False, "message": "Please provide end date"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get("company_id"):
+            return Response({"success": False, "message": "Please provide company id"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        st_date = datetime.strptime(request.GET.get("start_date"), "%Y-%m-%d")
+        ed_date = datetime.strptime(request.GET.get("end_date"), "%Y-%m-%d")
+        delta = timedelta(days=1)
+
+        if st_date > ed_date:
+            return Response({"success": False, "message": "Start date should be less than end date"}, status=status.HTTP_400_BAD_REQUEST)
+        if st_date.date() > datetime.now().date():
+            return Response({"success": False, "message": "Start date should be less than or equal to today's date"}, status=status.HTTP_400_BAD_REQUEST)
+        if ed_date.date() > datetime.now().date():
+            return Response({"success": False, "message": "End date should be less than or equal to today's date"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        res={'company_id':request.GET.get('company_id'),
+             'data':[]}
+        _d={'data':{}}
+        
+        custom_dates =[]
+        while st_date <= ed_date:
+            custom_dates.append(f"{st_date.year}-{st_date.month}-{st_date.day}")
+            st_date += delta
+
+        def call_datacube(field):
+            _date=field['task_created_date']
+            api_key = API_KEY
+            db_name= PROJECT_DB_NAME
+            coll_name =_date
+            query={'company_id':request.GET.get('company_id')}
+            get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,0))
+            
+            # Process the response_str here or store it in a suitable data structure
+            for item in get_collection['data']:
+                for i in item['data']:
+                    if i['project'] not in _d['data'].keys():
+                        _d['data'][i['project']]={}
+                    if 'total time (hrs)' not in _d['data'][i['project']].keys():
+                        _d['data'][i['project']]["total time (hrs)"]=0
+                    _d['data'][i['project']]["total time (hrs)"]+=i["total time (hrs)"]
+                    
+                    if 'total tasks' not in _d['data'][i['project']].keys():
+                        _d['data'][i['project']]["total tasks"]=0
+                    _d['data'][i['project']]["total tasks"]+=i['total tasks']
+                    
+                    if "subprojects" not in _d['data'][i['project']].keys():
+                        _d['data'][i['project']]['subprojects'] = {}
+                    for x in i['subprojects']:
+                        if x["subproject"] not in _d['data'][i['project']]['subprojects'].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]={}
+                        if "time added (hrs)" not in _d['data'][i['project']]['subprojects'][x["subproject"]].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["time added (hrs)"]=0
+                        _d['data'][i['project']]['subprojects'][x["subproject"]]["time added (hrs)"]+=x["time added (hrs)"]
+                        
+                        if "total_tasks" not in _d['data'][i['project']]['subprojects'][x["subproject"]].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["total_tasks"]=0
+                        _d['data'][i['project']]['subprojects'][x["subproject"]]["total_tasks"]+=x["total_tasks"]
+                        
+                        if "candidates" not in _d['data'][i['project']]['subprojects'][x["subproject"]].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"]={}
+                        for y in x["candidates"]:
+                            if y["candidate"] not in _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"].keys():
+                                _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]={}
+                            if "time added (hrs)" not in _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]].keys():
+                                _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["time added (hrs)"]=0
+                            
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["time added (hrs)"]+=y["time added (hrs)"]
+                            if "total_tasks" not in _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]].keys():
+                                _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["total_tasks"]=0
+                            
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["total_tasks"]+=y["total_tasks"]
+  
+        # Define a function to fetch data using threads
+        def fetch_data_for_date(task_created_date, company_id):
+            field = {'company_id': company_id, 'task_created_date': task_created_date}
+            try:
+                call_datacube(field)
+            except json.decoder.JSONDecodeError as error:
+                call_datacube(field)
+                
+        # Create threads for each date
+        threads = []
+        for task_created_date in custom_dates:
+            thread = threading.Thread(target=fetch_data_for_date, args=(task_created_date, request.GET.get('company_id')))
+            threads.append(thread)
+            thread.start()
+        # Wait for all threads to complete
+        for thread in threads:
+            thread.join()
+            
+        if (not i.is_alive() for i in threads):
+            for k,v in _d['data'].items():
+                item={'project':k,
+                      'total time (hrs)':v['total time (hrs)'],
+                      'total tasks':v['total tasks'],
+                      'subprojects':[]
+                      }
+                for k1,v1 in v['subprojects'].items():
+                    subitem={'total tasks':k1,
+                             'time added (hrs)':v1['time added (hrs)'],
+                             'total_tasks':v1['total_tasks'],
+                             'candidates':[]
+                             }
+                    for k2,v2 in v1['candidates'].items():
+                        subsubitem={'candidate':k2,
+                                    'time added (hrs)':v2['time added (hrs)'],
+                                    'total_tasks':v2['total_tasks']
+                                    }
+                        subitem['candidates'].append(subsubitem)
+                    item['subprojects'].append(subitem)
+                res["data"].append(item)
+            return Response(
+                {
+                    "success": True,
+                    "message": "Total number of worklogs for the month",
+                    "data": res,
+                }
+            )
+        else:
+            return Response({"success": False, "message": "Failed to fetch logs"})
+        
+    def update_day_project(self,request): 
+        print("------------checking paramaters------------")
+        if not request.GET.get('date'):
+            return Response({"success": False, "message": "Date is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('company_id'):
+            return Response({"success": False, "message": "Company id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        res=[]
+        item={}
+        
+        _date=request.GET.get('date')# e.g 2023-12-24
+        _date = datetime.strptime(_date, "%Y-%m-%d").date()
+        if _date >= datetime.today().date():
+            return Response({"success": False, "message": f"Date {request.GET.get('date')} should be less than today"}, status=status.HTTP_400_BAD_REQUEST)
+        task_created_date=f"{_date.year}-{_date.month}-{_date.day}"
+        field={"company_id":request.GET.get("company_id"), "task_created_date":task_created_date}
+        tasks=json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
+        if (tasks['isSuccess'] == True):
+            print("tasks exists, processing projects details-------------------",len(tasks['data']))
+            for i,task in enumerate(tasks['data']):
+                print(f"----------processing details for task {i}/{len(tasks['data'])}----------")
+                if 'task_id' in task.keys():
+                    c=json.loads(dowellconnection(*task_management_reports, "fetch", {"task_created_date":task_created_date, "_id":task["task_id"]}, update_field=None))['data']
+                    if len(c) > 0:
+                        candidate=c[0]['task_added_by']
+                    else:
+                        candidate='None'
+                if ('project' in task.keys() and 'subproject' in task.keys() ):
+                    """print(t,"======")"""
+                    try:
+                        start_time = datetime.strptime(task['start_time'], "%H:%M")
+                        end_time = datetime.strptime(task['end_time'], "%H:%M")
+                    except Exception:
+                        start_time = datetime.strptime(task['start_time'], "%H:%M:%S")
+                        end_time = datetime.strptime(task['end_time'], "%H:%M:%S")
+                    time_difference = (end_time - start_time).total_seconds()
+                    work_hours = time_difference / 3600
+                    if task['project'] not in item.keys():
+                        item[task['project']] = {"total time (hrs)":0, "total tasks":0, "subprojects":{}}
+                    if "total time (hrs)" not in item[task['project']].keys():
+                        item[task['project']]["total time (hrs)"] = work_hours
+                    else:
+                        item[task['project']]["total time (hrs)"] += work_hours
+                    if "total tasks" not in item[task['project']].keys():
+                        item[task['project']]["total tasks"] = 1
+                    else:
+                        item[task['project']]["total tasks"] += 1
+                    if "subprojects" not in item[task['project']].keys():
+                        item[task['project']]["subprojects"] = {}
+                    
+                    if task['subproject'] not in item[task['project']]['subprojects'].keys():
+                        item[task['project']]['subprojects'][task['subproject']] = {}
+                    
+                    if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] = work_hours
+                    else:
+                        item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] += work_hours
+                    
+                    if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['total_tasks'] = 1
+                    else:
+                        item[task['project']]['subprojects'][task['subproject']]['total_tasks'] += 1
+                    if "candidates" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'] = {}
+                    if candidate not in item[task['project']]['subprojects'][task['subproject']]['candidates'].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]={'time added (hrs)':0,'total_tasks':0}
+                    
+                    if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] = work_hours
+                    else:
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] += work_hours
+                    
+                    if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] = 1
+                    else:
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] += 1
+                    
+            for k,v in item.items(): 
+                _d = {
+                    "project":k,
+                    "total time (hrs)":v["total time (hrs)"] if 'total time (hrs)' in v.keys() else 0,
+                    "total tasks":v["total tasks"] if 'total tasks' in v.keys() else 0,
+                    "subprojects":[]
+                }
+                for k1,v1 in v["subprojects"].items():
+                    _d1 = {
+                        "subproject":k1,
+                        "time added (hrs)":v1["time added (hrs)"] if 'time added (hrs)' in v1.keys() else 0,
+                        "total_tasks":v1["total_tasks"] if 'total_tasks' in v1.keys() else 0,
+                        "candidates":[]
+                    }
+                    if 'candidates' in v1.keys():
+                        for k2, v2 in v1['candidates'].items():
+                            _d2 ={
+                                "candidate":k2,
+                                "time added (hrs)":v2["time added (hrs)"] if "time added (hrs)" in v2.keys() else 0,
+                                "total_tasks": v2['total_tasks'] if 'total_tasks' in v2.keys() else 0
+                            }
+                            _d1['candidates'].append(_d2)
+                    _d["subprojects"].append(_d1)
+                res.append(_d)
+            
+            api_key = API_KEY
+            db_name= PROJECT_DB_NAME
+            coll_name=task_created_date
+            data={"date":task_created_date, 'company_id':request.GET.get("company_id"), "data":res}
+            response = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+            if response['success']==True:
+                print(f'successfully created the collection-{coll_name}-------------')
+                #inserting data into the collection------------------------------
+                
+                response = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+                if response['success']==True:
+                    print(f'successfully inserted the data the collection-{coll_name}---------------')
+                    return Response(
+                        {
+                            "success": True,
+                            'message': f'successfully inserted the data the collection-{coll_name}',
+                            "data": data,
+                        },status=status.HTTP_200_OK)
+            print(f"error in inserting the data -> {response['message']}--------------------")
+            return Response({"success": False, "message": response['message']}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update_month_project(self,request):
+        if not request.GET.get('company_id'):
+            return Response({"success": False, "message": "please provide the company_id"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('month'):
+            return Response({"success": False, "message": "please provide the month"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('year'):
+            return Response({"success": False, "message": "please provide the year"}, status=status.HTTP_400_BAD_REQUEST)
+        month = request.GET.get('month')
+        year = request.GET.get('year')
+        
+        _, number_of_days = calendar.monthrange(int(year), int(month))
+        _month_dates = [f"{year}-{month}-{d}" for d in range(1, number_of_days + 1)]
+        #print(_month_dates)
+        res=[]
+        item={}
+        for day in _month_dates:
+            task_created_date=day# e.g 2023-12-24
+            field={"company_id":request.GET.get("company_id"), "task_created_date":task_created_date}
+            tasks=json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
+            if (tasks['isSuccess'] == True):
+                for task in tasks['data']:
+                    if 'task_id' in task.keys():
+                        c=json.loads(dowellconnection(*task_management_reports, "fetch", {"task_created_date":task_created_date, "_id":task["task_id"]}, update_field=None))['data']
+                        if len(c) > 0:
+                            candidate=c[0]['task_added_by']
+                        else:
+                            candidate='None'
+                    if ('project' in task.keys() and 'subproject' in task.keys() ):
+                        """print(t,"======")"""
+                        try:
+                            start_time = datetime.strptime(task['start_time'], "%H:%M")
+                            end_time = datetime.strptime(task['end_time'], "%H:%M")
+                        except Exception:
+                            start_time = datetime.strptime(task['start_time'], "%H:%M:%S")
+                            end_time = datetime.strptime(task['end_time'], "%H:%M:%S")
+                        time_difference = (end_time - start_time).total_seconds()
+                        work_hours = time_difference / 3600
+                        if task['project'] not in item.keys():
+                            item[task['project']] = {"total time (hrs)":0, "total tasks":0, "subprojects":{}}
+                        if "total time (hrs)" not in item[task['project']].keys():
+                            item[task['project']]["total time (hrs)"] = work_hours
+                        else:
+                            item[task['project']]["total time (hrs)"] += work_hours
+                        if "total tasks" not in item[task['project']].keys():
+                            item[task['project']]["total tasks"] = 1
+                        else:
+                            item[task['project']]["total tasks"] += 1
+                        if "subprojects" not in item[task['project']].keys():
+                            item[task['project']]["subprojects"] = {}
+                        
+                        if task['subproject'] not in item[task['project']]['subprojects'].keys():
+                            item[task['project']]['subprojects'][task['subproject']] = {}
+                        
+                        if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] = work_hours
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] += work_hours
+                        
+                        if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['total_tasks'] = 1
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['total_tasks'] += 1
+                        if "candidates" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'] = {}
+                        if candidate not in item[task['project']]['subprojects'][task['subproject']]['candidates'].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]={'time added (hrs)':0,'total_tasks':0}
+                        
+                        if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] = work_hours
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] += work_hours
+                        
+                        if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] = 1
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] += 1
+                    
+                for k,v in item.items(): 
+                    _d = {
+                        "project":k,
+                        "total time (hrs)":v["total time (hrs)"] if 'total time (hrs)' in v.keys() else 0,
+                        "total tasks":v["total tasks"] if 'total tasks' in v.keys() else 0,
+                        "subprojects":[]
+                    }
+                    for k1,v1 in v["subprojects"].items():
+                        _d1 = {
+                            "subproject":k1,
+                            "time added (hrs)":v1["time added (hrs)"] if 'time added (hrs)' in v1.keys() else 0,
+                            "total_tasks":v1["total_tasks"] if 'total_tasks' in v1.keys() else 0,
+                            "candidates":[]
+                        }
+                        print(v1, "==========================")
+                        if 'candidates' in v1.keys():
+                            for k2, v2 in v1['candidates'].items():
+                                _d2 ={
+                                    "candidate":k2,
+                                    "time added (hrs)":v2["time added (hrs)"] if "time added (hrs)" in v2.keys() else 0,
+                                    "total_tasks": v2['total_tasks'] if 'total_tasks' in v2.keys() else 0
+                                }
+                                _d1['candidates'].append(_d2)
+                        _d["subprojects"].append(_d1)
+                    res.append(_d)
+                
+                api_key = API_KEY
+                db_name= PROJECT_DB_NAME
+                coll_name=task_created_date
+                data={"date":task_created_date, 'company_id':request.GET.get("company_id"), "data":res}
+                response = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+                if response['success']==True:
+                    response = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+            
+        return Response(
+            {
+                "success": True,
+                'message': f'successfully inserted the data '
+            },status=status.HTTP_200_OK)
+        
+    def update_year_project(self, request):
+        if not request.GET.get('year'):
+            return Response({"success": False, "message": "please provide the year"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('company_id'):
+             return Response({"success": False, "message": "please provide the company_id"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        year = request.GET.get('year')
+        _year_dates=[]
+        for month in range(1, 13):
+            _, number_of_days = calendar.monthrange(int(year), month)
+            month_dates = [f"{year}-{month}-{d}" for d in range(1, number_of_days + 1)]
+            _year_dates+=month_dates
+        #print(_year_dates)
+        res=[]
+        item={}
+        for day in _year_dates:
+            task_created_date=day# e.g 2023-12-24
+            field={"company_id":request.GET.get("company_id"), "task_created_date":task_created_date}
+            tasks=json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
+            if (tasks['isSuccess'] == True):
+                for task in tasks['data']:
+                    if 'task_id' in task.keys():
+                        c=json.loads(dowellconnection(*task_management_reports, "fetch", {"task_created_date":task_created_date, "_id":task["task_id"]}, update_field=None))['data']
+                        if len(c) > 0:
+                            candidate=c[0]['task_added_by']
+                        else:
+                            candidate='None'
+                    if ('project' in task.keys() and 'subproject' in task.keys() ):
+                        """print(t,"======")"""
+                        try:
+                            start_time = datetime.strptime(task['start_time'], "%H:%M")
+                            end_time = datetime.strptime(task['end_time'], "%H:%M")
+                        except Exception:
+                            start_time = datetime.strptime(task['start_time'], "%H:%M:%S")
+                            end_time = datetime.strptime(task['end_time'], "%H:%M:%S")
+                        time_difference = (end_time - start_time).total_seconds()
+                        work_hours = time_difference / 3600
+                        if task['project'] not in item.keys():
+                            item[task['project']] = {"total time (hrs)":0, "total tasks":0, "subprojects":{}}
+                        if "total time (hrs)" not in item[task['project']].keys():
+                            item[task['project']]["total time (hrs)"] = work_hours
+                        else:
+                            item[task['project']]["total time (hrs)"] += work_hours
+                        if "total tasks" not in item[task['project']].keys():
+                            item[task['project']]["total tasks"] = 1
+                        else:
+                            item[task['project']]["total tasks"] += 1
+                        if "subprojects" not in item[task['project']].keys():
+                            item[task['project']]["subprojects"] = {}
+                        
+                        if task['subproject'] not in item[task['project']]['subprojects'].keys():
+                            item[task['project']]['subprojects'][task['subproject']] = {}
+                        
+                        if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] = work_hours
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] += work_hours
+                        
+                        if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['total_tasks'] = 1
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['total_tasks'] += 1
+                        if "candidates" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'] = {}
+                        if candidate not in item[task['project']]['subprojects'][task['subproject']]['candidates'].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]={'time added (hrs)':0,'total_tasks':0}
+                        
+                        if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] = work_hours
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] += work_hours
+                        
+                        if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] = 1
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] += 1
+                    
+                for k,v in item.items(): 
+                    _d = {
+                        "project":k,
+                        "total time (hrs)":v["total time (hrs)"] if 'total time (hrs)' in v.keys() else 0,
+                        "total tasks":v["total tasks"] if 'total tasks' in v.keys() else 0,
+                        "subprojects":[]
+                    }
+                    for k1,v1 in v["subprojects"].items():
+                        _d1 = {
+                            "subproject":k1,
+                            "time added (hrs)":v1["time added (hrs)"] if 'time added (hrs)' in v1.keys() else 0,
+                            "total_tasks":v1["total_tasks"] if 'total_tasks' in v1.keys() else 0,
+                            "candidates":[]
+                        }
+                        print(v1, "==========================")
+                        if 'candidates' in v1.keys():
+                            for k2, v2 in v1['candidates'].items():
+                                _d2 ={
+                                    "candidate":k2,
+                                    "time added (hrs)":v2["time added (hrs)"] if "time added (hrs)" in v2.keys() else 0,
+                                    "total_tasks": v2['total_tasks'] if 'total_tasks' in v2.keys() else 0
+                                }
+                                _d1['candidates'].append(_d2)
+                        _d["subprojects"].append(_d1)
+                    res.append(_d)
+                
+                api_key = API_KEY
+                db_name= PROJECT_DB_NAME
+                coll_name=task_created_date
+                data={"date":task_created_date, 'company_id':request.GET.get("company_id"), "data":res}
+                response = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+                if response['success']==True:
+                    response = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+            
+        
+        return Response(
+            {
+                "success": True,
+                'message': f'successfully inserted the data ',
+                
+            },status=status.HTTP_200_OK)
+
+    def handle_error(self, request,exc):
+        return Response(
+            {
+                "success": False,
+                "message": f"Specify the type -> {exc}",
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Testing_Threads(APIView):
@@ -8446,7 +8960,6 @@ class Testing_Threads(APIView):
                     "data": [],
                 }
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Product_Services_API(APIView):
@@ -8632,39 +9145,41 @@ class dashboard_services(APIView):
     """TOTAL WORKLOGS FOR MONTH"""
 
     def logs_for_month(self, request):
-        company_id = request.GET.get("company_id")
         today = date.today()
-        first_day_of_month = today.replace(day=1)
-        last_day_of_month = today.replace(day=1) + timedelta(days=32)
-        last_day_of_month = last_day_of_month.replace(day=1) - timedelta(days=1)
+        _, number_of_days = calendar.monthrange(today.year, today.month)
+        month_dates=[f"{today.year}-{today.month}-{d}" for d in range(1,number_of_days+1)]
 
-        field = {"company_id": company_id}
-
-        response_str = dowellconnection(
-            *task_details_module, "fetch", field, update_field=None
-        )
-        try:
-            response = json.loads(response_str)
-        except json.JSONDecodeError as e:
-            return Response(
-                {"success": False, "message": f"Failed to parse response: {str(e)}"}
-            )
-
-        if response["isSuccess"]:
-            log_counts = {}
-
-            first_day_date = first_day_of_month
-            last_day_date = last_day_of_month
-
-            for item in response["data"]:
-                task_date = date.fromisoformat(item["task_created_date"])
-                if first_day_date <= task_date <= last_day_date:
+        log_counts = {}
+        def call_dowell(field):
+            res=dowellconnection(*task_details_module, "fetch", field, update_field=None)
+            response_str = json.loads(res)['data']
+            # Process the response_str here or store it in a suitable data structure
+            for item in response_str:
+                if "project" in item.keys():
                     project_name = item["project"]
-                    if project_name in log_counts:
+                    if project_name in log_counts.keys():
                         log_counts[project_name] += 1
                     else:
                         log_counts[project_name] = 1
-
+        # Define a function to fetch data using threads
+        def fetch_data_for_date(task_created_date, company_id):
+            field = {"company_id": company_id, "task_created_date": task_created_date}
+            try:
+                call_dowell(field)
+            except json.decoder.JSONDecodeError as error:
+                call_dowell(field)
+                
+        # Create threads for each date
+        threads = []
+        for task_created_date in month_dates:
+            thread = threading.Thread(target=fetch_data_for_date, args=(task_created_date, request.GET.get("company_id")))
+            threads.append(thread)
+            thread.start()
+        # Wait for all threads to complete
+        for thread in threads:
+            thread.join()
+            
+        if (not i.is_alive() for i in threads):
             return Response(
                 {
                     "success": True,
@@ -8673,12 +9188,8 @@ class dashboard_services(APIView):
                 }
             )
         else:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Failed to fetch logs or logs not available",
-                }
-            )
+            return Response({"success": False, "message": "Failed to fetch logs"})
+
 
     def delete_application(self, request):
         data = request.data
@@ -8934,9 +9445,9 @@ class ReportDB(APIView):
                 )
             # -------------------------------------------------------------------------------
             coll_name = payload['username']
-            query ={"username":payload['username'],
-                    "year":year,
-                    "company_id":payload['company_id']
+            query ={'username':payload['username'],
+                    'year':year,
+                    'company_id':payload['company_id']
                     }
             get_collection = json.loads(datacube_data_retrival(API_KEY,REPORT_DB_NAME,coll_name,query,10,1))
             
@@ -9654,3 +10165,11 @@ class Datacube_operations(APIView):
                 {"success": False, "message": "No data found"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+@method_decorator(csrf_exempt, name='dispatch')
+class test(APIView):
+    def get(self, request):
+
+        return Response({
+            "api key":API_KEY,
+            "db name":DB_Name,
+        })

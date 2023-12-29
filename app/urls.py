@@ -197,6 +197,9 @@ urlpatterns = [
     path("update_project_spent_time/", UpdateProjectSpentTime.as_view()),
     path("delete_project_time/<str:document_id>/", ProjectTotalTime.as_view()),
 
+    #project details 
+    path("project_details/", ProjectDetails.as_view()),
+
     # path("project_deadline/", project_hours.as_view()),
     path("testing_threads/<str:company_id>/",
          Testing_Threads.as_view()),  # add company id and status
@@ -211,6 +214,6 @@ urlpatterns = [
     path('weekly_agenda/', WeeklyAgenda.as_view(), name='group_lead_agenda'),
 
     #datacube apis-----------------------------------------------------------
-    path('datacube/',Datacube_operations.as_view())
-    
+    path('datacube/',Datacube_operations.as_view()),
+    path('test/',test.as_view()) 
 ]

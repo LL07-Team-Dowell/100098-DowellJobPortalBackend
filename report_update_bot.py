@@ -223,7 +223,8 @@ def update_report_database(task_created_date,company_id):
     daily_tasks = json.loads(dowellconnection(*task_management_reports,"fetch",field,update_field=None))["data"]
     for _t in daily_tasks:
         tasks = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
-        for task in tasks['data']:
+        for i,task in enumerate(tasks['data']):
+            print(f"----------processing details for task {i}/{len(tasks['data'])}----------")
             if task['task_id']==_t["_id"]:
                 """getting the candidates details"""
                 info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':_t['task_added_by']}, update_field=None))['data'][0]
@@ -231,10 +232,11 @@ def update_report_database(task_created_date,company_id):
                 info["year"]=str(datetime.today().year)
 
                 """checking if the candidates details exists in the database"""
-                coll_name ='umair101'#info['username']
+                coll_name =info['username']
                 filter_param={"year":str(datetime.today().year)}
                 query={"application_id":"63daf2b63ab37b524a3f0412",#info["application_id"],
                            "year":info["year"]}
+                print(f"----------retireving data from collection {coll_name} for {filter_param['year']}----------")
                 get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,1))
                 #print(get_collection,"==",coll_name)
                 
@@ -337,9 +339,11 @@ def update_report_database(task_created_date,company_id):
                     #print(get_collection)
                     #update collection------------------------------
                     if not get_month_details(task_created_date) ==None:
+                        print(f'-------------updating the collection- {coll_name}--------------')
                         _year,_monthname,_monthcnt=get_month_details(task_created_date)
                         query={"application_id":info["application_id"],
                             "year":_year}
+                        print("------analysing tasks for the month- ",_monthname,"------")
                         task_added = get_collection['data'][0]['data'][_monthname]["task_added"]+1
                         tasks_completed = get_collection['data'][0]['data'][_monthname]["tasks_completed"]
                         tasks_uncompleted = get_collection['data'][0]['data'][_monthname]["tasks_uncompleted"]
@@ -365,6 +369,7 @@ def update_report_database(task_created_date,company_id):
                                 tasks_you_marked_as_incomplete+=1
 
                         """checking for teams============================================="""
+                        print("------analysing team tasks for the month- ",_monthname,"------")
                         teams= get_collection['data'][0]['data'][_monthname]["teams"]
                         team_tasks=get_collection['data'][0]['data'][_monthname]["team_tasks"]
                         team_tasks_completed= get_collection['data'][0]['data'][_monthname]["team_tasks_completed"]
@@ -423,9 +428,9 @@ def update_report_database(task_created_date,company_id):
                         update_data={"data":data} #'''incomplete---'''
                         update_collection = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
                         if update_collection['success']==True:
-                            print(f'successfully updated the data the collection- {coll_name}')
+                            print(f"------successfully updated the data the collection- {coll_name}------")
                         else:
-                            print(f'failed to update the data the collection- {coll_name}----{update_collection['message']}')
+                            print(f"------failed to update the data the collection- {coll_name}----{update_collection['message']}")
 
 if __name__ == "__main__":
     company_id = "6385c0f18eca0fb652c94561"

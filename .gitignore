@@ -63,6 +63,7 @@ db.sqlite3-journal
 discord.txt
 c_runner.py
 env
+.vscode/
 # Flask stuff:
 instance/
 .webassets-cache
