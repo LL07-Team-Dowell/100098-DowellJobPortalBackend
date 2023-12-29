@@ -140,37 +140,45 @@ def get_projects_spent_total_time(company_id, search_date):
             except Exception as error:
                 print(error)
                 pass
-            print(f"--retrieved project time--of--{task['_id']}--")
+            print(f"--retrieved project time--of--{task['_id']}--",task["project"])
         count+=1
     print("----------Processing total time spent for projects (Done)----------")
     return data
 
 def update_spent_time(project,company_id, spent_time):
     url="https://100098.pythonanywhere.com/update_project_spent_time/"
-    payload = json.dumps(
-            {
+    payload = {
                 "project":project,
                 "company_id":company_id,
                 "spent_time": spent_time
             }
-        )
     headers = {"Content-Type": "application/json"}
 
-    response = requests.request("PATCH", url, headers=headers, data=payload)
-    res = json.loads(response.text)
-
-    return res 
+    response = requests.request("PATCH", url, headers=headers, json=payload)
+    if response.status_code == 200:
+        res = {'status':f'success-{response.status_code}','message':'project time updated', 'data': response.text}
+        return res
+    elif response.status_code == 204:
+        res = {'status':f'error-{response.status_code}','message':"No Project time with these details exists"}
+        return res
+    elif response.status_code == 304:
+        res = {'status':f'error-{response.status_code}','message':'project time not updated'}
+        return res
+    else:
+        res = {'status':f'error-{response.status_code}','message':'project time not updated'}
+        return res
 
 def update_project_time(company_id,_date):
     spent_time = get_projects_spent_total_time(company_id, search_date=_date)
-    for s in spent_time:
-        response = update_spent_time(project=s,company_id=company_id, spent_time=spent_time[s])
-        print(response,"--------------------------------")
+    for k,v in spent_time.items():
+        print(f"----project({k}) spent time is",f"{v}----")
+        response = update_spent_time(project=k,company_id=company_id, spent_time=v)
+        print(f"----project({k}) ",response,"--------\n")
     return True
 
 def main():
     print("-----------------------------------")
-    print("----------Process started----------")
+    print("----------Process started----------\n")
 
     company_id='6385c0f18eca0fb652c94561'
     _date = datetime.today().date()-timedelta(days=1)
@@ -179,6 +187,7 @@ def main():
     """project time"""
     project_time = update_project_time(company_id=company_id,_date=_date)
 
+    print("\n")
     print("----------Process done-------------")
     print("-----------------------------------")
       
