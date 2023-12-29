@@ -8320,46 +8320,53 @@ class UpdateProjectSpentTime(APIView):
                 dowellconnection(*time_detail_module, "fetch", field, update_field=None)
             )
             if get_response["isSuccess"] is True:
-                total_time = get_response["data"][0]["total_time"]
-                # print(total_time,"==========",get_response["data"])
-                spent_time = get_response["data"][0]["spent_time"] + data.get(
-                    "spent_time"
-                )
+                if len(get_response["data"]) > 0:
+                    total_time = get_response["data"][0]["total_time"]
+                    # print(total_time,"==========",get_response["data"])
+                    spent_time = get_response["data"][0]["spent_time"] + data.get(
+                        "spent_time"
+                    )
 
-                update_field = {
-                    "spent_time": spent_time,
-                    "left_time": total_time - spent_time,
-                }
-                response = json.loads(
-                    dowellconnection(
-                        *time_detail_module,
-                        "update",
-                        {"_id": get_response["data"][0]["_id"]},
-                        update_field,
+                    update_field = {
+                        "spent_time": spent_time,
+                        "left_time": total_time - spent_time,
+                    }
+                    response = json.loads(
+                        dowellconnection(
+                            *time_detail_module,
+                            "update",
+                            {"_id": get_response["data"][0]["_id"]},
+                            update_field,
+                        )
                     )
+                    if response["isSuccess"] == True:
+                        return Response(
+                            {
+                                "success": True,
+                                "message": f"spent_time has been updated successfully for id-{get_response['data'][0]['_id']}",
+                            },
+                            status=status.HTTP_200_OK,
+                        )
+                    else:
+                        return Response(
+                            {
+                                "success": False,
+                                "message": "Failed to update spent_time",
+                                "data": response,
+                            },
+                            status=status.HTTP_304_NOT_MODIFIED,
+                        )
+                return Response(
+                    {
+                        "success": False,
+                        "message": "No Project time with these details exists"
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
                 )
-                # print(response,"===")
-                if response["isSuccess"] == True:
-                    return Response(
-                        {
-                            "success": True,
-                            "message": f"spent_time has been updated successfully for id-{get_response['data'][0]['_id']}",
-                        },
-                        status=status.HTTP_200_OK,
-                    )
-                else:
-                    return Response(
-                        {
-                            "success": False,
-                            "message": "Failed to update spent_time",
-                            "data": response,
-                        },
-                        status=status.HTTP_304_NOT_MODIFIED,
-                    )
             return Response(
                 {
                     "success": False,
-                    "message": "No Project time with these details exists",
+                    "message": "No Project time with these details exists"
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
