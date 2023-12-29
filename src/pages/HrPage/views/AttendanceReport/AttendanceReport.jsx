@@ -91,13 +91,14 @@ const AttendanceReport = () => {
                             className="item__Filter"
                         />
                     </div>
-                    <div className="internal_div">
+                    {/* <div className="internal_div"> */}
                         <div className="item__Filter__Wrap">
                             <p>Start Date</p>
                             <input
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
+                                className="att__Date__Input"
                             />
                         </div>
 
@@ -107,11 +108,11 @@ const AttendanceReport = () => {
                                 type="date"
                                 value={endDate}
                                 readOnly
-
+                                className="att__Date__Input"
                             />
                         </div>
-                        <button onClick={handleGetAttendanceClick}>Get Attendance</button>
-                    </div>
+                        <button onClick={handleGetAttendanceClick} className="hr__Att__Btn">Get Attendance</button>
+                    {/* </div> */}
                 </div>
                 {
                     showAttendaceReport &&
