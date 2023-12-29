@@ -26,6 +26,8 @@ import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuse
 import CompanyProgressOverview from "./components/CompanyProgressOverview/CompanyProgressOverview";
 import skeletonStyles from "./styles/skeleton.module.css";
 import noLogIllus from "../../../../assets/images/4380.jpg";
+import { getTotalWorklogCountInOrganization, getWorklogDetailInOrganization } from "../../../../services/adminServices";
+import useLoadLogOverviewData from "./hooks/useLoadLogOverviewData";
 
 
 ChartJS.register(
@@ -79,11 +81,17 @@ const AdminDashboard = ({ subAdminView }) => {
         setDashboardLogDataForToday,
         dashboardLogDataForMonth,
         setDashboardLogDataForMonth,
+        totalWorklogCountInOrgLoading,
+        setTotalWorklogCountInOrgLoading,
+        totalWorklogCountInOrgLoaded,
+        setTotalWorklogCountInOrgLoaded,
     } = useJobContext();
     const { currentUser } = useCurrentUserContext();
     const navigate = useNavigate();
     const [ greeting, setGreeting ] = useState('');
-    const [ logOverviewDataFilter, setLogOverviewDataFilter ] = useState('today');
+    const defaultLogOverviewDataFilter = 'select';
+    const [ logOverviewDataFilter, setLogOverviewDataFilter ] = useState(defaultLogOverviewDataFilter);
+    const [ logOverviewDataLoading, setLogOverviewDataLoading ] = useState(false);
 
     useLoadAdminDashboardData(
         dashboardDataLoaded,
@@ -97,10 +105,17 @@ const AdminDashboard = ({ subAdminView }) => {
         setApplications,
         setApplicationsLoaded,
         setJobs,
-        setTotalWorklogCountInOrg,
-        setDashboardLogDataForToday,
-        setDashboardLogDataForMonth,
         setDashboardDataLoaded,
+    )
+
+    useLoadLogOverviewData(
+        currentUser,
+        logOverviewDataFilter,
+        setLogOverviewDataLoading,
+        dashboardLogDataForToday,
+        setDashboardLogDataForToday,
+        dashboardLogDataForMonth,
+        setDashboardLogDataForMonth,
     )
 
     useEffect(() => {
@@ -113,6 +128,23 @@ const AdminDashboard = ({ subAdminView }) => {
         setGreeting("Good evening");
 
     }, [])
+    
+    const handleLoadTotalLogCount = async () => {
+        if (totalWorklogCountInOrgLoading) return
+        
+        setTotalWorklogCountInOrgLoading(true);
+
+        try {
+            const res = (await getTotalWorklogCountInOrganization(currentUser?.portfolio_info[0]?.org_id)).data;
+            
+            setTotalWorklogCountInOrgLoading(false);
+            setTotalWorklogCountInOrg(res?.worklogs_count);
+            setTotalWorklogCountInOrgLoaded(true);
+
+        } catch (error) {
+            setTotalWorklogCountInOrgLoading(false);            
+        }
+    }
     
     return <>
         <StaffJobLandingLayout
@@ -169,9 +201,11 @@ const AdminDashboard = ({ subAdminView }) => {
                         icon={<ImStack />}
                         title={'Total Logs'}
                         action={'/logs'}
-                        dataLoading={!dashboardDataLoaded}
-                        dataLoaded={dashboardDataLoaded}
+                        dataLoading={totalWorklogCountInOrgLoading}
+                        dataLoaded={totalWorklogCountInOrgLoaded}
                         data={totalWorklogCountInOrg}
+                        hasLoadingAction={true}
+                        loadingAction={handleLoadTotalLogCount}
                     />
                 </section>
                 <section className={styles.stat__overview}>
@@ -180,7 +214,10 @@ const AdminDashboard = ({ subAdminView }) => {
                         value={logOverviewDataFilter} 
                         onChange={({ target }) => setLogOverviewDataFilter(target.value)}
                         className={styles.log__Filter}
+                        defaultValue={defaultLogOverviewDataFilter}
+                        disabled={logOverviewDataLoading ? true : false}
                     >
+                        <option value={defaultLogOverviewDataFilter} disabled>Select time period</option>
                         <option value={'today'}>Today</option>
                         <option value={'this month'}>This Month</option>
                     </select>
@@ -188,10 +225,21 @@ const AdminDashboard = ({ subAdminView }) => {
                         !dashboardDataLoaded ? <div className={`${styles.project_Overview_Loading} ${skeletonStyles.skeleton}`}></div>
                         :
                         !(
+                            logOverviewDataFilter === defaultLogOverviewDataFilter ||
                             logOverviewDataFilter === 'today' ||
                             logOverviewDataFilter === 'this month'
                         ) ? 
                             <></>
+                        :
+                        logOverviewDataFilter === defaultLogOverviewDataFilter ? <>
+                            <img src={noLogIllus} className={styles.no__Log__Img} alt="" />
+                            <p className={styles.no__Log__Content}>Select a time period to get detailed worklog insights.</p>
+                        </>
+                        :
+                        logOverviewDataLoading ? <>
+                            <p className={styles.no__Log__Content}>Crunching latest data for {logOverviewDataFilter}...</p>
+                            <div className={`${styles.project_Overview_Loading} ${skeletonStyles.skeleton}`}></div> 
+                        </>
                         :
                             logOverviewDataFilter === 'today' && dashboardLogDataForToday?.labels?.length < 1 ?
                         <>
