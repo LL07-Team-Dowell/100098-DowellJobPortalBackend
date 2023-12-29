@@ -107,9 +107,10 @@ import ProjectLeadAgendaPage from "./pages/ProjectLeadPage/views/Agenda/ProjectL
 import TeamLeadAgendaPage from "./pages/TeamleadPage/views/Agenda/TeamLeadAgendaPage";
 import AdminAgendaPage from "./pages/AdminPage/views/Agenda/AdminAgendaPage";
 import AgendaReport from "./pages/AdminPage/views/Agenda/AgendaReportPage/AgendaReport";
+import AttendanceReport from "./pages/HrPage/views/AttendanceReport/AttendanceReport";
 
 function App() {
-  console.log = () => {};
+  console.log = () => { };
 
   const {
     currentUser,
@@ -1089,6 +1090,16 @@ function App() {
     return (
       <Routes>
         <Route path='/logout' element={<Logout />} />
+        <Route
+          path='/attendance-report'
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <AttendanceReport />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
 
         <Route
           path='/'
@@ -1137,6 +1148,7 @@ function App() {
             </Route>
           </Route>
         </Route>
+       
 
         <Route path='*' element={<ErrorPage />} />
       </Routes>

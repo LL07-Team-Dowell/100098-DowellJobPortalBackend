@@ -1,0 +1,146 @@
+.att_report_main {
+    width: 98%;
+    background-color: #f5f5f5;
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 30px;
+    margin-bottom: 10%;
+    margin-left: 2%;
+}
+
+.internal_div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    background-color: white;
+    border-radius: 30px;
+    justify-content: space-evenly;
+    margin: 2px;
+    padding: 0px;
+}
+
+
+.internal_div input {
+    border: 1px solid lightgray;
+    font-size: 16px;
+    width: 100%;
+    border-radius: 8px;
+    color: #807f7f;
+}
+
+.internal_div button {
+    width: 15%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #005734;
+    color: white;
+    border: 0px;
+    border-radius: 8px;
+    margin-top: 18px;
+}
+
+.item__Filter__Wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.2rem;
+    flex-direction: column;
+    margin-left: 25px;
+}
+
+.item__Filter__Wrap p {
+    margin-top: 1%;
+    font-size: 0.875rem;
+}
+
+.item__Filter{
+    width: 20rem;
+}
+
+.attendance-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.present {
+    background-color: rgb(77, 180, 86);
+    border: 1px solid rgb(43, 142, 51);
+    box-shadow: 0 0 3px black;
+}
+
+.absent {
+    background-color: rgba(219, 35, 35, 0.991);
+    border: 1px solid rgba(189, 12, 12, 0.991);
+    box-shadow: 0 0 3px black;
+}
+
+.att_rep {
+    width: 80%;
+    background-color: white;
+    padding: 2px;
+    border-radius: 30px;
+    margin-left: 35px;
+    margin-bottom: 2%;
+}
+
+
+.att_rep table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.att_rep thead {
+    background-color: #f2f2f2;
+}
+
+.att_rep th {
+    text-align: center;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+    color: #767474;
+    padding: 2%;
+}
+
+.att_rep td {
+    text-align: center;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+    padding: 2%;
+}
+.att_rep tr {
+    padding: 10px;
+}
+
+.tbl_rep{
+    max-height: 400px;
+    overflow: scroll;
+    padding-right: 10%;
+    border-radius: 30px;
+}
+
+.att_report_main h3{
+    padding-top: 1%;
+    padding-left: 2%;
+    color: #005734;
+    font-size: 35px;
+    font-weight: 500;
+}
+
+.check{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    margin-left: 35px;
+    margin-bottom: 1rem;
+    border-radius: 30px;
+    padding: 1%;
+}
+
