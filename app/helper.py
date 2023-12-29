@@ -557,7 +557,7 @@ def datacube_data_insertion(api_key,database_name,collection_name,data):
     }
     print(data)
     response = requests.post(url, json=data)
-    print(respone.text)
+    print(response.text)
     return response.text
 
 def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offset):
@@ -573,6 +573,7 @@ def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offs
     }
 
     response = requests.post(url, json=data)
+    print(response.text)
     return response.text
 
 def datacube_data_update(api_key,db_name,coll_name,query,update_data):
