@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, date
 import requests
 import threading
 
-
 task_management_reports = [
     "jobportal",
     "jobportal",
@@ -233,7 +232,7 @@ def main():
     print("----------Process started----------")
 
     company_id='6385c0f18eca0fb652c94561'
-    _date = datetime.today().date()-timedelta(days=10)
+    _date = datetime.today().date()-timedelta(days=1)
     _date = _date.strftime("%Y-%m-%d")
 
     """project details"""
