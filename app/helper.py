@@ -101,7 +101,6 @@ def call_notification(url, request_type, data):  ## calling  notification api
         details = notification.json()
         return details
 
-
 ### for settings api----------------------------
 def update_number(string):
     updated_string = ""
@@ -110,14 +109,12 @@ def update_number(string):
             updated_string += f"C{str(int(char) + 1)}"
     return updated_string
 
-
 def update_string(string):
     new_str = ""
     for char in string:
         if char == "C":
             new_str = string.replace("C", "O")
     return new_str
-
 
 ### calling the discord api----------------------------
 # generate discord invite link
@@ -150,7 +147,6 @@ def discord_invite(server_owner_ids, guild_id, token):
     return invite_link
     # get the channels in the server
 
-
 def get_guild_channels(guildid, token):
     """with open(os.getcwd()+"/app/token", "r", encoding="utf-8") as t:
     token = t.read()"""
@@ -159,7 +155,6 @@ def get_guild_channels(guildid, token):
     response = requests.request("GET", url=url, headers=headers)
     res = json.loads(response.text)
     return res
-
 
 def get_guild_members(guildid, token):
     """with open(os.getcwd()+"/app/token", "r", encoding="utf-8") as t:
@@ -170,7 +165,6 @@ def get_guild_members(guildid, token):
     res = json.loads(response.text)
 
     return res
-
 
 def create_master_link(company_id, links, job_name):
     url = "https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/"
@@ -186,7 +180,6 @@ def create_master_link(company_id, links, job_name):
 
     return response.text
 
-
 def send_mail(toname, toemail, subject, job_role, link):
     url = "https://100085.pythonanywhere.com/api/hr-invitation/"
     payload = {
@@ -199,7 +192,6 @@ def send_mail(toname, toemail, subject, job_role, link):
     response = requests.post(url, json=payload)
     return response.text
 
-
 def interview_email(toname, toemail, subject, email_content):
     url = "https://100085.pythonanywhere.com/api/email/"
     payload = {
@@ -210,7 +202,6 @@ def interview_email(toname, toemail, subject, email_content):
     }
     response = requests.post(url, json=payload)
     return response.text
-
 
 def set_finalize(linkid):
     # print(linkid)
