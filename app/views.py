@@ -119,6 +119,8 @@ if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
 if os.getenv("PROJECT_DB_NAME"):
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
+if os.getenv("ATTENDANCE_DB_NAME"):
+    PROJECT_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
@@ -128,6 +130,7 @@ else:
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
+    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 
 # Create your views here.
 
@@ -10018,15 +10021,16 @@ class Datacube_operations(APIView):
             return self.handle_error(request)
 
     def add_collection(Self, request):
-        coll_names = request.GET.get("coll_names")
-        num_collections = request.GET.get("num_collections")
+        coll_names = request.data.get("coll_names")
+        num_collections = request.data.get("num_collections")
 
         field = {
             "db_name": DB_Name,
             "api_key": API_KEY,
-            "coll_names": request.GET.get("coll_names"),
-            "num_collections": request.GET.get("num_collections"),
+            "coll_names": coll_names,
+            "num_collections": num_collections,
         }
+        print(field)
 
         serializer = AddCollectionSerializer(data=field)
 
@@ -10172,4 +10176,57 @@ class test(APIView):
         return Response({
             "api key":API_KEY,
             "db name":DB_Name,
+        })
+
+@method_decorator(csrf_exempt, name="dispatch")
+class candidate_attendance(APIView):
+    def post(self,request):
+
+        applicant_username=request.data.get("usernames")
+        start_date=request.data.get("start_date")
+        end_date=request.data.get("end_date")
+        company_id=request.data.get("company_id")
+        meeting=request.data.get("meeting")
+
+        unsuccessfull_attendance=[]
+        successfull_attendance=[]
+
+
+        for username in applicant_username:
+            print(username)
+            collection=start_date+"_"+end_date+"_"+username
+            print(collection)
+            data={
+                "username":username,
+                "date":str(date.today()),
+                "company_id":company_id,
+                "meeting":meeting,
+                "attendance":True
+            }
+            try:
+                # insert_attendance = json.loads(
+                #     datacube_data_insertion(API_KEY,ATTENDANCE_DB_NAME,collection, data)
+                # )
+
+                insert_attendance={
+                    "success":True
+                }
+
+                if insert_attendance["success"]==True:
+                    successfull_attendance.append(username)
+
+                else:
+                    unsuccessfull_attendance.append({
+                        "username":username,
+                        "error":insert_attendance["message"]
+                        })  
+            except: 
+                    unsuccessfull_attendance.append(username)
+
+        return Response({
+            "success":True,
+            "response":{
+                "successfull_attendance":successfull_attendance,
+                "unsuccessfull_attendance":unsuccessfull_attendance
+            }
         })
