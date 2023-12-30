@@ -97,7 +97,8 @@ from .serializers import (
     AddCollectionSerializer,
     agendaapproveserializer,
     leaveapplyserializers,
-    SubprojectSerializer
+    SubprojectSerializer,
+    AttendanceSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -119,6 +120,8 @@ if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
 if os.getenv("PROJECT_DB_NAME"):
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
+if os.getenv("ATTENDANCE_DB_NAME"):
+    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
@@ -128,6 +131,7 @@ else:
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
+    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 
 # Create your views here.
 
@@ -963,12 +967,15 @@ class candidate_apply_job(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        """speed_test_response= check_speed_test(applicant_email)
+            
+        speed_test_response= check_speed_test(applicant_email)
+        print(speed_test_response)
         if speed_test_response["success"] == False:
             return Response(
                 speed_test_response,
                 status=status.HTTP_400_BAD_REQUEST,
-            )"""
+            )           
+        
         # continue apply api-----
         field = {
             "eventId": get_event_id()["event_id"],
@@ -984,7 +991,7 @@ class candidate_apply_job(APIView):
             "country": data.get("country"),
             "job_category": data.get("job_category"),
             "agree_to_all_terms": data.get("agree_to_all_terms"),
-            "internet_speed": "",#speed_test_response['message'],
+            "internet_speed": speed_test_response['internet_speed'],
             "other_info": data.get("other_info"),
             "project": "",
             "status": "Pending",
@@ -1009,6 +1016,7 @@ class candidate_apply_job(APIView):
             "module": data.get("module"),
             "payment_requested": False,
             "current_payment_request_status": "",
+            "candidate_certificate":data.get("candidate_certificate")
         }
         serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
@@ -10023,15 +10031,16 @@ class Datacube_operations(APIView):
             return self.handle_error(request)
 
     def add_collection(Self, request):
-        coll_names = request.GET.get("coll_names")
-        num_collections = request.GET.get("num_collections")
+        coll_names = request.data.get("coll_names")
+        num_collections = request.data.get("num_collections")
 
         field = {
             "db_name": DB_Name,
             "api_key": API_KEY,
-            "coll_names": request.GET.get("coll_names"),
-            "num_collections": request.GET.get("num_collections"),
+            "coll_names": coll_names,
+            "num_collections": num_collections,
         }
+        print(field)
 
         serializer = AddCollectionSerializer(data=field)
 
@@ -10053,7 +10062,7 @@ class Datacube_operations(APIView):
             },status=status.HTTP_201_CREATED)
         
         return Response({
-                "success":False,
+                "success":True,
                 "message":"new collection has been added",
                 "data":response["data"]
             },status=status.HTTP_201_CREATED)
@@ -10178,3 +10187,121 @@ class test(APIView):
             "api key":API_KEY,
             "db name":DB_Name,
         })
+
+@method_decorator(csrf_exempt, name="dispatch")
+class candidate_attendance(APIView):
+    def post(self,request):
+       request_type=request.GET.get("type")
+       if not request_type:
+           return Response({"success":False,
+                            "message":"Request type should be sent in query as params"},
+                           status=status.HTTP_400_BAD_REQUEST
+                           )
+       if request_type=="add_attendance":
+           return self.add_attendance(request) 
+       if request_type=="get_attendance":
+           return self.get_attendance(request)
+       
+       else:
+           self.handle_error(request)
+        
+    
+    def add_attendance(self,request):
+
+        applicant_usernames=request.data.get("applicant_usernames")
+        start_date=request.data.get("start_date")
+        end_date=request.data.get("end_date")
+        company_id=request.data.get("company_id")
+        meeting=request.data.get("meeting")
+
+        unsuccessfull_attendance=[]
+        successfull_attendance=[]
+
+        serializer=AttendanceSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        for username in applicant_usernames:
+            print(username)
+            collection=start_date+"_"+end_date+"_"+username
+            print(collection)
+            data={
+                "username":username,
+                "date":str(date.today()),
+                "company_id":company_id,
+                "meeting":meeting,
+                "attendance":True
+            }
+            try:
+                insert_attendance = json.loads(
+                    datacube_data_insertion(API_KEY,DB_Name,collection, data)
+                )
+
+                if insert_attendance["success"]==True:
+                    successfull_attendance.append(username)
+
+                else:
+                    unsuccessfull_attendance.append({
+                        "username":username,
+                        "error":insert_attendance["message"]
+                        })  
+            except: 
+                    unsuccessfull_attendance.append({
+                        "username":username,
+                        "error":insert_attendance
+                        })  
+        return Response({
+            "success":True,
+            "message":"Attendance has been successfully recorded",
+            "response":{
+                "successfull_attendance":successfull_attendance,
+                "unsuccessfull_attendance":unsuccessfull_attendance
+            }
+        },status=status.HTTP_201_CREATED)
+    
+    def get_attendance(self,request):
+        start_date=request.data.get("start_date")
+        end_date=request.data.get("end_date")
+        username=request.data.get("applicant_username")
+        collection=start_date+"_"+end_date+"_"+username
+        attendance_date=request.data.get("attendance_date")
+        limit=request.data.get("limit")
+        offset=request.data.get("offset")
+        if attendance_date:
+            data={
+                "date":attendance_date
+            }
+        if not attendance_date:
+            data={}
+        try:
+            attendance_report=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection,data,limit,offset))
+            if not attendance_report["success"]==True:
+                return Response(
+                    {
+                        "success":False,
+                        "message":attendance_report["message"]
+                    },status=status.HTTP_400_BAD_REQUEST
+                            )
+            return Response({
+                "success":True,
+                "response":attendance_report["message"],
+                "data":attendance_report
+            },status=status.HTTP_200_OK)
+        except:
+            return Response({
+                "success":False,
+                "error":"datacube database not responding"
+            })
+    
+    def handle_error(self,request):
+        return Response({
+            "success":False,
+            "error":"Invalid request type"
+        },status=status.HTTP_400_BAD_REQUEST)
+    
