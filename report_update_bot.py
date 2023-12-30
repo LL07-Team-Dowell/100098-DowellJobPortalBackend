@@ -404,26 +404,25 @@ def update_report_database(task_created_date,company_id):
                                                         team_tasks_comments_added+=1
                             
                             _d={
-                                    "task_added": task_added,
-                                    "tasks_completed": tasks_completed,
-                                    "tasks_uncompleted": tasks_uncompleted,
-                                    "tasks_approved": tasks_approved,
-                                    "percentage_tasks_completed": percentage_tasks_completed,
-                                    "tasks_you_approved": tasks_you_approved,
-                                    "tasks_you_marked_as_complete": tasks_you_marked_as_complete,
-                                    "tasks_you_marked_as_incomplete": tasks_you_marked_as_uncomplete,
-                                    "teams": teams,
-                                    "team_tasks": team_tasks,
-                                    "team_tasks_completed": team_tasks_completed,
-                                    "team_tasks_uncompleted": team_tasks_uncompleted,
-                                    "percentage_team_tasks_completed": percentage_team_tasks_completed,
-                                    "team_tasks_approved": team_tasks_approved,
-                                    "team_tasks_issues_raised": team_tasks_issues_raised,
-                                    "team_tasks_issues_resolved": team_tasks_issues_resolved,
-                                    "team_tasks_comments_added": team_tasks_comments_added
-                                }
+                                "task_added": task_added,
+                                "tasks_completed": tasks_completed,
+                                "tasks_uncompleted": tasks_uncompleted,
+                                "tasks_approved": tasks_approved,
+                                "percentage_tasks_completed": percentage_tasks_completed,
+                                "tasks_you_approved": tasks_you_approved,
+                                "tasks_you_marked_as_complete": tasks_you_marked_as_complete,
+                                "tasks_you_marked_as_incomplete": tasks_you_marked_as_uncomplete,
+                                "teams": teams,
+                                "team_tasks": team_tasks,
+                                "team_tasks_completed": team_tasks_completed,
+                                "team_tasks_uncompleted": team_tasks_uncompleted,
+                                "percentage_team_tasks_completed": percentage_team_tasks_completed,
+                                "team_tasks_approved": team_tasks_approved,
+                                "team_tasks_issues_raised": team_tasks_issues_raised,
+                                "team_tasks_issues_resolved": team_tasks_issues_resolved,
+                                "team_tasks_comments_added": team_tasks_comments_added
+                            }
                             
-
                             get_collection['data'][0]['data'][_monthname]=_d
                             data=get_collection['data'][0]['data']
                             update_data={"data":data} #'''incomplete---'''

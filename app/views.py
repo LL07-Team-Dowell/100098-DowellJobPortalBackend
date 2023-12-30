@@ -8424,6 +8424,8 @@ class ProjectDetails(APIView):
         get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,0))
         if get_collection['success']==True:
             res= get_collection['data']
+            if len(get_collection['data'])>0:
+                res= get_collection['data'][-1]
             return Response(
                 {
                     "success": get_collection['success'],
@@ -8582,7 +8584,7 @@ class ProjectDetails(APIView):
         if (tasks['isSuccess'] == True):
             print("tasks exists, processing projects details-------------------",len(tasks['data']))
             for i,task in enumerate(tasks['data']):
-                print(f"----------processing details for task {i}/{len(tasks['data'])}----------")
+                print(f"----------processing details for task {i+1}/{len(tasks['data'])}----------")
                 if 'task_id' in task.keys():
                     c=json.loads(dowellconnection(*task_management_reports, "fetch", {"task_created_date":task_created_date, "_id":task["task_id"]}, update_field=None))['data']
                     if len(c) > 0:
@@ -8776,7 +8778,6 @@ class ProjectDetails(APIView):
                             "total_tasks":v1["total_tasks"] if 'total_tasks' in v1.keys() else 0,
                             "candidates":[]
                         }
-                        print(v1, "==========================")
                         if 'candidates' in v1.keys():
                             for k2, v2 in v1['candidates'].items():
                                 _d2 ={
@@ -8988,7 +8989,6 @@ class Product_Services_API(APIView):
             },
             status=status.HTTP_200_OK,
         )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class dashboard_services(APIView):
@@ -9227,7 +9227,6 @@ class dashboard_services(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class candidate_leave(APIView):
     def post(self, request):
@@ -9433,7 +9432,6 @@ class candidate_leave(APIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class ReportDB(APIView):
     def get_individual_report(self, request):
@@ -9492,9 +9490,6 @@ class ReportDB(APIView):
         error={"success":False,"error":"Specify the type of report"}
         return Response(error,status=status.HTTP_400_BAD_REQUEST)
     
-
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class WeeklyAgenda(APIView):
     def post(self, request):
@@ -10040,7 +10035,7 @@ class Datacube_operations(APIView):
             "coll_names": coll_names,
             "num_collections": num_collections,
         }
-        print(field)
+        #print(field)
 
         serializer = AddCollectionSerializer(data=field)
 
@@ -10200,14 +10195,12 @@ class candidate_attendance(APIView):
        if request_type=="add_attendance":
            return self.add_attendance(request) 
        if request_type=="get_attendance":
-           return self.get_attendance(request)
-       
+           return self.get_attendance(request) 
        else:
            self.handle_error(request)
         
     
     def add_attendance(self,request):
-
         applicant_usernames=request.data.get("applicant_usernames")
         start_date=request.data.get("start_date")
         end_date=request.data.get("end_date")
@@ -10245,7 +10238,6 @@ class candidate_attendance(APIView):
 
                 if insert_attendance["success"]==True:
                     successfull_attendance.append(username)
-
                 else:
                     unsuccessfull_attendance.append({
                         "username":username,
@@ -10273,26 +10265,23 @@ class candidate_attendance(APIView):
         attendance_date=request.data.get("attendance_date")
         limit=request.data.get("limit")
         offset=request.data.get("offset")
+
+        data={}
         if attendance_date:
             data={
                 "date":attendance_date
             }
-        if not attendance_date:
-            data={}
+
         try:
             attendance_report=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection,data,limit,offset))
-            if not attendance_report["success"]==True:
-                return Response(
-                    {
-                        "success":False,
-                        "message":attendance_report["message"]
-                    },status=status.HTTP_400_BAD_REQUEST
-                            )
-            return Response({
-                "success":True,
-                "response":attendance_report["message"],
-                "data":attendance_report
-            },status=status.HTTP_200_OK)
+            if attendance_report["success"]==True:
+                return Response({
+                    "success":True,
+                    "response":attendance_report["message"],
+                    "data":attendance_report},status=status.HTTP_200_OK)
+            
+            return Response({"success":False,"message":attendance_report["message"]},status=status.HTTP_400_BAD_REQUEST )
+            
         except:
             return Response({
                 "success":False,
