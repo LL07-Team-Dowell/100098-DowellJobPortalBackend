@@ -34,7 +34,7 @@ export default function ApplicationCardItem({ application, loading, greyJobCardC
         </div>
         <div className={`${loading ? skeletonStyles.skeleton : ''} ${loading ? styles.job__skeleton : ''} ${styles.job}`} style={{ backgroundColor: greyJobCardColor ? '#f2f2f2' : 'rgb(225, 251, 226)' }}>
             <p>
-                {application?.job_title}
+                {application?.job_title?.length >15 ? application?.job_title?.slice(0,15) + '...' : application?.job_title}
             </p>
         </div>
         <Tooltip 
