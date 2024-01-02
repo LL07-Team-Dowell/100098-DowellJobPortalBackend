@@ -217,5 +217,5 @@ urlpatterns = [
     path('datacube/',Datacube_operations.as_view()),
     path('test/',test.as_view()) ,
     path('attendance/',candidate_attendance.as_view()),
-    # path('speed_test_result/<str:email>',speed_test.as_view())
+    path('speed_test_result/<str:email>',speed_test.as_view())
 ]
