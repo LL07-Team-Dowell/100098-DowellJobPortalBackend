@@ -9118,17 +9118,19 @@ class dashboard_services(APIView):
             )
     
     def update_project(slf,request):
-        project=request.data.get("project")
+        project = request.data.get("project")
         candidate_id = request.data.get("candidate_id")
+        company_id = request.data.get("company_id")
 
-        serializer=
-        if not project or candidate_id:
+        serializer=Project_Update_Serializer(data=request.data)
+        
+        if not serializer.is_valid():
             return Response({
                 "success":False,
-                "message":"posting Invalid Data, project name and candidate_id is required",
+                "error":serializer.errors,
                 },status=status.HTTP_400_BAD_REQUEST)
         
-        field = {"_id": candidate_id}
+        field = {"_id": candidate_id,"company_id":company_id}
         update_field = {"project": project}
         
         try:
@@ -9136,23 +9138,24 @@ class dashboard_services(APIView):
                     dowellconnection(
                         *candidate_management_reports, "update", field, update_field
                     )
-                )
-            if response["success"]:
-                return Response({
-                    "success":True,
-                    "message":response["message"]
-                },status=status.HTTP_200_OK)
-        
-            else:
-                return Response({
-                    "success":False,
-                    "message":"Candidate projects could not be updated",
-                    "error":response["message"]
-                })
+                )           
         except:
             return Response({
                 "success":False,
-                "error":"Dowellconnection not responding"
+                "error":"DB not responding"
+            })
+            
+        if response["isSuccess"]:
+                return Response({
+                    "success":True,
+                    "message":"Candidate project has been updated successfully"
+                },status=status.HTTP_200_OK)
+        
+        else:
+            return Response({
+                "success":False,
+                "message":"Candidate projects could not be updated",
+                "error":response["error"]
             })
 
 
