@@ -627,6 +627,17 @@ def get_speed_test_data(email):
     except requests.RequestException as e:
         print(f"Request failed: {e}")
         return None
+def get_speed_test_result(email):
+    try:
+        url = f"https://dowellresearch.com/livinglab/api.php?email={email}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.json()[:10]
+        else:
+            return None
+    except requests.RequestException as e:
+        print(f"Request failed: {e}")
+        return None
 
 def speed_test_condition(upload, download, jitter, latency):
     conditions_met = (upload >= 100) + (download >= 100) + (jitter <= 30) + (latency <= 50)
