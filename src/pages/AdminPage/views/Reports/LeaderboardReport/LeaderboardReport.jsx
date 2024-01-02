@@ -279,6 +279,7 @@ const LeaderboardReport = ({ isPublicReportUser, isProjectLead, subAdminView }) 
             hideSearchBar={true}
             projectLeadView={isProjectLead}
             subAdminView={subAdminView}
+            newSidebarDesign={(!isProjectLead || !subAdminView) ? true : false}
         >
             <LoadingSpinner />
             <p style={{ textAlign: 'center' }}>
@@ -299,6 +300,7 @@ const LeaderboardReport = ({ isPublicReportUser, isProjectLead, subAdminView }) 
             hideSearchBar={true}
             projectLeadView={isProjectLead}
             subAdminView={subAdminView}
+            newSidebarDesign={(!isProjectLead || !subAdminView) ? true : false}
         >
             <p style={{ textAlign: 'center', color: 'red', marginTop: 40 }}>An error occured while trying to generate your report</p>
         </StaffJobLandingLayout>
@@ -312,6 +314,7 @@ const LeaderboardReport = ({ isPublicReportUser, isProjectLead, subAdminView }) 
             hideSearchBar={true}
             projectLeadView={isProjectLead}
             subAdminView={subAdminView}
+            newSidebarDesign={(!isProjectLead || !subAdminView) ? true : false}
         >
             <div className="detailed_indiv_container">
                 <div className="task__report__nav">

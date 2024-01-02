@@ -104,6 +104,7 @@ const AllApplicationsScreen = () => {
             adminView={true}
             adminAlternativePageActive={true}
             pageTitle={'Applications'}
+            newSidebarDesign={true}
         >
             <div className={styles.wrapper}>
                 

@@ -348,6 +348,7 @@ const AdminLogsHomePage = () => {
             searchValue={searchValue}
             setSearchValue={handleSearch}
             searchPlaceHolder={'user'}
+            newSidebarDesign={true}
         >
             {
                 loading ? 

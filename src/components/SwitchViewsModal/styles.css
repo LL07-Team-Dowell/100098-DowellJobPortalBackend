@@ -15,6 +15,10 @@
     color: black;
 }
 
+.switch__Views__Modal.new__Side {
+    left: 14rem;
+}
+
 .switch__Views__Modal ul {
     list-style: none;
     padding: 6%;

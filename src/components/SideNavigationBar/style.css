@@ -15,7 +15,8 @@
 }
 
 .new__Side__Navigation__Bar .new__Side__Navigation__Links,
-.new__Side__Navigation__Bar .new__Side__Navigation__Links a {
+.new__Side__Navigation__Bar .new__Side__Navigation__Links a,
+.new__Side__Navigation__Bar .new__Side__Navigation__Links p {
     color: var(--white-color);
     display: flex;
     flex-direction: column;
@@ -30,6 +31,10 @@
     height: 90%;
     justify-content: space-between;
     gap: 1.9rem;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links {
+    justify-content: unset;
 }
 
 .new__Side__Navigation__Bar .new__Side__Navigation__Links a {
@@ -47,10 +52,87 @@
     font-size: 0.8rem;
 }
 
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links a {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.7rem;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links a svg,
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links p svg {
+    font-size: 1.6rem;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links a span {
+    width: max-content;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links p {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+}
+
+.new__Side__Navigation__Bar .new__Side__Navigation__Links p span {
+    font-size: 0.8rem;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links .dropdown__ICon {
+    font-size: 0.8rem;
+    margin-left: auto;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links .child__Nav__Links {
+    width: 90%;
+    margin-left: auto;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links .child__Nav__Links span {
+    font-size: 0.75rem;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links .child__Nav__Links svg {
+    font-size: 1rem;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Nav__user__Wrap {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 1rem 0 1.2rem;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Nav__user__Wrap a {
+    color: #fff;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.new__Side__Navigation__Bar.new__Side__Design .new__Side__Nav__user__Wrap a svg {
+    font-size: 30px;
+}
+
+
 @media screen and (max-width: 767px) {
     .new__Side__Navigation__Bar .new__Side__Navigation__Links {
         justify-content: space-around;
         gap: 1.6rem;
+    }
+    .new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links a,
+    .new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links p {
+        flex-direction: column;
+    }
+    .new__Side__Navigation__Bar.new__Side__Design .new__Side__Navigation__Links p {
+        gap: 0.7rem;
     }
 }
 

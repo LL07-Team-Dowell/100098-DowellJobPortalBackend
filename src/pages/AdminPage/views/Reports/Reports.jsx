@@ -445,6 +445,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
         adminAlternativePageActive={true}
         pageTitle={"Reports"}
         subAdminView={subAdminView}
+        newSidebarDesign={!subAdminView ? true : false}
       >
         <div className='reports__container' id='reports__container'>
           <div className='reports__container_header'>
@@ -479,6 +480,7 @@ const AdminReports = ({ subAdminView, isPublicReportUser }) => {
       pageTitle={"Reports"}
       subAdminView={subAdminView}
       hideSideBar={showCustomTimeModal}
+      newSidebarDesign={!subAdminView ? true : false}
     >
       <>
         <div className='reports__container' ref={exportRef}>

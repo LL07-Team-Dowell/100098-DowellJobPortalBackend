@@ -110,7 +110,7 @@ import AgendaReport from "./pages/AdminPage/views/Agenda/AgendaReportPage/Agenda
 import AttendanceReport from "./pages/HrPage/views/AttendanceReport/AttendanceReport";
 
 function App() {
-  console.log = () => { };
+  // console.log = () => { };
 
   const {
     currentUser,
@@ -918,6 +918,7 @@ function App() {
                   pageTitle={"New Team"}
                   adminAlternativePageActive={true}
                   hideSearchBar={true}
+                  newSidebarDesign={true}
                 >
                   <ValuesProvider>
                     <CreateTeam isAdmin={true} />
@@ -937,6 +938,7 @@ function App() {
                   hideSearchBar={true}
                   adminAlternativePageActive={true}
                   pageTitle={"Teams"}
+                  newSidebarDesign={true}
                 >
                   <TeamProvider>
                     <ValuesProvider>
@@ -958,6 +960,7 @@ function App() {
                   hideSearchBar={true}
                   adminAlternativePageActive={true}
                   pageTitle={"Teams"}
+                  newSidebarDesign={true}
                 >
                   <TeamProvider>
                     <ValuesProvider>
@@ -980,6 +983,7 @@ function App() {
                   hideSearchBar={true}
                   adminAlternativePageActive={true}
                   pageTitle={"Teams"}
+                  newSidebarDesign={true}
                 >
                   <TeamProvider>
                     <ValuesProvider>
@@ -1001,6 +1005,7 @@ function App() {
                   hideSearchBar={true}
                   adminAlternativePageActive={true}
                   pageTitle={"Teams"}
+                  newSidebarDesign={true}
                 >
                   <TeamProvider>
                     <ValuesProvider>

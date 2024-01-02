@@ -125,6 +125,7 @@ export default function TeamReport({ isPublicReportUser, isProjectLead, subAdmin
                 projectLeadView={isProjectLead}
                 hideSearchBar={true}
                 subAdminView={subAdminView}
+                newSidebarDesign={(!isProjectLead || !subAdminView) ? true : false}
             >
                 <div className="detailed_indiv_container">
                     <div className="task__report__nav">
@@ -157,6 +158,7 @@ export default function TeamReport({ isPublicReportUser, isProjectLead, subAdmin
             projectLeadView={isProjectLead}
             hideSearchBar={true}
             subAdminView={subAdminView}
+            newSidebarDesign={(!isProjectLead || !subAdminView) ? true : false}
         >
             <div className="detailed_indiv_container">
                 <div className="task__report__nav">

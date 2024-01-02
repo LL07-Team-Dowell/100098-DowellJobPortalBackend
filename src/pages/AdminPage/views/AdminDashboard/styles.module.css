@@ -15,6 +15,10 @@
     flex-direction: row;
 }
 
+.top__Stats__Wrap {
+    gap: 1.2rem;
+}
+
 .top__Nav__Content h2 {
     color: #005734;
     font-weight: 600;

@@ -272,6 +272,7 @@ const AgendaReport = () => {
             adminView={true}
             adminAlternativePageActive={true}
             pageTitle={"Reports"}
+            newSidebarDesign={true}
         >
             <div className="parent_div">
                 <div className="main_div">

@@ -398,6 +398,7 @@ const LandingPage = ({ subAdminView }) => {
       showShareModalForJob={showShareModal}
       jobLinkToShareObj={jobLinkToShareObj}
       handleCloseShareJobModal={() => setShowShareModal(false)}
+      newSidebarDesign={!subAdminView ? true : false}
     >
       <div className='isActive-container'>
         <p

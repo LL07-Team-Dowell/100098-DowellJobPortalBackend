@@ -191,6 +191,7 @@ const Add = () => {
       handleCloseShareJobModal={handleCloseShareModal}
       isProductLink={isProductLink}
       isReportLink={isReportLink}
+      newSidebarDesign={true}
     >
       <div className='new__task__container'>
         {/* <h1 style={{ color: "#005734", fontSize: "1.6rem" }}>Add New Item</h1> */}
