@@ -108,9 +108,10 @@ import TeamLeadAgendaPage from "./pages/TeamleadPage/views/Agenda/TeamLeadAgenda
 import AdminAgendaPage from "./pages/AdminPage/views/Agenda/AdminAgendaPage";
 import AgendaReport from "./pages/AdminPage/views/Agenda/AgendaReportPage/AgendaReport";
 import AttendanceReport from "./pages/HrPage/views/AttendanceReport/AttendanceReport";
+import HrAllApplicationsScreen from "./pages/HrPage/views/AllApplicationsScreen/AllApplicationsScreen";
 
 function App() {
-  // console.log = () => { };
+  console.log = () => { };
 
   const {
     currentUser,
@@ -1101,6 +1102,17 @@ function App() {
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
                 <AttendanceReport />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
+
+        <Route
+          path='/all-users'
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <HrAllApplicationsScreen />
               </ValuesProvider>
             </HrJobScreenAllTasksContextProvider>
           }
