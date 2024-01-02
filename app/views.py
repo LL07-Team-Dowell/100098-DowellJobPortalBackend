@@ -46,6 +46,7 @@ from .helper import (
     get_subproject,
     check_speed_test, 
     get_projects,
+    get_speed_test_result
 )
 from .serializers import (
     AccountSerializer,
@@ -10341,3 +10342,17 @@ class candidate_attendance(APIView):
             "error":"Invalid request type"
         },status=status.HTTP_400_BAD_REQUEST)
     
+@method_decorator(csrf_exempt, name="dispatch")
+class speed_test(APIView):
+    def get(self, request,email):
+        if not email:
+            return Response({
+                "success": False,
+                "message": "Kindly provide email"
+            })
+        response = get_speed_test_result(email)
+        return Response({
+            "success": True,
+            "message": "Speed test data retrived successfully",
+            "response": response
+        })
