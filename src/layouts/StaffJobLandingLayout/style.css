@@ -85,6 +85,11 @@
     scrollbar-width: thin;
 }
 
+.staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar.new__Side__Width {
+    /* height: 100vh; */
+    height: calc(100% - 6.5rem);
+}
+
 .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -399,6 +404,7 @@
     }
     .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar.new__Side__Width {
         width: 100%;
+        height: max-content;
     }
 }
 @media(width >=1200px){

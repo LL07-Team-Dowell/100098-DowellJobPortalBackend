@@ -16,12 +16,28 @@
 }
 
 .switch__Views__Modal.new__Side {
-    left: 14rem;
+    position: relative;
+    left: 0;
+    width: 90%;
+    margin-left: auto;
+    bottom: unset;
+    background-color: transparent;
+    box-shadow: none;
+    color: #fff;
+    font-size: 0.8rem;
+    top: -1rem;
+    z-index: 0;
+    max-height: 100%;
+    overflow-y: auto;
 }
 
 .switch__Views__Modal ul {
     list-style: none;
     padding: 6%;
+}
+
+.switch__Views__Modal.new__Side ul {
+    padding-top: 0;
 }
 
 .switch__Views__Modal ul li {
@@ -31,6 +47,10 @@
     cursor: pointer;
     border-radius: 10px;
     transition: 0.3s ease-in-out;
+}
+
+.switch__Views__Modal.new__Side ul li {
+    margin-bottom: 0.4rem;
 }
 
 .switch__Views__Modal ul li:last-child {
@@ -47,4 +67,29 @@
     margin: 3% 3% 0 auto;
     cursor: pointer;
     font-size: 1.1rem;
+}
+
+@media screen and (max-width: 991.98px) {
+    .switch__Views__Modal.new__Side,
+    .switch__Views__Modal {
+        position: fixed;
+        border-radius: 10px;
+        box-shadow: 0px 1.85594px 12.373px rgba(0, 0, 0, 0.3);
+        right: 1rem;
+        width: 13rem;
+        z-index: 99;
+        background-color: var(--white-color);
+        top: 38%;
+        color: black;
+        height: max-content;
+        max-height: 50%;
+    }
+    
+    .switch__Views__Modal.new__Side ul {
+        padding-top: 6%;
+    }
+
+    .switch__Views__Modal.new__Side ul li {
+        margin-bottom: 0.875rem;
+    }
 }

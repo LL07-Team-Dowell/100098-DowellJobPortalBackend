@@ -27,7 +27,7 @@ export const adminNavigationLinks = [
       {
         linkAddress: "/agenda",
         icon: <TfiAgenda />,
-        text: "Agenda",
+        text: "Track Agendas",
       },
       {
         linkAddress: "/report",
