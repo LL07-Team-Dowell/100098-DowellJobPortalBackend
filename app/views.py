@@ -4216,10 +4216,8 @@ class SettingUserProjectView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request,pk):
+    def get(self, request):
         profiles = UserProject.objects.all()
-        if pk:
-            profiles=UserProject.objects.get(pk=pk)
         serializer = self.serializer_class(profiles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
