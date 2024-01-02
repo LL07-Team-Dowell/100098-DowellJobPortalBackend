@@ -209,7 +209,7 @@ const AllApplicationsScreen = () => {
                                 if (searchValue.length < 1) return true
                                 return application?.applicant?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
                             })
-                            ?.slice(cardGroupNumber, cardGroupNumber + 8)
+                            ?.slice(cardGroupNumber, cardGroupNumber + 9)
                             .map(application => {
                                 return <FullApplicationCardItem 
                                     application={application} 
@@ -246,18 +246,18 @@ const AllApplicationsScreen = () => {
                             .filter(application => {
                                 if (searchValue.length < 1) return true
                                 return application?.applicant?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
-                            })?.length / 8
+                            })?.length / 9
                         )
                     )
                     .slice(
                         cardPagination,
-                        cardPagination + 8
+                        cardPagination + 9
                     )
                     .map((s, index) => (
                         <button
                         className={s !== cardIndex ? "active" : "desactive"}
                         onClick={() => {
-                            setCardGroupNumber(index * 8);
+                            setCardGroupNumber(index * 9);
                             setCardIndex(index);
                         }}
                         key={`${s}_button`}
@@ -269,7 +269,7 @@ const AllApplicationsScreen = () => {
                     <button
                         onClick={() =>
                             incrementStepPagination(
-                                8,
+                                9,
                                 Math.ceil(
                                     applications
                                     ?.filter(application => {
@@ -287,7 +287,7 @@ const AllApplicationsScreen = () => {
                                     .filter(application => {
                                         if (searchValue.length < 1) return true
                                         return application?.applicant?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
-                                    })?.length / 8
+                                    })?.length / 9
                                 )
                             )
                         }

@@ -14,6 +14,10 @@
     position: relative;
 }
 
+.full__Application__Item.admin__Item {
+    width: calc(calc(100% - 7.5rem) / 3);
+}
+
 .edit__App {
     position: absolute;
     right: 1.5rem;

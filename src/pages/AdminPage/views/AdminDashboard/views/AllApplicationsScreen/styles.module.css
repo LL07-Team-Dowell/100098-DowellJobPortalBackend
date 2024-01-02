@@ -50,6 +50,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
+  justify-content: center;
 }
 
 @media (min-width: 768px) and (max-width: 991px) {

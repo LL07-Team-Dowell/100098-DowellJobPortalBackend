@@ -230,7 +230,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
 
   return (
     <>
-      <div className={styles.full__Application__Item}>
+      <div className={`${styles.full__Application__Item} ${styles.admin__Item}`}>
         <div
           className={styles.edit__App}
           onClick={() => setShowEditOptions(!showEditOptions)}

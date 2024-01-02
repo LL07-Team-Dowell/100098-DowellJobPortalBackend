@@ -2,10 +2,11 @@ import Avatar from 'react-avatar';
 import styles from './styles.module.css';
 import { Tooltip } from 'react-tooltip';
 import skeletonStyles from '../../styles/skeleton.module.css';
+import { changeToTitleCase } from '../../../../../../helpers/helpers';
 
 export default function ApplicationCardItem({ application, loading, greyJobCardColor }) {
     return <div className={styles.application__item} 
-        data-tooltip-content={loading ? '' : `${application?.applicant} from ${application?.country} applied for ${application?.job_title}`}
+        data-tooltip-content={loading ? '' : `${changeToTitleCase(application?.applicant)} from ${changeToTitleCase(application?.country)} applied for ${changeToTitleCase(application?.job_title)}`}
         data-tooltip-id={application?._id}
     >
         <div className={styles.profile__Wrap}>
