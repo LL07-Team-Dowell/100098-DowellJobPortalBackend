@@ -10,6 +10,7 @@ import { getSettingUserProject } from "../../../../../services/hrServices";
 import { getSettingUserSubProject } from "../../../../../services/adminServices";
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { getWeeklyAgenda } from "../../../../../services/commonServices";
+import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
 
 const AgendaReport = () => {
     //dummy data
@@ -84,6 +85,7 @@ const AgendaReport = () => {
     const [evaluatorResponse, setEvaluatorResponse] = useState([]);
     const [noResultFound, setNoResultFound] = useState(false);
     const { currentUser } = useCurrentUserContext();
+    const [isloading, setIsLoading] = useState(false);
 
     // const companyId = "6385c0f18eca0fb652c94561";
 
@@ -92,7 +94,7 @@ const AgendaReport = () => {
             try {
                 const data = (await getSettingUserProject()).data;
                 const companyProjects = data.filter(
-                    (project) => 
+                    (project) =>
                         project.company_id === currentUser?.portfolio_info[0]?.org_id
                         &&
                         project.data_type === currentUser?.portfolio_info[0]?.data_type
@@ -115,9 +117,9 @@ const AgendaReport = () => {
 
             if (response.data && Array.isArray(response.data.data)) {
                 const data = response.data.data?.filter(
-                    item => 
-                    item.company_id === currentUser?.portfolio_info[0]?.org_id &&
-                    item.data_type === currentUser?.portfolio_info[0]?.data_type
+                    item =>
+                        item.company_id === currentUser?.portfolio_info[0]?.org_id &&
+                        item.data_type === currentUser?.portfolio_info[0]?.data_type
                 )?.reverse();
 
                 const selectedProjectData = data.find(
@@ -173,10 +175,7 @@ const AgendaReport = () => {
         } else if (!startDate || !endDate) {
             return toast.info("Please select both start and end dates");
         } else {
-            const diffInDays = Math.floor((new Date(endDate) - new Date(startDate)) / (24 * 60 * 60 * 1000));
-            if (diffInDays !== 7) {
-                return toast.info("The difference between start and end dates should be exactly 7 days");
-            }
+            setIsLoading(true);
         }
         const processedSubProject = selectedSubProject.replace(/ /g, "-");
 
@@ -261,6 +260,7 @@ const AgendaReport = () => {
                     setResultVisibility(false);
                     setNoResultFound(true);
                 }
+                setIsLoading(false);
             })
             .catch(error => {
                 console.error('Errorrrrrrrrrrr:', error);
@@ -335,7 +335,7 @@ const AgendaReport = () => {
                                 </label>
                             </div>
 
-                            <button onClick={handleResultVisibilty}>Show Results</button>
+                            <button onClick={handleResultVisibilty}>{isloading ? <LoadingSpinner width={25} height={25} color="#fff" /> : 'Show Results'}</button>
                         </div>
                     </div>
                     {

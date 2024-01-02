@@ -8,31 +8,18 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getAllOnBoardedCandidate } from "../../../../services/candidateServices";
 
 const AttendanceReport = () => {
-    //dummy data
-    const data = [
-        { name: "John Doe", attendanceDetails: [true, true, false, true, true, true, false], event: "Meeting" },
-        { name: "Jane Doe", attendanceDetails: [false, true, true, true, true, false, true], event: "Training" },
-        { name: "Bob Smith", attendanceDetails: [true, true, false, false, true, true, true], event: "Conference" },
-        { name: "John Doe", attendanceDetails: [true, true, false, true, true, true, false], event: "Meeting" },
-        { name: "Jane Doe", attendanceDetails: [false, true, true, true, true, false, true], event: "Training" },
-        { name: "Bob Smith", attendanceDetails: [true, true, true, true, true, true, true], event: "Conference" },
-        { name: "John Doe", attendanceDetails: [true, true, false, true, true, true, false], event: "Meeting" },
-        { name: "Jane Doe", attendanceDetails: [false, true, true, true, true, false, true], event: "Training" },
-        { name: "Bob Smith", attendanceDetails: [true, true, true, true, true, true, true], event: "Conference" },
-    ];
-
-
     const [selectedUser, setSelectedUser] = useState([]);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [showAttendaceReport, setShowAttendaceReport] = useState(false);
     const { currentUser } = useCurrentUserContext();
     const [candidateOptions, setCandidateOptions] = useState([]);
+    const [candidateAttendance, setCandidateAttendance] = useState([]);
 
     useEffect(() => {
         getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id).then(res => {
             const onboardingCandidates = res?.data?.response?.data;
-            
+
             const options = onboardingCandidates.map(candidate => ({
                 value: candidate._id,
                 label: candidate.applicant,
@@ -55,6 +42,12 @@ const AttendanceReport = () => {
         } else if (startDate === "") {
             return toast.error("Please select a start date.");
         } else {
+            const newAttendanceData = selectedUser.map((user) => ({
+                name: user.label,
+                attendanceDetails: [true, false, true, true, false, true, false],
+                event: "Meeting",
+            }));
+            setCandidateAttendance(newAttendanceData);
             setShowAttendaceReport(true);
         }
     }
@@ -130,7 +123,7 @@ const AttendanceReport = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {data.map((row, index) => (
+                                    {candidateAttendance.map((row, index) => (
                                         <tr key={index}>
                                             <td>{row.name}</td>
                                             <td>{renderAttendanceCircles(row.attendanceDetails)}</td>
