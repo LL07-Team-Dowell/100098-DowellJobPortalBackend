@@ -46,8 +46,6 @@ from .helper import (
     get_subproject,
     check_speed_test, 
     get_projects,
-    get_speed_test_data,
-    get_speed_test_result
 )
 from .serializers import (
     AccountSerializer,
@@ -100,7 +98,8 @@ from .serializers import (
     agendaapproveserializer,
     leaveapplyserializers,
     SubprojectSerializer,
-    AttendanceSerializer
+    AttendanceSerializer,
+    Project_Update_Serializer
 )
 from .authorization import (
     verify_user_token,
@@ -4216,8 +4215,10 @@ class SettingUserProjectView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request):
+    def get(self, request,pk):
         profiles = UserProject.objects.all()
+        if pk:
+            profiles=UserProject.objects.get(pk=pk)
         serializer = self.serializer_class(profiles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -9004,6 +9005,8 @@ class dashboard_services(APIView):
             return self.update_job_category(request)
         elif type_request == "delete_application":
             return self.delete_application(request)
+        elif type_request == "update_project":
+            return self.update_project(request)
         else:
             return self.handle_error(request)
 
@@ -9113,6 +9116,45 @@ class dashboard_services(APIView):
                     "message": "There are no worklogs for the company or company id is not correct",
                 }
             )
+    
+    def update_project(slf,request):
+        project=request.data.get("project")
+        candidate_id = request.data.get("candidate_id")
+
+        serializer=
+        if not project or candidate_id:
+            return Response({
+                "success":False,
+                "message":"posting Invalid Data, project name and candidate_id is required",
+                },status=status.HTTP_400_BAD_REQUEST)
+        
+        field = {"_id": candidate_id}
+        update_field = {"project": project}
+        
+        try:
+            response = json.loads(
+                    dowellconnection(
+                        *candidate_management_reports, "update", field, update_field
+                    )
+                )
+            if response["success"]:
+                return Response({
+                    "success":True,
+                    "message":response["message"]
+                },status=status.HTTP_200_OK)
+        
+            else:
+                return Response({
+                    "success":False,
+                    "message":"Candidate projects could not be updated",
+                    "error":response["message"]
+                })
+        except:
+            return Response({
+                "success":False,
+                "error":"Dowellconnection not responding"
+            })
+
 
     """HANDLE ERROR"""
 
@@ -10296,18 +10338,3 @@ class candidate_attendance(APIView):
             "error":"Invalid request type"
         },status=status.HTTP_400_BAD_REQUEST)
     
-
-@method_decorator(csrf_exempt, name="dispatch")
-class speed_test(APIView):
-    def get(self, request,email):
-        if not email:
-            return Response({
-                "success": False,
-                "message": "Kindly provide email"
-            })
-        response = get_speed_test_result(email)
-        return Response({
-            "success": True,
-            "message": "Speed test data retrived successfully",
-            "response": response
-        })

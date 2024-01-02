@@ -729,3 +729,8 @@ class AttendanceSerializer(serializers.Serializer):
     company_id = serializers.IntegerField(allow_null=False)
     meeting = serializers.CharField(max_length=225)
     
+
+class Project_Update_Serializer(serializers.Serializer):
+    project=serializers.CharField(allow_null=False)
+    candidate_id=serializers.CharField(allow_null=False)
+    company_id=serializers.CharField(allow_null=False)
