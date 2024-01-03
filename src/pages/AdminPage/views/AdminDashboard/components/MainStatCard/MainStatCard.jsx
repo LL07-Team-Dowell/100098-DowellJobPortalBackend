@@ -55,10 +55,10 @@ const MainStatCard = ({
                         <span>
                             {
                                 dataLoading ?
-                                    'Generating...'
+                                    'Calculating...'
                                 :
                                 !dataLoaded ? 
-                                    'Generate' 
+                                    'Calculate' 
                                 :
                                     'View'
                             }

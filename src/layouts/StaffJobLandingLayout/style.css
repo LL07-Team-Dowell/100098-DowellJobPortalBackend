@@ -85,6 +85,11 @@
     scrollbar-width: thin;
 }
 
+.staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar.new__Side__Width {
+    /* height: 100vh; */
+    height: calc(100% - 6.5rem);
+}
+
 .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -286,6 +291,15 @@
     min-height: 100vh;
 }
 
+.staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar.new__Side__Width {
+    width: 13rem;
+}
+
+.staff__Jobs__Layout__Content__Container .jobs__Layout__Content.new__MAin__Width {
+    width: calc(100% - 13rem);
+    margin-left: 10.5rem;
+}
+
 @media screen and (max-width: 991px) {
     .admin__View__Title__Container {
         width: auto !important;
@@ -316,7 +330,8 @@
     .chat__With__CS__Icon {
         bottom: 15%;
     }
-    .staff__Jobs__Layout__Content__Container .jobs__Layout__Content {
+    .staff__Jobs__Layout__Content__Container .jobs__Layout__Content,
+    .staff__Jobs__Layout__Content__Container .jobs__Layout__Content.new__MAin__Width {
         width: 100%;
         margin-left: 0;
         padding-top: 4%;
@@ -386,6 +401,10 @@
         width: 65%;
         padding-top: 2%;
         padding-bottom: 2%;
+    }
+    .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar.new__Side__Width {
+        width: 100%;
+        height: max-content;
     }
 }
 @media(width >=1200px){

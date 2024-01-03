@@ -17,6 +17,7 @@ const ReportPages = ({ subAdminView }) => {
       pageTitle={"Reports"}
       hideSideBar={showCustomTimeModal}
       subAdminView={subAdminView}
+      newSidebarDesign={!subAdminView ? true : false}
     >
       <div className="create_team_parent report" style={{ padding: '20px 20px 200px' }}>
         <div

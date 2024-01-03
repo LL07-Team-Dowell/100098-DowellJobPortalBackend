@@ -1,25 +1,24 @@
 import { useEffect } from "react";
-import { useJobContext } from "../../../../../../contexts/Jobs";
-import StaffJobLandingLayout from "../../../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout"
-import { getApplicationForAdmin } from "../../../../../../services/adminServices";
-import { useCurrentUserContext } from "../../../../../../contexts/CurrentUserContext";
 import styles from './styles.module.css';
-import SearchBar from "../../../../../../components/SearchBar/SearchBar";
 import React, { useState } from "react";
-import FullApplicationCardItem from "../../components/FullApplicationCardItem/FullApplicationCardItem";
-import { getSettingUserProject } from "../../../../../../services/hrServices";
 import Select from "react-select";
-import { changeToTitleCase } from "../../../../../../helpers/helpers";
-import { candidateStatuses } from "../../../../../CandidatePage/utils/candidateStatuses";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { createArrayWithLength } from "../../../Landingpage/LandingPage";
-import { JOB_APPLICATION_CATEGORIES } from "../../../../../CandidatePage/utils/jobCategories";
 import { ArrowBackIos } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import LoadingSpinner from "../../../../../../components/LoadingSpinner/LoadingSpinner";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { getCandidateApplicationsForHr, getSettingUserProject } from "../../../../services/hrServices";
+import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
+import SearchBar from "../../../../components/SearchBar/SearchBar";
+import { changeToTitleCase } from "../../../../helpers/helpers";
+import { JOB_APPLICATION_CATEGORIES } from "../../../CandidatePage/utils/jobCategories";
+import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
+import { createArrayWithLength } from "../../../AdminPage/views/Landingpage/LandingPage";
+import { useHrJobScreenAllTasksContext } from "../../../../contexts/HrJobScreenAllTasks";
+import FullApplicationCardItem from "../../component/FullApplicationCardItem/FullApplicationCardItem";
 
 
-const AllApplicationsScreen = () => {
+const HrAllApplicationsScreen = () => {
     const {
         applications,
         setApplications,
@@ -31,7 +30,7 @@ const AllApplicationsScreen = () => {
         setProjectsLoaded,
         projectsLoading,
         setProjectsLoading,
-    } = useJobContext();
+    } = useHrJobScreenAllTasksContext();
     const { currentUser } = useCurrentUserContext();
     const [ searchValue, setSearchValue ] = useState('');
     const [ projectAssignedFilter, setProjectAssignedFilter ] = useState([]);
@@ -44,7 +43,7 @@ const AllApplicationsScreen = () => {
 
     useEffect(() => {
         if (!applicationsLoaded) {
-            getApplicationForAdmin(currentUser?.portfolio_info[0]?.org_id).then(res => {
+            getCandidateApplicationsForHr(currentUser?.portfolio_info[0]?.org_id).then(res => {
                 const applicationsFetched = res?.data?.response?.data?.filter(
                     (item) => currentUser?.portfolio_info[0]?.data_type === item.data_type
                 )?.reverse()
@@ -101,21 +100,14 @@ const AllApplicationsScreen = () => {
 
     return <>
         <StaffJobLandingLayout
-            adminView={true}
-            adminAlternativePageActive={true}
-            pageTitle={'Applications'}
-            newSidebarDesign={true}
+            hrView={true}
         >
             <div className={styles.wrapper}>
-                
                 <div className={styles.header__item}>
                     <div className={styles.header__Content}>
-                        <div className={styles.back__Icon} onClick={() => navigate(-1)}>
-                            <ArrowBackIos fontSize="1.2rem" />
-                        </div>
                         <h2>Users</h2>
                     </div>
-                    <SearchBar 
+                    <SearchBar
                         searchValue={searchValue}
                         handleSearchChange={setSearchValue}
                         placeholder={'Search user'}
@@ -209,9 +201,9 @@ const AllApplicationsScreen = () => {
                                 if (searchValue.length < 1) return true
                                 return application?.applicant?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
                             })
-                            ?.slice(cardGroupNumber, cardGroupNumber + 9)
+                            ?.slice(cardGroupNumber, cardGroupNumber + 8)
                             .map(application => {
-                                return <FullApplicationCardItem 
+                                return <FullApplicationCardItem
                                     application={application} 
                                     activeStatus={application.status === candidateStatuses.ONBOARDING}
                                 />
@@ -246,18 +238,18 @@ const AllApplicationsScreen = () => {
                             .filter(application => {
                                 if (searchValue.length < 1) return true
                                 return application?.applicant?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
-                            })?.length / 9
+                            })?.length / 8
                         )
                     )
                     .slice(
                         cardPagination,
-                        cardPagination + 9
+                        cardPagination + 8
                     )
                     .map((s, index) => (
                         <button
                         className={s !== cardIndex ? "active" : "desactive"}
                         onClick={() => {
-                            setCardGroupNumber(index * 9);
+                            setCardGroupNumber(index * 8);
                             setCardIndex(index);
                         }}
                         key={`${s}_button`}
@@ -269,7 +261,7 @@ const AllApplicationsScreen = () => {
                     <button
                         onClick={() =>
                             incrementStepPagination(
-                                9,
+                                8,
                                 Math.ceil(
                                     applications
                                     ?.filter(application => {
@@ -287,7 +279,7 @@ const AllApplicationsScreen = () => {
                                     .filter(application => {
                                         if (searchValue.length < 1) return true
                                         return application?.applicant?.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
-                                    })?.length / 9
+                                    })?.length / 8
                                 )
                             )
                         }
@@ -300,4 +292,4 @@ const AllApplicationsScreen = () => {
     </>
 }
 
-export default AllApplicationsScreen;
+export default HrAllApplicationsScreen;

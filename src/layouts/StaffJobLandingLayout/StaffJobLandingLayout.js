@@ -73,6 +73,7 @@ const StaffJobLandingLayout = ({
   isGrouplead,
   isReportLink,
   projectLeadView,
+  newSidebarDesign,
 }) => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const {
@@ -270,7 +271,10 @@ const StaffJobLandingLayout = ({
         >
           {!hideSideBar && currentUser && (
             <NewSideNavigationBar
-              className={hideTitleBar ? "full__Height" : ""}
+              className={`
+                ${hideTitleBar ? 'full__Height' : ''} 
+                ${newSidebarDesign ? 'new__Side__Width' : ''}
+              `}
               links={
                 hrView
                   ? hrNavigationLinks
@@ -315,6 +319,7 @@ const StaffJobLandingLayout = ({
                   :
                   []
               }
+              newSidebarDesign={newSidebarDesign}
             />
           )}
           {showLoadingOverlay && (
@@ -348,10 +353,11 @@ const StaffJobLandingLayout = ({
           )}
 
           <div
-            className={`jobs__Layout__Content ${adminView ? "full__Width" : ""
-              }
-            ${!currentUser ? "no__User" : ""
-              }
+            className={
+              `jobs__Layout__Content 
+              ${adminView ? "full__Width" : ""}
+              ${!currentUser ? "no__User" : ""}
+              ${newSidebarDesign ? 'new__MAin__Width' : ''}
             `}
             style={{
               backgroundColor: layoutBgColor ? layoutBgColor : "#fff",

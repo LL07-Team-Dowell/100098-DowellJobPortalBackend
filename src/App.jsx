@@ -107,9 +107,11 @@ import ProjectLeadAgendaPage from "./pages/ProjectLeadPage/views/Agenda/ProjectL
 import TeamLeadAgendaPage from "./pages/TeamleadPage/views/Agenda/TeamLeadAgendaPage";
 import AdminAgendaPage from "./pages/AdminPage/views/Agenda/AdminAgendaPage";
 import AgendaReport from "./pages/AdminPage/views/Agenda/AgendaReportPage/AgendaReport";
+import AttendanceReport from "./pages/HrPage/views/AttendanceReport/AttendanceReport";
+import HrAllApplicationsScreen from "./pages/HrPage/views/AllApplicationsScreen/AllApplicationsScreen";
 
 function App() {
-  // console.log = () => {};
+  console.log = () => { };
 
   const {
     currentUser,
@@ -917,6 +919,7 @@ function App() {
                   pageTitle={"New Team"}
                   adminAlternativePageActive={true}
                   hideSearchBar={true}
+                  newSidebarDesign={true}
                 >
                   <ValuesProvider>
                     <CreateTeam isAdmin={true} />
@@ -936,6 +939,7 @@ function App() {
                   hideSearchBar={true}
                   adminAlternativePageActive={true}
                   pageTitle={"Teams"}
+                  newSidebarDesign={true}
                 >
                   <TeamProvider>
                     <ValuesProvider>
@@ -957,6 +961,7 @@ function App() {
                   hideSearchBar={true}
                   adminAlternativePageActive={true}
                   pageTitle={"Teams"}
+                  newSidebarDesign={true}
                 >
                   <TeamProvider>
                     <ValuesProvider>
@@ -979,6 +984,7 @@ function App() {
                   hideSearchBar={true}
                   adminAlternativePageActive={true}
                   pageTitle={"Teams"}
+                  newSidebarDesign={true}
                 >
                   <TeamProvider>
                     <ValuesProvider>
@@ -1000,6 +1006,7 @@ function App() {
                   hideSearchBar={true}
                   adminAlternativePageActive={true}
                   pageTitle={"Teams"}
+                  newSidebarDesign={true}
                 >
                   <TeamProvider>
                     <ValuesProvider>
@@ -1089,6 +1096,27 @@ function App() {
     return (
       <Routes>
         <Route path='/logout' element={<Logout />} />
+        <Route
+          path='/attendance-report'
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <AttendanceReport />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
+
+        <Route
+          path='/all-users'
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <HrAllApplicationsScreen />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
 
         <Route
           path='/'
@@ -1137,6 +1165,7 @@ function App() {
             </Route>
           </Route>
         </Route>
+       
 
         <Route path='*' element={<ErrorPage />} />
       </Routes>

@@ -63,16 +63,19 @@ const AdminTeam = () => {
   }, []);
   console.log(searchValue);
   console.log(data.TeamsSelected.length);
+
   if (data.TeamsSelected.length === 0 && !response)
     return (
       <StaffJobLandingLayout
         adminView={true}
         pageTitle={"All Teams"}
         adminAlternativePageActive={true}
+        newSidebarDesign={true}
       >
         <LoadingSpinner />
       </StaffJobLandingLayout>
     );
+    
   return (
     <StaffJobLandingLayout
       adminView={true}
@@ -81,6 +84,7 @@ const AdminTeam = () => {
       searchTeam={true}
       pageTitle={"All Teams"}
       adminAlternativePageActive={true}
+      newSidebarDesign={true}
     >
       <Navbar color={"#005734"} noButtonBack={true} adminTeams={true} />
       <div className='container'>

@@ -412,6 +412,7 @@ const CreateTaskScreen = ({
       adminView={isAdmin}
       pageTitle={isAdmin ? 'Work Logs' : ''}
       adminAlternativePageActive={isAdmin}
+      newSidebarDesign={isAdmin ? true : false}
     >
       <>
         <TitleNavigationBar

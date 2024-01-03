@@ -26,6 +26,8 @@ export const CurrentUserContextProvider = ({ children }) => {
   const [userRemovalStatusChecked, setUserRemovalStatusChecked] = useState(false);
   const [userIsRemoved, setUserIsRemoved] = useState(false);
   const [userNewContract, setNewContract] = useState(false);
+  const [navLinksOpenForUser, setNavLinksOpenForUser] = useState([]);
+  const [navLinksOpenForUserSet, setNavLinksOpenForUserSet] = useState(false);
 
   return (
     <CurrentUserContext.Provider value={{
@@ -62,7 +64,11 @@ export const CurrentUserContextProvider = ({ children }) => {
       userRemovalStatusChecked,
       setUserRemovalStatusChecked,
       userNewContract,
-      setNewContract
+      setNewContract,
+      navLinksOpenForUser,
+      setNavLinksOpenForUser,
+      navLinksOpenForUserSet,
+      setNavLinksOpenForUserSet,
     }}>
       {children}
     </CurrentUserContext.Provider>

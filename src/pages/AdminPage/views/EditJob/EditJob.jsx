@@ -300,13 +300,15 @@ function EditJob({ subAdminView }) {
 
   return (
     <>
-      <StaffJobLandingLayout adminView={true}
+      <StaffJobLandingLayout 
+        adminView={true}
         adminAlternativePageActive={true}
         pageTitle={"Edit  Job"}
         showAnotherBtn={true}
         btnIcon={<MdArrowBackIos size="1.5rem" />}
         handleNavIcon={() => navigate(-1)}
         subAdminView={subAdminView}
+        newSidebarDesign={!subAdminView ? true : false}
       >
         <Wrapper>
           <div className="container edit__page_Admin__T">

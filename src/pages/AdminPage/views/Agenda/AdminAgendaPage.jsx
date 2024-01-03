@@ -162,6 +162,9 @@ const AdminAgendaPage = () => {
     return <>
         <StaffJobLandingLayout
             adminView={true}
+            newSidebarDesign={true}
+            adminAlternativePageActive={true}
+            pageTitle={'Agenda'}
         >
             <div className={styles.wrapper}>
 

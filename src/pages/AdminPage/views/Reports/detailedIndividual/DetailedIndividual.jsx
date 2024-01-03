@@ -157,6 +157,43 @@ export default function DetailedIndividual({
       payloadForIndividualReport.applicant_username = foundCandidate?.username;
     }
 
+    setPersonalInfo(foundCandidate)
+    setCandidateName(foundCandidate.applicant)
+    
+    if (foundUserSettingItem) {
+      setSelectedUserRoleSetting(currentUserSetting);
+    }
+    
+    setTaskReportData([]);
+    const dataForProjectGraph = {
+      labels: [],
+      datasets: [
+        {
+          label: "Hours",
+          data: [],
+          backgroundColor: "blue",
+          maxBarThickness: 40,
+        },
+        {
+          label: "Work logs",
+          data: [],
+          backgroundColor: "#005734",
+          maxBarThickness: 40,
+        },
+        {
+          label: "Work logs uploaded this week",
+          data: [],
+          backgroundColor: "yellow",
+          maxBarThickness: 40,
+        },
+      ],
+    };
+    setTaskProjectReportData(dataForProjectGraph);
+    setProjectSelectedForSubprojectBox([]);
+    setProjectSelectedForTasksBox(null);
+
+    return
+
     Promise.all([
       generateCommonAdminReport(payloadForIndividualReport),
       generateCommonAdminReport(payloadForIndividualTaskReport),
@@ -392,6 +429,7 @@ export default function DetailedIndividual({
         projectLeadView={isProjectLead}
         hideSearchBar={true}
         subAdminView={subAdminView}
+        newSidebarDesign={(!isProjectLead || !subAdminView) ? true : false}
       >
         <div className="detailed_indiv_container">
           <div className="task__report__nav">
@@ -424,6 +462,7 @@ export default function DetailedIndividual({
       projectLeadView={isProjectLead}
       hideSearchBar={true}
       subAdminView={subAdminView}
+      newSidebarDesign={(!isProjectLead || !subAdminView) ? true : false}
     >
       <div className="detailed_indiv_container" ref={mainDivRef}>
         <div className="task__report__nav">
@@ -726,7 +765,7 @@ export default function DetailedIndividual({
                             }
                             options={[
                               { label: "Select project", value: "" },
-                              ...taskReportData.map((item) => ({
+                              ...taskReportData?.map((item) => ({
                                 label: item.project,
                                 value: item.project,
                               })),
@@ -745,13 +784,13 @@ export default function DetailedIndividual({
                             <div className="graph">
                               <Doughnut
                                 data={{
-                                  labels: taskReportData.find(
+                                  labels: taskReportData?.find(
                                     (item) =>
                                       item.project ===
                                       projectSelectedForSubprojectBox
                                   )
                                     ? Object.keys(
-                                        taskReportData.find(
+                                        taskReportData?.find(
                                           (item) =>
                                             item.project ===
                                             projectSelectedForSubprojectBox
@@ -761,32 +800,32 @@ export default function DetailedIndividual({
                                   datasets: [
                                     {
                                       label: "Poll",
-                                      data: taskReportData.find(
+                                      data: taskReportData?.find(
                                         (item) =>
                                           item.project ===
                                           projectSelectedForSubprojectBox
                                       )
                                         ? Object.keys(
-                                            taskReportData.find(
+                                            taskReportData?.find(
                                               (item) =>
                                                 item.project ===
                                                 projectSelectedForSubprojectBox
                                             )?.subprojects || {}
                                           ).map((subproject) => {
-                                            return taskReportData.find(
+                                            return taskReportData?.find(
                                               (item) =>
                                                 item.project ===
                                                 projectSelectedForSubprojectBox
                                             )?.subprojects[subproject];
                                           })
                                         : [],
-                                      backgroundColor: taskReportData.find(
+                                      backgroundColor: taskReportData?.find(
                                         (item) =>
                                           item.project ===
                                           projectSelectedForSubprojectBox
                                       )
                                         ? Object.keys(
-                                            taskReportData.find(
+                                            taskReportData?.find(
                                               (item) =>
                                                 item.project ===
                                                 projectSelectedForSubprojectBox
@@ -829,7 +868,7 @@ export default function DetailedIndividual({
                         }
                         options={[
                           { label: "Select project", value: "" },
-                          ...taskReportData.map((item) => ({
+                          ...taskReportData?.map((item) => ({
                             label: item.project,
                             value: item.project,
                           })),
@@ -980,7 +1019,7 @@ export default function DetailedIndividual({
                             </>
                           )}
                           <div className="cand__task__Wrap">
-                            {!taskReportData.find(
+                            {!taskReportData?.find(
                               (task) =>
                                 task.project === projectSelectedForTasksBox
                             ) ||

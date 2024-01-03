@@ -3,21 +3,17 @@ import styles from "./styles.module.css";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import Overlay from "../../../../../../components/Overlay";
 import { AiOutlineClose } from "react-icons/ai";
-import { useJobContext } from "../../../../../../contexts/Jobs";
-import LoadingSpinner from "../../../../../../components/LoadingSpinner/LoadingSpinner";
-import { candidateStatuses } from "../../../../../CandidatePage/utils/candidateStatuses";
-import { changeToTitleCase } from "../../../../../../helpers/helpers";
-import { JOB_APPLICATION_CATEGORIES } from "../../../../../CandidatePage/utils/jobCategories";
 import Select from "react-select";
-import { getSettingUserProject } from "../../../../../../services/hrServices";
-import { useCurrentUserContext } from "../../../../../../contexts/CurrentUserContext";
-import {
-  adminDeleteApplication,
-  adminLeaveApplication,
-  updateCandidateApplicationDetail,
-} from "../../../../../../services/adminServices";
+import { useHrJobScreenAllTasksContext } from "../../../../contexts/HrJobScreenAllTasks";
+import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { getSettingUserProject } from "../../../../services/hrServices";
+import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
+import { adminDeleteApplication, adminLeaveApplication, updateCandidateApplicationDetail } from "../../../../services/adminServices";
+import { changeToTitleCase } from "../../../../helpers/helpers";
+import { JOB_APPLICATION_CATEGORIES } from "../../../CandidatePage/utils/jobCategories";
+import Overlay from "../../../../components/Overlay";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 
 export default function FullApplicationCardItem({ application, activeStatus }) {
   const [showEditOptions, setShowEditOptions] = useState(false);
@@ -31,7 +27,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
     setProjectsAdded,
     setProjectsLoaded,
     projectsLoaded,
-  } = useJobContext();
+  } = useHrJobScreenAllTasksContext();
   const { currentUser } = useCurrentUserContext();
   const [editLoading, setEditLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -254,7 +250,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
 
   return (
     <>
-      <div className={`${styles.full__Application__Item} ${styles.admin__Item}`}>
+      <div className={`${styles.full__Application__Item}`}>
         <div
           className={styles.edit__App}
           onClick={() => setShowEditOptions(!showEditOptions)}

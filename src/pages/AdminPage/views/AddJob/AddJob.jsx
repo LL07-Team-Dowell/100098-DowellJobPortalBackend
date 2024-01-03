@@ -439,6 +439,7 @@ const AddJob = ({ subAdminView }) => {
       btnIcon={<MdArrowBackIos size="1.5rem" />}
       handleNavIcon={() => navigate(-1)}
       subAdminView={subAdminView}
+      newSidebarDesign={!subAdminView ? true : false}
     >
       <div className="job_container">
         {/* <h1>{currentTab}</h1> */}

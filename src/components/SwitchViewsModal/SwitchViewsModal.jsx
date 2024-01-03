@@ -6,11 +6,21 @@ import { useCurrentUserContext } from '../../contexts/CurrentUserContext';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { rolesDict } from '../../pages/AdminPage/views/Settings/AdminSettings';
+import { useMediaQuery } from '@mui/material';
 
 
-const SwitchViewsModal = ({ handleCloseModal, restrictedRoles, otherPermittedRoles, otherProjects, assignedProject, defaultRole }) => {
+const SwitchViewsModal = ({ 
+    handleCloseModal, 
+    restrictedRoles, 
+    otherPermittedRoles, 
+    otherProjects, 
+    assignedProject, 
+    defaultRole, 
+    newSidebarDesign,
+}) => {
     const { currentUser, setCurrentUser } = useCurrentUserContext();
     const navigate = useNavigate();
+    const isLargeScreen = useMediaQuery("(min-width: 992px)");
 
     const handleItemClick = (item) => {
         handleCloseModal();
@@ -78,10 +88,12 @@ const SwitchViewsModal = ({ handleCloseModal, restrictedRoles, otherPermittedRol
     }
 
     return <>
-        <div className="switch__Views__Modal">
-            <div className="switch__View__Close__Icon" onClick={() => handleCloseModal()}>
-                <AiOutlineClose />
-            </div>
+        <div className={`switch__Views__Modal ${newSidebarDesign ? 'new__Side' : ''}`}>
+            {
+                !isLargeScreen && <div className="switch__View__Close__Icon" onClick={() => handleCloseModal()}>
+                    <AiOutlineClose />
+                </div>
+            }
             <ul>
                 {
                     restrictedRoles ?

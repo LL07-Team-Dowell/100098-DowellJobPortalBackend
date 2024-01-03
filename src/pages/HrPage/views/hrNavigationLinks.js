@@ -1,3 +1,4 @@
+import { FaUsers } from "react-icons/fa";
 import { FiHome } from "react-icons/fi";
 import { GiNotebook } from "react-icons/gi";
 import { ImStack } from "react-icons/im";
@@ -20,8 +21,18 @@ export const hrNavigationLinks = [
         text: "Training"
     },
     {
+        linkAddress: "/all-users",
+        icon: <FaUsers />,
+        text: "Users",
+    },
+    {
         linkAddress: "/attendance",
         icon: <IoCalendarOutline />,
         text: "Attendance",
-    }
+    },
+    {
+        linkAddress: "/attendance-report",
+        icon: <IoCalendarOutline />,
+        text: "Attendance",
+    },
 ]

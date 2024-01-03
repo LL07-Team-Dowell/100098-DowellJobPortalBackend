@@ -93,6 +93,7 @@ const IndividualTaskReports = ({ subAdminView }) => {
       adminAlternativePageActive={true}
       pageTitle={"Reports"}
       subAdminView={subAdminView}
+      newSidebarDesign={!subAdminView ? true : false}
     >
       <div className="task__reports__container">
         <div className="task__reports__container_header">

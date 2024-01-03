@@ -251,6 +251,7 @@ const TaskReports = ({ subAdminView, isPublicReportUser, isProjectLead }) => {
       subAdminView={subAdminView}
       projectLeadView={isProjectLead}
       hideSearchBar={true}
+      newSidebarDesign={(!isProjectLead || !subAdminView) ? true : false}
     >
       <div className="task__reports__container">
         <div className="task__reports__container_header">

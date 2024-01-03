@@ -339,7 +339,13 @@ const AdminSettings = () => {
     }
   }
   console.log(usersToDisplay)
-  return <StaffJobLandingLayout adminView={true} adminAlternativePageActive={true} pageTitle={"Settings"}>
+  
+  return <StaffJobLandingLayout 
+    adminView={true} 
+    adminAlternativePageActive={true} 
+    pageTitle={"Settings"}
+    newSidebarDesign={true}  
+  >
     {(loading || loading2) ? <LoadingSpinner /> :
       <>
         {alert && <Alert />}

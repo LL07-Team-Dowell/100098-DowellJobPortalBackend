@@ -152,6 +152,7 @@ const AdminDashboard = ({ subAdminView }) => {
             subAdminView={subAdminView}
             adminAlternativePageActive={true}
             pageTitle={'Dashboard'}
+            newSidebarDesign={true}
         >
             <section className={styles.admin__Dash}>
                 <section className={styles.top__Nav__Content}>

@@ -27,7 +27,14 @@ const AdminUserScreen = ({ subAdminView }) => {
     const handleLogout = () => navigate("/logout");
 
     return <>
-        <StaffJobLandingLayout adminView={true} handleNavIconClick={() => navigate("/add-job")} adminAlternativePageActive={true} pageTitle={"User"} subAdminView={subAdminView}>
+        <StaffJobLandingLayout 
+            adminView={true} 
+            handleNavIconClick={() => navigate("/add-job")} 
+            adminAlternativePageActive={true} 
+            pageTitle={"User"} 
+            subAdminView={subAdminView}
+            newSidebarDesign={!subAdminView ? true : false}
+        >
             <div className="user__Page__Container admin">
                 {<>
                     <ClaimVouchar />

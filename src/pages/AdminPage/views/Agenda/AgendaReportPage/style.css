@@ -45,6 +45,7 @@
 
 .internal_div span {
     margin-bottom: 5px;
+    font-family: "Poppins", sans-serif;
 }
 
 .internal_div select,
@@ -54,6 +55,7 @@
     font-size: 16px;
     width: 100%;
     border-radius: 8px;
+    font-family: "Poppins", sans-serif;
 }
 
 .internal_div button {
@@ -64,6 +66,7 @@
     color: white;
     border: 0px;
     border-radius: 8px;
+    font-family: "Poppins", sans-serif;
 }
 
 .graph_main_div {
@@ -90,6 +93,7 @@
 
 .graph_main_div div div {
     width: 98%;
+    height: 65%;
     background-color: white;
     text-align: center;
     display: flex;
@@ -104,12 +108,14 @@
     font-size: large;
     font-size: 18px;
     color: #3e3e3e;
+    font-family: "Poppins", sans-serif;
 }
 
 .graph_main_div h2 {
     margin-left: 9%;
     font-size: 40px;
     color: #52beff;
+    font-family: "Poppins", sans-serif;
 }
 
 .graph_main_div p {
@@ -122,7 +128,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content:flex-start;
+    justify-content: flex-start;
     height: 100%;
 }
 
@@ -150,6 +156,7 @@
     text-align: center;
     color: white;
     margin: 0.4rem auto;
+    font-family: "Poppins", sans-serif;
 }
 
 .graph_main_div .lead_assignee div h4 {
@@ -159,6 +166,7 @@
     font-size: medium;
     font-weight: 500;
     text-align: left;
+    font-family: "Poppins", sans-serif;
 }
 
 .graph_main_div .lead_assignee div p {
@@ -167,6 +175,7 @@
     margin-left: 1%;
     font-size: small;
     text-align: left;
+    font-family: "Poppins", sans-serif;
 }
 
 .graph_main_div .lead_assignee .lead_name {
@@ -178,7 +187,7 @@
 .progress_main_div {
     display: flex;
     flex-direction: row;
-    align-items:center;
+    align-items: center;
     width: 95%;
     justify-content: center;
     margin: 0.2rem auto;
@@ -203,6 +212,7 @@
 .report_agenda h2 p {
     color: #3e3e3e;
     text-align: center;
+    font-family: "Poppins", sans-serif;
 }
 
 .report_agenda_list {
@@ -238,6 +248,7 @@
 .weekly_agenda_list_table {
     border-collapse: collapse;
     width: 100%;
+    padding-right: 20px;
 }
 
 .weekly_agenda_list_table th {
@@ -377,9 +388,10 @@
     border-right: 5px solid #f5f5f5;
 }
 
-.evaluator .circular_progress_bar .response p{
+.evaluator .circular_progress_bar .response p {
     font-size: smaller;
     margin-top: 5%;
+    font-family: "Poppins", sans-serif;
 }
 
 .evaluator .circular_progress_bar .character_count {
@@ -392,17 +404,18 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    font-family: "Poppins", sans-serif;
 }
 
-.evaluator_reponse_color_g{
+.evaluator_reponse_color_g {
     color: #18d462;
 }
 
-.evaluator_reponse_color_p{
+.evaluator_reponse_color_p {
     color: #fe6a6a;
 }
 
-.table_profile{
+.table_profile {
     width: 50px;
     height: 50px;
     background-color: #72b0f9;
@@ -412,8 +425,150 @@
     align-items: center;
 }
 
-.no_data_found{
+.no_data_found {
     margin: 0.5rem auto;
     text-align: center;
     font-size: larger;
+}
+
+@media screen and (max-width: 500px) {
+    .main_div {
+        width: 100%;
+        margin-bottom: 10%;
+    }
+
+    .wrapper h2 {
+        font-size: 22px;
+        padding: 2px;
+        text-align: center;
+    }
+
+    .internal_div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    .internal_div div {
+        width: 90%;
+        margin: 2%;
+    }
+
+    .internal_div button {
+        width: 70%;
+        margin: 3%;
+    }
+
+    .graph_main_div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+
+    .graph_main_div div {
+        width: 100%;
+    }
+
+    .graph_main_div div div {
+        width: 98%;
+        height: 65%;
+    }
+
+    .progress_main_div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+
+    .agenda_report_wrap {
+        width: 100%;
+    }
+
+    .report_agenda {
+        width: 100%;
+        margin: 1px;
+        padding: 4%;
+        text-align: center;
+    }
+
+    .report_agenda_list {
+        margin: 1%;
+        width: 100%;
+        padding: 3%;
+        overflow: scroll;
+    }
+
+    .report_agenda h3 {
+        font-size: medium;
+    }
+
+    .weekly_agenda_list_table_div {
+        width: 100%;
+        max-height: 300px;
+        min-width: 500px;
+        overflow-x: auto;
+    }
+
+    .weekly_agenda_list_table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .weekly_agenda_list_table th {
+        padding-right: 100px;
+    }
+
+    .weekly_agenda_list_table td {
+        padding-right: 20px;
+    }
+
+    .weekly_agenda_list_table tr {
+        min-height: 10px;
+        padding: 2%;
+    }
+
+    .overall_progress {
+        width: 100%;
+    }
+
+    .overall_progress div {
+        width: 60%;
+        height: 30%;
+    }
+
+    .evaluator {
+        width: 100%;
+    }
+
+    .evaluator h3 {
+        padding-left: 3%;
+    }
+
+    .evaluator div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+
+    .evaluator .circular_progress_bar {
+        width: 100%;
+    }
+
+    .evaluator .circular_progress_bar div {
+        text-align: left;
+    }
+
+    .evaluator .circular_progress_bar .response {
+        width: 80%;
+        border-bottom: 5px solid #f5f5f5;
+        border-right: 0px;
+    }
 }
