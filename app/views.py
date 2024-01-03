@@ -127,6 +127,10 @@ if os.getenv("PROJECT_DB_NAME"):
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
 if os.getenv("ATTENDANCE_DB_NAME"):
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
+    COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
+if os.getenv("COMPANY_STRUCTURE_COLLECTION"):
+    COMPANY_STRUCTURE_COLLECTION = os.getenv("COMPANY_STRUCTURE_COLLECTION")
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
@@ -135,7 +139,8 @@ else:
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
-    PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
+    COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
+    COMPANY_STRUCTURE_COLLECTION = os.getenv("COMPANY_STRUCTURE_COLLECTION")
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 
 # Create your views here.
@@ -6924,8 +6929,8 @@ class Generate_Report(APIView):
                                             item[t_month_name].update(
                                                 {
                                                     "percentage_team_tasks_completed": (
-                                                        len(_teams_tasks_completed)
-                                                        / len(_teams_tasks)
+                                                        item[t_month_name]["team_tasks_completed"]
+                                                        / item[t_month_name]["team_tasks"]
                                                     )
                                                     * 100
                                                 }
@@ -10403,3 +10408,136 @@ class speed_test(APIView):
             "message": "Speed test data retrived successfully",
             "response": response
         })
+    
+class Company_Structure(APIView):
+    def rearrange(self,word):
+        res=""
+        for char in word:
+            if char.isalpha():
+                char.lower()
+                res+=char
+        return res
+
+    def post(self, request):
+        if not request.data.get("project"):
+            return Response({
+                "success": False,
+                "error": "Specify the project."
+            },status=status.HTTP_400_BAD_REQUEST)
+        project= self.rearrange(str(request.data.get("project")).lower())
+        coll_name = "oscaroguledo"#COMPANY_STRUCTURE_COLLECTION
+        get_collection = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{'project':project},10,1))
+        print(get_collection,len(get_collection['data']))
+        if (get_collection['success'] == True and len(get_collection['data']) >=1):
+            return Response({
+                "success": False,
+                "error": 'Insertion not allowed. This project already exists.'
+            },status=status.HTTP_400_BAD_REQUEST)
+
+        project_lead=request.data.get("project_lead")
+        if not project_lead:
+            project_lead = ''
+
+        team_lead=request.data.get("team_lead")
+        if not team_lead:
+            team_lead = ''
+
+        group_lead=request.data.get("group_lead")
+        if not group_lead:
+            group_lead = ''
+
+        company_id=request.data.get("company_id")
+        if not company_id:
+            return Response({
+                    "success": False,
+                    "error": "Specify the company_id."
+                },status=status.HTTP_400_BAD_REQUEST)
+        
+        _members=request.data.get("members")
+        
+        if not isinstance(_members, list):
+            return Response({
+                "success": False,
+                "error": " 'members' must be a list"
+            },status=status.HTTP_400_BAD_REQUEST)
+        members={}
+        for m in _members:
+            info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':m}, update_field=None))
+            if (info['isSuccess'] is True and len(info['data']) >=1 ):
+                if m == team_lead:
+                    members[m]="team_lead"
+                elif m == project_lead:
+                    members[m]="project_lead"
+                elif m == group_lead:
+                    members[m]='group_lead'
+                else:
+                    members[m]="normal"
+            else:
+                return Response({
+                    "success": False,
+                    "error": f"{m} is not a valid dowell candidate username"
+                },status=status.HTTP_400_BAD_REQUEST)
+
+        field ={
+            'project':project,
+            'project_lead':project_lead,
+            'team_lead':team_lead,
+            'teamlead_reports_to':project_lead,
+            'group_lead':group_lead,
+            'company_id':company_id,
+            'members':members #must be a dict
+        }
+        #insert into datacube-----------
+        create_collection ={'success':False,'message':f"Collection `{coll_name}` already exists in Database '{COMPANY_STRUCTURE_DB_NAME}'",'response':field}#json.loads(datacube_add_collection(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,1))
+        if create_collection['success']==True:  
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,field))
+            if insert_collection['success']==True:
+                return Response({
+                    "success": True,
+                    "message": f"Project({project}) structure created successfully",
+                    "response": insert_collection
+                },status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    "success": False,
+                    'message': create_collection['message'],
+                    "error": f"{create_collection['message']}--{insert_collection['message']}"
+                },status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            if create_collection['message'] == f"Collection `{coll_name}` already exists in Database '{COMPANY_STRUCTURE_DB_NAME}'":
+                return Response(create_collection,status=status.HTTP_400_BAD_REQUEST)
+            else:
+                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,field))
+                if insert_collection['success']==True:
+                    return Response({
+                        "success": True,
+                        "message": f"Project({project}) structure created successfully",
+                        "response": insert_collection
+                    },status=status.HTTP_200_OK)
+                else:
+                    return Response({
+                        "success": False,
+                        'message': create_collection['message'],
+                        "error": f"{create_collection['message']}--{insert_collection['message']}"
+                    },status=status.HTTP_304_NOT_MODIFIED)
+         
+    def get(self, request, company_id):
+        if not company_id:
+            return Response({
+                    "success": False,
+                    "error": "Specify the company_id."
+                },status=status.HTTP_400_BAD_REQUEST)
+        query = {'company_id':company_id}
+
+        data=[]
+        get_collection = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,COMPANY_STRUCTURE_COLLECTION,query,10,1))
+        if (get_collection['success'] == True and len(get_collection['data'])>=1):
+            for _d in get_collection['data']:
+                p ={"project_lead":_d['project_lead'],
+                    "project":_d['project']
+                    }
+                data.append(p)
+            return Response({"success":True,"message":"successfully retrieved company structure", 'data':data},status=status.HTTP_200_OK)
+      
+        print(get_collection,"==")
+        return Response({"success":True,"message":"failed to retrieve the company structure", 'data':data},status=status.HTTP_404_NOT_FOUND)

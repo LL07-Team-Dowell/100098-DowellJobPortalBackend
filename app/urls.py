@@ -217,5 +217,9 @@ urlpatterns = [
     path('datacube/',Datacube_operations.as_view()),
     path('test/',test.as_view()) ,
     path('attendance/',candidate_attendance.as_view()),
-    path('speed_test_result/<str:email>',speed_test.as_view())
+    path('speed_test_result/<str:email>',speed_test.as_view()),
+
+    #company_structure apis-------------------------------------------------------
+    path('insert_company_structure/', Company_Structure.as_view()),
+    path('get_company_structure/<str:company_id>/', Company_Structure.as_view()),
 ]
