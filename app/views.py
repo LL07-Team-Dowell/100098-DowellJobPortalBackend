@@ -102,6 +102,7 @@ from .serializers import (
     leaveapplyserializers,
     SubprojectSerializer,
     AttendanceSerializer,
+    Project_Update_Serializer,
     WeeklyAgendaDateReportSerializer
 )
 from .authorization import (
@@ -9006,6 +9007,8 @@ class dashboard_services(APIView):
             return self.update_job_category(request)
         elif type_request == "delete_application":
             return self.delete_application(request)
+        elif type_request == "update_project":
+            return self.update_project(request)
         else:
             return self.handle_error(request)
 
@@ -9115,6 +9118,53 @@ class dashboard_services(APIView):
                     "message": "There are no worklogs for the company or company id is not correct",
                 }
             )
+    
+    def update_project(slf,request):
+        project = request.data.get("project")
+        candidate_id = request.GET.get("candidate_id")
+        company_id = request.data.get("company_id")
+
+        field={
+            "project":project,
+            "candidate_id":candidate_id,
+            "company_id":company_id
+        }
+        serializer=Project_Update_Serializer(data=field)
+        
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "error":serializer.errors,
+                },status=status.HTTP_400_BAD_REQUEST)
+        
+        field = {"_id": candidate_id,"company_id":company_id}
+        update_field = {"project": project}
+        
+        try:
+            response = json.loads(
+                    dowellconnection(
+                        *candidate_management_reports, "update", field, update_field
+                    )
+                )           
+        except:
+            return Response({
+                "success":False,
+                "error":"DB not responding"
+            })
+            
+        if response["isSuccess"]:
+                return Response({
+                    "success":True,
+                    "message":"Candidate project has been updated successfully"
+                },status=status.HTTP_200_OK)
+        
+        else:
+            return Response({
+                "success":False,
+                "message":"Candidate projects could not be updated",
+                "error":response["error"]
+            })
+
 
     """HANDLE ERROR"""
 
@@ -10266,9 +10316,9 @@ class candidate_attendance(APIView):
             })
             
         for username in applicant_usernames:
-            print(username)
+            
             collection=start_date+"_"+end_date+"_"+username
-            print(collection)
+            
             data={
                 "username":username,
                 "date":str(date.today()),
@@ -10278,10 +10328,10 @@ class candidate_attendance(APIView):
             }
             try:
                 insert_attendance = json.loads(
-                    datacube_data_insertion(API_KEY,DB_Name,collection, data)
+                    datacube_data_insertion(API_KEY,ATTENDANCE_DB_NAME,collection, data)
                 )
 
-                if insert_attendance["success"]==True:
+                if insert_attendance["success"]:
                     successfull_attendance.append(username)
                 else:
                     unsuccessfull_attendance.append({
@@ -10339,7 +10389,6 @@ class candidate_attendance(APIView):
             "error":"Invalid request type"
         },status=status.HTTP_400_BAD_REQUEST)
     
-
 @method_decorator(csrf_exempt, name="dispatch")
 class speed_test(APIView):
     def get(self, request,email):
