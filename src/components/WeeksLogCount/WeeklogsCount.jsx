@@ -181,7 +181,7 @@ const WeeklogsCount = ({ user, className }) => {
                                             <p className={styles.log__Count__Info}>{`Worlogs Approved: ${approvedTasksCount?.length}`}</p>
                                         </>
                                         :
-                                        <span>`Log details from ${new Date(startDateCopy).toDateString()} to ${new Date(endDateCopy).toDateString()}`</span>
+                                        <span>Log details from {new Date(startDateCopy).toDateString()} to {new Date(endDateCopy).toDateString()}</span>
                             }
                         </h2>
                         <div className={styles.table__Wrap}>
