@@ -175,12 +175,13 @@ const WeeklogsCount = ({ user, className }) => {
                                     :
                                     customLogData ?
                                         <>
-                                            {`You added ${customLogData?.length} logs between ${new Date(startDateCopy).toDateString()} and ${new Date(endDateCopy).toDateString()}`}
-                                            <p>{`Total Worklogs: ${customLogData?.length}`}</p>
-                                            <p>{`Worlogs Approved: ${approvedTasksCount?.length}`}</p>
+                                            <span>{`You added ${customLogData?.length} logs between ${new Date(startDateCopy).toDateString()} and ${new Date(endDateCopy).toDateString()}`}</span>
+                                            
+                                            <p className={styles.log__Count__Info}>{`Total Worklogs: ${customLogData?.length}`}</p>
+                                            <p className={styles.log__Count__Info}>{`Worlogs Approved: ${approvedTasksCount?.length}`}</p>
                                         </>
                                         :
-                                        `Log details from ${new Date(startDateCopy).toDateString()} to ${new Date(endDateCopy).toDateString()}`
+                                        <span>`Log details from ${new Date(startDateCopy).toDateString()} to ${new Date(endDateCopy).toDateString()}`</span>
                             }
                         </h2>
                         <div className={styles.table__Wrap}>
