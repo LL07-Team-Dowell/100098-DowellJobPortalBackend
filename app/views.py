@@ -47,7 +47,8 @@ from .helper import (
     check_speed_test, 
     get_projects,
     get_speed_test_data,
-    get_speed_test_result
+    get_speed_test_result,
+    datacube_data_retrival_function
 )
 from .serializers import (
     AccountSerializer,
@@ -100,7 +101,8 @@ from .serializers import (
     agendaapproveserializer,
     leaveapplyserializers,
     SubprojectSerializer,
-    AttendanceSerializer
+    AttendanceSerializer,
+    WeeklyAgendaDateReportSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -9517,6 +9519,8 @@ class WeeklyAgenda(APIView):
 
         if type_request == "agenda_status":
             return self.agenda_status(request)
+        elif type_request == "agenda_add_date":
+            return self.agenda_add_date(request)
         else:
             return self.handle_error(request)
 
@@ -9941,6 +9945,42 @@ class WeeklyAgenda(APIView):
             "subprojects_list":sub_project
         },status=status.HTTP_200_OK)
 
+    def agenda_add_date(self,request):
+        subproject_name = request.GET.get('subproject_name')
+
+        serializer = WeeklyAgendaDateReportSerializer(data={"subproject_name": subproject_name})
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Posting wrong data to API",
+                "error": serializer.errors,
+            }, status=status.HTTP_400_BAD_REQUEST)
+        response = json.loads(datacube_data_retrival_function(
+            API_KEY,
+            DB_Name,
+            subproject_name,
+            {},
+            10000,
+            0,
+            False
+        ))
+        if not response["success"]:
+          return Response({
+                "success":False,
+                "message":f"Failed to retrieve data for {subproject_name.replace('-',' ')}",
+                "database_response":{
+                    "success":response["success"],
+                    "message":response["message"]
+                }
+            },status= status.HTTP_400_BAD_REQUEST)  
+        
+        week_pairs = [[data["week_start"], data["week_end"]] for data in response["data"]]
+
+        return Response({
+            "success": True,
+            "message": f"List of date added in the {subproject_name.replace('-',' ')}",
+            "response":week_pairs
+        })
     """HANDLE ERROR"""
     def handle_error(self, request): 
         return Response({
