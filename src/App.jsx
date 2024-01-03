@@ -109,7 +109,7 @@ import AdminAgendaPage from "./pages/AdminPage/views/Agenda/AdminAgendaPage";
 import AgendaReport from "./pages/AdminPage/views/Agenda/AgendaReportPage/AgendaReport";
 
 function App() {
-  console.log = () => {};
+  // console.log = () => {};
 
   const {
     currentUser,

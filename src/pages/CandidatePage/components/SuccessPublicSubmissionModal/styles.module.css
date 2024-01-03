@@ -91,6 +91,12 @@
     font-weight: 400;
 }
 
+.cancel {
+    font-size: 7rem;
+    color: red;
+    font-weight: 400;
+}
+
 .top__Content {
     display: flex;
     align-items: center;

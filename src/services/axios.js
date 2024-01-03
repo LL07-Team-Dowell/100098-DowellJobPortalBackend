@@ -11,11 +11,17 @@ const dowellLoginUrl = "https://100014.pythonanywhere.com/?redirect_url=" + wind
 const dowellLogoutUrl = "https://100014.pythonanywhere.com/sign-out?redirect_url=" + window.location.origin + "/100098-DowellJobPortal/%23";
 const dowellMailApiBaseUrl = "https://100085.pythonanywhere.com/api/";
 const dowellTimeBaseUrl = "https://100009.pythonanywhere.com/";
+const internetSpeedTestUrl = "https://dowellresearch.com/";
 
 
 const formerBackendAxiosInstance = axios.create({
     withCredentials: true,
     baseURL: formerbaseURL,
+})
+
+const speedTestAxiosInstance = axios.create({
+    // withCredentials: true,
+    baseURL: internetSpeedTestUrl,
 })
 
 const authAxiosInstance = axios.create({
@@ -70,17 +76,18 @@ const dowellTimeAxiosInstance = axios.create({
     baseURL: dowellTimeBaseUrl,
 })
 
-export { 
-    authAxiosInstance, 
-    otherAuthAxiosInstance, 
-    formerBackendAxiosInstance, 
-    dowellLoginUrl, 
-    dowellLogoutUrl,
-    mailAxiosInstance, 
-    communityAxiosInstance, 
-    locationAxiosInstance,
-    currentBackendAxiosInstance,
-    liveStatusBackendAxiosInstance,
-    dowellMailAxiosInstance,
-    dowellTimeAxiosInstance,
+export {
+  authAxiosInstance,
+  otherAuthAxiosInstance,
+  formerBackendAxiosInstance,
+  dowellLoginUrl,
+  dowellLogoutUrl,
+  mailAxiosInstance,
+  communityAxiosInstance,
+  locationAxiosInstance,
+  currentBackendAxiosInstance,
+  liveStatusBackendAxiosInstance,
+  dowellMailAxiosInstance,
+  dowellTimeAxiosInstance,
+  speedTestAxiosInstance,
 };
