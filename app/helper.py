@@ -697,3 +697,23 @@ def get_projects():
                 data[i["parent_project"]]+=i["sub_project_list"]
     
     return data           
+
+def datacube_data_retrival_function(api_key,database_name,collection_name,data,limit,offset,payment):
+    """
+    DON"T USER THIS WITHOUT ASKING ME 
+    """
+    url = "https://datacube.uxlivinglab.online/db_api/get_data/"
+
+    data = {
+        "api_key": api_key,
+        "db_name": database_name,
+        "coll_name": collection_name,
+        "operation": "fetch",
+        "filters":data,
+        "limit": limit,
+        "offset": offset,
+        "payment":payment
+    }
+
+    response = requests.post(url, json=data)
+    return response.text
