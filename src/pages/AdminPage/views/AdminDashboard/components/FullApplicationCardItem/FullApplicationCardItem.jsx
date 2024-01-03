@@ -143,6 +143,30 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
       }
     }
 
+    if (
+      (itemBeignEdited?.project && Array.isArray(itemBeignEdited?.project) && application.project && Array.isArray(application.project)) &&
+      (
+        (itemBeignEdited?.project?.length !== application.project.length) ||
+        (!itemBeignEdited?.project?.every(item => application.project.includes(item))) ||
+        (!application?.project?.every(item => itemBeignEdited?.project?.includes(item)))
+      )
+    ) {
+      try {
+        const updatedProjectRes = (
+          await updateCandidateApplicationDetail(
+            "update_project",
+            application._id,
+            {
+              project: itemBeignEdited?.project,
+            }
+          )
+        ).data;
+        console.log(updatedProjectRes);
+      } catch (error) {
+        console.log("Err updating project");
+      }
+    }
+
     const currentApplications = applications?.slice();
     const foundApplicationBeingEditedIndex = currentApplications.findIndex(
       (app) => app._id === application._id
@@ -287,10 +311,12 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
         {leaveOverlayVisibility && (
           <Overlay>
             <div className={styles.edit__Modal}>
-              <AiOutlineClose
-                onClick={handleClosingLeaveItemClick}
-                className={styles.edit__Icon}
-              />
+              <div style={{ width: '100%' }}>
+                <AiOutlineClose
+                  onClick={handleClosingLeaveItemClick}
+                  className={styles.edit__Icon}
+                />
+              </div>
               <h2>Set Leave</h2>
               <label>
                 <span>Start Date:</span>
@@ -313,10 +339,12 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
         {showEditModal && (
           <Overlay>
             <div className={styles.edit__Modal}>
-              <AiOutlineClose
-                onClick={handleCloseModal}
-                className={styles.edit__Icon}
-              />
+              <div style={{ width: '100%' }}>
+                <AiOutlineClose
+                  onClick={handleCloseModal}
+                  className={styles.edit__Icon}
+                />
+              </div>
               <h2>Edit Application for {itemBeignEdited?.applicant}</h2>
 
               <label>
