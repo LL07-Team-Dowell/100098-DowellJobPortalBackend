@@ -370,7 +370,6 @@ def update_report_database(task_created_date,company_id):
                                     tasks_you_marked_as_uncomplete+=1
 
                             """checking for teams============================================="""
-                            print("------analysing team tasks for the month- ",_monthname,"------")
                             teams= get_collection['data'][0]['data'][_monthname]["teams"]
                             team_tasks=get_collection['data'][0]['data'][_monthname]["team_tasks"]
                             team_tasks_completed= get_collection['data'][0]['data'][_monthname]["team_tasks_completed"]
