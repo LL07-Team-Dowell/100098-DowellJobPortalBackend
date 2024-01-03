@@ -9946,9 +9946,10 @@ class WeeklyAgenda(APIView):
         },status=status.HTTP_200_OK)
 
     def agenda_add_date(self,request):
+        company_id = request.GET.get('company_id')
         subproject_name = request.GET.get('subproject_name')
 
-        serializer = WeeklyAgendaDateReportSerializer(data={"subproject_name": subproject_name})
+        serializer = WeeklyAgendaDateReportSerializer(data={"company_id":company_id,"subproject_name": subproject_name})
         if not serializer.is_valid():
             return Response({
                 "success": False,
@@ -9959,7 +9960,9 @@ class WeeklyAgenda(APIView):
             API_KEY,
             DB_Name,
             subproject_name,
-            {},
+            {
+                "company_id": company_id
+            },
             10000,
             0,
             False
