@@ -9121,10 +9121,15 @@ class dashboard_services(APIView):
     
     def update_project(slf,request):
         project = request.data.get("project")
-        candidate_id = request.data.get("candidate_id")
+        candidate_id = request.GET.get("candidate_id")
         company_id = request.data.get("company_id")
 
-        serializer=Project_Update_Serializer(data=request.data)
+        field={
+            "project":project,
+            "candidate_id":candidate_id,
+            "company_id":company_id
+        }
+        serializer=Project_Update_Serializer(data=field)
         
         if not serializer.is_valid():
             return Response({
@@ -10311,9 +10316,9 @@ class candidate_attendance(APIView):
             })
             
         for username in applicant_usernames:
-            print(username)
+            
             collection=start_date+"_"+end_date+"_"+username
-            print(collection)
+            
             data={
                 "username":username,
                 "date":str(date.today()),
@@ -10323,10 +10328,10 @@ class candidate_attendance(APIView):
             }
             try:
                 insert_attendance = json.loads(
-                    datacube_data_insertion(API_KEY,DB_Name,collection, data)
+                    datacube_data_insertion(API_KEY,ATTENDANCE_DB_NAME,collection, data)
                 )
 
-                if insert_attendance["success"]==True:
+                if insert_attendance["success"]:
                     successfull_attendance.append(username)
                 else:
                     unsuccessfull_attendance.append({

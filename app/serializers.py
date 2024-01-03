@@ -731,7 +731,7 @@ class AttendanceSerializer(serializers.Serializer):
 
 
 class Project_Update_Serializer(serializers.Serializer):
-    project=serializers.CharField(allow_null=False)
+    project=serializers.ListField(allow_null=False)
     candidate_id=serializers.CharField(allow_null=False)
     company_id=serializers.CharField(allow_null=False)
 class WeeklyAgendaDateReportSerializer(serializers.Serializer):
