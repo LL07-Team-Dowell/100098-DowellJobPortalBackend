@@ -1,5 +1,7 @@
-import { speedTestAxiosInstance } from "./axios";
+import { currentBackendAxiosInstance } from "./axios";
 
 export const getInternetSpeedTest = async (email) => {
-  return await speedTestAxiosInstance.get(`livinglab/api.php?email=${email}`);
+  return await currentBackendAxiosInstance.get(
+    `speed_test_result/${email}`
+  );
 };
