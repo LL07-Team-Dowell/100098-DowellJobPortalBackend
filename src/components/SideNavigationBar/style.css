@@ -121,6 +121,44 @@
     font-size: 30px;
 }
 
+.child_nav_link_largeScreen{
+    color: black;
+    width: 200px;
+    /* background-color: white; */
+    position: fixed;
+    right: 1rem;
+    bottom: 14%;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.5);
+    padding: 0.5rem;
+    list-style: none;
+}
+
+.child_nav_link_largeScreen li{
+    color: black;
+    font-size: 20px;
+    /* border-bottom: 0.1px solid black; */
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    text-align: left;
+    width: 100%;
+    padding: 0.5rem;
+    /* transition: color 0.5s ease; */
+    border-radius: 15px;
+}
+
+.child_nav_link_largeScreen li:hover {
+    background-color: #005734;
+    color: #fff;
+    text-align: center;
+}
+
+.close_modal{
+    position: relative;
+    left: 90%;
+}
+
 
 @media screen and (max-width: 767px) {
     .new__Side__Navigation__Bar .new__Side__Navigation__Links {

@@ -9,22 +9,23 @@ import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
 import { HiOutlineUserCircle } from "react-icons/hi";
 import { useMediaQuery } from "@mui/material";
 import { switchViewItem } from "./util";
+import { AiOutlineClose } from "react-icons/ai";
 
-const NewSideNavigationBar = ({ 
-    className, 
-    links, 
-    runExtraFunctionOnNavItemClick, 
-    superUser, 
-    userHasOtherRoles, 
-    otherPermittedRoles, 
-    otherPermittedProjects, 
-    assignedProject, 
+const NewSideNavigationBar = ({
+    className,
+    links,
+    runExtraFunctionOnNavItemClick,
+    superUser,
+    userHasOtherRoles,
+    otherPermittedRoles,
+    otherPermittedProjects,
+    assignedProject,
     defaultRole,
     newSidebarDesign,
 }) => {
-    
+
     const navigate = useNavigate();
-    const [ showViewsModal, setShowViewsModal ] = useState(false);
+    const [showViewsModal, setShowViewsModal] = useState(false);
     const { pathname } = useLocation();
     const {
         currentUser,
@@ -34,12 +35,14 @@ const NewSideNavigationBar = ({
         setNavLinksOpenForUserSet,
     } = useCurrentUserContext();
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
+    const [showChildLinksReporting, setShowChildLinksReporting] = useState(false);
+    const [showChildLinksOrganization, setShowChildLinksOrganization] = useState(false);
 
     useEffect(() => {
         if (!links || !Array.isArray(links) || navLinksOpenForUserSet) return
 
         const linksWithChildren = links?.filter(item => item.hasChildren && Array.isArray(item.children))?.map(item => item.id);
-        
+
         setNavLinksOpenForUser(linksWithChildren);
         setNavLinksOpenForUserSet(true);
 
@@ -53,7 +56,7 @@ const NewSideNavigationBar = ({
 
     const handleNavItemClick = (e, addressToNavigateTo) => {
         e.preventDefault();
-        
+
         if (runExtraFunctionOnNavItemClick && typeof runExtraFunctionOnNavItemClick === "function") runExtraFunctionOnNavItemClick();
 
         navigate(addressToNavigateTo)
@@ -66,9 +69,14 @@ const NewSideNavigationBar = ({
         handleParentItemClick(id);
     }
 
+    const handleCloseModal = () => {
+        setShowChildLinksReporting(false);
+        setShowChildLinksOrganization(false);
+    }
+
     const handleParentItemClick = (id) => {
         if (!isLargeScreen) return
-        
+
         const copyOfLinksWithChildItemsOpen = navLinksOpenForUser?.slice();
         const childItemsOfParentAreShowing = copyOfLinksWithChildItemsOpen.find(item => item === id);
 
@@ -85,93 +93,133 @@ const NewSideNavigationBar = ({
         <div className={`new__Side__Navigation__Bar ${className ? className : ''} ${newSidebarDesign ? 'new__Side__Design' : ''}`}>
             {
                 !links || !Array.isArray(links) ? <></> :
-            
-                <ul className="new__Side__Navigation__Links">
-                    <>
-                        {
-                            React.Children.toArray(links.map(link => {
-                                if (!link.linkAddress) return <></>
 
-                                if (link.hasChildren && Array.isArray(link.children)) return <li>
-                                    <p className={link?.linkAddress?.includes(pathname) ? 'active' : ''} onClick={() => handleParentItemClick(link?.id)}>
-                                        {link.icon ? link.icon : <></>}
-                                        {link.text ? <span>{isLargeScreen ? link.text : link.textForSmallScreen ? link.textForSmallScreen : link.text}</span> : <></>}
+                    <ul className="new__Side__Navigation__Links">
+                        <>
+                            {
+                                React.Children.toArray(links.map(link => {
+                                    if (!link.linkAddress) return <></>
+
+                                    if (link.hasChildren && Array.isArray(link.children)) return <li>
+                                        <p className={link?.linkAddress?.includes(pathname) ? 'active' : ''} onClick={() => {
+                                            handleParentItemClick(link?.id);
+                                            switch (link.id) {
+                                                case '2':
+                                                    setShowChildLinksReporting(!showChildLinksReporting);
+                                                    setShowChildLinksOrganization(false);
+                                                    break;
+                                                case '3':
+                                                    setShowChildLinksOrganization(!showChildLinksOrganization);
+                                                    setShowChildLinksReporting(false);
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        }}>
+                                            {link.icon ? link.icon : <></>}
+                                            {link.text ? <span>{isLargeScreen ? link.text : link.textForSmallScreen ? link.textForSmallScreen : link.text}</span> : <></>}
+                                            {
+                                                !isLargeScreen ? <></>
+                                                    :
+                                                    <>
+                                                        {
+                                                            navLinksOpenForUser?.includes(link.id) ?
+                                                                <IoIosArrowDown className="dropdown__ICon" />
+                                                                :
+                                                                <FiChevronRight className="dropdown__ICon" />
+                                                        }
+                                                    </>
+                                            }
+                                        </p>
                                         {
-                                            !isLargeScreen ? <></> 
-                                            : 
-                                            <>
+                                            link.hasChildren && Array.isArray(link.children) && !isLargeScreen && (
+                                                link.id === '2' && showChildLinksReporting ? (
+                                                
+                                                    <ul className="child_nav_link_largeScreen">
+                                                        <AiOutlineClose className="close_modal" onClick={handleCloseModal}/>
+                                                        {React.Children.toArray(link.children.map(child => (
+                                                            <Link to={child.linkAddress} onClick={(e) => handleNavItemClick(e, child.linkAddress)}>
+                                                                <li>{child.text ? <span>{child.text}</span> : <></>}</li>
+                                                            </Link>
+                                                        )))}
+                                                    </ul>
+                                                ) : (
+                                                    link.id === '3' && showChildLinksOrganization ? (
+                                                        <ul className="child_nav_link_largeScreen">
+                                                            <AiOutlineClose className="close_modal" onClick={handleCloseModal}/>
+                                                            {React.Children.toArray(link.children.map(child => (
+                                                                <Link to={child.linkAddress} onClick={(e) => handleNavItemClick(e, child.linkAddress)}>
+                                                                    <li>{child.text ? <span>{child.text}</span> : <></>}</li>
+                                                                </Link>
+                                                            )))}
+                                                        </ul>
+                                                    ) : null
+                                                )
+                                            )
+                                        }
+                                        {
+                                            navLinksOpenForUser?.includes(link.id) && isLargeScreen &&
+                                            <ul className="child__Nav__Links">
                                                 {
-                                                    navLinksOpenForUser?.includes(link.id) ? 
-                                                        <IoIosArrowDown className="dropdown__ICon" /> 
-                                                    : 
-                                                    <FiChevronRight className="dropdown__ICon" />
+                                                    React.Children.toArray(link.children.map(child => {
+                                                        return <Link to={child.linkAddress} onClick={(e) => handleNavItemClick(e, child.linkAddress)} className={child?.linkAddress?.includes(pathname) ? 'active' : ''}>
+                                                            {child.icon ? child.icon : <></>}
+                                                            {child.text ? <span>{child.text}</span> : <></>}
+                                                        </Link>
+                                                    }))
+                                                }
+                                            </ul>
+                                        }
+                                    </li>
+
+                                    return <li>
+                                        <Link to={link.linkAddress} onClick={(e) => handleNavItemClick(e, link.linkAddress)} className={link?.linkAddress?.includes(pathname) ? 'active' : ''}>
+                                            {link.icon ? link.icon : <></>}
+                                            {link.text ? <span>{link.text}</span> : <></>}
+                                        </Link>
+                                    </li>
+                                }))
+                            }
+                            {
+                                (superUser || userHasOtherRoles) && <li>
+                                    <Link to={'/'} onClick={(e) => handleSuperLinkItemClick(e, switchViewItem.id)}>
+                                        {switchViewItem.icon}
+                                        <span>{switchViewItem.text}</span>
+                                        {
+                                            newSidebarDesign && isLargeScreen && <>
+                                                {
+                                                    showViewsModal ?
+                                                        <IoIosArrowDown className="dropdown__ICon" />
+                                                        :
+                                                        <FiChevronRight className="dropdown__ICon" />
                                                 }
                                             </>
                                         }
-                                    </p>
-                                    {
-                                        navLinksOpenForUser?.includes(link.id) && isLargeScreen &&
-                                        <ul className="child__Nav__Links">
-                                            {
-                                                React.Children.toArray(link.children.map(child => {
-                                                    return <Link to={child.linkAddress} onClick={(e) => handleNavItemClick(e, child.linkAddress)} className={child?.linkAddress?.includes(pathname) ? 'active' : ''}>
-                                                        {child.icon ? child.icon : <></>}
-                                                        {child.text ? <span>{child.text}</span> : <></>}
-                                                    </Link>
-                                                }))
-                                            }
-                                        </ul>
-                                    }
-                                </li>
-
-                                return <li>
-                                    <Link to={link.linkAddress} onClick={(e) => handleNavItemClick(e, link.linkAddress)} className={link?.linkAddress?.includes(pathname) ? 'active' : ''}>
-                                        {link.icon ? link.icon : <></>}
-                                        {link.text ? <span>{link.text}</span> : <></>}
                                     </Link>
                                 </li>
-                            }))
-                        }
-                        {
-                            (superUser || userHasOtherRoles) && <li>
-                                <Link to={'/'} onClick={(e) => handleSuperLinkItemClick(e, switchViewItem.id)}>
-                                    {switchViewItem.icon}
-                                    <span>{switchViewItem.text}</span>
-                                    {
-                                        newSidebarDesign && isLargeScreen && <>
-                                            {
-                                                showViewsModal ? 
-                                                    <IoIosArrowDown className="dropdown__ICon" /> 
-                                                : 
-                                                <FiChevronRight className="dropdown__ICon" />
-                                            }
-                                        </>
-                                    }
-                                </Link>
-                            </li>
-                        }
-                        {
-                            showViewsModal && 
-                            <SwitchViewsModal 
-                                restrictedRoles={userHasOtherRoles ? true : false}
-                                otherPermittedRoles={otherPermittedRoles} 
-                                handleCloseModal={() => setShowViewsModal(false)} 
-                                otherProjects={otherPermittedProjects}
-                                assignedProject={assignedProject}
-                                defaultRole={defaultRole}
-                                newSidebarDesign={newSidebarDesign}
-                            />
-                        }
-                    </>
-                </ul>
+                            }
+                            {
+                                showViewsModal &&
+                                <SwitchViewsModal
+                                    restrictedRoles={userHasOtherRoles ? true : false}
+                                    otherPermittedRoles={otherPermittedRoles}
+                                    handleCloseModal={() => setShowViewsModal(false)}
+                                    otherProjects={otherPermittedProjects}
+                                    assignedProject={assignedProject}
+                                    defaultRole={defaultRole}
+                                    newSidebarDesign={newSidebarDesign}
+                                />
+                            }
+                        </>
+                    </ul>
             }
             {
                 newSidebarDesign && isLargeScreen &&
-                    <div className="new__Side__Nav__user__Wrap">
-                        <Link to={"/user"}>
-                            <>
-                                {currentUser?.userinfo?.profile_img ? (
-                                    <img
+                <div className="new__Side__Nav__user__Wrap">
+                    <Link to={"/user"}>
+                        <>
+                            {currentUser?.userinfo?.profile_img ? (
+                                <img
                                     src={currentUser?.userinfo?.profile_img}
                                     alt="#"
                                     style={{
@@ -180,14 +228,14 @@ const NewSideNavigationBar = ({
                                         height: "30px",
                                         objectFit: "cover",
                                     }}
-                                    />
-                                ) : (
-                                    <HiOutlineUserCircle className="icon" />
-                                )}
-                                <span>{currentUser?.userinfo?.first_name} {currentUser?.userinfo?.last_name}</span>
-                            </>
-                        </Link>
-                    </div>
+                                />
+                            ) : (
+                                <HiOutlineUserCircle className="icon" />
+                            )}
+                            <span>{currentUser?.userinfo?.first_name} {currentUser?.userinfo?.last_name}</span>
+                        </>
+                    </Link>
+                </div>
             }
         </div>
     </>
