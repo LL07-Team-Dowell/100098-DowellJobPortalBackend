@@ -119,11 +119,20 @@ const JobApplicationScreen = () => {
 
     getInternetSpeedTest(email)
       .then((res) => {
-        const speedResultss = res.data.response.filter(
+        const speedTestResults = res.data.response.filter(
           (item) =>
             new Date(item.DATETIME).toDateString() === new Date().toDateString()
         );
-        if (speedResultss.length < 1) {
+
+        const matchingSpeedResult = speedTestResults.find(
+          (item) =>
+            Number(item.UPLOAD.split(" Mbps")[0]) >= 100 &&
+            Number(item.DOWNLOAD.split(" Mbps")[0]) >= 100 &&
+            Number(item.JITTER.split(" Mbps")[0]) <= 30 &&
+            Number(item.LATENCY.split(" Mbps")[0]) <= 50
+        );
+
+        if (speedTestResults.length < 1) {
           setShowInternetSpeedTestModal(true);
         } else {
           toast.success("Speed test upload successful");
@@ -131,7 +140,7 @@ const JobApplicationScreen = () => {
             type: newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED,
             payload: {
               stateToChange: mutableNewApplicationStateNames.internet_speed,
-              value: res.data.response[0].DOWNLOAD,
+              value: matchingSpeedResult.DOWNLOAD,
             },
           });
         }
