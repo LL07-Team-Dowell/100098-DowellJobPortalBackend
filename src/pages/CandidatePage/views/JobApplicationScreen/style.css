@@ -338,6 +338,15 @@
     border-radius: 10px;
     border: 1.5px solid var(--green-color);
 }
+
+.certificate__Imgg {
+    display: block; 
+    max-width: '100%';
+    width: 30rem; 
+    margin-top: 1rem;
+    padding-left: 4%;
+}
+
 @media screen and (max-width:600px){
     .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form input[type=text], 
     .candidate__Job__Application__Container .job__Application__Form__Wrapper .job__Application__Form .select__Dropdown__Container {

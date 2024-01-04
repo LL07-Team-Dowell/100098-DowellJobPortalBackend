@@ -158,6 +158,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
             application._id,
             {
               project: itemBeignEdited?.project,
+              company_id: itemBeignEdited?.company_id,
             }
           )
         ).data;

@@ -50,6 +50,7 @@ import { uxlivingLabURL, speedTestURL } from "../../../../utils/utils";
 import userNotFoundImage from "../../../../assets/images/user-not-found.jpg";
 import { Translate } from "@mui/icons-material";
 import { getInternetSpeedTest } from "../../../../services/speedTestServices";
+import CurrentJobNotFound from "./JobNotFound";
 
 const JobApplicationScreen = () => {
   const location = useLocation();
@@ -86,6 +87,7 @@ const JobApplicationScreen = () => {
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const [formPage, setFormPage] = useState(1);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [newApplicationSubmissionLoading, setNewApplicationSubmissionLoading] = useState(false);
 
   const addToRefsArray = (elem, arrayToAddTo) => {
     if (elem && !arrayToAddTo.current.includes(elem))
@@ -593,6 +595,8 @@ const JobApplicationScreen = () => {
     console.log(newApplicationData);
     // return
 
+    if (!selectedFile) return toast.info("Please upload a certification");
+
     if (isPublicUser || isProductUser) {
       if (newApplicationData.applicant_email.length < 1)
         return toast.info("Please enter your email");
@@ -605,6 +609,28 @@ const JobApplicationScreen = () => {
     }
 
     setDisableNextBtn(true);
+    setNewApplicationSubmissionLoading(true);
+
+    let formData = new FormData();
+    formData.append("image", selectedFile);
+
+    let fileURL = "";
+    if (selectedFile) {
+      const response = await fetch(
+        "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        fileURL = data.file_url;
+      } else {
+        toast.error("Error uploading image");
+      }
+    }
 
     // PUBLIC USER APPLICATION SUBMISSION
     if (isPublicUser || isProductUser) {
@@ -630,7 +656,10 @@ const JobApplicationScreen = () => {
       formData.append("subject", "New Job Application Submission");
 
       submitPublicApplication(
-        copyOfNewApplicationData,
+        {
+          ...copyOfNewApplicationData,
+          candidate_certificate: fileURL,
+        },
         isPublicUser
           ? publicUserDetails?.masterLinkId
           : productUserDetails?.masterLinkId
@@ -686,39 +715,16 @@ const JobApplicationScreen = () => {
           console.log(err);
           toast.info("Application submission failed. Please try again");
           setDisableNextBtn(false);
+          setNewApplicationSubmissionLoading(false);
         });
 
       return;
     }
 
-    let formData = new FormData();
-
-    if (selectedFile) {
-      formData.append("image", selectedFile);
-    }
-
-    let imageUrl = "";
-    if (selectedFile) {
-      const response = await fetch(
-        "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        imageUrl = data.file_url;
-      } else {
-        toast.error("Error uploading image");
-      }
-    }
-
     try {
       await submitNewApplication({
         ...newApplicationData,
-        candidate_certificate: imageUrl,
+        candidate_certificate: fileURL,
       });
       toast.success("Successfully submitted job application!");
       navigate("/applied");
@@ -726,6 +732,7 @@ const JobApplicationScreen = () => {
       console.log(error);
       toast.info("Application submission failed. Please try again");
       setDisableNextBtn(false);
+      setNewApplicationSubmissionLoading(false);
     }
 
     console.log(newApplicationData);
@@ -1159,25 +1166,6 @@ const JobApplicationScreen = () => {
                     )}
 
                     <div className="job__Application__Item">
-                      <h2>Add Certification if any</h2>
-                      <label className="input__Text__Container">
-                        <input
-                          aria-label="Add Certification"
-                          type={"file"}
-                          placeholder={"Add Certification"}
-                          onChange={handleFileChange}
-                        />
-                        {selectedFile && (
-                          <img
-                            src={URL.createObjectURL(selectedFile)}
-                            alt="Uploaded Preview"
-                            style={{ display: "block" }}
-                          />
-                        )}
-                      </label>
-                    </div>
-
-                    <div className="job__Application__Item">
                       <h2>
                         Academic Qualifications
                         <span className="required-indicator">*</span>
@@ -1237,6 +1225,26 @@ const JobApplicationScreen = () => {
                         </label>
                       </div>
                     )}
+
+                    <div className="job__Application__Item">
+                      <h2>Upload Certification (Image)</h2>
+                      <label className="input__Text__Container">
+                        <input
+                          aria-label="Add Certification"
+                          type={"file"}
+                          placeholder={"Add Certification"}
+                          onChange={handleFileChange}
+                          accept="image/*"
+                        />
+                        {selectedFile && selectedFile?.type?.split('/')[0] === 'image' && (
+                          <img
+                            src={URL.createObjectURL(selectedFile)}
+                            alt="Uploaded Preview"
+                            className="certificate__Imgg"
+                          />
+                        )}
+                      </label>
+                    </div>
 
                     <div className="job__Application__Item">
                       <h2>
@@ -1314,7 +1322,7 @@ const JobApplicationScreen = () => {
                       onClick={() => {
                         setFormPage(formPage + 1);
                       }}
-                      disabled={disableNextBtn}
+                      disabled={disableNextBtn ? true : false}
                     >
                       <span>Next</span>
                       <IoIosArrowRoundForward />
@@ -1328,10 +1336,17 @@ const JobApplicationScreen = () => {
                       className="apply__Btn green__Btn"
                       type="submit"
                       onClick={handleSubmitNewApplication}
-                      disabled={disableNextBtn}
+                      disabled={disableNextBtn ? true : false}
                     >
-                      <span>Submit</span>
-                      <IoIosArrowRoundForward />
+                      {
+                        newApplicationSubmissionLoading ?
+                          <LoadingSpinner color={'#fff'} width={'1.2rem'} height={'1.2rem'} /> 
+                        :
+                        <>
+                          <span>Submit</span>
+                          <IoIosArrowRoundForward />
+                        </>
+                      }
                     </button>
                   </>
                 )}
@@ -1580,22 +1595,3 @@ const JobApplicationScreen = () => {
 };
 
 export default JobApplicationScreen;
-
-const CurrentJobNotFound = () => {
-  return (
-    <div
-      className="current_job_not_found_container"
-      style={{ position: "absolute", top: "50%", left: "50%" }}
-    >
-      <img
-        className="current_job_not_found_container_image"
-        src={userNotFoundImage}
-        alt="image"
-        style={{ width: 600 }}
-      />
-      <p className="current_job_not_found_container_paragraph">
-        This job listing is no longer available
-      </p>
-    </div>
-  );
-};
