@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useEffect, useRef, useState, useReducer } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 // import Footer from "../../components/Footer/Footer";
@@ -45,9 +46,10 @@ import ReactDOMServer from "react-dom/server";
 import ApplicationSubmissionContent from "../../../../templates/applicationSubmition";
 import { sendMailUsingDowell } from "../../../../services/mailServices";
 import SuccessPublicSubmissionModal from "../../components/SuccessPublicSubmissionModal/SuccessPublicSubmissionModal";
-import { uxlivingLabURL } from "../../../../utils/utils";
+import { uxlivingLabURL, speedTestURL } from "../../../../utils/utils";
 import userNotFoundImage from "../../../../assets/images/user-not-found.jpg";
 import { Translate } from "@mui/icons-material";
+import { getInternetSpeedTest } from "../../../../services/speedTestServices";
 
 const JobApplicationScreen = () => {
   const location = useLocation();
@@ -83,16 +85,24 @@ const JobApplicationScreen = () => {
   const [jobSaved, setJobSaved] = useState(false);
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
   const [formPage, setFormPage] = useState(1);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const addToRefsArray = (elem, arrayToAddTo) => {
     if (elem && !arrayToAddTo.current.includes(elem))
       arrayToAddTo.current.push(elem);
   };
 
+  const   handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    setSelectedFile(selectedFile);
+  };
+
   const [testResult, setTestResult] = useState(null);
   const [error, setError] = useState(null);
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [showPublicSuccessModal, setShowPublicSuccessModal] = useState(false);
+  const [showInternetSpeedTestModal, setShowInternetSpeedTestModal] =
+    useState(false);
   const [publicSuccessModalBtnDisabled, setPublicSuccessModalBtnDisabled] =
     useState(false);
 
@@ -101,21 +111,21 @@ const JobApplicationScreen = () => {
   console.log({ currentJob });
   const netSpeed = (e) => {
     e.preventDefault();
-    const apiKey = "SOM6476e34f85968"; // Your API Key here
-    const domainName = "ll07-team-dowell.github.io"; // Your domain or sub-domain here
+    const email = newApplicationData?.applicant_email;
 
-    // Make the API call
-    fetch(`https://${domainName}/api/api.php?test=download&api=${apiKey}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.result === "success") {
-          setTestResult(data);
+    if (!isEmailValid) return;
+
+    getInternetSpeedTest(email)
+      .then((res) => {
+        if (res.status === 404) {
+          setShowInternetSpeedTestModal(true);
         } else {
-          setError({ message: "Error occurred during the speed test." });
+          toast.success("Speed test upload successful");
         }
+        console.log(res.data);
       })
       .catch((error) => {
-        setError({ message: error.message });
+        console.log(error);
       });
   };
 
@@ -139,9 +149,9 @@ const JobApplicationScreen = () => {
 
       getJobs(companyIdToUse)
         .then((res) => {
-          const filterJob = res.data.response.data.filter(
-            (job) => job.data_type === dataTypeToUse
-          ).filter(job => !job.is_internal);
+          const filterJob = res.data.response.data
+            .filter((job) => job.data_type === dataTypeToUse)
+            .filter((job) => !job.is_internal);
           setJobs(
             filterJob.sort(
               (a, b) => new Date(b.created_on) - new Date(a.created_on)
@@ -160,9 +170,11 @@ const JobApplicationScreen = () => {
     const datass = currentUser?.portfolio_info[0]?.org_id;
     getJobs(datass)
       .then((res) => {
-        const userAppliedJobs = res.data.response.data.filter(
-          (job) => job.data_type === currentUser?.portfolio_info[0].data_type
-        ).filter(job => !job.is_internal);
+        const userAppliedJobs = res.data.response.data
+          .filter(
+            (job) => job.data_type === currentUser?.portfolio_info[0].data_type
+          )
+          .filter((job) => !job.is_internal);
         // setjobs(res.data);
         setJobs(userAppliedJobs);
         setJobsLoading(false);
@@ -554,9 +566,18 @@ const JobApplicationScreen = () => {
 
   const handleSubmitNewApplication = async (e) => {
     e.preventDefault();
-    if (newApplicationData.other_info && typeof newApplicationData.other_info === 'object') {
-      const copyOfNewApplicationDataOtherInfo = {...newApplicationData.other_info};
-      newApplicationData.other_info = Object.keys(copyOfNewApplicationDataOtherInfo).map(key => { return copyOfNewApplicationDataOtherInfo[key] })
+    if (
+      newApplicationData.other_info &&
+      typeof newApplicationData.other_info === "object"
+    ) {
+      const copyOfNewApplicationDataOtherInfo = {
+        ...newApplicationData.other_info,
+      };
+      newApplicationData.other_info = Object.keys(
+        copyOfNewApplicationDataOtherInfo
+      ).map((key) => {
+        return copyOfNewApplicationDataOtherInfo[key];
+      });
     }
     console.log(newApplicationData);
     // return
@@ -659,8 +680,35 @@ const JobApplicationScreen = () => {
       return;
     }
 
+    let formData = new FormData();
+
+    if (selectedFile) {
+      formData.append("image", selectedFile);
+    }
+
+    let imageUrl = "";
+    if (selectedFile) {
+      const response = await fetch(
+        "https://dowellfileuploader.uxlivinglab.online/uploadfiles/upload-hr-image/",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        imageUrl = data.file_url;
+      } else {
+        toast.error("Error uploading image");
+      }
+    }
+
     try {
-      await submitNewApplication(newApplicationData);
+      await submitNewApplication({
+        ...newApplicationData,
+        candidate_certificate: imageUrl,
+      });
       toast.success("Successfully submitted job application!");
       navigate("/applied");
     } catch (error) {
@@ -959,24 +1007,38 @@ const JobApplicationScreen = () => {
                       </h2>
                       <label className="input__Text__Container speed__button">
                         <input
-                          aria-label="link to profile on freelance platform"
+                          aria-label="Internet speed Test"
                           type={"text"}
-                          placeholder={"Enter Your Internet Speed"}
+                          placeholder={"Internet speed Test"}
                           value={newApplicationData.internet_speed}
-                          onChange={(e) =>
-                            dispatchToNewApplicationData({
-                              type: newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED,
-                              payload: {
-                                stateToChange:
-                                  mutableNewApplicationStateNames.internet_speed,
-                                value: e.target.value,
-                              },
-                            })
-                          }
+                          readOnly
                         />
-                        {/* <button onClick={(e) => netSpeed(e)}>Internet Speed</button> */}
+                        <button
+                          onClick={(e) => netSpeed(e)}
+                          style={{
+                            padding: "0.3rem",
+                            borderRadius: "0.3rem",
+                            marginBottom: "0.2rem",
+                          }}
+                        >
+                          Check
+                        </button>
                       </label>
                     </div>
+                    {showInternetSpeedTestModal && (
+                      <SuccessPublicSubmissionModal
+                        title={"Oops! No result found"}
+                        body={
+                          "You have not done your internet speed test yet. Please visit our site to take it now by clicking the button below"
+                        }
+                        submissionModalIcon={false}
+                        handleBtnClick={() => {
+                          setPublicSuccessModalBtnDisabled(true);
+                          window.location.replace(speedTestURL);
+                        }}
+                        btnDisabled={publicSuccessModalBtnDisabled}
+                      />
+                    )}
 
                     <div className="job__Application__Item">
                       <h2>
@@ -1086,6 +1148,25 @@ const JobApplicationScreen = () => {
                     )}
 
                     <div className="job__Application__Item">
+                      <h2>Add Certification if any</h2>
+                      <label className="input__Text__Container">
+                        <input
+                          aria-label="Add Certification"
+                          type={"file"}
+                          placeholder={"Add Certification"}
+                          onChange={handleFileChange}
+                        />
+                        {selectedFile && (
+                          <img
+                            src={URL.createObjectURL(selectedFile)}
+                            alt="Uploaded Preview"
+                            style={{ display: "block" }}
+                          />
+                        )}
+                      </label>
+                    </div>
+
+                    <div className="job__Application__Item">
                       <h2>
                         Academic Qualifications
                         <span className="required-indicator">*</span>
@@ -1176,7 +1257,14 @@ const JobApplicationScreen = () => {
                                         </label>
                                     </div> */}
 
-                    {currentJob.other_info && Array.isArray(currentJob.other_info) && currentJob.other_info.length > 0 && React.Children.toArray(Object.keys(currentJob.other_info || {}).map((key) => createInputData(key, currentJob.other_info[key])))}
+                    {currentJob.other_info &&
+                      Array.isArray(currentJob.other_info) &&
+                      currentJob.other_info.length > 0 &&
+                      React.Children.toArray(
+                        Object.keys(currentJob.other_info || {}).map((key) =>
+                          createInputData(key, currentJob.other_info[key])
+                        )
+                      )}
 
                     <label
                       className="form__Label__Accept__All"
@@ -1464,6 +1552,11 @@ const JobApplicationScreen = () => {
       }
       {showPublicSuccessModal && (
         <SuccessPublicSubmissionModal
+          title={"Thank you for applying!"}
+          body={
+            "You can visit our website to learn more about our organization"
+          }
+          submissionModalIcon={true}
           handleBtnClick={() => {
             setPublicSuccessModalBtnDisabled(true);
             window.location.replace(uxlivingLabURL);

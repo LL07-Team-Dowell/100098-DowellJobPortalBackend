@@ -346,7 +346,7 @@ const AddJob = ({ subAdminView }) => {
           setJobs((prevValue) => [
             { ...newJob, newly_created: true },
             ...prevValue,
-          ]);
+          ]); 
           toast.success("Job created successfully");
           navigate("/");
         } else {
@@ -513,10 +513,10 @@ const AddJob = ({ subAdminView }) => {
           countryState={countryState}
           setCountryState={setCountryState}
           cityOption={cityOption}
+          setCityOption={setCityOption}
           cityState={cityState}
           continentState={continentState}
           setContinentState={setContinentState}
-          setCityOption={setCityOption}
         />
       </div>
     </StaffJobLandingLayout>

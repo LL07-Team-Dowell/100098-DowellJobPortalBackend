@@ -388,3 +388,14 @@ const AddIssueScreen = ({
 };
 
 export default AddIssueScreen;
+
+
+// {
+//   dispatchToNewApplicationData({
+//     type: newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED,
+//     payload: {
+//       stateToChange: mutableNewApplicationStateNames.internet_speed,
+//       value: res.data[0].DOWNLOAD,
+//     },
+//   });
+// }
