@@ -45,6 +45,12 @@ const NewSideNavigationBar = ({
 
     }, [links, navLinksOpenForUserSet])
 
+    useEffect(() => {
+        if (navLinksOpenForUser?.includes(switchViewItem.id)) return setShowViewsModal(true)
+
+        setShowViewsModal(false)
+    }, [])
+
     const handleNavItemClick = (e, addressToNavigateTo) => {
         e.preventDefault();
         
@@ -134,7 +140,7 @@ const NewSideNavigationBar = ({
                                     {
                                         newSidebarDesign && isLargeScreen && <>
                                             {
-                                                navLinksOpenForUser?.includes(switchViewItem.id) ? 
+                                                showViewsModal ? 
                                                     <IoIosArrowDown className="dropdown__ICon" /> 
                                                 : 
                                                 <FiChevronRight className="dropdown__ICon" />
