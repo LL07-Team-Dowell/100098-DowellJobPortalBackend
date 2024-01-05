@@ -4476,6 +4476,7 @@ class Public_apply_job(APIView):
             "module": data.get("module"),
             "is_public": True,
             "signup_mail_sent": False,
+            "candidate_certificate":data.get("candidate_certificate")
         }
         update_field = {"status": "nothing to update"}
         update_field = {"status": "nothing to update"}
