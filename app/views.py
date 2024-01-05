@@ -46,6 +46,9 @@ from .helper import (
     get_subproject,
     check_speed_test, 
     get_projects,
+    get_speed_test_data,
+    get_speed_test_result,
+    datacube_data_retrival_function
 )
 from .serializers import (
     AccountSerializer,
@@ -99,7 +102,8 @@ from .serializers import (
     leaveapplyserializers,
     SubprojectSerializer,
     AttendanceSerializer,
-    Project_Update_Serializer
+    Project_Update_Serializer,
+    WeeklyAgendaDateReportSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -123,6 +127,10 @@ if os.getenv("PROJECT_DB_NAME"):
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
 if os.getenv("ATTENDANCE_DB_NAME"):
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
+    COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
+if os.getenv("COMPANY_STRUCTURE_COLLECTION"):
+    COMPANY_STRUCTURE_COLLECTION = os.getenv("COMPANY_STRUCTURE_COLLECTION")
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
@@ -131,7 +139,8 @@ else:
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
-    PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
+    COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
+    COMPANY_STRUCTURE_COLLECTION = os.getenv("COMPANY_STRUCTURE_COLLECTION")
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 
 # Create your views here.
@@ -4215,10 +4224,8 @@ class SettingUserProjectView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request,pk):
+    def get(self, request):
         profiles = UserProject.objects.all()
-        if pk:
-            profiles=UserProject.objects.get(pk=pk)
         serializer = self.serializer_class(profiles, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -6922,8 +6929,8 @@ class Generate_Report(APIView):
                                             item[t_month_name].update(
                                                 {
                                                     "percentage_team_tasks_completed": (
-                                                        len(_teams_tasks_completed)
-                                                        / len(_teams_tasks)
+                                                        item[t_month_name]["team_tasks_completed"]
+                                                        / item[t_month_name]["team_tasks"]
                                                     )
                                                     * 100
                                                 }
@@ -9118,17 +9125,24 @@ class dashboard_services(APIView):
             )
     
     def update_project(slf,request):
-        project=request.data.get("project")
-        candidate_id = request.data.get("candidate_id")
+        project = request.data.get("project")
+        candidate_id = request.GET.get("candidate_id")
+        company_id = request.data.get("company_id")
 
-        serializer=
-        if not project or candidate_id:
+        field={
+            "project":project,
+            "candidate_id":candidate_id,
+            "company_id":company_id
+        }
+        serializer=Project_Update_Serializer(data=field)
+        
+        if not serializer.is_valid():
             return Response({
                 "success":False,
-                "message":"posting Invalid Data, project name and candidate_id is required",
+                "error":serializer.errors,
                 },status=status.HTTP_400_BAD_REQUEST)
         
-        field = {"_id": candidate_id}
+        field = {"_id": candidate_id,"company_id":company_id}
         update_field = {"project": project}
         
         try:
@@ -9136,23 +9150,24 @@ class dashboard_services(APIView):
                     dowellconnection(
                         *candidate_management_reports, "update", field, update_field
                     )
-                )
-            if response["success"]:
-                return Response({
-                    "success":True,
-                    "message":response["message"]
-                },status=status.HTTP_200_OK)
-        
-            else:
-                return Response({
-                    "success":False,
-                    "message":"Candidate projects could not be updated",
-                    "error":response["message"]
-                })
+                )           
         except:
             return Response({
                 "success":False,
-                "error":"Dowellconnection not responding"
+                "error":"DB not responding"
+            })
+            
+        if response["isSuccess"]:
+                return Response({
+                    "success":True,
+                    "message":"Candidate project has been updated successfully"
+                },status=status.HTTP_200_OK)
+        
+        else:
+            return Response({
+                "success":False,
+                "message":"Candidate projects could not be updated",
+                "error":response["error"]
             })
 
 
@@ -9559,6 +9574,8 @@ class WeeklyAgenda(APIView):
 
         if type_request == "agenda_status":
             return self.agenda_status(request)
+        elif type_request == "agenda_add_date":
+            return self.agenda_add_date(request)
         else:
             return self.handle_error(request)
 
@@ -9983,6 +10000,45 @@ class WeeklyAgenda(APIView):
             "subprojects_list":sub_project
         },status=status.HTTP_200_OK)
 
+    def agenda_add_date(self,request):
+        company_id = request.GET.get('company_id')
+        subproject_name = request.GET.get('subproject_name')
+
+        serializer = WeeklyAgendaDateReportSerializer(data={"company_id":company_id,"subproject_name": subproject_name})
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Posting wrong data to API",
+                "error": serializer.errors,
+            }, status=status.HTTP_400_BAD_REQUEST)
+        response = json.loads(datacube_data_retrival_function(
+            API_KEY,
+            DB_Name,
+            subproject_name,
+            {
+                "company_id": company_id
+            },
+            10000,
+            0,
+            False
+        ))
+        if not response["success"]:
+          return Response({
+                "success":False,
+                "message":f"Failed to retrieve data for {subproject_name.replace('-',' ')}",
+                "database_response":{
+                    "success":response["success"],
+                    "message":response["message"]
+                }
+            },status= status.HTTP_400_BAD_REQUEST)  
+        
+        week_pairs = [[data["week_start"], data["week_end"]] for data in response["data"]]
+
+        return Response({
+            "success": True,
+            "message": f"List of date added in the {subproject_name.replace('-',' ')}",
+            "response":week_pairs
+        })
     """HANDLE ERROR"""
     def handle_error(self, request): 
         return Response({
@@ -10265,9 +10321,9 @@ class candidate_attendance(APIView):
             })
             
         for username in applicant_usernames:
-            print(username)
+            
             collection=start_date+"_"+end_date+"_"+username
-            print(collection)
+            
             data={
                 "username":username,
                 "date":str(date.today()),
@@ -10277,10 +10333,10 @@ class candidate_attendance(APIView):
             }
             try:
                 insert_attendance = json.loads(
-                    datacube_data_insertion(API_KEY,DB_Name,collection, data)
+                    datacube_data_insertion(API_KEY,ATTENDANCE_DB_NAME,collection, data)
                 )
 
-                if insert_attendance["success"]==True:
+                if insert_attendance["success"]:
                     successfull_attendance.append(username)
                 else:
                     unsuccessfull_attendance.append({
@@ -10338,3 +10394,150 @@ class candidate_attendance(APIView):
             "error":"Invalid request type"
         },status=status.HTTP_400_BAD_REQUEST)
     
+@method_decorator(csrf_exempt, name="dispatch")
+class speed_test(APIView):
+    def get(self, request,email):
+        if not email:
+            return Response({
+                "success": False,
+                "message": "Kindly provide email"
+            })
+        response = get_speed_test_result(email)
+        return Response({
+            "success": True,
+            "message": "Speed test data retrived successfully",
+            "response": response
+        })
+    
+class Company_Structure(APIView):
+    def rearrange(self,word):
+        res=""
+        for char in word:
+            if char.isalpha():
+                char.lower()
+                res+=char
+        return res
+
+    def post(self, request):
+        if not request.data.get("project"):
+            return Response({
+                "success": False,
+                "error": "Specify the project."
+            },status=status.HTTP_400_BAD_REQUEST)
+        project= self.rearrange(str(request.data.get("project")).lower())
+        coll_name = "oscaroguledo"#COMPANY_STRUCTURE_COLLECTION
+        get_collection = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{'project':project},10,1))
+        print(get_collection,len(get_collection['data']))
+        if (get_collection['success'] == True and len(get_collection['data']) >=1):
+            return Response({
+                "success": False,
+                "error": 'Insertion not allowed. This project already exists.'
+            },status=status.HTTP_400_BAD_REQUEST)
+
+        project_lead=request.data.get("project_lead")
+        if not project_lead:
+            project_lead = ''
+
+        team_lead=request.data.get("team_lead")
+        if not team_lead:
+            team_lead = ''
+
+        group_lead=request.data.get("group_lead")
+        if not group_lead:
+            group_lead = ''
+
+        company_id=request.data.get("company_id")
+        if not company_id:
+            return Response({
+                    "success": False,
+                    "error": "Specify the company_id."
+                },status=status.HTTP_400_BAD_REQUEST)
+        
+        _members=request.data.get("members")
+        
+        if not isinstance(_members, list):
+            return Response({
+                "success": False,
+                "error": " 'members' must be a list"
+            },status=status.HTTP_400_BAD_REQUEST)
+        members={}
+        for m in _members:
+            info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':m}, update_field=None))
+            if (info['isSuccess'] is True and len(info['data']) >=1 ):
+                if m == team_lead:
+                    members[m]="team_lead"
+                elif m == project_lead:
+                    members[m]="project_lead"
+                elif m == group_lead:
+                    members[m]='group_lead'
+                else:
+                    members[m]="normal"
+            else:
+                return Response({
+                    "success": False,
+                    "error": f"{m} is not a valid dowell candidate username"
+                },status=status.HTTP_400_BAD_REQUEST)
+
+        field ={
+            'project':project,
+            'project_lead':project_lead,
+            'team_lead':team_lead,
+            'teamlead_reports_to':project_lead,
+            'group_lead':group_lead,
+            'company_id':company_id,
+            'members':members #must be a dict
+        }
+        #insert into datacube-----------
+        create_collection ={'success':False,'message':f"Collection `{coll_name}` already exists in Database '{COMPANY_STRUCTURE_DB_NAME}'",'response':field}#json.loads(datacube_add_collection(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,1))
+        if create_collection['success']==True:  
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,field))
+            if insert_collection['success']==True:
+                return Response({
+                    "success": True,
+                    "message": f"Project({project}) structure created successfully",
+                    "response": insert_collection
+                },status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    "success": False,
+                    'message': create_collection['message'],
+                    "error": f"{create_collection['message']}--{insert_collection['message']}"
+                },status=status.HTTP_304_NOT_MODIFIED)
+        else:
+            if create_collection['message'] == f"Collection `{coll_name}` already exists in Database '{COMPANY_STRUCTURE_DB_NAME}'":
+                return Response(create_collection,status=status.HTTP_400_BAD_REQUEST)
+            else:
+                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,field))
+                if insert_collection['success']==True:
+                    return Response({
+                        "success": True,
+                        "message": f"Project({project}) structure created successfully",
+                        "response": insert_collection
+                    },status=status.HTTP_200_OK)
+                else:
+                    return Response({
+                        "success": False,
+                        'message': create_collection['message'],
+                        "error": f"{create_collection['message']}--{insert_collection['message']}"
+                    },status=status.HTTP_304_NOT_MODIFIED)
+         
+    def get(self, request, company_id):
+        if not company_id:
+            return Response({
+                    "success": False,
+                    "error": "Specify the company_id."
+                },status=status.HTTP_400_BAD_REQUEST)
+        query = {'company_id':company_id}
+
+        data=[]
+        get_collection = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,COMPANY_STRUCTURE_COLLECTION,query,10,1))
+        if (get_collection['success'] == True and len(get_collection['data'])>=1):
+            for _d in get_collection['data']:
+                p ={"project_lead":_d['project_lead'],
+                    "project":_d['project']
+                    }
+                data.append(p)
+            return Response({"success":True,"message":"successfully retrieved company structure", 'data':data},status=status.HTTP_200_OK)
+      
+        print(get_collection,"==")
+        return Response({"success":True,"message":"failed to retrieve the company structure", 'data':data},status=status.HTTP_404_NOT_FOUND)

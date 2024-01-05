@@ -728,9 +728,13 @@ class AttendanceSerializer(serializers.Serializer):
     end_date = serializers.DateField(allow_null=False)
     company_id = serializers.IntegerField(allow_null=False)
     meeting = serializers.CharField(max_length=225)
-    
+
 
 class Project_Update_Serializer(serializers.Serializer):
-    project=serializers.CharField(allow_null=False)
+    project=serializers.ListField(allow_null=False)
     candidate_id=serializers.CharField(allow_null=False)
     company_id=serializers.CharField(allow_null=False)
+class WeeklyAgendaDateReportSerializer(serializers.Serializer):
+    subproject_name = serializers.CharField(max_length=255,allow_null=False)
+    company_id = serializers.CharField(max_length=255,allow_null=False)
+    
