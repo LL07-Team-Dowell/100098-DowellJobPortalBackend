@@ -10302,8 +10302,9 @@ class candidate_attendance(APIView):
     
     def add_attendance(self,request):
         applicant_usernames=request.data.get("applicant_usernames")
-        start_date=request.data.get("start_date")
-        end_date=request.data.get("end_date")
+        # start_date=request.data.get("start_date")
+        # end_date=request.data.get("end_date")
+        collection=request.data.get("collection")
         company_id=request.data.get("company_id")
         meeting=request.data.get("meeting")
 
@@ -10319,42 +10320,33 @@ class candidate_attendance(APIView):
                 "error":serializer.errors
                 
             })
-            
-        for username in applicant_usernames:
-            
-            collection=start_date+"_"+end_date+"_"+username
-            
-            data={
-                "username":username,
-                "date":str(date.today()),
-                "company_id":company_id,
-                "meeting":meeting,
-                "attendance":True
-            }
-            try:
-                insert_attendance = json.loads(
-                    datacube_data_insertion(API_KEY,ATTENDANCE_DB_NAME,collection, data)
-                )
+        
+        data={
+            "username":applicant_usernames,
+            "date_taken":str(date.today()),
+            "company_id":company_id,
+            "meeting":meeting,
+        }
 
-                if insert_attendance["success"]:
-                    successfull_attendance.append(username)
-                else:
-                    unsuccessfull_attendance.append({
-                        "username":username,
-                        "error":insert_attendance["message"]
-                        })  
-            except: 
-                    unsuccessfull_attendance.append({
-                        "username":username,
-                        "error":insert_attendance
-                        })  
+        try:
+            insert_attendance = json.loads(
+                datacube_data_insertion(API_KEY,DB_Name,collection, data)
+            )
+        except: 
+                return Response({
+                    "success":False,
+                    "error":"Datacube is not responding"
+                }) 
+
+        if not insert_attendance["success"]:
+            return Response({
+                "success":False,
+                "error":insert_attendance["message"]
+            })    
+            
         return Response({
             "success":True,
-            "message":"Attendance has been successfully recorded",
-            "response":{
-                "successfull_attendance":successfull_attendance,
-                "unsuccessfull_attendance":unsuccessfull_attendance
-            }
+            "message":f"Attendance has been successfully recorded to {collection}"
         },status=status.HTTP_201_CREATED)
     
     def get_attendance(self,request):
