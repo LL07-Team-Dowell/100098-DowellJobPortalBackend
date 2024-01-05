@@ -717,3 +717,12 @@ def datacube_data_retrival_function(api_key,database_name,collection_name,data,l
 
     response = requests.post(url, json=data)
     return response.text
+
+def get_current_week_start_end_date(date_taken):
+    
+    date_format = '%Y-%m-%d'
+    date_obj = datetime.datetime.strptime(date_taken, date_format).date() 
+    start_date = date_obj - timedelta(days=date_obj.weekday())
+    end_date = start_date + timedelta(days=4)
+
+    return start_date, end_date
