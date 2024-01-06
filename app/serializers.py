@@ -737,4 +737,45 @@ class Project_Update_Serializer(serializers.Serializer):
 class WeeklyAgendaDateReportSerializer(serializers.Serializer):
     subproject_name = serializers.CharField(max_length=255,allow_null=False)
     company_id = serializers.CharField(max_length=255,allow_null=False)
+
+class CompanyStructureAddCeoSerializer(serializers.Serializer):
+    company_id = serializers.CharField(max_length=255,allow_null=False)
+    company_name = serializers.CharField(max_length=255,allow_null=False)
+    ceo = serializers.CharField(max_length=255,allow_null=False)
     
+class CompanyStructureUpdateCeoSerializer(serializers.Serializer):
+    company_id = serializers.CharField(max_length=255,allow_null=False)
+    company_name = serializers.CharField(max_length=255,allow_null=False)
+    previous_ceo = serializers.CharField(max_length=255,allow_null=False, required=False)
+    current_ceo = serializers.CharField(max_length=255,allow_null=False, required=False)
+    DATA_TYPE_CHOICE = (
+        ("Real_Data", "Real_Data"),
+        ("Archived_Data", "Archived_Data"),
+    )
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+
+class CompanyStructureAddProjectLeadSerializer(serializers.Serializer):
+    company_id = serializers.CharField(max_length=255,allow_null=False)
+    project_lead = serializers.CharField(max_length=255,allow_null=False)
+    projects_managed=serializers.ListField(allow_null=False)
+
+class CompanyStructureUpdateProjectLeadSerializer(serializers.Serializer):
+    company_id = serializers.CharField(max_length=255,allow_null=False)
+    project_lead = serializers.CharField(max_length=255,allow_null=False)
+    projects_managed=serializers.ListField(allow_null=False, required=False)
+    DATA_TYPE_CHOICE = (
+        ("Real_Data", "Real_Data"),
+        ("Archived_Data", "Archived_Data"),
+    )
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+
+class CompanyStructureProjectsSerializer(serializers.Serializer):
+    project = serializers.CharField(max_length=255,allow_null=False)
+    company_id = serializers.CharField(max_length=255,allow_null=False)
+    team_lead = serializers.CharField(max_length=255,allow_null=True, required=False)
+    members=serializers.ListField(allow_null=True, required=False)
+    group_leads=serializers.ListField(allow_null=True, required=False)
