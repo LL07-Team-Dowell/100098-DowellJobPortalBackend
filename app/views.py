@@ -103,7 +103,12 @@ from .serializers import (
     SubprojectSerializer,
     AttendanceSerializer,
     Project_Update_Serializer,
-    WeeklyAgendaDateReportSerializer
+    WeeklyAgendaDateReportSerializer,
+    CompanyStructureAddCeoSerializer,
+    CompanyStructureUpdateCeoSerializer,
+    CompanyStructureAddProjectLeadSerializer,
+    CompanyStructureUpdateProjectLeadSerializer,
+    CompanyStructureProjectsSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -10417,127 +10422,537 @@ class Company_Structure(APIView):
                 char.lower()
                 res+=char
         return res
+    def post(self,request):
+        type_request = request.GET.get("type")
 
-    def post(self, request):
-        if not request.data.get("project"):
-            return Response({
-                "success": False,
-                "error": "Specify the project."
-            },status=status.HTTP_400_BAD_REQUEST)
-        project= self.rearrange(str(request.data.get("project")).lower())
-        coll_name = "oscaroguledo"#COMPANY_STRUCTURE_COLLECTION
-        get_collection = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{'project':project},10,1))
-        print(get_collection,len(get_collection['data']))
-        if (get_collection['success'] == True and len(get_collection['data']) >=1):
-            return Response({
-                "success": False,
-                "error": 'Insertion not allowed. This project already exists.'
-            },status=status.HTTP_400_BAD_REQUEST)
-
-        project_lead=request.data.get("project_lead")
-        if not project_lead:
-            project_lead = ''
-
-        team_lead=request.data.get("team_lead")
-        if not team_lead:
-            team_lead = ''
-
-        group_lead=request.data.get("group_lead")
-        if not group_lead:
-            group_lead = ''
-
-        company_id=request.data.get("company_id")
-        if not company_id:
-            return Response({
-                    "success": False,
-                    "error": "Specify the company_id."
-                },status=status.HTTP_400_BAD_REQUEST)
-        
-        _members=request.data.get("members")
-        
-        if not isinstance(_members, list):
-            return Response({
-                "success": False,
-                "error": " 'members' must be a list"
-            },status=status.HTTP_400_BAD_REQUEST)
-        members={}
-        for m in _members:
-            info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':m}, update_field=None))
-            if (info['isSuccess'] is True and len(info['data']) >=1 ):
-                if m == team_lead:
-                    members[m]="team_lead"
-                elif m == project_lead:
-                    members[m]="project_lead"
-                elif m == group_lead:
-                    members[m]='group_lead'
-                else:
-                    members[m]="normal"
-            else:
-                return Response({
-                    "success": False,
-                    "error": f"{m} is not a valid dowell candidate username"
-                },status=status.HTTP_400_BAD_REQUEST)
-
-        field ={
-            'project':project,
-            'project_lead':project_lead,
-            'team_lead':team_lead,
-            'teamlead_reports_to':project_lead,
-            'group_lead':group_lead,
-            'company_id':company_id,
-            'members':members #must be a dict
-        }
-        #insert into datacube-----------
-        create_collection ={'success':False,'message':f"Collection `{coll_name}` already exists in Database '{COMPANY_STRUCTURE_DB_NAME}'",'response':field}#json.loads(datacube_add_collection(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,1))
-        if create_collection['success']==True:  
-            insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,field))
-            if insert_collection['success']==True:
-                return Response({
-                    "success": True,
-                    "message": f"Project({project}) structure created successfully",
-                    "response": insert_collection
-                },status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    "success": False,
-                    'message': create_collection['message'],
-                    "error": f"{create_collection['message']}--{insert_collection['message']}"
-                },status=status.HTTP_304_NOT_MODIFIED)
+        if type_request == "add_ceo":
+            return self.add_ceo(request, type_request)
+        elif type_request == "update_ceo":
+            return self.update_ceo(request,type_request)
+        elif type_request == "add_project_leads":
+            return self.add_project_leads(request, type_request)
+        elif type_request == "update_project_leads":
+            return self.update_project_leads(request,type_request)
+        elif type_request == "add_projects":
+            return self.add_projects(request,type_request)
+        elif type_request == "update_projects":
+            return self.update_projects(request,type_request)
         else:
-            if create_collection['message'] == f"Collection `{coll_name}` already exists in Database '{COMPANY_STRUCTURE_DB_NAME}'":
-                return Response(create_collection,status=status.HTTP_400_BAD_REQUEST)
-            else:
-                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,field))
-                if insert_collection['success']==True:
-                    return Response({
-                        "success": True,
-                        "message": f"Project({project}) structure created successfully",
-                        "response": insert_collection
-                    },status=status.HTTP_200_OK)
-                else:
-                    return Response({
-                        "success": False,
-                        'message': create_collection['message'],
-                        "error": f"{create_collection['message']}--{insert_collection['message']}"
-                    },status=status.HTTP_304_NOT_MODIFIED)
-         
-    def get(self, request, company_id):
-        if not company_id:
+            return self.handle_error(request,"'ceo'|'project_leads'|'projects'")
+    def add_ceo(self,request, type_request):
+        type_request = type_request.replace("add_","")
+        serializer=CompanyStructureAddCeoSerializer(data=request.data)
+        if not serializer.is_valid():
             return Response({
-                    "success": False,
-                    "error": "Specify the company_id."
-                },status=status.HTTP_400_BAD_REQUEST)
-        query = {'company_id':company_id}
-
-        data=[]
-        get_collection = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,COMPANY_STRUCTURE_COLLECTION,query,10,1))
-        if (get_collection['success'] == True and len(get_collection['data'])>=1):
-            for _d in get_collection['data']:
-                p ={"project_lead":_d['project_lead'],
-                    "project":_d['project']
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
+        company_id = request.data.get("company_id")
+        company_name = request.data.get("company_name")
+        ceo = request.data.get("ceo")
+        project_leads = []
+        coll_name = type_request
+        search_query ={  
+            "company_id":company_id,
+            "company_name":company_name,
+            "data_type":"Real_Data"
+        }
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,1))
+        #if ceo exists update else insert it
+        if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
+            """create the collection if the is no content----------------------"""
+            create_collection= json.loads(datacube_add_collection(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,1))
+            if create_collection['success'] == False:
+                return Response(create_collection,status=status.HTTP_400_BAD_REQUEST)
+            """insert data into the collection if the is no content----------------------"""
+            data ={
+                    "company_id":company_id,
+                    "company_name":company_name,
+                    "ceo":ceo,
+                    "project_leads":project_leads,
+                    "data_type":"Real_Data"
+                }
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+            if insert_collection['success']==True:
+                insert_collection['message'] = f"{type_request} data has been inserted successfully."
+                return Response(insert_collection,status=status.HTTP_200_OK)
+            else:
+                return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+        elif res['success'] == True:
+            if len(res['data']) >=1:
+                res={"success":False, "message":f"Data with this ceo '{ceo}' already exists."}
+                return Response(res,status=status.HTTP_400_BAD_REQUEST)
+            else:
+                """insert data into the collection if the is no content----------------------"""
+                data ={
+                        "company_id":company_id,
+                        "company_name":company_name,
+                        "ceo":ceo,
+                        "project_leads":project_leads,
+                        "data_type":"Real_Data"
                     }
-                data.append(p)
-            return Response({"success":True,"message":"successfully retrieved company structure", 'data':data},status=status.HTTP_200_OK)
-      
-        print(get_collection,"==")
-        return Response({"success":True,"message":"failed to retrieve the company structure", 'data':data},status=status.HTTP_404_NOT_FOUND)
+                print(res,"==============")
+                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+                if insert_collection['success']==True:
+                    insert_collection['message'] = f"{type_request} data has been inserted successfully.."
+                    return Response(insert_collection,status=status.HTTP_200_OK)
+                else:
+                    return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+     
+    def update_ceo(self,request, type_request):
+        type_request = type_request.replace("update_","")
+        serializer=CompanyStructureUpdateCeoSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
+        company_id = request.data.get("company_id")
+        company_name = request.data.get("company_name")
+        previous_ceo = request.data.get("previous_ceo")
+        current_ceo = request.data.get("current_ceo")
+        data_type = request.data.get("data_type")
+        coll_name = type_request
+        search_query ={  
+            "company_id":company_id,
+            #"data_type":"Real_Data",
+            "ceo":previous_ceo,
+        }
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,1))
+        #if ceo exists update else insert it
+        if res['success'] == False:
+            return Response(res,status=status.HTTP_404_NOT_FOUND)
+        if res['success'] == True:
+            if len(res['data']) <=0 :
+                res = {'success':False,"message":"Data not found with these details."}
+                return Response(res,status=status.HTTP_404_NOT_FOUND)
+            else:
+                #update---------------
+                print(res,"==============")
+                update_data={
+                            "company_name":company_name,
+                            "ceo":current_ceo,
+                            "data_type":data_type
+                            } 
+                update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
+                if update_collection['success']==True:
+                    update_collection['message'] = f"{type_request} data has been updated successfully."
+                    del update_collection['data']
+                    return Response(update_collection,status=status.HTTP_200_OK)
+                else:
+                    del update_collection['data']
+                    return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
+    
+    def add_project_leads(self, request, type_request):
+        type_request = type_request.replace('add_','')
+        serializer=CompanyStructureAddProjectLeadSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
+        company_id = request.data.get("company_id")
+        project_lead = request.data.get("project_lead")
+        
+        info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':project_lead}, update_field=None))
+        #print(info,"===============")
+        if (info['isSuccess'] is False or len(info['data'])<=0):
+            return Response({
+                    "success":False,
+                    "message":f"No such candidate '{project_lead}' exists in Dowell."
+                })
+        applicant_id = info['data'][0]['_id']
+        project_lead_id = applicant_id
+        projects_managed = request.data.get("projects_managed")
+        coll_name = type_request
+        #check if the project is already managed by someone else------------
+        res_proj = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{},10,1))
+        if res_proj['success'] == True and len(res_proj['data']) >=1 :
+            for i in projects_managed:
+                if "_coded_projects_managed" in res_proj['data'][0].keys():
+                    if self.rearrange(i.lower()) in res_proj['data'][0]['_coded_projects_managed']:
+                        return Response({
+                            "success":False,
+                            "message":f"The Project {i} is already managed by another project lead."
+                        }) 
+        _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
+        
+        search_query ={  
+            "company_id":company_id,
+            "project_lead":project_lead,
+            "project_lead_id":project_lead_id
+            #"data_type":"Real_Data"
+        }
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,1))
+        #if ceo exists update else insert it
+        if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
+            """create the collection if the is no content----------------------"""
+            print(coll_name,"=======================")
+            try:
+                create_collection= json.loads(datacube_add_collection(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,1))
+                if create_collection['success'] == False:
+                    return Response(create_collection,status=status.HTTP_400_BAD_REQUEST)
+            except Exception as error:
+                return Response({'success':False,"message":error},status=status.HTTP_400_BAD_REQUEST)
+            """insert data into the collection if the is no content----------------------"""
+            data ={
+                    "company_id":company_id,
+                    "project_lead":project_lead,
+                    "project_lead_id":project_lead_id,
+                    "projects_managed":projects_managed,
+                    "_coded_projects_managed":_coded_projects_managed,
+                    "data_type":"Real_Data"
+                }
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+            if insert_collection['success']==True:
+                insert_collection['message'] = f"{type_request} data has been inserted successfully."
+                return Response(insert_collection,status=status.HTTP_200_OK)
+            else:
+                return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+        elif res['success'] == True:
+            if len(res['data']) >=1:
+                res={"success":False, "message":f"Data with this project '{project_lead}' already exists."}
+                return Response(res,status=status.HTTP_400_BAD_REQUEST)
+            else:
+                """insert data into the collection if the is no content----------------------"""
+                data ={
+                        "company_id":company_id,
+                        "project_lead":project_lead,
+                        "project_lead_id":project_lead_id,
+                        "projects_managed":projects_managed,
+                        "_coded_projects_managed":_coded_projects_managed,
+                        "data_type":"Real_Data"
+                    }
+                print(res,"==============")
+                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+                if insert_collection['success']==True:
+                    #update ceos project leads list-----------------------
+                    s_q ={
+                            "company_id":company_id,
+                        }
+                    res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"ceo",s_q,10,1))
+                    if res['success'] == True:
+                        for i in res['data']:
+                            pl = [x for x in i['project_leads']]
+                            pl.append(project_lead)
+                            update_data={
+                                    "project_leads":pl
+                                } 
+                            update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,'ceo',s_q,update_data))
+                            if update_collection['success']==False:
+                                del update_collection['data']
+                                update_collection['error'] = "Error while trying to update the ceo's project leads list"
+                                return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
+                    insert_collection['message'] = f"{type_request} data has been inserted successfully.."
+                    return Response(insert_collection,status=status.HTTP_200_OK)
+                else:
+                    return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+     
+    def update_project_leads(self,request,type_request):
+        type_request = type_request.replace("update_","")
+        serializer=CompanyStructureUpdateProjectLeadSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
+        
+        company_id = request.data.get('company_id')
+        project_lead = request.data.get('project_lead')
+        data_type = request.data.get('data_type')
+        info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':project_lead}, update_field=None))
+        #print(info,"===============")
+        if (info['isSuccess'] is False or len(info['data'])<=0):
+            return Response({
+                    "success":False,
+                    "message":f"No such candidate {project_lead} exists in Dowell."
+                })
+        
+        coll_name = type_request
+        search_query = {  
+            'company_id':company_id,
+            'project_lead':project_lead
+        }
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,10))
+        #if ceo exists update else insert it
+        if res['success'] == False :
+            return Response(res,status=status.HTTP_404_NOT_FOUND)
+        elif res['success'] == True:
+            print(res,"==================", coll_name,search_query)
+            if len(res['data']) <= 0 :
+                res = {'success':False,"message":f"Data not found for(company_id-{company_id},project_lead-{project_lead})"}
+                return Response(res,status=status.HTTP_404_NOT_FOUND)
+            else:
+                #update---------------
+                update_data={"data_type":data_type} 
+                update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
+                
+                if update_collection['success']==True:
+                    update_collection['message'] = f"{type_request} data has been updated successfully."
+                    del update_collection['data']
+                    return Response(update_collection,status=status.HTTP_200_OK)
+                else:
+                    del update_collection['data']
+                    return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
+
+    def add_projects(self, request, type_request):
+        type_request = type_request.replace("add_","")
+        serializer=CompanyStructureProjectsSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
+        company_id = request.data.get("company_id")
+        project = request.data.get("project")
+        _coded_project = self.rearrange(project.lower())
+        print(_coded_project,"==============")
+        ##checking if team lead exists in dowell---------------------
+        team_lead = request.data.get("team_lead")
+        info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':team_lead}, update_field=None))
+        #print(info,"===============")
+        if (info['isSuccess'] is False or len(info['data'])<=0):
+            return Response({
+                    "success":False,
+                    "message":f"No such team_lead candidate '{team_lead}' exists in Dowell."
+                })
+        #checking if team lead reports to is in dowell------------------------
+        teamlead_reports_to = []
+        res_proj = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{},10,1))
+        if res_proj['success'] == True and len(res_proj['data']) >=1 :
+            for project_leads in res_proj['data']:
+                print(project_leads,"===================",len(res_proj['data']))
+                if "_coded_projects_managed" in project_leads.keys():
+                    if _coded_project in project_leads["_coded_projects_managed"]:
+                        teamlead_reports_to.append(project_leads['project_lead'])
+
+        group_leads = request.data.get("group_leads")
+        for user in group_leads:
+            info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
+            #print(info,"===============")
+            if (info['isSuccess'] is False or len(info['data'])<=0):
+                return Response({
+                        "success":False,
+                        "message":f"No such group_lead candidate '{user}' exists in Dowell."
+                    })
+        members = request.data.get("members")
+        members = list(set(members+group_leads+teamlead_reports_to))
+
+        coll_name = type_request
+        search_query ={  
+            "company_id":company_id,
+            "_coded_project":_coded_project,
+            "data_type":"Real_Data"
+        }
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,1))
+        #if ceo exists update else insert it
+        
+        if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
+            """create the collection if the is no content----------------------"""
+            create_collection= json.loads(datacube_add_collection(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,1))
+            if create_collection['success'] == False:
+                return Response(create_collection,status=status.HTTP_400_BAD_REQUEST)
+            """insert data into the collection if the is no content----------------------"""
+            data ={
+                    "company_id":company_id,
+                    "group_leads":group_leads,
+                    "team_lead":team_lead,
+                    "project":project,
+                    "_coded_project":_coded_project,
+                    "teamlead_reports_to":teamlead_reports_to,
+                    "data_type":"Real_Data"
+                }
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+            if insert_collection['success']==True:
+                #update the projects collection for ------------------------------
+                s_q ={  
+                    "company_id":company_id,
+                    "data_type":"Real_Data"
+                }
+                if len(teamlead_reports_to)>=1:
+                    s_q["project_lead"] =teamlead_reports_to[0]
+                res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,s_q,10,1))
+                #if ceo exists update else insert it
+                if res['success'] == False :
+                    return Response(res,status=status.HTTP_404_NOT_FOUND)
+                elif res['success'] == True:
+                    if len(res['data']) <=0 :
+                        res = {'success':False,"message":"Data not found with these details."}
+                        return Response(res,status=status.HTTP_404_NOT_FOUND)
+                    else:
+                        #update---------------
+                        for i in res['data']:
+                            projects_managed = [x for x in i['projects_managed']]
+                            projects_managed.append(project)
+                            _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
+
+                            update_data={"projects_managed":projects_managed,
+                                         "_coded_projects_managed":_coded_projects_managed
+                                         } 
+                            update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
+                            if update_collection['success']==False:
+                                del update_collection['data']
+                                update_collection['error'] = "Error while trying to update the ceo's project leads list"
+                                return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
+
+                insert_collection['message'] = f"{type_request} data has been inserted successfully."
+                return Response(insert_collection,status=status.HTTP_200_OK)
+            else:
+                return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+        elif res['success'] == True:
+            if len(res['data']) >=1:
+                res={"success":False, "message":f"Data with this project '{project}' already exists."}
+                return Response(res,status=status.HTTP_400_BAD_REQUEST)
+            else:
+                """insert data into the collection if the is no content----------------------"""
+                data ={
+                        "company_id":company_id,
+                        "group_leads":group_leads,
+                        "team_lead":team_lead,
+                        "project":project,
+                        "_coded_project":_coded_project,
+                        "teamlead_reports_to":teamlead_reports_to,
+                        "data_type":"Real_Data"
+                    }
+                print(res,"==============")
+                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+                if insert_collection['success']==True:
+                    #update the projects collection for ------------------------------
+                    s_q ={  
+                        "company_id":company_id,
+                        "project_lead":teamlead_reports_to[0],
+                        "data_type":"Real_Data"
+                    }
+                    res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,s_q,10,1))
+                    #if ceo exists update else insert it
+                    if res['success'] == False :
+                        return Response(res,status=status.HTTP_404_NOT_FOUND)
+                    elif res['success'] == True:
+                        if len(res['data']) <=0 :
+                            res = {'success':False,"message":"Data not found with these details."}
+                            return Response(res,status=status.HTTP_404_NOT_FOUND)
+                        else:
+                            #update---------------
+                            for i in res['data']:
+                                projects_managed = [x for x in i['projects_managed']]
+                                projects_managed.append(project)
+                                _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
+
+                                update_data={"projects_managed":projects_managed,
+                                            "_coded_projects_managed":_coded_projects_managed
+                                            } 
+                                update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
+                                if update_collection['success']==False:
+                                    del update_collection['data']
+                                    update_collection['error'] = "Error while trying to update the ceo's project leads list"
+                                    return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
+
+                    insert_collection['message'] = f"{type_request} data has been inserted successfully.."
+                    return Response(insert_collection,status=status.HTTP_200_OK)
+                else:
+                    return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+    
+    def update_projects(self, request, type_request):
+        type_request = type_request.replace("update_","")
+        serializer=CompanyStructureProjectsSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
+        
+        project = request.data.get("project")
+        _coded_project = self.rearrange(project.lower())
+        company_id = request.data.get("company_id")
+        team_lead = request.data.get("team_lead")
+        teamlead_reports_to = []
+        res_proj = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{},10,1))
+        #print(res_proj, "===============",len(res_proj['data']))
+        if res_proj['success'] == True and len(res_proj['data']) >=1 :
+            for project_leads in res_proj['data']:
+                if "_coded_projects_managed" in project_leads.keys():
+                    if _coded_project in project_leads["_coded_projects_managed"]:
+                        teamlead_reports_to.append(project_leads['project_lead'])
+
+        group_leads = request.data.get("group_leads")
+        members = request.data.get("members")
+        _m =[]
+        update_data = {}
+        if members:
+            _m += members
+        if group_leads:
+            _m+=group_leads
+            update_data["group_leads"] = group_leads
+        _m += teamlead_reports_to
+        
+        if team_lead:
+            _m.append(team_lead)
+            update_data["team_lead"] = team_lead
+        
+        members = list(set(_m))
+        #print(members,"============")
+        if len(members)>=1:
+            update_data["members"] = members
+
+            for user in members:
+                info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
+                #print(info,"===============")
+                if (info['isSuccess'] is False or len(info['data'])<=0):
+                    return Response({
+                            "success":False,
+                            "message":f"No such candidate '{user}' exists in Dowell."
+                        },status=status.HTTP_400_BAD_REQUEST)   
+
+        coll_name = type_request
+
+        #update---------------
+        search_query={
+            '_coded_project':_coded_project,
+            "company_id":company_id
+        }
+        update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
+        if update_collection['success']==True:
+            update_collection['message'] = f"{type_request} data has been updated successfully."
+            del update_collection['data']
+            return Response(update_collection,status=status.HTTP_200_OK)
+        else:
+            del update_collection['data']
+            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)    
+
+    def get(self,requests, company_id):
+        data={}
+        search_query ={  
+            "company_id":company_id,
+            "data_type":"Real_Data",
+        }
+        ceo = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"ceo",search_query,10,1))
+        if len(ceo['data']) >0:
+            _x = ceo['data'][-1]
+            data['ceo'] =_x['ceo']
+            data["project_leads"] = _x["project_leads"]
+            for i in _x["project_leads"]:
+                sq={
+                    'project_lead':i,# eg Manish
+                    'company_id':"ABCD"
+                }
+                project_leads = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",sq,10,1))
+                print(project_leads,"=====================",sq)
+                if len(project_leads['data'])>0:
+                    
+                    for y in project_leads['data']:
+                        _y ={
+                            "project_lead":y['project_lead'],
+                            "project_lead_id":y['project_lead_id'],
+                            "projects":y['projects_managed']
+                        }
+                        data["project_leads"].append(_y)
+
+
+
+        return Response(data,status=status.HTTP_200_OK)
