@@ -111,7 +111,7 @@ import AttendanceReport from "./pages/HrPage/views/AttendanceReport/AttendanceRe
 import HrAllApplicationsScreen from "./pages/HrPage/views/AllApplicationsScreen/AllApplicationsScreen";
 
 function App() {
-  console.log = () => { };
+  // console.log = () => { };
 
   const {
     currentUser,

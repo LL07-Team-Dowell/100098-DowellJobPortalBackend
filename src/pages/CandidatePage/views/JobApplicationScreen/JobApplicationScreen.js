@@ -94,7 +94,7 @@ const JobApplicationScreen = () => {
       arrayToAddTo.current.push(elem);
   };
 
-  const   handleFileChange = async (e) => {
+  const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     setSelectedFile(selectedFile);
   };
@@ -119,12 +119,32 @@ const JobApplicationScreen = () => {
 
     getInternetSpeedTest(email)
       .then((res) => {
-        if (res.status === 404) {
+        const speedTestResults = res.data.response.filter(
+          (item) =>
+            new Date(item.DATETIME).toDateString() === new Date().toDateString()
+        );
+
+        const matchingSpeedResult = speedTestResults.find(
+          (item) =>
+            Number(item.UPLOAD.split(" Mbps")[0]) >= 100 &&
+            Number(item.DOWNLOAD.split(" Mbps")[0]) >= 100 &&
+            Number(item.JITTER.split(" Mbps")[0]) <= 30 &&
+            Number(item.LATENCY.split(" Mbps")[0]) <= 50
+        );
+
+        if (speedTestResults.length < 1) {
           setShowInternetSpeedTestModal(true);
         } else {
           toast.success("Speed test upload successful");
+          dispatchToNewApplicationData({
+            type: newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED,
+            payload: {
+              stateToChange: mutableNewApplicationStateNames.internet_speed,
+              value: matchingSpeedResult.DOWNLOAD,
+            },
+          });
         }
-        console.log(res.data);
+        console.log(res.data.response[0].DOWNLOAD);
       })
       .catch((error) => {
         console.log(error);
