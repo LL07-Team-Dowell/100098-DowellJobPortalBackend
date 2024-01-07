@@ -134,8 +134,7 @@ if os.getenv("ATTENDANCE_DB_NAME"):
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
-if os.getenv("COMPANY_STRUCTURE_COLLECTION"):
-    COMPANY_STRUCTURE_COLLECTION = os.getenv("COMPANY_STRUCTURE_COLLECTION")
+
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
@@ -145,7 +144,6 @@ else:
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
-    COMPANY_STRUCTURE_COLLECTION = os.getenv("COMPANY_STRUCTURE_COLLECTION")
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 
 # Create your views here.
@@ -10458,7 +10456,7 @@ class Company_Structure(APIView):
             "company_name":company_name,
             "data_type":"Real_Data"
         }
-        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,1))
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0))
         #if ceo exists update else insert it
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
@@ -10517,10 +10515,10 @@ class Company_Structure(APIView):
         coll_name = type_request
         search_query ={  
             "company_id":company_id,
-            #"data_type":"Real_Data",
+            "data_type":"Real_Data",
             "ceo":previous_ceo,
         }
-        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,1))
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0))
         #if ceo exists update else insert it
         if res['success'] == False:
             return Response(res,status=status.HTTP_404_NOT_FOUND)
@@ -10567,30 +10565,29 @@ class Company_Structure(APIView):
         applicant_id = info['data'][0]['_id']
         project_lead_id = applicant_id
         projects_managed = request.data.get("projects_managed")
-        coll_name = type_request
-        #check if the project is already managed by someone else------------
-        res_proj = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{},10,1))
-        if res_proj['success'] == True and len(res_proj['data']) >=1 :
-            for i in projects_managed:
-                if "_coded_projects_managed" in res_proj['data'][0].keys():
-                    if self.rearrange(i.lower()) in res_proj['data'][0]['_coded_projects_managed']:
-                        return Response({
-                            "success":False,
-                            "message":f"The Project {i} is already managed by another project lead."
-                        }) 
         _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
-        
+        coll_name = type_request
+        team_lead_reports_to ={}
+        projects = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{"company_id":company_id},10,0))
+        if len(projects['data'])>0:
+            for p in projects['data']:
+                team_lead_reports_to[p['_coded_project']]=p['teamlead_reports_to"']
+                if p['_coded_project'] not in _coded_projects_managed:
+                    return Response({
+                            "success":False,
+                            "message":f"The Project {p} doesnt exist."
+                        }) 
         search_query ={  
             "company_id":company_id,
             "project_lead":project_lead,
-            "project_lead_id":project_lead_id
-            #"data_type":"Real_Data"
+            "project_lead_id":project_lead_id,
+            "data_type":"Real_Data"
         }
-        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,1))
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0))
         #if ceo exists update else insert it
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
-            print(coll_name,"=======================")
+            
             try:
                 create_collection= json.loads(datacube_add_collection(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,1))
                 if create_collection['success'] == False:
@@ -10608,13 +10605,30 @@ class Company_Structure(APIView):
                 }
             insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
             if insert_collection['success']==True:
+                #update the projects team lead reports to list------------------------------
+                p_q ={"company_id":company_id,"_coded_project":projects_managed}
+                projects = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",p_q,10,0))
+                if len(projects['data'])>0:
+                    for p in projects['data']:
+                        p=projects['data'][0]
+
+                        teamlead_reports_to = p['teamlead_reports_to']
+                        teamlead_reports_to.append(project_lead)
+                        update_data={
+                            "teamlead_reports_to":teamlead_reports_to
+                        } 
+                        update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,'projects',p_q,update_data))
+                        if update_collection['success']==False:
+                            del update_collection['data']
+                            update_collection['error'] = "Error while trying to update the projects's teamlead_reports_to list"
+                            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
                 insert_collection['message'] = f"{type_request} data has been inserted successfully."
                 return Response(insert_collection,status=status.HTTP_200_OK)
             else:
                 return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
         elif res['success'] == True:
             if len(res['data']) >=1:
-                res={"success":False, "message":f"Data with this project '{project_lead}' already exists."}
+                res={"success":False, "message":f"Data with this Project Lead '{project_lead}' already exists."}
                 return Response(res,status=status.HTTP_400_BAD_REQUEST)
             else:
                 """insert data into the collection if the is no content----------------------"""
@@ -10626,7 +10640,7 @@ class Company_Structure(APIView):
                         "_coded_projects_managed":_coded_projects_managed,
                         "data_type":"Real_Data"
                     }
-                print(res,"==============")
+                
                 insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
                 if insert_collection['success']==True:
                     #update ceos project leads list-----------------------
@@ -10645,6 +10659,23 @@ class Company_Structure(APIView):
                             if update_collection['success']==False:
                                 del update_collection['data']
                                 update_collection['error'] = "Error while trying to update the ceo's project leads list"
+                                return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
+                    #update the projects team lead reports to list------------------------------
+                    p_q ={"company_id":company_id,"_coded_project":projects_managed}
+                    projects = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",p_q,10,0))
+                    if len(projects['data'])>0:
+                        for p in projects['data']:
+                            p=projects['data'][0]
+
+                            teamlead_reports_to = p['teamlead_reports_to']
+                            teamlead_reports_to.append(project_lead)
+                            update_data={
+                                "teamlead_reports_to":teamlead_reports_to
+                            } 
+                            update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,'projects',p_q,update_data))
+                            if update_collection['success']==False:
+                                del update_collection['data']
+                                update_collection['error'] = "Error while trying to update the projects's teamlead_reports_to list"
                                 return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
                     insert_collection['message'] = f"{type_request} data has been inserted successfully.."
                     return Response(insert_collection,status=status.HTTP_200_OK)
@@ -10675,20 +10706,20 @@ class Company_Structure(APIView):
         coll_name = type_request
         search_query = {  
             'company_id':company_id,
-            'project_lead':project_lead
+            'project_lead':project_lead,
+            'data_type':'Real_Data'
         }
-        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,10))
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0))
         #if ceo exists update else insert it
         if res['success'] == False :
             return Response(res,status=status.HTTP_404_NOT_FOUND)
         elif res['success'] == True:
-            print(res,"==================", coll_name,search_query)
             if len(res['data']) <= 0 :
                 res = {'success':False,"message":f"Data not found for(company_id-{company_id},project_lead-{project_lead})"}
                 return Response(res,status=status.HTTP_404_NOT_FOUND)
             else:
                 #update---------------
-                update_data={"data_type":data_type} 
+                update_data={'data_type':data_type} 
                 update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
                 
                 if update_collection['success']==True:
@@ -10723,7 +10754,7 @@ class Company_Structure(APIView):
                 })
         #checking if team lead reports to is in dowell------------------------
         teamlead_reports_to = []
-        res_proj = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{},10,1))
+        res_proj = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},10,0))
         if res_proj['success'] == True and len(res_proj['data']) >=1 :
             for project_leads in res_proj['data']:
                 print(project_leads,"===================",len(res_proj['data']))
@@ -10764,9 +10795,10 @@ class Company_Structure(APIView):
                     "team_lead":team_lead,
                     "project":project,
                     "_coded_project":_coded_project,
-                    "teamlead_reports_to":teamlead_reports_to,
                     "data_type":"Real_Data"
                 }
+            if len(teamlead_reports_to)>=1:
+                data['teamlead_reports_to']=teamlead_reports_to[0]
             insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
             if insert_collection['success']==True:
                 #update the projects collection for ------------------------------
@@ -10816,10 +10848,11 @@ class Company_Structure(APIView):
                         "team_lead":team_lead,
                         "project":project,
                         "_coded_project":_coded_project,
-                        "teamlead_reports_to":teamlead_reports_to,
                         "data_type":"Real_Data"
                     }
-                print(res,"==============")
+                
+                if len(teamlead_reports_to)>=1:
+                    data['teamlead_reports_to']=teamlead_reports_to[0]
                 insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
                 if insert_collection['success']==True:
                     #update the projects collection for ------------------------------
@@ -10872,7 +10905,7 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         team_lead = request.data.get("team_lead")
         teamlead_reports_to = []
-        res_proj = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{},10,1))
+        res_proj = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{},10,0))
         #print(res_proj, "===============",len(res_proj['data']))
         if res_proj['success'] == True and len(res_proj['data']) >=1 :
             for project_leads in res_proj['data']:
@@ -10883,7 +10916,7 @@ class Company_Structure(APIView):
         group_leads = request.data.get("group_leads")
         members = request.data.get("members")
         _m =[]
-        update_data = {}
+        update_data = {"teamlead_reports_to": ["Manish"]}
         if members:
             _m += members
         if group_leads:
@@ -10916,6 +10949,7 @@ class Company_Structure(APIView):
             '_coded_project':_coded_project,
             "company_id":company_id
         }
+        update_data={}
         update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
         if update_collection['success']==True:
             update_collection['message'] = f"{type_request} data has been updated successfully."
@@ -10931,26 +10965,38 @@ class Company_Structure(APIView):
             "company_id":company_id,
             "data_type":"Real_Data",
         }
-        ceo = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"ceo",search_query,10,1))
+        ceo = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"ceo",search_query,10,0))
         if len(ceo['data']) >0:
             _x = ceo['data'][-1]
             data['ceo'] =_x['ceo']
-            data["project_leads"] = _x["project_leads"]
+            data["project_leads"] = []
             for i in _x["project_leads"]:
-                sq={
+                plq={
                     'project_lead':i,# eg Manish
-                    'company_id':"ABCD"
+                    'company_id':company_id,
+                    "data_type":"Real_Data"
                 }
-                project_leads = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",sq,10,1))
-                print(project_leads,"=====================",sq)
+                
+                project_leads = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",plq,10,0))
+                
                 if len(project_leads['data'])>0:
                     
                     for y in project_leads['data']:
                         _y ={
                             "project_lead":y['project_lead'],
                             "project_lead_id":y['project_lead_id'],
-                            "projects":y['projects_managed']
+                            "projects":[]#y['projects_managed']
                         }
+                        pq={
+                            "teamlead_reports_to":[y['project_lead']],
+                            'company_id':company_id,
+                            "data_type":"Real_Data"
+                        }
+                        projects = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",pq,10,0))
+                
+                        if len(projects['data'])>0:
+                            for z in projects['data']:
+                                _y['projects'].append(z)
                         data["project_leads"].append(_y)
 
 
