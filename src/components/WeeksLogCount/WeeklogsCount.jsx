@@ -176,9 +176,13 @@ const WeeklogsCount = ({ user, className }) => {
                                     customLogData ?
                                         <>
                                             <span>{`You added ${customLogData?.length} logs between ${new Date(startDateCopy).toDateString()} and ${new Date(endDateCopy).toDateString()}`}</span>
-                                            
-                                            <p className={styles.log__Count__Info}>{`Total Worklogs: ${customLogData?.length}`}</p>
+
+                                            <br />
+                                            <br />
+
                                             <p className={styles.log__Count__Info}>{`Worlogs Approved: ${approvedTasksCount?.length}`}</p>
+                                            <p className={styles.log__Count__Info}>{`Total Worklogs: ${customLogData?.length}`}</p>
+                                            <p className={styles.log__Count__Info}>{`Total Hours: ${calculateHours(customLogData)}`}</p>
                                         </>
                                         :
                                         <span>Log details from {new Date(startDateCopy).toDateString()} to {new Date(endDateCopy).toDateString()}</span>
