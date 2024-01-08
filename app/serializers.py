@@ -724,10 +724,9 @@ class SubprojectSerializer(serializers.Serializer):
     
 class AttendanceSerializer(serializers.Serializer):
     applicant_usernames = serializers.ListField(child=serializers.CharField())
-    start_date = serializers.DateField(allow_null=False)
-    end_date = serializers.DateField(allow_null=False)
+    date_taken = serializers.DateField(allow_null=False)
     company_id = serializers.IntegerField(allow_null=False)
-    meeting = serializers.CharField(max_length=225)
+    meeting = serializers.ListField(child=serializers.CharField())
 
 
 class Project_Update_Serializer(serializers.Serializer):

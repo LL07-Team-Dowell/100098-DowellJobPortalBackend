@@ -115,17 +115,19 @@ def update_project_details(company_id,_date):
     item={}
     
     _date = datetime.strptime(_date, "%Y-%m-%d").date()
+    task_created_date=str(_date)
+    print(f"---the date is {_date}------",task_created_date)
     if _date >= datetime.today().date():
-        print("------------date should be less than today------------")
+        print(f"------------date should be less than today------------")
         return {'success': False,'message': 'date should be less than today'}
     
-    task_created_date=f"{_date.year}-{_date.month}-{_date.day}"
     field={"company_id":company_id, "task_created_date":task_created_date}
-    tasks=json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
+    tasks = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
+    
     if (tasks['isSuccess'] == True):
         print("tasks exists, processing projects details-------------------",len(tasks['data']))
         for i,task in enumerate(tasks['data']):
-            print(f"----------processing details for task {i+1}/{len(tasks['data'])}----------")
+            print(f"----------processing details for task {i+1}/{len(tasks['data'])} by {task['project']+"-("+task['subproject']})----------")
             if 'task_id' in task.keys():
                 c=json.loads(dowellconnection(*task_management_reports, "fetch", {"task_created_date":task_created_date, "_id":task["task_id"]}, update_field=None))['data']
                 if len(c) > 0:
@@ -209,7 +211,7 @@ def update_project_details(company_id,_date):
         
         api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f"
         db_name= "Project_Details"
-        coll_name=task_created_date
+        coll_name=f"{_date.year}-{_date.month}-{_date.day}"
         data={"date":task_created_date, 'company_id':company_id, "data":res}
         response = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
         if response['success']==True:
@@ -224,8 +226,20 @@ def update_project_details(company_id,_date):
                         'message': f'successfully inserted the data the collection-{coll_name}',
                         "data": data,
                     }
-        print(f"error in inserting the data -> {response['message']}--------------------")
-        return {"success": False, "message": response['message']}
+        elif response['message'] == f"Collection `{coll_name}` already exists in Database 'Project_Details'":
+            query={"company_id":company_id, "date":f"{_date.year}-{_date.month}-{_date.day}"}
+            update_data=data
+            response =json.loads(datacube_data_update(api_key,db_name,coll_name, query,update_data))
+            if response['success']==True:
+                print(f'successfully updated the data the collection-{coll_name}---------------')
+                return {
+                        "success": True,
+                        'message': f'successfully updated the data the collection-{coll_name}',
+                        "data": data,
+                    }
+        else:
+            print(f"error in inserting the data -> {response['message']}--------------------")
+            return {"success": False, "message": response['message']}
     
 def main():
     print("-----------------------------------")
