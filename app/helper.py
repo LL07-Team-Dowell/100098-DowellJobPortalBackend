@@ -631,8 +631,8 @@ def get_speed_test_result(email):
     try:
         url = f"https://dowellresearch.com/livinglab/api.php?email={email}"
         response = requests.get(url)
-        if response.status_code == 200:
-            return response.json()[:10]
+        if response.status_code == 200:           
+            return response.json()[:20]
         else:
             return None
     except requests.RequestException as e:

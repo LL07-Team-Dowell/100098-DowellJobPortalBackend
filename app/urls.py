@@ -218,6 +218,7 @@ urlpatterns = [
     path('test/',test.as_view()) ,
     path('attendance/',candidate_attendance.as_view()),
     path('speed_test_result/<str:email>',speed_test.as_view()),
+    path('v2/speed_test_result/<str:email>',dowell_speed_test.as_view()),
 
     #company_structure apis-------------------------------------------------------
     path('insert_company_structure/', Company_Structure.as_view()),

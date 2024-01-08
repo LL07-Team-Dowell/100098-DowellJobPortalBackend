@@ -48,6 +48,7 @@ from .helper import (
     get_projects,
     get_speed_test_data,
     get_speed_test_result,
+    speed_test_condition,
     datacube_data_retrival_function
 )
 from .serializers import (
@@ -10411,6 +10412,75 @@ class speed_test(APIView):
             "message": "Speed test data retrived successfully",
             "response": response
         })
+class dowell_speed_test(APIView):
+    def get(self, request, email):
+        if not email:
+            return Response({
+                "success": False,
+                "message": "Kindly provide an email"
+            })
+
+        response = get_speed_test_result(email)
+        
+        if not response:
+            return Response({
+                "success": False,
+                "message": f"Failed to retrieve data for {email}"
+            })
+
+        results = []
+        for test_result in response:
+            try:
+                download_speed = float(test_result.get("DOWNLOAD").split()[0])
+                upload_speed = float(test_result.get("UPLOAD").split()[0])
+                latency = float(test_result.get("LATENCY").split()[0])
+                jitter = float(test_result.get("JITTER").split()[0])
+
+                device_type = test_result.get("DEVICE")
+                if device_type != "Laptop":
+                    results.append({
+                        "success": False,
+                        "message": f"Access denied for {test_result.get('ID')} - Device not recognized as a Laptop"
+                    })
+                    continue
+
+                if not speed_test_condition(download_speed, upload_speed, latency, jitter):
+                    results.append({
+                        "success": False,
+                        "message": f"Speed test result less for {test_result.get('ID')}",
+                        "details": {
+                            "download": download_speed,
+                            "upload": upload_speed,
+                            "latency": latency,
+                            "jitter": jitter,
+                            "date": test_result.get("DATETIME"),
+                        }
+                    })
+                else:
+                    results.append({
+                        "success": True,
+                        "message": "Speed test data retrieved successfully and candidate has passed all the criteria",
+                        "details": {
+                            "download": download_speed,
+                            "upload": upload_speed,
+                            "latency": latency,
+                            "jitter": jitter,
+                            "date": test_result.get("DATETIME")
+                        }
+                    })
+
+            except (ValueError, KeyError, TypeError) as e:
+                results.append({
+                    "success": False,
+                    "message": f"You have manipulted the speedtest result {test_result.get('ID')} , Thank you"
+                })
+
+        return Response({
+            "success": True,
+            "message": "Speed test data retrieved successfully",
+            "response": results
+        })
+
     
 class Company_Structure(APIView):
     def rearrange(self,word):
