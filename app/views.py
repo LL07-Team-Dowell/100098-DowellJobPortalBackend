@@ -2590,7 +2590,7 @@ class task_module(APIView):
         else:
             return self.handle_error(request)
 
-    #@verify_user_token
+    @verify_user_token
     def add_task(self, request):
         data = request.data
         payload = {
