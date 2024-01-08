@@ -48,7 +48,8 @@ from .helper import (
     get_projects,
     get_speed_test_data,
     get_speed_test_result,
-    datacube_data_retrival_function
+    datacube_data_retrival_function,
+    get_current_week_start_end_date
 )
 from .serializers import (
     AccountSerializer,
@@ -4479,6 +4480,7 @@ class Public_apply_job(APIView):
             "module": data.get("module"),
             "is_public": True,
             "signup_mail_sent": False,
+            "candidate_certificate":data.get("candidate_certificate")
         }
         update_field = {"status": "nothing to update"}
         update_field = {"status": "nothing to update"}
@@ -10305,13 +10307,10 @@ class candidate_attendance(APIView):
     
     def add_attendance(self,request):
         applicant_usernames=request.data.get("applicant_usernames")
-        start_date=request.data.get("start_date")
-        end_date=request.data.get("end_date")
+        date_taken=request.data.get("date_taken")
         company_id=request.data.get("company_id")
         meeting=request.data.get("meeting")
 
-        unsuccessfull_attendance=[]
-        successfull_attendance=[]
 
         serializer=AttendanceSerializer(data=request.data)
         
@@ -10323,42 +10322,38 @@ class candidate_attendance(APIView):
                 
             })
             
-        for username in applicant_usernames:
-            
-            collection=start_date+"_"+end_date+"_"+username
-            
-            data={
-                "username":username,
-                "date":str(date.today()),
-                "company_id":company_id,
-                "meeting":meeting,
-                "attendance":True
-            }
-            try:
-                insert_attendance = json.loads(
-                    datacube_data_insertion(API_KEY,ATTENDANCE_DB_NAME,collection, data)
-                )
+        start, end = get_current_week_start_end_date(date_taken)
+        
+        collection=f"{start}_to_{end}"
+        
+        data={
+            "applicant_usernames":applicant_usernames,
+            "date_taken":date_taken,
+            "company_id":company_id,
+            "meeting":meeting,
+        }
 
-                if insert_attendance["success"]:
-                    successfull_attendance.append(username)
-                else:
-                    unsuccessfull_attendance.append({
-                        "username":username,
-                        "error":insert_attendance["message"]
-                        })  
-            except: 
-                    unsuccessfull_attendance.append({
-                        "username":username,
-                        "error":insert_attendance
-                        })  
-        return Response({
+        try:
+            insert_attendance = json.loads(
+                datacube_data_insertion(API_KEY,DB_Name,collection, data)
+            )
+        except: 
+                return Response({
+                    "success":False,
+                    "error":"Datacube is not responding"
+                })    
+            
+        if insert_attendance["success"]:
+            return Response({
             "success":True,
-            "message":"Attendance has been successfully recorded",
-            "response":{
-                "successfull_attendance":successfull_attendance,
-                "unsuccessfull_attendance":unsuccessfull_attendance
-            }
+            "message":f"Attendance has been successfully recorded to {collection}"
         },status=status.HTTP_201_CREATED)
+            
+        else:
+            return Response({
+                "success":False,
+                "error":insert_attendance["message"]
+            }) 
     
     def get_attendance(self,request):
         start_date=request.data.get("start_date")
