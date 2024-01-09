@@ -121,15 +121,15 @@ const JobApplicationScreen = () => {
       .then((res) => {
         const speedTestResults = res.data.response.filter(
           (item) =>
-            new Date(item.DATETIME).toDateString() === new Date().toDateString()
+            new Date(item.details.date).toDateString() === new Date().toDateString()
         );
 
         const matchingSpeedResult = speedTestResults.find(
           (item) =>
-            Number(item.UPLOAD.split(" Mbps")[0]) >= 100 &&
-            Number(item.DOWNLOAD.split(" Mbps")[0]) >= 100 &&
-            Number(item.JITTER.split(" Mbps")[0]) <= 30 &&
-            Number(item.LATENCY.split(" Mbps")[0]) <= 50
+            Number(item.details.upload.split(" Mbps")[0]) >= 100 &&
+            Number(item.details.download.split(" Mbps")[0]) >= 100 &&
+            Number(item.details.jitter.split(" Mbps")[0]) <= 30 &&
+            Number(item.details.latency.split(" Mbps")[0]) <= 50
         );
 
         if (speedTestResults.length < 1) {
@@ -140,11 +140,11 @@ const JobApplicationScreen = () => {
             type: newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED,
             payload: {
               stateToChange: mutableNewApplicationStateNames.internet_speed,
-              value: matchingSpeedResult.DOWNLOAD,
+              value: matchingSpeedResult.details.download,
             },
           });
         }
-        console.log(res.data.response[0].DOWNLOAD);
+        console.log(res.data.response[0].details);
       })
       .catch((error) => {
         console.log(error);
