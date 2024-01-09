@@ -1,0 +1,46 @@
+.card__Tile {
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-radius: 12px;
+    border-top: 4px solid #404958;
+    border-right: 0.2px solid #404958;
+    border-bottom: 0.2px solid #404958;
+    border-left: 0.2px solid #404958;
+    width: max-content;
+    padding: 0.7rem 1.2rem;
+    min-width: 15rem;
+    max-width: 20rem;
+}
+
+.title {
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.designation {
+    border-radius: 20px;
+    background-color: #ff0000;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+}
+
+.dash__Wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trail__dash {
+    background-color: #aaa;
+    width: 1px !important;
+}
+
+.trail__dash {
+    height: 2.5rem;
+}

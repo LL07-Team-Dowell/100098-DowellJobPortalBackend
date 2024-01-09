@@ -50,7 +50,7 @@ export const adminNavigationLinks = [
         text: "Applications",
       },
       {
-        linkAddress: "/",
+        linkAddress: "/company-structure",
         icon: <PiTreeStructure />,
         text: "Company Structure",
       },

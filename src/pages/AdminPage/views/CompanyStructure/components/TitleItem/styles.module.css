@@ -1,0 +1,31 @@
+.title__Item__Wrap {
+    border-radius: 12px;
+    background: #404958;
+    width: max-content;
+    padding: 0.7rem 2rem;
+    color: #fff;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dash__Wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lead__dash,
+.trail__dash {
+    background-color: #aaa;
+    width: 1px !important;
+}
+
+.trail__dash {
+    height: 0.5rem;
+}
+
+.lead__dash {
+    height: 1.2rem;
+}

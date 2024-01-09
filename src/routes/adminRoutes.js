@@ -6,6 +6,7 @@ import AllApplicationsScreen from "../pages/AdminPage/views/AdminDashboard/views
 import AdminUserScreen from "../pages/AdminPage/views/AdminUserScreen/AdminUserScreen";
 import AdminAgendaPage from "../pages/AdminPage/views/Agenda/AdminAgendaPage";
 import AgendaReport from "../pages/AdminPage/views/Agenda/AgendaReportPage/AgendaReport";
+import CompanyStructurePage from "../pages/AdminPage/views/CompanyStructure/CompanyStructure";
 import EditJob from "../pages/AdminPage/views/EditJob/EditJob";
 import LandingPage from "../pages/AdminPage/views/Landingpage/LandingPage";
 import AdminLogsHomePage from "../pages/AdminPage/views/LogsHomePage/LogsHomePage";
@@ -194,6 +195,10 @@ export const mainAdminRoutesInfo = [
   {
     path: "/all-applications",
     component: AllApplicationsScreen,
+  },
+  {
+    path: "/company-structure",
+    component: CompanyStructurePage,
   },
   {
     path: "/logout",
