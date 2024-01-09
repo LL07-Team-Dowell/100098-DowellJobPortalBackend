@@ -2592,7 +2592,7 @@ class task_module(APIView):
             return self.handle_error(request)
 
     @verify_user_token
-    def add_task(self, request):
+    def add_task(self,request,user):
         data = request.data
         payload = {
             "project": data.get("project"),
