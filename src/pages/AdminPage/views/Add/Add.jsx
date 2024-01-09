@@ -78,57 +78,6 @@ const Add = () => {
       window.history.replaceState({}, "/100098-DowellJobPortal/#/add");
     }
 
-    if (!projectsLoaded) {
-      getSettingUserProject()
-        .then((res) => {
-          setProjectsLoading(false);
-          setProjectsLoaded(true);
-
-          const projectsGotten = res.data
-            ?.filter(
-              (project) =>
-                project?.data_type ===
-                  currentUser.portfolio_info[0].data_type &&
-                project?.company_id === currentUser.portfolio_info[0].org_id &&
-                project.project_list &&
-                project.project_list.every(
-                  (listing) => typeof listing === "string"
-                )
-            )
-            ?.reverse();
-
-          if (projectsGotten.length < 1) return;
-
-          setProjectsAdded(projectsGotten);
-        })
-        .catch((err) => {
-          console.log(err);
-          setProjectsLoading(false);
-        });
-    }
-
-    if (!subProjectsLoaded) {
-      getSettingUserSubProject()
-        .then((res) => {
-          setSubProjectsLoading(false);
-          setSubProjectsLoaded(true);
-
-          setSubProjectsAdded(
-            res.data?.data
-              ?.filter(
-                (item) =>
-                  item.company_id === currentUser.portfolio_info[0].org_id &&
-                    item.data_type === currentUser.portfolio_info[0].data_type
-              )
-              .reverse()
-          );
-        })
-        .catch((err) => {
-          console.log(err);
-          setSubProjectsLoading(false);
-        });
-    }
-
     if (currentUser?.userportfolio?.length > 0) return;
 
     const currentSessionId = sessionStorage.getItem("session_id");

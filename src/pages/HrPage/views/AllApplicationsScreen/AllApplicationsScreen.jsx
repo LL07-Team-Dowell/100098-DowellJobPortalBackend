@@ -54,34 +54,6 @@ const HrAllApplicationsScreen = () => {
                 console.log('Failed to get applications for admin');
             })
         }
-        if (!projectsLoaded) {
-            setProjectsLoading(true);
-
-            getSettingUserProject().then(res => {
-                const projectsGotten = res?.data
-                ?.filter(
-                  (project) =>
-                    project?.data_type === currentUser?.portfolio_info[0]?.data_type &&
-                    project?.company_id === currentUser?.portfolio_info[0]?.org_id &&
-                    project.project_list &&
-                    project.project_list.every(
-                      (listing) => typeof listing === "string"
-                    )
-                )
-                ?.reverse()
-        
-                if (projectsGotten.length > 0) {
-                    setProjectsAdded(projectsGotten);
-                }
-                
-                setProjectsLoading(false);
-                setProjectsLoaded(true);
-
-            }).catch(err => {
-                console.log('Failed to get projects for admin');
-                setProjectsLoading(false);
-            })
-        }
     }, [])
 
     const incrementStepPagination = (steps, length) => {

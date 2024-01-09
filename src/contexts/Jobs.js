@@ -1,4 +1,7 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useCurrentUserContext } from "./CurrentUserContext";
+import { getSettingUserProject } from "../services/hrServices";
+import { getSettingUserSubProject } from "../services/adminServices";
 
 const JobContext = createContext();
 
@@ -35,6 +38,64 @@ export const JobContextProvider = ({ children }) => {
     datasets: [],
     labels: []
   });
+
+  const { currentUser } = useCurrentUserContext();
+
+  useEffect(() => {
+    if (!currentUser) return
+
+    if (!projectsLoaded) {
+      getSettingUserProject()
+        .then((res) => {
+          setProjectsLoading(false);
+          setProjectsLoaded(true);
+
+          const projectsGotten = res.data
+            ?.filter(
+              (project) =>
+                project?.data_type ===
+                  currentUser.portfolio_info[0].data_type &&
+                project?.company_id === currentUser.portfolio_info[0].org_id &&
+                project.project_list &&
+                project.project_list.every(
+                  (listing) => typeof listing === "string"
+                )
+            )
+            ?.reverse();
+
+          if (projectsGotten.length < 1) return;
+
+          setProjectsAdded(projectsGotten);
+        })
+        .catch((err) => {
+          console.log(err);
+          setProjectsLoading(false);
+        });
+    }
+
+    if (!subProjectsLoaded) {
+      getSettingUserSubProject()
+        .then((res) => {
+          setSubProjectsLoading(false);
+          setSubProjectsLoaded(true);
+
+          setSubProjectsAdded(
+            res.data?.data
+              ?.filter(
+                (item) =>
+                  item.company_id === currentUser.portfolio_info[0].org_id &&
+                    item.data_type === currentUser.portfolio_info[0].data_type
+              )
+              .reverse()
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+          setSubProjectsLoading(false);
+        });
+    }
+
+  }, [currentUser])
 
   return (
     <JobContext.Provider
