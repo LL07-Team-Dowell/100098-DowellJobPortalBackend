@@ -1,13 +1,7 @@
 import "./App.css";
 import "react-tooltip/dist/react-tooltip.css";
 import { Route, Routes } from "react-router-dom";
-import MainPage from "./pages/MainPage/MainPage";
 import ResearchAssociatePage from "./pages/CandidatePage/views/ResearchAssociatePage/ResearchAssociatePage";
-import AdminPage from "./pages/AdminPage/AdminPage";
-import AddJob from "./pages/AdminPage/views/AddJob/AddJob";
-import ViewJob from "./pages/AdminPage/views/ViewJob/ViewJob";
-import EditJob from "./pages/AdminPage/views/EditJob/EditJob";
-import LandingPage from "./pages/AdminPage/views/Landingpage/LandingPage";
 import React, { useState } from "react";
 import useDowellLogin from "./hooks/useDowellLogin";
 import useTitle from "./hooks/useTitle";
@@ -34,19 +28,13 @@ import AppliedScreen from "./pages/CandidatePage/views/AppliedPageScreen/Applied
 import HrJobScreen from "./pages/HrPage/views/JobScreen/HrJobScreen";
 import Teamlead from "./pages/TeamleadPage/Teamlead";
 import AccountPage from "./pages/AccountPage/AccountPage";
-import LoadingSpinner from "./components/LoadingSpinner/LoadingSpinner";
 import { JobContextProvider } from "./contexts/Jobs";
-import AdminUserScreen from "./pages/AdminPage/views/AdminUserScreen/AdminUserScreen";
 import AdminReports from "./pages/AdminPage/views/Reports/Reports";
-import AdminSettings from "./pages/AdminPage/views/Settings/AdminSettings";
-import AdminTeam from "./pages/AdminPage/views/Teams/AdminTeam";
 import RedirectPage from "./pages/Redirectpage/redirect";
 import { testingRoles } from "./utils/testingRoles";
 import LoadingPage from "./pages/LoadingPage/LoadingPage";
-import HrTasks from "./pages/HrPage/views/Tasks/HrTasks";
 import CreateTaskScreen from "./pages/TeamleadPage/views/CreateTaskScreen/CreateTaskScreen";
 import { HrJobScreenAllTasksContextProvider } from "./contexts/HrJobScreenAllTasks";
-import HrTrainingQuestions from "./pages/HrPage/views/HrTrainingScreen/HrTrainingQuestion";
 import CandidateTranningScreen from "./pages/CandidatePage/views/CandidateTranningScreen/CandidateTranningScreen";
 import TraningProgress from "./pages/CandidatePage/views/TraningProgress.js/TraningProgress";
 import { ResponsesContextProvider } from "./contexts/Responses";
@@ -67,48 +55,34 @@ import JobLandingLayout from "./layouts/CandidateJobLandingLayout/LandingLayout"
 import TeamThread from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
 import Payment from "./pages/AccountPage/Payment";
-import Add from "./pages/AdminPage/views/Add/Add";
 import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThreadScreen";
 import GroupLeadTask from "./pages/GroupLeadPage/components/GroupLeadTask";
-import { ClaimVouchar } from "./pages/TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
 import TaskScreen from "./pages/TeamleadPage/views/TaskScreen/TaskScreen";
-import ReportPages from "./pages/AdminPage/views/Reports/reportspages/ReportPages";
 import DetailedIndividual from "./pages/AdminPage/views/Reports/detailedIndividual/DetailedIndividual";
 import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
-import IndividualTaskReports from "./pages/AdminPage/views/Reports/individualTaskReport/individualTaskReport";
 import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
 import { reportOptionsPermitted } from "./components/ShareJobModal/ShareJobModal";
 import LeaderboardReport from "./pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
-import WorkLogRequest from "./pages/TeamleadPage/views/WorkLogRequest/WorkLogRequest";
 import WorkLogRequestCandidate from "./pages/CandidatePage/views/WorkLogRequest/WorkLogRequest";
 import { teamManagementProductName } from "./utils/utils";
 import LogRequest from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestNav";
-import ProjectLeadHomePage from "./pages/ProjectLeadPage/views/HomePage/HomePage";
-import ProjectLeadReportsLandingPage from "./pages/ProjectLeadPage/views/ReportsPage/ReportsLandingPage";
-import ProjectLeadTeams from "./pages/ProjectLeadPage/views/TeamsPage/TeamsLandingPage";
-import ProjectLeadUserScreen from "./pages/ProjectLeadPage/views/UserScreen/UserScreen";
-import TeamInfo from "./components/TeamInfo/TeamInfo";
 import TeamScreenInfoAdminTeamLead from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamScreenInfo";
 import TeamInfoCandidate from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamInfoCandidate/TeamInfoCandidate";
-import AdminLogsHomePage from "./pages/AdminPage/views/LogsHomePage/LogsHomePage";
 import CandidateRemovedScreen from "./pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
-import AdminDashboard from "./pages/AdminPage/views/AdminDashboard/AdminDashboard";
-import AllApplicationsScreen from "./pages/AdminPage/views/AdminDashboard/views/AllApplicationsScreen/AllApplicationsScreen";
 import WorkLogRequestGrouplead from "./pages/GroupLeadPage/views/WorklogRequests/WorkLogRequest";
 import LogRequestLanding from "./pages/TeamleadPage/views/WorkLogRequest/LogRequestLanding";
 import WorkLogRequestTeamLead from "./pages/TeamleadPage/views/WorkLogRequest/WorklogRequestTeamLead";
-import ProjectLogRequest from "./pages/ProjectLeadPage/views/LogRequests/ProjectLogRequest";
 import GroupleadAgendaLanding from "./pages/GroupLeadPage/views/Agenda/AgendaLanding";
 import NewGroupleadAgenda from "./pages/GroupLeadPage/views/Agenda/NewAgenda";
 import GroupleadTrackAgenda from "./pages/GroupLeadPage/views/Agenda/TrackAgenda";
 import CandidateRenewContract from "./pages/CandidatePage/views/CandidateRenewContract/CandidateRenewContract";
-import ProjectLeadAgendaPage from "./pages/ProjectLeadPage/views/Agenda/ProjectLeadAgendaPage";
 import TeamLeadAgendaPage from "./pages/TeamleadPage/views/Agenda/TeamLeadAgendaPage";
-import AdminAgendaPage from "./pages/AdminPage/views/Agenda/AdminAgendaPage";
-import AgendaReport from "./pages/AdminPage/views/Agenda/AgendaReportPage/AgendaReport";
 import AttendanceReport from "./pages/HrPage/views/AttendanceReport/AttendanceReport";
 import HrAllApplicationsScreen from "./pages/HrPage/views/AllApplicationsScreen/AllApplicationsScreen";
+import CompanyStructureContextProvider from "./contexts/CompanyStructureContext";
+import { mainAdminRoutesInfo } from "./routes/adminRoutes";
+import { projectLeadRoutesInfo } from "./routes/projectLeadRoutes";
 
 function App() {
   // console.log = () => { };
@@ -530,139 +504,22 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route
-          path='/'
-          element={
-            <JobContextProvider>
-              {" "}
-              <AdminDashboard subAdminView={true} />
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/jobs'
-          element={
-            <JobContextProvider>
-              {" "}
-              <LandingPage subAdminView={true} />
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/logout'
-          element={
-            <JobContextProvider>
-              {" "}
-              <Logout />
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/edit-job/:id'
-          element={
-            <JobContextProvider>
-              <EditJob subAdminView={true} />
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/view-job/:id'
-          element={
-            <JobContextProvider>
-              <ViewJob />
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/add-job'
-          element={
-            <JobContextProvider>
-              <AddJob subAdminView={true} />
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/user'
-          element={
-            <JobContextProvider>
-              <AdminUserScreen subAdminView={true} />
-            </JobContextProvider>
-          }
-        />
-
-        <Route
-          path='/report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <ReportPages subAdminView={true} />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/organization-report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AdminReports subAdminView={true} />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/team-report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <TeamReport subAdminView={true} />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/detailed-individual-report'
-          element={<DetailedIndividual subAdminView={true} />}
-        />
-        <Route
-          path='/report/task-report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <TaskReports subAdminView={true} />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/leaderboard-report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <LeaderboardReport subAdminView={true} />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-
-        <Route
-          path='*'
-          element={
-            <JobContextProvider>
-              <ErrorPage />
-            </JobContextProvider>
-          }
-        />
+        {
+          React.Children.toArray(mainAdminRoutesInfo.map(info => {
+            return <Route 
+              path={info?.path}
+              element={
+                <JobContextProvider>
+                  <CandidateTaskContextProvider>
+                    <ValuesProvider>
+                      <info.component />
+                    </ValuesProvider>
+                  </CandidateTaskContextProvider>
+                </JobContextProvider>
+              }
+            />
+          }))
+        }
       </Routes>
     );
   }
@@ -685,403 +542,26 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route
-          path='/'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AdminDashboard />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/jobs'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <LandingPage />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/logout'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <Logout />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/edit-job/:id'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <EditJob />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/view-job/:id'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <ViewJob />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/add-job'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AddJob />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/add'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <Add />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/user'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AdminUserScreen />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <ReportPages />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/agenda'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AdminAgendaPage />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/organization-report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AdminReports />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/agenda-report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AgendaReport />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/team-report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <TeamReport />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/detailed-individual-report'
-          element={<DetailedIndividual />}
-        />
-        <Route
-          path='/report/task-report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <TaskReports />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/individual-task-report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <IndividualTaskReports />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/leaderboard-report'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <LeaderboardReport />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/report/task-report'
-          element={
-            <>
-              <h1>Task report</h1>
-            </>
-          }
-        />
-        <Route
-          path='/report/individual-task-report'
-          element={
-            <>
-              <h1>Individual task report</h1>
-            </>
-          }
-        />
-        <Route
-          path='/teams'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AdminTeam />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/teams/create-new-team/'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <StaffJobLandingLayout
-                  adminView={true}
-                  pageTitle={"New Team"}
-                  adminAlternativePageActive={true}
-                  hideSearchBar={true}
-                  newSidebarDesign={true}
-                >
-                  <ValuesProvider>
-                    <CreateTeam isAdmin={true} />
-                  </ValuesProvider>
-                </StaffJobLandingLayout>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/team-screen-member/:id/team-members'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <StaffJobLandingLayout
-                  adminView={true}
-                  hideSearchBar={true}
-                  adminAlternativePageActive={true}
-                  pageTitle={"Teams"}
-                  newSidebarDesign={true}
-                >
-                  <TeamProvider>
+        {
+          React.Children.toArray(mainAdminRoutesInfo.map(info => {
+            return <Route 
+              path={info?.path}
+              element={
+                <JobContextProvider>
+                  <CandidateTaskContextProvider>
                     <ValuesProvider>
-                      <TeamScreenMembers />
+                      <TeamProvider>
+                        <CompanyStructureContextProvider>
+                          <info.component />
+                        </CompanyStructureContextProvider>
+                      </TeamProvider>
                     </ValuesProvider>
-                  </TeamProvider>
-                </StaffJobLandingLayout>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/team-screen-member/:id/team-info'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <StaffJobLandingLayout
-                  adminView={true}
-                  hideSearchBar={true}
-                  adminAlternativePageActive={true}
-                  pageTitle={"Teams"}
-                  newSidebarDesign={true}
-                >
-                  <TeamProvider>
-                    <ValuesProvider>
-                      <TeamScreenInfoAdminTeamLead />
-                    </ValuesProvider>
-                  </TeamProvider>
-                </StaffJobLandingLayout>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-
-        <Route
-          path='/team-screen-member/:id/team-tasks'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <StaffJobLandingLayout
-                  adminView={true}
-                  hideSearchBar={true}
-                  adminAlternativePageActive={true}
-                  pageTitle={"Teams"}
-                  newSidebarDesign={true}
-                >
-                  <TeamProvider>
-                    <ValuesProvider>
-                      <TeamScreenTasks />
-                    </ValuesProvider>
-                  </TeamProvider>
-                </StaffJobLandingLayout>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/team-screen-member/:id/team-issues'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <StaffJobLandingLayout
-                  adminView={true}
-                  hideSearchBar={true}
-                  adminAlternativePageActive={true}
-                  pageTitle={"Teams"}
-                  newSidebarDesign={true}
-                >
-                  <TeamProvider>
-                    <ValuesProvider>
-                      <TeamThread />
-                    </ValuesProvider>
-                  </TeamProvider>
-                </StaffJobLandingLayout>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-        <Route
-          path='/settings'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AdminSettings />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-
-        <Route
-          path='/logs'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AdminLogsHomePage />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-
-        <Route
-          path='/new-task-screen'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <CreateTaskScreen isAdmin={true} />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-
-        <Route
-          path='/all-applications'
-          element={
-            <JobContextProvider>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <AllApplicationsScreen />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </JobContextProvider>
-          }
-        />
-
-        <Route
-          path='*'
-          element={
-            <JobContextProvider>
-              <CandidateContextProvider>
-                <ValuesProvider>
-                  <ErrorPage />
-                </ValuesProvider>
-              </CandidateContextProvider>
-            </JobContextProvider>
-          }
-        />
+                  </CandidateTaskContextProvider>
+                </JobContextProvider>
+              }
+            />
+          }))
+        }
       </Routes>
     );
   }
@@ -1671,172 +1151,22 @@ function App() {
   ) {
     return (
       <Routes>
-        <Route
-          path='/'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <ProjectLeadHomePage />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path='/log-requests'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <ProjectLogRequest />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path='/agenda'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <ProjectLeadAgendaPage />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path='/new-task-screen'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <CreateTaskScreen isProjectLead={true} />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path='/report'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <ProjectLeadReportsLandingPage />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path='/report/team-report'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <TeamReport isProjectLead={true} />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path='/report/detailed-individual-report'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <DetailedIndividual isProjectLead={true} />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path='/report/task-report'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <TaskReports isProjectLead={true} />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path='/report/leaderboard-report'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <LeaderboardReport isProjectLead={true} />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path='/teams'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <ProjectLeadTeams />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route
-          path='/teams/create-new-team/'
-          element={
-            <StaffJobLandingLayout projectLeadView={true} hideSearchBar={true}>
-              <CandidateTaskContextProvider>
-                <ValuesProvider>
-                  <CreateTeam />
-                </ValuesProvider>
-              </CandidateTaskContextProvider>
-            </StaffJobLandingLayout>
-          }
-        />
-        <Route
-          path='/team-screen-member/:id/team-members'
-          element={
-            <StaffJobLandingLayout projectLeadView={true} hideSearchBar={true}>
-              <CandidateTaskContextProvider>
-                <TeamProvider>
+        {
+          React.Children.toArray(projectLeadRoutesInfo.map(item => {
+            return <Route 
+              path={item?.path}
+              element={
+                <CandidateTaskContextProvider>
                   <ValuesProvider>
-                    <TeamScreenMembers />
+                    <TeamProvider>
+                      <item.component />
+                    </TeamProvider>
                   </ValuesProvider>
-                </TeamProvider>
-              </CandidateTaskContextProvider>
-            </StaffJobLandingLayout>
-          }
-        />
-
-        <Route
-          path='/team-screen-member/:id/team-tasks'
-          element={
-            <StaffJobLandingLayout projectLeadView={true} hideSearchBar={true}>
-              <CandidateTaskContextProvider>
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamScreenTasks />
-                  </ValuesProvider>
-                </TeamProvider>
-              </CandidateTaskContextProvider>
-            </StaffJobLandingLayout>
-          }
-        />
-        <Route
-          path='/team-screen-member/:id/team-issues'
-          element={
-            <StaffJobLandingLayout projectLeadView={true} hideSearchBar={true}>
-              <CandidateTaskContextProvider>
-                <TeamProvider>
-                  <ValuesProvider>
-                    <TeamThread />
-                  </ValuesProvider>
-                </TeamProvider>
-              </CandidateTaskContextProvider>
-            </StaffJobLandingLayout>
-          }
-        />
-        <Route
-          path='/user'
-          element={
-            <CandidateTaskContextProvider>
-              <ValuesProvider>
-                <ProjectLeadUserScreen />
-              </ValuesProvider>
-            </CandidateTaskContextProvider>
-          }
-        />
-        <Route path='*' element={<ErrorPage />} />
+                </CandidateTaskContextProvider>
+              }
+            />
+          }))
+        }
       </Routes>
     );
   }
