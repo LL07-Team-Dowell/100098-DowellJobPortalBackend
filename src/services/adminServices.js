@@ -189,3 +189,11 @@ export const adminDeleteApplication = async (data) => {
 export const adminLeaveApplication = async (type, data) => {
   return await currentBackendAxiosInstance.post(`/candidate_leave_apply/?type=${type}`, data)
 }
+
+export const getCompanyStructure = async (companyId) => {
+  return await currentBackendAxiosInstance.get(`/get_company_structure/${companyId}/`)
+}
+
+export const updateCompanyStructure = async (type, data) => {
+  return await currentBackendAxiosInstance.post(`/insert_company_structure/?type=${type}`, data)
+}
