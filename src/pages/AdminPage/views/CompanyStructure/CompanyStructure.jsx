@@ -11,6 +11,7 @@ import Select from "react-select";
 import TitleItem from "./components/TitleItem/TitleItem";
 import { testCompanyData } from "./utils/testData";
 import CardTile from "./components/CardTile/CardTile";
+import UserIconsInfo from "./components/UsersIconsInfo/UserIconsInfo";
 
 
 
@@ -125,28 +126,9 @@ const CompanyStructurePage = () => {
                             </p>
                         </div>
                     </div>
-                    <div className={styles.nav__Users__Content}>
-                        <>
-                            {
-                                React.Children.toArray(
-                                    onboardedUsers?.slice(0, 3)?.map(application => {
-                                        return <EmployeeItem 
-                                            item={application} 
-                                            isImageItem={true}
-                                        />
-                                    })
-                                )
-                            }
-                        </>
-                        {
-                            onboardedUsers?.slice(3)?.length > 0 ?
-                                <EmployeeItem 
-                                    item={`+${onboardedUsers?.slice(3)?.length}`}
-                                />
-                            :
-                            <></>
-                        }
-                    </div>
+                    <UserIconsInfo 
+                        items={onboardedUsers}
+                    />
                 </div>
                 <div className={styles.project__Select}>
                     <div>
