@@ -9,11 +9,7 @@ export default function EmployeeItem ({ item, isImageItem }) {
                 isImageItem ? 
                     <Avatar
                         name={
-                            item?.applicant.slice(0, 1) +
-                            " " +
                             item?.applicant
-                            .split(" ")
-                            [item?.applicant.split(" ").length - 1]?.slice(0, 1)
                         }
                         round={true}
                         size='3rem'

@@ -21,11 +21,7 @@ export default function CardTile ({
         <div className={styles.card__Tile}>
             <Avatar
                 name={
-                    tileName?.slice(0, 1) +
-                    " " +
                     tileName
-                    ?.split(" ")
-                    [tileName?.split(" ").length - 1]?.slice(0, 1)
                 }
                 round={true}
                 size='3rem'

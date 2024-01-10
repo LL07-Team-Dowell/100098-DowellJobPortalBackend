@@ -15,8 +15,6 @@ import CardTile from "./components/CardTile/CardTile";
 
 
 const CompanyStructurePage = () => {
-    let projectRefIsRendered = false;
-
     const {
         applications,
         setApplications,
@@ -27,7 +25,7 @@ const CompanyStructurePage = () => {
     } = useJobContext();
     const { currentUser } = useCurrentUserContext();
     const [ copyOfStructureData, setCopyOfStructureData ] = useState(null);
-    const [ widthOfProjectConnector, setWidthOrProjectConnector ] = useState('100%');
+    const [ widthOfProjectConnector, setWidthOfProjectConnector ] = useState('100%');
     const [ onboardedUsers, setOnboardedUsers ] = useState([]);
     const [ searchProjectVal, setSearchProjectVal ] = useState('');
     const [ showSearchResult, setShowSearchResult ] = useState(false);
@@ -60,10 +58,16 @@ const CompanyStructurePage = () => {
             })
         }
 
+    }, [])
+
+    useEffect(() => {
+        let projectRefIsRendered = false;
+
         const checkProjectRefIsRendered = setInterval(() => {
+
             if (!projectWrapperRef.current || projectRefIsRendered || !projectsLoaded || !copyOfStructureData) return
 
-            setWidthOrProjectConnector(`${projectWrapperRef.current.scrollWidth}px`);
+            setWidthOfProjectConnector(`${projectWrapperRef.current.scrollWidth}px`);
             projectRefIsRendered = true;
         }, 2000)
 
@@ -71,7 +75,7 @@ const CompanyStructurePage = () => {
             clearInterval(checkProjectRefIsRendered)
         })
 
-    }, [])
+    }, [copyOfStructureData, projectsLoaded])
 
     useEffect(() => {
         setOnboardedUsers(
