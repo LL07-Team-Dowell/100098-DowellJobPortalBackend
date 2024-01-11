@@ -367,18 +367,17 @@ const StaffJobLandingLayout = ({
           )}
 
           {adminView && showShareModalForJob && (
-            // <ShareJobModal
-            //   linkToShareObj={jobLinkToShareObj}
-            //   handleCloseModal={
-            //     handleCloseShareJobModal &&
-            //       typeof handleCloseShareJobModal === "function"
-            //       ? () => handleCloseShareJobModal()
-            //       : () => { }
-            //   }
-            //   isProductLink={isProductLink}
-            //   isReportLink={isReportLink}
-            // />
-            <ProjectTimeModal handleCloseModal />
+            <ShareJobModal
+              linkToShareObj={jobLinkToShareObj}
+              handleCloseModal={
+                handleCloseShareJobModal &&
+                  typeof handleCloseShareJobModal === "function"
+                  ? () => handleCloseShareJobModal()
+                  : () => { }
+              }
+              isProductLink={isProductLink}
+              isReportLink={isReportLink}
+            />
           )}
 
           {hrView && showPublicAccountConfigurationModal && (
