@@ -60,7 +60,7 @@ export const adminNavigationLinks = [
         text: "Jobs",
       },
       {
-        linkAddress: "/add",
+        linkAddress: "/projects",
         icon: <GoTasklist />,
         text: "Projects",
       },
