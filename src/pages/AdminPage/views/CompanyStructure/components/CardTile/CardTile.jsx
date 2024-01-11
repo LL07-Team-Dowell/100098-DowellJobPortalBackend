@@ -7,6 +7,7 @@ export default function CardTile ({
     tileColor,
     hasTrailingDash,
     hasLeadingDash,
+    longDash,
     isClickable,
     tileHasChildren,
     hasSingleChild,
@@ -15,7 +16,7 @@ export default function CardTile ({
     
         {
             hasLeadingDash && <div className={styles.dash__Wrap}>
-                <div className={styles.trail__dash}></div>
+                <div className={`${styles.trail__dash} ${longDash ? styles.long__Dash : ''}`}></div>
             </div>
         }
         <div className={styles.card__Tile}>
@@ -49,7 +50,7 @@ export default function CardTile ({
         </div>
         {
             hasTrailingDash && <div className={styles.dash__Wrap}>
-                <div className={styles.trail__dash}></div>
+                <div className={`${styles.trail__dash} ${longDash ? styles.long__Dash : ''}`}></div>
             </div>
         }
     </>

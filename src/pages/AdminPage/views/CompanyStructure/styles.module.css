@@ -89,6 +89,7 @@
     width: 100%;
     padding: 5rem 1.5rem;
     border-radius: 10px;
+    position: relative;
 }
 
 .structure__Display::-webkit-scrollbar {
@@ -112,6 +113,12 @@
     margin-left: auto;
     margin-right: auto;
     display: block;
+}
+
+.edit__Btn {
+    position: absolute;
+    right: 3%;
+    top: 4%;
 }
 
 .ceo__Item__Wrap {

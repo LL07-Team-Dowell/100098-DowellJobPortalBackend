@@ -128,6 +128,7 @@ const CompanyStructurePage = () => {
                     </div>
                     <UserIconsInfo 
                         items={onboardedUsers}
+                        numberOfIcons={3}
                     />
                 </div>
                 <div className={styles.project__Select}>
@@ -181,6 +182,9 @@ const CompanyStructurePage = () => {
                             </button>
                         :
                         <>
+                            <button className={`${styles.result__Btn} ${styles.configure__Btn} ${styles.edit__Btn}`}>
+                                <span>Edit structure</span>
+                            </button>
                             <div className={styles.ceo__Item__Wrap}>
                                 <TitleItem 
                                     title={'Company CEO'}
@@ -268,6 +272,7 @@ const CompanyStructurePage = () => {
                                                         :
                                                         null   
                                                     }
+                                                    longDash={true}
                                                 />
                                                 
                                                 {/* <div className={styles.group_leads__Wrap}>
