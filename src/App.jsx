@@ -83,6 +83,7 @@ import HrAllApplicationsScreen from "./pages/HrPage/views/AllApplicationsScreen/
 import CompanyStructureContextProvider from "./contexts/CompanyStructureContext";
 import { mainAdminRoutesInfo } from "./routes/adminRoutes";
 import { projectLeadRoutesInfo } from "./routes/projectLeadRoutes";
+import HrAgendaPage from "./pages/HrPage/views/Agenda/HrTrackAgenda";
 
 function App() {
   // console.log = () => { };
@@ -582,6 +583,16 @@ function App() {
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
                 <AttendanceReport />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
+        <Route
+          path='/agenda-report'
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <HrAgendaPage />
               </ValuesProvider>
             </HrJobScreenAllTasksContextProvider>
           }

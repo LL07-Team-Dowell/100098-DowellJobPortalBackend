@@ -4,7 +4,7 @@ export const getJobs2 = async (data) => {
     return await currentBackendAxiosInstance.get(`admin_get_all_jobs/${data.company_id}/`)
 }
 
-export const getAllQuestions = async (company_id)=>{
+export const getAllQuestions = async (company_id) => {
     return await currentBackendAxiosInstance.get(`get_all_question/${company_id}`);
 }
 
@@ -32,7 +32,7 @@ export const getAllCompanyUserSubProject = async (companyId, companyDataType) =>
             resolve(projectForCompany)
         } catch (error) {
             reject({ error })
-        }    
+        }
     })
 }
 
@@ -58,4 +58,8 @@ export const getWeeklyAgenda = async (start, end, subproject, project, data) => 
 
 export const getWorkLogsAddedUnderSubproject = async (company_id, project, subproject, data) => {
     return await currentBackendAxiosInstance.post(`/task_module/?type=get_subproject_tasks&company_id=${company_id}&project=${encodeURIComponent(project)}&subproject=${encodeURIComponent(subproject)}`, data)
+}
+
+export const getSubprojectAgendaAddedDates = async (company_id, subproject) => {
+    return await currentBackendAxiosInstance.get(`/weekly_agenda/?type=agenda_add_date&company_id=${company_id}&subproject_name=${subproject}`)
 }
