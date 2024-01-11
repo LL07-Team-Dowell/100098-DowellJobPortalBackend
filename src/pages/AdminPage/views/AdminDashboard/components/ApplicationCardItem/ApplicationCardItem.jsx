@@ -26,7 +26,7 @@ export default function ApplicationCardItem({ application, loading, greyJobCardC
             }
             <div className={`${loading ? skeletonStyles.skeleton : ''} ${loading ? styles.detail__skeleton : ''} ${styles.detail}`}>
                 <p>
-                    {application?.applicant?.length > 16 ? application?.applicant?.slice(0, 16) + '...' : application?.applicant}
+                    {application?.applicant?.length > 12 ? application?.applicant?.slice(0, 12) + '...' : application?.applicant}
                 </p>
                 <p>
                     {application?.country}
@@ -35,7 +35,7 @@ export default function ApplicationCardItem({ application, loading, greyJobCardC
         </div>
         <div className={`${loading ? skeletonStyles.skeleton : ''} ${loading ? styles.job__skeleton : ''} ${styles.job}`} style={{ backgroundColor: greyJobCardColor ? '#f2f2f2' : 'rgb(225, 251, 226)' }}>
             <p>
-                {application?.job_title?.length >15 ? application?.job_title?.slice(0,15) + '...' : application?.job_title}
+                {application?.job_title?.length > 12 ? application?.job_title?.slice(0, 12) + '...' : application?.job_title}
             </p>
         </div>
         <Tooltip 
