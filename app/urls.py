@@ -52,7 +52,7 @@ urlpatterns = [
         "delete_candidate_application/<str:document_id>/",
         delete_candidate_application.as_view(),
     ),
-    # path("update_candidates_application/",update_candidates_application.as_view()),
+    path("update_candidates_application/",update_candidates_application.as_view()),
     # hr management--------------------------------------------------
     path("hr_shortlisted_candidate/", hr_shortlisted_candidate.as_view()),
     path("hr_selected_candidate/", hr_selected_candidate.as_view()),

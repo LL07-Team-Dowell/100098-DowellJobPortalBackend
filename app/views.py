@@ -111,7 +111,8 @@ from .serializers import (
     CompanyStructureAddProjectLeadSerializer,
     CompanyStructureUpdateProjectLeadSerializer,
     CompanyStructureProjectsSerializer,
-    WorklogsDateSerializer
+    WorklogsDateSerializer,
+    UpdateUserIdSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -1319,6 +1320,64 @@ class delete_candidate_application(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
+        
+    
+@method_decorator(csrf_exempt, name="dispatch")
+class update_candidates_application(APIView):
+    def post(self, request):
+        request_type = request.GET.get("type")
+
+        if request_type == "update_user_id":
+            return self.update_user_id(request)
+        else:
+            return self.handle_error(request)
+    def update_user_id(self,request):
+        application_id=request.data.get("application_id")
+        user_id=request.data.get("user_id")    
+        field = {"_id": application_id}
+        
+        update_field = {"user_id":user_id}
+
+        serializer=UpdateUserIdSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "error":serializer.errors
+            })    
+
+        try:
+            response = dowellconnection(
+                *candidate_management_reports, "update", field, update_field
+            )
+            
+        except:
+            return Response({
+                "success":False,
+                "error":"No response from Dowell connection"
+            
+            })
+
+        if json.loads(response)["isSuccess"] == True:
+            return Response(
+                {   
+                    "success":True,
+                    "message": f"Candidate of application id {application_id} has been updated with {update_field}",
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {
+                    "message": f"There are no job applications with the apllication id {application_id}",
+                    "response": json.loads(response),
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 # api for candidate management ends here______________________
 
