@@ -10790,7 +10790,7 @@ class Company_Structure(APIView):
             "project_lead_id":project_lead_id,
             "data_type":"Real_Data"
         }
-        res = res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
         #if ceo exists update else insert it
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
