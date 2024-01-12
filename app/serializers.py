@@ -791,3 +791,11 @@ class UpdateUserIdSerializer(serializers.Serializer):
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
     application_id=serializers.CharField(max_length=255,allow_null=False)
+
+
+class WorklogsDateSerializer(serializers.Serializer):
+    company_id=serializers.CharField(max_length=255,allow_null=False)
+    user_id=serializers.CharField(max_length=255,allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
