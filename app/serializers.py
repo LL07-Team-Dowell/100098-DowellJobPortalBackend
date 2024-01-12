@@ -2,7 +2,12 @@ from rest_framework import serializers
 from .models import *
 import json
 
-
+DATA_TYPE_CHOICE = (
+        ("Real_Data", "Real_Data"),
+        ("Learning_Data", "Learning_Data"),
+        ("Testing_Data", "Testing_Data"),
+        ("Archived_Data", "Archived_Data"),
+    )
 # account serializers__________________________________________________________________________
 class AccountSerializer(serializers.Serializer):
     DATA_TYPE_CHOICE = (
@@ -778,3 +783,19 @@ class CompanyStructureProjectsSerializer(serializers.Serializer):
     team_lead = serializers.CharField(max_length=255,allow_null=True, required=False)
     members=serializers.ListField(allow_null=True, required=False)
     group_leads=serializers.ListField(allow_null=True, required=False)
+
+
+class UpdateUserIdSerializer(serializers.Serializer):
+    user_id=serializers.CharField(max_length=255,allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+    application_id=serializers.CharField(max_length=255,allow_null=False)
+
+
+class WorklogsDateSerializer(serializers.Serializer):
+    company_id=serializers.CharField(max_length=255,allow_null=False)
+    user_id=serializers.CharField(max_length=255,allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
