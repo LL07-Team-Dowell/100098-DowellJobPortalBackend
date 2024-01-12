@@ -110,7 +110,9 @@ from .serializers import (
     CompanyStructureUpdateCeoSerializer,
     CompanyStructureAddProjectLeadSerializer,
     CompanyStructureUpdateProjectLeadSerializer,
-    CompanyStructureProjectsSerializer
+    CompanyStructureProjectsSerializer,
+    WorklogsDateSerializer,
+    UpdateUserIdSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -1318,6 +1320,64 @@ class delete_candidate_application(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
+        
+    
+@method_decorator(csrf_exempt, name="dispatch")
+class update_candidates_application(APIView):
+    def post(self, request):
+        request_type = request.GET.get("type")
+
+        if request_type == "update_user_id":
+            return self.update_user_id(request)
+        else:
+            return self.handle_error(request)
+    def update_user_id(self,request):
+        application_id=request.data.get("application_id")
+        user_id=request.data.get("user_id")    
+        field = {"_id": application_id}
+        
+        update_field = {"user_id":user_id}
+
+        serializer=UpdateUserIdSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "error":serializer.errors
+            })    
+
+        try:
+            response = dowellconnection(
+                *candidate_management_reports, "update", field, update_field
+            )
+            
+        except:
+            return Response({
+                "success":False,
+                "error":"No response from Dowell connection"
+            
+            })
+
+        if json.loads(response)["isSuccess"] == True:
+            return Response(
+                {   
+                    "success":True,
+                    "message": f"Candidate of application id {application_id} has been updated with {update_field}",
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {
+                    "message": f"There are no job applications with the apllication id {application_id}",
+                    "response": json.loads(response),
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 # api for candidate management ends here______________________
 
@@ -2577,6 +2637,8 @@ class task_module(APIView):
             return self.get_all_task_details(request)
         elif type_request == "get_subproject_tasks":
             return self.get_subproject_tasks(request)
+        elif type_request == "get_worklogs_date":
+            return self.get_worklogs_dates(request)
         else:
             return self.handle_error(request)
 
@@ -3120,6 +3182,73 @@ class task_module(APIView):
                 "task_details": filtered_tasks,
             }
         )
+    @verify_user_token
+    def get_worklogs_dates(self, request, user):
+
+        data = request.data
+        user_id = data.get("user_id")
+        company_id = data.get("company_id")
+        data_type = data.get("data_type")
+        
+        field = {
+            "user_id": user_id,
+            "company_id": company_id,
+            "data_type": data_type
+        }
+
+        serializer = WorklogsDateSerializer(data=field)
+
+        if serializer.is_valid():
+
+            field = {
+                "user_id": user_id,
+                "company_id": company_id,
+                "data_type": data_type,
+            }
+
+            try:
+                response = json.loads(
+                    dowellconnection(
+                        *task_management_reports,
+                        "fetch",
+                        field,
+                        update_field=None,
+                    )
+                )
+
+            except:
+                return Response({
+                    "success":False,
+                    "error":"Dowell Conn. DB not responding"
+                })
+            
+            if response["isSuccess"] == True and len(response["data"])>0:
+
+                worklogs_dates=[date["task_created_date"] for date in response["data"]]
+                
+                return Response(
+                    {
+                        "success": True,
+                        "message": f"worklogs dates of userid {user_id} is successfully retrieved",
+                        "data": worklogs_dates
+                    },
+                    status.HTTP_200_OK,
+                )
+            else:
+                return Response({
+                    "success":False,
+                    "error":f"worklogs dates not found of user {user_id} for company id {company_id} "
+                })
+
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Posting wrong data to API",
+                    "error": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def handle_error(self, request):
         return Response(
@@ -8437,7 +8566,7 @@ class ProjectDetails(APIView):
         db_name= PROJECT_DB_NAME
         coll_name =_date
         query={'company_id':request.GET.get('company_id')} #{"company_id":'6385c0f18eca0fb652c94561'}
-        get_collection = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0,False))
+        get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,0))
         if get_collection['success']==True:
             res= get_collection['data']
             if len(get_collection['data'])>0:
@@ -8487,7 +8616,7 @@ class ProjectDetails(APIView):
             db_name= PROJECT_DB_NAME
             coll_name =_date
             query={'company_id':request.GET.get('company_id')}
-            get_collection = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0,False))
+            get_collection = json.loads(datacube_data_retrival(api_key,db_name,coll_name,query,10,0))
             
             # Process the response_str here or store it in a suitable data structure
             for item in get_collection['data']:
@@ -9413,7 +9542,7 @@ class candidate_leave(APIView):
             "_id": leave_id,
         }
 
-        response = json.loads(datacube_data_retrival_function(API_KEY, DB_Name, leave_report_collection, data=data, limit=limit, offset=offset, payment=False))
+        response = json.loads(datacube_data_retrival(API_KEY, DB_Name, leave_report_collection, data=data, limit=limit, offset=offset))
 
         if not response["success"]:
             return Response({
@@ -9439,7 +9568,7 @@ class candidate_leave(APIView):
         limit = request.GET.get('limit')
         offset = request.GET.get('offset')
 
-        response = json.loads(datacube_data_retrival_function(API_KEY, DB_Name, leave_report_collection, data={}, limit=limit, offset=offset, payment=False))
+        response = json.loads(datacube_data_retrival(API_KEY, DB_Name, leave_report_collection, data={}, limit=limit, offset=offset))
 
         if not response["success"]:
             return Response({
@@ -9525,7 +9654,7 @@ class ReportDB(APIView):
                     'year':year,
                     'company_id':payload['company_id']
                     }
-            get_collection = json.loads(datacube_data_retrival_function(API_KEY,REPORT_DB_NAME,coll_name,query,10,1,False))
+            get_collection = json.loads(datacube_data_retrival(API_KEY,REPORT_DB_NAME,coll_name,query,10,1))
             
             if get_collection['success']==True:
                 if len(get_collection['data'])>0:
@@ -9748,9 +9877,9 @@ class WeeklyAgenda(APIView):
             "_id": document_id,
         }
         response = json.loads(
-            datacube_data_retrival_function(API_KEY, DB_Name, sub_project, data, limit, offset,False)
+            datacube_data_retrival(API_KEY, DB_Name, sub_project, data, limit, offset)
         )
-        # response2 = json.loads(datacube_data_retrival_function(API_KEY,"MetaDataTest","agenda_subtask",data,limit,offset,False))
+        # response2 = json.loads(datacube_data_retrival(API_KEY,"MetaDataTest","agenda_subtask",data,limit,offset))
 
         if not response["success"]:
             return Response(
@@ -9809,7 +9938,7 @@ class WeeklyAgenda(APIView):
 
         # data={}
         response = json.loads(
-            datacube_data_retrival_function(API_KEY, DB_Name, sub_project, data, limit, offset,False)
+            datacube_data_retrival(API_KEY, DB_Name, sub_project, data, limit, offset)
         )
         if not response["success"]:
             return Response(
@@ -10504,7 +10633,6 @@ class Company_Structure(APIView):
             return self.handle_error(request,"'ceo'|'project_leads'|'projects'")
     def add_ceo(self,request, type_request):
         type_request = type_request.replace("add_","")
-        coll_name = type_request
         serializer=CompanyStructureAddCeoSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({
@@ -10515,20 +10643,14 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         company_name = request.data.get("company_name")
         ceo = request.data.get("ceo")
-        c_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"ceo":ceo},10,0,False))
-        if len(c_l['data']) >0:
-            return Response({
-                        "success":False,
-                        "message":f"A ceo with called {ceo} already exists",
-                    },status=status.HTTP_404_NOT_FOUND)
         project_leads = []
-        
+        coll_name = type_request
         search_query ={  
             "company_id":company_id,
             "company_name":company_name,
             "data_type":"Real_Data"
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0))
         #if ceo exists update else insert it
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
@@ -10590,7 +10712,7 @@ class Company_Structure(APIView):
             "data_type":"Real_Data",
             "ceo":previous_ceo,
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0))
         #if ceo exists update else insert it
         if res['success'] == False:
             return Response(res,status=status.HTTP_404_NOT_FOUND)
@@ -10617,7 +10739,6 @@ class Company_Structure(APIView):
     
     def add_project_leads(self, request, type_request):
         type_request = type_request.replace('add_','')
-        coll_name = type_request
         serializer=CompanyStructureAddProjectLeadSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({
@@ -10627,12 +10748,6 @@ class Company_Structure(APIView):
             })
         company_id = request.data.get("company_id")
         project_lead = request.data.get("project_lead")
-        p_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"project_lead":project_lead},10,0,False))
-        if len(p_l['data']) >0:
-            return Response({
-                    "success":False,
-                    "message":f"A project lead with called {project_lead} already exists",
-                },status=status.HTTP_404_NOT_FOUND)
         
         info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':project_lead}, update_field=None))
         #print(info,"===============")
@@ -10645,12 +10760,12 @@ class Company_Structure(APIView):
         project_lead_id = applicant_id
         projects_managed = request.data.get("projects_managed")
         _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
-        
+        coll_name = type_request
         team_lead_reports_to ={}
-        projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{"company_id":company_id},10,0,False))
+        projects = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{"company_id":company_id},10,0))
         if len(projects['data'])>0:
             for p in projects['data']:
-                team_lead_reports_to[p['_coded_project']]=p['teamlead_reports_to']
+                team_lead_reports_to[p['_coded_project']]=p['teamlead_reports_to"']
                 if p['_coded_project'] not in _coded_projects_managed:
                     return Response({
                             "success":False,
@@ -10662,7 +10777,7 @@ class Company_Structure(APIView):
             "project_lead_id":project_lead_id,
             "data_type":"Real_Data"
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        res = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0))
         #if ceo exists update else insert it
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
@@ -10686,7 +10801,7 @@ class Company_Structure(APIView):
             if insert_collection['success']==True:
                 #update the projects team lead reports to list------------------------------
                 p_q ={"company_id":company_id,"_coded_project":projects_managed}
-                projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",p_q,10,0,False))
+                projects = json.loads(datacube_data_retrival(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",p_q,10,0))
                 if len(projects['data'])>0:
                     for p in projects['data']:
                         p=projects['data'][0]
@@ -10706,7 +10821,7 @@ class Company_Structure(APIView):
             else:
                 return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
         elif res['success'] == True:
-            if len(res['data']) >=100:
+            if len(res['data']) >=1:
                 res={"success":False, "message":f"Data with this Project Lead '{project_lead}' already exists."}
                 return Response(res,status=status.HTTP_400_BAD_REQUEST)
             else:
@@ -10720,8 +10835,7 @@ class Company_Structure(APIView):
                         "data_type":"Real_Data"
                     }
                 
-                insert_collection =json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
-                
+                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
                 if insert_collection['success']==True:
                     #update ceos project leads list-----------------------
                     s_q ={
