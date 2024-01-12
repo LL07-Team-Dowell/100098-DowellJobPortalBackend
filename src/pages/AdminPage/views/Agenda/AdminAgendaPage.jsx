@@ -11,7 +11,6 @@ import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner
 import { toast } from "react-toastify";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import DatePicker from "react-datepicker";
-import 'react-datepicker/dist/react-datepicker.module.css';
 
 const AdminAgendaPage = () => {
     const navigate = useNavigate();

@@ -10,7 +10,6 @@ import { getAllCompanyUserSubProject, getWeeklyAgenda, getWorkLogsAddedUnderSubp
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
-import 'react-datepicker/dist/react-datepicker.module.css';
 
 
 const TeamLeadAgendaPage = () => {

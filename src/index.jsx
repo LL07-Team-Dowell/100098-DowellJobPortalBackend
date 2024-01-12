@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { CurrentUserContextProvider } from './contexts/CurrentUserContext';
 import ViewJob from './pages/AdminPage/views/ViewJob/ViewJob';
 import 'react-circular-progressbar/dist/styles.css';
+import 'react-datepicker/dist/react-datepicker.module.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

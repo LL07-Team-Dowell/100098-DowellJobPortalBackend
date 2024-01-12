@@ -136,7 +136,7 @@ const CompanyStructurePage = () => {
                         <p>Project Name</p>
                         <Select 
                             value={{
-                                label: searchProjectVal,
+                                label: searchProjectVal?.length < 1 ? 'Filter by project' : searchProjectVal,
                                 value: searchProjectVal,
                             }}
                             options={
