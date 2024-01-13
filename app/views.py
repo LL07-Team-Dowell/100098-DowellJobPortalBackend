@@ -110,7 +110,9 @@ from .serializers import (
     CompanyStructureUpdateCeoSerializer,
     CompanyStructureAddProjectLeadSerializer,
     CompanyStructureUpdateProjectLeadSerializer,
-    CompanyStructureProjectsSerializer
+    CompanyStructureProjectsSerializer,
+    WorklogsDateSerializer,
+    UpdateUserIdSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -1318,6 +1320,64 @@ class delete_candidate_application(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
+        
+    
+@method_decorator(csrf_exempt, name="dispatch")
+class update_candidates_application(APIView):
+    def post(self, request):
+        request_type = request.GET.get("type")
+
+        if request_type == "update_user_id":
+            return self.update_user_id(request)
+        else:
+            return self.handle_error(request)
+    def update_user_id(self,request):
+        application_id=request.data.get("application_id")
+        user_id=request.data.get("user_id")    
+        field = {"_id": application_id}
+        
+        update_field = {"user_id":user_id}
+
+        serializer=UpdateUserIdSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "error":serializer.errors
+            })    
+
+        try:
+            response = dowellconnection(
+                *candidate_management_reports, "update", field, update_field
+            )
+            
+        except:
+            return Response({
+                "success":False,
+                "error":"No response from Dowell connection"
+            
+            })
+
+        if json.loads(response)["isSuccess"] == True:
+            return Response(
+                {   
+                    "success":True,
+                    "message": f"Candidate of application id {application_id} has been updated with {update_field}",
+                },
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {
+                    "message": f"There are no job applications with the apllication id {application_id}",
+                    "response": json.loads(response),
+                },
+                status=status.HTTP_204_NO_CONTENT,
+            )
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 # api for candidate management ends here______________________
 
@@ -2577,6 +2637,8 @@ class task_module(APIView):
             return self.get_all_task_details(request)
         elif type_request == "get_subproject_tasks":
             return self.get_subproject_tasks(request)
+        elif type_request == "get_worklogs_date":
+            return self.get_worklogs_dates(request)
         else:
             return self.handle_error(request)
 
@@ -3120,6 +3182,73 @@ class task_module(APIView):
                 "task_details": filtered_tasks,
             }
         )
+    @verify_user_token
+    def get_worklogs_dates(self, request, user):
+
+        data = request.data
+        user_id = data.get("user_id")
+        company_id = data.get("company_id")
+        data_type = data.get("data_type")
+        
+        field = {
+            "user_id": user_id,
+            "company_id": company_id,
+            "data_type": data_type
+        }
+
+        serializer = WorklogsDateSerializer(data=field)
+
+        if serializer.is_valid():
+
+            field = {
+                "user_id": user_id,
+                "company_id": company_id,
+                "data_type": data_type,
+            }
+
+            try:
+                response = json.loads(
+                    dowellconnection(
+                        *task_management_reports,
+                        "fetch",
+                        field,
+                        update_field=None,
+                    )
+                )
+
+            except:
+                return Response({
+                    "success":False,
+                    "error":"Dowell Conn. DB not responding"
+                })
+            
+            if response["isSuccess"] == True and len(response["data"])>0:
+
+                worklogs_dates=[date["task_created_date"] for date in response["data"]]
+                
+                return Response(
+                    {
+                        "success": True,
+                        "message": f"worklogs dates of userid {user_id} is successfully retrieved",
+                        "data": worklogs_dates
+                    },
+                    status.HTTP_200_OK,
+                )
+            else:
+                return Response({
+                    "success":False,
+                    "error":f"worklogs dates not found of user {user_id} for company id {company_id} "
+                })
+
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Posting wrong data to API",
+                    "error": serializer.errors,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def handle_error(self, request):
         return Response(
@@ -10522,7 +10651,7 @@ class Company_Structure(APIView):
                         "message":f"A ceo with called {ceo} already exists",
                     },status=status.HTTP_404_NOT_FOUND)
         project_leads = []
-        
+        coll_name = type_request
         search_query ={  
             "company_id":company_id,
             "company_name":company_name,
@@ -10633,7 +10762,6 @@ class Company_Structure(APIView):
                     "success":False,
                     "message":f"A project lead with called {project_lead} already exists",
                 },status=status.HTTP_404_NOT_FOUND)
-        
         info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':project_lead}, update_field=None))
         #print(info,"===============")
         if (info['isSuccess'] is False or len(info['data'])<=0):
@@ -10645,7 +10773,7 @@ class Company_Structure(APIView):
         project_lead_id = applicant_id
         projects_managed = request.data.get("projects_managed")
         _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
-        
+        coll_name = type_request
         team_lead_reports_to ={}
         projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{"company_id":company_id},10,0,False))
         if len(projects['data'])>0:
@@ -10720,8 +10848,7 @@ class Company_Structure(APIView):
                         "data_type":"Real_Data"
                     }
                 
-                insert_collection =json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
-                
+                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
                 if insert_collection['success']==True:
                     #update ceos project leads list-----------------------
                     s_q ={
