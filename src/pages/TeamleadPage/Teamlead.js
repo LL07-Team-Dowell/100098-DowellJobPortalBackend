@@ -73,7 +73,6 @@ const Teamlead = ({ isGrouplead }) => {
   const [showAddIssueModalForGrouplead, setShowAddIssueModalForGrouplead] = useState(false);
   const [currentSelectedProjectForLead, setCurrentSelectedProjectForLead] = useState('');
   const [tasksToDisplayForLead, setTasksToDisplayForLead] = useState([]);
-  const [allSubProjects, setAllSubprojects] = useState([]);
   const [showTaskLandingPage, setShowTaskLandingPage] = useState(true);
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
@@ -232,7 +231,6 @@ const Teamlead = ({ isGrouplead }) => {
       Promise.all([
         getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
         getCandidateTasksV2(requestDataToPost2),
-        getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id, currentUser.portfolio_info[0].data_type),
         getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id),
       ])
         .then(async (res) => {
@@ -243,7 +241,7 @@ const Teamlead = ({ isGrouplead }) => {
             return;
           }
 
-          const onboardingCandidates = res[3]?.data?.response?.data
+          const onboardingCandidates = res[2]?.data?.response?.data
             .filter(
               (application) =>
                 application.data_type === currentUser?.portfolio_info[0].data_type
@@ -306,7 +304,6 @@ const Teamlead = ({ isGrouplead }) => {
           )
           setLoading(false);
           setCandidatesDataLoaded(true);
-          setAllSubprojects(res[2].reverse());
         })
         .catch((err) => {
           console.log(err);
@@ -324,7 +321,6 @@ const Teamlead = ({ isGrouplead }) => {
       ),
       getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
       getCandidateTasksV2(requestDataToPost2),
-      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id, currentUser.portfolio_info[0].data_type),
     ])
       .then(async (res) => {
         console.log("res", res);
@@ -437,7 +433,6 @@ const Teamlead = ({ isGrouplead }) => {
           )
         )
         setLoading(false);
-        setAllSubprojects(res[4].reverse());
       })
       .catch((err) => {
         console.log(err);
@@ -1086,7 +1081,6 @@ const Teamlead = ({ isGrouplead }) => {
                           setShowAddIssueModal={setShowAddIssueModalForGrouplead}
                           showAddTaskModal={showAddTaskModalForGrouplead}
                           setShowAddTaskModal={setShowAddTaskModalForGrouplead}
-                          subprojects={allSubProjects}
                           logRequestDate={logRequestDate}
                         />
                       </> :
@@ -1441,7 +1435,6 @@ const Teamlead = ({ isGrouplead }) => {
                       setShowAddIssueModal={setShowAddIssueModalForGrouplead}
                       showAddTaskModal={showAddTaskModalForGrouplead}
                       setShowAddTaskModal={setShowAddTaskModalForGrouplead}
-                      subprojects={allSubProjects}
                       isTeamlead={true}
                       handleViewIndividualTaskBtn={() => navigate('/user-tasks')}
                       handleViewTeamTaskBtn={() => navigate('/all-tasks')}

@@ -797,7 +797,15 @@ function HrJobScreen() {
           <>
             {
               showAddTaskModal && <>
-                <AddTaskScreen closeTaskScreen={() => setShowAddTaskModal(false)} teamMembers={hiredCandidates} updateTasks={setAllTasks} editPage={editTaskActive} setEditPage={setEditTaskActive} taskToEdit={currentTaskToEdit} hrPageActive={true} />
+                <AddTaskScreen 
+                  closeTaskScreen={() => setShowAddTaskModal(false)} 
+                  teamMembers={hiredCandidates} 
+                  updateTasks={setAllTasks} 
+                  editPage={editTaskActive} 
+                  setEditPage={setEditTaskActive} 
+                  taskToEdit={currentTaskToEdit} 
+                  hrPageActive={true} 
+                />
               </>
             }
 

@@ -16,7 +16,6 @@ import "./style.css";
 import { useLocation, useParams } from "react-router-dom";
 import { getAllTeams } from "../../../../services/createMembersTasks";
 import { getSettingUserProject } from "../../../../services/hrServices";
-import { getAllCompanyUserSubProject } from "../../../../services/commonServices";
 
 const AfterSelectionScreen = ({ assignedProjects }) => {
   const { currentUser } = useCurrentUserContext();
@@ -30,7 +29,6 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
   const [candidateTeams, setCandidateTeams] = useState([]);
   const [ candidateAssignedProjects, setCandidateAssignedProjects ] = useState([]);
   const [ allProjects, setAllProjects ] = useState([]);
-  const [ allSubProjects, setAllSubprojects ] = useState([]);
   const [ logRequestDate, setLogRequestDate ] = useState(null);
   const { state } = useLocation();
 
@@ -49,7 +47,6 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
     Promise.all([
       getAllTeams(currentUser.portfolio_info[0].org_id),
       getSettingUserProject(),
-      getAllCompanyUserSubProject(currentUser.portfolio_info[0].org_id, currentUser.portfolio_info[0].data_type),
     ]).then(res => {
       setCandidateTeams(
         res[0]?.data?.response?.data?.filter((team) =>
@@ -74,8 +71,6 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
         :
         list[0]?.project_list
       );
-
-      setAllSubprojects(res[2].reverse());
     }).catch(err => {
       console.log(err);
       console.log('An error occured trying to fetch teams or projects for candidate');
@@ -112,7 +107,6 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
                 closeTaskScreen={() => setShowAddTaskModal(false)}
                 updateTasks={setUserTasks}
                 assignedProject={allProjects}
-                subprojects={allSubProjects}
                 logRequestDate={logRequestDate}
               />
             )}
