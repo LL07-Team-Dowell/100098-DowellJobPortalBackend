@@ -84,6 +84,7 @@ import CompanyStructureContextProvider from "./contexts/CompanyStructureContext"
 import { mainAdminRoutesInfo } from "./routes/adminRoutes";
 import { projectLeadRoutesInfo } from "./routes/projectLeadRoutes";
 import HrAgendaPage from "./pages/HrPage/views/Agenda/HrTrackAgenda";
+import { subAdminRoutesInfo } from "./routes/subAdminRoutes";
 
 function App() {
   // console.log = () => { };
@@ -506,7 +507,7 @@ function App() {
     return (
       <Routes>
         {
-          React.Children.toArray(mainAdminRoutesInfo.map(info => {
+          React.Children.toArray(subAdminRoutesInfo.map(info => {
             return <Route 
               path={info?.path}
               element={
