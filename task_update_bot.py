@@ -229,9 +229,9 @@ def update_report_database(task_created_date,company_id):
     for _t in daily_tasks:
         tasks = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
         for i,task in enumerate(tasks['data']):
+            print(f"----------processing details for task {i+1}/{len(tasks['data'])}----------")
             if (task['task_id']==_t["_id"]):
                 '''getting the candidates details'''
-                print(f"----------processing details for task {i+1}/{len(tasks['data'])}----------")
                 
                 query={"report_record_month": _monthname,
                         "report_record_year": year,
@@ -254,7 +254,7 @@ def update_report_database(task_created_date,company_id):
                         task_added = 1
                         tasks_completed =0 
                         tasks_uncompleted =0
-                        if (task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete" or task["status"] == "Mark as complete"):
+                        if ("status" in task.keys()) and(task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete" or task["status"] == "Mark as complete"):
                             tasks_completed=1
                         else:
                             tasks_uncompleted=1
@@ -511,7 +511,6 @@ def update_report_database(task_created_date,company_id):
                         else:
                             print(insert_collection)                     
     
-    """
 
 if __name__ == "__main__":
     company_id = "6385c0f18eca0fb652c94561"
@@ -519,4 +518,4 @@ if __name__ == "__main__":
     search_date=datetime.today().date() - timedelta(days=1) # e.g 2024-01-12
     search_date = str(search_date)
     
-    update_report_database('2023-08-12',company_id)
+    update_report_database(search_date,company_id)
