@@ -323,8 +323,7 @@ def valid_period(start_dt, end_dt):
     end_date = datetime.datetime.strptime(end_dt, "%m/%d/%Y %H:%M:%S")
     if end_date > start_date:
         return True
-    else:
-        return False
+    return False
 
 def set_date_format(date):
     try:
