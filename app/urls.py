@@ -160,8 +160,6 @@ urlpatterns = [
     path("generate_report/", Generate_Report.as_view()),
 
     ######
-    path("reportdb/", ReportDB.as_view()),
-    ######
     path("get_all_qrcode/<str:job_company_id>/", GetQRCode.as_view()),
     path(
         "generate_candidate_duplicates/<str:company_id>/",
