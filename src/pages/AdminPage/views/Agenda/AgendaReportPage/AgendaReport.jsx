@@ -243,7 +243,7 @@ const AgendaReport = () => {
                 <div className="main_div">
                     <div className="wrapper">
                         <h2>Weekly Agenda Detailed Report</h2>
-                        <div className="internal_div">
+                        <div className="internal_div report">
                             <div>
                                 <label>
                                     <span>Project</span>
@@ -283,6 +283,7 @@ const AgendaReport = () => {
                     {
                         buttonVisibility &&
                         <div className="pagination_wrap">
+                            <h4>Dates Added: </h4>
                             <div>
                                 <Tooltip
                                     id="my-tooltip"
@@ -290,7 +291,7 @@ const AgendaReport = () => {
                                 {Array.from({ length: agendaAddedDatesLength }).map((_, index) => (
                                     <button key={index} onClick={() => handleResultVisibilty(index)}
                                         data-tooltip-id="my-tooltip"
-                                        data-tooltip-content={`${agendaDates[index][0]}`}
+                                        data-tooltip-content={`${new Date(agendaDates[index][0]).toDateString()}`}
                                         data-tooltip-place="top">
                                         {loadingButtonIndex === index ? <LoadingSpinner width={13} height={13} color="#fff" /> : `${index + 1}`}
                                     </button>
