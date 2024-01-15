@@ -12,7 +12,18 @@ import TitleItem from "./components/TitleItem/TitleItem";
 import { testCompanyData } from "./utils/testData";
 import CardTile from "./components/CardTile/CardTile";
 import UserIconsInfo from "./components/UsersIconsInfo/UserIconsInfo";
+import { toast } from "react-toastify";
+import Overlay from "../../../../components/Overlay";
+import { AiOutlineClose } from "react-icons/ai";
+import Avatar from "react-avatar";
 
+const labelColors = {
+    ceo: '#00C1B7',
+    projectLead: '#FE6A6A',
+    teamlead: '#FF9F4E',
+    groupLead: '#5AA4FB',
+    member: '#FEDD6A',
+}
 
 
 const CompanyStructurePage = () => {
@@ -23,6 +34,8 @@ const CompanyStructurePage = () => {
         setApplicationsLoaded,
         projectsLoaded,
         projectsAdded,
+        subProjectsAdded,
+        subProjectsLoaded,
     } = useJobContext();
     const { currentUser } = useCurrentUserContext();
     const [ copyOfStructureData, setCopyOfStructureData ] = useState(null);
@@ -32,6 +45,8 @@ const CompanyStructurePage = () => {
     const [ showSearchResult, setShowSearchResult ] = useState(false);
     const projectWrapperRef = useRef();
     const singleProjectsRefs = useRef([]);
+    const [ showSelectedUser, setShowSelectedUser ] = useState(false);
+    const [ currentSelectedUser, setCurrentSelectedUser ] = useState(null);
 
 
     const addToRefsArray = (elem, arrayToAddTo) => {
@@ -101,6 +116,27 @@ const CompanyStructurePage = () => {
         }, 1000)
 
     }, [showSearchResult])
+
+    const handleTileClick = (currentUser, userTitle, userTileDesignation, projectSelected, teamMembers) => {
+        if (!projectsLoaded || !subProjectsLoaded) return toast.info('Please wait. Projects and subprojects are still loading...');
+
+        setShowSelectedUser(true);
+        
+        const foundSubprojectsList = subProjectsAdded.find(
+            (item) => item.parent_project === projectSelected
+          )?.sub_project_list;
+
+        const foundSubprojects = foundSubprojectsList && Array.isArray(foundSubprojectsList) ? foundSubprojectsList.sort((a, b) => a.localeCompare(b)) : [];
+        
+        setCurrentSelectedUser({
+            name: currentUser,
+            title: userTitle,
+            labelColor: userTileDesignation,
+            project: projectSelected,
+            subprojects: foundSubprojects,
+            members: teamMembers,
+        })
+    }
 
     return <>
         <StaffJobLandingLayout
@@ -174,6 +210,19 @@ const CompanyStructurePage = () => {
                         <span>Show results</span>
                     </button>
                 </div>
+                
+                {
+                    showSearchResult && <>
+                        <div className={styles.search__Project__Details__Item}>
+                            <h4>Current Project: {searchProjectVal}</h4>
+                            <p>Project Lead: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.project_lead}</span></p>
+                            <p>Team Lead: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.team_lead}</span></p>
+                            <p>Group Lead: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.group_leads?.join(', ')}</span></p>
+                            <p>Members: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.members?.join(', ')}</span></p>
+                        </div>
+                    </>
+                }
+
                 <div className={styles.structure__Display}>
                     {
                         !copyOfStructureData ?
@@ -193,7 +242,7 @@ const CompanyStructurePage = () => {
                                 <CardTile 
                                     tileName={copyOfStructureData?.ceo}
                                     tileDesignation={'CEO'}
-                                    tileColor={'#00C1B7'}
+                                    tileColor={labelColors.ceo}
                                     hasTrailingDash={true}
                                 />
                             </div>
@@ -205,6 +254,7 @@ const CompanyStructurePage = () => {
                                             const matchingProjectFromCompanyStructure = copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === projectItem))
                                             const foundTeamleadFromCompanyStructure = matchingProjectFromCompanyStructure?.projects?.find(item => item.project === projectItem)?.team_lead;
                                             const foundGroupleadsFromCompanyStructure = matchingProjectFromCompanyStructure?.projects?.find(item => item.project === projectItem)?.group_leads;
+                                            const foundMembersFromCompanyStructure = matchingProjectFromCompanyStructure?.projects?.find(item => item.project === projectItem)?.members;
                                             
                                             return <div 
                                                 className={styles.project__Detail__Item}
@@ -240,11 +290,22 @@ const CompanyStructurePage = () => {
                                                         }
                                                         tileColor={
                                                             matchingProjectFromCompanyStructure ?
-                                                                '#FE6A6A'
+                                                                labelColors.projectLead
                                                             : 
                                                             null
                                                         }
                                                         hasTrailingDash={true}
+                                                        noUser={matchingProjectFromCompanyStructure ? false : true}
+                                                        isClickable={matchingProjectFromCompanyStructure ? true : false}
+                                                        handleCardTileClick={
+                                                            () => handleTileClick(
+                                                                matchingProjectFromCompanyStructure?.project_lead,
+                                                                'project lead',
+                                                                labelColors.projectLead,
+                                                                projectItem,
+                                                                foundMembersFromCompanyStructure,
+                                                            )
+                                                        }
                                                     />
                                                 </div>
                                                 <CardTile 
@@ -268,14 +329,28 @@ const CompanyStructurePage = () => {
                                                     hasTrailingDash={true}
                                                     tileColor={
                                                         foundTeamleadFromCompanyStructure ?
-                                                            '#FF9F4E'
+                                                            labelColors.teamlead
                                                         :
                                                         null   
                                                     }
                                                     longDash={true}
+                                                    noUser={foundTeamleadFromCompanyStructure ? false : true}
+                                                    isClickable={foundTeamleadFromCompanyStructure ? true : false}
+                                                    handleCardTileClick={
+                                                        () => handleTileClick(
+                                                            foundTeamleadFromCompanyStructure,
+                                                            'team lead',
+                                                            labelColors.teamlead,
+                                                            projectItem,
+                                                            foundMembersFromCompanyStructure,
+                                                        )
+                                                    }
                                                 />
+
+                                                <div className={styles.dash}></div>
+                                                <div className={styles.dash__line}></div>
                                                 
-                                                {/* <div className={styles.group_leads__Wrap}>
+                                                <div className={styles.group_leads__Wrap}>
                                                     {
                                                         foundGroupleadsFromCompanyStructure && Array.isArray(foundGroupleadsFromCompanyStructure) ?
                                                             <>
@@ -296,8 +371,17 @@ const CompanyStructurePage = () => {
                                                                                     grouplead
                                                                                 }
                                                                                 tileDesignation={'Group Lead'}
-                                                                                tileColor={'#5AA4FB'}
-                                                                                hasLeadingDash={true}
+                                                                                tileColor={labelColors.groupLead}
+                                                                                isClickable={true}
+                                                                                handleCardTileClick={
+                                                                                    () => handleTileClick(
+                                                                                        grouplead,
+                                                                                        'group lead',
+                                                                                        labelColors.groupLead,
+                                                                                        projectItem,
+                                                                                        foundMembersFromCompanyStructure,
+                                                                                    )
+                                                                                }
                                                                             />
                                                                         </div>
                                                                     }))
@@ -308,10 +392,48 @@ const CompanyStructurePage = () => {
                                                             <CardTile 
                                                                 tileName={'No Group Lead'}
                                                                 tileDesignation={'No user'}
+                                                                noUser={true}
                                                             />
                                                         </div>
                                                     }
-                                                </div> */}
+                                                </div>
+
+                                                <div className={styles.dash}></div>
+                                                <div className={styles.dash__line}></div>
+
+                                                <div className={styles.team__Members__Wrap}>
+                                                    {   
+                                                        foundMembersFromCompanyStructure && Array.isArray(foundMembersFromCompanyStructure) ?
+                                                        React.Children.toArray(foundMembersFromCompanyStructure.map(member => {
+                                                            return <div className={styles.member__Item}>
+                                                                <CardTile 
+                                                                    tileName={
+                                                                        onboardedUsers?.find(
+                                                                            application => application.username ===
+                                                                            member
+                                                                        ) ?
+                                                                            onboardedUsers?.find(
+                                                                                application => application.username ===
+                                                                                member
+                                                                            )?.applicant
+                                                                        :
+                                                                        member
+                                                                    }
+                                                                    tileDesignation={'Member'}
+                                                                    tileColor={labelColors.member}
+                                                                />
+                                                            </div>
+                                                        }))
+                                                        :
+                                                        <div className={styles.member__Item}>
+                                                                <CardTile 
+                                                                    tileName={'No member'}
+                                                                    tileDesignation={'No user'}
+                                                                    noUser={true}
+                                                                />
+                                                            </div>
+                                                    }
+                                                </div>
                                             </div>
                                         })
                                     )
@@ -322,6 +444,61 @@ const CompanyStructurePage = () => {
                     }
                 </div>
             </div>
+
+            {
+                showSelectedUser && <Overlay>
+                    <div className={styles.single__User__Detail}>
+                        <div 
+                            className={styles.close__User__Detail} 
+                            onClick={() => {
+                                setCurrentSelectedUser(null);
+                                setShowSelectedUser(false);
+                            }}
+                        >
+                            <AiOutlineClose fontSize={'1.5rem'} />
+                        </div>
+                        
+                        <div className={styles.top__user__Info}>
+                            <Avatar
+                                name={
+                                    onboardedUsers?.find(application => application.username === currentSelectedUser?.name)?.applicant ? 
+                                        onboardedUsers?.find(application => application.username === currentSelectedUser?.name)?.applicant
+                                    :
+                                    currentSelectedUser?.name
+                                }
+                                round={true}
+                                size='8rem'
+                            />
+                            <div>
+                                <h5>
+                                    {
+                                        onboardedUsers?.find(application => application.username === currentSelectedUser?.name)?.applicant ? 
+                                            onboardedUsers?.find(application => application.username === currentSelectedUser?.name)?.applicant
+                                        :
+                                        currentSelectedUser?.name
+                                    }
+                                </h5>
+                                <p className={styles.single__User__label} style={{ backgroundColor: currentSelectedUser?.labelColor}}>{currentSelectedUser?.title}</p>
+                            
+                            </div>
+                        </div>
+
+                        <div className={styles.user__Detail__Info__Wrap}>
+                            <div className={styles.user__Detail__Info}>
+                                <p>
+                                    Details
+                                    <div className={styles.highlight}></div>
+                                </p>
+                            </div>
+                            <div className={styles.user__Project__Details}>
+                                <p>Project: {currentSelectedUser?.project}</p>
+                                <p>Subproject: {currentSelectedUser?.subprojects?.join(', ')}</p>
+                                <p>Team Members: {currentSelectedUser?.members?.join(', ')}</p>
+                            </div>
+                        </div>
+                    </div>
+                </Overlay>
+            }
         </StaffJobLandingLayout>
     </>
 }
