@@ -49,13 +49,13 @@ const JobLandingLayout = ({ children, user, afterSelection, hideSideNavigation, 
       const teamManagementProduct = currentUser?.portfolio_info?.find(portfolio => portfolio.product === teamManagementProductName);
       
       if (
-          (
-              currentUser.settings_for_profile_info && 
-              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1].Role === testingRoles.superAdminRole
-          ) ||
-          (
-              currentUser.isSuperAdmin
-          )
+        (
+          currentUser.settings_for_profile_info && 
+          currentUser.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.Role === testingRoles.superAdminRole
+        ) ||
+        (
+          currentUser?.isSuperAdmin
+        )
       ) return setIsSuperUser(true); 
 
       if (!teamManagementProduct || teamManagementProduct.member_type !== 'owner') return setIsSuperUser(false);
