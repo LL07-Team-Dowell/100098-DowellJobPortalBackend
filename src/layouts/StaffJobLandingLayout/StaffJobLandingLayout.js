@@ -87,12 +87,23 @@ const StaffJobLandingLayout = ({
     userRemovalStatusChecked,
     setUserRemovalStatusChecked,
     userNewContract,
-    setNewContract
+    setNewContract,
+    setCurrentUserHiredApplications,
+    setCurrentUserHiredApplicationsLoaded,
   } = useCurrentUserContext();
   const [isSuperUser, setIsSuperUser] = useState(false);
 
   useCheckCurrentAuthStatus(currentUser, setCurrentAuthSessionExpired);
-  useCheckIfUserIsRemoved(currentUser, setUserIsRemoved, setUserRemovalStatusLoading, userRemovalStatusChecked, setUserRemovalStatusChecked, setNewContract);
+  useCheckIfUserIsRemoved(
+    currentUser, 
+    setUserIsRemoved, 
+    setUserRemovalStatusLoading, 
+    userRemovalStatusChecked, 
+    setUserRemovalStatusChecked, 
+    setNewContract,
+    setCurrentUserHiredApplications,
+    setCurrentUserHiredApplicationsLoaded,
+  );
 
   useEffect(() => {
     if (!currentUser) return

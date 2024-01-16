@@ -28,6 +28,9 @@ export const CurrentUserContextProvider = ({ children }) => {
   const [userNewContract, setNewContract] = useState(false);
   const [navLinksOpenForUser, setNavLinksOpenForUser] = useState([]);
   const [navLinksOpenForUserSet, setNavLinksOpenForUserSet] = useState(false);
+  const [currentUserHiredApplications, setCurrentUserHiredApplications] = useState([]);
+  const [currentUserHiredApplicationsLoaded, setCurrentUserHiredApplicationsLoaded] = useState(false);
+  const [applicationsWithoutUserIdUpdated, setApplicationsWithoutUserIdUpdated] = useState(false);
 
   return (
     <CurrentUserContext.Provider value={{
@@ -69,6 +72,12 @@ export const CurrentUserContextProvider = ({ children }) => {
       setNavLinksOpenForUser,
       navLinksOpenForUserSet,
       setNavLinksOpenForUserSet,
+      currentUserHiredApplications,
+      setCurrentUserHiredApplications,
+      currentUserHiredApplicationsLoaded,
+      setCurrentUserHiredApplicationsLoaded,
+      applicationsWithoutUserIdUpdated,
+      setApplicationsWithoutUserIdUpdated,
     }}>
       {children}
     </CurrentUserContext.Provider>

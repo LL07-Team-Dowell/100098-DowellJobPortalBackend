@@ -63,3 +63,7 @@ export const getWorkLogsAddedUnderSubproject = async (company_id, project, subpr
 export const getSubprojectAgendaAddedDates = async (company_id, subproject) => {
     return await currentBackendAxiosInstance.get(`/weekly_agenda/?type=agenda_add_date&company_id=${company_id}&subproject_name=${subproject}`)
 }
+
+export const addUserIdToApplication = async (data) => {
+    return await currentBackendAxiosInstance.post('/update_candidates_application/?type=update_user_id', data);
+}

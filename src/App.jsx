@@ -85,6 +85,7 @@ import { mainAdminRoutesInfo } from "./routes/adminRoutes";
 import { projectLeadRoutesInfo } from "./routes/projectLeadRoutes";
 import HrAgendaPage from "./pages/HrPage/views/Agenda/HrTrackAgenda";
 import { subAdminRoutesInfo } from "./routes/subAdminRoutes";
+import useUpdateUserId from "./hooks/useUpdateUserId";
 
 function App() {
   // console.log = () => { };
@@ -105,6 +106,11 @@ function App() {
     setIsReportsUser,
     reportsUserDetails,
     setReportsUserDetails,
+    currentUserHiredApplications,
+    setCurrentUserHiredApplications,
+    applicationsWithoutUserIdUpdated,
+    setApplicationsWithoutUserIdUpdated,
+    currentUserHiredApplicationsLoaded,
   } = useCurrentUserContext();
 
   const [loading, setLoading] = useState(true);
@@ -134,6 +140,16 @@ function App() {
   );
 
   useTitle(teamManagementProductName);
+  
+  useUpdateUserId(
+    loading, 
+    currentUser, 
+    currentUserHiredApplications, 
+    currentUserHiredApplicationsLoaded,
+    setCurrentUserHiredApplications, 
+    applicationsWithoutUserIdUpdated,
+    setApplicationsWithoutUserIdUpdated,
+  );
 
   if (loading) return <LoadingPage />;
   console.log("CURRENT USER", currentUser);

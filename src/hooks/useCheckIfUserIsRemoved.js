@@ -8,7 +8,9 @@ export default function useCheckIfUserIsRemoved(
   updateLoadingStatus,
   removalStatusChecked,
   updateRemovalStatusChecked,
-  setNewContract
+  setNewContract,
+  updateCurrentUserApplications,
+  updateCurrentUserApplicationsLoaded,
 ) {
   useEffect(() => {
     if (removalStatusChecked || !userDetails) return updateLoadingStatus(false);
@@ -22,6 +24,9 @@ export default function useCheckIfUserIsRemoved(
           application.username === userDetails?.userinfo?.username
       )
 
+      updateCurrentUserApplications(currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING));
+      updateCurrentUserApplicationsLoaded(true);
+      
       if (currentUserAppliedJobs.find(application => application.status === candidateStatuses.REMOVED)) {
         updateUserRemovedStatus(true);
       }
