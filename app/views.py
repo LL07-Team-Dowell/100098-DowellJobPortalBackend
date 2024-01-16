@@ -9926,6 +9926,7 @@ class speed_test(APIView):
             "message": "Speed test data retrived successfully",
             "response": response
         })
+@method_decorator(csrf_exempt, name="dispatch")
 class dowell_speed_test(APIView):
     def get(self, request, email):
         if not email:
@@ -9995,7 +9996,7 @@ class dowell_speed_test(APIView):
             "response": results
         })
 
-    
+@method_decorator(csrf_exempt, name="dispatch")   
 class Company_Structure(APIView):
     def rearrange(self,word):
         res=""
@@ -10389,7 +10390,7 @@ class Company_Structure(APIView):
             "_coded_project":_coded_project,
             "data_type":"Real_Data"
         }
-        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,1,False))
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
         #if ceo exists update else insert it
         
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
@@ -10417,7 +10418,7 @@ class Company_Structure(APIView):
                 }
                 if len(teamlead_reports_to)>=1:
                     s_q["project_lead"] =teamlead_reports_to[0]
-                res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,s_q,10,1,False))
+                res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,s_q,10,0,False))
                 #if ceo exists update else insert it
                 if res['success'] == False :
                     return Response(res,status=status.HTTP_404_NOT_FOUND)
@@ -10470,7 +10471,7 @@ class Company_Structure(APIView):
                         "project_lead":teamlead_reports_to[0],
                         "data_type":"Real_Data"
                     }
-                    res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,s_q,10,1,False))
+                    res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,s_q,10,0,False))
                     #if ceo exists update else insert it
                     if res['success'] == False :
                         return Response(res,status=status.HTTP_404_NOT_FOUND)
