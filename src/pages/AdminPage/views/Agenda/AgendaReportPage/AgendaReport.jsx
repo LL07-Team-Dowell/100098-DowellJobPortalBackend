@@ -219,7 +219,7 @@ const AgendaReport = () => {
         await getSubprojectAgendaAddedDates(
             currentUser?.portfolio_info[0]?.org_id, processedSubProject
         ).then(response => {
-            setAgendaDates(response.data.response);
+            setAgendaDates(response.data.response?.reverse());
             console.log(">>>>>>>>>>>>>>>>>>>>>>", agendaDates);
 
             setAgendaAddedDatesLength(response.data.response.length);
@@ -282,13 +282,13 @@ const AgendaReport = () => {
                     </div>
                     {
                         buttonVisibility &&
-                        <div className="pagination_wrap">
+                        <div className="pagination_wrap txt_color">
                             <h4>Dates Added: </h4>
                             <div>
                                 <Tooltip
                                     id="my-tooltip"
                                 />
-                                {Array.from({ length: agendaAddedDatesLength }).map((_, index) => (
+                                {Array.from({ length: agendaAddedDatesLength - 1}).map((_, index) => (
                                     <button key={index} onClick={() => handleResultVisibilty(index)}
                                         data-tooltip-id="my-tooltip"
                                         data-tooltip-content={`${new Date(agendaDates[index][0]).toDateString()}`}

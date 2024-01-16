@@ -6,6 +6,10 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getAllOnBoardedCandidate } from "../../../../services/candidateServices";
+import { getSettingUserProject } from "../../../../services/hrServices";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import { FaCircleCheck } from "react-icons/fa6";
+import { MdCancel } from "react-icons/md";
 
 const AttendanceReport = () => {
     const [selectedUser, setSelectedUser] = useState([]);
@@ -14,52 +18,57 @@ const AttendanceReport = () => {
     const [showAttendaceReport, setShowAttendaceReport] = useState(false);
     const { currentUser } = useCurrentUserContext();
     const [candidateOptions, setCandidateOptions] = useState([]);
-    const [candidateAttendance, setCandidateAttendance] = useState([]);
+    const [projects, setProjects] = useState([]);
+    const [selectedProject, setSelectedProject] = useState("");
+    // const companyId = "6385c0f18eca0fb652c94561";
+
+    const isWeekend = (dayIndex) => dayIndex === 5 || dayIndex === 6;
+
+    //dummy data
+    const attendanceDetails = [
+        [true, false, true, true, false, false, false],
+        [false, true, false, true, true, false, false],
+        [true, false, true, true, false, false, false],
+        [false, true, false, true, true, false, false],
+    ];
 
     useEffect(() => {
         getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id).then(res => {
             const onboardingCandidates = res?.data?.response?.data;
+            const hiredCandidates = onboardingCandidates.filter(candidate => candidate.status === 'hired');
+            console.log(">>>>>>>>>>>>>>>>",hiredCandidates);
+            const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
+                candidate.project && candidate.project.includes(selectedProject)
+            );
 
-            const options = onboardingCandidates.map(candidate => ({
+            const options = candidatesInSelectedProject.map(candidate => ({
                 value: candidate._id,
                 label: candidate.applicant,
             }));
+            console.log(">>>>>>>>>>>>>>>>",options);
             setCandidateOptions(options);
         }).catch(err => {
             console.log('onboarded failed to load');
         })
-    }, [])
+    }, [selectedProject]);
 
     const handleChange = (selectedOptions) => {
         setSelectedUser(selectedOptions);
     };
 
     const handleGetAttendanceClick = () => {
-        if (selectedUser.length === 0 && startDate === "") {
-            return toast.error("Please select user(s) and a start date.");
+        if (selectedUser.length === 0 && startDate === "" && selectedProject === "") {
+            return toast.error("Please select Project, User(s) and a Start Date.");
+        } else if (selectedProject === "") {
+            return toast.error("Please select a project.");
         } else if (selectedUser.length === 0) {
             return toast.error("Please select user(s).");
         } else if (startDate === "") {
             return toast.error("Please select a start date.");
         } else {
-            const newAttendanceData = selectedUser.map((user) => ({
-                name: user.label,
-                attendanceDetails: [true, false, true, true, false, true, false],
-                event: "Meeting",
-            }));
-            setCandidateAttendance(newAttendanceData);
             setShowAttendaceReport(true);
         }
     }
-
-    const renderAttendanceCircles = (attendanceDetails) => {
-        return attendanceDetails.map((isPresent, index) => (
-            <div
-                key={index}
-                className={`attendance-circle ${isPresent ? 'present' : 'absent'}`}
-            ></div>
-        ));
-    };
 
     useEffect(() => {
         if (startDate) {
@@ -69,6 +78,32 @@ const AttendanceReport = () => {
         }
     }, [startDate]);
 
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const data = (await getSettingUserProject()).data;
+                const companyProjects = data.filter(
+                    (project) =>
+                    project.company_id === currentUser?.portfolio_info[0]?.org_id &&
+                    project.data_type === currentUser?.portfolio_info[0]?.data_type
+                ).reverse();
+                if (companyProjects.length > 0) {
+                    const projectList = companyProjects[0].project_list || [];
+                    setProjects(projectList);
+                }
+            } catch (error) {
+                console.error("Error fetching projects:", error);
+            }
+        };
+
+        fetchProjects();
+    }, []);
+
+    const handleProjectChange = async (event) => {
+        const projectId = event.target.value;
+        setSelectedProject(projectId);
+    };
+
     return (
         <StaffJobLandingLayout
             hrView={true}
@@ -77,6 +112,22 @@ const AttendanceReport = () => {
             <section className="att_report_main">
                 <h3>Attendance</h3>
                 <div className="check">
+                    <div className="item__Filter__Wrap">
+                        <p>Select Project:</p>
+                        <select
+                            value={selectedProject}
+                            onChange={handleProjectChange}
+                            className="att_select_input"
+                        >
+                            <option value="">Select a Project</option>
+                            {
+                                projects.map((project, index) => (
+                                    <option key={index} value={project}>
+                                        {project}
+                                    </option>
+                                ))}
+                        </select>
+                    </div>
                     <div className="item__Filter__Wrap">
                         <p>Select User:</p>
                         <Select
@@ -113,21 +164,66 @@ const AttendanceReport = () => {
                 {
                     showAttendaceReport &&
                     <div className="att_rep">
+                        <div className="att_name txt_color">
+                            <div className="profile"></div>
+                            <div className="candidate_info">
+                                <h4>Mark Robin</h4>
+                                <p>Freelancer</p>
+                                <p>Project: <b>Team Management</b></p>
+                            </div>
+                            <div className="att_percentage">
+                                <CircularProgressbar
+                                    value={82}
+                                    styles={
+                                        buildStyles({
+                                            pathColor: `#18d462`,
+                                            trailColor: '#f5f5f5',
+                                        })
+                                    }
+                                />
+                                <div>
+                                    <p>Present</p>
+                                    <b>82%</b>
+                                </div>
+                            </div>
+                            <div className="att_percentage">
+                                <CircularProgressbar
+                                    value={18}
+                                    styles={
+                                        buildStyles({
+                                            pathColor: `#f02a2b`,
+                                            trailColor: '#f5f5f5',
+                                        })
+                                    }
+                                />
+                                <div>
+                                    <p>Absent</p>
+                                    <b>18%</b>
+                                </div>
+                            </div>
+                        </div>
+                        <h2 className="title">Attendance Report</h2>
                         <div className="tbl_rep">
                             <table>
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Attendance Detail</th>
-                                        <th>Event</th>
+                                        <th>Monday</th>
+                                        <th>Tuesday</th>
+                                        <th>Wednesday</th>
+                                        <th>Thursday</th>
+                                        <th>Friday</th>
+                                        <th>Saturday</th>
+                                        <th>Sunday</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {candidateAttendance.map((row, index) => (
-                                        <tr key={index}>
-                                            <td>{row.name}</td>
-                                            <td>{renderAttendanceCircles(row.attendanceDetails)}</td>
-                                            <td>{row.event}</td>
+                                    {attendanceDetails.map((weekData, weekIndex) => (
+                                        <tr key={weekIndex}>
+                                            {weekData.map((isPresent, dayIndex) => (
+                                                <td key={dayIndex}>
+                                                    {isWeekend(dayIndex) ? <><FaCircleCheck className="holiday table_data" />Holiday</> : isPresent ? <><FaCircleCheck className="present table_data" />Present</> : <><MdCancel className="absent table_data" />Absent</>}
+                                                </td>
+                                            ))}
                                         </tr>
                                     ))}
                                 </tbody>
