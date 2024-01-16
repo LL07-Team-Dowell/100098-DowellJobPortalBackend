@@ -515,5 +515,12 @@ if __name__ == "__main__":
 
     search_date=datetime.today().date() - timedelta(days=1) # e.g 2024-01-12
     search_date = str(search_date)
-    
-    update_report_database(search_date,company_id)
+
+    _, number_of_days = calendar.monthrange(2024, 1)
+    _month_dates = [f"2024-01-{d}" for d in range(1, number_of_days + 1)]
+    for day in _month_dates:
+        if day == search_date:
+            break
+        else:
+            print(day)
+            #update_report_database(search_date,company_id)
