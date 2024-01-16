@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import styles from "./styles.module.css";
-import { getApplicationForAdmin } from "../../../../services/adminServices";
 import { useJobContext } from "../../../../contexts/Jobs";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
@@ -16,6 +15,8 @@ import { toast } from "react-toastify";
 import Overlay from "../../../../components/Overlay";
 import { AiOutlineClose } from "react-icons/ai";
 import Avatar from "react-avatar";
+import { useCompanyStructureContext } from "../../../../contexts/CompanyStructureContext";
+import { HiMiniArrowLongRight , HiMiniArrowLongLeft } from "react-icons/hi2";
 
 const labelColors = {
     ceo: '#00C1B7',
@@ -47,34 +48,29 @@ const CompanyStructurePage = () => {
     const singleProjectsRefs = useRef([]);
     const [ showSelectedUser, setShowSelectedUser ] = useState(false);
     const [ currentSelectedUser, setCurrentSelectedUser ] = useState(null);
-
+    const {
+        companyStructure,
+        setCompanyStructure,
+        companyStructureLoading,
+        companyStructureLoaded,
+        showConfigurationModal,
+        setShowConfigurationModal,
+        currentModalPage,
+        setCurrentModalPage,
+    } = useCompanyStructureContext();
 
     const addToRefsArray = (elem, arrayToAddTo) => {
         if (elem && !arrayToAddTo.current.includes(elem)) arrayToAddTo.current.push(elem);
     };
 
-
     useEffect(() => {
+        if (!companyStructureLoaded) return
+        
         // FOR TESTING
         setCopyOfStructureData(testCompanyData);
 
-        if (!applicationsLoaded) {
-
-            getApplicationForAdmin(currentUser?.portfolio_info[0]?.org_id).then(res => {
-                const applicationsFetched = res?.data?.response?.data?.filter(
-                    (item) => currentUser?.portfolio_info[0]?.data_type === item.data_type
-                )?.reverse()
-
-                setApplications(applicationsFetched);
-                setApplicationsLoaded(true);
-
-            }).catch(err => {
-                console.log('Failed to get applications for admin');
-                setApplicationsLoaded(true);
-            })
-        }
-
-    }, [])
+        // setCopyOfStructureData(companyStructure);
+    }, [companyStructure, companyStructureLoaded])
 
     useEffect(() => {
         let projectRefIsRendered = false;
@@ -94,10 +90,12 @@ const CompanyStructurePage = () => {
     }, [copyOfStructureData, projectsLoaded])
 
     useEffect(() => {
+        if (!applicationsLoaded) return
+
         setOnboardedUsers(
             applications?.filter(application => application.status === candidateStatuses.ONBOARDING)
         )
-    }, [applications])
+    }, [applications, applicationsLoaded])
 
     useEffect(() => {
         if (!showSearchResult || searchProjectVal.length < 1 || !projectsAdded[0]?.project_list) return
@@ -136,6 +134,21 @@ const CompanyStructurePage = () => {
             subprojects: foundSubprojects,
             members: teamMembers,
         })
+    }
+
+    const handleCloseSingleUserModal = () => {
+        setCurrentSelectedUser(null);
+        setShowSelectedUser(false);
+    }
+
+    const handleEditStructureBtnClick = () => {
+        setShowConfigurationModal(true);
+        setCurrentModalPage(1);
+    }
+
+    const handleCloseStructureModal = () => {
+        setShowConfigurationModal(false);
+        setCurrentModalPage(1);
     }
 
     return <>
@@ -214,7 +227,7 @@ const CompanyStructurePage = () => {
                 {
                     showSearchResult && <>
                         <div className={styles.search__Project__Details__Item}>
-                            <h4>Current Project: {searchProjectVal}</h4>
+                            <h4>Current Project: <span>{searchProjectVal}</span></h4>
                             <p>Project Lead: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.project_lead}</span></p>
                             <p>Team Lead: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.team_lead}</span></p>
                             <p>Group Lead: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.group_leads?.join(', ')}</span></p>
@@ -226,12 +239,12 @@ const CompanyStructurePage = () => {
                 <div className={styles.structure__Display}>
                     {
                         !copyOfStructureData ?
-                            <button className={`${styles.result__Btn} ${styles.configure__Btn}`}>
+                            <button className={`${styles.result__Btn} ${styles.configure__Btn}`} onClick={handleEditStructureBtnClick}>
                                 <span>Configure structure</span>
                             </button>
                         :
                         <>
-                            <button className={`${styles.result__Btn} ${styles.configure__Btn} ${styles.edit__Btn}`}>
+                            <button className={`${styles.result__Btn} ${styles.configure__Btn} ${styles.edit__Btn}`} onClick={handleEditStructureBtnClick}>
                                 <span>Edit structure</span>
                             </button>
                             <div className={styles.ceo__Item__Wrap}>
@@ -445,15 +458,13 @@ const CompanyStructurePage = () => {
                 </div>
             </div>
 
+            {/* SINGLE USER DETAIL MODAL  */}
             {
                 showSelectedUser && <Overlay>
                     <div className={styles.single__User__Detail}>
                         <div 
                             className={styles.close__User__Detail} 
-                            onClick={() => {
-                                setCurrentSelectedUser(null);
-                                setShowSelectedUser(false);
-                            }}
+                            onClick={handleCloseSingleUserModal}
                         >
                             <AiOutlineClose fontSize={'1.5rem'} />
                         </div>
@@ -492,13 +503,51 @@ const CompanyStructurePage = () => {
                             </div>
                             <div className={styles.user__Project__Details}>
                                 <p>Project: {currentSelectedUser?.project}</p>
-                                <p>Subproject: {currentSelectedUser?.subprojects?.join(', ')}</p>
+                                <p>Subprojects: {currentSelectedUser?.subprojects?.join(', ')}</p>
                                 <p>Team Members: {currentSelectedUser?.members?.join(', ')}</p>
                             </div>
                         </div>
                     </div>
                 </Overlay>
             }
+
+            {/* COMPANY STRUCTURE CONFIGURATION MODAL */}
+            {
+                showConfigurationModal && <Overlay>
+                    <div className={styles.structure__modal}>
+                        <div 
+                            className={styles.close__User__Detail} 
+                            onClick={handleCloseStructureModal}
+                        >
+                            <AiOutlineClose fontSize={'1.5rem'} />
+                        </div>
+                        <div>
+                            <h2>
+                                {
+                                    !companyStructure ? 'Configure Company Structure'
+                                    :
+                                    'Edit Structure'
+                                }
+                            </h2>
+                            <p>Step One: Configure CEO</p>
+                        </div>
+                        <div>
+
+                        </div>
+                        <div>
+                            
+                            <button>
+                                <HiMiniArrowLongLeft />
+                            </button>
+                            <button>
+                                <HiMiniArrowLongRight />
+                            </button>
+                            
+                        </div>
+                    </div>
+                </Overlay>
+            }
+
         </StaffJobLandingLayout>
     </>
 }

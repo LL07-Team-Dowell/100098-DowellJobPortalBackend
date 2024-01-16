@@ -196,12 +196,20 @@
 
 .search__Project__Details__Item h4 {
     font-weight: 500;
-    margin-bottom: 0.4rem;
+    color: #005734;
+    letter-spacing: 0.03em;
+    margin-top: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .search__Project__Details__Item p {
     font-size: 0.875rem;
     text-transform: capitalize;
+    font-weight: 600;
+}
+
+.search__Project__Details__Item p span {
+    font-weight: 400;
 }
 
 .single__User__Detail {
@@ -282,6 +290,20 @@
     flex-direction: column;
     gap: 0.6rem;
     text-transform: capitalize;
+}
+
+.structure__modal {
+    width: 50%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
 }
 
 @keyframes slideIn {
