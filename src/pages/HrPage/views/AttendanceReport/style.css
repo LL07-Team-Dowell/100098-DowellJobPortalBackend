@@ -130,8 +130,8 @@ button.hr__Att__Btn {
 .att_name .profile {
     width: 130px;
     height: 130px;
-    border: 1px solid #c8c8c8;
-    border-radius: 15px;
+    /* border: 1px solid #c8c8c8; */
+    /* border-radius: 15px; */
 }
 
 .att_percentage {
@@ -184,4 +184,28 @@ button.hr__Att__Btn {
     color: #807f7f;
     padding: 0.45rem;
     font-family: "Poppins", sans-serif;
+}
+
+.users_info{
+    padding: 1%;
+    display: flex;
+}
+.users_info button{
+    width: max-content;
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #005734;
+    color: white;
+    border: 0px;
+    border-radius: 8px;
+    font-family: "Poppins", sans-serif;
+    cursor: pointer;
+    margin: 2px;
+    box-shadow: 1px 4px 8px rgba(0, 0, 0.1, 0.2);
+}
+
+.users_info p{
+    padding: 10px 20px;
+    font-size: large;
+    font-weight: 600;
 }

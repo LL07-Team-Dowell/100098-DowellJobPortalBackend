@@ -8,6 +8,7 @@ import { TfiAgenda } from "react-icons/tfi";
 import { GoOrganization, GoTasklist } from "react-icons/go";
 import { FaUsers } from "react-icons/fa";
 import { PiTreeStructure } from "react-icons/pi";
+import { RiCalendarEventLine } from "react-icons/ri";
 
 export const adminNavigationLinks = [
 
@@ -53,6 +54,11 @@ export const adminNavigationLinks = [
         linkAddress: "/company-structure",
         icon: <PiTreeStructure />,
         text: "Company Structure",
+      },
+      {
+        linkAddress: "/event",
+        icon: <RiCalendarEventLine />,
+        text: "Events",
       },
       {
         linkAddress: "/jobs",
