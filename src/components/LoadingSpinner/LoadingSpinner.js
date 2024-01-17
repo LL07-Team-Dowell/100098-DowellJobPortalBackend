@@ -1,7 +1,7 @@
 import "./style.css";
 
 
-const LoadingSpinner = ({ color, bgColor, marginLeft, marginRight, width, height }) => {
+const LoadingSpinner = ({ color, bgColor, marginLeft, marginRight, width, height, className }) => {
     const customSpinnerColor = {
         borderTopColor: color ? color : "#57A639",
         marginLeft: marginLeft ? marginLeft : "auto",
@@ -11,7 +11,7 @@ const LoadingSpinner = ({ color, bgColor, marginLeft, marginRight, width, height
         backgroundColor: bgColor ? bgColor : 'transparent'
     }
 
-    return <div id="loading" className="display" style={customSpinnerColor}></div>
+    return <div id="loading" className={`display ${className ? className : ''}`} style={customSpinnerColor}></div>
 }
 
 export default LoadingSpinner;

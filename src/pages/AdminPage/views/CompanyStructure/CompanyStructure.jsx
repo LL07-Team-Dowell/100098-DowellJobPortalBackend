@@ -17,6 +17,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import Avatar from "react-avatar";
 import { useCompanyStructureContext } from "../../../../contexts/CompanyStructureContext";
 import { HiMiniArrowLongRight , HiMiniArrowLongLeft } from "react-icons/hi2";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 
 const labelColors = {
     ceo: '#00C1B7',
@@ -48,6 +49,8 @@ const CompanyStructurePage = () => {
     const singleProjectsRefs = useRef([]);
     const [ showSelectedUser, setShowSelectedUser ] = useState(false);
     const [ currentSelectedUser, setCurrentSelectedUser ] = useState(null);
+    const [ dataLoading, setDataLoading ] = useState(false);
+
     const {
         companyStructure,
         setCompanyStructure,
@@ -149,6 +152,14 @@ const CompanyStructurePage = () => {
     const handleCloseStructureModal = () => {
         setShowConfigurationModal(false);
         setCurrentModalPage(1);
+    }
+
+    const handleGoForward = async () => {
+
+    }
+
+    const handleGoBackward = async () => {
+
     }
 
     return <>
@@ -439,12 +450,12 @@ const CompanyStructurePage = () => {
                                                         }))
                                                         :
                                                         <div className={styles.member__Item}>
-                                                                <CardTile 
-                                                                    tileName={'No member'}
-                                                                    tileDesignation={'No user'}
-                                                                    noUser={true}
-                                                                />
-                                                            </div>
+                                                            <CardTile 
+                                                                tileName={'No member'}
+                                                                tileDesignation={'No user'}
+                                                                noUser={true}
+                                                            />
+                                                        </div>
                                                     }
                                                 </div>
                                             </div>
@@ -519,9 +530,9 @@ const CompanyStructurePage = () => {
                             className={styles.close__User__Detail} 
                             onClick={handleCloseStructureModal}
                         >
-                            <AiOutlineClose fontSize={'1.5rem'} />
+                            <AiOutlineClose fontSize={'1.2rem'} />
                         </div>
-                        <div>
+                        <div className={styles.form__Header}>
                             <h2>
                                 {
                                     !companyStructure ? 'Configure Company Structure'
@@ -531,16 +542,52 @@ const CompanyStructurePage = () => {
                             </h2>
                             <p>Step One: Configure CEO</p>
                         </div>
-                        <div>
-
+                        <div className={styles.structure__Form}>
+                            {
+                                currentModalPage === 1 ? <>
+                                    <label>
+                                        <p>
+                                            <span>Name of CEO</span>
+                                        </p>
+                                        <input 
+                                            type="text"
+                                            value={copyOfStructureData?.ceo}
+                                            onChange={
+                                                ({ target }) => setCopyOfStructureData(
+                                                    (prev) => {
+                                                        return  {...prev, ceo: target.value}
+                                                    }
+                                                )
+                                            }
+                                        />
+                                        {
+                                            dataLoading && <LoadingSpinner 
+                                                width={'0.85rem'}
+                                                height={'0.85rem'}
+                                                className={styles.loader}
+                                            />
+                                        }
+                                    </label>
+                                </> : <></>
+                            }
                         </div>
-                        <div>
+                        <div className={styles.form__Nav__Btns__Wrap}>
                             
-                            <button>
-                                <HiMiniArrowLongLeft />
-                            </button>
-                            <button>
-                                <HiMiniArrowLongRight />
+                            {
+                                currentModalPage > 1 && <button 
+                                    className={styles.form__Nav__Btn} 
+                                    onClick={handleGoBackward}
+                                    disabled={dataLoading ? true : false}
+                                >
+                                    <HiMiniArrowLongLeft fontSize={'1.2rem'} />
+                                </button>
+                            }
+                            <button 
+                                className={styles.form__Nav__Btn} 
+                                onClick={handleGoForward}
+                                disabled={dataLoading ? true : false}
+                            >
+                                <HiMiniArrowLongRight fontSize={'1.2rem'} />
                             </button>
                             
                         </div>

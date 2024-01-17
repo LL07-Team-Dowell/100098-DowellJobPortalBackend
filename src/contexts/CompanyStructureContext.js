@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useCurrentUserContext } from "./CurrentUserContext";
 import { useJobContext } from "./Jobs";
 import { getApplicationForAdmin } from "../services/adminServices";
+import { testCompanyData } from "../pages/AdminPage/views/CompanyStructure/utils/testData";
 
 const CompanyStructureContext = createContext({})
 
@@ -43,6 +44,7 @@ export default function CompanyStructureContextProvider ({ children }) {
         if (!companyStructureLoaded) {
             setCompanyStructureLoading(true);
             setCompanyStructureLoaded(true);
+            setCompanyStructure(testCompanyData);
         }
 
     }, [])

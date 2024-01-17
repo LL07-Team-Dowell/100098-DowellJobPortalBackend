@@ -92,20 +92,28 @@
     position: relative;
 }
 
-.structure__Display::-webkit-scrollbar {
+.structure__Display::-webkit-scrollbar,
+.group_leads__Wrap::-webkit-scrollbar,
+.team__Members__Wrap::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 
-.structure__Display::-webkit-scrollbar-track {
+.structure__Display::-webkit-scrollbar-track,
+.group_leads__Wrap::-webkit-scrollbar-track,
+.team__Members__Wrap::-webkit-scrollbar-track {
     background: #efefef;
 }
 
-.structure__Display::-webkit-scrollbar-thumb {
+.structure__Display::-webkit-scrollbar-thumb,
+.group_leads__Wrap::-webkit-scrollbar-thumb,
+.team__Members__Wrap::-webkit-scrollbar-thumb {
     background: #b8b8b8;
 }
 
-.structure__Display::-webkit-scrollbar-thumb:hover {
+.structure__Display::-webkit-scrollbar-thumb:hover,
+.group_leads__Wrap::-webkit-scrollbar-thumb:hover,
+.team__Members__Wrap::-webkit-scrollbar-thumb:hover  {
     background: #005734;
 }
 
@@ -166,6 +174,7 @@
     gap: 1.2rem;
     overflow-x: auto;
     padding: 0 0 0.8rem;
+    scrollbar-width: thin;
 }
 
 .group_leads__Wrap .grouplead__Item {
@@ -293,7 +302,7 @@
 }
 
 .structure__modal {
-    width: 50%;
+    width: 40%;
     position: fixed;
     top: 50%;
     left: 50%;
@@ -303,7 +312,76 @@
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    gap: 1.4rem;
+    gap: 1.2rem;
+}
+
+.form__Header h2 {
+    font-weight: 600;
+    color: #005734;
+    letter-spacing: 0.03em;
+}
+
+.form__Header p {
+    font-size: 0.8rem;
+}
+
+.structure__Form label {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.875rem;
+    position: relative;
+}
+
+.structure__Form label input {
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    border-radius: 6px;
+    border: 1px solid #efefef;
+    padding: 0.4rem;
+    font-size: 0.875rem;
+    transition: 0.3s ease-in-out;
+}
+
+.loader {
+    position: absolute;
+    right: 0.8rem;
+    bottom: -0.8rem;
+}
+
+.structure__Form label input:focus-within {
+    border-color: #005734;
+}
+
+.form__Nav__Btns__Wrap {
+    width: max-content;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.form__Nav__Btn {
+    background: none;
+    outline: none;
+    border: 2px solid #005734;
+    width: 2.8rem;
+    height: 2.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.form__Nav__Btn:hover {
+    background-color: #005734;
+    color: #fff;
 }
 
 @keyframes slideIn {
