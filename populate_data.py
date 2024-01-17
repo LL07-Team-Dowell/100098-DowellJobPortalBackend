@@ -509,18 +509,23 @@ def update_report_database(task_created_date,company_id):
                         else:
                             print(insert_collection)                     
 
-
 if __name__ == "__main__":
     company_id = "6385c0f18eca0fb652c94561"
 
     search_date=datetime.today().date() - timedelta(days=1) # e.g 2024-01-12
     search_date = str(search_date)
 
-    _, number_of_days = calendar.monthrange(2024, 1)
-    _month_dates = [f"2024-01-{d}" for d in range(1, number_of_days + 1)]
+    year =2024
+    month_number =1
+    _, number_of_days = calendar.monthrange(year, month_number)
+    _month_dates = [f"{year}-"+"{:02d}".format(month_number)+"-"+"{:02d}".format(d) for d in range(1, number_of_days + 1)]
+
+    """first week of jan 2024-----------------------------"""
+    print("---first week of jan 2024-----------------------------")
     for day in _month_dates:
-        if day == search_date:
+        if day == "2024-01-08":
             break
         else:
-            print(day)
-            #update_report_database(search_date,company_id)
+            print(f"---------updating for {day}------------------")
+            update_report_database(search_date,company_id)
+            print(f"---------successfully updated for {day}------")
