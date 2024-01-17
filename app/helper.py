@@ -603,6 +603,34 @@ def datacube_add_collection(api_key,db_name,coll_names,num_collections):
     response = requests.post(url, json=data)
     return response.text
 
+def datacube_data_delete(api_key,database_name,collection_name, query):
+    url = "https://datacube.uxlivinglab.online/db_api/crud/"
+
+    data = {
+        "api_key": api_key,
+        "db_name": database_name,
+        "coll_name": collection_name,
+        "operation": "delete",
+        "query": query
+    }
+    response = requests.delete(url, json=data)
+
+    return response.text
+def datacube_get_collections(api_key,database_name):
+    url =f"https://datacube.uxlivinglab.online/db_api/collections/"
+    data = {
+        "api_key": api_key,
+        "db_name": database_name,
+    }
+    response = requests.get(url, json=data)
+    return response.text
+def datacube_data_delete_all(api_key,database_name):
+    """deleting"""
+    g = json.loads(datacube_get_collections(api_key,database_name))['data']
+    for coll_name in g:
+        x= json.loads(datacube_data_delete(api_key,database_name,coll_name,{}))
+        #print(x)
+    return {'success': True, 'message': 'documents deleted successfully!', 'data': []}
 def get_subproject():
     url = "https://100098.pythonanywhere.com/settingusersubproject/"
 
