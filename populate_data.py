@@ -549,14 +549,14 @@ if __name__ == "__main__":
     year =2024
     month_number =1
     _, number_of_days = calendar.monthrange(year, month_number)
-    _month_dates = [f"{year}-"+"{:02d}".format(month_number)+"-"+"{:02d}".format(d) for d in range(1, number_of_days + 1)]
+    _month_dates = [f"{year}-"+"{:02d}".format(month_number)+"-"+"{:02d}".format(d) for d in range(8, number_of_days + 1)]
 
-    """first week of jan 2024-----------------------------"""
-    print("---first week of jan 2024-----------------------------")
+    """second week of jan 2024-----------------------------"""
+    print("---second week of jan 2024-----------------------------")
     for day in _month_dates:
-        if day == "2024-01-08":
+        if day == "2024-01-15":
             break
         else:
             print(f"---------updating for {day}------------------")
-            update_report_database(search_date,company_id)
+            #update_report_database(search_date,company_id)
             print(f"---------successfully updated for {day}------")
