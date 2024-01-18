@@ -558,5 +558,5 @@ if __name__ == "__main__":
             break
         else:
             print(f"---------updating for {day}------------------")
-            #update_report_database(search_date,company_id)
+            update_report_database(search_date,company_id)
             print(f"---------successfully updated for {day}------")
