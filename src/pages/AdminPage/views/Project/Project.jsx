@@ -6,11 +6,17 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { useJobContext } from "../../../../contexts/Jobs";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { AddProjectPopup } from "../Add/Add";
+import { dowellProjects } from "../../../../utils/utils";
 
-const ProjectTime = () => {
+const Project = () => {
   const navigate = useNavigate();
   const [showProjectsPop, setShowProjectsPop] = useState(false);
   const { state } = useLocation();
+  const { projectsLoading, projectsAdded, subProjectsAdded } = useJobContext();
+  const [displayedProjects, setDisplayedProjects] = useState([]);
+  const [inactiveProjects, setInactiveProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [inputProjects, setInputProjects] = useState([]);
 
   useEffect(() => {
     if (state && state.showProject && state?.showProject === true) {
@@ -21,14 +27,39 @@ const ProjectTime = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const projectsToDisplay = dowellProjects
+      .filter(
+        (project) =>
+          !projectsAdded[0]?.project_list.includes(project.project_name)
+      )
+      .sort((a, b) => a.project_name.localeCompare(b.project_name));
+    setDisplayedProjects(projectsToDisplay);
+    console.log(dowellProjects[0]["project_name"]); 
+
+    if (
+      projectsAdded[0]?.inactive_project_list &&
+      Array.isArray(projectsAdded[0]?.inactive_project_list)
+    ) {
+      setInactiveProjects(projectsAdded[0]?.inactive_project_list);
+    }
+
+    const subProjectList = subProjectsAdded.find(
+      (item) => item.parent_project === selectedProject
+    )?.sub_project_list;
+
+    console.log(subProjectList);
+
+    if (!subProjectList) return setInputProjects([]);
+    setInputProjects(subProjectList.sort((a, b) => a.localeCompare(b)));
+  }, []);
+
   const showProjectPopup = () => {
     setShowProjectsPop(true);
   };
   const unshowProjectPopup = () => {
     setShowProjectsPop(false);
   };
-
-  const { projectsLoading, projectsAdded } = useJobContext();
 
   return (
     <StaffJobLandingLayout
@@ -60,6 +91,16 @@ const ProjectTime = () => {
             </div>
           ) : null}
         </section>
+        {React.Children.toArray(
+          projectsAdded[0]?.project_list.map((project) => {
+            return <p>{project}</p>;
+          })
+        )}
+        {React.Children.toArray(
+          inputProjects.map((subProject) => {
+            return <p>{subProject}</p>;
+          })
+        )}
       </div>
       {showProjectsPop && (
         <AddProjectPopup unshowProjectPopup={unshowProjectPopup} />
@@ -68,4 +109,4 @@ const ProjectTime = () => {
   );
 };
 
-export default ProjectTime;
+export default Project;
