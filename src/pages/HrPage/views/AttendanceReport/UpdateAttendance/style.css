@@ -1,0 +1,140 @@
+.upd_att_wrap {
+    width: 95%;
+    height: 90%;
+    background-color: #f5f5f5;
+    margin: 1rem auto;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 2%;
+    margin-bottom: 10%;
+}
+
+.att_upd_calendar {
+    height: 50%;
+    width: 26%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 1%;
+    border-right: 2px solid #807f7f;
+}
+
+.upd_calendar{
+    width: 100%;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+}
+
+.att_upd_input {
+    display: flex;
+    flex-direction: row;
+}
+
+.att_upd_candidates {
+    width: 74%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    height: 100%;
+    padding: 2%;
+}
+
+.att_upd_select {
+    margin: 1rem;
+}
+
+
+.att_upd_select label {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.att_upd_select span {
+    margin-bottom: 5px;
+    font-family: "Poppins", sans-serif;
+}
+
+.att_upd_select select {
+    width: max-content;
+    border: 1px solid lightgray;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 8px;
+    font-family: "Poppins", sans-serif;
+    background-color: transparent;
+}
+
+.att_upd_candidates {
+    width: 74%;
+}
+
+.att_upd_candidates p {
+    font-family: "Poppins", sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 1rem auto;
+}
+
+.user_boxes {
+    background-color: #fff;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* justify-content: space-evenly; */
+    border-radius: 30px;
+    overflow-x: scroll;
+    box-shadow: 0 4px 8px rgba(0, 0, 0.1, 0.2);
+}
+.user_box b,h6{
+    text-align: center;
+}
+
+.user_box h6{
+    font-weight: 500;
+    font-size: small;
+}
+
+.user_box b{
+    font-weight: 600;
+    font-size: medium;
+}
+
+.user_box {
+    background-color: #f5f5f5;
+    margin: 1rem;
+    padding: 3% 7%;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: max-content;
+    height: 85%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mark_att{
+    width: 170%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.absent{
+    color: #f02a2b;
+    font-size: 25px;
+}
+.present{
+    color: #4ecb71;
+    font-size: 25px;
+}
+.att_title h3{
+    font-size: 30px;
+    font-family: "Poppins", sans-serif;
+    color: #005734;
+    font-weight: 500;
+    padding: 0.1% 4%;
+}
