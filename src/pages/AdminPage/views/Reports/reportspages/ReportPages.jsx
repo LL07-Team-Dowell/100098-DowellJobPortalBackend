@@ -5,6 +5,11 @@ import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/
 import { useState } from "react";
 import './index.scss';
 import { FaRankingStar } from 'react-icons/fa6'
+import { TfiAgenda } from "react-icons/tfi";
+import { TbReportSearch } from "react-icons/tb";
+import { SiAwsorganizations } from "react-icons/si";
+import { AiOutlineTeam } from "react-icons/ai";
+import { FaTasks } from "react-icons/fa";
 
 const ReportPages = ({ subAdminView }) => {
   const navigate = useNavigate();
@@ -22,11 +27,53 @@ const ReportPages = ({ subAdminView }) => {
       <div className="create_team_parent report" style={{ padding: '20px 20px 200px' }}>
         <div
           className="Create_Team"
+          onClick={() => navigate("agenda-report")}
+        >
+          <div>
+            <div>
+              <TfiAgenda className="icon" />
+            </div>
+            <h4>Agenda report</h4>
+            <p>
+              Get insights into the agenda items and weekly progress in your organization
+            </p>
+          </div>
+        </div>
+        <div
+          className="Create_Team"
+          onClick={() => navigate("detailed-individual-report")}
+        >
+          <div>
+            <div>
+              <TbReportSearch className="icon" />
+            </div>
+            <h4>Individual report</h4>
+            <p>
+              Get well-detailed actionable insights on hired individuals in your organization
+            </p>
+          </div>
+        </div>
+        <div
+          className="Create_Team"
+          onClick={() => navigate("leaderboard-report")}
+        >
+          <div>
+            <div>
+              <FaRankingStar className="icon" />
+            </div>
+            <h4>Leaderboard report</h4>
+            <p>
+              Get insights into the top performers in your organization
+            </p>
+          </div>
+        </div>
+        <div
+          className="Create_Team"
           onClick={() => navigate("organization-report")}
         >
           <div>
             <div>
-              <AiOutlinePlusCircle className="icon" />
+              <SiAwsorganizations className="icon" />
             </div>
             <h4>Organization report</h4>
             <p>
@@ -37,22 +84,25 @@ const ReportPages = ({ subAdminView }) => {
         </div>
         <div
           className="Create_Team"
-          onClick={() => navigate("detailed-individual-report")}
+          onClick={() => navigate("team-report")}
         >
           <div>
             <div>
-              <AiOutlinePlusCircle className="icon" />
+              <AiOutlineTeam className="icon" />
             </div>
-            <h4>Individual report</h4>
+            <h4>Team report</h4>
             <p>
-              Get well-detailed actionable insights on hired individuals in your organization
+              Get insights into how well teams are performing in your organization
             </p>
           </div>
         </div>
-        <div className="Create_Team" onClick={() => navigate("task-report")}>
+        <div
+          className="Create_Team"
+          onClick={() => navigate("task-report")}
+        >
           <div>
             <div>
-              <AiOutlinePlusCircle className="icon" />
+              <FaTasks className="icon" />
             </div>
             <h4>Work log report</h4>
             <p>
@@ -75,48 +125,6 @@ const ReportPages = ({ subAdminView }) => {
             </p>
           </div>
         </div> */}
-        <div
-          className="Create_Team"
-          onClick={() => navigate("team-report")}
-        >
-          <div>
-            <div>
-              <AiOutlinePlusCircle className="icon" />
-            </div>
-            <h4>Team report</h4>
-            <p>
-              Get insights into how well teams are performing in your organization
-            </p>
-          </div>
-        </div>
-        <div
-          className="Create_Team"
-          onClick={() => navigate("leaderboard-report")}
-        >
-          <div>
-            <div>
-              <FaRankingStar className="icon" />
-            </div>
-            <h4>Leaderboard report</h4>
-            <p>
-              Get insights into the top performers in your organization
-            </p>
-          </div>
-        </div>
-        <div
-          className="Create_Team"
-          onClick={() => navigate("agenda-report")}
-        >
-          <div>
-            <div>
-              <AiOutlinePlusCircle className="icon" />
-            </div>
-            <h4>Agenda report</h4>
-            <p>
-              Get insights into the agenda items and weekly progress in your organization
-            </p>
-          </div>
-        </div>
       </div>
     </StaffJobLandingLayout>
   );

@@ -37,7 +37,7 @@ export const hrNavigationLinks = [
         text: "Attendance",
     },
     {
-        linkAddress: "/attendance-report",
+        linkAddress: "/attendance-",
         icon: <IoCalendarOutline />,
         text: "Attendance",
     },
