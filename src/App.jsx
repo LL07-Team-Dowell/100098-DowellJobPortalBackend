@@ -88,6 +88,7 @@ import { subAdminRoutesInfo } from "./routes/subAdminRoutes";
 import useUpdateUserId from "./hooks/useUpdateUserId";
 import AttendanceLandingPage from "./pages/HrPage/views/AttendancePages/AttendanceLandingPage";
 import AttendanceUpdatePage from "./pages/HrPage/views/AttendanceReport/UpdateAttendance/UpdateAttendance";
+import { accountRoutesInfo } from "./routes/accountRoutes";
 
 function App() {
   // console.log = () => { };
@@ -491,6 +492,21 @@ function App() {
   ) {
     return (
       <Routes>
+        {/* {
+          React.Children.toArray(accountRoutesInfo.map(info => {
+            return <Route 
+              path={info?.path}
+              element={
+                <NavigationContextProvider>
+                  <CandidateContextProvider>
+                    <info.component />  
+                  </CandidateContextProvider>
+                </NavigationContextProvider>
+              }
+            />
+          }))
+        } */}
+
         <Route path='/logout' element={<Logout />} />
         <Route path='/payments' element={<Payment />} />
 
