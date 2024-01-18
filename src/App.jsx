@@ -83,6 +83,9 @@ import HrAllApplicationsScreen from "./pages/HrPage/views/AllApplicationsScreen/
 import CompanyStructureContextProvider from "./contexts/CompanyStructureContext";
 import { mainAdminRoutesInfo } from "./routes/adminRoutes";
 import { projectLeadRoutesInfo } from "./routes/projectLeadRoutes";
+import HrAgendaPage from "./pages/HrPage/views/Agenda/HrTrackAgenda";
+import { subAdminRoutesInfo } from "./routes/subAdminRoutes";
+import useUpdateUserId from "./hooks/useUpdateUserId";
 
 function App() {
   // console.log = () => { };
@@ -103,6 +106,11 @@ function App() {
     setIsReportsUser,
     reportsUserDetails,
     setReportsUserDetails,
+    currentUserHiredApplications,
+    setCurrentUserHiredApplications,
+    applicationsWithoutUserIdUpdated,
+    setApplicationsWithoutUserIdUpdated,
+    currentUserHiredApplicationsLoaded,
   } = useCurrentUserContext();
 
   const [loading, setLoading] = useState(true);
@@ -132,6 +140,16 @@ function App() {
   );
 
   useTitle(teamManagementProductName);
+  
+  useUpdateUserId(
+    loading, 
+    currentUser, 
+    currentUserHiredApplications, 
+    currentUserHiredApplicationsLoaded,
+    setCurrentUserHiredApplications, 
+    applicationsWithoutUserIdUpdated,
+    setApplicationsWithoutUserIdUpdated,
+  );
 
   if (loading) return <LoadingPage />;
   console.log("CURRENT USER", currentUser);
@@ -505,7 +523,7 @@ function App() {
     return (
       <Routes>
         {
-          React.Children.toArray(mainAdminRoutesInfo.map(info => {
+          React.Children.toArray(subAdminRoutesInfo.map(info => {
             return <Route 
               path={info?.path}
               element={
@@ -582,6 +600,16 @@ function App() {
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
                 <AttendanceReport />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
+        <Route
+          path='/agenda-report'
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <HrAgendaPage />
               </ValuesProvider>
             </HrJobScreenAllTasksContextProvider>
           }

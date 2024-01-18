@@ -29,6 +29,7 @@ import TeamScreenTasks from "../pages/TeamleadPage/views/CreateMembersTask/views
 import TeamScreenInfoAdminTeamLead from "../pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamScreenInfo";
 import TeamThread from "../pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 import CreateTaskScreen from "../pages/TeamleadPage/views/CreateTaskScreen/CreateTaskScreen";
+import EventScreen from "../pages/AdminPage/views/Event/EventScreen";
 
 export const mainAdminRoutesInfo = [
   {
@@ -204,6 +205,10 @@ export const mainAdminRoutesInfo = [
   {
     path: "/company-structure",
     component: CompanyStructurePage,
+  },
+  {
+    path: "/event",
+    component: EventScreen,
   },
   {
     path: "/logout",

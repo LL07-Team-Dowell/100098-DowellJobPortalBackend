@@ -8,7 +8,7 @@ export const testCompanyData = {
                 {
                     "project": "BD Team",
                     "members": ["oscaroguledo", "prajjwal", "ayesha", "isaac"],
-                    "group_leads": ["mahnoor"],
+                    "group_leads": ["mahnoor", 'oscar', 'isaac'],
                     "team_lead": "ayesha",
                     "team_lead_reports_to": ""
                 },

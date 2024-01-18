@@ -15,7 +15,6 @@ const AddPage = ({
     setShowAddIssueModal,
     showAddTaskModal,
     setShowAddTaskModal,
-    subprojects,
     isTeamlead,
     handleViewIndividualTaskBtn,
     handleViewTeamTaskBtn,
@@ -82,7 +81,6 @@ const AddPage = ({
                     closeTaskScreen={() => setShowAddTaskModal(false)}
                     updateTasks={setUserTasks}
                     assignedProject={allProjects}
-                    subprojects={subprojects}
                     logRequestDate={logRequestDate}
                 />
             )}

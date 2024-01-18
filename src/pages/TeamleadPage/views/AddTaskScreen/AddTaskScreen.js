@@ -21,6 +21,7 @@ import { formatDateForAPI } from "../../../../helpers/helpers";
 import { getCurrentTimeFromDowell } from "../../../../services/dowellTimeServices";
 import { rolesNamesDict } from "../../../AdminPage/views/Settings/AdminSettings";
 import Overlay from "../../../../components/Overlay";
+import { getAllCompanyUserSubProject } from "../../../../services/commonServices";
 
 const AddTaskScreen = ({
   teamMembers,
@@ -32,17 +33,11 @@ const AddTaskScreen = ({
   taskToEdit,
   hrPageActive,
   assignedProject,
-  subprojects,
   logRequestDate,
 }) => {
+  const showTaskForm = true;
+
   const ref = useRef(null);
-  const [showTaskForm, setShowTaskForm] = useState(false);
-  const [newTaskDetails, setNewTaskDetails] = useState({
-    username: "",
-    title: "",
-    description: "",
-    status: "Incomplete",
-  });
   const [disabled, setDisabled] = useState(true);
   const navigate = useNavigate();
   const { currentUser } = useCurrentUserContext();
@@ -78,11 +73,14 @@ const AddTaskScreen = ({
       :
       true
   );
+  const [allowedTimeInterval, setAllowedTimeInterval] = useState(15);
+  const [ allSubProjects, setAllSubprojects ] = useState([]);
+  const [ allSubProjectsLoaded, setAllSubprojectsLoaded ] = useState(false);
+
   const textareaRef = useRef();
   const subprojectRef = useRef();
   const [showSubprojectSelections, setShowSubprojectSelections] = useState(false);
   const [formattedTaskName, setFormattedTaskName] = useState('');
-  const [allowedTimeInterval, setAllowedTimeInterval] = useState(15);
 
 
   const handleFileChange = async (e) => {
@@ -320,15 +318,6 @@ const AddTaskScreen = ({
   // console.log(time);
   // useClickOutside(ref, () => { closeTaskScreen(); !afterSelectionScreen && setEditPage(false) });
 
-  // useEffect (() => {
-
-  //     if (newTaskDetails.username.length < 1) return setShowTaskForm(false);
-
-  //     if ((newTaskDetails.title.length < 1) || (newTaskDetails.description.length < 1)) return setDisabled(true)
-
-  //     setDisabled(false)
-
-  // }, [newTaskDetails])
   useEffect(() => {
     if (taskStartTime) {
       const [hours, minutes] = taskStartTime.split(':').map(Number);
@@ -338,6 +327,20 @@ const AddTaskScreen = ({
       setTaskEndTime(newEndTime);
     }
   }, [taskStartTime])
+
+  useEffect(() => {
+    if ((allSubProjectsLoaded || !currentUser) && allSubProjects?.length > 0) return
+
+    getAllCompanyUserSubProject(currentUser?.portfolio_info[0]?.org_id, currentUser?.portfolio_info[0]?.data_type).then(res => {
+      console.log('subprojects: ', res);
+      setAllSubprojects(res?.reverse());
+      setAllSubprojectsLoaded(true);
+    }).catch(err => {
+      console.log(err);
+      setAllSubprojectsLoaded(true);
+    })
+
+  }, [allSubProjectsLoaded, currentUser])
 
   useEffect(() => {
     const currentUserSetting = currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1];
@@ -447,26 +450,6 @@ const AddTaskScreen = ({
   useEffect(() => {
     setFormattedTaskName(formatSubprojectStringItemToHTML(taskName));
   }, [taskName])
-
-  useEffect(() => {
-    if (afterSelectionScreen) {
-      setNewTaskDetails((prevValue) => {
-        return { ...prevValue, username: currentUser.userinfo.username };
-      });
-      setShowTaskForm(true);
-    }
-  }, [afterSelectionScreen]);
-
-  useEffect(() => {
-    if (editPage) {
-      setNewTaskDetails({
-        username: taskToEdit.user,
-        title: taskToEdit.title,
-        description: taskToEdit.description,
-      });
-      setShowTaskForm(true);
-    }
-  }, [editPage]);
 
   useListenToKeyStrokeInElement(
     ref,
@@ -598,7 +581,7 @@ const AddTaskScreen = ({
 
       let res;
 
-      // UPDATE TASKS FOR TODAY
+      // UPDATE TASKS FOR THE DAY AFTER FIRST TASK IS ADDED
       if (updateTask) {
         res = (await updateNewCandidateTaskV2(dataToPost, taskDetailForToday?.parentTask?._id)).data;
 
@@ -615,14 +598,18 @@ const AddTaskScreen = ({
         clearAllInputs();
         setTaskId("");
         setTaskStartTime(endTime);
+        setSelectedFile(null);
+
         const [hours, minutes] = endTime.split(':').map(Number);
         const newMinutes = (minutes + allowedTimeInterval) % 60;
         const newHours = hours + Math.floor((minutes + allowedTimeInterval) / 60);
         const newEndTime = `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
         setTaskEndTime(newEndTime);
+
         return
       }
 
+      // ADD FIRST TASK OF THE DAY
       res = (await addNewCandidateTaskV2(dataToPost)).data;
       console.log(res);
 
@@ -653,6 +640,7 @@ const AddTaskScreen = ({
         setTasks(listsOfTasksForToday?.reverse());
         clearAllInputs();
         setTaskId("");
+        setSelectedFile(null);
 
       } catch (error) {
         console.log(error);
@@ -751,43 +739,6 @@ const AddTaskScreen = ({
     setTaskName(taskName.replace(`${taskName.substring(startIndex, endIndex + 11)}`, '@'))
   }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewTaskDetails((prevValue) => {
-      return { ...prevValue, [name]: value };
-    });
-  };
-
-  const handleMemberItemClick = (member) => {
-    setNewTaskDetails((prevValue) => {
-      return { ...prevValue, username: member };
-    });
-    setShowTaskForm(true);
-  };
-
-  const handleUpdateTaskBtnClick = async () => {
-    // setDisabled(true);
-    // const dataToSend = { ...newTaskDetails };
-    // dataToSend.user = newTaskDetails.username;
-    // delete dataToSend["username"];
-    // try{
-    //     await updateSingleTask(taskToEdit.id + "/", dataToSend)
-    //     taskToEdit.title = dataToSend.title;
-    //     taskToEdit.description = dataToSend.description;
-    //     updateTasks(prevTasks => prevTasks.map(task => {
-    //         if (task.id === taskToEdit.id) {
-    //             return { ...task, title: dataToSend.title, description: dataToSend.description }
-    //         }
-    //         return task;
-    //     }) );
-    //     closeTaskScreen();
-    //     navigate("/task");
-    // } catch (err) {
-    //     console.log(err);
-    //     setDisabled(false);
-    // }
-  };
-
   const handleNotesButtonClick = () => {
     setNotesOverlayVisibility(true);
   };
@@ -871,7 +822,7 @@ const AddTaskScreen = ({
                                     closeTaskScreen();
                                     setEditPage(false);
                                   }
-                                  : () => setShowTaskForm(false)
+                                  : () => {}
                               }
                               style={{ cursor: "pointer" }}
                             />
@@ -991,7 +942,7 @@ const AddTaskScreen = ({
                               <input
                                 type={"text"}
                                 placeholder={"Task Assignee"}
-                                value={newTaskDetails.username}
+                                value={currentUser?.userinfo?.username}
                                 style={{ margin: 0, marginBottom: "0.8rem" }}
                                 readOnly={true}
                               />
@@ -1013,12 +964,13 @@ const AddTaskScreen = ({
                                         placeholder={"add log image"}
                                         style={{ margin: 0, marginBottom: "0.8rem" }}
                                         onChange={handleFileChange}
+                                        accept="image/*"
                                       />
                                       {selectedFile && (
                                         <img
                                           src={URL.createObjectURL(selectedFile)}
                                           alt="Uploaded Preview"
-                                          style={{ display: "block" }}
+                                          style={{ display: "block", maxWidth: '100%', width: '55%' }}
                                         />
                                       )}
                                     </div>
@@ -1152,7 +1104,7 @@ const AddTaskScreen = ({
                               <div className="task__Item full__Widthh">
                                 <span className="selectProject">Subproject</span>
                                 <SubprojectSelectWithSearch
-                                  subprojects={subprojects}
+                                  subprojects={allSubProjects}
                                   selectedSubProject={subprojectSelected}
                                   handleSelectItem={(subproject, project) => {
                                     setSubprojectSelected(subproject);
@@ -1326,7 +1278,7 @@ const AddTaskScreen = ({
                                   disabled={tasks.length < 1 || editLoading || deleteLoading ? true : false}
                                   onClick={
                                     editPage
-                                      ? () => handleUpdateTaskBtnClick()
+                                      ? () => {}
                                       : () => setShowSubmitTaskInfo(true)
                                   }
                                 >
@@ -1353,9 +1305,7 @@ const AddTaskScreen = ({
                                   return (
                                     <p
                                       className="team__Member__Item"
-                                      onClick={() =>
-                                        handleMemberItemClick(member.applicant)
-                                      }
+                                      onClick={() => {}}
                                     >
                                       {member.applicant}
                                     </p>

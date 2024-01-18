@@ -8,7 +8,9 @@ export default function CardTile ({
     hasTrailingDash,
     hasLeadingDash,
     longDash,
+    noUser,
     isClickable,
+    handleCardTileClick,
     tileHasChildren,
     hasSingleChild,
 }) {
@@ -19,13 +21,24 @@ export default function CardTile ({
                 <div className={`${styles.trail__dash} ${longDash ? styles.long__Dash : ''}`}></div>
             </div>
         }
-        <div className={styles.card__Tile}>
+        <div 
+            className={styles.card__Tile} 
+            style={{ cursor: isClickable ? 'pointer' : 'default' }}
+            onClick={
+                isClickable && typeof handleCardTileClick === 'function' ?
+                    () => handleCardTileClick() 
+                :
+                () => {}
+            }
+        >
             <Avatar
                 name={
+                    noUser ? 'NA' :
                     tileName
                 }
                 round={true}
                 size='3rem'
+                color={noUser ? "grey" : null}
             />
             <div>
                 <h5 className={styles.title}>{tileName}</h5>

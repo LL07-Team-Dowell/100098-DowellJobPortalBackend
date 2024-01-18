@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import { getSettingUserProject } from "../../../../services/hrServices";
 import DatePicker from "react-datepicker";
 
-const AdminAgendaPage = () => {
+const HrAgendaPage = () => {
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext();
 
@@ -195,10 +195,9 @@ const AdminAgendaPage = () => {
 
     return <>
         <StaffJobLandingLayout
-            adminView={true}
-            newSidebarDesign={true}
-            adminAlternativePageActive={true}
+            hrView={true}
             pageTitle={'Agenda'}
+            
         >
             <div className={styles.wrapper}>
 
@@ -424,4 +423,4 @@ const AdminAgendaPage = () => {
     </>
 }
 
-export default AdminAgendaPage;
+export default HrAgendaPage;

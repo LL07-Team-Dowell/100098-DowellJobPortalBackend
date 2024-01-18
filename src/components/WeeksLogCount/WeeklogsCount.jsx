@@ -180,7 +180,7 @@ const WeeklogsCount = ({ user, className }) => {
                                             <br />
                                             <br />
 
-                                            <p className={styles.log__Count__Info}>{`Worlogs Approved: ${approvedTasksCount?.length}`}</p>
+                                            <p className={styles.log__Count__Info}>{`Worklogs Approved: ${approvedTasksCount?.length}`}</p>
                                             <p className={styles.log__Count__Info}>{`Total Worklogs: ${customLogData?.length}`}</p>
                                             <p className={styles.log__Count__Info}>{`Total Hours: ${calculateHours(customLogData)}`}</p>
                                         </>

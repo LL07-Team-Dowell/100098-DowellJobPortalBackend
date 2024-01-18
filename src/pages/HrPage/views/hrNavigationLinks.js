@@ -3,6 +3,7 @@ import { FiHome } from "react-icons/fi";
 import { GiNotebook } from "react-icons/gi";
 import { ImStack } from "react-icons/im";
 import { IoCalendarOutline } from "react-icons/io5";
+import { TfiAgenda } from "react-icons/tfi";
 
 export const hrNavigationLinks = [
     {
@@ -24,6 +25,11 @@ export const hrNavigationLinks = [
         linkAddress: "/all-users",
         icon: <FaUsers />,
         text: "Users",
+    },
+    {
+        linkAddress: "/agenda-report",
+        icon: <TfiAgenda />,
+        text: "Agenda",
     },
     {
         linkAddress: "/attendance",

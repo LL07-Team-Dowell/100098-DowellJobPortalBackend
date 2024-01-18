@@ -26,7 +26,12 @@ function Home({
   const { candidateJobs, setCandidateJobs } = useCandidateJobsContext();
   const isLargeScreen = useMediaQuery("(min-width: 992px)");
 
-  const { currentUser, setCurrentUser } = useCurrentUserContext();
+  const { 
+    currentUser, 
+    setCurrentUser,
+    setCurrentUserHiredApplications, 
+    setCurrentUserHiredApplicationsLoaded,
+  } = useCurrentUserContext();
 
   useEffect(() => {
 
@@ -34,16 +39,18 @@ function Home({
     if (Array.isArray(candidateJobs.appliedJobs) && candidateJobs.appliedJobs.length > 0) return setLoading(false);
 
     getAppliedJobs(currentUser?.portfolio_info[0].org_id).then(res => {
-      const userApplication = res.data.response.data.filter(
-        (application) => application.data_type === currentUser?.portfolio_info[0].data_type
-      )
-
-      const currentUserAppliedJobs = userApplication.filter(
-        (application) => application.username === currentUser.userinfo.username
+      const currentUserAppliedJobs = res.data.response.data.filter(
+        (application) => 
+          application.username === currentUser.userinfo.username 
+          &&
+          application.data_type === currentUser?.portfolio_info[0]?.data_type
       );
       const userSelectedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.ONBOARDING);
       const userShortlistedJobs = currentUserAppliedJobs.filter(application => application.status === candidateStatuses.SHORTLISTED);
       console.log(userShortlistedJobs);
+
+      setCurrentUserHiredApplications(userSelectedJobs);
+      setCurrentUserHiredApplicationsLoaded(true);
 
       if (currentUserAppliedJobs.find(application => application.status === candidateStatuses.REMOVED)) {
         setRemoved(true);

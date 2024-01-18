@@ -1,5 +1,5 @@
 .att_report_main {
-    width: 90%;
+    width: 95%;
     background-color: #f5f5f5;
     margin: 1rem auto;
     display: flex;
@@ -12,12 +12,10 @@
 }
 
 .att__Date__Input {
-    outline: none;
-    border: none;
     border: 1px solid lightgray;
     font-size: 14px;
     width: max-content;
-    border-radius: 8px;
+    border-radius: 3px;
     color: #807f7f;
     padding: 0.45rem;
     font-family: "Poppins", sans-serif;
@@ -39,7 +37,7 @@ button.hr__Att__Btn {
 .item__Filter__Wrap {
     display: flex;
     align-items: flex-start;
-    gap: 0.6rem;
+    gap: 0.4rem;
     flex-direction: column;
     /* margin-left: 25px; */
 }
@@ -49,35 +47,14 @@ button.hr__Att__Btn {
     font-size: 0.875rem;
 }
 
-.item__Filter{
-    width: 20rem;
-}
-
-.attendance-circle {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: inline-block;
-    margin-right: 5px;
-}
-
-.present {
-    background-color: rgb(77, 180, 86);
-    border: 1px solid rgb(43, 142, 51);
-    box-shadow: 0 0 3px black;
-}
-
-.absent {
-    background-color: rgba(219, 35, 35, 0.991);
-    border: 1px solid rgba(189, 12, 12, 0.991);
-    box-shadow: 0 0 3px black;
+.item__Filter {
+    width: 15rem;
 }
 
 .att_rep {
-    width: 80%;
+    width: 100%;
     background-color: white;
-    padding: 2px;
+    padding: 2%;
     border-radius: 30px;
     margin-bottom: 2%;
 }
@@ -86,7 +63,6 @@ button.hr__Att__Btn {
 .att_rep table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
 }
 
 .att_rep thead {
@@ -96,8 +72,8 @@ button.hr__Att__Btn {
 .att_rep th {
     text-align: center;
     background-color: white;
-    border-bottom: 1px solid #ddd;
-    color: #767474;
+    border-bottom: 4px solid #ddd;
+    color: #000000;
     padding: 2%;
 }
 
@@ -107,18 +83,19 @@ button.hr__Att__Btn {
     border-bottom: 1px solid #ddd;
     padding: 2%;
 }
+
 .att_rep tr {
     padding: 10px;
 }
 
-.tbl_rep{
+.tbl_rep {
     max-height: 400px;
     overflow: scroll;
-    padding-right: 10%;
-    border-radius: 30px;
+    /* padding-right: 10%; */
+    /* border-radius: 30px; */
 }
 
-.att_report_main h3{
+.att_report_main h3 {
     padding-top: 1%;
     padding-left: 2%;
     color: #005734;
@@ -126,7 +103,7 @@ button.hr__Att__Btn {
     font-weight: 500;
 }
 
-.check{
+.check {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -139,3 +116,96 @@ button.hr__Att__Btn {
     padding: 3%;
 }
 
+.att_name {
+    width: 78%;
+    border-radius: 18px;
+    border: 1px solid #c8c8c8;
+    padding: 2%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.att_name .profile {
+    width: 130px;
+    height: 130px;
+    /* border: 1px solid #c8c8c8; */
+    /* border-radius: 15px; */
+}
+
+.att_percentage {
+    width: 20%;
+    margin: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.att_percentage b {
+    font-size: 25px;
+    font-family: "Poppins", sans-serif;
+}
+
+.att_percentage div {
+    margin: 0.3rem;
+}
+
+.txt_color {
+    color: #000000;
+}
+
+.title {
+    /* margin: 1rem auto; */
+    padding-top: 3%;
+}
+
+.present {
+    color: #4ecb71;
+}
+
+.absent {
+    color: #f02a2b;
+}
+
+.holiday {
+    color: #909090;
+}
+
+.table_data {
+    margin-right: 4%;
+}
+
+.att_select_input{
+    border: 1px solid lightgray;
+    font-size: 14px;
+    width: 15rem;
+    border-radius: 3px;
+    color: #807f7f;
+    padding: 0.45rem;
+    font-family: "Poppins", sans-serif;
+}
+
+.users_info{
+    padding: 1%;
+    display: flex;
+}
+.users_info button{
+    width: max-content;
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #005734;
+    color: white;
+    border: 0px;
+    border-radius: 8px;
+    font-family: "Poppins", sans-serif;
+    cursor: pointer;
+    margin: 2px;
+    box-shadow: 1px 4px 8px rgba(0, 0, 0.1, 0.2);
+}
+
+.users_info p{
+    padding: 10px 20px;
+    font-size: large;
+    font-weight: 600;
+}

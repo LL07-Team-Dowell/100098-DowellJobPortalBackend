@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import './style.css';
-import axios from "axios";
 import { FaCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
@@ -11,6 +10,8 @@ import { getSettingUserSubProject } from "../../../../../services/adminServices"
 import { useCurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { getWeeklyAgenda } from "../../../../../services/commonServices";
 import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
+import { getSubprojectAgendaAddedDates } from "../../../../../services/commonServices";
+import { Tooltip } from "react-tooltip";
 
 const AgendaReport = () => {
     //dummy data
@@ -63,19 +64,11 @@ const AgendaReport = () => {
             },
         },
     };
-
-    // const data02 = [
-    //     { name: 'completed', value: 80 },
-    //     { name: 'incompleted', value: 20 },
-    // ];
-
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
     const [subProjects, setSubProjects] = useState([]);
     const [selectedSubProject, setSelectedSubProject] = useState("");
     const [resultVisibility, setResultVisibility] = useState(false);
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
     const [agendaTitle, setAgendaTitle] = useState("");
     const [agendaDescription, setAgendaDescription] = useState("");
     const [leadName, setLeadName] = useState("");
@@ -86,6 +79,10 @@ const AgendaReport = () => {
     const [noResultFound, setNoResultFound] = useState(false);
     const { currentUser } = useCurrentUserContext();
     const [isloading, setIsLoading] = useState(false);
+    const [agendaAddedDatesLength, setAgendaAddedDatesLength] = useState('');
+    const [buttonVisibility, setButtonVisibility] = useState(false);
+    const [loadingButtonIndex, setLoadingButtonIndex] = useState(null);
+    const [agendaDates, setAgendaDates] = useState([]);
 
     // const companyId = "6385c0f18eca0fb652c94561";
 
@@ -159,69 +156,12 @@ const AgendaReport = () => {
         return str.replace(/\b\w/g, char => char.toUpperCase());
     }
 
-    useEffect(() => {
-        if (startDate) {
-            const newEndDate = new Date(startDate);
-            newEndDate.setDate(newEndDate.getDate() + 7);
-            setEndDate(newEndDate.toISOString().split('T')[0]);
-        }
-    }, [startDate]);
+    const handleResultVisibilty = async (index) => {
+        setResultVisibility(false);
+        setLoadingButtonIndex(index);
 
-    const handleResultVisibilty = async () => {
-        if (!selectedProject) {
-            return toast.info("Please select a project");
-        } else if (!selectedSubProject) {
-            return toast.info("Please select a subproject");
-        } else if (!startDate || !endDate) {
-            return toast.info("Please select both start and end dates");
-        } else {
-            setIsLoading(true);
-        }
         const processedSubProject = selectedSubProject.replace(/ /g, "-");
-
-        // axios.post(`https://100098.pythonanywhere.com/weekly_agenda/?type=all_weekly_agendas&limit=1&offset=1&sub_project=${processedSubProject}&project=${selectedProject}`)
-        //     .then(response => {
-        //         console.log("testinggggggggggggg", response.data);
-
-        //         const timelineData = response.data.response[0].timeline;
-        //         const processedLeadName = capitalizeFirstLetter(response.data.response[0].lead_name);
-        //         const totalSubtasksCount = timelineData.length;
-
-        //         setAgendaTitle(response.data.response[0].agenda_title);
-        //         setAgendaDescription(response.data.response[0].aggregate_agenda);
-        //         setLeadName(processedLeadName);
-        //         setTotalHours(response.data.response[0].total_time);
-
-        //         const formattedTableData = timelineData.map(entry => {
-        //             const entryStartDate = new Date(entry.timeline_start);
-        //             const entryEndDate = new Date(entry.timeline_end);
-        //             const formattedStartDate = entryStartDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-        //             const formattedEndDate = entryEndDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-        //             const formattedDateRange = `${formattedStartDate}-${formattedEndDate}`;
-
-        //             return {
-        //                 name: entry.subtask,
-        //                 status: 'Completed',
-        //                 dueDate: formattedDateRange,
-        //                 hours: entry.hours,
-        //                 assignee: entry.assignees.join(', '),
-        //             };
-        //         });
-
-        //         setEvaluatorResponse(response.data.response[0].evaluator_response);
-        //         setTableData(formattedTableData);
-        //         setTotalSubTasks(totalSubtasksCount);
-        //         if (response.data.response.length > 0) {
-        //             setResultVisibility(true);
-        //         } else {
-        //             setNoResultFound(true);
-        //         }
-        //     })
-        //     .catch(error => {
-        //         console.error('Errorrrrrrrrrrr:', error);
-        //     });
-
-        getWeeklyAgenda(1, 1, processedSubProject, selectedProject)
+        getWeeklyAgenda(agendaAddedDatesLength - 1 - index, 1, processedSubProject, selectedProject)
             .then(response => {
                 console.log("testinggggggggggggg", response.data);
 
@@ -260,11 +200,36 @@ const AgendaReport = () => {
                     setResultVisibility(false);
                     setNoResultFound(true);
                 }
-                setIsLoading(false);
+                setLoadingButtonIndex(null);
             })
             .catch(error => {
                 console.error('Errorrrrrrrrrrr:', error);
-            });
+            })
+    }
+
+    const handleButtonsVisibilty = async () => {
+        if (!selectedProject) {
+            return toast.info("Please select a project");
+        } else if (!selectedSubProject) {
+            return toast.info("Please select a subproject");
+        } else {
+            setIsLoading(true);
+        }
+        const processedSubProject = selectedSubProject.replace(/ /g, "-");
+        await getSubprojectAgendaAddedDates(
+            currentUser?.portfolio_info[0]?.org_id, processedSubProject
+        ).then(response => {
+            setAgendaDates(response.data.response?.reverse());
+            console.log(">>>>>>>>>>>>>>>>>>>>>>", agendaDates);
+
+            setAgendaAddedDatesLength(response.data.response.length);
+            setButtonVisibility(true);
+            setIsLoading(false);
+            // console.log(">>>>>>>>>>>>>>>",agendaAddedDatesLength);
+        }).catch(error => {
+            console.error('Errorrrrrrrrrrr:', error);
+        }
+        );
     }
 
     return (
@@ -278,7 +243,7 @@ const AgendaReport = () => {
                 <div className="main_div">
                     <div className="wrapper">
                         <h2>Weekly Agenda Detailed Report</h2>
-                        <div className="internal_div">
+                        <div className="internal_div report">
                             <div>
                                 <label>
                                     <span>Project</span>
@@ -312,32 +277,28 @@ const AgendaReport = () => {
                                     </select>
                                 </label>
                             </div>
-
-                            <div>
-                                <label>
-                                    <span>Start Date</span>
-                                    <input
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
-                                    />
-                                </label>
-                            </div>
-
-                            <div>
-                                <label>
-                                    <span>End Date</span>
-                                    <input
-                                        type="date"
-                                        value={endDate}
-                                        readOnly
-                                    />
-                                </label>
-                            </div>
-
-                            <button onClick={handleResultVisibilty}>{isloading ? <LoadingSpinner width={25} height={25} color="#fff" /> : 'Show Results'}</button>
+                            <button onClick={handleButtonsVisibilty}>{isloading ? <LoadingSpinner width={20} height={20} color="#fff" /> : 'Show Results'}</button>
                         </div>
                     </div>
+                    {
+                        buttonVisibility &&
+                        <div className="pagination_wrap txt_color">
+                            <h4>Dates Added: </h4>
+                            <div>
+                                <Tooltip
+                                    id="my-tooltip"
+                                />
+                                {Array.from({ length: agendaAddedDatesLength - 1}).map((_, index) => (
+                                    <button key={index} onClick={() => handleResultVisibilty(index)}
+                                        data-tooltip-id="my-tooltip"
+                                        data-tooltip-content={`${new Date(agendaDates[index][0]).toDateString()}`}
+                                        data-tooltip-place="top">
+                                        {loadingButtonIndex === index ? <LoadingSpinner width={13} height={13} color="#fff" /> : `${index + 1}`}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    }
                     {
                         resultVisibility &&
                         <>
@@ -347,12 +308,6 @@ const AgendaReport = () => {
                                     <h2>{totalSubTasks}</h2>
                                     <div>
                                         <Bar data={subTaskChartData} options={chartOptions} />
-                                        {/* <ResponsiveContainer width="90%" height="90%">
-                                        <BarChart width={150} height={40} data={data}>
-                                            <XAxis dataKey="name" />
-                                            <Bar dataKey="uv" fill="#52beff" />
-                                        </BarChart>
-                                    </ResponsiveContainer> */}
                                     </div>
                                 </div>
                                 <div>
@@ -360,12 +315,6 @@ const AgendaReport = () => {
                                     <h2 style={{ color: '#fe6a6a' }}>{totalHours}</h2>
                                     <div>
                                         <Bar data={hoursChartData} options={chartOptions} />
-                                        {/* <ResponsiveContainer width="90%" height="90%">
-                                        <BarChart width={150} height={40} data={data}>
-                                            <XAxis dataKey="name" />
-                                            <Bar dataKey="uv" fill="#fe6a8a" />
-                                        </BarChart>
-                                    </ResponsiveContainer> */}
                                     </div>
                                 </div>
                                 <div className="lead_assignee">
@@ -382,7 +331,12 @@ const AgendaReport = () => {
                                     <div>
                                         <div className="profile"><p>{tableData[0]?.assignee[0]?.toUpperCase()}</p></div>
                                         <div className="lead_name">
-                                            <h4>{tableData.map(item => item.assignee).join(', ')}</h4>
+                                            <h4>
+                                                {tableData
+                                                    .map(item => item.assignee)
+                                                    .join(', ')
+                                                    .slice(0, 20) + (tableData.length > 1 ? '...' : '')}
+                                            </h4>
                                             <p>Task Management and rehire</p>
                                         </div>
                                     </div>
