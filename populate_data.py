@@ -325,7 +325,7 @@ def update_report_database(task_created_date,company_id):
                         "report_record_year": year,
                         "db_report_type": "report"
                     }
-
+                    update_data =data
                     try:
                         update_collection = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
                         if update_collection['success']==True:
@@ -518,6 +518,7 @@ def update_report_database(task_created_date,company_id):
                         "report_record_year": year,
                         "db_report_type": "report"
                     }
+                    update_data =data
 
                     try:
                         update_collection = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
