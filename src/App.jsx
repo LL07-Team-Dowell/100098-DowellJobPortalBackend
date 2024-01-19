@@ -86,6 +86,9 @@ import { projectLeadRoutesInfo } from "./routes/projectLeadRoutes";
 import HrAgendaPage from "./pages/HrPage/views/Agenda/HrTrackAgenda";
 import { subAdminRoutesInfo } from "./routes/subAdminRoutes";
 import useUpdateUserId from "./hooks/useUpdateUserId";
+import AttendanceLandingPage from "./pages/HrPage/views/AttendancePages/AttendanceLandingPage";
+import AttendanceUpdatePage from "./pages/HrPage/views/AttendanceReport/UpdateAttendance/UpdateAttendance";
+import { accountRoutesInfo } from "./routes/accountRoutes";
 
 function App() {
   // console.log = () => { };
@@ -489,6 +492,21 @@ function App() {
   ) {
     return (
       <Routes>
+        {/* {
+          React.Children.toArray(accountRoutesInfo.map(info => {
+            return <Route 
+              path={info?.path}
+              element={
+                <NavigationContextProvider>
+                  <CandidateContextProvider>
+                    <info.component />  
+                  </CandidateContextProvider>
+                </NavigationContextProvider>
+              }
+            />
+          }))
+        } */}
+
         <Route path='/logout' element={<Logout />} />
         <Route path='/payments' element={<Payment />} />
 
@@ -595,11 +613,31 @@ function App() {
       <Routes>
         <Route path='/logout' element={<Logout />} />
         <Route
-          path='/attendance-report'
+          path='/attendance-'
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <AttendanceLandingPage />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
+        <Route
+          path='/attendance-/attendance-report'
           element={
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
                 <AttendanceReport />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
+        <Route
+          path='/attendance-/attendance-update'
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <AttendanceUpdatePage />
               </ValuesProvider>
             </HrJobScreenAllTasksContextProvider>
           }

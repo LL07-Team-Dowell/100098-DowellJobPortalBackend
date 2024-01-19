@@ -153,7 +153,7 @@ const AgendaReport = () => {
     };
 
     function capitalizeFirstLetter(str) {
-        return str.replace(/\b\w/g, char => char.toUpperCase());
+        return str.replace(/\b\w/g, char => char?.toUpperCase());
     }
 
     const handleResultVisibilty = async (index) => {
@@ -165,15 +165,15 @@ const AgendaReport = () => {
             .then(response => {
                 console.log("testinggggggggggggg", response.data);
 
-                if (Array.isArray(response.data.response) && response.data.response.length > 0) {
-                    const timelineData = response.data.response[0].timeline;
-                    const processedLeadName = capitalizeFirstLetter(response.data.response[0].lead_name);
+                if (Array.isArray(response?.data?.response) && response?.data?.response?.length > 0) {
+                    const timelineData = response?.data?.response[0]?.timeline;
+                    const processedLeadName = capitalizeFirstLetter(response?.data?.response[0]?.lead_name);
                     const totalSubtasksCount = timelineData.length;
 
-                    setAgendaTitle(response.data.response[0].agenda_title);
-                    setAgendaDescription(response.data.response[0].aggregate_agenda);
+                    setAgendaTitle(response?.data.response[0]?.agenda_title);
+                    setAgendaDescription(response?.data.response[0]?.aggregate_agenda);
                     setLeadName(processedLeadName);
-                    setTotalHours(response.data.response[0].total_time);
+                    setTotalHours(response?.data.response[0]?.total_time);
 
                     const formattedTableData = timelineData.map(entry => {
                         const entryStartDate = new Date(entry.timeline_start);
@@ -191,7 +191,7 @@ const AgendaReport = () => {
                         };
                     });
 
-                    setEvaluatorResponse(response.data.response[0].evaluator_response);
+                    setEvaluatorResponse(response?.data?.response[0]?.evaluator_response);
                     setTableData(formattedTableData);
                     setTotalSubTasks(totalSubtasksCount);
                     setResultVisibility(true);
@@ -219,7 +219,7 @@ const AgendaReport = () => {
         await getSubprojectAgendaAddedDates(
             currentUser?.portfolio_info[0]?.org_id, processedSubProject
         ).then(response => {
-            setAgendaDates(response.data.response?.reverse());
+            setAgendaDates(response?.data?.response?.reverse());
             console.log(">>>>>>>>>>>>>>>>>>>>>>", agendaDates);
 
             setAgendaAddedDatesLength(response.data.response.length);
@@ -369,7 +369,7 @@ const AgendaReport = () => {
                                                             <td className={item.status.toLowerCase()}>{item.status}</td>
                                                             <td>{item.dueDate}</td>
                                                             <td>{item.hours}</td>
-                                                            <td><div className="table_profile"><p>{item.assignee[0].toUpperCase()}</p></div></td>
+                                                            <td><div className="table_profile"><p>{item.assignee[0]?.toUpperCase()}</p></div></td>
                                                             {/* <td>{item.assignee}</td> */}
                                                         </tr>
                                                     ))}
