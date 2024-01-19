@@ -803,3 +803,27 @@ class UpdateUserIdSerializer(serializers.Serializer):
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
     application_id=serializers.CharField(max_length=255,allow_null=False)
+
+
+class AttendanceRetrievalSerializer(serializers.Serializer):
+    start_date = serializers.DateField(allow_null=False)
+    end_date = serializers.DateField(allow_null=False)
+    project=serializers.CharField(max_length=255,allow_null=False)
+    company_id = serializers.IntegerField(allow_null=False)
+    meeting = serializers.CharField(allow_null=False)
+    project = serializers.ListField(allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+
+class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
+    start_date = serializers.DateField(allow_null=False)
+    end_date = serializers.DateField(allow_null=False)
+    project=serializers.CharField(max_length=255,allow_null=False)
+    usernames=serializers.ListField(allow_null=False)
+    company_id = serializers.IntegerField(allow_null=False)
+    meeting = serializers.CharField(allow_null=False)
+    project = serializers.ListField(allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )

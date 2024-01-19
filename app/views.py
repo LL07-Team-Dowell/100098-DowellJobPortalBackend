@@ -50,7 +50,8 @@ from .helper import (
     get_speed_test_result,
     datacube_data_retrival_function,
     get_current_week_start_end_date,
-    speed_test_condition
+    speed_test_condition,
+    get_dates_between
 )
 from .serializers import (
     AccountSerializer,
@@ -112,7 +113,9 @@ from .serializers import (
     CompanyStructureUpdateProjectLeadSerializer,
     CompanyStructureProjectsSerializer,
     WorklogsDateSerializer,
-    UpdateUserIdSerializer
+    UpdateUserIdSerializer,
+    AttendanceRetrievalSerializer,
+    IndividualAttendanceRetrievalSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -9819,8 +9822,11 @@ class candidate_attendance(APIView):
                            )
        if request_type=="add_attendance":
            return self.add_attendance(request) 
-       if request_type=="get_attendance":
-           return self.get_attendance(request) 
+       if request_type=="project_wise_attendance":
+           return self.get_project_wise_attendance(request) 
+       if request_type=="get_user_wise_attendance":
+           return self.get_user_wise_attendance(request) 
+           
        else:
            self.handle_error(request)
         
@@ -9863,6 +9869,7 @@ class candidate_attendance(APIView):
             insert_attendance = json.loads(
                 datacube_data_insertion(API_KEY,DB_Name,collection, data)
             )
+            print(insert_attendance)
         except: 
                 return Response({
                     "success":False,
@@ -9881,32 +9888,122 @@ class candidate_attendance(APIView):
                 "error":insert_attendance["message"]
             }) 
     
-    def get_attendance(self,request):
+    def get_project_wise_attendance(self,request):
+
         start_date=request.data.get("start_date")
         end_date=request.data.get("end_date")
-        username=request.data.get("applicant_username")
-        project=request.data.get("project")
+        projects=request.data.get("project")
+        company_id=request.data.get("company_id")
         collection=start_date+"_to_"+end_date
         limit=request.data.get("limit")
         offset=request.data.get("offset")
+        
+        data={"company_id":company_id}
+        
+        attendance_with_projects={}
 
-        data={"project":project}
+        serializer=AttendanceRetrievalSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "error":serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            attendance_report=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection,data,limit,offset))
-            if attendance_report["success"]==True:
-                return Response({
-                    "success":True,
-                    "response":attendance_report["message"],
-                    "data":attendance_report},status=status.HTTP_200_OK)
-            
-            return Response({"success":False,"message":attendance_report["message"]},status=status.HTTP_400_BAD_REQUEST )
+            attendance_report=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection,data,limit,offset))    
             
         except:
             return Response({
                 "success":False,
                 "error":"datacube database not responding"
             })
+       
+        if attendance_report["success"]==True:              
+                if len(attendance_report["data"])>0:
+                    for project in projects:
+                        for attendance in attendance_report["data"]:
+                            if attendance_report["data"][0]["project"] in attendance_with_projects:
+                                attendance_with_projects[project].append(attendance)
+                            else:
+                                attendance_with_projects[project]=[attendance]    
+                    return Response({
+                        "success":True,
+                        "message":"Attendance records has been succesfully retrieved",
+                        "data":attendance_with_projects},status=status.HTTP_200_OK)                  
+                else:
+                    return Response({
+                        "success":False,
+                        "error":"Attendance for the given payload does not exist"
+                    })
+                    
+        return Response({"success":False,"message":attendance_report["message"]},status=status.HTTP_400_BAD_REQUEST )
+    
+    def get_user_wise_attendance(self,request):
+
+        start_date=request.data.get("start_date")
+        end_date=request.data.get("end_date")
+        usernames=request.data.get("usernames")
+        company_id=request.data.get("company_id")
+        projects=request.data.get("project")
+        collection=start_date+"_to_"+end_date
+        limit=request.data.get("limit")
+        offset=request.data.get("offset")
+        attendance_with_users={}
+
+        data={"company_id":company_id}
+
+        serializer=IndividualAttendanceRetrievalSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "error":serializer.errors
+            })
+        
+        try:
+            attendance_report=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection,data,limit,offset))     
+        except:
+            return Response({
+                "success":False,
+                "error":"datacube database not responding"
+            })
+
+        dates=get_dates_between(start_date,end_date)
+        print(dates)
+
+        if attendance_report["success"]==True:
+                for username in usernames:
+                    attendance_with_users[username]=[]
+                    # print(f"project is {username}")
+                    # for i in range(len(attendance_report["data"])):
+                    for attendance in attendance_report["data"]:
+                        if username in attendance:
+                            attendance_with_users[username].append({
+                                "meeting": data["meeting"],
+                                "dates_present": [data["date_taken"]],
+                                "dates_absent": data["user_absent"],
+                                "project": data["project"]
+                            })
+                                                      
+                                                      
+                                                           
+                               
+                            # print(attendance_report["data"][0]["project"])
+                            print(attendance_with_users)
+                            # if attendance_report["data"][0]["project"]==project:
+        #                     print(attendance_report["data"][0]["project"])
+        #                     if username in attendance_with_users:
+        #                         attendance_with_users[username].append(attendance)
+        #                         print(f"\n\nappended the attendance for {project}")
+        #                     else:
+        #                         print(f"\n\nInside else statement{project}")
+        #                         attendance_with_projects[project]=[attendance]
+        #         return Response({
+        #             "success":True,
+        #             "message":"Attendance records has been succesfully retrieved",
+        #             "data":attendance_with_projects},status=status.HTTP_200_OK)
+            
+        return Response({"success":False,"message":attendance_with_users},status=status.HTTP_400_BAD_REQUEST )
     
     def handle_error(self,request):
         return Response({
