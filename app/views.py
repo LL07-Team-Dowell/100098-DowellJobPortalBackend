@@ -9826,10 +9826,13 @@ class candidate_attendance(APIView):
         
     
     def add_attendance(self,request):
-        applicant_usernames=request.data.get("applicant_usernames")
+        user_present=request.data.get("user_present")
+        user_absent=request.data.get("user_absent")
+        project=request.data.get("project")
         date_taken=request.data.get("date_taken")
         company_id=request.data.get("company_id")
         meeting=request.data.get("meeting")
+        data_type=request.data.get("data_type")
 
 
         serializer=AttendanceSerializer(data=request.data)
@@ -9847,10 +9850,13 @@ class candidate_attendance(APIView):
         collection=f"{start}_to_{end}"
         
         data={
-            "applicant_usernames":applicant_usernames,
+            "user_present":user_present,
+            "user_absent":user_absent,
             "date_taken":date_taken,
+            "project":project,
             "company_id":company_id,
             "meeting":meeting,
+            "data_type":data_type
         }
 
         try:
@@ -9879,19 +9885,15 @@ class candidate_attendance(APIView):
         start_date=request.data.get("start_date")
         end_date=request.data.get("end_date")
         username=request.data.get("applicant_username")
-        collection=start_date+"_"+end_date+"_"+username
-        attendance_date=request.data.get("attendance_date")
+        project=request.data.get("project")
+        collection=start_date+"_to_"+end_date
         limit=request.data.get("limit")
         offset=request.data.get("offset")
 
-        data={}
-        if attendance_date:
-            data={
-                "date":attendance_date
-            }
+        data={"project":project}
 
         try:
-            attendance_report=json.loads(datacube_data_retrival_function(API_KEY,DB_Name,collection,data,limit,offset,False))
+            attendance_report=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection,data,limit,offset))
             if attendance_report["success"]==True:
                 return Response({
                     "success":True,
