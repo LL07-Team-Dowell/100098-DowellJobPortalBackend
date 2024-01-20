@@ -2516,7 +2516,7 @@ class approve_task(APIView):
         if data:
             field = {"_id": data.get("document_id")}
             update_field = {
-                # "status": data.get("status"),
+                "status": data.get("status"),
                 "task_approved_by": data.get("lead_username")
             }
             serializer = TaskApprovedBySerializer(data=update_field)
