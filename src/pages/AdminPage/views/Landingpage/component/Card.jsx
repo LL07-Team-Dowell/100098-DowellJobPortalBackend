@@ -264,7 +264,7 @@ const Card = ({
             <div className='state_of_job'>
               <label htmlFor='is_active'></label>
               <input
-                className='active_checkbox'
+                className='active_job_Card__checkbox'
                 type='checkbox'
                 name={"is_active"}
                 checked={is_activee}

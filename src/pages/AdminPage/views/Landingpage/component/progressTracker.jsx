@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import "./progressTracker.css";
 
-const ProgressTracker = ({ durationInSec }) => {
+const ProgressTracker = ({ durationInSec, showDivProgressBar, progressClassName }) => {
   const [progressVal, setProgressVal] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(
-      () => setProgressVal((prevVal) => prevVal + 1),
+      () => setProgressVal((prevVal) => {
+        if (prevVal <= 100) return prevVal + 1;
+        return prevVal;
+      }),
       (durationInSec * 1000) / 1000
     );
 
@@ -14,6 +17,15 @@ const ProgressTracker = ({ durationInSec }) => {
       clearInterval(interval);
     };
   }, []);
+
+  if (showDivProgressBar) return <>
+    <div
+      style={{ width: `${progressVal <= 100 ? progressVal : '100'}%` }}
+      className={`${progressClassName ? progressClassName : ''} ' progress__bar'`}
+    >
+      <span>{progressVal <= 100 ? progressVal : '100'}%</span>
+    </div>
+  </>
 
   return (
     <>
