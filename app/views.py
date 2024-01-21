@@ -115,7 +115,9 @@ from .serializers import (
     WorklogsDateSerializer,
     UpdateUserIdSerializer,
     AttendanceRetrievalSerializer,
-    IndividualAttendanceRetrievalSerializer
+    IndividualAttendanceRetrievalSerializer,
+    AddEventSerializer,
+    UpdateEventSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -141,6 +143,8 @@ if os.getenv("ATTENDANCE_DB_NAME"):
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
+if os.getenv("Events_collection"):
+    Events_collection = str(os.getenv("Events_collection"))
 
 else:
     """for windows local"""
@@ -152,6 +156,7 @@ else:
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+    Events_collection=str(os.getenv("Events_collection"))
 
 # Create your views here.
 
@@ -2519,7 +2524,7 @@ class approve_task(APIView):
         if data:
             field = {"_id": data.get("document_id")}
             update_field = {
-                # "status": data.get("status"),
+                "status": data.get("status"),
                 "task_approved_by": data.get("lead_username")
             }
             serializer = TaskApprovedBySerializer(data=update_field)
@@ -5653,76 +5658,139 @@ class Generate_Report(APIView):
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            start_date = datetime.strptime(payload["start_date"], "%m/%d/%Y %H:%M:%S")
+            end_date = datetime.strptime(payload["end_date"], "%m/%d/%Y %H:%M:%S")
+                
             data = {}
             # get all details firstly---------------
             field = {"company_id": request.data.get("company_id")}
             
-            response = dowellconnection(*jobs, "fetch", field, update_field=None)
+            jobs_response = json.loads(dowellconnection(*jobs, "fetch", field, update_field=None))["data"]
 
-            jbs = json.loads(response)["data"]
-            res_jobs = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=jbs,
-                key="created_on",
-            )
-            data["jobs"] = res_jobs[1]
-            # print(res_jobs[0])
+            data["jobs"] = 0
+            data["no_of_active_jobs"] = 0
+            data["no_of_inactive_jobs"] = 0
+            for res in jobs_response:
+                if "created_on" in res.keys():
+                    res_dt = datetime.strptime(set_date_format(res["created_on"]), "%m/%d/%Y %H:%M:%S")
+                    if  res_dt >= start_date and res_dt <= end_date:
+                        data["jobs"]+=1
+                        if "is_active" in res.keys():
+                            if (
+                                res["is_active"] == "True"
+                                or res["is_active"] == "true"
+                                or res["is_active"] == True
+                            ):
+                                data["no_of_active_jobs"]+=1
+                            if (
+                                res["is_active"] == "False"
+                                or res["is_active"] == "false"
+                                or res["is_active"] == False
+                            ):
+                                data["no_of_inactive_jobs"]+=1
+            
 
-            active_jobs = []
-            inactive_jobs = []
-            for t in res_jobs[0]:
-                if "is_active" in t.keys():
-                    if (
-                        t["is_active"] == "True"
-                        or t["is_active"] == "true"
-                        or t["is_active"] == True
-                    ):
-                        active_jobs.append([t["_id"], t["is_active"]])
-                    if (
-                        t["is_active"] == "False"
-                        or t["is_active"] == "false"
-                        or t["is_active"] == False
-                    ):
-                        inactive_jobs.append([t["_id"], t["is_active"]])
-            data["no_of_active_jobs"] = len(active_jobs)
-            data["no_of_inactive_jobs"] = len(inactive_jobs)
-
-            response = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None))["data"]
-            job_application=[]
+            candidate_response = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None))["data"]
+            data['job_applications']={
+                'total':0,
+                "months":{
+                            "January": [],
+                            "February": [],
+                            "March": [],
+                            "April": [],
+                            "May": [],
+                            "June": [],
+                            "July": [],
+                            "August": [],
+                            "September": [],
+                            "October": [],
+                            "November": [],
+                            "December": [],
+                        }
+            }
             job_titles = {}
             
-            new_candidates = []
-            guest_candidates = []
-            probationary_candidates = []
-            selected = []
-            shortlisted = []
-            hired = []
-            rehired = []
-            rejected = []
-            onboarded = []
-            for res in response:
+            data["new_candidates"]=0
+            data["guest_candidates"]=0
+            data["probationary_candidates"]=0
+            data["selected"] = 0
+            data["shortlisted"] =0
+            data["hired"] =0
+            data["rehired"] =0
+            data["rejected"] =0
+            data["onboarded"] =0
+
+            job_application_count=[i['job_number'] for i in candidate_response if "job_number" in i.keys()]
+            
+            for res in candidate_response:
                 if "application_submitted_on" in res.keys():
-                    job_application.append(res)
                     job_titles[res["job_number"]] = res["job_title"]
-                    if res["status"] == "Pending":
-                        new_candidates.append(res)
-                    if res["status"] == "Guest_Pending":
-                        guest_candidates.append(res)
-                    if res["status"] == "probationary":
-                        probationary_candidates.append(res)
+                    res_dt = datetime.strptime(set_date_format(res["application_submitted_on"]), "%m/%d/%Y %H:%M:%S")
+                    if  res_dt >= start_date and res_dt <= end_date:
+                        
+                        month_list = calendar.month_name
+                        month = month_list[res_dt.month]
+                        if month in data['job_applications']["months"].keys():
+                            job_application_count.append(res["job_number"])
+                            i = {
+                                "job_number": res["job_number"],
+                                "job_title": res["job_title"],
+                                "no_job_applications": job_application_count.count(res["job_number"]),
+                            }
+                            if not i in data['job_applications']["months"][month]:
+                                data['job_applications']["months"][month].append(i)
+                                
+                        if res["status"] == "Pending":
+                            data["new_candidates"]+=1
+                        if res["status"] == "Guest_Pending":
+                            data["guest_candidates"] +=1
+                        if res["status"] == "probationary":
+                            data["probationary_candidates"] +=1
+
                 if "selected_on" in res.keys():
-                    selected.append(res)
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["selected_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["selected"] +=1
+                    except ValueError:
+                        pass 
                 if "shortlisted_on" in res.keys():
-                    shortlisted.append(res)
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["shortlisted_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["shortlisted"] +=1
+                    except ValueError:
+                        pass 
+
                 if "hired_on" in res.keys():
-                    hired.append(res)
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["hired_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["hired"] +=1
+                    except ValueError:
+                        pass 
+                    
                 if "rehired_on" in res.keys():
-                    rehired.append(res)
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["rehired_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["rehired"] +=1
+                    except ValueError:
+                        pass 
                 if "rejected_on" in res.keys():
-                    rejected.append(res)
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["rejected_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["rejected"] +=1
+                    except ValueError:
+                        pass 
                 if "onboarded_on" in res.keys():
-                    onboarded.append(res)
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["onboarded_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["onboarded"] +=1
+                    except ValueError:
+                        pass 
             
             try:
                 ids =list(job_titles.keys())
@@ -5743,132 +5811,6 @@ class Generate_Report(APIView):
             except Exception:
                 data["most_applied_job"] = {"job_number": "none"}
                 data["least_applied_job"] = {"job_number": "none"}
-
-            res_job_application = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=job_application,
-                key="application_submitted_on",
-            )
-
-            m = {
-                "January": [],
-                "February": [],
-                "March": [],
-                "April": [],
-                "May": [],
-                "June": [],
-                "July": [],
-                "August": [],
-                "September": [],
-                "October": [],
-                "November": [],
-                "December": [],
-            }
-            months = []
-            month_list = calendar.month_name
-            for res in res_job_application[0]:
-                date = set_date_format(res["application_submitted_on"])
-                month = month_list[
-                    datetime.strptime(date, "%m/%d/%Y %H:%M:%S").month
-                ]
-                months.append(
-                    {
-                        "job_title": res["job_title"],
-                        "job_number": res["job_number"],
-                        "month": month,
-                    }
-                )
-
-            for item in months:
-                if item["month"] in m.keys():
-                    i = {
-                        "job_number": item["job_number"],
-                        "job_title": item["job_title"],
-                        "no_job_applications": months.count(item),
-                    }
-                    if not i in m[item["month"]]:
-                        m[item["month"]].append(i)
-            for key in m.keys():
-                if len(m[key]) == 0:
-                    m[key] = 0
-
-            data["job_applications"] = {
-                "total": res_job_application[1],
-                "months": m,
-            }
-
-            res_new_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=new_candidates,
-                key="application_submitted_on",
-            )
-            data["new_candidates"] = res_new_candidates[1]
-
-            res_guest_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=guest_candidates,
-                key="application_submitted_on",
-            )
-            data["guest_candidates"] = res_guest_candidates[1]
-
-            res_probationary_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=probationary_candidates,
-                key="application_submitted_on",
-            )
-            data["probationary_candidates"] = res_probationary_candidates[1]
-
-            res_selected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=selected,
-                key="selected_on",
-            )
-            data["selected"] = res_selected[1]
-
-            res_shortlisted = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=shortlisted,
-                key="shortlisted_on",
-            )
-            data["shortlisted"] = res_shortlisted[1]
-
-            res_hired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=hired,
-                key="hired_on",
-            )
-            data["hired"] = res_hired[1]
-
-            res_rehired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rehired,
-                key="rehired_on",
-            )
-            data["rehired"] = res_rehired[1]
-
-            res_onboarded = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=onboarded,
-                key="onboarded_on",
-            )
-            data["onboarded"] = res_onboarded[1]
-
-            res_rejected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rejected,
-                key="rejected_on",
-            )
-            data["rejected"] = res_rejected[1]
 
             try:
                 data["hiring_rate"] = (
@@ -6567,41 +6509,33 @@ class Generate_Report(APIView):
         payload = request.data
         if payload:
             if valid_period(payload["start_date"], payload["end_date"]) == True:
-                data = {}
-                # get all details firstly---------------
+                start_date = datetime.strptime(payload["start_date"], "%m/%d/%Y %H:%M:%S")
+                end_date = datetime.strptime(payload["end_date"], "%m/%d/%Y %H:%M:%S")
+                
                 field = {}
-                update_field = {}
-                response = dowellconnection(
-                    *lead_management_reports, "fetch", field, update_field
-                )
-                total = [res for res in json.loads(response)["data"]]
-                rehired = [res for res in total if "rehired_on" in res.keys()]
-                rejected = [res for res in total if "rejected_on" in res.keys()]
-                hired = [res for res in total if "hired_on" in res.keys()]
+                response = dowellconnection(*lead_management_reports, "fetch", field, update_field=None)
+                
+                rehired=[]
+                rejected=[]
+                hired=[]
+                for res in json.loads(response)["data"]:
+                    if "rehired_on" in res.keys():
+                        res_dt = datetime.strptime(set_date_format(res["rehired_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            rehired.append(res)
+                    if "rejected_on" in res.keys():
+                        res_dt = datetime.strptime(set_date_format(res["rejected_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            rejected.append(res)
+                    if "hired_on" in res.keys():
+                        res_dt = datetime.strptime(set_date_format(res["hired_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            hired.append(res)
 
-                res_rehired = period_check(
-                    start_dt=payload["start_date"],
-                    end_dt=payload["end_date"],
-                    data_list=rehired,
-                    key="rehired_on",
-                )
-                data["rehired"] = res_rehired[1]
-
-                res_hired = period_check(
-                    start_dt=payload["start_date"],
-                    end_dt=payload["end_date"],
-                    data_list=hired,
-                    key="hired_on",
-                )
-                data["onboarded"] = res_hired[1]
-
-                res_rejected = period_check(
-                    start_dt=payload["start_date"],
-                    end_dt=payload["end_date"],
-                    data_list=rejected,
-                    key="rejected_on",
-                )
-                data["rejected"] = res_rejected[1]
+                data = {"rehired":len(rehired),
+                        "rejected":len(rejected),
+                        "onboarded":len(hired)
+                        }
 
                 return Response(
                     {"message": "Lead Report Generated", "response": data},
@@ -9973,54 +9907,26 @@ class candidate_attendance(APIView):
             })
 
         dates=get_dates_between(start_date,end_date)
+        
         print(dates)
 
-        dates=get_dates_between(start_date,end_date)
-        attendance_with_users_key = {
-        user: {
-            "meeting": set(),
-            "dates_present": set(),
-            "dates_absent": set(),
-            "project": projects  
-        }
-            for user in usernames
-        }
-
-        if attendance_report["success"] == True:
-            for date in dates:
+        attendance_with_users={user:{"meeting":{"dates_present":[],"dates_absent":[]},"project":projects} for user in usernames}
+        if attendance_report["success"]==True:
+            for attendance in attendance_report["data"]:
                 for user in usernames:
-                    user_found = False
-                    for attendance in attendance_report["data"]:
-                        if attendance["date_taken"] == date and user in attendance["user_present"]:
-                            # user_found = True
+                    # for date in dates:
+                        if attendance["date_taken"] == date in dates:
+                            if user in attendance["user_present"]:                        
+                                attendance_with_users[user]["meeting"]["dates_present"].append(date)
                             
+                            else:
+                                attendance_with_users[user]["meeting"]["dates_absent"].append(date)
                             
-                            attendance_with_users_key[user]["dates_present"].add(date)
-                            attendance_with_users_key[user]["meeting"].add(attendance["meeting"])
-                            break
-
-                    
-                        
-                            # If user is not found, initialize with an empty meeting and dates_absent containing only the current date
-                        
-                        attendance_with_users_key[user]["dates_absent"].add(date)
-                        attendance_with_users_key[user]["meeting"].add(attendance["meeting"])
-
-# Print or use attendance_with_users_key as needed
-# print(attendance_with_users_key)
-
-        
-
-#         print(attendance_with_users_key)
-                            
-
-
-
-
-
+                               
+                    # for username in usernames:
                     # attendance_with_users[username]=[]
-                    # # print(f"project is {username}")
-                    # # for i in range(len(attendance_report["data"])):
+                    # print(f"project is {username}")
+                    # for i in range(len(attendance_report["data"])):
                     # for attendance in attendance_report["data"]:
                     #     if username in attendance:
                     #         attendance_with_users[username].append({
@@ -10046,7 +9952,7 @@ class candidate_attendance(APIView):
                 return Response({
                     "success":True,
                     "message":"Attendance records has been succesfully retrieved",
-                    "data":attendance_with_users_key},status=status.HTTP_200_OK)
+                    "data":attendance_with_projects},status=status.HTTP_200_OK)
             
         return Response({"success":False,"message":attendance_report},status=status.HTTP_400_BAD_REQUEST )
     
@@ -10755,3 +10661,157 @@ class Company_Structure(APIView):
                                 _y['projects'].append(z)
                         data["project_leads"].append(_y)
         return Response(data,status=status.HTTP_200_OK)
+
+    
+@method_decorator(csrf_exempt, name="dispatch")
+class DowellEvents(APIView):
+    def post(self,request):
+        request_type=request.GET.get("type")
+        if request_type=="add_events":
+            return self.AddEvents(request)
+        if request_type=="update_events":
+            return self.UpdateEvents(request)
+        else:
+            print("Request invalids")
+            return self.handle_error(request)   
+    def AddEvents(self,request):
+        data=request.data
+        
+        field={
+            "event_name":data.get("event_name"),
+            "event_frequency":data.get("event_frequency"),
+            "event_host":data.get("event_host"),
+            "data_type":data.get("data_type"),
+            "company_id":data.get("company_id")
+        }
+
+        serializer=AddEventSerializer(data=request.data)
+       
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        try:    
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,DB_Name,Events_collection,data=field))
+        
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            })
+
+        if insert_collection["success"] and len(insert_collection["data"])>0:
+            return Response({
+                            "success":True,
+                            "message":"events has been added successfuly"
+                            })
+
+        else:
+            return Response({
+                "success":False,
+                "error":insert_collection["message"]
+            })
+            
+    def UpdateEvents(self, request):
+
+        document_id=request.data.get("document_id")
+        update=request.data
+
+        field={"_id":document_id}
+
+        allowed_to_update=("event_name","event_host","event_frequency") #this tuple contains the data that cannot be updated in the Db
+        
+        serializer=UpdateEventSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+        update_field={key:Value for key,Value in update.items() if key in allowed_to_update}
+
+        try:
+            update_event = json.loads(
+                datacube_data_update(
+                    API_KEY,
+                    DB_Name,
+                    coll_name=Events_collection,
+                    query=field,
+                    update_data=update_field,
+                )
+            )
+            print(update_event)
+
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        if update_event["success"]==True:
+            return Response({
+                "success":True,
+                "message":f"{update_field} has been updated for eventid {document_id}"
+            })
+
+        else:
+             return Response({
+                "success":False,
+                "error":update_event["message"]
+            })
+    def GetEvents(self,request):
+        
+        data={}
+
+        serializer=AddEventSerializer(data=request.data)
+       
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        try:    
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,DB_Name,Events_collection,data))
+            print(insert_collection)
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            })
+        print("h2")
+        if insert_collection["success"] and len(insert_collection["data"])>0:
+            return Response({
+                            "success":True,
+                            "message":"events has been added successfuly"
+                            })
+
+        else:
+            return Response({
+                "success":False,
+                "error":insert_collection["message"]
+            })
+
+        print(update_field)
+        
+    def handle_error(self, request):
+        print("Request invalid")
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    
+
+
