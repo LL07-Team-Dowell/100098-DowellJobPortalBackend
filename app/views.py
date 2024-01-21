@@ -9948,9 +9948,13 @@ class candidate_attendance(APIView):
         collection=start_date+"_to_"+end_date
         limit=request.data.get("limit")
         offset=request.data.get("offset")
-        attendance_with_users={}
 
-        data={"company_id":company_id}
+
+
+        
+
+
+        data={"company_id":company_id,"project":projects}
 
         serializer=IndividualAttendanceRetrievalSerializer(data=request.data)
 
@@ -9971,25 +9975,66 @@ class candidate_attendance(APIView):
         dates=get_dates_between(start_date,end_date)
         print(dates)
 
-        if attendance_report["success"]==True:
-                for username in usernames:
-                    attendance_with_users[username]=[]
-                    # print(f"project is {username}")
-                    # for i in range(len(attendance_report["data"])):
+        dates=get_dates_between(start_date,end_date)
+        attendance_with_users_key = {
+        user: {
+            "meeting": set(),
+            "dates_present": set(),
+            "dates_absent": set(),
+            "project": projects  
+        }
+            for user in usernames
+        }
+
+        if attendance_report["success"] == True:
+            for date in dates:
+                for user in usernames:
+                    user_found = False
                     for attendance in attendance_report["data"]:
-                        if username in attendance:
-                            attendance_with_users[username].append({
-                                "meeting": data["meeting"],
-                                "dates_present": [data["date_taken"]],
-                                "dates_absent": data["user_absent"],
-                                "project": data["project"]
-                            })
+                        if attendance["date_taken"] == date and user in attendance["user_present"]:
+                            # user_found = True
+                            
+                            
+                            attendance_with_users_key[user]["dates_present"].add(date)
+                            attendance_with_users_key[user]["meeting"].add(attendance["meeting"])
+                            break
+
+                    
+                        
+                            # If user is not found, initialize with an empty meeting and dates_absent containing only the current date
+                        
+                        attendance_with_users_key[user]["dates_absent"].add(date)
+                        attendance_with_users_key[user]["meeting"].add(attendance["meeting"])
+
+# Print or use attendance_with_users_key as needed
+# print(attendance_with_users_key)
+
+        
+
+#         print(attendance_with_users_key)
+                            
+
+
+
+
+
+                    # attendance_with_users[username]=[]
+                    # # print(f"project is {username}")
+                    # # for i in range(len(attendance_report["data"])):
+                    # for attendance in attendance_report["data"]:
+                    #     if username in attendance:
+                    #         attendance_with_users[username].append({
+                    #             "meeting": data["meeting"],
+                    #             "dates_present": [data["date_taken"]],
+                    #             "dates_absent": data["user_absent"],
+                    #             "project": data["project"]
+                    #         })
                                                       
                                                       
                                                            
                                
                             # print(attendance_report["data"][0]["project"])
-                            print(attendance_with_users)
+                            # print(attendance_with_users)
                             # if attendance_report["data"][0]["project"]==project:
         #                     print(attendance_report["data"][0]["project"])
         #                     if username in attendance_with_users:
@@ -9998,12 +10043,12 @@ class candidate_attendance(APIView):
         #                     else:
         #                         print(f"\n\nInside else statement{project}")
         #                         attendance_with_projects[project]=[attendance]
-        #         return Response({
-        #             "success":True,
-        #             "message":"Attendance records has been succesfully retrieved",
-        #             "data":attendance_with_projects},status=status.HTTP_200_OK)
+                return Response({
+                    "success":True,
+                    "message":"Attendance records has been succesfully retrieved",
+                    "data":attendance_with_users_key},status=status.HTTP_200_OK)
             
-        return Response({"success":False,"message":attendance_with_users},status=status.HTTP_400_BAD_REQUEST )
+        return Response({"success":False,"message":attendance_report},status=status.HTTP_400_BAD_REQUEST )
     
     def handle_error(self,request):
         return Response({
