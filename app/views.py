@@ -9969,27 +9969,47 @@ class candidate_attendance(APIView):
             })
 
         dates=get_dates_between(start_date,end_date)
+        
         print(dates)
 
+        attendance_with_users={user:{"meeting":{"dates_present":[],"dates_absent":[]},"project":projects} for user in usernames}
         if attendance_report["success"]==True:
-                for username in usernames:
-                    attendance_with_users[username]=[]
+            for attendance in attendance_report["data"]:
+                for user in usernames:
+                    for date in dates:
+                        if attendance["date_taken"] == date:
+                            if user in attendance["user_present"]:
+                                user_present=True
+                                
+                            else:
+                                user_present=False
+                            
+
+                            if user_present:
+                                    attendance_with_users[user]["meeting"]["dates_present"].append(date)
+                            
+                            else:
+                                attendance_with_users[user]["meeting"]["dates_absent"].append(date)
+                            
+                               
+                    # for username in usernames:
+                    # attendance_with_users[username]=[]
                     # print(f"project is {username}")
                     # for i in range(len(attendance_report["data"])):
-                    for attendance in attendance_report["data"]:
-                        if username in attendance:
-                            attendance_with_users[username].append({
-                                "meeting": data["meeting"],
-                                "dates_present": [data["date_taken"]],
-                                "dates_absent": data["user_absent"],
-                                "project": data["project"]
-                            })
+                    # for attendance in attendance_report["data"]:
+                    #     if username in attendance:
+                    #         attendance_with_users[username].append({
+                    #             "meeting": data["meeting"],
+                    #             "dates_present": [data["date_taken"]],
+                    #             "dates_absent": data["user_absent"],
+                    #             "project": data["project"]
+                    #         })
                                                       
                                                       
                                                            
                                
                             # print(attendance_report["data"][0]["project"])
-                            print(attendance_with_users)
+                            # print(attendance_with_users)
                             # if attendance_report["data"][0]["project"]==project:
         #                     print(attendance_report["data"][0]["project"])
         #                     if username in attendance_with_users:
