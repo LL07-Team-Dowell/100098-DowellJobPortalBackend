@@ -10056,14 +10056,20 @@ class Company_Structure(APIView):
 
         if type_request == "add_ceo":
             return self.add_ceo(request, type_request)
+        elif type_request == "get_ceo":
+            return self.get_ceo(request, type_request)
         elif type_request == "update_ceo":
             return self.update_ceo(request,type_request)
         elif type_request == "add_project_leads":
             return self.add_project_leads(request, type_request)
+        elif type_request == "get_project_leads":
+            return self.get_project_leads(request, type_request)
         elif type_request == "update_project_leads":
             return self.update_project_leads(request,type_request)
         elif type_request == "add_projects":
             return self.add_projects(request,type_request)
+        elif type_request == "get_projects":
+            return self.get_projects(request,type_request)
         elif type_request == "update_projects":
             return self.update_projects(request,type_request)
         else:
@@ -10135,7 +10141,18 @@ class Company_Structure(APIView):
                     return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
                     return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
-     
+    def get_ceo(self,request, type_request):
+        company_id = request.data.get("company_id")
+        search_query ={  
+            "company_id":company_id,
+            "data_type":"Real_Data"
+        }
+        coll_name = 'ceo'
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        if res['success'] == True:
+            return Response(res,status=status.HTTP_200_OK)
+        else:
+            return Response(res,status=status.HTTP_404_NOT_FOUND)
     def update_ceo(self,request, type_request):
         type_request = type_request.replace("update_","")
         serializer=CompanyStructureUpdateCeoSerializer(data=request.data)
@@ -10271,7 +10288,7 @@ class Company_Structure(APIView):
             else:
                 return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
         elif res['success'] == True:
-            if len(res['data']) >=100:
+            if len(res['data']) >=1:
                 res={"success":False, "message":f"Data with this Project Lead '{project_lead}' already exists."}
                 return Response(res,status=status.HTTP_400_BAD_REQUEST)
             else:
@@ -10326,7 +10343,18 @@ class Company_Structure(APIView):
                     return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
                     return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
-     
+    def get_project_leads(self,request, type_request):
+        company_id = request.data.get("company_id")
+        search_query ={  
+            "company_id":company_id,
+            "data_type":"Real_Data"
+        }
+        coll_name = 'project_leads'
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        if res['success'] == True:
+            return Response(res,status=status.HTTP_200_OK)
+        else:
+            return Response(res,status=status.HTTP_404_NOT_FOUND)
     def update_project_leads(self,request,type_request):
         type_request = type_request.replace("update_","")
         serializer=CompanyStructureUpdateProjectLeadSerializer(data=request.data)
@@ -10545,7 +10573,18 @@ class Company_Structure(APIView):
                     return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
                     return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
-    
+    def get_projects(self,request, type_request):
+        company_id = request.data.get("company_id")
+        search_query ={  
+            "company_id":company_id,
+            "data_type":"Real_Data"
+        }
+        coll_name = 'projects'
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        if res['success'] == True:
+            return Response(res,status=status.HTTP_200_OK)
+        else:
+            return Response(res,status=status.HTTP_404_NOT_FOUND)
     def update_projects(self, request, type_request):
         type_request = type_request.replace("update_","")
         serializer=CompanyStructureProjectsSerializer(data=request.data)
@@ -10629,7 +10668,7 @@ class Company_Structure(APIView):
             for i in _x["project_leads"]:
                 plq={
                     'project_lead':i,# eg Manish
-                    'company_id':company_id,
+                   'company_id':company_id,
                     "data_type":"Real_Data"
                 }
                 
@@ -10656,7 +10695,7 @@ class Company_Structure(APIView):
                                 del z["_coded_project"]
                                 _y['projects'].append(z)
                         data["project_leads"].append(_y)
-        return Response(data,status=status.HTTP_200_OK)
+        return Response({'success':True,'data':data},status=status.HTTP_200_OK)
 
     
 @method_decorator(csrf_exempt, name="dispatch")
@@ -10807,7 +10846,5 @@ class DowellEvents(APIView):
             {"success": False, "message": "Invalid request type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
-    
 
 

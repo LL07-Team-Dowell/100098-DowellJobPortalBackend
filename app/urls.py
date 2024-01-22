@@ -222,6 +222,9 @@ urlpatterns = [
 
     #company_structure apis-------------------------------------------------------
     path('insert_company_structure/', Company_Structure.as_view()),
+    path('get_company_ceo/', Company_Structure.as_view()),
+    path('get_company_project_leads/', Company_Structure.as_view()),
+    path('get_projects/', Company_Structure.as_view()),
     path('get_company_structure/<str:company_id>/', Company_Structure.as_view()),
 
     #eventsAPI
