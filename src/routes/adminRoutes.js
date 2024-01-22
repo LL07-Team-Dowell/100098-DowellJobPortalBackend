@@ -30,6 +30,7 @@ import TeamScreenInfoAdminTeamLead from "../pages/TeamleadPage/views/CreateMembe
 import TeamThread from "../pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 import CreateTaskScreen from "../pages/TeamleadPage/views/CreateTaskScreen/CreateTaskScreen";
 import EventScreen from "../pages/AdminPage/views/Event/EventScreen";
+import ProjectEdit from "../pages/AdminPage/views/Project/ProjectEdit";
 
 export const mainAdminRoutesInfo = [
   {
@@ -47,6 +48,10 @@ export const mainAdminRoutesInfo = [
   {
     path: "/projects",
     component: Project,
+  },
+  {
+    path: "/projects/edit-project-time",
+    component: ProjectEdit,
   },
   {
     path: "/add-job",
