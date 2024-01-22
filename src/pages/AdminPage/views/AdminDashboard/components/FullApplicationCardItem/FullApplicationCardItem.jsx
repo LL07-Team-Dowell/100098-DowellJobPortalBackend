@@ -18,6 +18,7 @@ import {
   adminLeaveApplication,
   updateCandidateApplicationDetail,
 } from "../../../../../../services/adminServices";
+import { Link } from "react-router-dom";
 
 export default function FullApplicationCardItem({ application, activeStatus }) {
   const [showEditOptions, setShowEditOptions] = useState(false);
@@ -38,6 +39,15 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
   const [leaveOverlayVisibility, setLeaveOverlayVisibility] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [viewOverlayVisibility, setViewOverlayVisibility] = useState(false);
+
+  const handleViewItemClick = () => {
+    setViewOverlayVisibility(true);
+  };
+
+  const handleClosingviewItemClick = () => {
+    setViewOverlayVisibility(false);
+  };
 
   useEffect(() => {
     setItemBeingEdited(application);
@@ -211,10 +221,10 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
       leave_end: endDate,
     };
 
-    try{
-      const res = await (await adminLeaveApplication('approved_leave',dataToPost)).data;
+    try {
+      const res = await (await adminLeaveApplication('approved_leave', dataToPost)).data;
       console.log("set leave application responseeeeeeeeeeeeeeeeeeeee: ", res);
-    }catch(error){
+    } catch (error) {
       console.log("err setting leave");
     }
   }
@@ -262,6 +272,9 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
         </div>
         {showEditOptions && (
           <ul className={styles.update__Listing}>
+            <li className={styles.item} onClick={handleViewItemClick}>
+              View
+            </li>
             <li className={styles.item} onClick={handleUpdateItemClick}>
               Update
             </li>
@@ -274,6 +287,96 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
               {deleteLoading ? "Deleting.." : "Delete"}
             </li>
           </ul>
+        )}
+        {viewOverlayVisibility && (
+          <Overlay>
+            <div className={styles.edit__Modal}>
+              <div style={{ width: "100%" }}>
+                <AiOutlineClose
+                  onClick={handleClosingviewItemClick}
+                  className={styles.edit__Icon}
+                />
+              </div>
+              <h2>Application Details</h2>
+              <div className={styles.view_modal_avatar}>
+                <div>
+                  <Avatar
+                    name={
+                      application.applicant.slice(0, 1) +
+                      " " +
+                      application.applicant
+                        .split(" ")
+                      [application.applicant.split(" ").length - 1]?.slice(
+                        0,
+                        1
+                      )
+                    }
+                    round={true}
+                    size="5rem"
+                  />
+                </div>
+                <div className={styles.applicant_info}>
+                  <h2>{application.applicant}</h2>
+                  <p>{application.job_category}</p>
+                </div>
+              </div>
+              <div className={activeStatus ? styles.active : styles.inactive}>
+                <p>{activeStatus ? "Active" : "Inactive"}</p>
+              </div>
+              <div className={styles.applicant_oth_info}>
+                <p>
+                  <b>Email:</b> {application.applicant_email}
+                </p>
+                <p>
+                  <b>Country:</b> {application.country}
+                </p>
+                <p>
+                  <b>Current Status:</b>{" "}
+                  {changeToTitleCase(application?.status?.replace("_", " "))}
+                </p>
+                <p>
+                  <b>Job:</b> {application.job_title}
+                </p>
+                <p>
+                  <b>Application Submitted On:</b> {`${new Date(application.application_submitted_on).toDateString()}`}
+                </p>
+                {
+                  application.hired_on ? <p>
+                    <b>Hired On:</b> {`${new Date(application.hired_on).toDateString()}`}
+                  </p> :
+                    <></>
+                }
+                {
+                  application.onboarded_on ? <p>
+                    <b>Onboarded:</b> {`${new Date(application.onboarded_on).toDateString()}`}
+                  </p> :
+                    <></>
+                }
+                <p>
+                  <b>Freelancing Platform:</b> {application.freelancePlatform}
+                </p>
+                <p>
+                  <b>Freelancing Platform URL:</b>
+                  <Link
+                    to={application.freelancePlatformUrl}
+                    target="_blank"
+                  >{application.freelancePlatformUrl}</Link>
+                </p>
+                <p>
+                  <b>Job Applied For:</b> {application.job_title}
+                </p>
+
+                {
+                  application.project && Array.isArray(application.project) && (
+                    <p>
+                      <b>Project:</b>
+                      {application.project[0]}
+                    </p>
+                  )
+                }
+              </div>
+            </div>
+          </Overlay>
         )}
         {leaveOverlayVisibility && (
           <Overlay>
