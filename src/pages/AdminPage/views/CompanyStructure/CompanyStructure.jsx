@@ -218,7 +218,18 @@ const CompanyStructurePage = () => {
                         ...updatedProjectLeads.map(item => updateCompanyStructure('update_project_leads', { project_lead: item.project_lead, projects_managed: item.projects.map(item => item.project), company_id: currentUser?.portfolio_info[0]?.org_id})),
                     ])
 
-                    setCompanyStructure(copyOfStructureData);
+                    const updatedStructure = { ...copyOfStructureData };
+                    updatedStructure.project_leads = copyOfStructureData?.project_leads?.map(item => {
+                        if (item.is_new_project_lead) {
+                            const copyOfItem = {...item};
+                            delete copyOfItem.is_new_project_lead;
+                            return copyOfItem;
+                        }
+                        return item;
+                    })
+
+                    setCompanyStructure(updatedStructure);
+                    setCopyOfStructureData(updatedStructure);
                     setDataLoading(false);
                     setCurrentModalPage(currentModalPage + 1);
 
