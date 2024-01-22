@@ -552,7 +552,7 @@ def datacube_data_insertion(api_key,database_name,collection_name,data):
 
 def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offset):
     url = "https://datacube.uxlivinglab.online/db_api/get_data/"
-    data = {
+    field = {
         "api_key": api_key,
         "db_name": database_name,
         "coll_name": collection_name,
@@ -562,7 +562,7 @@ def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offs
         "offset": offset     
     }
 
-    response = requests.post(url, json=data)
+    response = requests.post(url, json=field)
     
     return response.text
 
@@ -753,3 +753,11 @@ def get_current_week_start_end_date(date_taken):
     end_date = start_date + timedelta(days=4)
 
     return start_date, end_date
+
+def get_dates_between(start_date, end_date):
+    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+
+    date_list = [start_date + timedelta(days=x) for x in range((end_date - start_date).days + 1)]
+
+    return [date.strftime('%Y-%m-%d') for date in date_list]

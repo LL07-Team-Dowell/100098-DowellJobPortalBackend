@@ -728,10 +728,15 @@ class SubprojectSerializer(serializers.Serializer):
     parent_project=serializers.CharField(max_length=200)
     
 class AttendanceSerializer(serializers.Serializer):
-    applicant_usernames = serializers.ListField(child=serializers.CharField())
+    user_present = serializers.ListField(child=serializers.CharField())
+    user_absent = serializers.ListField(child=serializers.CharField())
     date_taken = serializers.DateField(allow_null=False)
     company_id = serializers.IntegerField(allow_null=False)
     meeting = serializers.ListField(child=serializers.CharField())
+    project = serializers.CharField(allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
 
 
 class Project_Update_Serializer(serializers.Serializer):
@@ -798,3 +803,40 @@ class UpdateUserIdSerializer(serializers.Serializer):
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
     application_id=serializers.CharField(max_length=255,allow_null=False)
+
+
+class AttendanceRetrievalSerializer(serializers.Serializer):
+    start_date = serializers.DateField(allow_null=False)
+    end_date = serializers.DateField(allow_null=False)
+    project=serializers.CharField(max_length=255,allow_null=False)
+    company_id = serializers.IntegerField(allow_null=False)
+    meeting = serializers.CharField(allow_null=False)
+    project = serializers.ListField(allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+
+class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
+    start_date = serializers.DateField(allow_null=False)
+    end_date = serializers.DateField(allow_null=False)
+    project=serializers.CharField(max_length=255,allow_null=False)
+    usernames=serializers.ListField(allow_null=False)
+    company_id = serializers.IntegerField(allow_null=False)
+    meeting = serializers.CharField(allow_null=False)
+    project = serializers.ListField(allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+
+class AddEventSerializer(serializers.Serializer):
+    company_id=serializers.CharField(max_length=225,allow_null=False)
+    event_name=serializers.CharField(max_length=225,allow_null=False)
+    event_frequency=serializers.ChoiceField(allow_null=False,choices=("daily","weekly","twice_a_week","custom"))
+    event_host=serializers.CharField(max_length=225,allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+
+class UpdateEventSerializer(serializers.Serializer):
+    event_frequency=serializers.ChoiceField(allow_null=True,choices=("daily","weekly","twice_a_week","custom"))
+    document_id=serializers.CharField(allow_null=False, allow_blank=False)
