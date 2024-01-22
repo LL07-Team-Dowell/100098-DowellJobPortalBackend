@@ -226,4 +226,8 @@ urlpatterns = [
     path('get_company_project_leads/', Company_Structure.as_view()),
     path('get_projects/', Company_Structure.as_view()),
     path('get_company_structure/<str:company_id>/', Company_Structure.as_view()),
+
+    #eventsAPI
+
+    path('events/',DowellEvents.as_view())
 ]
