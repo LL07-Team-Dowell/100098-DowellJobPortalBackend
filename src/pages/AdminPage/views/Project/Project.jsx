@@ -183,6 +183,7 @@ const Project = ({ _id }) => {
                         )?.sub_project_list
                       }
                       numberOfIcons={3}
+                      isNotEmployeeItem={true}
                     />
                     <button
                       className={styles.view__project__btn__container}
