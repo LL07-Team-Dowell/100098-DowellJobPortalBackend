@@ -2,13 +2,16 @@ import Avatar from "react-avatar";
 import styles from "./styles.module.css";
 
 
-export default function EmployeeItem ({ item, isImageItem }) {
+export default function EmployeeItem ({ item, isImageItem, isNotEmployeeItem }) {
     return <>
         <div>
             {
                 isImageItem ? 
                     <Avatar
                         name={
+                            isNotEmployeeItem ?
+                                item
+                            :
                             item?.applicant
                         }
                         round={true}

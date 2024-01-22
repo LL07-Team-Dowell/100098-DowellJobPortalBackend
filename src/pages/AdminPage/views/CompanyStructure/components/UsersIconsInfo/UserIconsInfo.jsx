@@ -13,6 +13,7 @@ export default function UserIconsInfo ({ items, numberOfIcons }) {
                         return <EmployeeItem 
                             item={application} 
                             isImageItem={true}
+                            isNotEmployeeItem={true}
                         />
                     })
                 )
@@ -22,6 +23,7 @@ export default function UserIconsInfo ({ items, numberOfIcons }) {
             items?.slice(numberOfIcons)?.length > 0 ?
                 <EmployeeItem
                     item={`+${items?.slice(numberOfIcons)?.length}`}
+                    isNotEmployeeItem={true}
                 />
             :
             <></>

@@ -123,7 +123,7 @@ const Project = ({ _id }) => {
                     <h2>{project}</h2>
                     <>
                       {projectTime.find((item) => item.project === project) ? (
-                        <div style={{ width: 80, height: 80 }}>
+                        <div style={{ width: 60, height: 60 }}>
                           <CircularProgressbar
                             value={Number(
                               (projectTime.find(
@@ -152,7 +152,7 @@ const Project = ({ _id }) => {
                           />
                         </div>
                       ) : (
-                        <div style={{ width: 80, height: 80 }}>
+                        <div style={{ width: 60, height: 60 }}>
                           <CircularProgressbar
                             value={0}
                             text={"0%"}
@@ -167,21 +167,23 @@ const Project = ({ _id }) => {
                       )}
                     </>
                   </div>
-                  <UserIconsInfo
-                    items={
-                      subProjectsAdded.find(
-                        (item) => item.parent_project === project
-                      )?.sub_project_list
-                    }
-                    numberOfIcons={3}
-                  />
                   <div
                     style={{
                       display: "flex",
-                      justifyContent: "flex-end",
+                      justifyContent: "space-between",
                       marginTop: "1.5rem",
+                      alignItems: 'flex-end',
+                      minHeight: '4rem',
                     }}
                   >
+                    <UserIconsInfo
+                      items={
+                        subProjectsAdded.find(
+                          (item) => item.parent_project === project
+                        )?.sub_project_list
+                      }
+                      numberOfIcons={3}
+                    />
                     <button
                       className={styles.view__project__btn__container}
                       onClick={() => editProjects(project)}
