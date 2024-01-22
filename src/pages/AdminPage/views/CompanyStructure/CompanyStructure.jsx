@@ -4,7 +4,6 @@ import styles from "./styles.module.css";
 import { useJobContext } from "../../../../contexts/Jobs";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
-import EmployeeItem from "./components/EmployeeItem/EmployeeItem";
 import { GoRepoForked } from "react-icons/go";
 import Select from "react-select";
 import TitleItem from "./components/TitleItem/TitleItem";
@@ -18,15 +17,10 @@ import Avatar from "react-avatar";
 import { useCompanyStructureContext } from "../../../../contexts/CompanyStructureContext";
 import { HiMiniArrowLongRight , HiMiniArrowLongLeft } from "react-icons/hi2";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
-
-const labelColors = {
-    ceo: '#00C1B7',
-    projectLead: '#FE6A6A',
-    teamlead: '#FF9F4E',
-    groupLead: '#5AA4FB',
-    member: '#FEDD6A',
-}
-
+import { updateCompanyStructure } from "../../../../services/adminServices";
+import { changeToTitleCase } from "../../../../helpers/helpers";
+import ProgressTracker from "../Landingpage/component/progressTracker";
+import { labelColors, projectDetailUpdateType, selectValuePreCursor } from "./utils/utils";
 
 const CompanyStructurePage = () => {
     const {
@@ -50,6 +44,7 @@ const CompanyStructurePage = () => {
     const [ showSelectedUser, setShowSelectedUser ] = useState(false);
     const [ currentSelectedUser, setCurrentSelectedUser ] = useState(null);
     const [ dataLoading, setDataLoading ] = useState(false);
+    const [ selectedProject, setSelectedProject ] = useState('');
 
     const {
         companyStructure,
@@ -67,13 +62,8 @@ const CompanyStructurePage = () => {
     };
 
     useEffect(() => {
-        if (!companyStructureLoaded) return
-        
-        // FOR TESTING
-        setCopyOfStructureData(testCompanyData);
-
-        // setCopyOfStructureData(companyStructure);
-    }, [companyStructure, companyStructureLoaded])
+        if (companyStructureLoaded && !copyOfStructureData) setCopyOfStructureData(companyStructure);
+    }, [companyStructure, companyStructureLoaded, copyOfStructureData])
 
     useEffect(() => {
         let projectRefIsRendered = false;
@@ -150,16 +140,162 @@ const CompanyStructurePage = () => {
     }
 
     const handleCloseStructureModal = () => {
+        if (dataLoading) return
+
         setShowConfigurationModal(false);
+        setCopyOfStructureData(companyStructure);
         setCurrentModalPage(1);
+        setSelectedProject('');
+    }
+
+    const handleUpdateProjectLead = (newLead, project, itemValueInCompanyStructure) => {
+        const itemValue = newLead?.split(selectValuePreCursor)[0];
+        const currentStructureDataCopy = {...copyOfStructureData};
+
+        const addNewProjectLead = (structureData, newProjectLead, projectDetails) => {
+            structureData?.project_leads?.push({
+                project_lead: newProjectLead,
+                projects: [projectDetails],
+                is_new_project_lead: true,
+            })
+        }
+
+        // CHANGING THE PROJECT LEAD FOR A PROJECT
+        if (itemValueInCompanyStructure) {
+            const foundProjectLeadItem = currentStructureDataCopy?.project_leads?.find(item => item.project_lead_id === itemValueInCompanyStructure?.project_lead_id);
+            if (foundProjectLeadItem?.project_lead === itemValue) return;
+
+            const existingProjectDetails = foundProjectLeadItem?.projects?.find(item => item.project === project);
+            const updatedPreviousProjectLeadProjects = [...foundProjectLeadItem?.projects]?.filter(item => item.project !== project);
+            foundProjectLeadItem.projects = updatedPreviousProjectLeadProjects;
+
+            const isNewProjectLeadInStructure = currentStructureDataCopy?.project_leads?.find(item => item.project_lead === itemValue);
+            
+            if (isNewProjectLeadInStructure) isNewProjectLeadInStructure?.projects?.push(existingProjectDetails);
+            
+            if (!isNewProjectLeadInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, existingProjectDetails);
+
+            console.log('updated copy -> ', currentStructureDataCopy);
+            setCopyOfStructureData(currentStructureDataCopy);
+
+            return
+        }
+
+        // ASSIGNING A PROJECT TO A LEAD FOR THE FIRST TIME 
+        const projectLeadItemIsInStructure = currentStructureDataCopy?.project_leads?.find(item => item.project_lead === itemValue);
+        const newProjectDetails = {
+            project: project,
+            team_lead: ''
+        };
+
+        if (projectLeadItemIsInStructure) projectLeadItemIsInStructure?.projects?.push(newProjectDetails);
+        if (!projectLeadItemIsInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, newProjectDetails);
+
+        console.log('updated copy -> ', currentStructureDataCopy);
+        setCopyOfStructureData(currentStructureDataCopy);
+    }
+
+    const handleUpdateProjectDetail = (newValue, project, updateType) => {
+        console.log(newValue, project, updateType);
     }
 
     const handleGoForward = async () => {
+        switch (currentModalPage) {
+            
+            // CONFIGURING/UPDATING CEO
+            case 1:
+                const initialCeoData = {
+                    company_name: currentUser?.portfolio_info[0]?.org_name,
+                    company_id: currentUser?.portfolio_info[0]?.org_id,
+                    data_type: currentUser?.portfolio_info[0]?.data_type,
+                }
+    
+                if (companyStructure?.ceo){
+                    if (copyOfStructureData?.ceo?.length < 1) return toast.info('Please enter the ceo name');
+                    if (companyStructure?.ceo?.toLocaleLowerCase() === copyOfStructureData?.ceo?.toLocaleLowerCase()) return setCurrentModalPage(currentModalPage + 1);
+    
+                    setDataLoading(true);
+    
+                    try {
+                        const res = (await updateCompanyStructure('update_ceo', { ...initialCeoData, previous_ceo: companyStructure?.ceo, current_ceo: copyOfStructureData?.ceo })).data;
+                        toast.success(changeToTitleCase(res?.message));
+                        
+                        setCompanyStructure(copyOfStructureData);
+                        setDataLoading(false);
+                        setCurrentModalPage(currentModalPage + 1);
+    
+                    } catch (error) {
+                        console.log(error?.response ? error?.response?.data : error?.message);
+                        setDataLoading(false);
+                        toast.error('An error occured while trying to update the ceo. Please try again later')
+                    }
+    
+                    return
+                }
+    
+                if (!copyOfStructureData.ceo || copyOfStructureData?.ceo?.length < 1) return toast.info('Please enter the ceo name');
+    
+                try {
+    
+                    setDataLoading(true);
+                    const res = (await updateCompanyStructure('add_ceo', { ...initialCeoData, ceo: copyOfStructureData.ceo})).data;
+                    toast.success(changeToTitleCase(res?.message));
+    
+                    const updatedStructure = {
+                        ...copyOfStructureData,
+                        company_id: initialCeoData.company_id,
+                        project_leads: [],
+                    }
+    
+                    setCopyOfStructureData(updatedStructure);
+                    setCompanyStructure(updatedStructure);
+                    setDataLoading(false);
+                    setCurrentModalPage(currentModalPage + 1);
+                } catch (error) {
+                    console.log(error?.response ? error?.response?.data : error?.message);
+                    setDataLoading(false);
+                    toast.error('An error occured while trying to configure the ceo. Please try again later');
+                }
 
+                break;
+
+            // CONFIGURING/UPDATING PROJECT LEADS
+            case 2:
+                return setCurrentModalPage(currentModalPage + 1);
+
+                const newProjectLeads = copyOfStructureData?.project_leads?.filter(item => item.is_new_project_lead);
+                const updatedProjectLeads = copyOfStructureData?.project_leads?.filter(item => item?.projects?.length !== companyStructure?.project_leads?.find(project => project?.project_lead === item?.project_lead)?.projects?.length);
+
+                try {
+
+                    setDataLoading(true);
+
+                    await Promise.all([
+                        ...newProjectLeads.map(item => updateCompanyStructure('add_project_leads', { project_lead: item.project_lead, projects_managed: item.projects.map(item => item.project), company_id: currentUser?.portfolio_info[0]?.org_id})),
+                        ...updatedProjectLeads.map(item => updateCompanyStructure('update_project_leads', { project_lead: item.project_lead, projects_managed: item.projects.map(item => item.project), company_id: currentUser?.portfolio_info[0]?.org_id})),
+                    ])
+
+                    setCompanyStructure(copyOfStructureData);
+                    setDataLoading(false);
+                    setCurrentModalPage(currentModalPage + 1);
+
+                } catch (error) {
+                    console.log(error?.response ? error?.response?.data : error?.message);
+                    setDataLoading(false);
+                    toast.error('An error occured while trying to update project leads. Please try again later');
+                }
+                break;
+
+            default:
+                console.log(`Case '${currentModalPage}' not defined`);
+                break;
+        }
     }
 
-    const handleGoBackward = async () => {
+    const handleGoBackward = () => {
+        if (dataLoading || currentModalPage === 1) return;
 
+        setCurrentModalPage(currentModalPage - 1);
     }
 
     return <>
@@ -239,17 +375,22 @@ const CompanyStructurePage = () => {
                     showSearchResult && <>
                         <div className={styles.search__Project__Details__Item}>
                             <h4>Current Project: <span>{searchProjectVal}</span></h4>
-                            <p>Project Lead: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.project_lead}</span></p>
-                            <p>Team Lead: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.team_lead}</span></p>
-                            <p>Group Lead: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.group_leads?.join(', ')}</span></p>
-                            <p>Members: <span>{copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.members?.join(', ')}</span></p>
+                            <p>Project Lead: <span>{copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.project_lead}</span></p>
+                            <p>Team Lead: <span>{copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.team_lead}</span></p>
+                            <p>Group Lead: <span>{copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.group_leads?.join(', ')}</span></p>
+                            <p>Members: <span>{copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.members?.join(', ')}</span></p>
                         </div>
                     </>
                 }
 
                 <div className={styles.structure__Display}>
                     {
-                        !copyOfStructureData ?
+                        companyStructureLoading ? <LoadingSpinner 
+                            width={'2rem'}
+                            height={'2rem'}
+                            color={labelColors.ceo}
+                        /> :
+                        !copyOfStructureData || Object.keys(copyOfStructureData || {}).length < 1 ?
                             <button className={`${styles.result__Btn} ${styles.configure__Btn}`} onClick={handleEditStructureBtnClick}>
                                 <span>Configure structure</span>
                             </button>
@@ -275,7 +416,7 @@ const CompanyStructurePage = () => {
                                 {
                                     React.Children.toArray(
                                         projectsAdded[0]?.project_list?.map(projectItem => {
-                                            const matchingProjectFromCompanyStructure = copyOfStructureData?.projects?.find(item => item?.projects?.find(structure => structure?.project === projectItem))
+                                            const matchingProjectFromCompanyStructure = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === projectItem))
                                             const foundTeamleadFromCompanyStructure = matchingProjectFromCompanyStructure?.projects?.find(item => item.project === projectItem)?.team_lead;
                                             const foundGroupleadsFromCompanyStructure = matchingProjectFromCompanyStructure?.projects?.find(item => item.project === projectItem)?.group_leads;
                                             const foundMembersFromCompanyStructure = matchingProjectFromCompanyStructure?.projects?.find(item => item.project === projectItem)?.members;
@@ -293,11 +434,11 @@ const CompanyStructurePage = () => {
                                                     <CardTile 
                                                         tileName={
                                                             matchingProjectFromCompanyStructure ?
-                                                                onboardedUsers?.find(
+                                                                applications?.find(
                                                                     application => application.username ===
                                                                         matchingProjectFromCompanyStructure?.project_lead
                                                                 ) ?
-                                                                    onboardedUsers?.find(
+                                                                    applications?.find(
                                                                         application => application.username ===
                                                                             matchingProjectFromCompanyStructure?.project_lead
                                                                     )?.applicant
@@ -335,11 +476,11 @@ const CompanyStructurePage = () => {
                                                 <CardTile 
                                                     tileName={
                                                         foundTeamleadFromCompanyStructure ?
-                                                            onboardedUsers?.find(
+                                                            applications?.find(
                                                                 application => application.username ===
                                                                     foundTeamleadFromCompanyStructure
                                                             ) ?
-                                                                onboardedUsers?.find(
+                                                                applications?.find(
                                                                     application => application.username ===
                                                                         foundTeamleadFromCompanyStructure
                                                                 )?.applicant
@@ -383,11 +524,11 @@ const CompanyStructurePage = () => {
                                                                         return <div className={styles.grouplead__Item}>
                                                                             <CardTile 
                                                                                 tileName={
-                                                                                    onboardedUsers?.find(
+                                                                                    applications?.find(
                                                                                         application => application.username ===
                                                                                             grouplead
                                                                                     ) ?
-                                                                                        onboardedUsers?.find(
+                                                                                        applications?.find(
                                                                                             application => application.username ===
                                                                                                 grouplead
                                                                                         )?.applicant
@@ -432,11 +573,11 @@ const CompanyStructurePage = () => {
                                                             return <div className={styles.member__Item}>
                                                                 <CardTile 
                                                                     tileName={
-                                                                        onboardedUsers?.find(
+                                                                        applications?.find(
                                                                             application => application.username ===
                                                                             member
                                                                         ) ?
-                                                                            onboardedUsers?.find(
+                                                                            applications?.find(
                                                                                 application => application.username ===
                                                                                 member
                                                                             )?.applicant
@@ -483,8 +624,8 @@ const CompanyStructurePage = () => {
                         <div className={styles.top__user__Info}>
                             <Avatar
                                 name={
-                                    onboardedUsers?.find(application => application.username === currentSelectedUser?.name)?.applicant ? 
-                                        onboardedUsers?.find(application => application.username === currentSelectedUser?.name)?.applicant
+                                    applications?.find(application => application.username === currentSelectedUser?.name)?.applicant ? 
+                                        applications?.find(application => application.username === currentSelectedUser?.name)?.applicant
                                     :
                                     currentSelectedUser?.name
                                 }
@@ -494,8 +635,8 @@ const CompanyStructurePage = () => {
                             <div>
                                 <h5>
                                     {
-                                        onboardedUsers?.find(application => application.username === currentSelectedUser?.name)?.applicant ? 
-                                            onboardedUsers?.find(application => application.username === currentSelectedUser?.name)?.applicant
+                                        applications?.find(application => application.username === currentSelectedUser?.name)?.applicant ? 
+                                            applications?.find(application => application.username === currentSelectedUser?.name)?.applicant
                                         :
                                         currentSelectedUser?.name
                                     }
@@ -540,9 +681,16 @@ const CompanyStructurePage = () => {
                                     'Edit Structure'
                                 }
                             </h2>
-                            <p>Step One: Configure CEO</p>
+                            <p>
+                                {
+                                    currentModalPage === 1 ? 'Step One: Configure CEO' : 
+                                    currentModalPage === 2 ? 'Step Two: Configure project leads' :
+                                    currentModalPage === 3 ? 'Step Three: Configure teamlead, grouplead and members of projects' :
+                                    ''
+                                }
+                            </p>
                         </div>
-                        <div className={styles.structure__Form}>
+                        <div className={`${styles.structure__Form} ${currentModalPage === 3 ? styles.structure__Form_2 : ''}`}>
                             {
                                 currentModalPage === 1 ? <>
                                     <label>
@@ -568,28 +716,207 @@ const CompanyStructurePage = () => {
                                             />
                                         }
                                     </label>
-                                </> : <></>
+                                </> :
+                                currentModalPage === 2 ? <>
+                                    <table 
+                                        className={styles.project__Lead__Table} 
+                                        style={{ 
+                                            pointerEvents : dataLoading ? 'none' : 'initial',
+                                        }}
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th>Project</th>
+                                                <th>Project Lead</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                projectsLoaded && projectsAdded[0]?.project_list && Array.isArray(projectsAdded[0]?.project_list) ?
+                                                    React.Children.toArray(
+                                                        projectsAdded[0]?.project_list
+                                                        ?.sort((a, b) => a.localeCompare(b))
+                                                        ?.map((project, index) => {
+                                                            const matchingProjectFromCompanyStructure = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === project));
+                                                            
+                                                            return <tr>
+                                                                <td>{project}</td>
+                                                                <td>
+                                                                    <Select 
+                                                                        value={
+                                                                            {
+                                                                                label: matchingProjectFromCompanyStructure?.project_lead ?
+                                                                                    applications?.find(application => application.username === matchingProjectFromCompanyStructure?.project_lead)?.applicant
+                                                                                :
+                                                                                    'Select project lead'
+                                                                                ,
+                                                                                value: matchingProjectFromCompanyStructure?.project_lead + selectValuePreCursor + index
+                                                                            }
+                                                                        }
+                                                                        options={
+                                                                            onboardedUsers?.map(application => {
+                                                                                return { 
+                                                                                    label: changeToTitleCase(application?.applicant),
+                                                                                    value: application?.username + selectValuePreCursor + index
+                                                                                }
+                                                                            })
+                                                                        }
+                                                                        onChange={(val) => handleUpdateProjectLead(val.value, project, matchingProjectFromCompanyStructure)}
+                                                                        placeholder={'Select project lead'}
+                                                                        id={crypto.randomUUID()}
+                                                                    />
+                                                                </td>
+                                                            </tr>
+                                                        })
+                                                    )
+                                                : <></>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </> : 
+                                currentModalPage === 3 ? <>
+                                    <label>
+                                        <p>
+                                            <span>Select project <span className={styles.min__Detail}>(only projects with assigned project leads will show here)</span></span>
+                                        </p>
+                                        <Select 
+                                            value={{
+                                                label: selectedProject?.length < 1 ? 'Select project' : selectedProject,
+                                                value: selectedProject,
+                                            }}
+                                            options={
+                                                projectsLoaded &&
+                                                projectsAdded[0] &&
+                                                projectsAdded[0]?.project_list
+                                                ? [
+                                                ...projectsAdded[0]?.project_list
+                                                    ?.sort((a, b) => a.localeCompare(b))
+                                                    ?.map((project) => {
+                                                        const projectWithProjectLeads = copyOfStructureData?.project_leads?.map(item => item.projects.map(projectItem => projectItem.project))?.flat();
+                                                        if (!projectWithProjectLeads.includes(project)) return null;
+                                                        return { label: project, value: project };
+                                                    }).filter(item => item !== null),
+                                                ]
+                                                : [{label: '', value: ''}]
+                                            }
+                                            placeholder={'Select project'}
+                                            className={styles.select__Item}
+                                            onChange={(val) => setSelectedProject(val.value)}
+                                        />
+                                    </label>
+                                    
+                                    {
+                                        selectedProject?.length > 0 &&
+                                        <>
+                                            <label>
+                                                <p>
+                                                    <span>Select team lead</span>
+                                                </p>
+                                                {
+                                                    
+                                                }
+                                                <Select 
+                                                    value={
+                                                        {
+                                                            label: copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.find(item => item.project === selectedProject)?.team_lead ?
+                                                                applications?.find(item => item?.username === copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.find(item => item?.project === selectedProject)?.team_lead)?.applicant
+                                                                :
+                                                            'Select teamlead'
+                                                            ,
+                                                            value: copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.find(item => item.project === selectedProject)?.team_lead
+                                                        }
+                                                    }
+                                                    options={
+                                                        onboardedUsers?.map(user => {
+                                                            return { label: user?.applicant, value: user?.username }
+                                                        })
+                                                    }
+                                                    onChange={(val) => handleUpdateProjectDetail(val.value, selectedProject, projectDetailUpdateType.teamlead_update)}  
+                                                />
+                                            </label>
+
+                                            <label>
+                                                <p>
+                                                    <span>Select group leads</span>
+                                                </p>
+                                                <Select 
+                                                    value={
+                                                        copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.find(item => item.project === selectedProject)?.group_leads?.map(item => {
+                                                            return {
+                                                                label: applications?.find(user => user.username === item)?.applicant,
+                                                                value: item,
+                                                            }
+                                                        })
+                                                    }
+                                                    options={
+                                                        onboardedUsers?.map(user => {
+                                                            return { label: user?.applicant, value: user?.username }
+                                                        })
+                                                    }
+                                                    onChange={(val) => handleUpdateProjectDetail(val.map(item => item.value), selectedProject, projectDetailUpdateType.grouplead_update)}  
+                                                    isMulti
+                                                />
+                                            </label>
+
+                                            <label>
+                                                <p>
+                                                    <span>Select team members</span>
+                                                </p>
+                                                <Select 
+                                                    value={
+                                                        copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.find(item => item.project === selectedProject)?.members?.map(item => {
+                                                            return {
+                                                                label: applications?.find(user => user.username === item)?.applicant,
+                                                                value: item,
+                                                            }
+                                                        })
+                                                    }
+                                                    options={
+                                                        onboardedUsers?.map(user => {
+                                                            return { label: user?.applicant, value: user?.username }
+                                                        })
+                                                    }
+                                                    onChange={(val) => handleUpdateProjectDetail(val.map(item => item.value), selectedProject, projectDetailUpdateType.member_update)}  
+                                                    isMulti
+                                                />
+                                            </label>
+                                        </>
+                                    }
+                                </>
+                                :
+                                <></>
                             }
                         </div>
                         <div className={styles.form__Nav__Btns__Wrap}>
-                            
-                            {
-                                currentModalPage > 1 && <button 
-                                    className={styles.form__Nav__Btn} 
-                                    onClick={handleGoBackward}
-                                    disabled={dataLoading ? true : false}
-                                >
-                                    <HiMiniArrowLongLeft fontSize={'1.2rem'} />
-                                </button>
-                            }
-                            <button 
-                                className={styles.form__Nav__Btn} 
-                                onClick={handleGoForward}
-                                disabled={dataLoading ? true : false}
-                            >
-                                <HiMiniArrowLongRight fontSize={'1.2rem'} />
-                            </button>
-                            
+                            <>
+                                {
+                                    currentModalPage === 2 && dataLoading ? <div className={styles.save__Progress_Container}>
+                                        <p className={styles.loader_text}>Saving....</p>
+                                        <ProgressTracker 
+                                            durationInSec={120} 
+                                            showDivProgressBar={true}
+                                            progressClassName={styles.progress}
+                                        />
+                                    </div> : <>
+                                        {
+                                            currentModalPage > 1 && <button 
+                                                className={styles.form__Nav__Btn} 
+                                                onClick={handleGoBackward}
+                                                disabled={dataLoading ? true : false}
+                                            >
+                                                <HiMiniArrowLongLeft fontSize={'1.2rem'} />
+                                            </button>
+                                        }
+                                        <button 
+                                            className={styles.form__Nav__Btn} 
+                                            onClick={handleGoForward}
+                                            disabled={dataLoading ? true : false}
+                                        >
+                                            <HiMiniArrowLongRight fontSize={'1.2rem'} />
+                                        </button>
+                                    </>
+                                }
+                            </>
                         </div>
                     </div>
                 </Overlay>

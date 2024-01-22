@@ -1,9 +1,10 @@
 export const testCompanyData = {
     "ceo": "Manish",
     "company_id": "63a2b3fb2be81449d3a30d3f",
-    "projects": [
+    "project_leads": [
         {
             "project_lead": "ayoolaa_",
+            "project_lead_id": "001",
             "projects": [
                 {
                     "project": "BD Team",
@@ -30,6 +31,7 @@ export const testCompanyData = {
         },
         {
             "project_lead": "edwin",
+            "project_lead_id": "002",
             "projects": [
                 {
                     "project": "Legalzard",
@@ -39,7 +41,7 @@ export const testCompanyData = {
                     "team_lead_reports_to": ""
                 },
             ]
-        }
+        },
     ]
 }
 

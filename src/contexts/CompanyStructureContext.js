@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useCurrentUserContext } from "./CurrentUserContext";
 import { useJobContext } from "./Jobs";
-import { getApplicationForAdmin } from "../services/adminServices";
+import { getApplicationForAdmin, getCompanyStructure } from "../services/adminServices";
 import { testCompanyData } from "../pages/AdminPage/views/CompanyStructure/utils/testData";
 
 const CompanyStructureContext = createContext({})
@@ -43,8 +43,17 @@ export default function CompanyStructureContextProvider ({ children }) {
 
         if (!companyStructureLoaded) {
             setCompanyStructureLoading(true);
-            setCompanyStructureLoaded(true);
-            setCompanyStructure(testCompanyData);
+
+            getCompanyStructure(currentUser?.portfolio_info[0]?.org_id).then(res => {
+                setCompanyStructureLoading(false);
+                setCompanyStructureLoaded(true);
+                setCompanyStructure(res.data);
+
+                // setCompanyStructure(testCompanyData); // for testing
+            }).catch(err => {
+                console.log('Failed to get company structure for admin');
+                setCompanyStructureLoading(false);
+            })
         }
 
     }, [])
