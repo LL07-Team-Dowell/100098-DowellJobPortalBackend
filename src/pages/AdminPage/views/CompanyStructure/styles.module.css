@@ -334,6 +334,7 @@
 .structure__Form {
     max-height: 50vh;
     overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .structure__Form_2 {

@@ -197,6 +197,28 @@ const CompanyStructurePage = () => {
 
     const handleUpdateProjectDetail = (newValue, project, updateType) => {
         console.log(newValue, project, updateType);
+
+        const currentStructureDataCopy = {...copyOfStructureData};
+        
+        const foundProjectLeadItemIndex = currentStructureDataCopy?.project_leads?.findIndex(item => item.projects.find(pro => pro.project === project));
+        if (foundProjectLeadItemIndex === -1) return;
+
+        const copyOfProjectLeadItem = { ...currentStructureDataCopy?.project_leads[foundProjectLeadItemIndex] };
+        
+        const foundProjectDetailsIndex = copyOfProjectLeadItem?.projects?.findIndex(item => item.project === project);
+        if (foundProjectDetailsIndex === -1) return;
+
+        const copyOfProjectDetailsInProjectLeadItem = { ...copyOfProjectLeadItem?.projects[foundProjectDetailsIndex] };
+
+        if (updateType === projectDetailUpdateType.teamlead_update) copyOfProjectDetailsInProjectLeadItem.team_lead = newValue;
+        if (updateType === projectDetailUpdateType.grouplead_update) copyOfProjectDetailsInProjectLeadItem.group_leads = newValue;
+        if (updateType === projectDetailUpdateType.member_update) copyOfProjectDetailsInProjectLeadItem.members = newValue;
+
+        copyOfProjectLeadItem.projects[foundProjectDetailsIndex] = copyOfProjectDetailsInProjectLeadItem;
+        currentStructureDataCopy.project_leads[foundProjectLeadItemIndex] = copyOfProjectLeadItem;
+
+        console.log('updated structure details -> ', currentStructureDataCopy);
+        setCopyOfStructureData(currentStructureDataCopy);
     }
 
     const handleGoForward = async () => {
@@ -818,12 +840,12 @@ const CompanyStructurePage = () => {
                                                 <Select 
                                                     value={
                                                         {
-                                                            label: copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.find(item => item.project === selectedProject)?.team_lead ?
-                                                                applications?.find(item => item?.username === copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.find(item => item?.project === selectedProject)?.team_lead)?.applicant
+                                                            label: copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead ?
+                                                                applications?.find(item => item?.username === copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead)?.applicant
                                                                 :
                                                             'Select teamlead'
                                                             ,
-                                                            value: copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.find(item => item.project === selectedProject)?.team_lead
+                                                            value: copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead
                                                         }
                                                     }
                                                     options={
@@ -841,7 +863,7 @@ const CompanyStructurePage = () => {
                                                 </p>
                                                 <Select 
                                                     value={
-                                                        copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.find(item => item.project === selectedProject)?.group_leads?.map(item => {
+                                                        copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.group_leads?.map(item => {
                                                             return {
                                                                 label: applications?.find(user => user.username === item)?.applicant,
                                                                 value: item,
@@ -850,8 +872,10 @@ const CompanyStructurePage = () => {
                                                     }
                                                     options={
                                                         onboardedUsers?.map(user => {
+                                                            const teamleadForProject = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead;
+                                                            if (user?.username === teamleadForProject) return null;
                                                             return { label: user?.applicant, value: user?.username }
-                                                        })
+                                                        }).filter(item => item !== null)
                                                     }
                                                     onChange={(val) => handleUpdateProjectDetail(val.map(item => item.value), selectedProject, projectDetailUpdateType.grouplead_update)}  
                                                     isMulti
@@ -864,7 +888,7 @@ const CompanyStructurePage = () => {
                                                 </p>
                                                 <Select 
                                                     value={
-                                                        copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.find(item => item.project === selectedProject)?.members?.map(item => {
+                                                        copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.members?.map(item => {
                                                             return {
                                                                 label: applications?.find(user => user.username === item)?.applicant,
                                                                 value: item,
