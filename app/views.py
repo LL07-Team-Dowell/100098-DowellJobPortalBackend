@@ -115,7 +115,9 @@ from .serializers import (
     WorklogsDateSerializer,
     UpdateUserIdSerializer,
     AttendanceRetrievalSerializer,
-    IndividualAttendanceRetrievalSerializer
+    IndividualAttendanceRetrievalSerializer,
+    AddEventSerializer,
+    UpdateEventSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -141,6 +143,8 @@ if os.getenv("ATTENDANCE_DB_NAME"):
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
+if os.getenv("Events_collection"):
+    Events_collection = str(os.getenv("Events_collection"))
 
 else:
     """for windows local"""
@@ -152,6 +156,7 @@ else:
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+    Events_collection=str(os.getenv("Events_collection"))
 
 # Create your views here.
 
@@ -9905,17 +9910,10 @@ class candidate_attendance(APIView):
         if attendance_report["success"]==True:
             for attendance in attendance_report["data"]:
                 for user in usernames:
-                    for date in dates:
-                        if attendance["date_taken"] == date:
-                            if user in attendance["user_present"]:
-                                user_present=True
-                                
-                            else:
-                                user_present=False
-                            
-
-                            if user_present:
-                                    attendance_with_users[user]["meeting"]["dates_present"].append(date)
+                    # for date in dates:
+                        if attendance["date_taken"] == date in dates:
+                            if user in attendance["user_present"]:                        
+                                attendance_with_users[user]["meeting"]["dates_present"].append(date)
                             
                             else:
                                 attendance_with_users[user]["meeting"]["dates_absent"].append(date)
@@ -9947,10 +9945,10 @@ class candidate_attendance(APIView):
         #                     else:
         #                         print(f"\n\nInside else statement{project}")
         #                         attendance_with_projects[project]=[attendance]
-        #         return Response({
-        #             "success":True,
-        #             "message":"Attendance records has been succesfully retrieved",
-        #             "data":attendance_with_projects},status=status.HTTP_200_OK)
+                return Response({
+                    "success":True,
+                    "message":"Attendance records has been succesfully retrieved",
+                    "data":attendance_with_projects},status=status.HTTP_200_OK)
             
         return Response({"success":False,"message":attendance_with_users},status=status.HTTP_400_BAD_REQUEST )
     
@@ -10659,3 +10657,157 @@ class Company_Structure(APIView):
                                 _y['projects'].append(z)
                         data["project_leads"].append(_y)
         return Response(data,status=status.HTTP_200_OK)
+
+    
+@method_decorator(csrf_exempt, name="dispatch")
+class DowellEvents(APIView):
+    def post(self,request):
+        request_type=request.GET.get("type")
+        if request_type=="add_events":
+            return self.AddEvents(request)
+        if request_type=="update_events":
+            return self.UpdateEvents(request)
+        else:
+            print("Request invalids")
+            return self.handle_error(request)   
+    def AddEvents(self,request):
+        data=request.data
+        
+        field={
+            "event_name":data.get("event_name"),
+            "event_frequency":data.get("event_frequency"),
+            "event_host":data.get("event_host"),
+            "data_type":data.get("data_type"),
+            "company_id":data.get("company_id")
+        }
+
+        serializer=AddEventSerializer(data=request.data)
+       
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        try:    
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,DB_Name,Events_collection,data=field))
+        
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            })
+
+        if insert_collection["success"] and len(insert_collection["data"])>0:
+            return Response({
+                            "success":True,
+                            "message":"events has been added successfuly"
+                            })
+
+        else:
+            return Response({
+                "success":False,
+                "error":insert_collection["message"]
+            })
+            
+    def UpdateEvents(self, request):
+
+        document_id=request.data.get("document_id")
+        update=request.data
+
+        field={"_id":document_id}
+
+        allowed_to_update=("event_name","event_host","event_frequency") #this tuple contains the data that cannot be updated in the Db
+        
+        serializer=UpdateEventSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+        update_field={key:Value for key,Value in update.items() if key in allowed_to_update}
+
+        try:
+            update_event = json.loads(
+                datacube_data_update(
+                    API_KEY,
+                    DB_Name,
+                    coll_name=Events_collection,
+                    query=field,
+                    update_data=update_field,
+                )
+            )
+            print(update_event)
+
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        if update_event["success"]==True:
+            return Response({
+                "success":True,
+                "message":f"{update_field} has been updated for eventid {document_id}"
+            })
+
+        else:
+             return Response({
+                "success":False,
+                "error":update_event["message"]
+            })
+    def GetEvents(self,request):
+        
+        data={}
+
+        serializer=AddEventSerializer(data=request.data)
+       
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        try:    
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,DB_Name,Events_collection,data))
+            print(insert_collection)
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            })
+        print("h2")
+        if insert_collection["success"] and len(insert_collection["data"])>0:
+            return Response({
+                            "success":True,
+                            "message":"events has been added successfuly"
+                            })
+
+        else:
+            return Response({
+                "success":False,
+                "error":insert_collection["message"]
+            })
+
+        print(update_field)
+        
+    def handle_error(self, request):
+        print("Request invalid")
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    
+
+
