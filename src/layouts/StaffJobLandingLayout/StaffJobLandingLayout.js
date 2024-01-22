@@ -34,6 +34,7 @@ import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import CandidateRemovedScreen from "../../pages/CandidatePage/views/CandidateRemovedScreen/CandidateRemovedScreen";
 import HorizontalBarLoader from "../../components/HorizontalBarLoader/HorizontalBarLoader";
 import CandidateRenewContract from "../../pages/CandidatePage/views/CandidateRenewContract/CandidateRenewContract";
+import ProjectTimeModal from "../../components/ProjectTimeCards/ProjectTimeCard";
 
 
 const StaffJobLandingLayout = ({
@@ -138,10 +139,7 @@ const StaffJobLandingLayout = ({
   if (userNewContract) return <CandidateRenewContract />
   return (
     <>
-      {
-        currentAuthSessionExpired &&
-        <AuthOverlay />
-      }
+      {currentAuthSessionExpired && <AuthOverlay />}
       <nav style={{ display: hideTitleBar ? "none" : "block" }}>
         <div style={{ position: "relative" }}>
           <p
@@ -157,17 +155,19 @@ const StaffJobLandingLayout = ({
               left: "50%",
               zIndex: "100",
               color: "red",
-              transform: 'translateX(-50%)',
-              background: 'linear-gradient(to top, rgba(0, 0, 0, 0.07), transparent)',
-              width: '100%',
+              transform: "translateX(-50%)",
+              background:
+                "linear-gradient(to top, rgba(0, 0, 0, 0.07), transparent)",
+              width: "100%",
             }}
           >
             You're on the Beta Version of Jobportal
           </p>
         </div>
         <div
-          className={`staff__Jobs__Layout__Navigation__Container ${adminView ? "admin" : ""
-            }`}
+          className={`staff__Jobs__Layout__Navigation__Container ${
+            adminView ? "admin" : ""
+          }`}
         >
           {!adminView && isLargeScreen && (
             <Link to={"/"} className="jobs__Layout__Link__Item">
@@ -177,56 +177,61 @@ const StaffJobLandingLayout = ({
           {adminView ? (
             !currentUser ? (
               <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.3rem",
+                  }}
+                >
                   <img
                     src={teamManagementLogo}
                     alt="team management"
-                    style={{ width: '8rem' }}
+                    style={{ width: "8rem" }}
                   />
-                  {
-                    isLargeScreen ?
-                      <h2>{teamManagementProductName}</h2>
-                      :
-                      <></>
-                  }
+                  {isLargeScreen ? <h2>{teamManagementProductName}</h2> : <></>}
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
                   <MdPublic className="icon" />
                   <span style={{ fontSize: 13 }}>Public user</span>
                 </div>
               </>
+            ) : adminAlternativePageActive ? (
+              <div
+                className="admin__View__Title__Container"
+                onClick={handleNavIconClick ? handleNavIconClick : () => {}}
+              >
+                {showAnotherBtn ? (
+                  <>
+                    <div
+                      className="add__Icon__Container"
+                      onClick={handleNavIcon}
+                    >
+                      {btnIcon}
+                    </div>
+                  </>
+                ) : (
+                  <></>
+                )}
+                {pageTitle ? <h2>{pageTitle}</h2> : <></>}
+              </div>
+            ) : (
+              <div
+                className="admin__View__Title__Container"
+                onClick={handleNavIconClick ? handleNavIconClick : () => {}}
+              >
+                <div className="add__Icon__Container">
+                  <AiOutlinePlus />
+                </div>
+                {isLargeScreen && <h2>All Jobs</h2>}
+              </div>
             )
-              :
-              adminAlternativePageActive ? (
-                <div
-                  className="admin__View__Title__Container"
-                  onClick={handleNavIconClick ? handleNavIconClick : () => { }}
-                >
-                  {showAnotherBtn ? (
-                    <>
-                      <div
-                        className="add__Icon__Container"
-                        onClick={handleNavIcon}
-                      >
-                        {btnIcon}
-                      </div>
-                    </>
-                  ) : (
-                    <></>
-                  )}
-                  {pageTitle ? <h2>{pageTitle}</h2> : <></>}
-                </div>
-              ) : (
-                <div
-                  className="admin__View__Title__Container"
-                  onClick={handleNavIconClick ? handleNavIconClick : () => { }}
-                >
-                  <div className="add__Icon__Container">
-                    <AiOutlinePlus />
-                  </div>
-                  {isLargeScreen && <h2>All Jobs</h2>}
-                </div>
-              )
           ) : (
             <></>
           )}
@@ -241,14 +246,14 @@ const StaffJobLandingLayout = ({
                 searchTeam
                   ? "Search for Team"
                   : adminView
-                    ? "Search by skill, job"
-                    : `Search for job/${searchPlaceHolder}`
+                  ? "Search by skill, job"
+                  : `Search for job/${searchPlaceHolder}`
               }
               searchValue={searchValue}
               handleSearchChange={setSearchValue}
             />
           )}
-          {(hideTitleBar || !currentUser) ? (
+          {hideTitleBar || !currentUser ? (
             <></>
           ) : (
             <>
@@ -277,58 +282,91 @@ const StaffJobLandingLayout = ({
       </nav>
       <main>
         <div
-          className={`staff__Jobs__Layout__Content__Container ${accountView ? "account" : ""
-            }`}
+          className={`staff__Jobs__Layout__Content__Container ${
+            accountView ? "account" : ""
+          }`}
         >
           {!hideSideBar && currentUser && (
             <NewSideNavigationBar
               className={`
-                ${hideTitleBar ? 'full__Height' : ''} 
-                ${newSidebarDesign ? 'new__Side__Width' : ''}
+                ${hideTitleBar ? "full__Height" : ""} 
+                ${newSidebarDesign ? "new__Side__Width" : ""}
               `}
               links={
                 hrView
                   ? hrNavigationLinks
                   : accountView
-                    ? accountNavigationLinks
-                    : teamleadView
-                      ? isGrouplead
-                        ? groupLeadNavigationLinks
-                        : teamleadNavigationLinks
-                      : adminView
-                        ? subAdminView
-                          ? subAdminNavigationLinks
-                          : adminNavigationLinks
-                        : projectLeadView ?
-                          projectLeadNavLinks
-                          :
-                          []
+                  ? accountNavigationLinks
+                  : teamleadView
+                  ? isGrouplead
+                    ? groupLeadNavigationLinks
+                    : teamleadNavigationLinks
+                  : adminView
+                  ? subAdminView
+                    ? subAdminNavigationLinks
+                    : adminNavigationLinks
+                  : projectLeadView
+                  ? projectLeadNavLinks
+                  : []
               }
               runExtraFunctionOnNavItemClick={runExtraFunctionOnNavItemClick}
               superUser={isSuperUser}
               defaultRole={
-                currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.Role
+                currentUser?.settings_for_profile_info?.profile_info[
+                  currentUser.settings_for_profile_info?.profile_info?.length -
+                    1
+                ]?.Role
               }
               assignedProject={
-                currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.project
+                currentUser?.settings_for_profile_info?.profile_info[
+                  currentUser.settings_for_profile_info?.profile_info?.length -
+                    1
+                ]?.project
               }
               userHasOtherRoles={
-                currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.other_roles &&
-                Array.isArray(currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.other_roles)
+                currentUser?.settings_for_profile_info?.profile_info[
+                  currentUser.settings_for_profile_info?.profile_info?.length -
+                    1
+                ]?.other_roles &&
+                Array.isArray(
+                  currentUser?.settings_for_profile_info?.profile_info[
+                    currentUser.settings_for_profile_info?.profile_info
+                      ?.length - 1
+                  ]?.other_roles
+                )
               }
               otherPermittedRoles={
-                currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles &&
-                  Array.isArray(currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles) ?
-                  currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.other_roles
-                  :
-                  []
+                currentUser?.settings_for_profile_info?.profile_info[
+                  currentUser.settings_for_profile_info.profile_info.length - 1
+                ]?.other_roles &&
+                Array.isArray(
+                  currentUser?.settings_for_profile_info?.profile_info[
+                    currentUser.settings_for_profile_info.profile_info.length -
+                      1
+                  ]?.other_roles
+                )
+                  ? currentUser?.settings_for_profile_info?.profile_info[
+                      currentUser.settings_for_profile_info.profile_info
+                        .length - 1
+                    ]?.other_roles
+                  : []
               }
               otherPermittedProjects={
-                currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects &&
-                  Array.isArray(currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects) ?
-                  currentUser?.settings_for_profile_info?.profile_info[currentUser.settings_for_profile_info?.profile_info?.length - 1]?.additional_projects
-                  :
-                  []
+                currentUser?.settings_for_profile_info?.profile_info[
+                  currentUser.settings_for_profile_info?.profile_info?.length -
+                    1
+                ]?.additional_projects &&
+                Array.isArray(
+                  currentUser?.settings_for_profile_info?.profile_info[
+                    currentUser.settings_for_profile_info?.profile_info
+                      ?.length - 1
+                  ]?.additional_projects
+                )
+                  ? currentUser?.settings_for_profile_info?.profile_info[
+                      currentUser.settings_for_profile_info?.profile_info
+                        ?.length - 1
+                    ]?.additional_projects
+                  : []
               }
               newSidebarDesign={newSidebarDesign}
             />
@@ -364,11 +402,10 @@ const StaffJobLandingLayout = ({
           )}
 
           <div
-            className={
-              `jobs__Layout__Content 
+            className={`jobs__Layout__Content 
               ${adminView ? "full__Width" : ""}
               ${!currentUser ? "no__User" : ""}
-              ${newSidebarDesign ? 'new__MAin__Width' : ''}
+              ${newSidebarDesign ? "new__MAin__Width" : ""}
             `}
             style={{
               backgroundColor: layoutBgColor ? layoutBgColor : "#fff",

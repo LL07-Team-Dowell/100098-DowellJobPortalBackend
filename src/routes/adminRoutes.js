@@ -10,6 +10,7 @@ import CompanyStructurePage from "../pages/AdminPage/views/CompanyStructure/Comp
 import EditJob from "../pages/AdminPage/views/EditJob/EditJob";
 import LandingPage from "../pages/AdminPage/views/Landingpage/LandingPage";
 import AdminLogsHomePage from "../pages/AdminPage/views/LogsHomePage/LogsHomePage";
+import Project from "../pages/AdminPage/views/Project/Project";
 import LeaderboardReport from "../pages/AdminPage/views/Reports/LeaderboardReport/LeaderboardReport";
 import AdminReports from "../pages/AdminPage/views/Reports/Reports";
 import TaskReports from "../pages/AdminPage/views/Reports/TaskReports";
@@ -29,6 +30,7 @@ import TeamScreenInfoAdminTeamLead from "../pages/TeamleadPage/views/CreateMembe
 import TeamThread from "../pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 import CreateTaskScreen from "../pages/TeamleadPage/views/CreateTaskScreen/CreateTaskScreen";
 import EventScreen from "../pages/AdminPage/views/Event/EventScreen";
+import ProjectEdit from "../pages/AdminPage/views/Project/ProjectEdit";
 
 export const mainAdminRoutesInfo = [
   {
@@ -42,6 +44,14 @@ export const mainAdminRoutesInfo = [
   {
     path: "/add",
     component: Add,
+  },
+  {
+    path: "/projects",
+    component: Project,
+  },
+  {
+    path: "/projects/edit-project-time",
+    component: ProjectEdit,
   },
   {
     path: "/add-job",

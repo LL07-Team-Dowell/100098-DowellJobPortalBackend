@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Add.scss";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-import { MdArrowBackIos } from "react-icons/md";
+  import { MdArrowBackIos } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   AiOutlineArrowLeft,
@@ -330,7 +330,7 @@ const Add = () => {
 
 export default Add;
 
-const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
+export const AddProjectPopup = ({ projects, unshowProjectPopup }) => {
   const { currentUser } = useCurrentUserContext();
   const [query, setquery] = useState("");
   const [inputProjects, setInputProjects] = useState([]);

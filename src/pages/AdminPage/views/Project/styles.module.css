@@ -1,0 +1,109 @@
+.wrapper {
+  width: 87%;
+  margin: 0 auto;
+  font-family: "Poppins", sans-serif;
+  padding: 1.4rem 0 14rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.top__Nav__Content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  flex-direction: row;
+}
+
+.edit__Nav__Content {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+}
+
+.top__Nav__Content h2,
+.edit__Nav__Content h2 {
+  color: #005734;
+  font-weight: 600;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  font-size: 1.7rem;
+  letter-spacing: 0.04em;
+  margin-left: 1.2rem;
+}
+
+.top__Nav__Content button {
+  background-color: #005734;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  outline: none;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: "Poppins", sans-serif;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.top__Nav__Content button:hover {
+  filter: brightness(0.85);
+}
+
+.project__cards {
+  margin-top: 2rem;
+  display: grid;
+  gap: 4rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.project__cards .project__card {
+  padding: 1rem 1.37rem;
+  width: 100%;
+  height: auto;
+  border-radius: 1.8rem;
+  background-color: #fcfcfc;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  transition: 0.3s;
+  position: relative;
+  text-transform: capitalize;
+}
+
+.project__cards .project__card:hover {
+  box-shadow: rgba(#005734, 0.6) 0px 7px 29px 0px;
+}
+
+.project__card .project__card__header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.view__project__btn__container {
+  background-color: #005734;
+  width: 7rem;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0px 1.85594px 12.373px rgba(0, 87, 52, 0.49);
+  color: #fff;
+  cursor: pointer;
+}
+
+.view__project__btn__container .view__project__btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.6rem 0.5rem;
+  font-weight: 300;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  gap: 0.7rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.view__project__btn .arrow__link {
+  width: 0.8rem;
+  height: 0.8rem;
+}
