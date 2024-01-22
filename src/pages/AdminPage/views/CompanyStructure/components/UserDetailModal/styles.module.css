@@ -1,0 +1,92 @@
+.single__User__Detail {
+    position: fixed;
+    right: 0;
+    background-color: #fff;
+    width: 35%;
+    bottom: 0;
+    padding: 1.7rem 1.7rem 5rem;
+    border-top-left-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: slideIn 0.5s ease-in-out;
+}
+
+.close__User__Detail {
+    width: max-content;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+.top__user__Info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.3rem;
+    flex-direction: column;
+}
+
+.top__user__Info h5 {
+    font-size: 1.6rem;
+    text-transform: capitalize;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.single__User__label {
+    border-radius: 20px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    text-transform: capitalize;
+    width: max-content;
+    margin: 0 auto;
+}
+
+.user__Detail__Info__Wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.user__Detail__Info {
+    border-bottom: 1px solid #aaa;
+    padding-bottom: 0.6rem;
+}
+
+.user__Detail__Info p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    width: max-content;
+}
+
+.highlight {
+    position: absolute;
+    height: 5px;
+    width: 100%;
+    background-color: #005734;
+    top: calc(100% + 0.6rem);
+}
+
+.user__Project__Details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    text-transform: capitalize;
+}
+
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        right: -30%;
+    } to {
+        opacity: 1;
+        right: 0;
+    }
+}

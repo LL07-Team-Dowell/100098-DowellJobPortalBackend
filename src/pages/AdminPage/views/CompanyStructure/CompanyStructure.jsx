@@ -7,27 +7,21 @@ import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuse
 import { GoRepoForked } from "react-icons/go";
 import Select from "react-select";
 import TitleItem from "./components/TitleItem/TitleItem";
-import { testCompanyData } from "./utils/testData";
 import CardTile from "./components/CardTile/CardTile";
 import UserIconsInfo from "./components/UsersIconsInfo/UserIconsInfo";
 import { toast } from "react-toastify";
-import Overlay from "../../../../components/Overlay";
-import { AiOutlineClose } from "react-icons/ai";
-import Avatar from "react-avatar";
 import { useCompanyStructureContext } from "../../../../contexts/CompanyStructureContext";
-import { HiMiniArrowLongRight , HiMiniArrowLongLeft } from "react-icons/hi2";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { updateCompanyStructure } from "../../../../services/adminServices";
 import { changeToTitleCase } from "../../../../helpers/helpers";
-import ProgressTracker from "../Landingpage/component/progressTracker";
-import { labelColors, projectDetailUpdateType, selectValuePreCursor } from "./utils/utils";
+import { labelColors } from "./utils/utils";
+import StructureConfigurationModal from "./components/StructureConfigurationModal/StructureConfigurationModal";
+import UserDetailModal from "./components/UserDetailModal/UserDetailModal";
 
 const CompanyStructurePage = () => {
     const {
         applications,
-        setApplications,
         applicationsLoaded,
-        setApplicationsLoaded,
         projectsLoaded,
         projectsAdded,
         subProjectsAdded,
@@ -146,79 +140,6 @@ const CompanyStructurePage = () => {
         setCopyOfStructureData(companyStructure);
         setCurrentModalPage(1);
         setSelectedProject('');
-    }
-
-    const handleUpdateProjectLead = (newLead, project, itemValueInCompanyStructure) => {
-        const itemValue = newLead?.split(selectValuePreCursor)[0];
-        const currentStructureDataCopy = {...copyOfStructureData};
-
-        const addNewProjectLead = (structureData, newProjectLead, projectDetails) => {
-            structureData?.project_leads?.push({
-                project_lead: newProjectLead,
-                projects: [projectDetails],
-                is_new_project_lead: true,
-            })
-        }
-
-        // CHANGING THE PROJECT LEAD FOR A PROJECT
-        if (itemValueInCompanyStructure) {
-            const foundProjectLeadItem = currentStructureDataCopy?.project_leads?.find(item => item.project_lead_id === itemValueInCompanyStructure?.project_lead_id);
-            if (foundProjectLeadItem?.project_lead === itemValue) return;
-
-            const existingProjectDetails = foundProjectLeadItem?.projects?.find(item => item.project === project);
-            const updatedPreviousProjectLeadProjects = [...foundProjectLeadItem?.projects]?.filter(item => item.project !== project);
-            foundProjectLeadItem.projects = updatedPreviousProjectLeadProjects;
-
-            const isNewProjectLeadInStructure = currentStructureDataCopy?.project_leads?.find(item => item.project_lead === itemValue);
-            
-            if (isNewProjectLeadInStructure) isNewProjectLeadInStructure?.projects?.push(existingProjectDetails);
-            
-            if (!isNewProjectLeadInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, existingProjectDetails);
-
-            console.log('updated copy -> ', currentStructureDataCopy);
-            setCopyOfStructureData(currentStructureDataCopy);
-
-            return
-        }
-
-        // ASSIGNING A PROJECT TO A LEAD FOR THE FIRST TIME 
-        const projectLeadItemIsInStructure = currentStructureDataCopy?.project_leads?.find(item => item.project_lead === itemValue);
-        const newProjectDetails = {
-            project: project,
-            team_lead: ''
-        };
-
-        if (projectLeadItemIsInStructure) projectLeadItemIsInStructure?.projects?.push(newProjectDetails);
-        if (!projectLeadItemIsInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, newProjectDetails);
-
-        console.log('updated copy -> ', currentStructureDataCopy);
-        setCopyOfStructureData(currentStructureDataCopy);
-    }
-
-    const handleUpdateProjectDetail = (newValue, project, updateType) => {
-        console.log(newValue, project, updateType);
-
-        const currentStructureDataCopy = {...copyOfStructureData};
-        
-        const foundProjectLeadItemIndex = currentStructureDataCopy?.project_leads?.findIndex(item => item.projects.find(pro => pro.project === project));
-        if (foundProjectLeadItemIndex === -1) return;
-
-        const copyOfProjectLeadItem = { ...currentStructureDataCopy?.project_leads[foundProjectLeadItemIndex] };
-        
-        const foundProjectDetailsIndex = copyOfProjectLeadItem?.projects?.findIndex(item => item.project === project);
-        if (foundProjectDetailsIndex === -1) return;
-
-        const copyOfProjectDetailsInProjectLeadItem = { ...copyOfProjectLeadItem?.projects[foundProjectDetailsIndex] };
-
-        if (updateType === projectDetailUpdateType.teamlead_update) copyOfProjectDetailsInProjectLeadItem.team_lead = newValue;
-        if (updateType === projectDetailUpdateType.grouplead_update) copyOfProjectDetailsInProjectLeadItem.group_leads = newValue;
-        if (updateType === projectDetailUpdateType.member_update) copyOfProjectDetailsInProjectLeadItem.members = newValue;
-
-        copyOfProjectLeadItem.projects[foundProjectDetailsIndex] = copyOfProjectDetailsInProjectLeadItem;
-        currentStructureDataCopy.project_leads[foundProjectLeadItemIndex] = copyOfProjectLeadItem;
-
-        console.log('updated structure details -> ', currentStructureDataCopy);
-        setCopyOfStructureData(currentStructureDataCopy);
     }
 
     const handleGoForward = async () => {
@@ -634,316 +555,27 @@ const CompanyStructurePage = () => {
 
             {/* SINGLE USER DETAIL MODAL  */}
             {
-                showSelectedUser && <Overlay>
-                    <div className={styles.single__User__Detail}>
-                        <div 
-                            className={styles.close__User__Detail} 
-                            onClick={handleCloseSingleUserModal}
-                        >
-                            <AiOutlineClose fontSize={'1.5rem'} />
-                        </div>
-                        
-                        <div className={styles.top__user__Info}>
-                            <Avatar
-                                name={
-                                    applications?.find(application => application.username === currentSelectedUser?.name)?.applicant ? 
-                                        applications?.find(application => application.username === currentSelectedUser?.name)?.applicant
-                                    :
-                                    currentSelectedUser?.name
-                                }
-                                round={true}
-                                size='8rem'
-                            />
-                            <div>
-                                <h5>
-                                    {
-                                        applications?.find(application => application.username === currentSelectedUser?.name)?.applicant ? 
-                                            applications?.find(application => application.username === currentSelectedUser?.name)?.applicant
-                                        :
-                                        currentSelectedUser?.name
-                                    }
-                                </h5>
-                                <p className={styles.single__User__label} style={{ backgroundColor: currentSelectedUser?.labelColor}}>{currentSelectedUser?.title}</p>
-                            
-                            </div>
-                        </div>
-
-                        <div className={styles.user__Detail__Info__Wrap}>
-                            <div className={styles.user__Detail__Info}>
-                                <p>
-                                    Details
-                                    <div className={styles.highlight}></div>
-                                </p>
-                            </div>
-                            <div className={styles.user__Project__Details}>
-                                <p>Project: {currentSelectedUser?.project}</p>
-                                <p>Subprojects: {currentSelectedUser?.subprojects?.join(', ')}</p>
-                                <p>Team Members: {currentSelectedUser?.members?.join(', ')}</p>
-                            </div>
-                        </div>
-                    </div>
-                </Overlay>
+                showSelectedUser && 
+                <UserDetailModal
+                    currentSelectedUser={currentSelectedUser}
+                    handleCloseSingleUserModal={handleCloseSingleUserModal}
+                />
             }
 
             {/* COMPANY STRUCTURE CONFIGURATION MODAL */}
             {
-                showConfigurationModal && <Overlay>
-                    <div className={styles.structure__modal}>
-                        <div 
-                            className={styles.close__User__Detail} 
-                            onClick={handleCloseStructureModal}
-                        >
-                            <AiOutlineClose fontSize={'1.2rem'} />
-                        </div>
-                        <div className={styles.form__Header}>
-                            <h2>
-                                {
-                                    !companyStructure ? 'Configure Company Structure'
-                                    :
-                                    'Edit Structure'
-                                }
-                            </h2>
-                            <p>
-                                {
-                                    currentModalPage === 1 ? 'Step One: Configure CEO' : 
-                                    currentModalPage === 2 ? 'Step Two: Configure project leads' :
-                                    currentModalPage === 3 ? 'Step Three: Configure teamlead, grouplead and members of projects' :
-                                    ''
-                                }
-                            </p>
-                        </div>
-                        <div className={`${styles.structure__Form} ${currentModalPage === 3 ? styles.structure__Form_2 : ''}`}>
-                            {
-                                currentModalPage === 1 ? <>
-                                    <label>
-                                        <p>
-                                            <span>Name of CEO</span>
-                                        </p>
-                                        <input 
-                                            type="text"
-                                            value={copyOfStructureData?.ceo}
-                                            onChange={
-                                                ({ target }) => setCopyOfStructureData(
-                                                    (prev) => {
-                                                        return  {...prev, ceo: target.value}
-                                                    }
-                                                )
-                                            }
-                                        />
-                                        {
-                                            dataLoading && <LoadingSpinner 
-                                                width={'0.85rem'}
-                                                height={'0.85rem'}
-                                                className={styles.loader}
-                                            />
-                                        }
-                                    </label>
-                                </> :
-                                currentModalPage === 2 ? <>
-                                    <table 
-                                        className={styles.project__Lead__Table} 
-                                        style={{ 
-                                            pointerEvents : dataLoading ? 'none' : 'initial',
-                                        }}
-                                    >
-                                        <thead>
-                                            <tr>
-                                                <th>Project</th>
-                                                <th>Project Lead</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {
-                                                projectsLoaded && projectsAdded[0]?.project_list && Array.isArray(projectsAdded[0]?.project_list) ?
-                                                    React.Children.toArray(
-                                                        projectsAdded[0]?.project_list
-                                                        ?.sort((a, b) => a.localeCompare(b))
-                                                        ?.map((project, index) => {
-                                                            const matchingProjectFromCompanyStructure = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === project));
-                                                            
-                                                            return <tr>
-                                                                <td>{project}</td>
-                                                                <td>
-                                                                    <Select 
-                                                                        value={
-                                                                            {
-                                                                                label: matchingProjectFromCompanyStructure?.project_lead ?
-                                                                                    applications?.find(application => application.username === matchingProjectFromCompanyStructure?.project_lead)?.applicant
-                                                                                :
-                                                                                    'Select project lead'
-                                                                                ,
-                                                                                value: matchingProjectFromCompanyStructure?.project_lead + selectValuePreCursor + index
-                                                                            }
-                                                                        }
-                                                                        options={
-                                                                            onboardedUsers?.map(application => {
-                                                                                return { 
-                                                                                    label: changeToTitleCase(application?.applicant),
-                                                                                    value: application?.username + selectValuePreCursor + index
-                                                                                }
-                                                                            })
-                                                                        }
-                                                                        onChange={(val) => handleUpdateProjectLead(val.value, project, matchingProjectFromCompanyStructure)}
-                                                                        placeholder={'Select project lead'}
-                                                                        id={crypto.randomUUID()}
-                                                                    />
-                                                                </td>
-                                                            </tr>
-                                                        })
-                                                    )
-                                                : <></>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </> : 
-                                currentModalPage === 3 ? <>
-                                    <label>
-                                        <p>
-                                            <span>Select project <span className={styles.min__Detail}>(only projects with assigned project leads will show here)</span></span>
-                                        </p>
-                                        <Select 
-                                            value={{
-                                                label: selectedProject?.length < 1 ? 'Select project' : selectedProject,
-                                                value: selectedProject,
-                                            }}
-                                            options={
-                                                projectsLoaded &&
-                                                projectsAdded[0] &&
-                                                projectsAdded[0]?.project_list
-                                                ? [
-                                                ...projectsAdded[0]?.project_list
-                                                    ?.sort((a, b) => a.localeCompare(b))
-                                                    ?.map((project) => {
-                                                        const projectWithProjectLeads = copyOfStructureData?.project_leads?.map(item => item.projects.map(projectItem => projectItem.project))?.flat();
-                                                        if (!projectWithProjectLeads.includes(project)) return null;
-                                                        return { label: project, value: project };
-                                                    }).filter(item => item !== null),
-                                                ]
-                                                : [{label: '', value: ''}]
-                                            }
-                                            placeholder={'Select project'}
-                                            className={styles.select__Item}
-                                            onChange={(val) => setSelectedProject(val.value)}
-                                        />
-                                    </label>
-                                    
-                                    {
-                                        selectedProject?.length > 0 &&
-                                        <>
-                                            <label>
-                                                <p>
-                                                    <span>Select team lead</span>
-                                                </p>
-                                                {
-                                                    
-                                                }
-                                                <Select 
-                                                    value={
-                                                        {
-                                                            label: copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead ?
-                                                                applications?.find(item => item?.username === copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead)?.applicant
-                                                                :
-                                                            'Select teamlead'
-                                                            ,
-                                                            value: copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead
-                                                        }
-                                                    }
-                                                    options={
-                                                        onboardedUsers?.map(user => {
-                                                            return { label: user?.applicant, value: user?.username }
-                                                        })
-                                                    }
-                                                    onChange={(val) => handleUpdateProjectDetail(val.value, selectedProject, projectDetailUpdateType.teamlead_update)}  
-                                                />
-                                            </label>
-
-                                            <label>
-                                                <p>
-                                                    <span>Select group leads</span>
-                                                </p>
-                                                <Select 
-                                                    value={
-                                                        copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.group_leads?.map(item => {
-                                                            return {
-                                                                label: applications?.find(user => user.username === item)?.applicant,
-                                                                value: item,
-                                                            }
-                                                        })
-                                                    }
-                                                    options={
-                                                        onboardedUsers?.map(user => {
-                                                            const teamleadForProject = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead;
-                                                            if (user?.username === teamleadForProject) return null;
-                                                            return { label: user?.applicant, value: user?.username }
-                                                        }).filter(item => item !== null)
-                                                    }
-                                                    onChange={(val) => handleUpdateProjectDetail(val.map(item => item.value), selectedProject, projectDetailUpdateType.grouplead_update)}  
-                                                    isMulti
-                                                />
-                                            </label>
-
-                                            <label>
-                                                <p>
-                                                    <span>Select team members</span>
-                                                </p>
-                                                <Select 
-                                                    value={
-                                                        copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.members?.map(item => {
-                                                            return {
-                                                                label: applications?.find(user => user.username === item)?.applicant,
-                                                                value: item,
-                                                            }
-                                                        })
-                                                    }
-                                                    options={
-                                                        onboardedUsers?.map(user => {
-                                                            return { label: user?.applicant, value: user?.username }
-                                                        })
-                                                    }
-                                                    onChange={(val) => handleUpdateProjectDetail(val.map(item => item.value), selectedProject, projectDetailUpdateType.member_update)}  
-                                                    isMulti
-                                                />
-                                            </label>
-                                        </>
-                                    }
-                                </>
-                                :
-                                <></>
-                            }
-                        </div>
-                        <div className={styles.form__Nav__Btns__Wrap}>
-                            <>
-                                {
-                                    currentModalPage === 2 && dataLoading ? <div className={styles.save__Progress_Container}>
-                                        <p className={styles.loader_text}>Saving....</p>
-                                        <ProgressTracker 
-                                            durationInSec={120} 
-                                            showDivProgressBar={true}
-                                            progressClassName={styles.progress}
-                                        />
-                                    </div> : <>
-                                        {
-                                            currentModalPage > 1 && <button 
-                                                className={styles.form__Nav__Btn} 
-                                                onClick={handleGoBackward}
-                                                disabled={dataLoading ? true : false}
-                                            >
-                                                <HiMiniArrowLongLeft fontSize={'1.2rem'} />
-                                            </button>
-                                        }
-                                        <button 
-                                            className={styles.form__Nav__Btn} 
-                                            onClick={handleGoForward}
-                                            disabled={dataLoading ? true : false}
-                                        >
-                                            <HiMiniArrowLongRight fontSize={'1.2rem'} />
-                                        </button>
-                                    </>
-                                }
-                            </>
-                        </div>
-                    </div>
-                </Overlay>
+                showConfigurationModal && 
+                <StructureConfigurationModal 
+                    copyOfExistingStructure={copyOfStructureData}
+                    updateCopyOfExistingStructure={setCopyOfStructureData}
+                    dataLoading={dataLoading}
+                    onboardedUsers={onboardedUsers}
+                    selectedProject={selectedProject}
+                    updateSelectedProject={setSelectedProject}
+                    handleGoForward={handleGoForward}
+                    handleGoBackward={handleGoBackward}
+                    handleCloseStructureModal={handleCloseStructureModal}
+                />
             }
 
         </StaffJobLandingLayout>
