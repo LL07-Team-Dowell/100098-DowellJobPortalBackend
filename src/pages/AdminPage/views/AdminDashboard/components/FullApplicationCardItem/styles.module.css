@@ -209,6 +209,47 @@
     max-width: 100%;
 }
 
+.view_modal_avatar {
+    /* background-color: red; */
+    width: 100%;
+    display: flex;
+    justify-content: start;
+  }
+  
+  .applicant_info {
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    justify-content: space-around;
+    margin: 1rem;
+    font-family: "Poppins", sans-serif;
+  }
+  
+  .applicant_info h2 {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-size: 1.4rem;
+    color: #404040;
+  }
+  
+  .applicant_oth_info {
+    display: flex;
+    flex-direction: column;
+    line-height: 2rem;
+    font-family: "Poppins", sans-serif;
+  }
+  
+  .applicant_oth_info b {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0.5rem;
+    color: #404040;
+  }
+  
+  .applicant_oth_info p{
+    font-size: 0.8rem;
+  }
+
 @media (min-width: 992px) and (max-width: 1500px) {
     .full__Application__Item {
         width: calc(calc(100% - 3rem) / 3);
