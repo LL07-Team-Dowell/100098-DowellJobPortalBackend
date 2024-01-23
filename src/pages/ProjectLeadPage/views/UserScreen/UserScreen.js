@@ -9,9 +9,10 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 
 
 const ProjectLeadUserScreen = () => {
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser/*, currentUserHiredApplications*/ } = useCurrentUserContext();
     const [success, setsuccsess] = useState(false);
     const navigate = useNavigate();
+    // const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
 
     useEffect(() => {
         const checkActive = setInterval(() => {
@@ -88,6 +89,13 @@ const ProjectLeadUserScreen = () => {
                     }
                 </span>
             </div>
+            {/* {
+                userProject !== "" &&
+                <div className="user__Intro__Item">
+                    <h2>Project(s)</h2>
+                    <span>{userProject}</span>
+                </div>
+            } */}
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout
             </button>

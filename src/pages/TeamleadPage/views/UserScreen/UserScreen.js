@@ -10,8 +10,9 @@ import { ApproveVouchar, ClaimVouchar } from "../ClaimVouchar/ClaimVouchar";
 
 
 const UserScreen = ({ isGrouplead }) => {
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser /*, currentUserHiredApplications*/ } = useCurrentUserContext();
     const [success, setsuccsess] = useState(false);
+    // const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
 
     console.log({ currentUser });
     const navigate = useNavigate();
@@ -44,11 +45,11 @@ const UserScreen = ({ isGrouplead }) => {
                 isGrouplead ? <>
                     <ClaimVouchar />
                 </>
-                :
-                <>
-                    <ClaimVouchar />
-                    <ApproveVouchar />
-                </>
+                    :
+                    <>
+                        <ClaimVouchar />
+                        <ApproveVouchar />
+                    </>
             }
             <div className="user__Intro__Item__Container">
                 <div className="user__Intro__Item">
@@ -98,6 +99,13 @@ const UserScreen = ({ isGrouplead }) => {
                     }
                 </span>
             </div>
+            {/* {
+                userProject !== "" &&
+                <div className="user__Intro__Item">
+                    <h2>Project(s)</h2>
+                    <span>{userProject}</span>
+                </div>
+            } */}
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout
             </button>

@@ -21,17 +21,19 @@ const AdminUserScreen = ({ subAdminView }) => {
 
 
     const navigate = useNavigate();
-    const { currentUser } = useCurrentUserContext()
+    const { currentUser, currentUserHiredApplications } = useCurrentUserContext()
     console.log(currentUser);
+    const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
+    // console.log("current>>>>>>>>>>>>>>>",currentUserHiredApplications);
 
     const handleLogout = () => navigate("/logout");
 
     return <>
-        <StaffJobLandingLayout 
-            adminView={true} 
-            handleNavIconClick={() => navigate("/add-job")} 
-            adminAlternativePageActive={true} 
-            pageTitle={"User"} 
+        <StaffJobLandingLayout
+            adminView={true}
+            handleNavIconClick={() => navigate("/add-job")}
+            adminAlternativePageActive={true}
+            pageTitle={"User"}
             subAdminView={subAdminView}
             newSidebarDesign={!subAdminView ? true : false}
         >
@@ -70,6 +72,13 @@ const AdminUserScreen = ({ subAdminView }) => {
                     <h2>Role</h2>
                     <span>Admin</span>
                 </div>
+                {
+                    userProject !== "" &&
+                    <div className="user__Intro__Item">
+                        <h2>Project(s)</h2>
+                        <span>{userProject}</span>
+                    </div>
+                }
                 <button className="logout__Btn" onClick={handleLogout}>
                     Logout
                 </button>
