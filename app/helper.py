@@ -49,6 +49,7 @@ def dowellconnection(
 
     return res
 
+
 def get_event_id():
     url = "https://uxlivinglab.pythonanywhere.com/create_event"
 
@@ -86,6 +87,7 @@ def get_event_id():
         # print("r---->", r.text,json.loads(r.text))
         return json.loads(r.text)["error"]
 
+
 ### for notification api----------------------------
 def call_notification(url, request_type, data):  ## calling  notification api
     if request_type == "post":
@@ -101,6 +103,7 @@ def call_notification(url, request_type, data):  ## calling  notification api
         details = notification.json()
         return details
 
+
 ### for settings api----------------------------
 def update_number(string):
     updated_string = ""
@@ -109,12 +112,14 @@ def update_number(string):
             updated_string += f"C{str(int(char) + 1)}"
     return updated_string
 
+
 def update_string(string):
     new_str = ""
     for char in string:
         if char == "C":
             new_str = string.replace("C", "O")
     return new_str
+
 
 ### calling the discord api----------------------------
 # generate discord invite link
@@ -147,6 +152,7 @@ def discord_invite(server_owner_ids, guild_id, token):
     return invite_link
     # get the channels in the server
 
+
 def get_guild_channels(guildid, token):
     """with open(os.getcwd()+"/app/token", "r", encoding="utf-8") as t:
     token = t.read()"""
@@ -155,6 +161,7 @@ def get_guild_channels(guildid, token):
     response = requests.request("GET", url=url, headers=headers)
     res = json.loads(response.text)
     return res
+
 
 def get_guild_members(guildid, token):
     """with open(os.getcwd()+"/app/token", "r", encoding="utf-8") as t:
@@ -165,6 +172,7 @@ def get_guild_members(guildid, token):
     res = json.loads(response.text)
 
     return res
+
 
 def create_master_link(company_id, links, job_name):
     url = "https://www.qrcodereviews.uxlivinglab.online/api/v3/qr-code/"
@@ -180,6 +188,7 @@ def create_master_link(company_id, links, job_name):
 
     return response.text
 
+
 def send_mail(toname, toemail, subject, job_role, link):
     url = "https://100085.pythonanywhere.com/api/hr-invitation/"
     payload = {
@@ -192,6 +201,7 @@ def send_mail(toname, toemail, subject, job_role, link):
     response = requests.post(url, json=payload)
     return response.text
 
+
 def interview_email(toname, toemail, subject, email_content):
     url = "https://100085.pythonanywhere.com/api/email/"
     payload = {
@@ -202,6 +212,7 @@ def interview_email(toname, toemail, subject, email_content):
     }
     response = requests.post(url, json=payload)
     return response.text
+
 
 def set_finalize(linkid):
     # print(linkid)
@@ -318,12 +329,14 @@ def period_check(start_dt, end_dt, data_list, key):
                                             pass
     return items, len(items), items_ids, len(items_ids)
 
+
 def valid_period(start_dt, end_dt):
     start_date = datetime.datetime.strptime(start_dt, "%m/%d/%Y %H:%M:%S")
     end_date = datetime.datetime.strptime(end_dt, "%m/%d/%Y %H:%M:%S")
     if end_date > start_date:
         return True
     return False
+
 
 def set_date_format(date):
     try:
@@ -385,6 +398,7 @@ def set_date_format(date):
                                     except Exception:
                                         return ""
 
+
 def targeted_population(
     database, collection, fields, period, column_name, start_point, end_point
 ):
@@ -431,8 +445,10 @@ def targeted_population(
     response = requests.post(url, json=request_data, headers=headers)
     return response.text
 
+
 class CustomValidationError(Exception):
     pass
+
 
 def validate_and_generate_times(
     task_type, task_created_date, start_time=None, end_time=None
@@ -461,6 +477,7 @@ def validate_and_generate_times(
 
     return start_time_dt.strftime(date_format), end_time_dt.strftime(date_format)
 
+
 def update_task_status(self, current_task_id, is_active):
     field = {"_id": current_task_id}
     update_field = {"is_active": is_active}
@@ -468,6 +485,7 @@ def update_task_status(self, current_task_id, is_active):
         dowellconnection(*task_details_module, "update", field, update_field)
     )
     return response.get("isSuccess", False)
+
 
 def validate_id(id):
     try:
@@ -478,17 +496,18 @@ def validate_id(id):
     except:
         return None
 
+
 def get_positions(serializer_data):
     teamleads = []
-    accountleads =[]
-    hrs=[]
-    subadmins=[]
-    groupleads=[]
-    superadmins=[]
-    candidates=[]
-    viewers=[]
-    projectlead=[]
-    leaders=[]
+    accountleads = []
+    hrs = []
+    subadmins = []
+    groupleads = []
+    superadmins = []
+    candidates = []
+    viewers = []
+    projectlead = []
+    leaders = []
     for user in serializer_data:
         for d in user["profile_info"]:
             if "profile_title" in d.keys():
@@ -512,19 +531,21 @@ def get_positions(serializer_data):
                         projectlead.append(d["profile_title"])
                     if d["Role"] == "Viewer":
                         viewers.append(d["profile_title"])
-    positions={
-        "leaders":leaders,
-        "teamleads":teamleads,
-        "accountleads":accountleads,
-        "hrs":hrs,
-        "subadmins":subadmins,
-        "groupleads":groupleads,
-        "superadmins":superadmins,
-        "candidates":candidates,
-        "projectlead":projectlead,
-        "viewers":viewers
+    positions = {
+        "leaders": leaders,
+        "teamleads": teamleads,
+        "accountleads": accountleads,
+        "hrs": hrs,
+        "subadmins": subadmins,
+        "groupleads": groupleads,
+        "superadmins": superadmins,
+        "candidates": candidates,
+        "projectlead": projectlead,
+        "viewers": viewers,
     }
     return positions
+
+
 def get_month_details(date):
     month_list = calendar.month_name
     months = []
@@ -533,9 +554,10 @@ def get_month_details(date):
 
     months.append(month_name)
 
-    return (str(datime.year),month_name,months.count(month_name))
+    return (str(datime.year), month_name, months.count(month_name))
 
-def datacube_data_insertion(api_key,database_name,collection_name,data):
+
+def datacube_data_insertion(api_key, database_name, collection_name, data):
     url = "https://datacube.uxlivinglab.online/db_api/crud/"
 
     data = {
@@ -543,54 +565,56 @@ def datacube_data_insertion(api_key,database_name,collection_name,data):
         "db_name": database_name,
         "coll_name": collection_name,
         "operation": "insert",
-        "data":data
+        "data": data,
     }
 
     response = requests.post(url, json=data)
 
     return response.text
 
-def datacube_data_retrival(api_key,database_name,collection_name,data,limit,offset):
+
+def datacube_data_retrival(
+    api_key, database_name, collection_name, data, limit, offset
+):
     url = "https://datacube.uxlivinglab.online/db_api/get_data/"
     data = {
         "api_key": api_key,
         "db_name": database_name,
         "coll_name": collection_name,
         "operation": "fetch",
-        "filters":data,
+        "filters": data,
         "limit": limit,
-        "offset": offset     
+        "offset": offset,
     }
 
     response = requests.post(url, json=data)
-    
+
     return response.text
 
-def datacube_data_update(api_key,db_name,coll_name,query,update_data):
+
+def datacube_data_update(api_key, db_name, coll_name, query, update_data):
     url = "https://datacube.uxlivinglab.online/db_api/crud/"
     data = {
         "api_key": api_key,
         "db_name": db_name,
         "coll_name": coll_name,
         "operation": "update",
-        "query" : query,
-        "update_data":update_data
+        "query": query,
+        "update_data": update_data,
     }
 
     response = requests.put(url, json=data)
     return response.text
 
-def samanta_content_evaluator(api_key,title,description):
-    url=f"https://100085.pythonanywhere.com/uxlivinglab/v1/content-scan/{api_key}/"
-    payload={
-        "title":title,
-        "content":description
-    }
+
+def samanta_content_evaluator(api_key, title, description):
+    url = f"https://100085.pythonanywhere.com/uxlivinglab/v1/content-scan/{api_key}/"
+    payload = {"title": title, "content": description}
     response = requests.post(url, json=payload)
     return response.text
 
-def datacube_add_collection(api_key,db_name,coll_names,num_collections):
 
+def datacube_add_collection(api_key, db_name, coll_names, num_collections):
     url = "https://datacube.uxlivinglab.online/db_api/collections/?name=add_collection"
 
     data = {
@@ -603,18 +627,20 @@ def datacube_add_collection(api_key,db_name,coll_names,num_collections):
     response = requests.post(url, json=data)
     return response.text
 
+
 def get_subproject():
     url = "https://100098.pythonanywhere.com/settingusersubproject/"
 
     try:
         response = requests.get(url)
-        response.raise_for_status()  
-        data = response.json()  
+        response.raise_for_status()
+        data = response.json()
         return data
     except requests.exceptions.RequestException as e:
         print(f"Error: {e}")
         return None
-    
+
+
 def get_speed_test_data(email):
     try:
         url = f"https://dowellresearch.com/livinglab/api.php?email={email}"
@@ -626,11 +652,13 @@ def get_speed_test_data(email):
     except requests.RequestException as e:
         print(f"Request failed: {e}")
         return None
+
+
 def get_speed_test_result(email):
     try:
         url = f"https://dowellresearch.com/livinglab/api.php?email={email}"
         response = requests.get(url)
-        if response.status_code == 200:           
+        if response.status_code == 200:
             return response.json()[:20]
         else:
             return None
@@ -638,9 +666,14 @@ def get_speed_test_result(email):
         print(f"Request failed: {e}")
         return None
 
+
 def speed_test_condition(upload, download, jitter, latency):
-    conditions_met = (upload >= 100) + (download >= 100) + (jitter <= 30) + (latency <= 50)
+    conditions_met = (
+        (upload >= 100) + (download >= 100) + (jitter <= 30) + (latency <= 50)
+    )
     return conditions_met >= 2
+
+
 def date_time_operation(date_string):
     date_info = date_string.split(" GMT")[0]
     parsed_date = datetime.datetime.strptime(date_info, "%a %b %d %Y %H:%M:%S")
@@ -651,55 +684,71 @@ def date_time_operation(date_string):
         return True
     else:
         return False
+
+
 def check_speed_test(applicant_email):
-        speed_test_result = get_speed_test_data(applicant_email)
-        if not speed_test_result:
-            return {"success":False,"message":f"Speed test has not been completed yet for {applicant_email}"}
-        download_speed = float(speed_test_result.get("DOWNLOAD").split()[0])  
-        upload_speed = float(speed_test_result.get("UPLOAD").split()[0]) 
-        latency = float(speed_test_result.get("LATENCY").split()[0]) 
-        jitter = float(speed_test_result.get("JITTER").split()[0]) 
-        device_type = speed_test_result.get("DEVICE")
-        if device_type != "Laptop":
-            return {'success':False,"message":"Device not recognized as a Laptop"}
-        elif not speed_test_condition(download_speed,upload_speed,latency,jitter):
-            return {'success':False,"message":f"Speed test result less for {applicant_email} - Download Speed: {download_speed} Mbps, Upload Speed: {upload_speed} Mbps , Latency: {latency} MS , Jitter: {jitter} MS"}
+    speed_test_result = get_speed_test_data(applicant_email)
+    if not speed_test_result:
+        return {
+            "success": False,
+            "message": f"Speed test has not been completed yet for {applicant_email}",
+        }
+    download_speed = float(speed_test_result.get("DOWNLOAD").split()[0])
+    upload_speed = float(speed_test_result.get("UPLOAD").split()[0])
+    latency = float(speed_test_result.get("LATENCY").split()[0])
+    jitter = float(speed_test_result.get("JITTER").split()[0])
+    device_type = speed_test_result.get("DEVICE")
+    if device_type != "Laptop":
+        return {"success": False, "message": "Device not recognized as a Laptop"}
+    elif not speed_test_condition(download_speed, upload_speed, latency, jitter):
+        return {
+            "success": False,
+            "message": f"Speed test result less for {applicant_email} - Download Speed: {download_speed} Mbps, Upload Speed: {upload_speed} Mbps , Latency: {latency} MS , Jitter: {jitter} MS",
+        }
+    else:
+        date_to_match = date_time_operation(speed_test_result.get("DATETIME"))
+        if date_to_match:
+            return {"success": True, "internet_speed": download_speed}
         else:
-            date_to_match = date_time_operation(speed_test_result.get("DATETIME"))
-            if date_to_match:
-                return {'success':True,"internet_speed":download_speed}
-            else:
-                return {"success":False,"message":f"Speed test has not been completed yet for {applicant_email}"}
-            
+            return {
+                "success": False,
+                "message": f"Speed test has not been completed yet for {applicant_email}",
+            }
+
 
 def get_projects():
-    p_url ="https://100098.pythonanywhere.com/settinguserproject/"
-    sp_url ="https://100098.pythonanywhere.com/settingusersubproject/"
+    p_url = "https://100098.pythonanywhere.com/settinguserproject/"
+    sp_url = "https://100098.pythonanywhere.com/settingusersubproject/"
 
     headers = {"Content-Type": "application/json"}
 
     proj_response = json.loads(requests.request("GET", p_url, headers=headers).text)
-    _projects =[]
+    _projects = []
     proj_list = [i["project_list"] for i in proj_response if "project_list" in i.keys()]
     for proj in proj_list:
         for p in proj:
-            if type(p)== str:
+            if type(p) == str:
                 _projects.append(p)
 
-    sproj_response = json.loads(requests.request("GET", sp_url, headers=headers).text)['data']
-    data={}
+    sproj_response = json.loads(requests.request("GET", sp_url, headers=headers).text)[
+        "data"
+    ]
+    data = {}
     for i in sproj_response:
-        if ("parent_project" in i.keys() and i["parent_project"] in _projects):
+        if "parent_project" in i.keys() and i["parent_project"] in _projects:
             if i["parent_project"] not in data.keys():
-                data[i["parent_project"]]=i["sub_project_list"]
+                data[i["parent_project"]] = i["sub_project_list"]
             else:
-                data[i["parent_project"]]+=i["sub_project_list"]
-    
-    return data           
+                data[i["parent_project"]] += i["sub_project_list"]
 
-def datacube_data_retrival_function(api_key,database_name,collection_name,data,limit,offset,payment):
+    return data
+
+
+def datacube_data_retrival_function(
+    api_key, database_name, collection_name, data, limit, offset, payment
+):
     """
-    DON"T USER THIS WITHOUT ASKING ME 
+    DON"T USER THIS WITHOUT ASKING ME
     """
     url = "https://datacube.uxlivinglab.online/db_api/get_data/"
 
@@ -708,19 +757,19 @@ def datacube_data_retrival_function(api_key,database_name,collection_name,data,l
         "db_name": database_name,
         "coll_name": collection_name,
         "operation": "fetch",
-        "filters":data,
+        "filters": data,
         "limit": limit,
         "offset": offset,
-        "payment":payment
+        "payment": payment,
     }
 
     response = requests.post(url, json=data)
     return response.text
 
+
 def get_current_week_start_end_date(date_taken):
-    
-    date_format = '%Y-%m-%d'
-    date_obj = datetime.datetime.strptime(date_taken, date_format).date() 
+    date_format = "%Y-%m-%d"
+    date_obj = datetime.datetime.strptime(date_taken, date_format).date()
     start_date = date_obj - timedelta(days=date_obj.weekday())
     end_date = start_date + timedelta(days=4)
 
