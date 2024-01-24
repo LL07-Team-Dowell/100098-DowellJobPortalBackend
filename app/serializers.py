@@ -842,3 +842,6 @@ class AddEventSerializer(serializers.Serializer):
 class UpdateEventSerializer(serializers.Serializer):
     event_frequency=serializers.ChoiceField(allow_null=True,choices=("daily","weekly","twice_a_week","custom"))
     document_id=serializers.CharField(allow_null=False, allow_blank=False)
+
+class GetEventSerializer(serializers.Serializer):
+    company_id=serializers.CharField(max_length=225,allow_null=False)
