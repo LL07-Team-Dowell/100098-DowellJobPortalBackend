@@ -10181,7 +10181,7 @@ class Company_Structure(APIView):
             "data_type":"Real_Data"
         }
         res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
-        #if ceo exists update else insert it
+        
         if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
             
@@ -10240,41 +10240,6 @@ class Company_Structure(APIView):
                 
                 insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
                 if insert_collection['success']==True:
-                    #update ceos project leads list-----------------------
-                    s_q ={
-                            "company_id":company_id,
-                        }
-                    res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"ceo",s_q,10,0,False))
-                    
-                    if res['success'] == True:
-                        for i in res['data']:
-                            pl = [x for x in i['project_leads']]
-                            pl.append(project_lead)
-                            update_data={
-                                    "project_leads":pl
-                                } 
-                            update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,'ceo',s_q,update_data))
-                            if update_collection['success']==False:
-                                del update_collection['data']
-                                update_collection['error'] = "Error while trying to update the ceo's project leads list"
-                                return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
-                    #update the projects team lead reports to list------------------------------
-                    p_q ={"company_id":company_id,"_coded_project":projects_managed}
-                    projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",p_q,10,0,False))
-                    if len(projects['data'])>0:
-                        for p in projects['data']:
-                            p=projects['data'][0]
-
-                            teamlead_reports_to = p['teamlead_reports_to']
-                            teamlead_reports_to.append(project_lead)
-                            update_data={
-                                "teamlead_reports_to":teamlead_reports_to
-                            } 
-                            update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,'projects',p_q,update_data))
-                            if update_collection['success']==False:
-                                del update_collection['data']
-                                update_collection['error'] = "Error while trying to update the projects's teamlead_reports_to list"
-                                return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
                     insert_collection['message'] = f"{type_request} data has been inserted successfully.."
                     return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
@@ -10344,13 +10309,12 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         project = request.data.get("project")
         _coded_project = self.rearrange(project.lower())
-        ##checking if project exists---------------------
-        project = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"_coded_project":_coded_project},10,0,False))
-        if len(project['data']) >0:
+        _project = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},10,0,False))
+        if len(_project['data']) >0:
             return Response({
-                        "success":False,
-                        "message":f"A project with called {project} already exists",
-                    },status=status.HTTP_404_NOT_FOUND)
+                    "success":False,
+                    "message":f"A project with {_project['projects_managed']} already exists",
+                },status=status.HTTP_404_NOT_FOUND)
         team_lead = request.data.get("team_lead")
         info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':team_lead}, update_field=None))
         #print(info,"===============")
@@ -10417,7 +10381,7 @@ class Company_Structure(APIView):
                 }
                 if len(teamlead_reports_to)>=1:
                     s_q["project_lead"] =teamlead_reports_to[0]
-                res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,s_q,10,1,False))
+                res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,s_q,10,0,False))
                 #if ceo exists update else insert it
                 if res['success'] == False :
                     return Response(res,status=status.HTTP_404_NOT_FOUND)
@@ -10464,36 +10428,6 @@ class Company_Structure(APIView):
                     data['teamlead_reports_to']=teamlead_reports_to[0]
                 insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
                 if insert_collection['success']==True:
-                    #update the projects collection for ------------------------------
-                    s_q ={  
-                        "company_id":company_id,
-                        "project_lead":teamlead_reports_to[0],
-                        "data_type":"Real_Data"
-                    }
-                    res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,s_q,10,1,False))
-                    #if ceo exists update else insert it
-                    if res['success'] == False :
-                        return Response(res,status=status.HTTP_404_NOT_FOUND)
-                    elif res['success'] == True:
-                        if len(res['data']) <=0 :
-                            res = {'success':False,"message":"Data not found with these details."}
-                            return Response(res,status=status.HTTP_404_NOT_FOUND)
-                        else:
-                            #update---------------
-                            for i in res['data']:
-                                projects_managed = [x for x in i['projects_managed']]
-                                projects_managed.append(project)
-                                _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
-
-                                update_data={"projects_managed":projects_managed,
-                                            "_coded_projects_managed":_coded_projects_managed
-                                            } 
-                                update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
-                                if update_collection['success']==False:
-                                    del update_collection['data']
-                                    update_collection['error'] = "Error while trying to update the ceo's project leads list"
-                                    return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
-
                     insert_collection['message'] = f"{type_request} data has been inserted successfully.."
                     return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
@@ -10579,6 +10513,188 @@ class Company_Structure(APIView):
             data['ceo'] =_x['ceo']
             data['company_id'] =_x['company_id']
             data["project_leads"] = []
+            plq={
+                'company_id':company_id,
+                "data_type":"Real_Data"
+            }
+            project_leads = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",plq,10,0,False))
+            
+            for y in project_leads['data']:
+                _y ={
+                    "project_lead":y['project_lead'],
+                    "project_lead_id":y['project_lead_id'],
+                    'projects_managed':y['projects_managed'],
+                    "projects":[]#y['projects_managed']
+                }
+                
+                pq={
+                    'company_id':company_id,
+                    "data_type":"Real_Data"
+                }
+                projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",pq,10,0,False))
+        
+                if len(projects['data'])>0:
+                    
+                    for z in projects['data']:
+                        if z["_coded_project"] in y['_coded_projects_managed']:
+                            del z["_id"]
+                            del z["_coded_project"]
+                            _y['projects'].append(z)
+                        
+                data["project_leads"].append(_y)
+        return Response({'success':True,'data':data},status=status.HTTP_200_OK)
+
+    
+@method_decorator(csrf_exempt, name="dispatch")
+class DowellEvents(APIView):
+    def post(self,request):
+        request_type=request.GET.get("type")
+        if request_type=="add_events":
+            return self.AddEvents(request)
+        if request_type=="update_events":
+            return self.UpdateEvents(request)
+        else:
+            print("Request invalids")
+            return self.handle_error(request)   
+    def AddEvents(self,request):
+        data=request.data
+        
+        field={
+            "event_name":data.get("event_name"),
+            "event_frequency":data.get("event_frequency"),
+            "event_host":data.get("event_host"),
+            "data_type":data.get("data_type"),
+            "company_id":data.get("company_id")
+        }
+
+        serializer=AddEventSerializer(data=request.data)
+       
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        try:    
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,DB_Name,Events_collection,data=field))
+        
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            })
+
+        if insert_collection["success"] and len(insert_collection["data"])>0:
+            return Response({
+                            "success":True,
+                            "message":"events has been added successfuly"
+                            })
+
+        else:
+            return Response({
+                "success":False,
+                "error":insert_collection["message"]
+            })
+            
+    def UpdateEvents(self, request):
+
+        document_id=request.data.get("document_id")
+        update=request.data
+
+        field={"_id":document_id}
+
+        allowed_to_update=("event_name","event_host","event_frequency") #this tuple contains the data that cannot be updated in the Db
+        
+        serializer=UpdateEventSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+        update_field={key:Value for key,Value in update.items() if key in allowed_to_update}
+
+        try:
+            update_event = json.loads(
+                datacube_data_update(
+                    API_KEY,
+                    DB_Name,
+                    coll_name=Events_collection,
+                    query=field,
+                    update_data=update_field,
+                )
+            )
+            print(update_event)
+
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        if update_event["success"]==True:
+            return Response({
+                "success":True,
+                "message":f"{update_field} has been updated for eventid {document_id}"
+            })
+
+        else:
+             return Response({
+                "success":False,
+                "error":update_event["message"]
+            })
+    def GetEvents(self,request):
+        
+        data={}
+
+        serializer=AddEventSerializer(data=request.data)
+       
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        try:    
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,DB_Name,Events_collection,data))
+            print(insert_collection)
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            })
+        print("h2")
+        if insert_collection["success"] and len(insert_collection["data"])>0:
+            return Response({
+                            "success":True,
+                            "message":"events has been added successfuly"
+                            })
+
+        else:
+            return Response({
+                "success":False,
+                "error":insert_collection["message"]
+            })
+
+        print(update_field)
+        
+    def handle_error(self, request):
+        print("Request invalid")
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
             for i in _x["project_leads"]:
                 plq={
                     'project_lead':i,# eg Manish
