@@ -134,8 +134,8 @@ if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
 if os.getenv("PROJECT_DB_NAME"):
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
-if os.getenv("ATTENDANCE_DB_NAME"):
-    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+if os.getenv("ATTENDANCE_DB"):
+    ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
 if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
 
@@ -148,7 +148,8 @@ else:
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
-    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+    ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
+    Events_collection=str(os.getenv("Events_collection"))
 
 # Create your views here.
 
@@ -9855,7 +9856,7 @@ class candidate_attendance(APIView):
 
         try:
             insert_attendance = json.loads(
-                datacube_data_insertion(API_KEY,DB_Name,collection, data)
+                datacube_data_insertion(API_KEY,ATTENDANCE_DB,collection, data)
             )
         except: 
                 return Response({
@@ -9891,20 +9892,88 @@ class candidate_attendance(APIView):
             }
 
         try:
-            attendance_report=json.loads(datacube_data_retrival_function(API_KEY,DB_Name,collection,data,limit,offset,False))
-            if attendance_report["success"]==True:
-                return Response({
-                    "success":True,
-                    "response":attendance_report["message"],
-                    "data":attendance_report},status=status.HTTP_200_OK)
-            
-            return Response({"success":False,"message":attendance_report["message"]},status=status.HTTP_400_BAD_REQUEST )
+            attendance_report=json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,collection,data,limit,offset))    
             
         except:
             return Response({
                 "success":False,
                 "error":"datacube database not responding"
             })
+       
+        if attendance_report["success"]==True:              
+                if len(attendance_report["data"])>0:
+                    for project in projects:
+                        for attendance in attendance_report["data"]:
+                            if attendance_report["data"][0]["project"] in attendance_with_projects:
+                                attendance_with_projects[project].append(attendance)
+                            else:
+                                attendance_with_projects[project]=[attendance]    
+                    return Response({
+                        "success":True,
+                        "message":"Attendance records has been succesfully retrieved",
+                        "data":attendance_with_projects},status=status.HTTP_200_OK)                  
+                else:
+                    return Response({
+                        "success":False,
+                        "error":"Attendance for the given payload does not exist"
+                    })
+                    
+        return Response({"success":False,"message":attendance_report["message"]},status=status.HTTP_400_BAD_REQUEST )
+    
+    def get_user_wise_attendance(self,request):
+
+        def add_user_attendance(userdetail,date,is_user_present):
+            if is_user_present:
+                userdetail["dates_present"].append(date)
+            else:
+                userdetail["dates_absent"].append(date)
+
+                
+        start_date=request.data.get("start_date")
+        end_date=request.data.get("end_date")
+        usernames=request.data.get("usernames")
+        company_id=request.data.get("company_id")
+        project=request.data.get("project")
+        collection=start_date+"_to_"+end_date
+        limit=request.data.get("limit")
+        offset=request.data.get("offset")
+
+        data={"company_id":company_id,"project":project}
+
+        serializer=IndividualAttendanceRetrievalSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "error":serializer.errors
+            })
+        
+        try:
+            attendance_report=json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,collection,data,limit,offset))     
+            print(attendance_report)
+        except:
+            return Response({
+                "success":False,
+                "error":"datacube database not responding"
+            })
+
+        dates=get_dates_between(start_date,end_date)
+
+        
+        attendance_with_users={user:{"dates_present":[],"dates_absent":[],"project":project} for user in usernames }
+
+        if attendance_report["success"]==True:
+                for user in usernames:
+                        for date in dates:
+                                is_user_present= any(record.get("date_taken")==date and user in record.get("user_present") for record in attendance_report["data"])
+                                
+                                add_user_attendance(attendance_with_users[user],date,is_user_present)
+                return Response({
+                    "success":True,
+                    "message":"Attendance records has been succesfully retrieved",
+                    "data":attendance_with_users},status=status.HTTP_200_OK)
+            
+        return Response({"success":False,"message":attendance_report},status=status.HTTP_400_BAD_REQUEST )
     
     def handle_error(self,request):
         return Response({
@@ -10590,23 +10659,164 @@ class Company_Structure(APIView):
                 
                 if len(project_leads['data'])>0:
                     
-                    for y in project_leads['data']:
-                        _y ={
-                            "project_lead":y['project_lead'],
-                            "project_lead_id":y['project_lead_id'],
-                            "projects":[]#y['projects_managed']
-                        }
-                        pq={
-                            "teamlead_reports_to":y['project_lead'],
-                            'company_id':company_id,
-                            "data_type":"Real_Data"
-                        }
-                        projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",pq,10,0,False))
+                    for z in projects['data']:
+                        if z["_coded_project"] in y['_coded_projects_managed']:
+                            del z["_id"]
+                            del z["_coded_project"]
+                            _y['projects'].append(z)
+                        
+                data["project_leads"].append(_y)
+        return Response({'success':True,'data':data},status=status.HTTP_200_OK)
+
+    
+@method_decorator(csrf_exempt, name="dispatch")
+class DowellEvents(APIView):
+    def post(self,request):
+        request_type=request.GET.get("type")
+        if request_type=="add_events":
+            return self.AddEvents(request)
+        if request_type=="update_events":
+            return self.UpdateEvents(request)
+        else:
+            print("Request invalids")
+            return self.handle_error(request)   
+    def AddEvents(self,request):
+        data=request.data
+        
+        field={
+            "event_name":data.get("event_name"),
+            "event_type":data.get("event_type"),
+            "event_frequency":data.get("event_frequency"),
+            "event_host":data.get("event_host"),
+            "data_type":data.get("data_type"),
+            "company_id":data.get("company_id")
+        }
+
+        serializer=AddEventSerializer(data=request.data)
+       
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
                 
-                        if len(projects['data'])>0:
-                            for z in projects['data']:
-                                del z["_id"]
-                                del z["_coded_project"]
-                                _y['projects'].append(z)
-                        data["project_leads"].append(_y)
-        return Response(data,status=status.HTTP_200_OK)
+            })
+            
+        try:    
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,ATTENDANCE_DB,Events_collection,data=field))
+        
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            })
+
+        if insert_collection["success"] and len(insert_collection["data"])>0:
+            return Response({
+                            "success":True,
+                            "message":"events has been added successfuly"
+                            })
+
+        else:
+            return Response({
+                "success":False,
+                "error":insert_collection["message"]
+            })
+            
+    def UpdateEvents(self, request):
+
+        document_id=request.data.get("document_id")
+        update=request.data
+
+        field={"_id":document_id}
+
+        allowed_to_update=("event_name","event_host","event_frequency") #this tuple contains the data that can be updated in the Db
+        
+        serializer=UpdateEventSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+        update_field={key:Value for key,Value in update.items() if key in allowed_to_update}
+
+        try:
+            update_event = json.loads(
+                datacube_data_update(
+                    API_KEY,
+                    DB_Name,
+                    coll_name=Events_collection,
+                    query=field,
+                    update_data=update_field,
+                )
+            )
+            print(update_event)
+
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        if update_event["success"]==True:
+            return Response({
+                "success":True,
+                "message":f"{update_field} has been updated for eventid {document_id}"
+            })
+
+        else:
+             return Response({
+                "success":False,
+                "error":update_event["message"]
+            })
+    def GetEvents(self,request):
+        
+        data={}
+
+        serializer=AddEventSerializer(data=request.data)
+       
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        try:    
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,ATTENDANCE_DB,Events_collection,data))
+            print(insert_collection)
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            })
+        print("h2")
+        if insert_collection["success"] and len(insert_collection["data"])>0:
+            return Response({
+                            "success":True,
+                            "message":"events has been added successfuly"
+                            })
+
+        else:
+            return Response({
+                "success":False,
+                "error":insert_collection["message"]
+            })
+
+        print(update_field)
+        
+    def handle_error(self, request):
+        print("Request invalid")
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
