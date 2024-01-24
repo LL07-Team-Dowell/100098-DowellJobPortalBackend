@@ -10578,6 +10578,7 @@ class Company_Structure(APIView):
                 _y ={
                     "project_lead":y['project_lead'],
                     "project_lead_id":y['project_lead_id'],
+                    'projects_managed':y['projects_managed'],
                     "projects":[]#y['projects_managed']
                 }
                 
