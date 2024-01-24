@@ -9,9 +9,10 @@ import { ClaimVouchar } from "../../../TeamleadPage/views/ClaimVouchar/ClaimVouc
 
 const UserScreen = () => {
     const navigate = useNavigate();
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser, currentUserHiredApplications } = useCurrentUserContext();
     const handleLogout = () => navigate("/logout");
     const [success, setsuccsess] = useState(false);
+    const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
 
     useEffect(() => {
         const checkActive = setInterval(() => {
@@ -65,6 +66,13 @@ const UserScreen = () => {
                 <h2>Role</h2>
                 <span>{"Account"}</span>
             </div>
+            {
+                userProject !== "" &&
+                <div className="user__Intro__Item">
+                    <h2>Project(s)</h2>
+                    <span>{userProject}</span>
+                </div>
+            }
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout
             </button>

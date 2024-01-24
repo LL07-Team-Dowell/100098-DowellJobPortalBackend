@@ -5,11 +5,11 @@ import JobLandingLayout from '../../../../layouts/CandidateJobLandingLayout/Land
 import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getUserLiveStatus, postUserLiveStatus } from '../../../../services/commonServices';
 import { teamManagementProductName } from '../../../../utils/utils';
-import {ApproveVouchar, ClaimVouchar} from '../../../TeamleadPage/views/ClaimVouchar/ClaimVouchar';
+import { ApproveVouchar, ClaimVouchar } from '../../../TeamleadPage/views/ClaimVouchar/ClaimVouchar';
 
 function UserScreen({ candidateSelected }) {
 
-  const { currentUser } = useCurrentUserContext()
+  const { currentUser, currentUserHiredApplications } = useCurrentUserContext()
   const navigate = useNavigate();
 
   const handleLogout = () => navigate("/logout");
@@ -24,6 +24,9 @@ function UserScreen({ candidateSelected }) {
     }, 60000)
     return () => clearInterval(checkActive)
   }, [])
+
+  const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
+  console.log(' user project >>>>>>>>>>>>>>>>', userProject);
 
   return (
     <JobLandingLayout user={currentUser} afterSelection={candidateSelected}>
@@ -66,10 +69,17 @@ function UserScreen({ candidateSelected }) {
             <h2>Job hired for</h2>
             <span>
               {
-                currentUser?.candidateAssignmentDetails?.jobsAppliedFor?.join(", ") 
+                currentUser?.candidateAssignmentDetails?.jobsAppliedFor?.join(", ")
               }
             </span>
           </div>
+          {
+            userProject !== "" &&
+            <div className="user__Intro__Item">
+              <h2>Project(s)</h2>
+              <span>{userProject}</span>
+            </div>
+          }
           <button className="logout__Btn" onClick={handleLogout}>
             Logout
           </button>

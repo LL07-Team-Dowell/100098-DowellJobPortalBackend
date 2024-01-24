@@ -325,6 +325,9 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
               </div>
               <div className={styles.applicant_oth_info}>
                 <p>
+                  <b>Username:</b> {application.username}
+                </p>
+                <p>
                   <b>Email:</b> {application.applicant_email}
                 </p>
                 <p>

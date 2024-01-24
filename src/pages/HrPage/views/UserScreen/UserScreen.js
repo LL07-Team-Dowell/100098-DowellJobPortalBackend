@@ -3,29 +3,30 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import "./style.css";
 import { getUserLiveStatus, postUserLiveStatus } from "../../../../services/commonServices";
 import React from "react";
-import { teamManagementProductName } from "../../../../utils/utils"; 
+import { teamManagementProductName } from "../../../../utils/utils";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { ClaimVouchar } from "../../../TeamleadPage/views/ClaimVouchar/ClaimVouchar";
 
-const UserScreen = ({subAdminView}) => {
+const UserScreen = ({ subAdminView }) => {
     const navigate = useNavigate();
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser, currentUserHiredApplications } = useCurrentUserContext();
     const handleLogout = () => navigate("/logout");
-    console.log("3asnaaaaa",currentUser.userinfo) ;
-    const [success ,setsuccsess] = React.useState(false) ;  
-    React.useEffect(()=>{
-        const checkActive = setInterval(()=>{
-         Promise.all([getUserLiveStatus(),postUserLiveStatus({product:teamManagementProductName , session_id:sessionStorage.getItem("session_id")})])
-            .then(resp => {
-                console.log(resp[0],resp[1]);
-                if(resp[0]){
-                    setsuccsess(true) ; 
-                }
-            }) 
-            .catch(err => {console.log(err[0],err[1]);setsuccsess(false);}); 
-        },60000)
+    const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
+    console.log("3asnaaaaa", currentUser.userinfo);
+    const [success, setsuccsess] = React.useState(false);
+    React.useEffect(() => {
+        const checkActive = setInterval(() => {
+            Promise.all([getUserLiveStatus(), postUserLiveStatus({ product: teamManagementProductName, session_id: sessionStorage.getItem("session_id") })])
+                .then(resp => {
+                    console.log(resp[0], resp[1]);
+                    if (resp[0]) {
+                        setsuccsess(true);
+                    }
+                })
+                .catch(err => { console.log(err[0], err[1]); setsuccsess(false); });
+        }, 60000)
         return () => clearInterval(checkActive)
-    },[])
+    }, [])
     return <>
         <div className="user__Page__Container hr">
             {
@@ -36,7 +37,7 @@ const UserScreen = ({subAdminView}) => {
             <div className="user__Intro__Item__Container">
                 <div className="user__Intro__Item ">
                     <h2>User Name</h2>
-                    <span>{ currentUser.userinfo.username }</span>    
+                    <span>{currentUser.userinfo.username}</span>
                 </div>
                 {/* <div className="edit__Btn">
                     Edit
@@ -57,7 +58,7 @@ const UserScreen = ({subAdminView}) => {
                     <span>{currentUser.userinfo.last_name}</span>
                 </div>
             }
-            <div className="user__Intro__Item" style={{display:"flex",gap:5,alignItems:"center"}}>
+            <div className="user__Intro__Item" style={{ display: "flex", gap: 5, alignItems: "center" }}>
                 <h2>Live Status</h2>
                 <div style={success ? successStatus : failedStatus}></div>
             </div>
@@ -65,10 +66,16 @@ const UserScreen = ({subAdminView}) => {
                 <h2>Role</h2>
                 <span>{"Hr"}</span>
             </div>
-            
+            {
+                userProject !== "" &&
+                <div className="user__Intro__Item">
+                    <h2>Project(s)</h2>
+                    <span>{userProject}</span>
+                </div>
+            }
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout
-            </button>  
+            </button>
         </div>
     </>
 }
@@ -76,10 +83,10 @@ const UserScreen = ({subAdminView}) => {
 export default UserScreen;
 
 const defaultStatus = {
-    backgroundColor:"gray" ,
-    width:10,
-    height:10,
-    borderRadius:"50%"
+    backgroundColor: "gray",
+    width: 10,
+    height: 10,
+    borderRadius: "50%"
 }
-const successStatus = {...defaultStatus , backgroundColor:"green"} ; 
-const failedStatus = {...defaultStatus , backgroundColor:"red"} ; 
+const successStatus = { ...defaultStatus, backgroundColor: "green" };
+const failedStatus = { ...defaultStatus, backgroundColor: "red" }; 
