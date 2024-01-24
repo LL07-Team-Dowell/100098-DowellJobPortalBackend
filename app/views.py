@@ -51,7 +51,8 @@ from .helper import (
     datacube_data_retrival_function,
     get_current_week_start_end_date,
     speed_test_condition,
-    get_dates_between
+    get_dates_between,
+    normalize
 )
 from .serializers import (
     AccountSerializer,
@@ -6598,7 +6599,7 @@ class Generate_Report(APIView):
             data = {}
             data["personal_info"] = info[0]
 
-            coll_name = username
+            coll_name = normalize(username)
             query ={
                 "report_record_year": year,
                 "db_report_type": "report"
