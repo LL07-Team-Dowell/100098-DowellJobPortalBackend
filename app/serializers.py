@@ -732,7 +732,7 @@ class AttendanceSerializer(serializers.Serializer):
     user_absent = serializers.ListField(child=serializers.CharField())
     date_taken = serializers.DateField(allow_null=False)
     company_id = serializers.IntegerField(allow_null=False)
-    meeting = serializers.ListField(child=serializers.CharField())
+    meeting = serializers.CharField(allow_null=False)
     project = serializers.CharField(allow_null=False)
     data_type = serializers.ChoiceField(
         allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
@@ -823,7 +823,7 @@ class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
     usernames=serializers.ListField(allow_null=False)
     company_id = serializers.IntegerField(allow_null=False)
     meeting = serializers.CharField(allow_null=False)
-    project = serializers.ListField(allow_null=False)
+    project = serializers.CharField(allow_null=False)
     data_type = serializers.ChoiceField(
         allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
@@ -831,6 +831,7 @@ class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
 class AddEventSerializer(serializers.Serializer):
     company_id=serializers.CharField(max_length=225,allow_null=False)
     event_name=serializers.CharField(max_length=225,allow_null=False)
+    event_type=serializers.ChoiceField(choices=("Meeting","Event"),allow_null=False)
     event_frequency=serializers.ChoiceField(allow_null=False,choices=("daily","weekly","twice_a_week","custom"))
     event_host=serializers.CharField(max_length=225,allow_null=False)
     data_type = serializers.ChoiceField(
