@@ -520,8 +520,8 @@ def update_report_database(task_created_date,company_id):
 if __name__ == "__main__":
     company_id = "6385c0f18eca0fb652c94561"
 
-    search_date=datetime.today().date() - timedelta(days=1) # e.g 2024-01-12
-    search_date = str(search_date)
+    #search_date=datetime.today().date() - timedelta(days=1) # e.g 2024-01-12
+    #search_date = str(search_date)
 
     year =2024
     month_number =1
@@ -537,5 +537,5 @@ if __name__ == "__main__":
             break
         else:
             print(f"---------updating for {day}------------------")
-            update_report_database(search_date,company_id)
+            update_report_database(day,company_id)
             print(f"---------successfully updated for {day}------")
