@@ -214,4 +214,6 @@ urlpatterns = [
     path("get_company_structure/<str:company_id>/", Company_Structure.as_view()),
     # invoice management apis------------------------------------------------------
     path("invoice/<str:company_id>/", Invoice_management.as_view()),
+    path("SavePaymentRrecords/", SavePaymentRrecords.as_view()),
+    path("updatePaymentRrecords/", UpdatePaymentRecords.as_view()),
 ]
