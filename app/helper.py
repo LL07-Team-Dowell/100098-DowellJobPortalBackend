@@ -577,7 +577,7 @@ def datacube_data_retrival(
     api_key, database_name, collection_name, data, limit, offset
 ):
     url = "https://datacube.uxlivinglab.online/db_api/get_data/"
-    data = {
+    field = {
         "api_key": api_key,
         "db_name": database_name,
         "coll_name": collection_name,
@@ -588,6 +588,8 @@ def datacube_data_retrival(
     }
 
     response = requests.post(url, json=data)
+
+    response = requests.post(url, json=field)
 
     return response.text
 
@@ -626,6 +628,40 @@ def datacube_add_collection(api_key, db_name, coll_names, num_collections):
 
     response = requests.post(url, json=data)
     return response.text
+
+
+def datacube_data_delete(api_key, database_name, collection_name, query):
+    url = "https://datacube.uxlivinglab.online/db_api/crud/"
+
+    data = {
+        "api_key": api_key,
+        "db_name": database_name,
+        "coll_name": collection_name,
+        "operation": "delete",
+        "query": query,
+    }
+    response = requests.delete(url, json=data)
+
+    return response.text
+
+
+def datacube_get_collections(api_key, database_name):
+    url = f"https://datacube.uxlivinglab.online/db_api/collections/"
+    data = {
+        "api_key": api_key,
+        "db_name": database_name,
+    }
+    response = requests.get(url, json=data)
+    return response.text
+
+
+def datacube_data_delete_all(api_key, database_name):
+    """deleting"""
+    g = json.loads(datacube_get_collections(api_key, database_name))["data"]
+    for coll_name in g:
+        x = json.loads(datacube_data_delete(api_key, database_name, coll_name, {}))
+        # print(x)
+    return {"success": True, "message": "documents deleted successfully!", "data": []}
 
 
 def get_subproject():
@@ -774,3 +810,14 @@ def get_current_week_start_end_date(date_taken):
     end_date = start_date + timedelta(days=4)
 
     return start_date, end_date
+
+
+def get_dates_between(start_date, end_date):
+    start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+
+    date_list = [
+        start_date + timedelta(days=x) for x in range((end_date - start_date).days + 1)
+    ]
+
+    return [date.strftime("%Y-%m-%d") for date in date_list]

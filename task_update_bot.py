@@ -227,115 +227,113 @@ def update_report_database(task_created_date,company_id):
     
     daily_tasks = json.loads(dowellconnection(*task_management_reports,"fetch",field,update_field=None))["data"]
     for _t in daily_tasks:
+        field['task_id']=_t["_id"]
         tasks = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
         for i,task in enumerate(tasks['data']):
             print(f"----------processing details for task {i+1}/{len(tasks['data'])}----------")
-            if (task['task_id']==_t["_id"]):
-                '''getting the candidates details'''
-                
-                query={"report_record_month": _monthname,
-                        "report_record_year": year,
-                        "db_report_type": "report"}
-                coll_name = _t['task_added_by']
-                print(f"----------retrieving data from collection {coll_name} for {_monthname}, {year}----------")
-                get_collection = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0, False))
-                #print(get_collection,"==",coll_name)
-                
-                if get_collection['success']==False:
-                    print(f'-------collection-{coll_name} not found----------')
-                    print(f'-------creating collection-{coll_name} ----------')
-                    #inserting data collection-------------------------------------- 
-                    #creating collection------------------------------
-                    create_collection = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
-                    if create_collection['success']==True:
-                        print(f'successfully created the collection-{coll_name}')
-                        #inserting data into the collection------------------------------
-                        
-                        task_added = 1
-                        tasks_completed =0 
-                        tasks_uncompleted =0
-                        if ("status" in task.keys()) and(task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete" or task["status"] == "Mark as complete"):
-                            tasks_completed=1
-                        else:
-                            tasks_uncompleted=1
-                        percentage_tasks_completed=(tasks_completed/task_added)*100
-                        tasks_approved = 0
-                        if (("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True)):
-                            tasks_approved=1
-
-                        tasks_you_approved=0
-                        tasks_you_marked_as_complete=0
-                        tasks_you_marked_as_uncomplete=0
-                        if (("task_approved_by" in task.keys() and task["task_approved_by"] == _t['task_added_by'])):
-                            tasks_you_approved=1
-                            if (tasks_completed>0):
-                                tasks_you_marked_as_complete=1
-                            else:
-                                tasks_you_marked_as_uncomplete+=1
-                        
-                        '''checking for teams============================================='''
-                        teams= 0
-                        team_tasks=0
-                        team_tasks_completed= 0
-                        team_tasks_uncompleted= 0
-                        percentage_team_tasks_completed= 0.0
-                        team_tasks_approved= 0
-                        team_tasks_issues_raised= 0
-                        team_tasks_issues_resolved= 0
-                        team_tasks_comments_added= 0
-                        
-                        for team in json.loads(dowellconnection(*team_management_modules, "fetch", {"date_created":task_created_date,'task_id':_t['_id']}, update_field=None))['data']:
-                            if 'members' in team.keys():
-                                if _t['task_added_by'] in team['members']:
-                                    teams+=1
-                                    if 'team_id' in task.keys():
-                                        if (task['team_id']==team['_id']):    
-                                            team_tasks+=1
-                                            if (task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete" or task["status"] == "Mark as complete"):
-                                                team_tasks_completed+=1
-                                            else:
-                                                team_tasks_uncompleted+=1  
-                                            percentage_team_tasks_completed =  (team_tasks_completed/team_tasks)*100
-                                            if ('approved' in task.keys() and task['approved']==True):
-                                                team_tasks_approved+=1
-                                            for issue in json.loads(dowellconnection(*thread_report_module, "fetch", {'team_id':team['_id'],"created_date":task_created_date,'created_by':_t['task_added_by']}, update_field=None))['data']:
-                                                team_tasks_issues_raised+=1
-                                                if issue["current_status"]=="Resolved" or 'Resolved' in issue["previous_status"]:
-                                                    team_tasks_issues_resolved+=1
-                                                for comment in json.loads(dowellconnection(*thread_report_module, "fetch", {"thread_id":issue['_id'],"created_date":task_created_date,'created_by':_t['task_added_by']}, update_field=None))['data']:
-                                                    team_tasks_comments_added+=1
+            query={"report_record_month": _monthname,
+                    "report_record_year": year,
+                    "db_report_type": "report"}
+            coll_name = _t['task_added_by']
+            print(f"----------retrieving data from collection {coll_name} for {_monthname}, {year}----------")
+            get_collection = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0, False))
+            #print(get_collection,"==",coll_name)
+            
+            if get_collection['success']==False:
+                print(f'-------collection-{coll_name} not found----------')
+                print(f'-------creating collection-{coll_name} ----------')
+                #inserting data collection-------------------------------------- 
+                #creating collection------------------------------
+                create_collection = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+                if create_collection['success']==True:
+                    print(f'successfully created the collection-{coll_name}')
+                    #inserting data into the collection------------------------------
                     
-                        data={
-                            "task_added": task_added,
-                            "tasks_completed": tasks_completed,
-                            "tasks_uncompleted": tasks_uncompleted,
-                            "tasks_approved": tasks_approved,
-                            "percentage_tasks_completed": percentage_tasks_completed,
-                            "tasks_you_approved": tasks_you_approved,
-                            "tasks_you_marked_as_complete": tasks_you_marked_as_complete,
-                            "tasks_you_marked_as_incomplete": tasks_you_marked_as_uncomplete,
-                            "teams": teams,
-                            "team_tasks": team_tasks,
-                            "team_tasks_completed": team_tasks_completed,
-                            "team_tasks_uncompleted": team_tasks_uncompleted,
-                            "percentage_team_tasks_completed": percentage_team_tasks_completed,
-                            "team_tasks_approved": team_tasks_approved,
-                            "team_tasks_issues_raised": team_tasks_issues_raised,
-                            "team_tasks_issues_resolved": team_tasks_issues_resolved,
-                            "team_tasks_comments_added": team_tasks_comments_added,
-                            "report_record_month": _monthname,
-                            "report_record_year": year,
-                            "db_report_type": "report"
-                        }
-
-                        insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
-                        if insert_collection['success']==True:
-                            print(f'---successfully inserted the data the collection- {coll_name}--')
-                        else:
-                            print(insert_collection)
+                    task_added = 1
+                    tasks_completed =0 
+                    tasks_uncompleted =0
+                    if ("status" in task.keys()) and(task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete" or task["status"] == "Mark as complete"):
+                        tasks_completed=1
                     else:
-                        print(create_collection)
+                        tasks_uncompleted=1
+                    percentage_tasks_completed=(tasks_completed/task_added)*100
+                    tasks_approved = 0
+                    if (("approved" in task.keys() and task["approved"] == True) or ("approval" in task.keys() and task["approval"] == True)):
+                        tasks_approved=1
+
+                    tasks_you_approved=0
+                    tasks_you_marked_as_complete=0
+                    tasks_you_marked_as_uncomplete=0
+                    if (("task_approved_by" in task.keys() and task["task_approved_by"] == _t['task_added_by'])):
+                        tasks_you_approved=1
+                        if (tasks_completed>0):
+                            tasks_you_marked_as_complete=1
+                        else:
+                            tasks_you_marked_as_uncomplete+=1
+                    
+                    '''checking for teams============================================='''
+                    teams= 0
+                    team_tasks=0
+                    team_tasks_completed= 0
+                    team_tasks_uncompleted= 0
+                    percentage_team_tasks_completed= 0.0
+                    team_tasks_approved= 0
+                    team_tasks_issues_raised= 0
+                    team_tasks_issues_resolved= 0
+                    team_tasks_comments_added= 0
+                    
+                    for team in json.loads(dowellconnection(*team_management_modules, "fetch", {"date_created":task_created_date,'task_id':_t['_id']}, update_field=None))['data']:
+                        if 'members' in team.keys():
+                            if _t['task_added_by'] in team['members']:
+                                teams+=1
+                                if 'team_id' in task.keys():
+                                    if (task['team_id']==team['_id']):    
+                                        team_tasks+=1
+                                        if (task["status"] == "Completed" or task["status"] == "Complete" or task["status"] == "completed" or task["status"] == "complete" or task["status"] == "Mark as complete"):
+                                            team_tasks_completed+=1
+                                        else:
+                                            team_tasks_uncompleted+=1  
+                                        percentage_team_tasks_completed =  (team_tasks_completed/team_tasks)*100
+                                        if ('approved' in task.keys() and task['approved']==True):
+                                            team_tasks_approved+=1
+                                        for issue in json.loads(dowellconnection(*thread_report_module, "fetch", {'team_id':team['_id'],"created_date":task_created_date,'created_by':_t['task_added_by']}, update_field=None))['data']:
+                                            team_tasks_issues_raised+=1
+                                            if issue["current_status"]=="Resolved" or 'Resolved' in issue["previous_status"]:
+                                                team_tasks_issues_resolved+=1
+                                            for comment in json.loads(dowellconnection(*thread_report_module, "fetch", {"thread_id":issue['_id'],"created_date":task_created_date,'created_by':_t['task_added_by']}, update_field=None))['data']:
+                                                team_tasks_comments_added+=1
+                
+                    data={
+                        "task_added": task_added,
+                        "tasks_completed": tasks_completed,
+                        "tasks_uncompleted": tasks_uncompleted,
+                        "tasks_approved": tasks_approved,
+                        "percentage_tasks_completed": percentage_tasks_completed,
+                        "tasks_you_approved": tasks_you_approved,
+                        "tasks_you_marked_as_complete": tasks_you_marked_as_complete,
+                        "tasks_you_marked_as_incomplete": tasks_you_marked_as_uncomplete,
+                        "teams": teams,
+                        "team_tasks": team_tasks,
+                        "team_tasks_completed": team_tasks_completed,
+                        "team_tasks_uncompleted": team_tasks_uncompleted,
+                        "percentage_team_tasks_completed": percentage_team_tasks_completed,
+                        "team_tasks_approved": team_tasks_approved,
+                        "team_tasks_issues_raised": team_tasks_issues_raised,
+                        "team_tasks_issues_resolved": team_tasks_issues_resolved,
+                        "team_tasks_comments_added": team_tasks_comments_added,
+                        "report_record_month": _monthname,
+                        "report_record_year": year,
+                        "db_report_type": "report"
+                    }
+
+                    insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+                    if insert_collection['success']==True:
+                        print(f'---successfully inserted the data the collection- {coll_name}--')
+                    else:
+                        print(insert_collection)
                 else:
+                    print(create_collection)
+            else:
                     if len(get_collection['data']) > 0:
                         print(f'\n-------collection-{coll_name} found--------------------')
                         print(f'-------updating the collection- {coll_name}--------------')
@@ -510,11 +508,11 @@ def update_report_database(task_created_date,company_id):
                             print(f'successfully inserted the data into the empty collection- {coll_name}')
                         else:
                             print(insert_collection)                     
-    
+
 
 if __name__ == "__main__":
     company_id = "6385c0f18eca0fb652c94561"
-    
+
     search_date=datetime.today().date() - timedelta(days=1) # e.g 2024-01-12
     search_date = str(search_date)
     
