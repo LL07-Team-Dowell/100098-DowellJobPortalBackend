@@ -10584,8 +10584,15 @@ class DowellEvents(APIView):
         if request_type=="update_events":
             return self.UpdateEvents(request)
         else:
-            print("Request invalids")
-            return self.handle_error(request)   
+            return self.handle_error(request)
+
+    def get(self,request):
+        request_type=request.GET.get("type") 
+        if request_type=="GetAllEvents":
+            return self.GetAllEvents(request)
+        else:
+            return self.handle_error(request)
+        
     def AddEvents(self,request):
         data=request.data
         
@@ -10595,9 +10602,17 @@ class DowellEvents(APIView):
             "event_frequency":data.get("event_frequency"),
             "event_host":data.get("event_host"),
             "data_type":data.get("data_type"),
-            "company_id":data.get("company_id")
+            "company_id":data.get("company_id"),
+            "is_mendatory":data.get("is_mendatory")
         }
 
+        check_field={
+            "event_name":data.get("event_name"),
+            "event_type":data.get("event_type"),
+            "event_host":data.get("event_host"),
+        }
+
+        
         serializer=AddEventSerializer(data=request.data)
        
         if not serializer.is_valid():
@@ -10608,7 +10623,20 @@ class DowellEvents(APIView):
                 "error":serializer.errors
                 
             })
-            
+        
+        try:
+            fetch_collection = json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,Events_collection,data=check_field,limit=0,offset=0))
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            })
+        if fetch_collection["success"] and len(fetch_collection["data"])>0:
+            return Response({
+                "message":False,
+                "error":f"Event having the following details {check_field} already exists"
+            })
+        
         try:    
             insert_collection = json.loads(datacube_data_insertion(API_KEY,ATTENDANCE_DB,Events_collection,data=field))
         
@@ -10680,43 +10708,34 @@ class DowellEvents(APIView):
                 "success":False,
                 "error":update_event["message"]
             })
-    def GetEvents(self,request):
+    def GetAllEvents(self,request):
         
-        data={}
-
-        serializer=AddEventSerializer(data=request.data)
-       
-        if not serializer.is_valid():
-            print(serializer.errors)
-            return Response({
-                "success":False,
-                "message":"Posting Invalid Data",
-                "error":serializer.errors
-                
-            })
+        data={key:value for key,value in request.data.items()}
+        limit=request.GET.get("limit")
+        offset=request.GET.get("offset")
             
         try:    
-            insert_collection = json.loads(datacube_data_insertion(API_KEY,ATTENDANCE_DB,Events_collection,data))
-            print(insert_collection)
+            fetch_collection = json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,Events_collection,data,limit,offset))
+            print(fetch_collection)
+
         except:
             return Response({
                 "success":False,
                 "error":"Datacube is not responding"
             })
-        print("h2")
-        if insert_collection["success"] and len(insert_collection["data"])>0:
+        if fetch_collection["success"] and len(fetch_collection["data"])>0:
             return Response({
                             "success":True,
-                            "message":"events has been added successfuly"
+                            "message":"events has been retrieved successfuly",
+                            "data":fetch_collection["data"]
                             })
 
         else:
             return Response({
                 "success":False,
-                "error":insert_collection["message"]
+                "error":fetch_collection["message"]
             })
 
-        print(update_field)
         
     def handle_error(self, request):
         print("Request invalid")
