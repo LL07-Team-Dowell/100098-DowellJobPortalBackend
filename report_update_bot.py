@@ -216,7 +216,14 @@ comment_report_module = [
     "1000981017",
     "ABCDE",
 ]
-
+def normalize(text):
+    normalized_text = ''
+    for char in text:
+        if char.isalnum() or char =='_' or char =='-':
+            normalized_text += char
+        if char ==' ':
+            normalized_text+='_'
+    return normalized_text
 def update_report_database(task_created_date,company_id):
     field = {
             "task_created_date": task_created_date,
@@ -236,7 +243,7 @@ def update_report_database(task_created_date,company_id):
                 query={"report_record_month": _monthname,
                         "report_record_year": year,
                         "db_report_type": "report"}
-                coll_name = _t['task_added_by']
+                coll_name = normalize(_t['task_added_by'])
                 print(f"----------retrieving data from collection {coll_name} for {_monthname}, {year}----------")
                 get_collection = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0, False))
                 #print(get_collection,"==",coll_name)
