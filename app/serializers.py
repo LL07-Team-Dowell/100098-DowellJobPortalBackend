@@ -831,6 +831,7 @@ class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
 class AddEventSerializer(serializers.Serializer):
     company_id=serializers.CharField(max_length=225,allow_null=False)
     event_name=serializers.CharField(max_length=225,allow_null=False)
+    event_type=serializers.ChoiceField(choices=("Meeting","Event"),allow_null=False)
     event_frequency=serializers.ChoiceField(allow_null=False,choices=("daily","weekly","twice_a_week","custom"))
     event_host=serializers.CharField(max_length=225,allow_null=False)
     data_type = serializers.ChoiceField(

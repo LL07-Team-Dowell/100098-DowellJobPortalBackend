@@ -9874,21 +9874,23 @@ class candidate_attendance(APIView):
     
     def get_user_wise_attendance(self,request):
 
+        def add_user_attendance(userdetail,date,is_user_present):
+            if is_user_present:
+                userdetail["dates_present"].append(date)
+            else:
+                userdetail["dates_absent"].append(date)
+
+                
         start_date=request.data.get("start_date")
         end_date=request.data.get("end_date")
         usernames=request.data.get("usernames")
         company_id=request.data.get("company_id")
-        projects=request.data.get("project")
+        project=request.data.get("project")
         collection=start_date+"_to_"+end_date
         limit=request.data.get("limit")
         offset=request.data.get("offset")
 
-
-
-        
-
-
-        data={"company_id":company_id,"project":projects}
+        data={"company_id":company_id,"project":project}
 
         serializer=IndividualAttendanceRetrievalSerializer(data=request.data)
 
@@ -9900,6 +9902,7 @@ class candidate_attendance(APIView):
         
         try:
             attendance_report=json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,collection,data,limit,offset))     
+            print(attendance_report)
         except:
             return Response({
                 "success":False,
@@ -9907,52 +9910,20 @@ class candidate_attendance(APIView):
             })
 
         dates=get_dates_between(start_date,end_date)
-        
-        print(dates)
 
-        attendance_with_users={user:{"meeting":{"dates_present":[],"dates_absent":[]},"project":projects} for user in usernames}
+        
+        attendance_with_users={user:{"dates_present":[],"dates_absent":[],"project":project} for user in usernames }
+
         if attendance_report["success"]==True:
-            for attendance in attendance_report["data"]:
                 for user in usernames:
-                    # for date in dates:
-                        if attendance["date_taken"] == date in dates:
-                            if user in attendance["user_present"]:                        
-                                attendance_with_users[user]["meeting"]["dates_present"].append(date)
-                            
-                            else:
-                                attendance_with_users[user]["meeting"]["dates_absent"].append(date)
-                            
-                               
-                    # for username in usernames:
-                    # attendance_with_users[username]=[]
-                    # print(f"project is {username}")
-                    # for i in range(len(attendance_report["data"])):
-                    # for attendance in attendance_report["data"]:
-                    #     if username in attendance:
-                    #         attendance_with_users[username].append({
-                    #             "meeting": data["meeting"],
-                    #             "dates_present": [data["date_taken"]],
-                    #             "dates_absent": data["user_absent"],
-                    #             "project": data["project"]
-                    #         })
-                                                      
-                                                      
-                                                           
-                               
-                            # print(attendance_report["data"][0]["project"])
-                            # print(attendance_with_users)
-                            # if attendance_report["data"][0]["project"]==project:
-        #                     print(attendance_report["data"][0]["project"])
-        #                     if username in attendance_with_users:
-        #                         attendance_with_users[username].append(attendance)
-        #                         print(f"\n\nappended the attendance for {project}")
-        #                     else:
-        #                         print(f"\n\nInside else statement{project}")
-        #                         attendance_with_projects[project]=[attendance]
+                        for date in dates:
+                                is_user_present= any(record.get("date_taken")==date and user in record.get("user_present") for record in attendance_report["data"])
+                                
+                                add_user_attendance(attendance_with_users[user],date,is_user_present)
                 return Response({
                     "success":True,
                     "message":"Attendance records has been succesfully retrieved",
-                    "data":attendance_with_projects},status=status.HTTP_200_OK)
+                    "data":attendance_with_users},status=status.HTTP_200_OK)
             
         return Response({"success":False,"message":attendance_report},status=status.HTTP_400_BAD_REQUEST )
     
@@ -10718,6 +10689,7 @@ class DowellEvents(APIView):
         
         field={
             "event_name":data.get("event_name"),
+            "event_type":data.get("event_type"),
             "event_frequency":data.get("event_frequency"),
             "event_host":data.get("event_host"),
             "data_type":data.get("data_type"),
@@ -10852,4 +10824,3 @@ class DowellEvents(APIView):
         )
 
 
-a
