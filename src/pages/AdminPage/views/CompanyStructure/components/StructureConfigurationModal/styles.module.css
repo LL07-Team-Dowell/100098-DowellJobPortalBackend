@@ -151,6 +151,32 @@
   font-size: 0.9rem;
 }
 
+.update__project__Btn {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  background-color: #005734;
+  color: #fff;
+  outline: none;
+  border: none;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  width: max-content;
+  margin: 0 auto 1rem;
+}
+
+.update__project__Btn:disabled,
+.result__Btn[disabled] {
+    cursor: not-allowed;
+}
+
+
+.update__project__Btn:not(:disabled):hover,
+.update__project__Btn:not([disabled]):hover {
+    filter: brightness(0.8);
+}
+
 .structure__Form::-webkit-scrollbar {
   width: 8px;
   height: 8px;

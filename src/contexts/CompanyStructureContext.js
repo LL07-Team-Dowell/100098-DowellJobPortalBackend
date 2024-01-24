@@ -47,7 +47,7 @@ export default function CompanyStructureContextProvider ({ children }) {
             getCompanyStructure(currentUser?.portfolio_info[0]?.org_id).then(res => {
                 setCompanyStructureLoading(false);
                 setCompanyStructureLoaded(true);
-                setCompanyStructure(res.data);
+                setCompanyStructure(res.data?.data);
 
                 // setCompanyStructure(testCompanyData); // for testing
             }).catch(err => {

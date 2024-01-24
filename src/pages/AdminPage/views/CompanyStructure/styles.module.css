@@ -124,9 +124,7 @@
 }
 
 .edit__Btn {
-    position: absolute;
-    right: 3%;
-    top: 4%;
+    margin-right: 0;
 }
 
 .ceo__Item__Wrap {

@@ -204,10 +204,8 @@ const CompanyStructurePage = () => {
 
             // CONFIGURING/UPDATING PROJECT LEADS
             case 2:
-                return setCurrentModalPage(currentModalPage + 1);
-
                 const newProjectLeads = copyOfStructureData?.project_leads?.filter(item => item.is_new_project_lead);
-                const updatedProjectLeads = copyOfStructureData?.project_leads?.filter(item => item?.projects?.length !== companyStructure?.project_leads?.find(project => project?.project_lead === item?.project_lead)?.projects?.length);
+                const updatedProjectLeads = copyOfStructureData?.project_leads?.filter(item => !item.is_new_project_lead && item?.projects?.length !== companyStructure?.project_leads?.find(project => project?.project_lead === item?.project_lead)?.projects?.length);
 
                 try {
 
@@ -218,10 +216,10 @@ const CompanyStructurePage = () => {
                         ...updatedProjectLeads.map(item => updateCompanyStructure('update_project_leads', { project_lead: item.project_lead, projects_managed: item.projects.map(item => item.project), company_id: currentUser?.portfolio_info[0]?.org_id})),
                     ])
 
-                    const updatedStructure = { ...copyOfStructureData };
+                    const updatedStructure = structuredClone(copyOfStructureData);
                     updatedStructure.project_leads = copyOfStructureData?.project_leads?.map(item => {
                         if (item.is_new_project_lead) {
-                            const copyOfItem = {...item};
+                            const copyOfItem = structuredClone(item);
                             delete copyOfItem.is_new_project_lead;
                             return copyOfItem;
                         }
@@ -239,7 +237,45 @@ const CompanyStructurePage = () => {
                     toast.error('An error occured while trying to update project leads. Please try again later');
                 }
                 break;
+            
+            // CONFIGURING/UPDATING PROJECT DETAILS
+            case 3:
+                if (selectedProject.length < 1) return
 
+                const projectFromStructure = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))
+                const projectLeadOfProject = projectFromStructure?.project_lead;
+                const projectDetails = projectFromStructure?.projects?.find(item => item?.project === selectedProject);
+                
+                try {
+                    setDataLoading(true);
+
+                    const res = (await updateCompanyStructure(
+                        projectDetails?.team_lead_reports_to?.length > 0 ? 'update_projects' : 'add_project_leads', 
+                        {...projectDetails, company_id: currentUser?.portfolio_info[0]?.org_id}
+                    )).data;
+                    console.log(res);
+
+                    if (projectDetails?.team_lead_reports_to?.length < 1) {
+                        const updatedProjectDetails = structuredClone(projectDetails);
+                        updatedProjectDetails.team_lead_reports_to = projectLeadOfProject;
+
+                        const foundProjectIndexToUpdate = projectFromStructure?.projects?.findIndex(item => item?.project === selectedProject);
+                        if (foundProjectIndexToUpdate === -1) return
+
+                        projectFromStructure.projects[foundProjectIndexToUpdate] = updatedProjectDetails;
+                    }
+
+                    setCompanyStructure(copyOfStructureData);
+                    setDataLoading(false);
+                    toast.success(`Successfully updated details for ${selectedProject}!`)
+
+                } catch (error) {
+                    console.log(error?.response ? error?.response?.data : error?.message);
+                    setDataLoading(false);
+                    toast.error('An error occured while trying to update projects. Please try again later');
+                }
+
+                break;
             default:
                 console.log(`Case '${currentModalPage}' not defined`);
                 break;
@@ -337,6 +373,15 @@ const CompanyStructurePage = () => {
                     </>
                 }
 
+                {
+                    copyOfStructureData && Object.keys(copyOfStructureData || {}).length > 0 ?
+                    <button className={`${styles.result__Btn} ${styles.configure__Btn} ${styles.edit__Btn}`} onClick={handleEditStructureBtnClick}>
+                        <span>Edit structure</span>
+                    </button> 
+                    :
+                    <></>
+                }
+
                 <div className={styles.structure__Display}>
                     {
                         companyStructureLoading ? <LoadingSpinner 
@@ -350,9 +395,6 @@ const CompanyStructurePage = () => {
                             </button>
                         :
                         <>
-                            <button className={`${styles.result__Btn} ${styles.configure__Btn} ${styles.edit__Btn}`} onClick={handleEditStructureBtnClick}>
-                                <span>Edit structure</span>
-                            </button>
                             <div className={styles.ceo__Item__Wrap}>
                                 <TitleItem 
                                     title={'Company CEO'}

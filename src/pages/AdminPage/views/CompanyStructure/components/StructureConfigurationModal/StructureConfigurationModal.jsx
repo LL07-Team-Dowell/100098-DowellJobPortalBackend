@@ -4,7 +4,7 @@ import styles from './styles.module.css';
 import { useCompanyStructureContext } from "../../../../../../contexts/CompanyStructureContext";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner/LoadingSpinner";
 import { useJobContext } from "../../../../../../contexts/Jobs";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { projectDetailUpdateType, selectValuePreCursor } from "../../utils/utils";
 import Select from "react-select";
 import ProgressTracker from "../../../Landingpage/component/progressTracker";
@@ -33,9 +33,17 @@ export default function StructureConfigurationModal ({
         projectsAdded,
     } = useJobContext();
 
+    const [ currentProjectItemFromStructure, setCurrentProjectItemFromStructure ] = useState(null);
+
+    useEffect(() => {
+        const matchingProjectFromCompanyStructure = companyStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject));
+        if (!matchingProjectFromCompanyStructure) return setCurrentProjectItemFromStructure(null);
+        setCurrentProjectItemFromStructure(matchingProjectFromCompanyStructure);
+    }, [companyStructure, selectedProject])
+
     const handleUpdateProjectLead = (newLead, project, itemValueInCompanyStructure) => {
         const itemValue = newLead?.split(selectValuePreCursor)[0];
-        const currentStructureDataCopy = {...copyOfExistingStructure};
+        const currentStructureDataCopy = structuredClone(copyOfExistingStructure);
 
         const addNewProjectLead = (structureData, newProjectLead, projectDetails) => {
             structureData?.project_leads?.push({
@@ -83,17 +91,17 @@ export default function StructureConfigurationModal ({
     const handleUpdateProjectDetail = (newValue, project, updateType) => {
         console.log(newValue, project, updateType);
 
-        const currentStructureDataCopy = {...copyOfExistingStructure};
+        const currentStructureDataCopy = structuredClone(copyOfExistingStructure);
         
         const foundProjectLeadItemIndex = currentStructureDataCopy?.project_leads?.findIndex(item => item.projects.find(pro => pro.project === project));
         if (foundProjectLeadItemIndex === -1) return;
 
-        const copyOfProjectLeadItem = { ...currentStructureDataCopy?.project_leads[foundProjectLeadItemIndex] };
+        const copyOfProjectLeadItem = structuredClone(currentStructureDataCopy?.project_leads[foundProjectLeadItemIndex]);
         
         const foundProjectDetailsIndex = copyOfProjectLeadItem?.projects?.findIndex(item => item.project === project);
         if (foundProjectDetailsIndex === -1) return;
 
-        const copyOfProjectDetailsInProjectLeadItem = { ...copyOfProjectLeadItem?.projects[foundProjectDetailsIndex] };
+        const copyOfProjectDetailsInProjectLeadItem = structuredClone(copyOfProjectLeadItem?.projects[foundProjectDetailsIndex]);
 
         if (updateType === projectDetailUpdateType.teamlead_update) copyOfProjectDetailsInProjectLeadItem.team_lead = newValue;
         if (updateType === projectDetailUpdateType.grouplead_update) copyOfProjectDetailsInProjectLeadItem.group_leads = newValue;
@@ -194,7 +202,10 @@ export default function StructureConfigurationModal ({
                                                                 value={
                                                                     {
                                                                         label: matchingProjectFromCompanyStructure?.project_lead ?
-                                                                            applications?.find(application => application.username === matchingProjectFromCompanyStructure?.project_lead)?.applicant
+                                                                            applications?.find(application => application.username === matchingProjectFromCompanyStructure?.project_lead) ?
+                                                                                applications?.find(application => application.username === matchingProjectFromCompanyStructure?.project_lead)?.applicant
+                                                                            :
+                                                                            matchingProjectFromCompanyStructure?.project_lead
                                                                         :
                                                                             'Select project lead'
                                                                         ,
@@ -241,7 +252,7 @@ export default function StructureConfigurationModal ({
                                             ?.sort((a, b) => a.localeCompare(b))
                                             ?.map((project) => {
                                                 const projectWithProjectLeads = copyOfExistingStructure?.project_leads?.map(item => item.projects.map(projectItem => projectItem.project))?.flat();
-                                                if (!projectWithProjectLeads.includes(project)) return null;
+                                                if (projectWithProjectLeads && !projectWithProjectLeads.includes(project)) return null;
                                                 return { label: project, value: project };
                                             }).filter(item => item !== null),
                                         ]
@@ -267,7 +278,10 @@ export default function StructureConfigurationModal ({
                                             value={
                                                 {
                                                     label: copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead ?
-                                                        applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead)?.applicant
+                                                        applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead) ?
+                                                            applications?.find(item => item?.username === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead)?.applicant
+                                                            :
+                                                            copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.team_lead
                                                         :
                                                     'Select teamlead'
                                                     ,
@@ -291,7 +305,11 @@ export default function StructureConfigurationModal ({
                                             value={
                                                 copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.group_leads?.map(item => {
                                                     return {
-                                                        label: applications?.find(user => user.username === item)?.applicant,
+                                                        label: applications?.find(user => user.username === item) ?
+                                                            applications?.find(user => user.username === item)?.applicant
+                                                            :
+                                                            item
+                                                        ,
                                                         value: item,
                                                     }
                                                 })
@@ -316,7 +334,11 @@ export default function StructureConfigurationModal ({
                                             value={
                                                 copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.members?.map(item => {
                                                     return {
-                                                        label: applications?.find(user => user.username === item)?.applicant,
+                                                        label: applications?.find(user => user.username === item) ?
+                                                            applications?.find(user => user.username === item)?.applicant
+                                                            :
+                                                            item
+                                                        ,
                                                         value: item,
                                                     }
                                                 })
@@ -330,6 +352,68 @@ export default function StructureConfigurationModal ({
                                             isMulti
                                         />
                                     </label>
+
+                                    {
+                                        (
+                                            currentProjectItemFromStructure &&
+                                            !(
+                                                // checking if teamlead is updated
+                                                (currentProjectItemFromStructure?.projects?.find(item => item?.project === selectedProject)?.team_lead === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead) 
+                                                &&
+
+                                                // checking if groupleads are updated
+                                                (
+                                                    currentProjectItemFromStructure?.projects?.find(item => item?.project === selectedProject)?.group_leads
+                                                    ?.every(
+                                                        itemFromOriginalStructure => 
+                                                            copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.group_leads?.includes(itemFromOriginalStructure)
+                                                    )
+                                                    &&
+                                                    copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.group_leads
+                                                    ?.every(
+                                                        itemFromCopyStructure => 
+                                                            currentProjectItemFromStructure?.projects?.find(item => item?.project === selectedProject)?.group_leads?.includes(itemFromCopyStructure)
+                                                    )
+                                                ) 
+                                                &&
+
+                                                // checking if members are updated
+                                                (
+                                                    currentProjectItemFromStructure?.projects?.find(item => item?.project === selectedProject)?.members
+                                                    ?.every(
+                                                        itemFromOriginalStructure => 
+                                                            copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.members?.includes(itemFromOriginalStructure)
+                                                    )
+                                                    &&
+                                                    copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.members
+                                                    ?.every(
+                                                        itemFromCopyStructure => 
+                                                            currentProjectItemFromStructure?.projects?.find(item => item?.project === selectedProject)?.members?.includes(itemFromCopyStructure)
+                                                    )
+                                                )
+                                            )
+                                        ) ?
+                                        <button 
+                                            className={styles.update__project__Btn} 
+                                            onClick={handleGoForward}
+                                            disabled={dataLoading ? true : false}
+                                        >
+                                            {
+                                                dataLoading ? 
+                                                    <LoadingSpinner
+                                                        width={'1.2rem'}
+                                                        height={'1.2rem'}
+                                                        color={'#fff'}
+                                                    /> 
+                                                :
+                                                <span>
+                                                    {
+                                                        'Update'
+                                                    }
+                                                </span>
+                                            }
+                                        </button> : <></>
+                                    }
                                 </>
                             }
                         </>
@@ -362,18 +446,23 @@ export default function StructureConfigurationModal ({
                                         <HiMiniArrowLongLeft fontSize={'1.2rem'} />
                                     </button>
                                 }
-                                <button 
-                                    className={styles.form__Nav__Btn} 
-                                    onClick={
-                                        handleGoForward && typeof handleGoForward === 'function' ?
-                                            () => handleGoForward()
-                                        :
-                                        () => {}
-                                    }
-                                    disabled={dataLoading ? true : false}
-                                >
-                                    <HiMiniArrowLongRight fontSize={'1.2rem'} />
-                                </button>
+                                {
+                                    currentModalPage > 0 && currentModalPage < 3 ?
+                                    <button 
+                                        className={styles.form__Nav__Btn} 
+                                        onClick={
+                                            handleGoForward && typeof handleGoForward === 'function' ?
+                                                () => handleGoForward()
+                                            :
+                                            () => {}
+                                        }
+                                        disabled={dataLoading ? true : false}
+                                    >
+                                        <HiMiniArrowLongRight fontSize={'1.2rem'} />
+                                    </button>
+                                    :
+                                    <></>
+                                }
                             </>
                         }
                     </>
