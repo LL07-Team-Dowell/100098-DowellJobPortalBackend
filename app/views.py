@@ -139,8 +139,8 @@ if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
 if os.getenv("PROJECT_DB_NAME"):
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
-if os.getenv("ATTENDANCE_DB_NAME"):
-    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+if os.getenv("ATTENDANCE_DB"):
+    ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
 if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
 if os.getenv("Events_collection"):
@@ -155,7 +155,7 @@ else:
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
-    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+    ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
     Events_collection=str(os.getenv("Events_collection"))
 
 # Create your views here.
@@ -9801,7 +9801,7 @@ class candidate_attendance(APIView):
 
         try:
             insert_attendance = json.loads(
-                datacube_data_insertion(API_KEY,DB_Name,collection, data)
+                datacube_data_insertion(API_KEY,ATTENDANCE_DB,collection, data)
             )
             print(insert_attendance)
         except: 
@@ -9844,7 +9844,7 @@ class candidate_attendance(APIView):
             },status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            attendance_report=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection,data,limit,offset))    
+            attendance_report=json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,collection,data,limit,offset))    
             
         except:
             return Response({
@@ -9899,7 +9899,7 @@ class candidate_attendance(APIView):
             })
         
         try:
-            attendance_report=json.loads(datacube_data_retrival(API_KEY,DB_Name,collection,data,limit,offset))     
+            attendance_report=json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,collection,data,limit,offset))     
         except:
             return Response({
                 "success":False,
@@ -10697,7 +10697,7 @@ class DowellEvents(APIView):
             })
             
         try:    
-            insert_collection = json.loads(datacube_data_insertion(API_KEY,DB_Name,Events_collection,data=field))
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,ATTENDANCE_DB,Events_collection,data=field))
         
         except:
             return Response({
@@ -10724,7 +10724,7 @@ class DowellEvents(APIView):
 
         field={"_id":document_id}
 
-        allowed_to_update=("event_name","event_host","event_frequency") #this tuple contains the data that cannot be updated in the Db
+        allowed_to_update=("event_name","event_host","event_frequency") #this tuple contains the data that can be updated in the Db
         
         serializer=UpdateEventSerializer(data=request.data)
 
@@ -10783,7 +10783,7 @@ class DowellEvents(APIView):
             })
             
         try:    
-            insert_collection = json.loads(datacube_data_insertion(API_KEY,DB_Name,Events_collection,data))
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,ATTENDANCE_DB,Events_collection,data))
             print(insert_collection)
         except:
             return Response({
@@ -10815,3 +10815,4 @@ class DowellEvents(APIView):
     
 
 
+a
