@@ -12,8 +12,7 @@ urlpatterns = [
     path("accounts_update_project/", accounts_update_project.as_view()),
     path("accounts_rehire_candidate/", accounts_rehire_candidate.as_view()),
     path("accounts_reject_candidate/", accounts_reject_candidate.as_view()),
-    path("onboard_candidate/<str:document_id>",
-         accounts_onboard_candidate.as_view()),
+    path("onboard_candidate/<str:document_id>", accounts_onboard_candidate.as_view()),
     path("update_project/", accounts_update_project.as_view()),
     path("rehire_candidate/", accounts_rehire_candidate.as_view()),
     path("reject_candidate/", accounts_reject_candidate.as_view()),
@@ -42,7 +41,8 @@ urlpatterns = [
         "get_all_hired_candidate/<str:company_id>/",
         get_all_hired_candidate.as_view(),
     ),
-    path("get_all_renew_contract_candidate/<str:company_id>/",
+    path(
+        "get_all_renew_contract_candidate/<str:company_id>/",
         get_all_renew_contract_candidate.as_view(),
     ),
     path(
@@ -53,7 +53,10 @@ urlpatterns = [
         "delete_candidate_application/<str:document_id>/",
         delete_candidate_application.as_view(),
     ),
-    path("update_candidates_application/",update_candidates_application.as_view(),),
+    path(
+        "update_candidates_application/",
+        update_candidates_application.as_view(),
+    ),
     # hr management--------------------------------------------------
     path("hr_shortlisted_candidate/", hr_shortlisted_candidate.as_view()),
     path("hr_selected_candidate/", hr_selected_candidate.as_view()),
@@ -71,8 +74,7 @@ urlpatterns = [
     path("delete_task/<str:document_id>/", delete_task.as_view()),
     # update task apis
     path("create_task_update_request/", create_task_update_request.as_view()),
-    path("get_update_task/<str:document_id>/",
-         get_task_request_update.as_view()),
+    path("get_update_task/<str:document_id>/", get_task_request_update.as_view()),
     path(
         "get_all_update_task/<str:company_id>/", get_all_task_request_update.as_view()
     ),
@@ -112,8 +114,7 @@ urlpatterns = [
     path("update_rating/", update_rating.as_view()),
     # settings -------------------------------------------------------
     path("settinguserprofileinfo/", SettingUserProfileInfoView.as_view()),
-    path("settinguserprofileinfo/<int:pk>",
-         SettingUserProfileInfoView.as_view()),
+    path("settinguserprofileinfo/<int:pk>", SettingUserProfileInfoView.as_view()),
     path("settinguserproject/", SettingUserProjectView.as_view()),
     path("settinguserproject/<int:pk>", SettingUserProjectView.as_view()),
     path("settinguserdatatype/<int:pk>", SettingUserProfileInfoView.as_view()),
@@ -132,8 +133,7 @@ urlpatterns = [
     ),
     # public job application link-------------------------------------
     path("public_candidate_job_application/", Public_apply_job.as_view()),
-    path("generate_public_job_application_link/",
-         createPublicApplication.as_view()),
+    path("generate_public_job_application_link/", createPublicApplication.as_view()),
     path(
         "generate_public_job_application_link/<str:company_id>/",
         createPublicApplication.as_view(),
@@ -141,8 +141,7 @@ urlpatterns = [
     path("send_mail_to_public/", sendMailToPublicCandidate.as_view()),
     path("update_user_status/", updateTheUserDetails.as_view()),
     path("public_product_url/", public_product.as_view()),
-    path("fetch_public_product_url/<str:job_company_id>/",
-         public_product.as_view()),
+    path("fetch_public_product_url/<str:job_company_id>/", public_product.as_view()),
     # Thread-------------------------------------
     path("fetch_thread/<str:document_id>/", Thread_Apis.as_view()),
     path(
@@ -159,7 +158,6 @@ urlpatterns = [
     path("update_comment/", Comment_Apis.as_view()),
     # Generate Report -------------------------------------
     path("generate_report/", Generate_Report.as_view()),
-
     ######
     path("get_all_qrcode/<str:job_company_id>/", GetQRCode.as_view()),
     path(
@@ -181,14 +179,11 @@ urlpatterns = [
         "generate_candidate_duplicates/<str:company_id>/",
         Generate_candidate_dublicates.as_view(),
     ),
-
     # github api---------------------------------------
     path("updategithubprofile/", AddUserGithubInfo.as_view()),
-
     # secure end point-----------------
     path("secureendpoint/", SecureEndPoint.as_view()),
-
-    #project time endpoint
+    # project time endpoint
     path("add_project_total_time/", ProjectTotalTime.as_view()),
     path("get_project_time/<str:document_id>/", ProjectTotalTime.as_view()),
     path("get_all_projects_time/<str:company_id>/", AllProjectTotalTime.as_view()),
@@ -196,31 +191,27 @@ urlpatterns = [
     path("update_project_time_enabled/", EnabledProjectTotalTime.as_view()),
     path("update_project_spent_time/", UpdateProjectSpentTime.as_view()),
     path("delete_project_time/<str:document_id>/", ProjectTotalTime.as_view()),
-
-    #project details 
+    # project details
     path("project_details/", ProjectDetails.as_view()),
-
     # path("project_deadline/", project_hours.as_view()),
-    path("testing_threads/<str:company_id>/",
-         Testing_Threads.as_view()),  # add company id and status
-
-    path("product_services/",Product_Services_API.as_view()),
-
+    path(
+        "testing_threads/<str:company_id>/", Testing_Threads.as_view()
+    ),  # add company id and status
+    path("product_services/", Product_Services_API.as_view()),
     # DashBoard Services -----------------------------------------------------------
-    path("dashboard_services/",dashboard_services.as_view()),
-    path("candidate_leave_apply/",candidate_leave.as_view()),
-
-    #group lead agenda-----------------------------------------------------------
-    path('weekly_agenda/', WeeklyAgenda.as_view(), name='group_lead_agenda'),
-
-    #datacube apis-----------------------------------------------------------
-    path('datacube/',Datacube_operations.as_view()),
-    path('test/',test.as_view()) ,
-    path('attendance/',candidate_attendance.as_view()),
-    path('speed_test_result/<str:email>',speed_test.as_view()),
-    path('v2/speed_test_result/<str:email>',dowell_speed_test.as_view()),
-
-    #company_structure apis-------------------------------------------------------
-    path('insert_company_structure/', Company_Structure.as_view()),
-    path('get_company_structure/<str:company_id>/', Company_Structure.as_view()),
+    path("dashboard_services/", dashboard_services.as_view()),
+    path("candidate_leave_apply/", candidate_leave.as_view()),
+    # group lead agenda-----------------------------------------------------------
+    path("weekly_agenda/", WeeklyAgenda.as_view(), name="group_lead_agenda"),
+    # datacube apis-----------------------------------------------------------
+    path("datacube/", Datacube_operations.as_view()),
+    path("test/", test.as_view()),
+    path("attendance/", candidate_attendance.as_view()),
+    path("speed_test_result/<str:email>", speed_test.as_view()),
+    path("v2/speed_test_result/<str:email>", dowell_speed_test.as_view()),
+    # company_structure apis-------------------------------------------------------
+    path("insert_company_structure/", Company_Structure.as_view()),
+    path("get_company_structure/<str:company_id>/", Company_Structure.as_view()),
+    # invoice management apis------------------------------------------------------
+    path("invoice/<str:company_id>/", Invoice_management.as_view()),
 ]

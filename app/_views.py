@@ -44,13 +44,13 @@ from .helper import (
     datacube_add_collection,
     datacube_data_update,
     get_subproject,
-    check_speed_test, 
+    check_speed_test,
     get_projects,
     get_speed_test_data,
     get_speed_test_result,
     datacube_data_retrival_function,
     get_current_week_start_end_date,
-    speed_test_condition
+    speed_test_condition,
 )
 from .serializers import (
     AccountSerializer,
@@ -112,7 +112,8 @@ from .serializers import (
     CompanyStructureUpdateProjectLeadSerializer,
     CompanyStructureProjectsSerializer,
     WorklogsDateSerializer,
-    UpdateUserIdSerializer
+    UpdateUserIdSerializer,
+    InsertPaymentInformation,
 )
 from .authorization import (
     verify_user_token,
@@ -294,3 +295,78 @@ ISSUES_MAIL = """
   </body>
 </html>
 """
+
+
+class Invoice_management(APIView):
+    def post(self, request, company_id):
+        type_request = request.GET.get("type")
+
+        if type_request == "create_collection":
+            return self.create_collection(request, company_id)
+        else:
+            return self.handle_error(request)
+
+    def create_collection(self, request, company_id):
+        if company_id:
+            field = {"company_id": company_id, "status": "hired"}
+            response = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field=None
+            )
+            parsed_response = json.loads(response)
+
+            if parsed_response["isSuccess"]:
+                onboarded_candidates = parsed_response["data"]
+
+                if len(onboarded_candidates) == 0:
+                    return Response(
+                        {
+                            "message": f"There are no onboarded candidates with this company id",
+                            "response": parsed_response,
+                        },
+                        status=status.HTTP_204_NO_CONTENT,
+                    )
+                else:
+                    # Extract usernames from all onboarded candidates
+                    usernames = [
+                        candidate["username"] for candidate in onboarded_candidates
+                    ]
+
+                    for username in usernames:
+                        # Create a collection for each username
+                        url = (
+                            "https://datacube.uxlivinglab.online/db_api/add_collection/"
+                        )
+                        data_to_add = {
+                            "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+                            "db_name": "Payment_Records",
+                            "coll_names": username,
+                            "num_collections": 1,
+                        }
+                        response = requests.post(url, json=data_to_add)
+                        print(response.text)
+
+                    return Response(
+                        {
+                            "message": "collection created succesfully",
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+            else:
+                return Response(
+                    {
+                        "message": "Failed to fetch onboarded candidates",
+                        "response": parsed_response,
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+        else:
+            return Response(
+                {"message": "Company ID is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
