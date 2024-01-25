@@ -205,15 +205,15 @@ const CompanyStructurePage = () => {
             // CONFIGURING/UPDATING PROJECT LEADS
             case 2:
                 const newProjectLeads = copyOfStructureData?.project_leads?.filter(item => item.is_new_project_lead);
-                const updatedProjectLeads = copyOfStructureData?.project_leads?.filter(item => !item.is_new_project_lead && item?.projects?.length !== companyStructure?.project_leads?.find(project => project?.project_lead === item?.project_lead)?.projects?.length);
+                const updatedProjectLeads = copyOfStructureData?.project_leads?.filter(item => !item.is_new_project_lead && item?.projects_managed?.length !== companyStructure?.project_leads?.find(project => project?.project_lead === item?.project_lead)?.projects_managed?.length);
 
                 try {
 
                     setDataLoading(true);
 
                     await Promise.all([
-                        ...newProjectLeads.map(item => updateCompanyStructure('add_project_leads', { project_lead: item.project_lead, projects_managed: item.projects.map(item => item.project), company_id: currentUser?.portfolio_info[0]?.org_id})),
-                        ...updatedProjectLeads.map(item => updateCompanyStructure('update_project_leads', { project_lead: item.project_lead, projects_managed: item.projects.map(item => item.project), company_id: currentUser?.portfolio_info[0]?.org_id})),
+                        ...newProjectLeads.map(item => updateCompanyStructure('add_project_leads', { project_lead: item.project_lead, projects_managed: item.projects_managed, company_id: currentUser?.portfolio_info[0]?.org_id})),
+                        ...updatedProjectLeads.map(item => updateCompanyStructure('update_project_leads', { project_lead: item.project_lead, projects_managed: item.projects_managed, company_id: currentUser?.portfolio_info[0]?.org_id})),
                     ])
 
                     const updatedStructure = structuredClone(copyOfStructureData);
@@ -229,6 +229,7 @@ const CompanyStructurePage = () => {
                     setCompanyStructure(updatedStructure);
                     setCopyOfStructureData(updatedStructure);
                     setDataLoading(false);
+                    if (newProjectLeads?.length > 0 || updatedProjectLeads?.length > 0) toast.success(`Successfully ${updatedProjectLeads?.length > 0 ? ' updated ' : ' configured '} project lead details!`);
                     setCurrentModalPage(currentModalPage + 1);
 
                 } catch (error) {
@@ -243,21 +244,21 @@ const CompanyStructurePage = () => {
                 if (selectedProject.length < 1) return
 
                 const projectFromStructure = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))
-                const projectLeadOfProject = projectFromStructure?.project_lead;
+                const projectLeadOfProject = copyOfStructureData?.project_leads?.find(item => item?.projects_managed?.includes(selectedProject))?.project_lead;
                 const projectDetails = projectFromStructure?.projects?.find(item => item?.project === selectedProject);
                 
                 try {
                     setDataLoading(true);
 
                     const res = (await updateCompanyStructure(
-                        projectDetails?.team_lead_reports_to?.length > 0 ? 'update_projects' : 'add_project_leads', 
+                        projectDetails?.teamlead_reports_to?.length > 0 ? 'update_projects' : 'add_projects', 
                         {...projectDetails, company_id: currentUser?.portfolio_info[0]?.org_id}
                     )).data;
                     console.log(res);
 
-                    if (projectDetails?.team_lead_reports_to?.length < 1) {
+                    if (projectDetails?.teamlead_reports_to?.length < 1) {
                         const updatedProjectDetails = structuredClone(projectDetails);
-                        updatedProjectDetails.team_lead_reports_to = projectLeadOfProject;
+                        updatedProjectDetails.teamlead_reports_to = projectLeadOfProject;
 
                         const foundProjectIndexToUpdate = projectFromStructure?.projects?.findIndex(item => item?.project === selectedProject);
                         if (foundProjectIndexToUpdate === -1) return
@@ -365,7 +366,7 @@ const CompanyStructurePage = () => {
                     showSearchResult && <>
                         <div className={styles.search__Project__Details__Item}>
                             <h4>Current Project: <span>{searchProjectVal}</span></h4>
-                            <p>Project Lead: <span>{copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.project_lead}</span></p>
+                            <p>Project Lead: <span>{copyOfStructureData?.project_leads?.find(item => item?.projects_managed?.includes(searchProjectVal))?.project_lead}</span></p>
                             <p>Team Lead: <span>{copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.team_lead}</span></p>
                             <p>Group Lead: <span>{copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.group_leads?.join(', ')}</span></p>
                             <p>Members: <span>{copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === searchProjectVal))?.projects?.find(item => item.project === searchProjectVal)?.members?.join(', ')}</span></p>
@@ -412,7 +413,8 @@ const CompanyStructurePage = () => {
                                 {
                                     React.Children.toArray(
                                         projectsAdded[0]?.project_list?.map(projectItem => {
-                                            const matchingProjectFromCompanyStructure = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === projectItem))
+                                            const matchingProjectLeadFromCompanyStructure = copyOfStructureData?.project_leads?.find(item => item?.projects_managed?.includes(projectItem));
+                                            const matchingProjectFromCompanyStructure = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === projectItem));
                                             const foundTeamleadFromCompanyStructure = matchingProjectFromCompanyStructure?.projects?.find(item => item.project === projectItem)?.team_lead;
                                             const foundGroupleadsFromCompanyStructure = matchingProjectFromCompanyStructure?.projects?.find(item => item.project === projectItem)?.group_leads;
                                             const foundMembersFromCompanyStructure = matchingProjectFromCompanyStructure?.projects?.find(item => item.project === projectItem)?.members;
@@ -429,38 +431,38 @@ const CompanyStructurePage = () => {
                                                     />
                                                     <CardTile 
                                                         tileName={
-                                                            matchingProjectFromCompanyStructure ?
+                                                            matchingProjectLeadFromCompanyStructure ?
                                                                 applications?.find(
                                                                     application => application.username ===
-                                                                        matchingProjectFromCompanyStructure?.project_lead
+                                                                    matchingProjectLeadFromCompanyStructure?.project_lead
                                                                 ) ?
                                                                     applications?.find(
                                                                         application => application.username ===
-                                                                            matchingProjectFromCompanyStructure?.project_lead
+                                                                        matchingProjectLeadFromCompanyStructure?.project_lead
                                                                     )?.applicant
                                                                 :
-                                                                matchingProjectFromCompanyStructure?.project_lead
+                                                                matchingProjectLeadFromCompanyStructure?.project_lead
                                                             :
                                                             'No Project Lead'
                                                         }
                                                         tileDesignation={
-                                                            matchingProjectFromCompanyStructure ?
+                                                            matchingProjectLeadFromCompanyStructure ?
                                                                 'Project Lead'
                                                             :
                                                             'No user'
                                                         }
                                                         tileColor={
-                                                            matchingProjectFromCompanyStructure ?
+                                                            matchingProjectLeadFromCompanyStructure ?
                                                                 labelColors.projectLead
                                                             : 
                                                             null
                                                         }
                                                         hasTrailingDash={true}
-                                                        noUser={matchingProjectFromCompanyStructure ? false : true}
-                                                        isClickable={matchingProjectFromCompanyStructure ? true : false}
+                                                        noUser={matchingProjectLeadFromCompanyStructure ? false : true}
+                                                        isClickable={matchingProjectLeadFromCompanyStructure ? true : false}
                                                         handleCardTileClick={
                                                             () => handleTileClick(
-                                                                matchingProjectFromCompanyStructure?.project_lead,
+                                                                matchingProjectLeadFromCompanyStructure?.project_lead,
                                                                 'project lead',
                                                                 labelColors.projectLead,
                                                                 projectItem,
@@ -513,7 +515,7 @@ const CompanyStructurePage = () => {
                                                 
                                                 <div className={styles.group_leads__Wrap}>
                                                     {
-                                                        foundGroupleadsFromCompanyStructure && Array.isArray(foundGroupleadsFromCompanyStructure) ?
+                                                        foundGroupleadsFromCompanyStructure && Array.isArray(foundGroupleadsFromCompanyStructure) && foundGroupleadsFromCompanyStructure.length > 0 ?
                                                             <>
                                                                 {
                                                                     React.Children.toArray(foundGroupleadsFromCompanyStructure.map(grouplead => {
@@ -564,7 +566,7 @@ const CompanyStructurePage = () => {
 
                                                 <div className={styles.team__Members__Wrap}>
                                                     {   
-                                                        foundMembersFromCompanyStructure && Array.isArray(foundMembersFromCompanyStructure) ?
+                                                        foundMembersFromCompanyStructure && Array.isArray(foundMembersFromCompanyStructure) && foundMembersFromCompanyStructure.length > 0 ?
                                                         React.Children.toArray(foundMembersFromCompanyStructure.map(member => {
                                                             return <div className={styles.member__Item}>
                                                                 <CardTile 

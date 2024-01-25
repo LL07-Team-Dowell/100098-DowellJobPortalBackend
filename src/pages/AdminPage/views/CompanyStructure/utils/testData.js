@@ -11,21 +11,21 @@ export const testCompanyData = {
                     "members": ["oscaroguledo", "prajjwal", "ayesha", "isaac"],
                     "group_leads": ["mahnoor", 'oscar', 'isaac'],
                     "team_lead": "ayesha",
-                    "team_lead_reports_to": ""
+                    "teamlead_reports_to": ""
                 },
                 {
                     "project": "Team Management",
                     "members": ["oscaroguledo", "prajjwal", "ayesha", "isaac"],
                     "group_leads": ["mahnoor", "isaac"],
                     "team_lead": "oscaroguledo",
-                    "team_lead_reports_to": ""
+                    "teamlead_reports_to": ""
                 },
                 {
                     "project": "Workflow AI",
                     "members": ["oscaroguledo", "prajjwal", "ayesha", "isaac"],
                     "group_leads": ["mahnoor"],
                     "team_lead": "prajjwal",
-                    "team_lead_reports_to": ""
+                    "teamlead_reports_to": ""
                 },
             ],
         },
@@ -38,7 +38,7 @@ export const testCompanyData = {
                     "members": ["oscaroguledo", "prajjwal", "ayesha", "isaac"],
                     "group_leads": ["mahnoor"],
                     "team_lead": "couzy",
-                    "team_lead_reports_to": ""
+                    "teamlead_reports_to": ""
                 },
             ]
         },

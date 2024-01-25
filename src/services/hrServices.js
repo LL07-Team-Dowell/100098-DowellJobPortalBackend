@@ -27,10 +27,18 @@ export const getSettingUserProject = async () => {
   return await currentBackendAxiosInstance.get('settinguserproject/')
 }
 
-export const getJob = async (data,document_id) => {
+export const getJob = async (data, document_id) => {
   return await currentBackendAxiosInstance.post(`admin_get_job/${document_id}/`, data)
 }
 
 export const hrSendMailToPublicUser = async (data) => {
   return await currentBackendAxiosInstance.post(`send_mail_to_public/`, data)
+}
+
+export const getAllEvents = async (companyId) => {
+  return await currentBackendAxiosInstance.post(`events/?type=GetAllEvents&limit=0&offset=0`, companyId)
+}
+
+export const addAttendance = async (data) => {
+  return await currentBackendAxiosInstance.post(`attendance/?type=add_attendance`, data)
 }

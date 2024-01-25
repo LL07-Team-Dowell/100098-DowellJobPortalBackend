@@ -48,7 +48,7 @@ button.hr__Att__Btn {
 }
 
 .item__Filter {
-    width: 15rem;
+    width: 18rem;
 }
 
 .att_rep {
@@ -176,21 +176,12 @@ button.hr__Att__Btn {
     margin-right: 4%;
 }
 
-.att_select_input{
-    border: 1px solid lightgray;
-    font-size: 14px;
-    width: 15rem;
-    border-radius: 3px;
-    color: #807f7f;
-    padding: 0.45rem;
-    font-family: "Poppins", sans-serif;
-}
-
-.users_info{
+.users_info {
     padding: 1%;
     display: flex;
 }
-.users_info button{
+
+.users_info button {
     width: max-content;
     padding: 10px 20px;
     font-size: 14px;
@@ -204,7 +195,7 @@ button.hr__Att__Btn {
     box-shadow: 1px 4px 8px rgba(0, 0, 0.1, 0.2);
 }
 
-.users_info p{
+.users_info p {
     padding: 10px 20px;
     font-size: large;
     font-weight: 600;
