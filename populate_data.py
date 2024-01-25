@@ -215,7 +215,14 @@ comment_report_module = [
     "1000981017",
     "ABCDE",
 ]
-
+def normalize(text):
+    normalized_text = ''
+    for char in text:
+        if char.isalnum() or char =='_' or char =='-':
+            normalized_text += char
+        if char ==' ':
+            normalized_text+='_'
+    return normalized_text
 def update_report_database(task_created_date,company_id):
     field = {
             "task_created_date": task_created_date,
@@ -233,7 +240,7 @@ def update_report_database(task_created_date,company_id):
             query={"report_record_month": _monthname,
                     "report_record_year": year,
                     "db_report_type": "report"}
-            coll_name = str(_t['task_added_by']).replace(' ','_')
+            coll_name = normalize(_t['task_added_by'])
             print(f"----------retrieving data from collection {coll_name} for {_monthname}, {year}----------")
             get_collection = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0, False))
             #print(get_collection,"==",coll_name)
@@ -520,15 +527,15 @@ def update_report_database(task_created_date,company_id):
 if __name__ == "__main__":
     company_id = "6385c0f18eca0fb652c94561"
 
-    search_date=datetime.today().date() - timedelta(days=1) # e.g 2024-01-12
-    search_date = str(search_date)
+    #search_date=datetime.today().date() - timedelta(days=1) # e.g 2024-01-12
+    #search_date = str(search_date)
 
     year =2024
     month_number =1
     _, number_of_days = calendar.monthrange(year, month_number)
     _month_dates = [f"{year}-"+"{:02d}".format(month_number)+"-"+"{:02d}".format(d) for d in range(1, number_of_days + 1)]
     #print(_month_dates)
-    #['2024-01-03', '2024-01-04', '2024-01-05', '2024-01-06', '2024-01-07', '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12', '2024-01-13', '2024-01-14', '2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-20', '2024-01-21', '2024-01-22', '2024-01-23', '2024-01-24', '2024-01-25', '2024-01-26', '2024-01-27', '2024-01-28', '2024-01-29', '2024-01-30', '2024-01-31']
+    #['2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12', '2024-01-13', '2024-01-14', '2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-20', '2024-01-21', '2024-01-22', '2024-01-23', '2024-01-24', '2024-01-25', '2024-01-26', '2024-01-27', '2024-01-28', '2024-01-29', '2024-01-30', '2024-01-31']
     """first week of jan 2024-----------------------------"""
     
     print("---first week of jan 2024-----------------------------")
@@ -537,5 +544,5 @@ if __name__ == "__main__":
             break
         else:
             print(f"---------updating for {day}------------------")
-            update_report_database(search_date,company_id)
+            update_report_database(day,company_id)
             print(f"---------successfully updated for {day}------")
