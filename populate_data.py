@@ -331,20 +331,13 @@ def update_report_database(task_created_date,company_id):
                         "report_record_year": year,
                         "db_report_type": "report"
                     }
-                    update_data =data
-                    try:
-                        update_collection = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
-                        if update_collection['success']==True:
-                            print(f"------successfully updated the data the collection- {coll_name}------")
-                        else:
-                            print(f"------failed to update the data the collection- {coll_name}----{update_collection['message']}")
-                    except json.decoder.JSONDecodeError:
-                        update_collection = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
-                        if update_collection['success']==True:
-                            print(f"------successfully updated the data the collection- {coll_name}------")
-                        else:
-                            print(f"------failed to update the data the collection- {coll_name}----{update_collection['message']}")
- 
+                    insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+                    if insert_collection['success']==True:
+                        print(f'successfully inserted the data into the empty collection- {coll_name}')
+                        print(insert_collection)
+                    else:
+                        print(insert_collection)   
+                    
                 else:
                     print(create_collection)
             else:
