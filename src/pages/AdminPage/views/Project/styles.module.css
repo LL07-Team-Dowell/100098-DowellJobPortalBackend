@@ -123,7 +123,6 @@
 
 .job__details {
   background: #fff;
-  padding: 3rem;
   display: flex;
   flex-direction: column;
 }
@@ -143,4 +142,16 @@
   background-color: #f4f4f4;
   font-weight: 400;
   margin-bottom: 2rem;
+}
+
+.editing_ptoject {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.is_active {
+  display: flex;
+  justify-content: flex-end;
 }

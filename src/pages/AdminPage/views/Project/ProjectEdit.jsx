@@ -54,12 +54,23 @@ const ProjectEdit = () => {
           </button>
           <h2>Edit Project</h2>
         </div>
-        <section>
+        <div>
           <h2>Team Management</h2>
-          <div></div>
+          <div>
+            <div className={styles.editing_ptoject}>
+              <label htmlFor="is_active">Editing Enabled</label>
+              <div className={styles.is_active}>
+                <input
+                  className={styles.active_checkbox}
+                  type="checkbox"
+                  name={"is_active"}
+                />
+              </div>
+            </div>
+          </div>
           <div>
             <div className={styles.job__details}>
-              <label htmlFor="lead_name"></label>
+              <label htmlFor="lead_name">Lead Name</label>
               <input
                 type="text"
                 id="lead_name"
@@ -67,8 +78,8 @@ const ProjectEdit = () => {
                 placeholder="Enter lead name"
               />
             </div>
-            <div>
-              <label htmlFor="total_time"></label>
+            <div className={styles.job__details}>
+              <label htmlFor="total_time">Total Time</label>
               <input
                 type="text"
                 id="total_time"
@@ -77,7 +88,7 @@ const ProjectEdit = () => {
               />
             </div>
           </div>
-        </section>
+        </div>
         <button>Update</button>
       </div>
     </StaffJobLandingLayout>
