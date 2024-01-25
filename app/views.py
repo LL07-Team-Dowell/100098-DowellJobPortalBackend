@@ -10680,14 +10680,13 @@ class DowellEvents(APIView):
             update_event = json.loads(
                 datacube_data_update(
                     API_KEY,
-                    DB_Name,
+                    ATTENDANCE_DB,
                     coll_name=Events_collection,
                     query=field,
                     update_data=update_field,
                 )
             )
-            print(update_event)
-
+        
         except:
             return Response({
                 "success":False,
