@@ -6,6 +6,7 @@ import { getUserLiveStatus, postUserLiveStatus } from "../../../../services/comm
 import React from "react";
 import { teamManagementProductName } from "../../../../utils/utils";
 import { ApproveVouchar, ClaimVouchar } from "../../../TeamleadPage/views/ClaimVouchar/ClaimVouchar";
+import { useState, useEffect } from "react";
 
 const AdminUserScreen = ({ subAdminView }) => {
     const [success, setsuccsess] = React.useState(false);
@@ -21,9 +22,15 @@ const AdminUserScreen = ({ subAdminView }) => {
 
 
     const navigate = useNavigate();
-    const { currentUser, currentUserHiredApplications } = useCurrentUserContext()
+    const { currentUser, currentUserHiredApplications, currentUserHiredApplicationsLoaded } = useCurrentUserContext()
     console.log(currentUser);
-    const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
+    const [userProject, setUserProject] = useState('');
+    useEffect(() => {
+        if (currentUserHiredApplicationsLoaded) {
+            setUserProject(currentUserHiredApplications.map(app => app?.project).flat().join(', '));
+        }
+    },
+        [currentUserHiredApplicationsLoaded])
     // console.log("current>>>>>>>>>>>>>>>",currentUserHiredApplications);
 
     const handleLogout = () => navigate("/logout");

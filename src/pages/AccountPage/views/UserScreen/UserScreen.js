@@ -9,10 +9,17 @@ import { ClaimVouchar } from "../../../TeamleadPage/views/ClaimVouchar/ClaimVouc
 
 const UserScreen = () => {
     const navigate = useNavigate();
-    const { currentUser, currentUserHiredApplications } = useCurrentUserContext();
+    const { currentUser, currentUserHiredApplications, currentUserHiredApplicationsLoaded } = useCurrentUserContext();
     const handleLogout = () => navigate("/logout");
     const [success, setsuccsess] = useState(false);
-    const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
+    const [userProject, setUserProject] = useState('');
+
+    useEffect(() => {
+        if (currentUserHiredApplicationsLoaded) {
+            setUserProject(currentUserHiredApplications.map(app => app?.project).flat().join(', '));
+        }
+    },
+        [currentUserHiredApplicationsLoaded])
 
     useEffect(() => {
         const checkActive = setInterval(() => {
