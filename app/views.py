@@ -10630,9 +10630,9 @@ class DowellEvents(APIView):
             })
         if fetch_collection["success"] and len(fetch_collection["data"])>0:
             return Response({
-                "message":False,
+                "success":False,
                 "error":f"Event having the following details {check_field} already exists"
-            })
+            },status=status.HTTP_409_CONFLICT)
         
         try:    
             insert_collection = json.loads(datacube_data_insertion(API_KEY,ATTENDANCE_DB,Events_collection,data=field))
@@ -10708,7 +10708,6 @@ class DowellEvents(APIView):
     def GetAllEvents(self,request):
         
         data={key:value for key,value in request.data.items()}
-        print(data)
         limit=request.GET.get("limit")
         offset=request.GET.get("offset")
 
