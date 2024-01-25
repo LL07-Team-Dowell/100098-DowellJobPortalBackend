@@ -12,8 +12,11 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { MdCancel } from "react-icons/md";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import Avatar from "react-avatar";
+import { useNavigate } from "react-router-dom";
+import { IoChevronBack } from "react-icons/io5";
 
 const AttendanceReport = () => {
+    const navigate = useNavigate();
     const [selectedUser, setSelectedUser] = useState([]);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -24,7 +27,8 @@ const AttendanceReport = () => {
     const [selectedProject, setSelectedProject] = useState("");
     // const [usersVisibility, setUsersVisibility] = useState(false);
     const [userForAttendance, setUserForAttendance] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [isProjectLoading, setIsProjectLoading] = useState(false);
+    const [isUserLoading, setIsUserLoading] = useState(false);
     // const companyId = "6385c0f18eca0fb652c94561";
 
     const isWeekend = (dayIndex) => dayIndex === 5 || dayIndex === 6;
@@ -36,22 +40,24 @@ const AttendanceReport = () => {
 
     useEffect(() => {
         setSelectedUser([]);
+        setIsUserLoading(true);
         setShowAttendaceReport(false);
         getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id).then(res => {
             const onboardingCandidates = res?.data?.response?.data;
             const hiredCandidates = onboardingCandidates.filter(candidate => candidate.status === 'hired');
 
             const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
-                candidate.project && candidate.project.includes(selectedProject)
+                candidate.project && candidate.project.includes(selectedProject?.value)
             );
 
             const options = candidatesInSelectedProject.map(candidate => ({
                 value: candidate._id,
                 label: candidate.applicant,
             }));
-            console.log(">>>>>>>>>>>>>>>>", options.length);
+            console.log(">>>>>>>>>>>>>>>>", options);
             setCandidateOptions(options);
             setUserForAttendance(options[0].label);
+            setIsUserLoading(false);
         }).catch(err => {
             setUserForAttendance("");
             console.log('onboarded failed to load');
@@ -65,9 +71,9 @@ const AttendanceReport = () => {
     };
 
     const handleGetAttendanceClick = () => {
-        if (selectedUser.length === 0 && startDate === "" && selectedProject === "") {
+        if (selectedUser.length === 0 && startDate === "" && selectedProject?.value === "") {
             return toast.error("Please select Project, User(s) and a Start Date.");
-        } else if (selectedProject === "") {
+        } else if (selectedProject?.value === "") {
             return toast.error("Please select a project.");
         } else if (selectedUser.length === 0) {
             return toast.error("Please select user(s).");
@@ -88,6 +94,7 @@ const AttendanceReport = () => {
     }, [startDate]);
 
     useEffect(() => {
+        setIsProjectLoading(true);
         const fetchProjects = async () => {
             try {
                 const data = (await getSettingUserProject()).data;
@@ -98,18 +105,22 @@ const AttendanceReport = () => {
                 ).reverse();
                 if (companyProjects.length > 0) {
                     const projectList = companyProjects[0].project_list || [];
-                    setProjects(projectList);
+                    const options = projectList.map((projectName) => ({
+                        label: projectName,
+                        value: projectName,
+                    }));
+                    setProjects(options);
+                    setIsProjectLoading(false);
                 }
             } catch (error) {
                 console.error("Error fetching projects:", error);
             }
         };
-
         fetchProjects();
     }, []);
 
     const handleProjectChange = async (event) => {
-        const projectId = event.target.value;
+        const projectId = event;
         setSelectedProject(projectId);
     };
 
@@ -122,12 +133,12 @@ const AttendanceReport = () => {
             hrView={true}
             hideSearchBar={true}
         >
+            <div className="att_title"><div className="back_icon" onClick={() => navigate(-1)}><IoChevronBack /></div><h3>Attendance</h3></div>
             <section className="att_report_main">
-                <h3>Attendance</h3>
                 <div className="check">
                     <div className="item__Filter__Wrap">
                         <p>Select Project:</p>
-                        <select
+                        {/* <select
                             value={selectedProject}
                             onChange={handleProjectChange}
                             className="att_select_input"
@@ -139,13 +150,22 @@ const AttendanceReport = () => {
                                         {project}
                                     </option>
                                 ))}
-                        </select>
+                        </select> */}
+                        <Select
+                            options={projects}
+                            isMulti={false}
+                            isLoading={isProjectLoading}
+                            value={selectedProject}
+                            onChange={handleProjectChange}
+                            className="item__Filter"
+                        />
                     </div>
                     <div className="item__Filter__Wrap">
                         <p>Select User:</p>
                         <Select
                             options={candidateOptions}
                             isMulti={true}
+                            isLoading={isUserLoading}
                             value={selectedUser}
                             onChange={handleChange}
                             className="item__Filter"
@@ -203,7 +223,7 @@ const AttendanceReport = () => {
                                 <div className="candidate_info">
                                     <h4>{userForAttendance}</h4>
                                     <p>Freelancer</p>
-                                    <p>Project: <b>{selectedProject}</b></p>
+                                    <p>Project: <b>{selectedProject?.value}</b></p>
                                 </div>
                                 <div className="att_percentage">
                                     <CircularProgressbar

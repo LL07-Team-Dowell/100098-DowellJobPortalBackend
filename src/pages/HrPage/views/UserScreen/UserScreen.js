@@ -6,12 +6,19 @@ import React from "react";
 import { teamManagementProductName } from "../../../../utils/utils";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { ClaimVouchar } from "../../../TeamleadPage/views/ClaimVouchar/ClaimVouchar";
+import { useState, useEffect } from "react";
 
 const UserScreen = ({ subAdminView }) => {
     const navigate = useNavigate();
-    const { currentUser, currentUserHiredApplications } = useCurrentUserContext();
+    const { currentUser, currentUserHiredApplications, currentUserHiredApplicationsLoaded } = useCurrentUserContext();
     const handleLogout = () => navigate("/logout");
-    const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
+    const [userProject, setUserProject] = useState('');
+    useEffect(() => {
+        if (currentUserHiredApplicationsLoaded) {
+            setUserProject(currentUserHiredApplications.map(app => app?.project).flat().join(', '));
+        }
+    },
+        [currentUserHiredApplicationsLoaded])
     console.log("3asnaaaaa", currentUser.userinfo);
     const [success, setsuccsess] = React.useState(false);
     React.useEffect(() => {

@@ -9,10 +9,16 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 
 
 const ProjectLeadUserScreen = () => {
-    const { currentUser/*, currentUserHiredApplications*/ } = useCurrentUserContext();
+    const { currentUser, currentUserHiredApplications, currentUserHiredApplicationsLoaded } = useCurrentUserContext();
     const [success, setsuccsess] = useState(false);
     const navigate = useNavigate();
-    // const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
+    const [userProject, setUserProject] = useState('');
+    useEffect(() => {
+        if (currentUserHiredApplicationsLoaded) {
+            setUserProject(currentUserHiredApplications.map(app => app?.project).flat().join(', '));
+        }
+    },
+        [currentUserHiredApplicationsLoaded])
 
     useEffect(() => {
         const checkActive = setInterval(() => {
@@ -77,7 +83,7 @@ const ProjectLeadUserScreen = () => {
                 <div style={success ? successStatus : failedStatus}></div>
             </div>
             <div className="user__Intro__Item">
-                <h2>Project</h2>
+                <h2>{`Project(s) assigned to ${currentUser?.userinfo.first_name} ${currentUser?.userinfo.last_name}`}</h2>
                 <span>
                     {currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project}
                     {
@@ -89,13 +95,13 @@ const ProjectLeadUserScreen = () => {
                     }
                 </span>
             </div>
-            {/* {
+            {
                 userProject !== "" &&
                 <div className="user__Intro__Item">
                     <h2>Project(s)</h2>
                     <span>{userProject}</span>
                 </div>
-            } */}
+            }
             <button className="logout__Btn" onClick={handleLogout}>
                 Logout
             </button>

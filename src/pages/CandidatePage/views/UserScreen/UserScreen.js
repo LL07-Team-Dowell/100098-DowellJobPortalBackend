@@ -6,10 +6,11 @@ import { useCurrentUserContext } from '../../../../contexts/CurrentUserContext';
 import { getUserLiveStatus, postUserLiveStatus } from '../../../../services/commonServices';
 import { teamManagementProductName } from '../../../../utils/utils';
 import { ApproveVouchar, ClaimVouchar } from '../../../TeamleadPage/views/ClaimVouchar/ClaimVouchar';
+import { useState, useEffect } from "react";
 
 function UserScreen({ candidateSelected }) {
 
-  const { currentUser, currentUserHiredApplications } = useCurrentUserContext()
+  const { currentUser, currentUserHiredApplications, currentUserHiredApplicationsLoaded } = useCurrentUserContext()
   const navigate = useNavigate();
 
   const handleLogout = () => navigate("/logout");
@@ -25,8 +26,13 @@ function UserScreen({ candidateSelected }) {
     return () => clearInterval(checkActive)
   }, [])
 
-  const userProject = currentUserHiredApplications.map(app => app?.project).flat().join(', ');
-  console.log(' user project >>>>>>>>>>>>>>>>', userProject);
+  const [userProject, setUserProject] = useState('');
+  useEffect(() => {
+    if (currentUserHiredApplicationsLoaded) {
+      setUserProject(currentUserHiredApplications.map(app => app?.project).flat().join(', '));
+    }
+  },
+    [currentUserHiredApplicationsLoaded])
 
   return (
     <JobLandingLayout user={currentUser} afterSelection={candidateSelected}>
