@@ -357,7 +357,7 @@ class Invoice_management(APIView):
                         "message": "Failed to fetch onboarded candidates",
                         "response": parsed_response,
                     },
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         else:
             return Response(
@@ -374,133 +374,116 @@ class Invoice_management(APIView):
 
 class SavePaymentRrecords(APIView):
     def post(self, request):
-        try:
-            username = request.data.get("username")
-            weekly_payment_amount = request.data.get("weekly_payment_amount")
-            payment_currency = request.data.get("currency")
+        username = request.data.get("username")
+        weekly_payment_amount = request.data.get("weekly_payment_amount")
+        payment_currency = request.data.get("currency")
 
-            if not (username and weekly_payment_amount and payment_currency):
-                return Response(
-                    {
-                        "message": "Username, weekly_payment_amount, and currency are required"
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+        if not (username and weekly_payment_amount and payment_currency):
+            return Response(
+                {
+                    "message": "Username, weekly_payment_amount, and currency are required"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-            url = "https://datacube.uxlivinglab.online/db_api/get_data/"
+        url = "https://datacube.uxlivinglab.online/db_api/get_data/"
 
+        data = {
+            "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            "db_name": "Payment_Records",
+            "coll_name": username,
+            "operation": "fetch",
+            "data": {"db_record_type": "payment_records"},
+        }
+        response = requests.post(url, json=data)
+        response = response.json()
+
+        # Handle the API response appropriately
+        if response["data"] == []:
+            url = "https://datacube.uxlivinglab.online/db_api/crud/"
             data = {
                 "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
                 "db_name": "Payment_Records",
                 "coll_name": username,
-                "operation": "fetch",
+                "operation": "insert",
                 "data": {
-                    "username": username,
                     "weekly_payment_amount": weekly_payment_amount,
                     "payment_currency": payment_currency,
+                    "db_record_type": "payment_record",
+                    "previous_weekly_amounts": [],
+                    "last_payment_date": "",
                 },
             }
             response = requests.post(url, json=data)
-            response = response.json()
-
-            # Handle the API response appropriately
-            if response["data"] == []:
-                url = "https://datacube.uxlivinglab.online/db_api/crud/"
-                data = {
-                    "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                    "db_name": "Payment_Records",
-                    "coll_name": username,
-                    "operation": "insert",
-                    "data": {
-                        "weekly_payment_amount": weekly_payment_amount,
-                        "payment_currency": payment_currency,
-                        "db_record_type": "payment_record",
-                        "previous_weekly_amounts": [],
-                        "last_payment_date": "",
-                    },
-                }
-                response = requests.post(url, json=data)
-                return Response(response.json(), status=status.HTTP_200_OK)
-            else:
-                return Response(
-                    {"message": "Data alrady exists", "error": response},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-
-        except Exception as e:
-            # Handle unexpected exceptions
-            print(f"Unexpected error: {e}")
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
             return Response(
-                {"message": "Internal Server Error"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                {"message": "Record alrady saved"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
 
 class UpdatePaymentRecords(APIView):
     def patch(self, request):
-        try:
-            username = request.data.get("username")
-            weekly_payment_amount = request.data.get("weekly_payment_amount")
-            payment_currency = request.data.get("currency")
+        username = request.data.get("username")
+        weekly_payment_amount = request.data.get("weekly_payment_amount")
+        payment_currency = request.data.get("currency")
 
-            if not (username and weekly_payment_amount and payment_currency):
-                return Response(
-                    {
-                        "message": "Username, weekly_payment_amount, and currency are required"
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+        if not (username and weekly_payment_amount and payment_currency):
+            return Response(
+                {
+                    "message": "Username, weekly_payment_amount, and currency are required"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-            # Fetch data from the API to get the existing record
-            url = "https://datacube.uxlivinglab.online/db_api/get_data/"
-            data = {
+        # Fetch data from the API to get the existing record
+        url = "https://datacube.uxlivinglab.online/db_api/get_data/"
+        data = {
+            "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            "db_name": "Payment_Records",
+            "coll_name": username,
+            "operation": "fetch",
+            "data": {"db_record_type": "payment_records"},
+        }
+        response = requests.post(url, json=data)
+        existing_data = response.json()["data"]
+        print(response)
+
+        # Check if data exists
+        if existing_data:
+            previous_weekly_amounts = existing_data[0].get(
+                "previous_weekly_amounts", []
+            )
+
+            # Concatenate the previous amount and currency into a string
+            previous_amount_currency = f"{existing_data[0].get('weekly_payment_amount', '')}{existing_data[0].get('payment_currency', '')}"
+
+            # Append the new payment to previous weekly amounts
+            new_payment = f"{weekly_payment_amount}{payment_currency}"
+            previous_weekly_amounts.append(previous_amount_currency)
+
+            # Send the update request to the API
+            update_url = "https://datacube.uxlivinglab.online/db_api/crud/"
+            update_data = {
                 "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
                 "db_name": "Payment_Records",
                 "coll_name": username,
-                "operation": "fetch",
-                "data": {
-                    "username": username,
+                "operation": "update",
+                "update_data": {
                     "weekly_payment_amount": weekly_payment_amount,
                     "payment_currency": payment_currency,
+                    "db_record_type": "payment_record",
+                    "previous_weekly_amounts": previous_weekly_amounts,
+                    "last_payment_date": "",
                 },
             }
-            response = requests.post(url, json=data)
-            existing_data = response.json()["data"]
+            update_response = requests.put(update_url, json=update_data)
 
-            # Check if data exists
-            if existing_data:
-                # Send the update request to the API
-                update_url = "https://datacube.uxlivinglab.online/db_api/crud/"
-                update_data = {
-                    "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                    "db_name": "Payment_Records",
-                    "coll_name": username,
-                    "operation": "update",
-                    "update_data": {
-                        "weekly_payment_amount": weekly_payment_amount,
-                        "payment_currency": payment_currency,
-                        "db_record_type": "payment_record",
-                        "previous_weekly_amounts": [],
-                        "last_payment_date": "",
-                    },
-                }
-                update_response = requests.put(update_url, json=update_data)
+            return Response(update_response.json(), status=update_response.status_code)
 
-                response = requests.post(url, json=update_data)
-                return Response(
-                    update_response.json(), status=update_response.status_code
-                )
-
-            else:
-                return Response(
-                    {"message": "Data does not exist, create first"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-
-        except Exception as e:
-            # Handle unexpected exceptions
-            print(f"Unexpected error: {e}")
+        else:
             return Response(
-                {"message": "Internal Server Error"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                {"message": "Data does not exist, you need to save first"},
+                status=status.HTTP_404_NOT_FOUND,
             )
