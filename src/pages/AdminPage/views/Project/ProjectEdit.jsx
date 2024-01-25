@@ -57,11 +57,11 @@ const ProjectEdit = () => {
         <div>
           <h2>Team Management</h2>
           <div>
-            <div className={styles.editing_ptoject}>
+            <div className={styles.editing_project}>
               <label htmlFor="is_active">Editing Enabled</label>
-              <div className={styles.is_active}>
+              <div className={styles.is__active}>
                 <input
-                  className={styles.active_checkbox}
+                  className={styles.active__checkbox}
                   type="checkbox"
                   name={"is_active"}
                 />

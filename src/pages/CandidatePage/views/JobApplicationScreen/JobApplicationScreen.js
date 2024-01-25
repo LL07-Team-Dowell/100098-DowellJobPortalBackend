@@ -127,18 +127,16 @@ const JobApplicationScreen = () => {
         );
         console.log(speedTestResults);
 
-
-        const matchingSpeedResult = speedTestResults.find((item) =>
-          Number(item.details.upload) >= 100 &&
-          Number(item.details.download) >= 100 &&
-          Number(item.details.jitter) <= 30 &&
-          Number(item.details.latency) <= 50
+        const matchingSpeedResult = speedTestResults.find(
+          (item) =>
+            item.details.upload >= 100 &&
+            item.details.download >= 100 &&
+            item.details.jitter <= 30 &&
+            item.details.latency <= 50
         );
 
-       
-
         if (!matchingSpeedResult) {
-          // setShowInternetSpeedTestModal(true);
+          setShowInternetSpeedTestModal(true);
         } else {
           toast.success("Speed test upload successful");
           dispatchToNewApplicationData({

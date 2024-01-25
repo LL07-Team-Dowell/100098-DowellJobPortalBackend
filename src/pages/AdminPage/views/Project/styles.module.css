@@ -144,14 +144,14 @@
   margin-bottom: 2rem;
 }
 
-.editing_ptoject {
+.editing_project {
   display: flex;
   justify-content: space-between;
   margin-bottom: 2rem;
   align-items: center;
 }
 
-.is_active {
+.is__active {
   display: flex;
   justify-content: flex-end;
 }
