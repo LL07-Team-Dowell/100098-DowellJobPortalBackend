@@ -10613,7 +10613,7 @@ class DowellEvents(APIView):
         serializer=AddEventSerializer(data=request.data)
        
         if not serializer.is_valid():
-            print(serializer.errors)
+            
             return Response({
                 "success":False,
                 "message":"Posting Invalid Data",
@@ -10708,6 +10708,7 @@ class DowellEvents(APIView):
     def GetAllEvents(self,request):
         
         data={key:value for key,value in request.data.items()}
+        print(data)
         limit=request.GET.get("limit")
         offset=request.GET.get("offset")
 
