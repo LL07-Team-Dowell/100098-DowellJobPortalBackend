@@ -115,7 +115,6 @@ from .serializers import (
     CompanyStructureProjectsSerializer,
     WorklogsDateSerializer,
     UpdateUserIdSerializer,
-    AttendanceRetrievalSerializer,
     IndividualAttendanceRetrievalSerializer,
     AddEventSerializer,
     UpdateEventSerializer,
