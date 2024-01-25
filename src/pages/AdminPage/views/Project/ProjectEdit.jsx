@@ -1,6 +1,6 @@
 import { useState } from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styles from "./styles.module.css";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useEffect } from "react";
@@ -10,9 +10,14 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 const ProjectEdit = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const { id, project } = useParams();
   const { currentUser } = useCurrentUserContext();
   const [projectTime, setProjectTime] = useState([]);
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
+  const project = urlParams.get("project");
+  const id = urlParams.get("id");
+  //  console.log(id)
+  // console.log(project);
 
   const [projectTimeDetail, setProjectTimeDetail] = useState({
     total_time: 0,
@@ -23,14 +28,32 @@ const ProjectEdit = () => {
   });
 
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      const getEditProjectDetails = {};
-      setProjectTimeDetail((prev) => {
-        return { ...prev, ...getEditProjectDetails };
-      });
-    }
-  }, []);
+    const fetchProjectDetails = async () => {
+      try {
+        if (id) {
+          setLoading(true);
+
+          const projectDetails = await getProjectTime(currentUser.portfolio_info[0].org_id);
+
+          // Find the object with the specific id
+          const editDetails = projectDetails.find((item) => item["_id"] === id);
+
+          if (editDetails) {
+            setProjectTimeDetail((prevDetails) => {
+              return { ...prevDetails, ...editDetails };
+            });
+          }
+
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching project details:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchProjectDetails();
+  }, [id]);
 
   return (
     <StaffJobLandingLayout
@@ -55,10 +78,10 @@ const ProjectEdit = () => {
           <h2>Edit Project</h2>
         </div>
         <div>
-          <h2>Team Management</h2>
+          <h2>{project}</h2>
           <div>
             <div className={styles.editing_project}>
-              <label htmlFor="is_active">Editing Enabled</label>
+              <label htmlFor="is_active"></label>
               <div className={styles.is__active}>
                 <input
                   className={styles.active__checkbox}
@@ -76,6 +99,7 @@ const ProjectEdit = () => {
                 id="lead_name"
                 name="lead_name"
                 placeholder="Enter lead name"
+                value={projectTimeDetail.lead_name}
               />
             </div>
             <div className={styles.job__details}>
@@ -85,11 +109,14 @@ const ProjectEdit = () => {
                 id="total_time"
                 name="total_time"
                 placeholder="Enter total time"
+                value={projectTimeDetail.total_time}
               />
             </div>
           </div>
         </div>
-        <button>Update</button>
+        <div>
+          <button className={styles.project__submit}>Update</button>
+        </div>
       </div>
     </StaffJobLandingLayout>
   );
