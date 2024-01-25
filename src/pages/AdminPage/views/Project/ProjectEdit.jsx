@@ -27,7 +27,7 @@ const ProjectEdit = () => {
       setLoading(true);
       const getEditProjectDetails = {};
       setProjectTimeDetail((prev) => {
-        return { ...prev, getEditProjectDetails };
+        return { ...prev, ...getEditProjectDetails };
       });
     }
   }, []);
@@ -42,7 +42,7 @@ const ProjectEdit = () => {
       newSidebarDesign={true}
     >
       <div className={styles.wrapper}>
-        <section className={styles.edit__Nav__Content}>
+        <div className={styles.edit__Nav__Content}>
           <button onClick={() => navigate(-1)}>
             <MdArrowBackIosNew
               style={{
@@ -53,8 +53,43 @@ const ProjectEdit = () => {
             />
           </button>
           <h2>Edit Project</h2>
-        </section>
-        <section>{project}</section>
+        </div>
+        <div>
+          <h2>Team Management</h2>
+          <div>
+            <div className={styles.editing_project}>
+              <label htmlFor="is_active">Editing Enabled</label>
+              <div className={styles.is__active}>
+                <input
+                  className={styles.active__checkbox}
+                  type="checkbox"
+                  name={"is_active"}
+                />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className={styles.job__details}>
+              <label htmlFor="lead_name">Lead Name</label>
+              <input
+                type="text"
+                id="lead_name"
+                name="lead_name"
+                placeholder="Enter lead name"
+              />
+            </div>
+            <div className={styles.job__details}>
+              <label htmlFor="total_time">Total Time</label>
+              <input
+                type="text"
+                id="total_time"
+                name="total_time"
+                placeholder="Enter total time"
+              />
+            </div>
+          </div>
+        </div>
+        <button>Update</button>
       </div>
     </StaffJobLandingLayout>
   );
