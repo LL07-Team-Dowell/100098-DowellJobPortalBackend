@@ -49,6 +49,7 @@ export default function StructureConfigurationModal ({
             structureData?.project_leads?.push({
                 project_lead: newProjectLead,
                 projects: [projectDetails],
+                projects_managed: [projectDetails?.project],
                 is_new_project_lead: true,
             })
         }
@@ -59,12 +60,19 @@ export default function StructureConfigurationModal ({
             if (foundProjectLeadItem?.project_lead === itemValue) return;
 
             const existingProjectDetails = foundProjectLeadItem?.projects?.find(item => item.project === project);
+
+            const updatedPreviousProjectLeadProjectsManaged = [...foundProjectLeadItem?.projects_managed]?.filter(item => item !== project);
+            foundProjectLeadItem.projects_managed = updatedPreviousProjectLeadProjectsManaged;
+
             const updatedPreviousProjectLeadProjects = [...foundProjectLeadItem?.projects]?.filter(item => item.project !== project);
             foundProjectLeadItem.projects = updatedPreviousProjectLeadProjects;
 
             const isNewProjectLeadInStructure = currentStructureDataCopy?.project_leads?.find(item => item.project_lead === itemValue);
             
-            if (isNewProjectLeadInStructure) isNewProjectLeadInStructure?.projects?.push(existingProjectDetails);
+            if (isNewProjectLeadInStructure) {
+                isNewProjectLeadInStructure?.projects_managed?.push(project);
+                isNewProjectLeadInStructure?.projects?.push(existingProjectDetails);
+            }
             
             if (!isNewProjectLeadInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, existingProjectDetails);
 
@@ -81,7 +89,10 @@ export default function StructureConfigurationModal ({
             team_lead: ''
         };
 
-        if (projectLeadItemIsInStructure) projectLeadItemIsInStructure?.projects?.push(newProjectDetails);
+        if (projectLeadItemIsInStructure) {
+            projectLeadItemIsInStructure?.projects_managed?.push(project);
+            projectLeadItemIsInStructure?.projects?.push(newProjectDetails);
+        }
         if (!projectLeadItemIsInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, newProjectDetails);
 
         console.log('updated copy -> ', currentStructureDataCopy);
@@ -89,14 +100,30 @@ export default function StructureConfigurationModal ({
     }
 
     const handleUpdateProjectDetail = (newValue, project, updateType) => {
-        console.log(newValue, project, updateType);
+        // console.log(newValue, project, updateType);
 
         const currentStructureDataCopy = structuredClone(copyOfExistingStructure);
         
-        const foundProjectLeadItemIndex = currentStructureDataCopy?.project_leads?.findIndex(item => item.projects.find(pro => pro.project === project));
-        if (foundProjectLeadItemIndex === -1) return;
+        const [
+            foundProjectLead, 
+            foundProjectLeadIndex,
+        ] = [
+            currentStructureDataCopy?.project_leads?.find(item => item?.projects_managed?.includes(project)),
+            currentStructureDataCopy?.project_leads?.findIndex(item => item?.projects_managed?.includes(project)),
+        ];
+        if (!foundProjectLead || foundProjectLeadIndex === -1) return;
 
-        const copyOfProjectLeadItem = structuredClone(currentStructureDataCopy?.project_leads[foundProjectLeadItemIndex]);
+        const copyOfProjectLeadItem = structuredClone(foundProjectLead);
+
+        const projectLeadHasProjectDetailsPrevSaved = copyOfProjectLeadItem?.projects?.find(item => item?.project === project);
+        if (!projectLeadHasProjectDetailsPrevSaved) {
+            copyOfProjectLeadItem?.projects?.push({
+                project: project,
+                team_lead: '',
+                group_leads: [],
+                members: [],
+            })
+        }
         
         const foundProjectDetailsIndex = copyOfProjectLeadItem?.projects?.findIndex(item => item.project === project);
         if (foundProjectDetailsIndex === -1) return;
@@ -108,7 +135,7 @@ export default function StructureConfigurationModal ({
         if (updateType === projectDetailUpdateType.member_update) copyOfProjectDetailsInProjectLeadItem.members = newValue;
 
         copyOfProjectLeadItem.projects[foundProjectDetailsIndex] = copyOfProjectDetailsInProjectLeadItem;
-        currentStructureDataCopy.project_leads[foundProjectLeadItemIndex] = copyOfProjectLeadItem;
+        currentStructureDataCopy.project_leads[foundProjectLeadIndex] = copyOfProjectLeadItem;
 
         console.log('updated structure details -> ', currentStructureDataCopy);
         updateCopyOfExistingStructure(currentStructureDataCopy);
@@ -193,7 +220,7 @@ export default function StructureConfigurationModal ({
                                                 projectsAdded[0]?.project_list
                                                 ?.sort((a, b) => a.localeCompare(b))
                                                 ?.map((project, index) => {
-                                                    const matchingProjectFromCompanyStructure = copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === project));
+                                                    const matchingProjectFromCompanyStructure = copyOfExistingStructure?.project_leads?.find(item => item?.projects_managed?.includes(project));
                                                     
                                                     return <tr>
                                                         <td>{project}</td>
@@ -251,7 +278,7 @@ export default function StructureConfigurationModal ({
                                         ...projectsAdded[0]?.project_list
                                             ?.sort((a, b) => a.localeCompare(b))
                                             ?.map((project) => {
-                                                const projectWithProjectLeads = copyOfExistingStructure?.project_leads?.map(item => item.projects.map(projectItem => projectItem.project))?.flat();
+                                                const projectWithProjectLeads = copyOfExistingStructure?.project_leads?.map(item => item?.projects_managed.map(projectItem => projectItem))?.flat();
                                                 if (projectWithProjectLeads && !projectWithProjectLeads.includes(project)) return null;
                                                 return { label: project, value: project };
                                             }).filter(item => item !== null),
@@ -358,7 +385,9 @@ export default function StructureConfigurationModal ({
                                             currentProjectItemFromStructure &&
                                             !(
                                                 // checking if teamlead is updated
-                                                (currentProjectItemFromStructure?.projects?.find(item => item?.project === selectedProject)?.team_lead === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead) 
+                                                (
+                                                    currentProjectItemFromStructure?.projects?.find(item => item?.project === selectedProject)?.team_lead === copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject)?.team_lead
+                                                ) 
                                                 &&
 
                                                 // checking if groupleads are updated
@@ -392,10 +421,15 @@ export default function StructureConfigurationModal ({
                                                     )
                                                 )
                                             )
-                                        ) ?
+                                        ) || (!currentProjectItemFromStructure) ?
                                         <button 
                                             className={styles.update__project__Btn} 
-                                            onClick={handleGoForward}
+                                            onClick={() => {
+                                                const foundProjectDetails = copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject);
+                                                if (!foundProjectDetails) return;
+                                                
+                                                handleGoForward();
+                                            }}
                                             disabled={dataLoading ? true : false}
                                         >
                                             {
