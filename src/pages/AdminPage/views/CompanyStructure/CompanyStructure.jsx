@@ -251,14 +251,14 @@ const CompanyStructurePage = () => {
                     setDataLoading(true);
 
                     const res = (await updateCompanyStructure(
-                        projectDetails?.team_lead_reports_to?.length > 0 ? 'update_projects' : 'add_projects', 
+                        projectDetails?.teamlead_reports_to?.length > 0 ? 'update_projects' : 'add_projects', 
                         {...projectDetails, company_id: currentUser?.portfolio_info[0]?.org_id}
                     )).data;
                     console.log(res);
 
-                    if (projectDetails?.team_lead_reports_to?.length < 1) {
+                    if (projectDetails?.teamlead_reports_to?.length < 1) {
                         const updatedProjectDetails = structuredClone(projectDetails);
-                        updatedProjectDetails.team_lead_reports_to = projectLeadOfProject;
+                        updatedProjectDetails.teamlead_reports_to = projectLeadOfProject;
 
                         const foundProjectIndexToUpdate = projectFromStructure?.projects?.findIndex(item => item?.project === selectedProject);
                         if (foundProjectIndexToUpdate === -1) return
