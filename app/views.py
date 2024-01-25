@@ -118,7 +118,8 @@ from .serializers import (
     AttendanceRetrievalSerializer,
     IndividualAttendanceRetrievalSerializer,
     AddEventSerializer,
-    UpdateEventSerializer
+    UpdateEventSerializer,
+    GetEventSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -9887,7 +9888,7 @@ class candidate_attendance(APIView):
         usernames=request.data.get("usernames")
         company_id=request.data.get("company_id")
         project=request.data.get("project")
-        collection=start_date+"_to_"+end_date
+        collection=str(start_date)+"_to_"+str(end_date)
         limit=request.data.get("limit")
         offset=request.data.get("offset")
 
@@ -10584,11 +10585,6 @@ class DowellEvents(APIView):
             return self.AddEvents(request)
         if request_type=="update_events":
             return self.UpdateEvents(request)
-        else:
-            return self.handle_error(request)
-
-    def get(self,request):
-        request_type=request.GET.get("type") 
         if request_type=="GetAllEvents":
             return self.GetAllEvents(request)
         else:
@@ -10617,7 +10613,7 @@ class DowellEvents(APIView):
         serializer=AddEventSerializer(data=request.data)
        
         if not serializer.is_valid():
-            print(serializer.errors)
+            
             return Response({
                 "success":False,
                 "message":"Posting Invalid Data",
@@ -10634,9 +10630,9 @@ class DowellEvents(APIView):
             })
         if fetch_collection["success"] and len(fetch_collection["data"])>0:
             return Response({
-                "message":False,
+                "success":False,
                 "error":f"Event having the following details {check_field} already exists"
-            })
+            },status=status.HTTP_409_CONFLICT)
         
         try:    
             insert_collection = json.loads(datacube_data_insertion(API_KEY,ATTENDANCE_DB,Events_collection,data=field))
@@ -10714,6 +10710,17 @@ class DowellEvents(APIView):
         data={key:value for key,value in request.data.items()}
         limit=request.GET.get("limit")
         offset=request.GET.get("offset")
+
+        serializer=GetEventSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
             
         try:    
             fetch_collection = json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,Events_collection,data,limit,offset))
