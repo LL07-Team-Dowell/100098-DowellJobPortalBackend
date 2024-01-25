@@ -787,3 +787,13 @@ def get_dates_between(start_date, end_date):
     ]
 
     return [date.strftime("%Y-%m-%d") for date in date_list]
+
+
+def normalize(text):
+    normalized_text = ""
+    for char in text:
+        if char.isalnum() or char == "_" or char == "-":
+            normalized_text += char
+        if char == " ":
+            normalized_text += "_"
+    return normalized_text
