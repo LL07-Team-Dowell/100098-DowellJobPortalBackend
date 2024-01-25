@@ -9887,7 +9887,7 @@ class candidate_attendance(APIView):
         usernames=request.data.get("usernames")
         company_id=request.data.get("company_id")
         project=request.data.get("project")
-        collection=start_date+"_to_"+end_date
+        collection=str(start_date)+"_to_"+str(end_date)
         limit=request.data.get("limit")
         offset=request.data.get("offset")
 

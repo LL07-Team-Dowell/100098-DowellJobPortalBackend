@@ -832,7 +832,7 @@ class AddEventSerializer(serializers.Serializer):
     company_id=serializers.CharField(max_length=225,allow_null=False)
     event_name=serializers.CharField(max_length=225,allow_null=False)
     event_type=serializers.ChoiceField(choices=("Meeting","Event"),allow_null=False)
-    event_frequency=serializers.ChoiceField(allow_null=False,choices=("daily","weekly","twice_a_week","custom"))
+    event_frequency=serializers.ChoiceField(allow_null=False,choices=("daily","weekly","twice_a_week","monthly","once_in_two_months","yearly","custom"))
     event_host=serializers.CharField(max_length=225,allow_null=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
@@ -840,7 +840,8 @@ class AddEventSerializer(serializers.Serializer):
     is_mendatory=serializers.BooleanField(allow_null=False)
 
 class UpdateEventSerializer(serializers.Serializer):
-    event_frequency=serializers.ChoiceField(allow_null=True,choices=("daily","weekly","twice_a_week","custom"))
+    company_id=serializers.CharField(max_length=225,allow_null=False)
+    event_frequency=serializers.ChoiceField(allow_null=False,choices=("daily","weekly","twice_a_week","monthly","once_in_two_months","yearly","custom"))
     document_id=serializers.CharField(allow_null=False, allow_blank=False)
 
 class GetEventSerializer(serializers.Serializer):
