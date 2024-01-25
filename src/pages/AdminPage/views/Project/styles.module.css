@@ -120,3 +120,27 @@
   width: 0.5rem;
   height: 0.5rem;
 }
+
+.job__details {
+  background: #fff;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.job__details label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #005734;
+  margin-bottom: 0.8rem;
+  display: flex;
+}
+
+.job__details input {
+  padding: 1.1rem 1.1rem 1.1rem 2rem;
+  border-radius: 0.8rem;
+  border: 0.1rem solid var(--primary-color);
+  background-color: #f4f4f4;
+  font-weight: 400;
+  margin-bottom: 2rem;
+}

@@ -128,10 +128,10 @@ const JobApplicationScreen = () => {
 
         const matchingSpeedResult = speedTestResults.find(
           (item) =>
-            Number(item.details.upload[0]) >= 100 &&
-            Number(item.details.download[0]) >= 100 &&
-            Number(item.details.jitter[0]) <= 30 &&
-            Number(item.details.latency[0]) <= 50
+            Number(item[0].details.upload) >= 100 &&
+            Number(item[0].details.download) >= 100 &&
+            Number(item[0].details.jitter) <= 30 &&
+            Number(item[0].details.latency) <= 50
         );
 
         if (!matchingSpeedResult) {

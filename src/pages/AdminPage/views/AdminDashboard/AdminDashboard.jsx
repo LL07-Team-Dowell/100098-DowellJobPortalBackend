@@ -195,8 +195,7 @@ const AdminDashboard = ({ subAdminView }) => {
                         dataLoading={projectsLoading}
                         dataLoaded={projectsLoaded}
                         data={projectsAdded[0]?.project_list?.length}
-                        action={'/add'}
-                        locationState={'showProject'}
+                        action={'/projects'}
                     />
                     <MainStatCard 
                         icon={<ImStack />}

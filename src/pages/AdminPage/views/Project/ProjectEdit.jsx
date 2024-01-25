@@ -27,7 +27,7 @@ const ProjectEdit = () => {
       setLoading(true);
       const getEditProjectDetails = {};
       setProjectTimeDetail((prev) => {
-        return { ...prev, getEditProjectDetails };
+        return { ...prev, ...getEditProjectDetails };
       });
     }
   }, []);
@@ -42,7 +42,7 @@ const ProjectEdit = () => {
       newSidebarDesign={true}
     >
       <div className={styles.wrapper}>
-        <section className={styles.edit__Nav__Content}>
+        <div className={styles.edit__Nav__Content}>
           <button onClick={() => navigate(-1)}>
             <MdArrowBackIosNew
               style={{
@@ -53,8 +53,32 @@ const ProjectEdit = () => {
             />
           </button>
           <h2>Edit Project</h2>
+        </div>
+        <section>
+          <h2>Team Management</h2>
+          <div></div>
+          <div>
+            <div className={styles.job__details}>
+              <label htmlFor="lead_name"></label>
+              <input
+                type="text"
+                id="lead_name"
+                name="lead_name"
+                placeholder="Enter lead name"
+              />
+            </div>
+            <div>
+              <label htmlFor="total_time"></label>
+              <input
+                type="text"
+                id="total_time"
+                name="total_time"
+                placeholder="Enter total time"
+              />
+            </div>
+          </div>
         </section>
-        <section>{project}</section>
+        <button>Update</button>
       </div>
     </StaffJobLandingLayout>
   );
