@@ -447,7 +447,6 @@ class Invoice_module(APIView):
         }
         response = requests.post(url, json=data)
         existing_data = response.json()["data"]
-        print(response)
 
         # Check if data exists
         if existing_data:
