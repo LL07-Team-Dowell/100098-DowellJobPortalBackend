@@ -152,7 +152,6 @@ urlpatterns = [
     path("fetch_all_threads/<str:company_id>/", GetAllThreads.as_view()),
     path("create_thread/", Thread_Apis.as_view()),
     path("update_thread/", Thread_Apis.as_view()),
-    
     # Comment-------------------------------------
     path("fetch_comment/<str:document_id>/", Comment_Apis.as_view()),
     path("create_comment/", Comment_Apis.as_view()),
@@ -169,7 +168,6 @@ urlpatterns = [
         "generate_project_task_Report/", Generate_project_task_details_Report.as_view()
     ),
     path("generate_public_report/", Public_report.as_view()),
-
     # Payment Request Status -------------------------------------
     path(
         "update_payment_request_status/<str:document_id>/",
@@ -214,8 +212,6 @@ urlpatterns = [
     # company_structure apis-------------------------------------------------------
     path("insert_company_structure/", Company_Structure.as_view()),
     path("get_company_structure/<str:company_id>/", Company_Structure.as_view()),
-    # invoice management apis------------------------------------------------------
-    path("invoice/<str:company_id>/", Invoice_management.as_view()),
-    path("SavePaymentRrecords/", SavePaymentRrecords.as_view()),
-    path("updatePaymentRrecords/", UpdatePaymentRecords.as_view()),
+    # invoice module apis------------------------------------------------------
+    path("invoice-module/", Invoice_module.as_view()),
 ]

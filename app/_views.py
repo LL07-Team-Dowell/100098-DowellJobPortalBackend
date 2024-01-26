@@ -297,12 +297,17 @@ ISSUES_MAIL = """
 """
 
 
-class Invoice_management(APIView):
-    def post(self, request, company_id):
+class Invoice_module(APIView):
+    def post(self, request):
         type_request = request.GET.get("type")
+        company_id = request.GET.get("company_id")
 
-        if type_request == "create_collection":
+        if type_request == "create-collection":
             return self.create_collection(request, company_id)
+        elif type_request == "save-payment-records":
+            return self.save_payment_records(request)
+        elif type_request == "update-payment-records":
+            return self.update_payment_records(request)
         else:
             return self.handle_error(request)
 
@@ -312,12 +317,13 @@ class Invoice_management(APIView):
             response = dowellconnection(
                 *candidate_management_reports, "fetch", field, update_field=None
             )
+            print(response)
             parsed_response = json.loads(response)
 
-            if parsed_response["isSuccess"]:
-                onboarded_candidates = parsed_response["data"]
+            if parsed_response.get("isSuccess", False):
+                onboarded_candidates = parsed_response.get("data", [])
 
-                if len(onboarded_candidates) == 0:
+                if not onboarded_candidates:
                     return Response(
                         {
                             "message": f"There are no onboarded candidates with this company id",
@@ -325,13 +331,12 @@ class Invoice_management(APIView):
                         },
                         status=status.HTTP_204_NO_CONTENT,
                     )
-                else:
-                    # Extract usernames from all onboarded candidates
-                    usernames = [
-                        candidate["username"] for candidate in onboarded_candidates
-                    ]
 
-                    for username in usernames:
+                for candidate in onboarded_candidates:
+                    user_id = candidate.get("user_id")
+
+                    # Check if user_id is present
+                    if user_id:
                         # Create a collection for each username
                         url = (
                             "https://datacube.uxlivinglab.online/db_api/add_collection/"
@@ -339,18 +344,22 @@ class Invoice_management(APIView):
                         data_to_add = {
                             "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
                             "db_name": "Payment_Records",
-                            "coll_names": username,
+                            "coll_names": user_id,
                             "num_collections": 1,
                         }
                         response = requests.post(url, json=data_to_add)
-                        print(response.text)
 
-                    return Response(
-                        {
-                            "message": "collection created succesfully",
-                        },
-                        status=status.HTTP_200_OK,
-                    )
+                        if response.status_code == 200:
+                            print(f"Collection created for user_id: {user_id}")
+                        else:
+                            print(f"Failed to create collection for user_id: {user_id}")
+
+                return Response(
+                    {
+                        "message": "Collections created successfully",
+                    },
+                    status=status.HTTP_200_OK,
+                )
             else:
                 return Response(
                     {
@@ -365,20 +374,12 @@ class Invoice_management(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def handle_error(self, request):
-        return Response(
-            {"success": False, "message": "Invalid request type"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-
-class SavePaymentRrecords(APIView):
-    def post(self, request):
-        username = request.data.get("username")
+    def save_payment_records(self, request):
+        user_id = request.data.get("username")
         weekly_payment_amount = request.data.get("weekly_payment_amount")
         payment_currency = request.data.get("currency")
 
-        if not (username and weekly_payment_amount and payment_currency):
+        if not (user_id and weekly_payment_amount and payment_currency):
             return Response(
                 {
                     "message": "Username, weekly_payment_amount, and currency are required"
@@ -391,20 +392,20 @@ class SavePaymentRrecords(APIView):
         data = {
             "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
             "db_name": "Payment_Records",
-            "coll_name": username,
+            "coll_name": user_id,
             "operation": "fetch",
             "data": {"db_record_type": "payment_records"},
         }
         response = requests.post(url, json=data)
-        response = response.json()
+        response_data = response.json()
 
         # Handle the API response appropriately
-        if response["data"] == []:
+        if response_data["data"] == []:
             url = "https://datacube.uxlivinglab.online/db_api/crud/"
             data = {
                 "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
                 "db_name": "Payment_Records",
-                "coll_name": username,
+                "coll_name": user_id,
                 "operation": "insert",
                 "data": {
                     "weekly_payment_amount": weekly_payment_amount,
@@ -418,18 +419,16 @@ class SavePaymentRrecords(APIView):
             return Response(response.json(), status=status.HTTP_200_OK)
         else:
             return Response(
-                {"message": "Record alrady saved"},
+                {"message": "Record already saved"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
-class UpdatePaymentRecords(APIView):
-    def patch(self, request):
-        username = request.data.get("username")
+    def update_payment_records(self, request):
+        user_id = request.data.get("username")
         weekly_payment_amount = request.data.get("weekly_payment_amount")
         payment_currency = request.data.get("currency")
 
-        if not (username and weekly_payment_amount and payment_currency):
+        if not (user_id and weekly_payment_amount and payment_currency):
             return Response(
                 {
                     "message": "Username, weekly_payment_amount, and currency are required"
@@ -442,7 +441,7 @@ class UpdatePaymentRecords(APIView):
         data = {
             "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
             "db_name": "Payment_Records",
-            "coll_name": username,
+            "coll_name": user_id,
             "operation": "fetch",
             "data": {"db_record_type": "payment_records"},
         }
@@ -468,7 +467,7 @@ class UpdatePaymentRecords(APIView):
             update_data = {
                 "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
                 "db_name": "Payment_Records",
-                "coll_name": username,
+                "coll_name": user_id,
                 "operation": "update",
                 "update_data": {
                     "weekly_payment_amount": weekly_payment_amount,
@@ -487,3 +486,9 @@ class UpdatePaymentRecords(APIView):
                 {"message": "Data does not exist, you need to save first"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+    def handle_error(self, request):
+        return Response(
+            {"success": False, "message": "Invalid request type"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
