@@ -243,28 +243,17 @@ const CompanyStructurePage = () => {
             case 3:
                 if (selectedProject.length < 1) return
 
-                const projectFromStructure = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))
-                const projectLeadOfProject = copyOfStructureData?.project_leads?.find(item => item?.projects_managed?.includes(selectedProject))?.project_lead;
-                const projectDetails = projectFromStructure?.projects?.find(item => item?.project === selectedProject);
+                const projectExistsInStructure = companyStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject));
+                const projectDetails = copyOfStructureData?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item?.project === selectedProject);
                 
                 try {
                     setDataLoading(true);
 
                     const res = (await updateCompanyStructure(
-                        projectDetails?.teamlead_reports_to?.length > 0 ? 'update_projects' : 'add_projects', 
+                        projectExistsInStructure ? 'update_projects' : 'add_projects', 
                         {...projectDetails, company_id: currentUser?.portfolio_info[0]?.org_id}
                     )).data;
                     console.log(res);
-
-                    if (projectDetails?.teamlead_reports_to?.length < 1) {
-                        const updatedProjectDetails = structuredClone(projectDetails);
-                        updatedProjectDetails.teamlead_reports_to = projectLeadOfProject;
-
-                        const foundProjectIndexToUpdate = projectFromStructure?.projects?.findIndex(item => item?.project === selectedProject);
-                        if (foundProjectIndexToUpdate === -1) return
-
-                        projectFromStructure.projects[foundProjectIndexToUpdate] = updatedProjectDetails;
-                    }
 
                     setCompanyStructure(copyOfStructureData);
                     setDataLoading(false);
