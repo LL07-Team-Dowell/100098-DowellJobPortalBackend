@@ -6,12 +6,15 @@ import { MdArrowBackIosNew } from "react-icons/md";
 import { useEffect } from "react";
 import { getProjectTime } from "../../../../services/projectTimeServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
+import { CircularProgress } from "@mui/material";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 
 const ProjectEdit = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { currentUser } = useCurrentUserContext();
-  const [projectTime, setProjectTime] = useState([]);
+  const [inputValue, setInputValue] = useState("");
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
   const project = urlParams.get("project");
@@ -27,16 +30,27 @@ const ProjectEdit = () => {
     left_time: 0,
   });
 
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
         if (id) {
           setLoading(true);
 
-          const projectDetails = await getProjectTime(currentUser.portfolio_info[0].org_id);
+          const projectDetails = await getProjectTime(
+            currentUser.portfolio_info[0].org_id
+          );
+
+          const editProjectData = projectDetails?.data?.data;
+          // console.log(projectDetails?.data?.data)
 
           // Find the object with the specific id
-          const editDetails = projectDetails.find((item) => item["_id"] === id);
+          const editDetails = editProjectData.find(
+            (item) => item["_id"] === id
+          );
 
           if (editDetails) {
             setProjectTimeDetail((prevDetails) => {
@@ -78,41 +92,80 @@ const ProjectEdit = () => {
           <h2>Edit Project</h2>
         </div>
         <div>
-          <h2>{project}</h2>
           <div>
-            <div className={styles.editing_project}>
-              <label htmlFor="is_active"></label>
-              <div className={styles.is__active}>
-                <input
-                  className={styles.active__checkbox}
-                  type="checkbox"
-                  name={"is_active"}
+            <h2>{project}</h2>
+          </div>
+          {loading ? (
+            <LoadingSpinner />
+          ) : (
+            <>
+              <div
+                style={{
+                  maxWidth: 300,
+                  margin: "0 auto",
+                  padding: "2rem 1rem",
+                }}
+              >
+                <CircularProgressbar
+                  value={Number(
+                    (projectTimeDetail.spent_time /
+                      projectTimeDetail.total_time) *
+                      100
+                  ).toFixed(2)}
+                  text={`${Number(
+                    (projectTimeDetail.spent_time /
+                      projectTimeDetail.total_time) *
+                      100
+                  ).toFixed(2)}%`}
+                  styles={buildStyles({
+                    pathColor: `#005734`,
+                    textColor: "#005734",
+                    trailColor: "#efefef",
+                    backgroundColor: "#005734",
+                  })}
                 />
               </div>
-            </div>
-          </div>
-          <div>
-            <div className={styles.job__details}>
-              <label htmlFor="lead_name">Lead Name</label>
-              <input
-                type="text"
-                id="lead_name"
-                name="lead_name"
-                placeholder="Enter lead name"
-                value={projectTimeDetail.lead_name}
-              />
-            </div>
-            <div className={styles.job__details}>
-              <label htmlFor="total_time">Total Time</label>
-              <input
-                type="text"
-                id="total_time"
-                name="total_time"
-                placeholder="Enter total time"
-                value={projectTimeDetail.total_time}
-              />
-            </div>
-          </div>
+              <div>
+                <div className={styles.editing_project}>
+                  <label htmlFor="is_active"></label>
+                  <div className={styles.is__active}>
+                    <input
+                      className={styles.active__checkbox}
+                      type="checkbox"
+                      name={"is_active"}
+                      checked={projectTimeDetail.editing_enabled}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className={styles.job__details}>
+                  <label htmlFor="lead_name">Lead Name</label>
+                  <input
+                    type="text"
+                    id="lead_name"
+                    name="lead_name"
+                    placeholder="Enter lead name"
+                    value={projectTimeDetail.lead_name}
+                    onChange={handleInputChange}
+                    disabled={inputValue !== ""}
+                  />
+                </div>
+                <div className={styles.job__details}>
+                  <label htmlFor="total_time">Total Time</label>
+                  <input
+                    type="text"
+                    id="total_time"
+                    name="total_time"
+                    placeholder="Enter total time"
+                    value={projectTimeDetail.total_time}
+                    onChange={handleInputChange}
+                    disabled={inputValue !== ""}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
         <div>
           <button className={styles.project__submit}>Update</button>
