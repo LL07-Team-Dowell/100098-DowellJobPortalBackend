@@ -30,8 +30,12 @@ const ProjectEdit = () => {
     left_time: 0,
   });
 
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
+  const handleInputChange = (valueEntered, inputName) => {
+    setProjectTimeDetail((prevValue) => {
+      const copyOfPrevValue = { ...prevValue };
+      copyOfPrevValue[inputName] = valueEntered;
+      return copyOfPrevValue;
+    });
   };
 
   useEffect(() => {
@@ -80,7 +84,16 @@ const ProjectEdit = () => {
     >
       <div className={styles.wrapper}>
         <div className={styles.edit__Nav__Content}>
-          <button onClick={() => navigate(-1)}>
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              borderRadius: "0.8rem",
+              padding: "0 0.7rem",
+              border: "none",
+              backgroundColor: "#fff",
+              boxShadow: "inset 0px 1.7px 8px rgba(0, 0, 0, 0.16)",
+            }}
+          >
             <MdArrowBackIosNew
               style={{
                 color: "#005734",
@@ -92,9 +105,9 @@ const ProjectEdit = () => {
           <h2>Edit Project</h2>
         </div>
         <div>
-          <div>
+          <button className={styles.project__name__heading}>
             <h2>{project}</h2>
-          </div>
+          </button>
           {loading ? (
             <LoadingSpinner />
           ) : (
@@ -126,43 +139,83 @@ const ProjectEdit = () => {
                 />
               </div>
               <div>
-                <div className={styles.editing_project}>
-                  <label htmlFor="is_active"></label>
+                <div className={styles.editing__project}>
+                  <label htmlFor="editing_enabled"></label>
                   <div className={styles.is__active}>
                     <input
                       className={styles.active__checkbox}
                       type="checkbox"
-                      name={"is_active"}
+                      name={"editing_enabled"}
                       checked={projectTimeDetail.editing_enabled}
+                      onChange={(e) =>
+                        handleInputChange(e.target.checked, e.target.name)
+                      }
                     />
                   </div>
                 </div>
               </div>
               <div>
-                <div className={styles.job__details}>
-                  <label htmlFor="lead_name">Lead Name</label>
-                  <input
-                    type="text"
-                    id="lead_name"
-                    name="lead_name"
-                    placeholder="Enter lead name"
-                    value={projectTimeDetail.lead_name}
-                    onChange={handleInputChange}
-                    disabled={inputValue !== ""}
-                  />
-                </div>
-                <div className={styles.job__details}>
-                  <label htmlFor="total_time">Total Time</label>
-                  <input
-                    type="text"
-                    id="total_time"
-                    name="total_time"
-                    placeholder="Enter total time"
-                    value={projectTimeDetail.total_time}
-                    onChange={handleInputChange}
-                    disabled={inputValue !== ""}
-                  />
-                </div>
+                {projectTimeDetail.editing_enabled ? (
+                  <>
+                    <div className={styles.job__details}>
+                      <label htmlFor="lead_name">Lead Name</label>
+                      <input
+                        type="text"
+                        id="lead_name"
+                        name="lead_name"
+                        placeholder="Enter lead name"
+                        value={projectTimeDetail.lead_name}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, e.target.name)
+                        }
+                      />
+                    </div>
+                    <div className={styles.job__details}>
+                      <label htmlFor="total_time">Total Time</label>
+                      <input
+                        type="text"
+                        id="total_time"
+                        name="total_time"
+                        placeholder="Enter total time"
+                        value={projectTimeDetail.total_time}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, e.target.name)
+                        }
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className={styles.job__details}>
+                      <label htmlFor="lead_name">Lead Name</label>
+                      <input
+                        type="text"
+                        id="lead_name"
+                        name="lead_name"
+                        placeholder="Enter lead name"
+                        value={projectTimeDetail.lead_name}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, e.target.name)
+                        }
+                        disabled
+                      />
+                    </div>
+                    <div className={styles.job__details}>
+                      <label htmlFor="total_time">Total Time</label>
+                      <input
+                        type="text"
+                        id="total_time"
+                        name="total_time"
+                        placeholder="Enter total time"
+                        value={projectTimeDetail.total_time}
+                        onChange={(e) =>
+                          handleInputChange(e.target.value, e.target.name)
+                        }
+                        disabled
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </>
           )}

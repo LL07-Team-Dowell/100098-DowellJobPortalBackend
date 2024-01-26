@@ -144,11 +144,22 @@
   margin-bottom: 2rem;
 }
 
-.editing_project {
+.editing__project {
   display: flex;
   justify-content: space-between;
   margin-bottom: 2rem;
   align-items: center;
+}
+
+.project__name__heading {
+  font-size: 1rem;
+  padding: 0.5rem;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #005734;
+  background-color: #fff;
+  border: 0.1rem solid #005734;
+  border-radius: 0.8rem;
 }
 
 .is__active {
