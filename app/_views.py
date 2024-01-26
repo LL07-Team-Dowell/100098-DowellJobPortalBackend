@@ -317,7 +317,6 @@ class Invoice_module(APIView):
             response = dowellconnection(
                 *candidate_management_reports, "fetch", field, update_field=None
             )
-            print(response)
             parsed_response = json.loads(response)
 
             if parsed_response.get("isSuccess", False):
