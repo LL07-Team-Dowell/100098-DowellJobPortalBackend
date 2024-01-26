@@ -226,6 +226,8 @@ INVITATION_MAIL = """
 </html>
 
 """
+
+
 ISSUES_MAIL = """
 <!DOCTYPE html>
 <html lang="en">
