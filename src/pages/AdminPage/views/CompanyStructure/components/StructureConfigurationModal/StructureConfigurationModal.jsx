@@ -45,11 +45,11 @@ export default function StructureConfigurationModal ({
         const itemValue = newLead?.split(selectValuePreCursor)[0];
         const currentStructureDataCopy = structuredClone(copyOfExistingStructure);
 
-        const addNewProjectLead = (structureData, newProjectLead, projectDetails) => {
+        const addNewProjectLead = (structureData, newProjectLead, project, projectDetails=null) => {
             structureData?.project_leads?.push({
                 project_lead: newProjectLead,
-                projects: [projectDetails],
-                projects_managed: [projectDetails?.project],
+                projects: projectDetails ? [projectDetails] : [],
+                projects_managed: [project],
                 is_new_project_lead: true,
             })
         }
@@ -74,7 +74,7 @@ export default function StructureConfigurationModal ({
                 isNewProjectLeadInStructure?.projects?.push(existingProjectDetails);
             }
             
-            if (!isNewProjectLeadInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, existingProjectDetails);
+            if (!isNewProjectLeadInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, project, existingProjectDetails);
 
             console.log('updated copy -> ', currentStructureDataCopy);
             updateCopyOfExistingStructure(currentStructureDataCopy);
@@ -84,16 +84,11 @@ export default function StructureConfigurationModal ({
 
         // ASSIGNING A PROJECT TO A LEAD FOR THE FIRST TIME 
         const projectLeadItemIsInStructure = currentStructureDataCopy?.project_leads?.find(item => item.project_lead === itemValue);
-        const newProjectDetails = {
-            project: project,
-            team_lead: ''
-        };
 
         if (projectLeadItemIsInStructure) {
             projectLeadItemIsInStructure?.projects_managed?.push(project);
-            projectLeadItemIsInStructure?.projects?.push(newProjectDetails);
         }
-        if (!projectLeadItemIsInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, newProjectDetails);
+        if (!projectLeadItemIsInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, project);
 
         console.log('updated copy -> ', currentStructureDataCopy);
         updateCopyOfExistingStructure(currentStructureDataCopy);
@@ -330,16 +325,19 @@ export default function StructureConfigurationModal ({
                                         </p>
                                         <Select 
                                             value={
-                                                copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.group_leads?.map(item => {
-                                                    return {
-                                                        label: applications?.find(user => user.username === item) ?
-                                                            applications?.find(user => user.username === item)?.applicant
-                                                            :
-                                                            item
-                                                        ,
-                                                        value: item,
-                                                    }
-                                                })
+                                                copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject) ?
+                                                    copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.group_leads?.map(item => {
+                                                        return {
+                                                            label: applications?.find(user => user.username === item) ?
+                                                                applications?.find(user => user.username === item)?.applicant
+                                                                :
+                                                                item
+                                                            ,
+                                                            value: item,
+                                                        }
+                                                    })
+                                                :
+                                                [] 
                                             }
                                             options={
                                                 onboardedUsers?.map(user => {
@@ -359,16 +357,19 @@ export default function StructureConfigurationModal ({
                                         </p>
                                         <Select 
                                             value={
-                                                copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.members?.map(item => {
-                                                    return {
-                                                        label: applications?.find(user => user.username === item) ?
-                                                            applications?.find(user => user.username === item)?.applicant
-                                                            :
-                                                            item
-                                                        ,
-                                                        value: item,
-                                                    }
-                                                })
+                                                copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject) ?
+                                                    copyOfExistingStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === selectedProject))?.projects?.find(item => item.project === selectedProject)?.members?.map(item => {
+                                                        return {
+                                                            label: applications?.find(user => user.username === item) ?
+                                                                applications?.find(user => user.username === item)?.applicant
+                                                                :
+                                                                item
+                                                            ,
+                                                            value: item,
+                                                        }
+                                                    })
+                                                :
+                                                []
                                             }
                                             options={
                                                 onboardedUsers?.map(user => {
