@@ -8,6 +8,9 @@ import { getProjectTime } from "../../../../services/projectTimeServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import TimeDetails from "./components/TimeDetails/TimeDetails";
+import Avatar from "react-avatar";
+import { useJobContext } from "../../../../contexts/Jobs";
 
 const ProjectEdit = () => {
   const navigate = useNavigate();
@@ -17,6 +20,7 @@ const ProjectEdit = () => {
   const urlParams = new URLSearchParams(location.search);
   const project = urlParams.get("project");
   const id = urlParams.get("id");
+  const [ showEditView, setShowEditView ] = useState(false);
   //  console.log(id)
   // console.log(project);
 
@@ -28,8 +32,20 @@ const ProjectEdit = () => {
     left_time: 0,
   });
 
+  const [copyOfProjectTimeDetail, setCopyOfProjectTimeDetail] = useState({
+    total_time: 0,
+    lead_name: "",
+    editing_enabled: true,
+    spent_time: 0,
+    left_time: 0,
+  });
+
+  const {
+    subProjectsAdded
+  } = useJobContext();
+  
   const handleInputChange = (valueEntered, inputName) => {
-    setProjectTimeDetail((prevValue) => {
+    setCopyOfProjectTimeDetail((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
       copyOfPrevValue[inputName] = valueEntered;
       return copyOfPrevValue;
@@ -58,6 +74,9 @@ const ProjectEdit = () => {
             setProjectTimeDetail((prevDetails) => {
               return { ...prevDetails, ...editDetails };
             });
+            setCopyOfProjectTimeDetail((prevDetails) => {
+              return { ...prevDetails, ...editDetails };
+            });
           }
 
           setLoading(false);
@@ -70,6 +89,12 @@ const ProjectEdit = () => {
 
     fetchProjectDetails();
   }, [id]);
+
+  const handleEditProjectTime = () => {
+    if (showEditView) setCopyOfProjectTimeDetail(projectTimeDetail);
+
+    setShowEditView(!showEditView);
+  }
 
   return (
     <StaffJobLandingLayout
@@ -100,124 +125,225 @@ const ProjectEdit = () => {
               }}
             />
           </button>
-          <h2>Edit Project</h2>
+          <h2>Project Details</h2>
         </div>
         <div className={styles.project__details__bg}>
-          <button className={styles.project__name__heading}>
-            <h2>{project}</h2>
-          </button>
           {loading ? (
             <LoadingSpinner />
           ) : (
             <>
-              <div
-                style={{
-                  maxWidth: 300,
-                  margin: "0 auto",
-                  padding: "2rem 1rem",
-                }}
+              <button 
+                className={styles.project__name__heading}
+                onClick={handleEditProjectTime}
               >
-                <CircularProgressbar
-                  value={Number(
-                    (projectTimeDetail.spent_time /
-                      projectTimeDetail.total_time) *
-                      100
-                  ).toFixed(2)}
-                  text={`${Number(
-                    (projectTimeDetail.spent_time /
-                      projectTimeDetail.total_time) *
-                      100
-                  ).toFixed(2)}%`}
-                  styles={buildStyles({
-                    pathColor: `#005734`,
-                    textColor: "#005734",
-                    trailColor: "#efefef",
-                    backgroundColor: "#005734",
-                  })}
-                />
-              </div>
-              <div>
-                <div className={styles.editing__project}>
-                  <label htmlFor="editing_enabled"></label>
-                  <div className={styles.is__active}>
-                    <input
-                      className={styles.active__checkbox}
-                      type="checkbox"
-                      name={"editing_enabled"}
-                      checked={projectTimeDetail.editing_enabled}
-                      onChange={(e) =>
-                        handleInputChange(e.target.checked, e.target.name)
+                <h2>
+                  {
+                    showEditView ? 'Cancel editing' :
+                    'Edit project time'
+                  }
+                </h2>
+              </button>
+              {
+                !showEditView ? <>
+                  <div>
+                    <h3>Teamlead Detail</h3>
+                    <div className={styles.project__Time__lead__Display}>
+                      <Avatar 
+                        name={projectTimeDetail.lead_name} 
+                        round={true}
+                        size="3.2rem"
+                      />
+                      <div className={styles.project__Team__Lead}>
+                        <p>{projectTimeDetail.lead_name}</p>
+                        <span className={styles.lead__Hightlight__Item}>{project}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.project__Time__Overview}>
+                    
+                    <TimeDetails
+                      title={'Spent time'}
+                      time={projectTimeDetail.spent_time} 
+                    />
+                    <TimeDetails
+                      title={'Left time'}
+                      time={projectTimeDetail.left_time} 
+                    />
+                    <TimeDetails
+                      title={'Total time'}
+                      time={projectTimeDetail.total_time} 
+                    />
+
+                  </div>
+
+                  <div
+                    style={{
+                      maxWidth: 250,
+                      margin: "0 auto",
+                      padding: "2rem 1rem",
+                    }}
+                  >
+                    <CircularProgressbar
+                      value={
+                        projectTimeDetail?.total_time === 0 ? 
+                          0.00 
+                        : 
+                        Number(
+                          (projectTimeDetail.spent_time /
+                            projectTimeDetail.total_time) *
+                            100
+                        ).toFixed(2)
                       }
+                      text={
+                        projectTimeDetail?.total_time === 0 ? 
+                          '0.00%'
+                        :
+                        `${Number(
+                          (projectTimeDetail.spent_time /
+                            projectTimeDetail.total_time) *
+                            100
+                        ).toFixed(2)}%`
+                      }
+                      styles={buildStyles({
+                        pathColor: `#005734`,
+                        textColor: "#005734",
+                        trailColor: "#efefef",
+                        backgroundColor: "#005734",
+                      })}
                     />
                   </div>
-                </div>
-              </div>
-              <div>
-                {projectTimeDetail.editing_enabled ? (
-                  <>
-                    <div className={styles.job__details}>
-                      <label htmlFor="lead_name">Lead Name</label>
-                      <input
-                        type="text"
-                        id="lead_name"
-                        name="lead_name"
-                        placeholder="Enter lead name"
-                        value={projectTimeDetail.lead_name}
-                        onChange={(e) =>
-                          handleInputChange(e.target.value, e.target.name)
-                        }
-                      />
+
+                  <TimeDetails 
+                    title={'Subprojects'}
+                    isSubproject={true}
+                    subprojects={
+                      subProjectsAdded.find(
+                        (item) => item.parent_project === project
+                      )?.sub_project_list
+                    }
+                  />
+                </> : <>
+
+                  <div
+                    style={{
+                      maxWidth: 250,
+                      margin: "0 auto",
+                      padding: "2rem 1rem",
+                    }}
+                  >
+                    <CircularProgressbar
+                      value={
+                        projectTimeDetail?.total_time === 0 ? 
+                          0.00 
+                        : 
+                        Number(
+                          (projectTimeDetail.spent_time /
+                            projectTimeDetail.total_time) *
+                            100
+                        ).toFixed(2)
+                      }
+                      text={
+                        projectTimeDetail?.total_time === 0 ? 
+                          '0.00%'
+                        :
+                        `${Number(
+                          (projectTimeDetail.spent_time /
+                            projectTimeDetail.total_time) *
+                            100
+                        ).toFixed(2)}%`
+                      }
+                      styles={buildStyles({
+                        pathColor: `#005734`,
+                        textColor: "#005734",
+                        trailColor: "#efefef",
+                        backgroundColor: "#005734",
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <div className={styles.editing__project}>
+                      <label htmlFor="editing_enabled"></label>
+                      <div className={styles.is__active}>
+                        <input
+                          className={styles.active__checkbox}
+                          type="checkbox"
+                          name={"editing_enabled"}
+                          checked={copyOfProjectTimeDetail.editing_enabled}
+                          onChange={(e) =>
+                            handleInputChange(e.target.checked, e.target.name)
+                          }
+                        />
+                      </div>
                     </div>
-                    <div className={styles.job__details}>
-                      <label htmlFor="total_time">Total Time</label>
-                      <input
-                        type="text"
-                        id="total_time"
-                        name="total_time"
-                        placeholder="Enter total time"
-                        value={projectTimeDetail.total_time}
-                        onChange={(e) =>
-                          handleInputChange(e.target.value, e.target.name)
-                        }
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className={styles.job__details}>
-                      <label htmlFor="lead_name">Lead Name</label>
-                      <input
-                        type="text"
-                        id="lead_name"
-                        name="lead_name"
-                        placeholder="Enter lead name"
-                        value={projectTimeDetail.lead_name}
-                        onChange={(e) =>
-                          handleInputChange(e.target.value, e.target.name)
-                        }
-                        disabled
-                      />
-                    </div>
-                    <div className={styles.job__details}>
-                      <label htmlFor="total_time">Total Time</label>
-                      <input
-                        type="text"
-                        id="total_time"
-                        name="total_time"
-                        placeholder="Enter total time"
-                        value={projectTimeDetail.total_time}
-                        onChange={(e) =>
-                          handleInputChange(e.target.value, e.target.name)
-                        }
-                        disabled
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-              <div className={styles.project__btn}>
-                <button className={styles.project__submit}>Update</button>
-              </div>
+                  </div>
+                  <div>
+                    {copyOfProjectTimeDetail.editing_enabled ? (
+                      <>
+                        <div className={styles.job__details}>
+                          <label htmlFor="lead_name">Lead Name</label>
+                          <input
+                            type="text"
+                            id="lead_name"
+                            name="lead_name"
+                            placeholder="Enter lead name"
+                            value={copyOfProjectTimeDetail.lead_name}
+                            onChange={(e) =>
+                              handleInputChange(e.target.value, e.target.name)
+                            }
+                          />
+                        </div>
+                        <div className={styles.job__details}>
+                          <label htmlFor="total_time">Total Time</label>
+                          <input
+                            type="text"
+                            id="total_time"
+                            name="total_time"
+                            placeholder="Enter total time"
+                            value={copyOfProjectTimeDetail.total_time}
+                            onChange={(e) =>
+                              handleInputChange(e.target.value, e.target.name)
+                            }
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className={styles.job__details}>
+                          <label htmlFor="lead_name">Lead Name</label>
+                          <input
+                            type="text"
+                            id="lead_name"
+                            name="lead_name"
+                            placeholder="Enter lead name"
+                            value={copyOfProjectTimeDetail.lead_name}
+                            onChange={(e) =>
+                              handleInputChange(e.target.value, e.target.name)
+                            }
+                            disabled
+                          />
+                        </div>
+                        <div className={styles.job__details}>
+                          <label htmlFor="total_time">Total Time</label>
+                          <input
+                            type="text"
+                            id="total_time"
+                            name="total_time"
+                            placeholder="Enter total time"
+                            value={copyOfProjectTimeDetail.total_time}
+                            onChange={(e) =>
+                              handleInputChange(e.target.value, e.target.name)
+                            }
+                            disabled
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className={styles.project__btn}>
+                    <button className={styles.project__submit}>Update</button>
+                  </div>
+                </>
+              }
             </>
           )}
         </div>
