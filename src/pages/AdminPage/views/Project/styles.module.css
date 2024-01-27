@@ -152,14 +152,30 @@
 }
 
 .project__name__heading {
-  font-size: 1rem;
-  padding: 0.5rem;
+  padding: 0.875rem 1.7rem;
   margin-top: 1rem;
   font-weight: 600;
-  color: #005734;
-  background-color: #fff;
-  border: 0.1rem solid #005734;
-  border-radius: 0.8rem;
+  color: #fff;
+  background-color: #005734;
+  /* border: 0.1rem solid #005734; */
+  border: none;
+  border-radius: 1.5rem;
+  outline: none;
+  margin-left: auto;
+  margin-bottom: 2.1rem;
+  display: block;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.project__name__heading:hover {
+  filter: brightness(0.95);
+}
+
+.project__name__heading h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 500;
 }
 
 .project__details__bg {
@@ -253,4 +269,32 @@
   background-color: #7e7e7e;
   box-shadow: none;
   cursor: not-allowed;
+}
+
+.project__Time__Overview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin: 1.8rem 0;
+}
+
+.project__Time__lead__Display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.project__Team__Lead p {
+  font-size: 0.8rem;
+}
+
+.lead__Hightlight__Item {
+  display: block;
+  background-color: #f2f2f2;
+  color: #000;
+  border-radius: 15px;
+  font-size: 0.65rem;
+  padding: 0.3rem 1rem;
+  margin-top: 0.25rem;
 }
