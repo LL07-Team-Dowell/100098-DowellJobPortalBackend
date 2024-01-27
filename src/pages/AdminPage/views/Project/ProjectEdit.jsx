@@ -6,7 +6,6 @@ import { MdArrowBackIosNew } from "react-icons/md";
 import { useEffect } from "react";
 import { getProjectTime } from "../../../../services/projectTimeServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { CircularProgress } from "@mui/material";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 
@@ -14,7 +13,6 @@ const ProjectEdit = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { currentUser } = useCurrentUserContext();
-  const [inputValue, setInputValue] = useState("");
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
   const project = urlParams.get("project");
@@ -104,7 +102,7 @@ const ProjectEdit = () => {
           </button>
           <h2>Edit Project</h2>
         </div>
-        <div>
+        <div className={styles.project__details__bg}>
           <button className={styles.project__name__heading}>
             <h2>{project}</h2>
           </button>
@@ -217,11 +215,11 @@ const ProjectEdit = () => {
                   </>
                 )}
               </div>
+              <div className={styles.project__btn}>
+                <button className={styles.project__submit}>Update</button>
+              </div>
             </>
           )}
-        </div>
-        <div>
-          <button className={styles.project__submit}>Update</button>
         </div>
       </div>
     </StaffJobLandingLayout>

@@ -17,7 +17,6 @@ const Project = ({ _id }) => {
   const navigate = useNavigate();
   const [showProjectsPop, setShowProjectsPop] = useState(false);
   const { state } = useLocation();
-  const { id } = useParams();
   const { projectsLoading, projectsAdded, subProjectsAdded } = useJobContext();
   const [displayedProjects, setDisplayedProjects] = useState([]);
   const [inactiveProjects, setInactiveProjects] = useState([]);
