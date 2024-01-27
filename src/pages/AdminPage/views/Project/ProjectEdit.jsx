@@ -4,10 +4,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import styles from "./styles.module.css";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useEffect } from "react";
-import { getProjectTime } from "../../../../services/projectTimeServices";
+import {
+  addProjectTime,
+  getProjectTime,
+  updateProjectTime,
+} from "../../../../services/projectTimeServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
+import { toast } from "react-toastify";
 
 const ProjectEdit = () => {
   const navigate = useNavigate();
@@ -26,6 +31,9 @@ const ProjectEdit = () => {
     editing_enabled: true,
     spent_time: 0,
     left_time: 0,
+    project: project,
+    company_id: id,
+    data_type: currentUser.portfolio_info[0].data_type,
   });
 
   const handleInputChange = (valueEntered, inputName) => {
@@ -70,6 +78,18 @@ const ProjectEdit = () => {
 
     fetchProjectDetails();
   }, [id]);
+
+  const handleUpdate = async () => {
+    if (id) {
+      const updateProjectData = await updateProjectTime(projectTimeDetail);
+      console.log(updateProjectData);
+    } else {
+      const addProjectData = await addProjectTime(projectTimeDetail);
+      setProjectTimeDetail((prevData) => [...prevData, ...projectTimeDetail]);
+    }
+
+    navigate(`/projects`);
+  };
 
   return (
     <StaffJobLandingLayout
@@ -216,7 +236,20 @@ const ProjectEdit = () => {
                 )}
               </div>
               <div className={styles.project__btn}>
-                <button className={styles.project__submit}>Update</button>
+                <button
+                  className={styles.project__submit}
+                  onClick={handleUpdate}
+                >
+                  {loading ? (
+                    <LoadingSpinner
+                      color={"#fff"}
+                      width={"1.1rem"}
+                      height={"1.1rem"}
+                    />
+                  ) : (
+                    "Update"
+                  )}
+                </button>
               </div>
             </>
           )}
