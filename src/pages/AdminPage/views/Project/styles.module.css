@@ -1,3 +1,9 @@
+.search__project__Navigation__Bar {
+  --bg-grey-color: #f5f5f5;
+  --green-color: #005734;
+  --grey-color: #a3a1a1;
+}
+
 .wrapper {
   width: 87%;
   margin: 0 auto;
@@ -11,6 +17,31 @@
 .search__bar {
   display: flex;
   justify-content: flex-end;
+}
+
+.search__project__Navigation__Bar {
+  background-color: var(--bg-grey-color);
+  width: max-content;
+  padding: 1%;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search__project__Navigation__Bar input {
+  border: none;
+  outline: none;
+  font-family: "Poppins", sans-serif;
+  background-color: var(--bg-grey-color);
+  padding-left: 2%;
+  caret-color: var(--green-color);
+}
+
+.search__project__Navigation__Bar .search__project__icon {
+  width: 1.4rem;
+  font-size: 1.4rem;
+  color: var(--green-color);
 }
 
 .top__Nav__Content {
@@ -302,4 +333,23 @@
   font-size: 0.65rem;
   padding: 0.3rem 1rem;
   margin-top: 0.25rem;
+}
+
+@media screen and (max-width: 991px) {
+  .search__project__Navigation__Bar {
+    padding: 2%;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .search__project__Navigation__Bar {
+    max-width: 100%;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .search__project__Navigation__Bar input {
+    max-width: 80%;
+  }
 }
