@@ -119,7 +119,8 @@ from .serializers import (
     IndividualAttendanceRetrievalSerializer,
     AddEventSerializer,
     UpdateEventSerializer,
-    GetEventSerializer
+    GetEventSerializer,
+    UpdateAttendanceSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -9758,6 +9759,8 @@ class candidate_attendance(APIView):
                            )
        if request_type=="add_attendance":
            return self.add_attendance(request) 
+       if request_type=="update_attendance":
+           return self.update_attendance(request) 
        if request_type=="project_wise_attendance":
            return self.get_project_wise_attendance(request) 
        if request_type=="get_user_wise_attendance":
@@ -9822,6 +9825,57 @@ class candidate_attendance(APIView):
             return Response({
                 "success":False,
                 "error":insert_attendance["message"]
+            }) 
+
+    def update_attendance(self,request):
+        user_present=request.data.get("user_present")
+        user_absent=request.data.get("user_absent")
+        date_taken=request.data.get("date_taken")
+        document_id=request.data.get("document_id")
+
+        serializer=UpdateAttendanceSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        start, end = get_current_week_start_end_date(date_taken)
+        
+        collection=f"{start}_to_{end}"
+        
+        update_data={
+            "user_present":user_present,
+            "user_absent":user_absent,
+            "date_taken":date_taken,
+        }
+
+        query={
+            "document_id":document_id
+        }
+        try:
+            update_attendance = json.loads(
+                datacube_data_update(API_KEY,ATTENDANCE_DB,collection,query,update_data))
+            print(update_attendance)
+        except: 
+                return Response({
+                    "success":False,
+                    "error":"Datacube is not responding"
+                })    
+            
+        if update_attendance["success"]:
+            return Response({
+            "success":True,
+            "message":f"Attendance has been updated to {collection}"
+        },status=status.HTTP_201_CREATED)
+            
+        else:
+            return Response({
+                "success":False,
+                "error":update_attendance["message"]
             }) 
     
     def get_project_wise_attendance(self,request):
