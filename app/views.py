@@ -10086,7 +10086,7 @@ class dowell_speed_test(APIView):
 class Company_Structure(APIView):
     def rearrange(self,word):
         res=""
-        for char in word:
+        for char in word.lower():
             if char.isalpha():
                 char.lower()
                 res+=char
@@ -10373,7 +10373,7 @@ class Company_Structure(APIView):
         company_id = request.data.get('company_id')
         project_lead = request.data.get('project_lead')
         projects_managed = request.data.get('projects_managed')
-        _coded_projects_managed = [self.rearrange(p) for p in projects_managed]
+        _coded_projects_managed = [self.rearrange(p.lower()) for p in projects_managed]
 
         data_type ="Real_Data"
         if request.data.get('data_type'):
@@ -10415,17 +10415,17 @@ class Company_Structure(APIView):
                     for p in check_projects_managed['data']:
                         if p["projects_managed"]!=None and len(p["projects_managed"])>0:
                             for pm in p["projects_managed"]:
-                                if not self.rearrange(pm) in _coded_projects_managed:
+                                if not self.rearrange(pm.lower()) in _coded_projects_managed:
                                     try:
                                         current_projects_managed[p["project_lead"]].append(pm)
                                     except Exception:
                                         current_projects_managed[p["project_lead"]] =[]
                                         current_projects_managed[p["project_lead"]].append(pm)
                                     try:
-                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm))
+                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
                                     except Exception:
                                         current_coded_projects_managed[p["project_lead"]] =[]
-                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm))
+                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
                                     _pleads.append(p["project_lead"])
                 for pl in _pleads:
                     pleadquery={
@@ -10467,11 +10467,13 @@ class Company_Structure(APIView):
         project = request.data.get("project")
         _coded_project = self.rearrange(project.lower())
         _project = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},10,0,False))
-        if len(_project['data']) >0:
-            return Response({
-                    "success":False,
-                    "message":f"A project with {_project['projects_managed']} already exists",
-                },status=status.HTTP_404_NOT_FOUND)
+        
+        for p in _project['data']:
+            if p['_coded_project'] == _coded_project:
+                return Response({
+                        "success":False,
+                        "message":f"A project with {project} already exists",
+                    },status=status.HTTP_400_BAD_REQUEST)
         team_lead = request.data.get("team_lead")
         info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':team_lead}, update_field=None))
         #print(info,"===============")
