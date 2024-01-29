@@ -9804,6 +9804,36 @@ class candidate_attendance(APIView):
             "data_type": data_type
         }
 
+        check_field={
+            "date_taken":date_taken,
+            "meeting": meeting,
+            "project":project,
+            "data_type": data_type
+        }
+
+        try:
+            check_data = json.loads(
+                datacube_data_retrival(
+                    API_KEY,
+                    ATTENDANCE_DB,
+                    collection,
+                    data=check_field,
+                    limit=0,
+                    offset=0,
+                )
+            )
+        except:
+            return Response({"success": False, "error": "Datacube is not responding"})
+        
+        if check_data["success"] and len(check_data["data"]) > 0:
+            return Response(
+                {
+                    "success": False,
+                    "error": f"attendance of the date {date_taken} for the meeting {meeting} and project {project} already recorded ",
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
+
         def insert_data(attempt=1):  
             try:
                 insert_attendance = json.loads(
@@ -9821,18 +9851,23 @@ class candidate_attendance(APIView):
                     "message": f"Attendance has been successfully recorded to {collection}"
                 }, status=status.HTTP_201_CREATED)
             
-            elif "success" in insert_attendance and not insert_attendance["success"]:
-
-                if attempt < self.max_try:
-                    
+            elif not insert_attendance["success"] and attempt < self.max_try:
                     add_collection = json.loads(datacube_add_collection(API_KEY, ATTENDANCE_DB, collection, num_collections=1))
-                    attempt += 1
-                    return insert_data(attempt=attempt)
-                else:
-                    return Response({
-                        "success": False,
-                        "error": "Maximum try reached to insert the data to the datacube"
-                    })
+
+                    if add_collection["success"]:
+                        attempt += 1
+                        return insert_data(attempt=attempt)
+                    
+                    else:
+                        return Response({
+                            "success": False,
+                            "error": "Failed to add cllection in datacube"
+                        })
+            else:
+                return Response({
+                    "success": False,
+                    "error": "Attendance could not be recored due to unknown error"
+                })
 
         return insert_data()
 
