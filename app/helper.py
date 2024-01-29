@@ -606,6 +606,7 @@ def datacube_data_update(api_key, db_name, coll_name, query, update_data):
     }
 
     response = requests.put(url, json=data)
+    print(response.text)
     return response.text
 
 
@@ -617,7 +618,7 @@ def samanta_content_evaluator(api_key, title, description):
 
 
 def datacube_add_collection(api_key, db_name, coll_names, num_collections):
-    url = "https://datacube.uxlivinglab.online/db_api/collections/?name=add_collection"
+    url = "https://datacube.uxlivinglab.online/db_api/add_collection/"
 
     data = {
         "api_key": api_key,

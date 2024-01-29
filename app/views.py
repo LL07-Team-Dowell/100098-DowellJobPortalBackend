@@ -44,7 +44,7 @@ from .helper import (
     datacube_add_collection,
     datacube_data_update,
     get_subproject,
-    check_speed_test,
+    check_speed_test, 
     get_projects,
     get_speed_test_data,
     get_speed_test_result,
@@ -53,6 +53,7 @@ from .helper import (
     speed_test_condition,
     get_dates_between,
     normalize,
+    datacube_add_collection
 )
 from .serializers import (
     AccountSerializer,
@@ -115,10 +116,12 @@ from .serializers import (
     CompanyStructureProjectsSerializer,
     WorklogsDateSerializer,
     UpdateUserIdSerializer,
+    AttendanceRetrievalSerializer,
     IndividualAttendanceRetrievalSerializer,
     AddEventSerializer,
     UpdateEventSerializer,
     GetEventSerializer,
+    UpdateAttendanceSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -129,6 +132,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from dotenv import load_dotenv
 import os
+import logging
 
 """for linux server"""
 load_dotenv("/home/100098/100098-DowellJobPortal/.env")
@@ -144,6 +148,8 @@ if os.getenv("ATTENDANCE_DB"):
     ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
 if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
+if os.getenv("Events_collection"):
+    Events_collection = str(os.getenv("Events_collection"))
 
 else:
     """for windows local"""
@@ -155,7 +161,7 @@ else:
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
     ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
-    Events_collection = str(os.getenv("Events_collection"))
+    Events_collection=str(os.getenv("Events_collection"))
 
 # Create your views here.
 
@@ -226,8 +232,6 @@ INVITATION_MAIL = """
 </html>
 
 """
-
-
 ISSUES_MAIL = """
 <!DOCTYPE html>
 <html lang="en">
@@ -303,7 +307,6 @@ ISSUES_MAIL = """
   </body>
 </html>
 """
-
 
 # api for job portal begins here---------------------------
 @method_decorator(csrf_exempt, name="dispatch")
@@ -916,8 +919,6 @@ class admin_delete_job(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
 # api for admin management ends here______________________
 
 
@@ -930,14 +931,7 @@ class candidate_apply_job(APIView):
             "job_number": data.get("job_number"),
             "applicant_email": applicant_email,
         }
-        candidate_report = json.loads(
-            dowellconnection(
-                *candidate_management_reports,
-                "fetch",
-                candidate_field,
-                update_field=None,
-            )
-        )["data"]
+        candidate_report = json.loads(dowellconnection(*candidate_management_reports, "fetch", candidate_field, update_field=None))["data"]
         # print(candidate_report)
         if len(candidate_report) > 0:
             return False
@@ -951,9 +945,7 @@ class candidate_apply_job(APIView):
             "applicant_email": applicant_email,
             "username": data.get("username"),
         }
-        applicant = dowellconnection(
-            *hr_management_reports, "fetch", field, update_field=None
-        )
+        applicant = dowellconnection(*hr_management_reports, "fetch", field, update_field=None)
 
         if applicant is not None:
             rejected_dates = [
@@ -976,6 +968,7 @@ class candidate_apply_job(APIView):
 
         return False
 
+    
     def post(self, request):
         data = request.data
         applicant_email = data.get("applicant_email")
@@ -1004,15 +997,15 @@ class candidate_apply_job(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        speed_test_response = check_speed_test(applicant_email)
+            
+        speed_test_response= check_speed_test(applicant_email)
         print(speed_test_response)
         if speed_test_response["success"] == False:
             return Response(
                 speed_test_response,
                 status=status.HTTP_400_BAD_REQUEST,
-            )
-
+            )           
+        
         # continue apply api-----
         field = {
             "eventId": get_event_id()["event_id"],
@@ -1028,7 +1021,7 @@ class candidate_apply_job(APIView):
             "country": data.get("country"),
             "job_category": data.get("job_category"),
             "agree_to_all_terms": data.get("agree_to_all_terms"),
-            "internet_speed": speed_test_response["internet_speed"],
+            "internet_speed": speed_test_response['internet_speed'],
             "other_info": data.get("other_info"),
             "project": "",
             "status": "Pending",
@@ -1053,15 +1046,11 @@ class candidate_apply_job(APIView):
             "module": data.get("module"),
             "payment_requested": False,
             "current_payment_request_status": "",
-            "candidate_certificate": data.get("candidate_certificate"),
+            "candidate_certificate":data.get("candidate_certificate")
         }
         serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
-            response = json.loads(
-                dowellconnection(
-                    *candidate_management_reports, "insert", field, update_field=None
-                )
-            )
+            response = json.loads(dowellconnection(*candidate_management_reports, "insert", field, update_field=None))
             if response["isSuccess"] == True:
                 return Response(
                     {
@@ -1085,7 +1074,6 @@ class candidate_apply_job(APIView):
             for field_name, field_errors in default_errors.items():
                 new_error[field_name] = field_errors[0]
             return Response(new_error, status=status.HTTP_400_BAD_REQUEST)
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class candidate_get_job_application(APIView):
@@ -1123,7 +1111,6 @@ class candidate_get_job_application(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_candidate_application(APIView):
     def get(self, request, document_id):
@@ -1158,7 +1145,6 @@ class get_candidate_application(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_onboarded_candidate(APIView):
@@ -1201,7 +1187,6 @@ class get_all_onboarded_candidate(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_removed_candidate(APIView):
     def get(self, request, company_id):
@@ -1220,16 +1205,11 @@ class get_all_removed_candidate(APIView):
                     status=status.HTTP_204_NO_CONTENT,
                 )
             else:
-                candidates = [
-                    {
-                        "_id": res["_id"],
-                        "applicant": res["applicant"],
-                        "username": res["username"],
-                        "applicant_email": res["applicant_email"],
-                    }
-                    for res in json.loads(response)["data"]
-                ]
-
+                candidates=[{"_id":res["_id"],
+                    "applicant":res["applicant"],
+                    "username":res["username"],
+                    "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
+                
                 return Response(
                     {
                         "message": f"List of Removed Candidates",
@@ -1245,8 +1225,6 @@ class get_all_removed_candidate(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_hired_candidate(APIView):
     def get(self, request, company_id):
@@ -1264,16 +1242,11 @@ class get_all_hired_candidate(APIView):
                     status=status.HTTP_204_NO_CONTENT,
                 )
             else:
-                candidates = [
-                    {
-                        "_id": res["_id"],
-                        "applicant": res["applicant"],
-                        "username": res["username"],
-                        "applicant_email": res["applicant_email"],
-                    }
-                    for res in json.loads(response)["data"]
-                ]
-
+                candidates=[{"_id":res["_id"],
+                    "applicant":res["applicant"],
+                    "username":res["username"],
+                    "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
+                
                 return Response(
                     {
                         "message": f"List of hired Candidates",
@@ -1289,8 +1262,6 @@ class get_all_hired_candidate(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
 @method_decorator(csrf_exempt, name="dispatch")
 class get_all_renew_contract_candidate(APIView):
     def get(self, request, company_id):
@@ -1311,16 +1282,11 @@ class get_all_renew_contract_candidate(APIView):
                         status=status.HTTP_204_NO_CONTENT,
                     )
                 else:
-                    candidates = [
-                        {
-                            "_id": res["_id"],
-                            "applicant": res["applicant"],
-                            "username": res["username"],
-                            "applicant_email": res["applicant_email"],
-                        }
-                        for res in json.loads(response)["data"]
-                    ]
-
+                    candidates=[{"_id":res["_id"],
+                    "applicant":res["applicant"],
+                    "username":res["username"],
+                    "applicant_email":res["applicant_email"]} for res in json.loads(response)["data"]]
+                    
                     return Response(
                         {
                             "message": f"List of Candidates with Renewed Contracts",
@@ -1341,7 +1307,6 @@ class get_all_renew_contract_candidate(APIView):
                 {"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class delete_candidate_application(APIView):
@@ -1368,8 +1333,8 @@ class delete_candidate_application(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
-
+        
+    
 @method_decorator(csrf_exempt, name="dispatch")
 class update_candidates_application(APIView):
     def post(self, request):
@@ -1379,32 +1344,36 @@ class update_candidates_application(APIView):
             return self.update_user_id(request)
         else:
             return self.handle_error(request)
-
-    def update_user_id(self, request):
-        application_id = request.data.get("application_id")
-        user_id = request.data.get("user_id")
+    def update_user_id(self,request):
+        application_id=request.data.get("application_id")
+        user_id=request.data.get("user_id")    
         field = {"_id": application_id}
+        
+        update_field = {"user_id":user_id}
 
-        update_field = {"user_id": user_id}
-
-        serializer = UpdateUserIdSerializer(data=request.data)
+        serializer=UpdateUserIdSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response({"success": False, "error": serializer.errors})
+            return Response({
+                "success":False,
+                "error":serializer.errors
+            })    
 
         try:
             response = dowellconnection(
                 *candidate_management_reports, "update", field, update_field
             )
-
+            
         except:
-            return Response(
-                {"success": False, "error": "No response from Dowell connection"}
-            )
+            return Response({
+                "success":False,
+                "error":"No response from Dowell connection"
+            
+            })
 
         if json.loads(response)["isSuccess"] == True:
             return Response(
-                {
-                    "success": True,
+                {   
+                    "success":True,
                     "message": f"Candidate of application id {application_id} has been updated with {update_field}",
                 },
                 status=status.HTTP_200_OK,
@@ -1417,13 +1386,11 @@ class update_candidates_application(APIView):
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
-
     def handle_error(self, request):
         return Response(
             {"success": False, "message": "Invalid request type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
 
 # api for candidate management ends here______________________
 
@@ -2021,7 +1988,7 @@ class create_task(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class get_task(APIView):
     @verify_user_token
-    def get(self, request, user, company_id):
+    def get(self, request,user,company_id):
         field = {"company_id": company_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -2051,8 +2018,8 @@ class get_task(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_candidate_task(APIView):
-    # @verify_user_token
-    def get(self, request, document_id):
+    #@verify_user_token
+    def get(self, request,document_id):
         field = {"_id": document_id}
         update_field = {"status": "Nothing to update"}
         response = dowellconnection(
@@ -2487,9 +2454,7 @@ class approve_task(APIView):
         if len(json.loads(info)["data"]) > 0:
             username = json.loads(info)["data"][0]["username"]
             portfolio_name = [
-                names["portfolio_name"]
-                for names in json.loads(info)["data"]
-                if "portfolio_name" in names.keys()
+                names["portfolio_name"] for names in json.loads(info)["data"] if "portfolio_name" in names.keys()
             ]
             valid_profiles = []
             for data in serializer.data:
@@ -2564,7 +2529,7 @@ class approve_task(APIView):
         if data:
             field = {"_id": data.get("document_id")}
             update_field = {
-                # "status": data.get("status"),
+                "status": data.get("status"),
                 "task_approved_by": data.get("lead_username")
             }
             serializer = TaskApprovedBySerializer(data=update_field)
@@ -2582,7 +2547,7 @@ class approve_task(APIView):
                         )
                     update_field["approved"] = check_approvable
                     update_field["approval"] = check_approvable
-
+                    
                     response = dowellconnection(
                         *task_details_module, "update", field, update_field
                     )
@@ -2665,7 +2630,7 @@ class task_module(APIView):
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
 
-    # @verify_user_token
+    #@verify_user_token
     def post(self, request):
         type_request = request.GET.get("type")
 
@@ -2702,7 +2667,7 @@ class task_module(APIView):
             return self.handle_error(request)
 
     @verify_user_token
-    def add_task(self, request, user):
+    def add_task(self,request,user):
         data = request.data
         payload = {
             "project": data.get("project"),
@@ -2769,7 +2734,7 @@ class task_module(APIView):
                     )
                 )
                 if response["isSuccess"]:
-                    field["_id"] = response["inserted_id"]
+                    field["_id"]=response["inserted_id"]
                     # year,monthname, monthcount = get_month_details(data.get("task_created_date"))
                     # filter_params={
                     #    "applicant_id":data.get("applicant_id"),
@@ -3230,19 +3195,24 @@ class task_module(APIView):
                 "task_details": filtered_tasks,
             }
         )
-
     @verify_user_token
     def get_worklogs_dates(self, request, user):
+
         data = request.data
         user_id = data.get("user_id")
         company_id = data.get("company_id")
         data_type = data.get("data_type")
-
-        field = {"user_id": user_id, "company_id": company_id, "data_type": data_type}
+        
+        field = {
+            "user_id": user_id,
+            "company_id": company_id,
+            "data_type": data_type
+        }
 
         serializer = WorklogsDateSerializer(data=field)
 
         if serializer.is_valid():
+
             field = {
                 "user_id": user_id,
                 "company_id": company_id,
@@ -3260,30 +3230,28 @@ class task_module(APIView):
                 )
 
             except:
-                return Response(
-                    {"success": False, "error": "Dowell Conn. DB not responding"}
-                )
+                return Response({
+                    "success":False,
+                    "error":"Dowell Conn. DB not responding"
+                })
+            
+            if response["isSuccess"] == True and len(response["data"])>0:
 
-            if response["isSuccess"] == True and len(response["data"]) > 0:
-                worklogs_dates = [
-                    date["task_created_date"] for date in response["data"]
-                ]
-
+                worklogs_dates=[date["task_created_date"] for date in response["data"]]
+                
                 return Response(
                     {
                         "success": True,
                         "message": f"worklogs dates of userid {user_id} is successfully retrieved",
-                        "data": worklogs_dates,
+                        "data": worklogs_dates
                     },
                     status.HTTP_200_OK,
                 )
             else:
-                return Response(
-                    {
-                        "success": False,
-                        "error": f"worklogs dates not found of user {user_id} for company id {company_id} ",
-                    }
-                )
+                return Response({
+                    "success":False,
+                    "error":f"worklogs dates not found of user {user_id} for company id {company_id} "
+                })
 
         else:
             return Response(
@@ -3337,6 +3305,7 @@ class create_team(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
+                
                 return Response(
                     {
                         "message": "Team created successfully",
@@ -3559,7 +3528,7 @@ class create_team_task(APIView):
                 # "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.now())),
             }
             update_field = {"status": "nothing to update"}
-
+            
             response = dowellconnection(
                 *task_management_reports, "insert", field, update_field
             )
@@ -3621,7 +3590,7 @@ class edit_team_task(APIView):
                 "team_name": data.get("team_name"),
                 "subtasks": data.get("subtasks"),
             }
-            iscomplete = False
+            iscomplete=False
             if (
                 data.get("completed") == "True"
                 or data.get("completed") == "true"
@@ -4654,7 +4623,7 @@ class Public_apply_job(APIView):
             "module": data.get("module"),
             "is_public": True,
             "signup_mail_sent": False,
-            "candidate_certificate": data.get("candidate_certificate"),
+            "candidate_certificate":data.get("candidate_certificate")
         }
         update_field = {"status": "nothing to update"}
         update_field = {"status": "nothing to update"}
@@ -5666,108 +5635,170 @@ class Generate_Report(APIView):
         if payload:
             if not request.data.get("start_date"):
                 return Response(
-                    {"success": False, "message": "Specify the start date"},
+                    {'success':False,
+                        "message": "Specify the start date"
+                    },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             if not request.data.get("end_date"):
                 return Response(
-                    {"success": False, "message": "Specify the end date"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            if not valid_period(
-                request.data.get("start_date"), request.data.get("end_date")
-            ):
-                return Response(
-                    {
-                        "success": False,
-                        "message": "Parameters are not valid, start date must be smaller that end date",
+                    {'success':False,
+                        "message": "Specify the end date"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            if not request.data.get("company_id"):
+            if not valid_period(request.data.get("start_date"), request.data.get("end_date")):
                 return Response(
-                    {"success": False, "message": "Specify the company id"},
+                    {'success':False,
+                        "message": "Parameters are not valid, start date must be smaller that end date"
+                    },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+            
+            if not request.data.get("company_id"):
+                return Response(
+                    {'success':False,
+                        "message": "Specify the company id"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            start_date = datetime.strptime(payload["start_date"], "%m/%d/%Y %H:%M:%S")
+            end_date = datetime.strptime(payload["end_date"], "%m/%d/%Y %H:%M:%S")
+                
             data = {}
             # get all details firstly---------------
             field = {"company_id": request.data.get("company_id")}
+            
+            jobs_response = json.loads(dowellconnection(*jobs, "fetch", field, update_field=None))["data"]
 
-            response = dowellconnection(*jobs, "fetch", field, update_field=None)
+            data["jobs"] = 0
+            data["no_of_active_jobs"] = 0
+            data["no_of_inactive_jobs"] = 0
+            for res in jobs_response:
+                if "created_on" in res.keys():
+                    res_dt = datetime.strptime(set_date_format(res["created_on"]), "%m/%d/%Y %H:%M:%S")
+                    if  res_dt >= start_date and res_dt <= end_date:
+                        data["jobs"]+=1
+                        if "is_active" in res.keys():
+                            if (
+                                res["is_active"] == "True"
+                                or res["is_active"] == "true"
+                                or res["is_active"] == True
+                            ):
+                                data["no_of_active_jobs"]+=1
+                            if (
+                                res["is_active"] == "False"
+                                or res["is_active"] == "false"
+                                or res["is_active"] == False
+                            ):
+                                data["no_of_inactive_jobs"]+=1
+            
 
-            jbs = json.loads(response)["data"]
-            res_jobs = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=jbs,
-                key="created_on",
-            )
-            data["jobs"] = res_jobs[1]
-            # print(res_jobs[0])
-
-            active_jobs = []
-            inactive_jobs = []
-            for t in res_jobs[0]:
-                if "is_active" in t.keys():
-                    if (
-                        t["is_active"] == "True"
-                        or t["is_active"] == "true"
-                        or t["is_active"] == True
-                    ):
-                        active_jobs.append([t["_id"], t["is_active"]])
-                    if (
-                        t["is_active"] == "False"
-                        or t["is_active"] == "false"
-                        or t["is_active"] == False
-                    ):
-                        inactive_jobs.append([t["_id"], t["is_active"]])
-            data["no_of_active_jobs"] = len(active_jobs)
-            data["no_of_inactive_jobs"] = len(inactive_jobs)
-
-            response = json.loads(
-                dowellconnection(
-                    *candidate_management_reports, "fetch", field, update_field=None
-                )
-            )["data"]
-            job_application = []
+            candidate_response = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None))["data"]
+            data['job_applications']={
+                'total':0,
+                "months":{
+                            "January": [],
+                            "February": [],
+                            "March": [],
+                            "April": [],
+                            "May": [],
+                            "June": [],
+                            "July": [],
+                            "August": [],
+                            "September": [],
+                            "October": [],
+                            "November": [],
+                            "December": [],
+                        }
+            }
             job_titles = {}
+            
+            data["new_candidates"]=0
+            data["guest_candidates"]=0
+            data["probationary_candidates"]=0
+            data["selected"] = 0
+            data["shortlisted"] =0
+            data["hired"] =0
+            data["rehired"] =0
+            data["rejected"] =0
+            data["onboarded"] =0
 
-            new_candidates = []
-            guest_candidates = []
-            probationary_candidates = []
-            selected = []
-            shortlisted = []
-            hired = []
-            rehired = []
-            rejected = []
-            onboarded = []
-            for res in response:
+            job_application_count=[i['job_number'] for i in candidate_response if "job_number" in i.keys()]
+            
+            for res in candidate_response:
                 if "application_submitted_on" in res.keys():
-                    job_application.append(res)
                     job_titles[res["job_number"]] = res["job_title"]
-                    if res["status"] == "Pending":
-                        new_candidates.append(res)
-                    if res["status"] == "Guest_Pending":
-                        guest_candidates.append(res)
-                    if res["status"] == "probationary":
-                        probationary_candidates.append(res)
-                if "selected_on" in res.keys():
-                    selected.append(res)
-                if "shortlisted_on" in res.keys():
-                    shortlisted.append(res)
-                if "hired_on" in res.keys():
-                    hired.append(res)
-                if "rehired_on" in res.keys():
-                    rehired.append(res)
-                if "rejected_on" in res.keys():
-                    rejected.append(res)
-                if "onboarded_on" in res.keys():
-                    onboarded.append(res)
+                    res_dt = datetime.strptime(set_date_format(res["application_submitted_on"]), "%m/%d/%Y %H:%M:%S")
+                    if  res_dt >= start_date and res_dt <= end_date:
+                        
+                        month_list = calendar.month_name
+                        month = month_list[res_dt.month]
+                        if month in data['job_applications']["months"].keys():
+                            job_application_count.append(res["job_number"])
+                            i = {
+                                "job_number": res["job_number"],
+                                "job_title": res["job_title"],
+                                "no_job_applications": job_application_count.count(res["job_number"]),
+                            }
+                            if not i in data['job_applications']["months"][month]:
+                                data['job_applications']["months"][month].append(i)
+                                
+                        if res["status"] == "Pending":
+                            data["new_candidates"]+=1
+                        if res["status"] == "Guest_Pending":
+                            data["guest_candidates"] +=1
+                        if res["status"] == "probationary":
+                            data["probationary_candidates"] +=1
 
+                if "selected_on" in res.keys():
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["selected_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["selected"] +=1
+                    except ValueError:
+                        pass 
+                if "shortlisted_on" in res.keys():
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["shortlisted_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["shortlisted"] +=1
+                    except ValueError:
+                        pass 
+
+                if "hired_on" in res.keys():
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["hired_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["hired"] +=1
+                    except ValueError:
+                        pass 
+                    
+                if "rehired_on" in res.keys():
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["rehired_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["rehired"] +=1
+                    except ValueError:
+                        pass 
+                if "rejected_on" in res.keys():
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["rejected_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["rejected"] +=1
+                    except ValueError:
+                        pass 
+                if "onboarded_on" in res.keys():
+                    try:
+                        res_dt = datetime.strptime(set_date_format(res["onboarded_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            data["onboarded"] +=1
+                    except ValueError:
+                        pass 
+            
             try:
-                ids = list(job_titles.keys())
+                ids =list(job_titles.keys())
                 counter = Counter(ids)
                 most_applied_job = counter.most_common(1)[0][0]
                 least_applied_job = counter.most_common()[-1][0]
@@ -5786,147 +5817,17 @@ class Generate_Report(APIView):
                 data["most_applied_job"] = {"job_number": "none"}
                 data["least_applied_job"] = {"job_number": "none"}
 
-            res_job_application = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=job_application,
-                key="application_submitted_on",
-            )
-
-            m = {
-                "January": [],
-                "February": [],
-                "March": [],
-                "April": [],
-                "May": [],
-                "June": [],
-                "July": [],
-                "August": [],
-                "September": [],
-                "October": [],
-                "November": [],
-                "December": [],
-            }
-            months = []
-            month_list = calendar.month_name
-            for res in res_job_application[0]:
-                date = set_date_format(res["application_submitted_on"])
-                month = month_list[datetime.strptime(date, "%m/%d/%Y %H:%M:%S").month]
-                months.append(
-                    {
-                        "job_title": res["job_title"],
-                        "job_number": res["job_number"],
-                        "month": month,
-                    }
-                )
-
-            for item in months:
-                if item["month"] in m.keys():
-                    i = {
-                        "job_number": item["job_number"],
-                        "job_title": item["job_title"],
-                        "no_job_applications": months.count(item),
-                    }
-                    if not i in m[item["month"]]:
-                        m[item["month"]].append(i)
-            for key in m.keys():
-                if len(m[key]) == 0:
-                    m[key] = 0
-
-            data["job_applications"] = {
-                "total": res_job_application[1],
-                "months": m,
-            }
-
-            res_new_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=new_candidates,
-                key="application_submitted_on",
-            )
-            data["new_candidates"] = res_new_candidates[1]
-
-            res_guest_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=guest_candidates,
-                key="application_submitted_on",
-            )
-            data["guest_candidates"] = res_guest_candidates[1]
-
-            res_probationary_candidates = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=probationary_candidates,
-                key="application_submitted_on",
-            )
-            data["probationary_candidates"] = res_probationary_candidates[1]
-
-            res_selected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=selected,
-                key="selected_on",
-            )
-            data["selected"] = res_selected[1]
-
-            res_shortlisted = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=shortlisted,
-                key="shortlisted_on",
-            )
-            data["shortlisted"] = res_shortlisted[1]
-
-            res_hired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=hired,
-                key="hired_on",
-            )
-            data["hired"] = res_hired[1]
-
-            res_rehired = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rehired,
-                key="rehired_on",
-            )
-            data["rehired"] = res_rehired[1]
-
-            res_onboarded = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=onboarded,
-                key="onboarded_on",
-            )
-            data["onboarded"] = res_onboarded[1]
-
-            res_rejected = period_check(
-                start_dt=payload["start_date"],
-                end_dt=payload["end_date"],
-                data_list=rejected,
-                key="rejected_on",
-            )
-            data["rejected"] = res_rejected[1]
-
             try:
-                data["hiring_rate"] = (data["hired"] / data["job_applications"]) * 100
+                data["hiring_rate"] = (
+                    data["hired"] / data["job_applications"]
+                ) * 100
             except Exception:
                 data["hiring_rate"] = 0
             # tasksand teams========================================================================================
-            total_tasks = json.loads(
-                dowellconnection(
-                    *task_management_reports, "fetch", field, update_field=None
-                )
-            )["data"]
-
-            total_teams = json.loads(
-                dowellconnection(
-                    *team_management_modules, "fetch", field, update_field=None
-                )
-            )["data"]
-
+            total_tasks = json.loads(dowellconnection(*task_management_reports, "fetch", field, update_field=None))["data"]
+            
+            total_teams = json.loads(dowellconnection(*team_management_modules, "fetch", field, update_field=None))["data"]
+            
             total_teams_ids = [res["_id"] for res in total_teams]
 
             res_teams = period_check(
@@ -5945,47 +5846,30 @@ class Generate_Report(APIView):
             )
             data["tasks"] = res_tasks[1]
 
-            team_tasks, data["team_tasks"] = [], 0
-            tasks_completed, data["tasks_completed"] = [], 0
-            tasks_uncompleted, data["tasks_uncompleted"] = [], 0
-            tasks_completed_on_time, data["tasks_completed_on_time"] = [], 0
+            team_tasks,data["team_tasks"] = [],0
+            tasks_completed,data["tasks_completed"] = [],0
+            tasks_uncompleted, data["tasks_uncompleted"] = [],0
+            tasks_completed_on_time,data["tasks_completed_on_time"] = [],0
 
             for t in res_tasks[0]:
-                if "team_id" in t.keys() and t["team_id"] in total_teams_ids:
+                if ("team_id" in t.keys() and t["team_id"] in total_teams_ids):
                     team_tasks.append(t)
-                    data["team_tasks"] += 1
-                if "status" in t.keys():
-                    if (
-                        (
-                            t["status"] == "Complete"
-                            or t["status"] == "complete"
-                            or t["status"] == "Completed"
-                            or t["status"] == "completed"
-                        )
-                        or ("completed" in t.keys() and t["completed"] == True)
-                        or ("Complete" in t.keys() and t["Complete"] == True)
-                    ):
+                    data["team_tasks"] +=1
+                if 'status' in t.keys():
+                    if (t["status"] == "Complete" or t["status"] == "complete" or t["status"] == "Completed" or t["status"] == "completed")or("completed" in t.keys() and t["completed"] == True) or ("Complete" in t.keys() and t["Complete"] == True):
                         tasks_completed.append(t)
-                        data["tasks_completed"] += 1
-                    if (
-                        (t["status"] == "Incomplete" or t["status"] == "Incompleted")
-                        or ("Incompleted" in t.keys() and t["Incompleted"] == True)
-                        or ("Incomplete" in t.keys() and t["Incomplete"] == True)
-                    ):
+                        data["tasks_completed"] +=1
+                    if (t["status"] == "Incomplete" or t["status"] == "Incompleted") or ("Incompleted" in t.keys() and t["Incompleted"] == True) or ("Incomplete" in t.keys() and t["Incomplete"] == True):
                         tasks_uncompleted.append(t)
-                        data["tasks_uncompleted"] += 1
-
-                if "due_date" in t.keys() and "task_updated_date" in t.keys():
-                    due_date = datetime.strptime(
-                        set_date_format(t["due_date"]), "%m/%d/%Y %H:%M:%S"
-                    )
-                    task_updated_date = datetime.strptime(
-                        set_date_format(t["task_updated_date"]), "%m/%d/%Y %H:%M:%S"
-                    )
-
+                        data["tasks_uncompleted"] +=1
+                
+                if ("due_date" in t.keys() and "task_updated_date" in t.keys()):
+                    due_date = datetime.strptime( set_date_format(t["due_date"]), "%m/%d/%Y %H:%M:%S")
+                    task_updated_date = datetime.strptime(set_date_format(t["task_updated_date"]), "%m/%d/%Y %H:%M:%S" )
+                    
                     if due_date > task_updated_date:
                         tasks_completed_on_time.append(t)
-                        data["tasks_completed_on_time"] += 1
+                        data["tasks_completed_on_time"] +=1
 
             try:
                 data["percentage_tasks_completed"] = (
@@ -5994,6 +5878,7 @@ class Generate_Report(APIView):
             except Exception:
                 data["percentage_tasks_completed"] = 0
 
+        
             try:
                 data["percentage_tasks_completed_on_time"] = (
                     data["tasks_completed_on_time"] / data["tasks_completed"]
@@ -6001,11 +5886,8 @@ class Generate_Report(APIView):
             except Exception:
                 data["percentage_tasks_completed_on_time"] = 0
 
-            res_tasks_mod_list = json.loads(
-                dowellconnection(
-                    *task_details_module, "fetch", field, update_field=None
-                )
-            )["data"]
+            res_tasks_mod_list = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None ))["data"]
+            
 
             res_t = period_check(
                 start_dt=payload["start_date"],
@@ -6022,7 +5904,7 @@ class Generate_Report(APIView):
                     projects.append(r["project"])
 
             c = Counter(projects)
-            _mi, _ma = min(c.values()), max(c.values())
+            _mi, _ma = min(c.values()) , max(c.values())
             least_taskeds = [x for x in projects if c[x] == _mi]
             least_tasked_projects = []
             for items in set(least_taskeds):
@@ -6038,13 +5920,13 @@ class Generate_Report(APIView):
             data["project_with_most_tasks"] = most_tasked_projects
             data["project_with_least_tasks"] = least_tasked_projects
             return Response(
-                {"success": True, "message": "Admin Report Generated", "data": data},
+                {'success':True,"message": "Admin Report Generated", "data": data},
                 status=status.HTTP_201_CREATED,
             )
-
+            
         else:
             return Response(
-                {"success": False, "message": "Parameters are not valid"},
+                {'success':False,"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -6450,7 +6332,7 @@ class Generate_Report(APIView):
                     {"team_id": payload["team_id"]},
                     update_field,
                 )
-                print(tasks, "===")
+                print(tasks,"===")
 
                 comments = dowellconnection(
                     *comment_report_module, "fetch", {}, update_field
@@ -6498,17 +6380,13 @@ class Generate_Report(APIView):
 
                 for threads in Threads_Resolved:
                     if "resolved_on" in threads.keys():
-                        threads_created_on = threads["created_date"]
-                        threads_resolved_on = threads["resolved_on"]
-                        date_format = "%m/%d/%Y %H:%M:%S"
-                        created_date = datetime.strptime(
-                            threads_created_on, date_format
-                        )
-                        resolved_date = datetime.strptime(
-                            threads_resolved_on, date_format
-                        )
-                        time_to_solve_issue = resolved_date - created_date
-                        all_issue_resolved_time += time_to_solve_issue
+                        threads_created_on=threads["created_date"]
+                        threads_resolved_on=threads["resolved_on"]
+                        date_format = '%m/%d/%Y %H:%M:%S'
+                        created_date = datetime.strptime(threads_created_on,date_format )
+                        resolved_date = datetime.strptime(threads_resolved_on,date_format )
+                        time_to_solve_issue=resolved_date-created_date
+                        all_issue_resolved_time +=time_to_solve_issue   
                 if len(Threads_Resolved) > 0:
                     average_time_taken_to_resolve = all_issue_resolved_time / len(
                         Threads_Resolved
@@ -6636,41 +6514,33 @@ class Generate_Report(APIView):
         payload = request.data
         if payload:
             if valid_period(payload["start_date"], payload["end_date"]) == True:
-                data = {}
-                # get all details firstly---------------
+                start_date = datetime.strptime(payload["start_date"], "%m/%d/%Y %H:%M:%S")
+                end_date = datetime.strptime(payload["end_date"], "%m/%d/%Y %H:%M:%S")
+                
                 field = {}
-                update_field = {}
-                response = dowellconnection(
-                    *lead_management_reports, "fetch", field, update_field
-                )
-                total = [res for res in json.loads(response)["data"]]
-                rehired = [res for res in total if "rehired_on" in res.keys()]
-                rejected = [res for res in total if "rejected_on" in res.keys()]
-                hired = [res for res in total if "hired_on" in res.keys()]
+                response = dowellconnection(*lead_management_reports, "fetch", field, update_field=None)
+                
+                rehired=[]
+                rejected=[]
+                hired=[]
+                for res in json.loads(response)["data"]:
+                    if "rehired_on" in res.keys():
+                        res_dt = datetime.strptime(set_date_format(res["rehired_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            rehired.append(res)
+                    if "rejected_on" in res.keys():
+                        res_dt = datetime.strptime(set_date_format(res["rejected_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            rejected.append(res)
+                    if "hired_on" in res.keys():
+                        res_dt = datetime.strptime(set_date_format(res["hired_on"]), "%m/%d/%Y %H:%M:%S")
+                        if  res_dt >= start_date and res_dt <= end_date:
+                            hired.append(res)
 
-                res_rehired = period_check(
-                    start_dt=payload["start_date"],
-                    end_dt=payload["end_date"],
-                    data_list=rehired,
-                    key="rehired_on",
-                )
-                data["rehired"] = res_rehired[1]
-
-                res_hired = period_check(
-                    start_dt=payload["start_date"],
-                    end_dt=payload["end_date"],
-                    data_list=hired,
-                    key="hired_on",
-                )
-                data["onboarded"] = res_hired[1]
-
-                res_rejected = period_check(
-                    start_dt=payload["start_date"],
-                    end_dt=payload["end_date"],
-                    data_list=rejected,
-                    key="rejected_on",
-                )
-                data["rejected"] = res_rejected[1]
+                data = {"rehired":len(rehired),
+                        "rejected":len(rejected),
+                        "onboarded":len(hired)
+                        }
 
                 return Response(
                     {"message": "Lead Report Generated", "response": data},
@@ -6691,48 +6561,33 @@ class Generate_Report(APIView):
 
     def generate_individual_report(self, request):
         payload = request.data
-
+        
         if payload:
             # intializing query parameters-----------------------------------------------------
             company_id = payload.get("company_id")
             if not company_id:
-                return Response(
-                    {"success": False, "message": f"Company id is empty"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                return Response({'success':False,"message": f"Company id is empty"},status=status.HTTP_400_BAD_REQUEST)
             username = payload.get("username")
             if not username:
-                return Response(
-                    {"success": False, "message": f"username is empty"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
+                return Response({'success':False,"message": f"username is empty"},status=status.HTTP_400_BAD_REQUEST)
+            
             # check if the user has any data------------------------------------------------
             field = {
                 "username": username,
                 "company_id": company_id,
             }
-            info = json.loads(
-                dowellconnection(
-                    *candidate_management_reports, "fetch", field, update_field=None
-                )
-            )["data"]
+            info = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None ))["data"]
             if len(info) <= 0:
                 return Response(
                     {
-                        "success": False,
+                        'success':False,
                         "message": f"There is no candidate with such parameters --> "
-                        + " ".join([va for va in field.values()]),
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
+                        + " ".join([va for va in field.values()])
+                    },status=status.HTTP_204_NO_CONTENT)
 
             year = payload.get("year")
             if not year:
-                return Response(
-                    {"success": False, "message": f"year is empty"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                return Response({'success':False,"message": f"year is empty"},status=status.HTTP_400_BAD_REQUEST)
             # ensuring the given year is a valid year------------------------------------------
             if int(year) > datetime.today().year:
                 return Response(
@@ -6743,69 +6598,52 @@ class Generate_Report(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             # -------------------------------------------------------------------------------
-
+            
+            
             data = {}
             data["personal_info"] = info[0]
 
             coll_name = normalize(username)
-            query = {"report_record_year": year, "db_report_type": "report"}
-            get_collection = json.loads(
-                datacube_data_retrival_function(
-                    API_KEY, REPORT_DB_NAME, coll_name, query, 10, 0, False
-                )
-            )
-            if get_collection["success"] == False:
-                return Response(
-                    {
-                        "success": False,
-                        "message": f"This candidate has no report data collection created",
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
-            if len(get_collection["data"]) <= 0:
-                return Response(
-                    {
-                        "success": False,
-                        "message": f"This candidate has no report data inserted in collection",
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
-
-            months = [calendar.month_name[i] for i in range(1, 13)]
-            # print(months)
-            t = {
-                "task_added": 0,
-                "tasks_completed": 0,
-                "tasks_uncompleted": 0,
-                "tasks_approved": 0,
-                "percentage_tasks_completed": 0.0,
-                "tasks_you_approved": 0,
-                "tasks_you_marked_as_complete": 0,
-                "tasks_you_marked_as_incomplete": 0,
-                "teams": 0,
-                "team_tasks": 0,
-                "team_tasks_completed": 0,
-                "team_tasks_uncompleted": 0,
-                "percentage_team_tasks_completed": 0.0,
-                "team_tasks_approved": 0,
-                "team_tasks_issues_raised": 0,
-                "team_tasks_issues_resolved": 0,
-                "team_tasks_comments_added": 0,
+            query ={
+                "report_record_year": year,
+                "db_report_type": "report"
             }
-            _data = {m: t for m in months}
-
-            for x in get_collection["data"]:
-                if (
-                    "report_record_month" in x.keys()
-                    and x["report_record_month"] in months
-                ):
-                    del x["_id"]
-                    report_record_month = x["report_record_month"]
-                    del x["report_record_month"]
-                    del x["report_record_year"]
-                    del x["db_report_type"]
+            get_collection = json.loads(datacube_data_retrival_function(API_KEY,REPORT_DB_NAME,coll_name,query,10,0, False))
+            if get_collection['success']==False:
+                return Response({'success':False,"message": f"This candidate has no report data collection created"},status=status.HTTP_204_NO_CONTENT)
+            if len(get_collection['data']) <= 0:
+                return Response({'success':False,"message": f"This candidate has no report data inserted in collection"},status=status.HTTP_204_NO_CONTENT)
+            
+            months=[calendar.month_name[i] for i in range(1,13)]
+            #print(months)
+            t={"task_added": 0,
+            "tasks_completed": 0,
+            "tasks_uncompleted": 0,
+            "tasks_approved": 0,
+            "percentage_tasks_completed": 0.0,
+            "tasks_you_approved": 0,
+            "tasks_you_marked_as_complete": 0,
+            "tasks_you_marked_as_incomplete": 0,
+            "teams": 0,
+            "team_tasks": 0,
+            "team_tasks_completed": 0,
+            "team_tasks_uncompleted": 0,
+            "percentage_team_tasks_completed": 0.0,
+            "team_tasks_approved": 0,
+            "team_tasks_issues_raised": 0,
+            "team_tasks_issues_resolved": 0,
+            "team_tasks_comments_added": 0}
+            _data={m:t for m in months}
+            
+            for x in get_collection['data']:
+                if ('report_record_month' in x.keys() and x['report_record_month'] in months):
+                    del x['_id']
+                    report_record_month = x['report_record_month']
+                    del x['report_record_month']
+                    del x['report_record_year']
+                    del x['db_report_type']
                     _data[report_record_month] = x
-            data["monthly_data"] = _data
+            data["monthly_data"] =_data
             return Response(data, status=status.HTTP_200_OK)
         else:
             return Response(
@@ -7944,7 +7782,6 @@ class ProjectTotalTime(APIView):
             status=status.HTTP_204_NO_CONTENT,
         )
 
-
 class AllProjectTotalTime(APIView):
     def get(self, request, company_id):
         field = {"company_id": company_id, "data_type": "Real_Data"}
@@ -7958,7 +7795,6 @@ class AllProjectTotalTime(APIView):
             },
             status=status.HTTP_200_OK,
         )
-
 
 class EnabledProjectTotalTime(APIView):
     def patch(self, request):
@@ -8011,7 +7847,6 @@ class EnabledProjectTotalTime(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
 
 class UpdateProjectSpentTime(APIView):
     def patch(self, request):
@@ -8067,14 +7902,14 @@ class UpdateProjectSpentTime(APIView):
                 return Response(
                     {
                         "success": False,
-                        "message": "No Project time with these details exists",
+                        "message": "No Project time with these details exists"
                     },
                     status=status.HTTP_204_NO_CONTENT,
                 )
             return Response(
                 {
                     "success": False,
-                    "message": "No Project time with these details exists",
+                    "message": "No Project time with these details exists"
                 },
                 status=status.HTTP_204_NO_CONTENT,
             )
@@ -8088,10 +7923,9 @@ class UpdateProjectSpentTime(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class ProjectDetails(APIView):
-    def post(self, request):
+    def post(self,request):
         type_request = request.GET.get("type")
 
         if type_request == "update_day_project":
@@ -8101,11 +7935,8 @@ class ProjectDetails(APIView):
         elif type_request == "update_year_project":
             return self.update_year_project(request)
         else:
-            return self.handle_error(
-                request,
-                "'update_day_project'|'update_month_project'|'update_year_project'",
-            )
-
+            return self.handle_error(request,"'update_day_project'|'update_month_project'|'update_year_project'")
+        
     def get(self, request):
         type_request = request.GET.get("type")
         if type_request == "day":
@@ -8113,261 +7944,148 @@ class ProjectDetails(APIView):
         elif type_request == "custom":
             return self.get_custom_project(request)
         else:
-            return self.handle_error(request, "'day'|'custom'")
-
+            return self.handle_error(request,"'day'|'custom'")
+    
     def get_day_project(self, request):
         if not request.GET.get("date"):
-            return Response(
-                {"success": False, "message": "Please provide date"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"success": False,"message": "Please provide date"},status=status.HTTP_400_BAD_REQUEST)
         if not request.GET.get("company_id"):
-            return Response(
-                {"success": False, "message": "Please provide company_id"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        _date = request.GET.get("date")  # e.g 2023-12-24
+            return Response({"success": False,"message": "Please provide company_id"},status=status.HTTP_400_BAD_REQUEST)
+        _date=request.GET.get("date")#e.g 2023-12-24
         api_key = API_KEY
-        db_name = PROJECT_DB_NAME
-        coll_name = _date
-        query = {
-            "company_id": request.GET.get("company_id")
-        }  # {"company_id":'6385c0f18eca0fb652c94561'}
-        get_collection = json.loads(
-            datacube_data_retrival_function(
-                api_key, db_name, coll_name, query, 10, 0, False
-            )
-        )
-        if get_collection["success"] == True:
-            res = get_collection["data"]
-            if len(get_collection["data"]) > 0:
-                res = get_collection["data"][-1]
+        db_name= PROJECT_DB_NAME
+        coll_name =_date
+        query={'company_id':request.GET.get('company_id')} #{"company_id":'6385c0f18eca0fb652c94561'}
+        get_collection = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0,False))
+        if get_collection['success']==True:
+            res= get_collection['data']
+            if len(get_collection['data'])>0:
+                res= get_collection['data'][-1]
             return Response(
                 {
-                    "success": get_collection["success"],
-                    "message": f"Successfully fetched project details for {_date}",
+                    "success": get_collection['success'],
+                    'message': f'Successfully fetched project details for {_date}',
                     "data": res,
                 },
                 status=status.HTTP_200_OK,
             )
         else:
-            return Response(
-                {
-                    "success": False,
-                    "message": f"Failed to fetch project details,{get_collection['message']}",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"success": False, "message": f"Failed to fetch project details,{get_collection['message']}"}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_custom_project(self, request):
         if not request.GET.get("start_date"):
-            return Response(
-                {"success": False, "message": "Please provide start date"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"success": False, "message": "Please provide start date"}, status=status.HTTP_400_BAD_REQUEST)
         if not request.GET.get("end_date"):
-            return Response(
-                {"success": False, "message": "Please provide end date"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"success": False, "message": "Please provide end date"}, status=status.HTTP_400_BAD_REQUEST)
         if not request.GET.get("company_id"):
-            return Response(
-                {"success": False, "message": "Please provide company id"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
+            return Response({"success": False, "message": "Please provide company id"}, status=status.HTTP_400_BAD_REQUEST)
+        
         st_date = datetime.strptime(request.GET.get("start_date"), "%Y-%m-%d")
         ed_date = datetime.strptime(request.GET.get("end_date"), "%Y-%m-%d")
         delta = timedelta(days=1)
 
         if st_date > ed_date:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Start date should be less than end date",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"success": False, "message": "Start date should be less than end date"}, status=status.HTTP_400_BAD_REQUEST)
         if st_date.date() > datetime.now().date():
-            return Response(
-                {
-                    "success": False,
-                    "message": "Start date should be less than or equal to today's date",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({"success": False, "message": "Start date should be less than or equal to today's date"}, status=status.HTTP_400_BAD_REQUEST)
         if ed_date.date() > datetime.now().date():
-            return Response(
-                {
-                    "success": False,
-                    "message": "End date should be less than or equal to today's date",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        res = {"company_id": request.GET.get("company_id"), "data": []}
-        _d = {"data": {}}
-
-        custom_dates = []
+            return Response({"success": False, "message": "End date should be less than or equal to today's date"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        res={'company_id':request.GET.get('company_id'),
+             'data':[]}
+        _d={'data':{}}
+        
+        custom_dates =[]
         while st_date <= ed_date:
             custom_dates.append(f"{st_date.year}-{st_date.month}-{st_date.day}")
             st_date += delta
 
         def call_datacube(field):
-            _date = field["task_created_date"]
+            _date=field['task_created_date']
             api_key = API_KEY
-            db_name = PROJECT_DB_NAME
-            coll_name = _date
-            query = {"company_id": request.GET.get("company_id")}
-            get_collection = json.loads(
-                datacube_data_retrival_function(
-                    api_key, db_name, coll_name, query, 10, 0, False
-                )
-            )
-
+            db_name= PROJECT_DB_NAME
+            coll_name =_date
+            query={'company_id':request.GET.get('company_id')}
+            get_collection = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0,False))
+            
             # Process the response_str here or store it in a suitable data structure
-            for item in get_collection["data"]:
-                for i in item["data"]:
-                    if i["project"] not in _d["data"].keys():
-                        _d["data"][i["project"]] = {}
-                    if "total time (hrs)" not in _d["data"][i["project"]].keys():
-                        _d["data"][i["project"]]["total time (hrs)"] = 0
-                    _d["data"][i["project"]]["total time (hrs)"] += i[
-                        "total time (hrs)"
-                    ]
-
-                    if "total tasks" not in _d["data"][i["project"]].keys():
-                        _d["data"][i["project"]]["total tasks"] = 0
-                    _d["data"][i["project"]]["total tasks"] += i["total tasks"]
-
-                    if "subprojects" not in _d["data"][i["project"]].keys():
-                        _d["data"][i["project"]]["subprojects"] = {}
-                    for x in i["subprojects"]:
-                        if (
-                            x["subproject"]
-                            not in _d["data"][i["project"]]["subprojects"].keys()
-                        ):
-                            _d["data"][i["project"]]["subprojects"][
-                                x["subproject"]
-                            ] = {}
-                        if (
-                            "time added (hrs)"
-                            not in _d["data"][i["project"]]["subprojects"][
-                                x["subproject"]
-                            ].keys()
-                        ):
-                            _d["data"][i["project"]]["subprojects"][x["subproject"]][
-                                "time added (hrs)"
-                            ] = 0
-                        _d["data"][i["project"]]["subprojects"][x["subproject"]][
-                            "time added (hrs)"
-                        ] += x["time added (hrs)"]
-
-                        if (
-                            "total_tasks"
-                            not in _d["data"][i["project"]]["subprojects"][
-                                x["subproject"]
-                            ].keys()
-                        ):
-                            _d["data"][i["project"]]["subprojects"][x["subproject"]][
-                                "total_tasks"
-                            ] = 0
-                        _d["data"][i["project"]]["subprojects"][x["subproject"]][
-                            "total_tasks"
-                        ] += x["total_tasks"]
-
-                        if (
-                            "candidates"
-                            not in _d["data"][i["project"]]["subprojects"][
-                                x["subproject"]
-                            ].keys()
-                        ):
-                            _d["data"][i["project"]]["subprojects"][x["subproject"]][
-                                "candidates"
-                            ] = {}
+            for item in get_collection['data']:
+                for i in item['data']:
+                    if i['project'] not in _d['data'].keys():
+                        _d['data'][i['project']]={}
+                    if 'total time (hrs)' not in _d['data'][i['project']].keys():
+                        _d['data'][i['project']]["total time (hrs)"]=0
+                    _d['data'][i['project']]["total time (hrs)"]+=i["total time (hrs)"]
+                    
+                    if 'total tasks' not in _d['data'][i['project']].keys():
+                        _d['data'][i['project']]["total tasks"]=0
+                    _d['data'][i['project']]["total tasks"]+=i['total tasks']
+                    
+                    if "subprojects" not in _d['data'][i['project']].keys():
+                        _d['data'][i['project']]['subprojects'] = {}
+                    for x in i['subprojects']:
+                        if x["subproject"] not in _d['data'][i['project']]['subprojects'].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]={}
+                        if "time added (hrs)" not in _d['data'][i['project']]['subprojects'][x["subproject"]].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["time added (hrs)"]=0
+                        _d['data'][i['project']]['subprojects'][x["subproject"]]["time added (hrs)"]+=x["time added (hrs)"]
+                        
+                        if "total_tasks" not in _d['data'][i['project']]['subprojects'][x["subproject"]].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["total_tasks"]=0
+                        _d['data'][i['project']]['subprojects'][x["subproject"]]["total_tasks"]+=x["total_tasks"]
+                        
+                        if "candidates" not in _d['data'][i['project']]['subprojects'][x["subproject"]].keys():
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"]={}
                         for y in x["candidates"]:
-                            if (
-                                y["candidate"]
-                                not in _d["data"][i["project"]]["subprojects"][
-                                    x["subproject"]
-                                ]["candidates"].keys()
-                            ):
-                                _d["data"][i["project"]]["subprojects"][
-                                    x["subproject"]
-                                ]["candidates"][y["candidate"]] = {}
-                            if (
-                                "time added (hrs)"
-                                not in _d["data"][i["project"]]["subprojects"][
-                                    x["subproject"]
-                                ]["candidates"][y["candidate"]].keys()
-                            ):
-                                _d["data"][i["project"]]["subprojects"][
-                                    x["subproject"]
-                                ]["candidates"][y["candidate"]]["time added (hrs)"] = 0
-
-                            _d["data"][i["project"]]["subprojects"][x["subproject"]][
-                                "candidates"
-                            ][y["candidate"]]["time added (hrs)"] += y[
-                                "time added (hrs)"
-                            ]
-                            if (
-                                "total_tasks"
-                                not in _d["data"][i["project"]]["subprojects"][
-                                    x["subproject"]
-                                ]["candidates"][y["candidate"]].keys()
-                            ):
-                                _d["data"][i["project"]]["subprojects"][
-                                    x["subproject"]
-                                ]["candidates"][y["candidate"]]["total_tasks"] = 0
-
-                            _d["data"][i["project"]]["subprojects"][x["subproject"]][
-                                "candidates"
-                            ][y["candidate"]]["total_tasks"] += y["total_tasks"]
-
+                            if y["candidate"] not in _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"].keys():
+                                _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]={}
+                            if "time added (hrs)" not in _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]].keys():
+                                _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["time added (hrs)"]=0
+                            
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["time added (hrs)"]+=y["time added (hrs)"]
+                            if "total_tasks" not in _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]].keys():
+                                _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["total_tasks"]=0
+                            
+                            _d['data'][i['project']]['subprojects'][x["subproject"]]["candidates"][y["candidate"]]["total_tasks"]+=y["total_tasks"]
+  
         # Define a function to fetch data using threads
         def fetch_data_for_date(task_created_date, company_id):
-            field = {"company_id": company_id, "task_created_date": task_created_date}
+            field = {'company_id': company_id, 'task_created_date': task_created_date}
             try:
                 call_datacube(field)
             except json.decoder.JSONDecodeError as error:
                 call_datacube(field)
-
+                
         # Create threads for each date
         threads = []
         for task_created_date in custom_dates:
-            thread = threading.Thread(
-                target=fetch_data_for_date,
-                args=(task_created_date, request.GET.get("company_id")),
-            )
+            thread = threading.Thread(target=fetch_data_for_date, args=(task_created_date, request.GET.get('company_id')))
             threads.append(thread)
             thread.start()
         # Wait for all threads to complete
         for thread in threads:
             thread.join()
-
+            
         if (not i.is_alive() for i in threads):
-            for k, v in _d["data"].items():
-                item = {
-                    "project": k,
-                    "total time (hrs)": v["total time (hrs)"],
-                    "total tasks": v["total tasks"],
-                    "subprojects": [],
-                }
-                for k1, v1 in v["subprojects"].items():
-                    subitem = {
-                        "total tasks": k1,
-                        "time added (hrs)": v1["time added (hrs)"],
-                        "total_tasks": v1["total_tasks"],
-                        "candidates": [],
-                    }
-                    for k2, v2 in v1["candidates"].items():
-                        subsubitem = {
-                            "candidate": k2,
-                            "time added (hrs)": v2["time added (hrs)"],
-                            "total_tasks": v2["total_tasks"],
-                        }
-                        subitem["candidates"].append(subsubitem)
-                    item["subprojects"].append(subitem)
+            for k,v in _d['data'].items():
+                item={'project':k,
+                      'total time (hrs)':v['total time (hrs)'],
+                      'total tasks':v['total tasks'],
+                      'subprojects':[]
+                      }
+                for k1,v1 in v['subprojects'].items():
+                    subitem={'total tasks':k1,
+                             'time added (hrs)':v1['time added (hrs)'],
+                             'total_tasks':v1['total_tasks'],
+                             'candidates':[]
+                             }
+                    for k2,v2 in v1['candidates'].items():
+                        subsubitem={'candidate':k2,
+                                    'time added (hrs)':v2['time added (hrs)'],
+                                    'total_tasks':v2['total_tasks']
+                                    }
+                        subitem['candidates'].append(subsubitem)
+                    item['subprojects'].append(subitem)
                 res["data"].append(item)
             return Response(
                 {
@@ -8378,694 +8096,368 @@ class ProjectDetails(APIView):
             )
         else:
             return Response({"success": False, "message": "Failed to fetch logs"})
-
-    def update_day_project(self, request):
+        
+    def update_day_project(self,request): 
         print("------------checking paramaters------------")
-        if not request.GET.get("date"):
+        if not request.GET.get('date'):
             print("------------date is required------------")
-            return Response(
-                {"success": False, "message": "Date is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if not request.GET.get("company_id"):
+            return Response({"success": False, "message": "Date is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('company_id'):
             print("------------company id is required------------")
-            return Response(
-                {"success": False, "message": "Company id is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        res = []
-        item = {}
-
-        _date = request.GET.get("date")  # e.g 2023-12-24
+            return Response({"success": False, "message": "Company id is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        res=[]
+        item={}
+        
+        _date=request.GET.get('date')# e.g 2023-12-24
         _date = datetime.strptime(_date, "%Y-%m-%d").date()
         if _date >= datetime.today().date():
-            return Response(
-                {
-                    "success": False,
-                    "message": f"Date {request.GET.get('date')} should be less than today",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        task_created_date = f"{_date.year}-{_date.month}-{_date.day}"
-        field = {
-            "company_id": request.GET.get("company_id"),
-            "task_created_date": task_created_date,
-        }
-        tasks = json.loads(
-            dowellconnection(*task_details_module, "fetch", field, update_field=None)
-        )
-        if tasks["isSuccess"] == True:
-            print(
-                "tasks exists, processing projects details-------------------",
-                len(tasks["data"]),
-            )
-            for i, task in enumerate(tasks["data"]):
-                print(
-                    f"----------processing details for task {i+1}/{len(tasks['data'])}----------"
-                )
-                if "task_id" in task.keys():
-                    c = json.loads(
-                        dowellconnection(
-                            *task_management_reports,
-                            "fetch",
-                            {
-                                "task_created_date": task_created_date,
-                                "_id": task["task_id"],
-                            },
-                            update_field=None,
-                        )
-                    )["data"]
+            return Response({"success": False, "message": f"Date {request.GET.get('date')} should be less than today"}, status=status.HTTP_400_BAD_REQUEST)
+        task_created_date=f"{_date.year}-{_date.month}-{_date.day}"
+        field={"company_id":request.GET.get("company_id"), "task_created_date":task_created_date}
+        tasks=json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
+        if (tasks['isSuccess'] == True):
+            print("tasks exists, processing projects details-------------------",len(tasks['data']))
+            for i,task in enumerate(tasks['data']):
+                print(f"----------processing details for task {i+1}/{len(tasks['data'])}----------")
+                if 'task_id' in task.keys():
+                    c=json.loads(dowellconnection(*task_management_reports, "fetch", {"task_created_date":task_created_date, "_id":task["task_id"]}, update_field=None))['data']
                     if len(c) > 0:
-                        candidate = c[0]["task_added_by"]
+                        candidate=c[0]['task_added_by']
                     else:
-                        candidate = "None"
-                if "project" in task.keys() and "subproject" in task.keys():
+                        candidate='None'
+                if ('project' in task.keys() and 'subproject' in task.keys() ):
                     """print(t,"======")"""
                     try:
-                        start_time = datetime.strptime(task["start_time"], "%H:%M")
-                        end_time = datetime.strptime(task["end_time"], "%H:%M")
+                        start_time = datetime.strptime(task['start_time'], "%H:%M")
+                        end_time = datetime.strptime(task['end_time'], "%H:%M")
                     except Exception:
-                        start_time = datetime.strptime(task["start_time"], "%H:%M:%S")
-                        end_time = datetime.strptime(task["end_time"], "%H:%M:%S")
+                        start_time = datetime.strptime(task['start_time'], "%H:%M:%S")
+                        end_time = datetime.strptime(task['end_time'], "%H:%M:%S")
                     time_difference = (end_time - start_time).total_seconds()
                     work_hours = time_difference / 3600
-                    if task["project"] not in item.keys():
-                        item[task["project"]] = {
-                            "total time (hrs)": 0,
-                            "total tasks": 0,
-                            "subprojects": {},
-                        }
-                    if "total time (hrs)" not in item[task["project"]].keys():
-                        item[task["project"]]["total time (hrs)"] = work_hours
+                    if task['project'] not in item.keys():
+                        item[task['project']] = {"total time (hrs)":0, "total tasks":0, "subprojects":{}}
+                    if "total time (hrs)" not in item[task['project']].keys():
+                        item[task['project']]["total time (hrs)"] = work_hours
                     else:
-                        item[task["project"]]["total time (hrs)"] += work_hours
-                    if "total tasks" not in item[task["project"]].keys():
-                        item[task["project"]]["total tasks"] = 1
+                        item[task['project']]["total time (hrs)"] += work_hours
+                    if "total tasks" not in item[task['project']].keys():
+                        item[task['project']]["total tasks"] = 1
                     else:
-                        item[task["project"]]["total tasks"] += 1
-                    if "subprojects" not in item[task["project"]].keys():
-                        item[task["project"]]["subprojects"] = {}
-
-                    if (
-                        task["subproject"]
-                        not in item[task["project"]]["subprojects"].keys()
-                    ):
-                        item[task["project"]]["subprojects"][task["subproject"]] = {}
-
-                    if (
-                        "time added (hrs)"
-                        not in item[task["project"]]["subprojects"][
-                            task["subproject"]
-                        ].keys()
-                    ):
-                        item[task["project"]]["subprojects"][task["subproject"]][
-                            "time added (hrs)"
-                        ] = work_hours
+                        item[task['project']]["total tasks"] += 1
+                    if "subprojects" not in item[task['project']].keys():
+                        item[task['project']]["subprojects"] = {}
+                    
+                    if task['subproject'] not in item[task['project']]['subprojects'].keys():
+                        item[task['project']]['subprojects'][task['subproject']] = {}
+                    
+                    if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] = work_hours
                     else:
-                        item[task["project"]]["subprojects"][task["subproject"]][
-                            "time added (hrs)"
-                        ] += work_hours
-
-                    if (
-                        "total_tasks"
-                        not in item[task["project"]]["subprojects"][
-                            task["subproject"]
-                        ].keys()
-                    ):
-                        item[task["project"]]["subprojects"][task["subproject"]][
-                            "total_tasks"
-                        ] = 1
+                        item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] += work_hours
+                    
+                    if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['total_tasks'] = 1
                     else:
-                        item[task["project"]]["subprojects"][task["subproject"]][
-                            "total_tasks"
-                        ] += 1
-                    if (
-                        "candidates"
-                        not in item[task["project"]]["subprojects"][
-                            task["subproject"]
-                        ].keys()
-                    ):
-                        item[task["project"]]["subprojects"][task["subproject"]][
-                            "candidates"
-                        ] = {}
-                    if (
-                        candidate
-                        not in item[task["project"]]["subprojects"][task["subproject"]][
-                            "candidates"
-                        ].keys()
-                    ):
-                        item[task["project"]]["subprojects"][task["subproject"]][
-                            "candidates"
-                        ][candidate] = {"time added (hrs)": 0, "total_tasks": 0}
-
-                    if (
-                        "time added (hrs)"
-                        not in item[task["project"]]["subprojects"][task["subproject"]][
-                            "candidates"
-                        ][candidate].keys()
-                    ):
-                        item[task["project"]]["subprojects"][task["subproject"]][
-                            "candidates"
-                        ][candidate]["time added (hrs)"] = work_hours
+                        item[task['project']]['subprojects'][task['subproject']]['total_tasks'] += 1
+                    if "candidates" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'] = {}
+                    if candidate not in item[task['project']]['subprojects'][task['subproject']]['candidates'].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]={'time added (hrs)':0,'total_tasks':0}
+                    
+                    if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] = work_hours
                     else:
-                        item[task["project"]]["subprojects"][task["subproject"]][
-                            "candidates"
-                        ][candidate]["time added (hrs)"] += work_hours
-
-                    if (
-                        "total_tasks"
-                        not in item[task["project"]]["subprojects"][task["subproject"]][
-                            "candidates"
-                        ][candidate].keys()
-                    ):
-                        item[task["project"]]["subprojects"][task["subproject"]][
-                            "candidates"
-                        ][candidate]["total_tasks"] = 1
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] += work_hours
+                    
+                    if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] = 1
                     else:
-                        item[task["project"]]["subprojects"][task["subproject"]][
-                            "candidates"
-                        ][candidate]["total_tasks"] += 1
-
-            for k, v in item.items():
+                        item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] += 1
+                    
+            for k,v in item.items(): 
                 _d = {
-                    "project": k,
-                    "total time (hrs)": v["total time (hrs)"]
-                    if "total time (hrs)" in v.keys()
-                    else 0,
-                    "total tasks": v["total tasks"] if "total tasks" in v.keys() else 0,
-                    "subprojects": [],
+                    "project":k,
+                    "total time (hrs)":v["total time (hrs)"] if 'total time (hrs)' in v.keys() else 0,
+                    "total tasks":v["total tasks"] if 'total tasks' in v.keys() else 0,
+                    "subprojects":[]
                 }
-                for k1, v1 in v["subprojects"].items():
+                for k1,v1 in v["subprojects"].items():
                     _d1 = {
-                        "subproject": k1,
-                        "time added (hrs)": v1["time added (hrs)"]
-                        if "time added (hrs)" in v1.keys()
-                        else 0,
-                        "total_tasks": v1["total_tasks"]
-                        if "total_tasks" in v1.keys()
-                        else 0,
-                        "candidates": [],
+                        "subproject":k1,
+                        "time added (hrs)":v1["time added (hrs)"] if 'time added (hrs)' in v1.keys() else 0,
+                        "total_tasks":v1["total_tasks"] if 'total_tasks' in v1.keys() else 0,
+                        "candidates":[]
                     }
-                    if "candidates" in v1.keys():
-                        for k2, v2 in v1["candidates"].items():
-                            _d2 = {
-                                "candidate": k2,
-                                "time added (hrs)": v2["time added (hrs)"]
-                                if "time added (hrs)" in v2.keys()
-                                else 0,
-                                "total_tasks": v2["total_tasks"]
-                                if "total_tasks" in v2.keys()
-                                else 0,
+                    if 'candidates' in v1.keys():
+                        for k2, v2 in v1['candidates'].items():
+                            _d2 ={
+                                "candidate":k2,
+                                "time added (hrs)":v2["time added (hrs)"] if "time added (hrs)" in v2.keys() else 0,
+                                "total_tasks": v2['total_tasks'] if 'total_tasks' in v2.keys() else 0
                             }
-                            _d1["candidates"].append(_d2)
+                            _d1['candidates'].append(_d2)
                     _d["subprojects"].append(_d1)
                 res.append(_d)
-
+            
             api_key = API_KEY
-            db_name = PROJECT_DB_NAME
-            coll_name = task_created_date
-            data = {
-                "date": task_created_date,
-                "company_id": request.GET.get("company_id"),
-                "data": res,
-            }
-            response = json.loads(
-                datacube_add_collection(api_key, db_name, coll_name, 1)
-            )
-            if response["success"] == True:
-                print(f"successfully created the collection-{coll_name}-------------")
-                # inserting data into the collection------------------------------
-
-                response = json.loads(
-                    datacube_data_insertion(api_key, db_name, coll_name, data)
-                )
-                if response["success"] == True:
-                    print(
-                        f"successfully inserted the data the collection-{coll_name}---------------"
-                    )
+            db_name= PROJECT_DB_NAME
+            coll_name=task_created_date
+            data={"date":task_created_date, 'company_id':request.GET.get("company_id"), "data":res}
+            response = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+            if response['success']==True:
+                print(f'successfully created the collection-{coll_name}-------------')
+                #inserting data into the collection------------------------------
+                
+                response = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+                if response['success']==True:
+                    print(f'successfully inserted the data the collection-{coll_name}---------------')
                     return Response(
                         {
                             "success": True,
-                            "message": f"successfully inserted the data the collection-{coll_name}",
+                            'message': f'successfully inserted the data the collection-{coll_name}',
                             "data": data,
-                        },
-                        status=status.HTTP_200_OK,
-                    )
-            print(
-                f"error in inserting the data -> {response['message']}--------------------"
-            )
-            return Response(
-                {"success": False, "message": response["message"]},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-    def update_month_project(self, request):
-        if not request.GET.get("company_id"):
-            return Response(
-                {"success": False, "message": "please provide the company_id"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if not request.GET.get("month"):
-            return Response(
-                {"success": False, "message": "please provide the month"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if not request.GET.get("year"):
-            return Response(
-                {"success": False, "message": "please provide the year"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        month = request.GET.get("month")
-        year = request.GET.get("year")
-
+                        },status=status.HTTP_200_OK)
+            print(f"error in inserting the data -> {response['message']}--------------------")
+            return Response({"success": False, "message": response['message']}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update_month_project(self,request):
+        if not request.GET.get('company_id'):
+            return Response({"success": False, "message": "please provide the company_id"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('month'):
+            return Response({"success": False, "message": "please provide the month"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('year'):
+            return Response({"success": False, "message": "please provide the year"}, status=status.HTTP_400_BAD_REQUEST)
+        month = request.GET.get('month')
+        year = request.GET.get('year')
+        
         _, number_of_days = calendar.monthrange(int(year), int(month))
         _month_dates = [f"{year}-{month}-{d}" for d in range(1, number_of_days + 1)]
-        # print(_month_dates)
-        res = []
-        item = {}
+        #print(_month_dates)
+        res=[]
+        item={}
         for day in _month_dates:
-            task_created_date = day  # e.g 2023-12-24
-            field = {
-                "company_id": request.GET.get("company_id"),
-                "task_created_date": task_created_date,
-            }
-            tasks = json.loads(
-                dowellconnection(
-                    *task_details_module, "fetch", field, update_field=None
-                )
-            )
-            if tasks["isSuccess"] == True:
-                for task in tasks["data"]:
-                    if "task_id" in task.keys():
-                        c = json.loads(
-                            dowellconnection(
-                                *task_management_reports,
-                                "fetch",
-                                {
-                                    "task_created_date": task_created_date,
-                                    "_id": task["task_id"],
-                                },
-                                update_field=None,
-                            )
-                        )["data"]
+            task_created_date=day# e.g 2023-12-24
+            field={"company_id":request.GET.get("company_id"), "task_created_date":task_created_date}
+            tasks=json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
+            if (tasks['isSuccess'] == True):
+                for task in tasks['data']:
+                    if 'task_id' in task.keys():
+                        c=json.loads(dowellconnection(*task_management_reports, "fetch", {"task_created_date":task_created_date, "_id":task["task_id"]}, update_field=None))['data']
                         if len(c) > 0:
-                            candidate = c[0]["task_added_by"]
+                            candidate=c[0]['task_added_by']
                         else:
-                            candidate = "None"
-                    if "project" in task.keys() and "subproject" in task.keys():
+                            candidate='None'
+                    if ('project' in task.keys() and 'subproject' in task.keys() ):
                         """print(t,"======")"""
                         try:
-                            start_time = datetime.strptime(task["start_time"], "%H:%M")
-                            end_time = datetime.strptime(task["end_time"], "%H:%M")
+                            start_time = datetime.strptime(task['start_time'], "%H:%M")
+                            end_time = datetime.strptime(task['end_time'], "%H:%M")
                         except Exception:
-                            start_time = datetime.strptime(
-                                task["start_time"], "%H:%M:%S"
-                            )
-                            end_time = datetime.strptime(task["end_time"], "%H:%M:%S")
+                            start_time = datetime.strptime(task['start_time'], "%H:%M:%S")
+                            end_time = datetime.strptime(task['end_time'], "%H:%M:%S")
                         time_difference = (end_time - start_time).total_seconds()
                         work_hours = time_difference / 3600
-                        if task["project"] not in item.keys():
-                            item[task["project"]] = {
-                                "total time (hrs)": 0,
-                                "total tasks": 0,
-                                "subprojects": {},
-                            }
-                        if "total time (hrs)" not in item[task["project"]].keys():
-                            item[task["project"]]["total time (hrs)"] = work_hours
+                        if task['project'] not in item.keys():
+                            item[task['project']] = {"total time (hrs)":0, "total tasks":0, "subprojects":{}}
+                        if "total time (hrs)" not in item[task['project']].keys():
+                            item[task['project']]["total time (hrs)"] = work_hours
                         else:
-                            item[task["project"]]["total time (hrs)"] += work_hours
-                        if "total tasks" not in item[task["project"]].keys():
-                            item[task["project"]]["total tasks"] = 1
+                            item[task['project']]["total time (hrs)"] += work_hours
+                        if "total tasks" not in item[task['project']].keys():
+                            item[task['project']]["total tasks"] = 1
                         else:
-                            item[task["project"]]["total tasks"] += 1
-                        if "subprojects" not in item[task["project"]].keys():
-                            item[task["project"]]["subprojects"] = {}
-
-                        if (
-                            task["subproject"]
-                            not in item[task["project"]]["subprojects"].keys()
-                        ):
-                            item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ] = {}
-
-                        if (
-                            "time added (hrs)"
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "time added (hrs)"
-                            ] = work_hours
+                            item[task['project']]["total tasks"] += 1
+                        if "subprojects" not in item[task['project']].keys():
+                            item[task['project']]["subprojects"] = {}
+                        
+                        if task['subproject'] not in item[task['project']]['subprojects'].keys():
+                            item[task['project']]['subprojects'][task['subproject']] = {}
+                        
+                        if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] = work_hours
                         else:
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "time added (hrs)"
-                            ] += work_hours
-
-                        if (
-                            "total_tasks"
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "total_tasks"
-                            ] = 1
+                            item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] += work_hours
+                        
+                        if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['total_tasks'] = 1
                         else:
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "total_tasks"
-                            ] += 1
-                        if (
-                            "candidates"
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ] = {}
-                        if (
-                            candidate
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ]["candidates"].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ][candidate] = {"time added (hrs)": 0, "total_tasks": 0}
-
-                        if (
-                            "time added (hrs)"
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ]["candidates"][candidate].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ][candidate]["time added (hrs)"] = work_hours
+                            item[task['project']]['subprojects'][task['subproject']]['total_tasks'] += 1
+                        if "candidates" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'] = {}
+                        if candidate not in item[task['project']]['subprojects'][task['subproject']]['candidates'].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]={'time added (hrs)':0,'total_tasks':0}
+                        
+                        if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] = work_hours
                         else:
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ][candidate]["time added (hrs)"] += work_hours
-
-                        if (
-                            "total_tasks"
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ]["candidates"][candidate].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ][candidate]["total_tasks"] = 1
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] += work_hours
+                        
+                        if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] = 1
                         else:
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ][candidate]["total_tasks"] += 1
-
-                for k, v in item.items():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] += 1
+                    
+                for k,v in item.items(): 
                     _d = {
-                        "project": k,
-                        "total time (hrs)": v["total time (hrs)"]
-                        if "total time (hrs)" in v.keys()
-                        else 0,
-                        "total tasks": v["total tasks"]
-                        if "total tasks" in v.keys()
-                        else 0,
-                        "subprojects": [],
+                        "project":k,
+                        "total time (hrs)":v["total time (hrs)"] if 'total time (hrs)' in v.keys() else 0,
+                        "total tasks":v["total tasks"] if 'total tasks' in v.keys() else 0,
+                        "subprojects":[]
                     }
-                    for k1, v1 in v["subprojects"].items():
+                    for k1,v1 in v["subprojects"].items():
                         _d1 = {
-                            "subproject": k1,
-                            "time added (hrs)": v1["time added (hrs)"]
-                            if "time added (hrs)" in v1.keys()
-                            else 0,
-                            "total_tasks": v1["total_tasks"]
-                            if "total_tasks" in v1.keys()
-                            else 0,
-                            "candidates": [],
+                            "subproject":k1,
+                            "time added (hrs)":v1["time added (hrs)"] if 'time added (hrs)' in v1.keys() else 0,
+                            "total_tasks":v1["total_tasks"] if 'total_tasks' in v1.keys() else 0,
+                            "candidates":[]
                         }
-                        if "candidates" in v1.keys():
-                            for k2, v2 in v1["candidates"].items():
-                                _d2 = {
-                                    "candidate": k2,
-                                    "time added (hrs)": v2["time added (hrs)"]
-                                    if "time added (hrs)" in v2.keys()
-                                    else 0,
-                                    "total_tasks": v2["total_tasks"]
-                                    if "total_tasks" in v2.keys()
-                                    else 0,
+                        if 'candidates' in v1.keys():
+                            for k2, v2 in v1['candidates'].items():
+                                _d2 ={
+                                    "candidate":k2,
+                                    "time added (hrs)":v2["time added (hrs)"] if "time added (hrs)" in v2.keys() else 0,
+                                    "total_tasks": v2['total_tasks'] if 'total_tasks' in v2.keys() else 0
                                 }
-                                _d1["candidates"].append(_d2)
+                                _d1['candidates'].append(_d2)
                         _d["subprojects"].append(_d1)
                     res.append(_d)
-
+                
                 api_key = API_KEY
-                db_name = PROJECT_DB_NAME
-                coll_name = task_created_date
-                data = {
-                    "date": task_created_date,
-                    "company_id": request.GET.get("company_id"),
-                    "data": res,
-                }
-                response = json.loads(
-                    datacube_add_collection(api_key, db_name, coll_name, 1)
-                )
-                if response["success"] == True:
-                    response = json.loads(
-                        datacube_data_insertion(api_key, db_name, coll_name, data)
-                    )
-
-        return Response(
-            {"success": True, "message": f"successfully inserted the data "},
-            status=status.HTTP_200_OK,
-        )
-
-    def update_year_project(self, request):
-        if not request.GET.get("year"):
-            return Response(
-                {"success": False, "message": "please provide the year"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if not request.GET.get("company_id"):
-            return Response(
-                {"success": False, "message": "please provide the company_id"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        year = request.GET.get("year")
-        _year_dates = []
-        for month in range(1, 13):
-            _, number_of_days = calendar.monthrange(int(year), month)
-            month_dates = [f"{year}-{month}-{d}" for d in range(1, number_of_days + 1)]
-            _year_dates += month_dates
-        # print(_year_dates)
-        res = []
-        item = {}
-        for day in _year_dates:
-            task_created_date = day  # e.g 2023-12-24
-            field = {
-                "company_id": request.GET.get("company_id"),
-                "task_created_date": task_created_date,
-            }
-            tasks = json.loads(
-                dowellconnection(
-                    *task_details_module, "fetch", field, update_field=None
-                )
-            )
-            if tasks["isSuccess"] == True:
-                for task in tasks["data"]:
-                    if "task_id" in task.keys():
-                        c = json.loads(
-                            dowellconnection(
-                                *task_management_reports,
-                                "fetch",
-                                {
-                                    "task_created_date": task_created_date,
-                                    "_id": task["task_id"],
-                                },
-                                update_field=None,
-                            )
-                        )["data"]
-                        if len(c) > 0:
-                            candidate = c[0]["task_added_by"]
-                        else:
-                            candidate = "None"
-                    if "project" in task.keys() and "subproject" in task.keys():
-                        """print(t,"======")"""
-                        try:
-                            start_time = datetime.strptime(task["start_time"], "%H:%M")
-                            end_time = datetime.strptime(task["end_time"], "%H:%M")
-                        except Exception:
-                            start_time = datetime.strptime(
-                                task["start_time"], "%H:%M:%S"
-                            )
-                            end_time = datetime.strptime(task["end_time"], "%H:%M:%S")
-                        time_difference = (end_time - start_time).total_seconds()
-                        work_hours = time_difference / 3600
-                        if task["project"] not in item.keys():
-                            item[task["project"]] = {
-                                "total time (hrs)": 0,
-                                "total tasks": 0,
-                                "subprojects": {},
-                            }
-                        if "total time (hrs)" not in item[task["project"]].keys():
-                            item[task["project"]]["total time (hrs)"] = work_hours
-                        else:
-                            item[task["project"]]["total time (hrs)"] += work_hours
-                        if "total tasks" not in item[task["project"]].keys():
-                            item[task["project"]]["total tasks"] = 1
-                        else:
-                            item[task["project"]]["total tasks"] += 1
-                        if "subprojects" not in item[task["project"]].keys():
-                            item[task["project"]]["subprojects"] = {}
-
-                        if (
-                            task["subproject"]
-                            not in item[task["project"]]["subprojects"].keys()
-                        ):
-                            item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ] = {}
-
-                        if (
-                            "time added (hrs)"
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "time added (hrs)"
-                            ] = work_hours
-                        else:
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "time added (hrs)"
-                            ] += work_hours
-
-                        if (
-                            "total_tasks"
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "total_tasks"
-                            ] = 1
-                        else:
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "total_tasks"
-                            ] += 1
-                        if (
-                            "candidates"
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ] = {}
-                        if (
-                            candidate
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ]["candidates"].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ][candidate] = {"time added (hrs)": 0, "total_tasks": 0}
-
-                        if (
-                            "time added (hrs)"
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ]["candidates"][candidate].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ][candidate]["time added (hrs)"] = work_hours
-                        else:
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ][candidate]["time added (hrs)"] += work_hours
-
-                        if (
-                            "total_tasks"
-                            not in item[task["project"]]["subprojects"][
-                                task["subproject"]
-                            ]["candidates"][candidate].keys()
-                        ):
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ][candidate]["total_tasks"] = 1
-                        else:
-                            item[task["project"]]["subprojects"][task["subproject"]][
-                                "candidates"
-                            ][candidate]["total_tasks"] += 1
-
-                for k, v in item.items():
-                    _d = {
-                        "project": k,
-                        "total time (hrs)": v["total time (hrs)"]
-                        if "total time (hrs)" in v.keys()
-                        else 0,
-                        "total tasks": v["total tasks"]
-                        if "total tasks" in v.keys()
-                        else 0,
-                        "subprojects": [],
-                    }
-                    for k1, v1 in v["subprojects"].items():
-                        _d1 = {
-                            "subproject": k1,
-                            "time added (hrs)": v1["time added (hrs)"]
-                            if "time added (hrs)" in v1.keys()
-                            else 0,
-                            "total_tasks": v1["total_tasks"]
-                            if "total_tasks" in v1.keys()
-                            else 0,
-                            "candidates": [],
-                        }
-                        print(v1, "==========================")
-                        if "candidates" in v1.keys():
-                            for k2, v2 in v1["candidates"].items():
-                                _d2 = {
-                                    "candidate": k2,
-                                    "time added (hrs)": v2["time added (hrs)"]
-                                    if "time added (hrs)" in v2.keys()
-                                    else 0,
-                                    "total_tasks": v2["total_tasks"]
-                                    if "total_tasks" in v2.keys()
-                                    else 0,
-                                }
-                                _d1["candidates"].append(_d2)
-                        _d["subprojects"].append(_d1)
-                    res.append(_d)
-
-                api_key = API_KEY
-                db_name = PROJECT_DB_NAME
-                coll_name = task_created_date
-                data = {
-                    "date": task_created_date,
-                    "company_id": request.GET.get("company_id"),
-                    "data": res,
-                }
-                response = json.loads(
-                    datacube_add_collection(api_key, db_name, coll_name, 1)
-                )
-                if response["success"] == True:
-                    response = json.loads(
-                        datacube_data_insertion(api_key, db_name, coll_name, data)
-                    )
-
+                db_name= PROJECT_DB_NAME
+                coll_name=task_created_date
+                data={"date":task_created_date, 'company_id':request.GET.get("company_id"), "data":res}
+                response = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+                if response['success']==True:
+                    response = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+            
         return Response(
             {
                 "success": True,
-                "message": f"successfully inserted the data ",
-            },
-            status=status.HTTP_200_OK,
-        )
+                'message': f'successfully inserted the data '
+            },status=status.HTTP_200_OK)
+        
+    def update_year_project(self, request):
+        if not request.GET.get('year'):
+            return Response({"success": False, "message": "please provide the year"}, status=status.HTTP_400_BAD_REQUEST)
+        if not request.GET.get('company_id'):
+             return Response({"success": False, "message": "please provide the company_id"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        year = request.GET.get('year')
+        _year_dates=[]
+        for month in range(1, 13):
+            _, number_of_days = calendar.monthrange(int(year), month)
+            month_dates = [f"{year}-{month}-{d}" for d in range(1, number_of_days + 1)]
+            _year_dates+=month_dates
+        #print(_year_dates)
+        res=[]
+        item={}
+        for day in _year_dates:
+            task_created_date=day# e.g 2023-12-24
+            field={"company_id":request.GET.get("company_id"), "task_created_date":task_created_date}
+            tasks=json.loads(dowellconnection(*task_details_module, "fetch", field, update_field=None))
+            if (tasks['isSuccess'] == True):
+                for task in tasks['data']:
+                    if 'task_id' in task.keys():
+                        c=json.loads(dowellconnection(*task_management_reports, "fetch", {"task_created_date":task_created_date, "_id":task["task_id"]}, update_field=None))['data']
+                        if len(c) > 0:
+                            candidate=c[0]['task_added_by']
+                        else:
+                            candidate='None'
+                    if ('project' in task.keys() and 'subproject' in task.keys() ):
+                        """print(t,"======")"""
+                        try:
+                            start_time = datetime.strptime(task['start_time'], "%H:%M")
+                            end_time = datetime.strptime(task['end_time'], "%H:%M")
+                        except Exception:
+                            start_time = datetime.strptime(task['start_time'], "%H:%M:%S")
+                            end_time = datetime.strptime(task['end_time'], "%H:%M:%S")
+                        time_difference = (end_time - start_time).total_seconds()
+                        work_hours = time_difference / 3600
+                        if task['project'] not in item.keys():
+                            item[task['project']] = {"total time (hrs)":0, "total tasks":0, "subprojects":{}}
+                        if "total time (hrs)" not in item[task['project']].keys():
+                            item[task['project']]["total time (hrs)"] = work_hours
+                        else:
+                            item[task['project']]["total time (hrs)"] += work_hours
+                        if "total tasks" not in item[task['project']].keys():
+                            item[task['project']]["total tasks"] = 1
+                        else:
+                            item[task['project']]["total tasks"] += 1
+                        if "subprojects" not in item[task['project']].keys():
+                            item[task['project']]["subprojects"] = {}
+                        
+                        if task['subproject'] not in item[task['project']]['subprojects'].keys():
+                            item[task['project']]['subprojects'][task['subproject']] = {}
+                        
+                        if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] = work_hours
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['time added (hrs)'] += work_hours
+                        
+                        if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['total_tasks'] = 1
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['total_tasks'] += 1
+                        if "candidates" not in item[task['project']]['subprojects'][task['subproject']].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'] = {}
+                        if candidate not in item[task['project']]['subprojects'][task['subproject']]['candidates'].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]={'time added (hrs)':0,'total_tasks':0}
+                        
+                        if "time added (hrs)" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] = work_hours
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['time added (hrs)'] += work_hours
+                        
+                        if "total_tasks" not in item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate].keys():
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] = 1
+                        else:
+                            item[task['project']]['subprojects'][task['subproject']]['candidates'][candidate]['total_tasks'] += 1
+                    
+                for k,v in item.items(): 
+                    _d = {
+                        "project":k,
+                        "total time (hrs)":v["total time (hrs)"] if 'total time (hrs)' in v.keys() else 0,
+                        "total tasks":v["total tasks"] if 'total tasks' in v.keys() else 0,
+                        "subprojects":[]
+                    }
+                    for k1,v1 in v["subprojects"].items():
+                        _d1 = {
+                            "subproject":k1,
+                            "time added (hrs)":v1["time added (hrs)"] if 'time added (hrs)' in v1.keys() else 0,
+                            "total_tasks":v1["total_tasks"] if 'total_tasks' in v1.keys() else 0,
+                            "candidates":[]
+                        }
+                        print(v1, "==========================")
+                        if 'candidates' in v1.keys():
+                            for k2, v2 in v1['candidates'].items():
+                                _d2 ={
+                                    "candidate":k2,
+                                    "time added (hrs)":v2["time added (hrs)"] if "time added (hrs)" in v2.keys() else 0,
+                                    "total_tasks": v2['total_tasks'] if 'total_tasks' in v2.keys() else 0
+                                }
+                                _d1['candidates'].append(_d2)
+                        _d["subprojects"].append(_d1)
+                    res.append(_d)
+                
+                api_key = API_KEY
+                db_name= PROJECT_DB_NAME
+                coll_name=task_created_date
+                data={"date":task_created_date, 'company_id':request.GET.get("company_id"), "data":res}
+                response = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+                if response['success']==True:
+                    response = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+            
+        
+        return Response(
+            {
+                "success": True,
+                'message': f'successfully inserted the data ',
+                
+            },status=status.HTTP_200_OK)
 
-    def handle_error(self, request, exc):
+    def handle_error(self, request,exc):
         return Response(
             {
                 "success": False,
@@ -9073,7 +8465,6 @@ class ProjectDetails(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class Testing_Threads(APIView):
@@ -9119,7 +8510,6 @@ class Testing_Threads(APIView):
                 }
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class Product_Services_API(APIView):
     def get(self, request):
@@ -9134,7 +8524,6 @@ class Product_Services_API(APIView):
             },
             status=status.HTTP_200_OK,
         )
-
 
 @method_decorator(csrf_exempt, name="dispatch")
 class dashboard_services(APIView):
@@ -9259,57 +8648,53 @@ class dashboard_services(APIView):
                     "message": "There are no worklogs for the company or company id is not correct",
                 }
             )
-
-    def update_project(slf, request):
+    
+    def update_project(slf,request):
         project = request.data.get("project")
         candidate_id = request.GET.get("candidate_id")
         company_id = request.data.get("company_id")
 
-        field = {
-            "project": project,
-            "candidate_id": candidate_id,
-            "company_id": company_id,
+        field={
+            "project":project,
+            "candidate_id":candidate_id,
+            "company_id":company_id
         }
-        serializer = Project_Update_Serializer(data=field)
-
+        serializer=Project_Update_Serializer(data=field)
+        
         if not serializer.is_valid():
-            return Response(
-                {
-                    "success": False,
-                    "error": serializer.errors,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        field = {"_id": candidate_id, "company_id": company_id}
+            return Response({
+                "success":False,
+                "error":serializer.errors,
+                },status=status.HTTP_400_BAD_REQUEST)
+        
+        field = {"_id": candidate_id,"company_id":company_id}
         update_field = {"project": project}
-
+        
         try:
             response = json.loads(
-                dowellconnection(
-                    *candidate_management_reports, "update", field, update_field
-                )
-            )
+                    dowellconnection(
+                        *candidate_management_reports, "update", field, update_field
+                    )
+                )           
         except:
-            return Response({"success": False, "error": "DB not responding"})
-
+            return Response({
+                "success":False,
+                "error":"DB not responding"
+            })
+            
         if response["isSuccess"]:
-            return Response(
-                {
-                    "success": True,
-                    "message": "Candidate project has been updated successfully",
-                },
-                status=status.HTTP_200_OK,
-            )
-
+                return Response({
+                    "success":True,
+                    "message":"Candidate project has been updated successfully"
+                },status=status.HTTP_200_OK)
+        
         else:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Candidate projects could not be updated",
-                    "error": response["error"],
-                }
-            )
+            return Response({
+                "success":False,
+                "message":"Candidate projects could not be updated",
+                "error":response["error"]
+            })
+
 
     """HANDLE ERROR"""
 
@@ -9359,17 +8744,12 @@ class dashboard_services(APIView):
     def logs_for_month(self, request):
         today = date.today()
         _, number_of_days = calendar.monthrange(today.year, today.month)
-        month_dates = [
-            f"{today.year}-{today.month}-{d}" for d in range(1, number_of_days + 1)
-        ]
+        month_dates=[f"{today.year}-{today.month}-{d}" for d in range(1,number_of_days+1)]
 
         log_counts = {}
-
         def call_dowell(field):
-            res = dowellconnection(
-                *task_details_module, "fetch", field, update_field=None
-            )
-            response_str = json.loads(res)["data"]
+            res=dowellconnection(*task_details_module, "fetch", field, update_field=None)
+            response_str = json.loads(res)['data']
             # Process the response_str here or store it in a suitable data structure
             for item in response_str:
                 if "project" in item.keys():
@@ -9378,7 +8758,6 @@ class dashboard_services(APIView):
                         log_counts[project_name] += 1
                     else:
                         log_counts[project_name] = 1
-
         # Define a function to fetch data using threads
         def fetch_data_for_date(task_created_date, company_id):
             field = {"company_id": company_id, "task_created_date": task_created_date}
@@ -9386,20 +8765,17 @@ class dashboard_services(APIView):
                 call_dowell(field)
             except json.decoder.JSONDecodeError as error:
                 call_dowell(field)
-
+                
         # Create threads for each date
         threads = []
         for task_created_date in month_dates:
-            thread = threading.Thread(
-                target=fetch_data_for_date,
-                args=(task_created_date, request.GET.get("company_id")),
-            )
+            thread = threading.Thread(target=fetch_data_for_date, args=(task_created_date, request.GET.get("company_id")))
             threads.append(thread)
             thread.start()
         # Wait for all threads to complete
         for thread in threads:
             thread.join()
-
+            
         if (not i.is_alive() for i in threads):
             return Response(
                 {
@@ -9410,6 +8786,7 @@ class dashboard_services(APIView):
             )
         else:
             return Response({"success": False, "message": "Failed to fetch logs"})
+
 
     def delete_application(self, request):
         data = request.data
@@ -9434,7 +8811,6 @@ class dashboard_services(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-
 @method_decorator(csrf_exempt, name="dispatch")
 class candidate_leave(APIView):
     def post(self, request):
@@ -9444,11 +8820,11 @@ class candidate_leave(APIView):
         elif type_request == "approved_leave":
             return self.candidate_leave_approve(request)
         elif type_request == "get_leave":
-            return self.get_leave(request)
+            return self.get_leave(request)       
         elif type_request == "get_all_leave_application":
-            return self.get_all_leave_application(request)
+            return self.get_all_leave_application(request)    
         elif type_request == "applicants_on_leave":
-            return self.applicants_on_leave(request)
+            return self.applicants_on_leave(request)     
         else:
             return self.handle_error(request)
 
@@ -9532,6 +8908,7 @@ class candidate_leave(APIView):
         if res["isSuccess"]:
             return Response(
                 {
+                    
                     "isSuccess": True,
                     "message": "candidate leave request has been approved",
                 },
@@ -9547,126 +8924,98 @@ class candidate_leave(APIView):
             )
 
     def get_leave(self, request):
-        leave_id = request.GET.get("leave_id")
-        limit = request.GET.get("limit")
-        offset = request.GET.get("offset")
+        leave_id = request.GET.get('leave_id')
+        limit = request.GET.get('limit')
+        offset = request.GET.get('offset')
 
         data = {
             "_id": leave_id,
         }
 
-        response = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                DB_Name,
-                leave_report_collection,
-                data=data,
-                limit=limit,
-                offset=offset,
-                payment=False,
-            )
-        )
+        response = json.loads(datacube_data_retrival_function(API_KEY, DB_Name, leave_report_collection, data=data, limit=limit, offset=offset, payment=False))
 
         if not response["success"]:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Failed to retrieve leave",
-                    "database_response": {
-                        "success": response["success"],
-                        "message": response["message"],
-                    },
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        return Response(
-            {
-                "success": True,
-                "message": "Leave retrieved successfully",
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve leave",
                 "database_response": {
                     "success": response["success"],
-                    "message": response["message"],
-                },
-                "response": response["data"],
+                    "message": response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Leave retrieved successfully",
+            "database_response": {
+                "success": response["success"],
+                "message": response["message"]
             },
-            status=status.HTTP_200_OK,
-        )
+            "response": response["data"]
+        }, status=status.HTTP_200_OK)
 
     def get_all_leave_application(self, request):
-        limit = request.GET.get("limit")
-        offset = request.GET.get("offset")
+        limit = request.GET.get('limit')
+        offset = request.GET.get('offset')
 
-        response = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                DB_Name,
-                leave_report_collection,
-                data={},
-                limit=limit,
-                offset=offset,
-                payment=False,
-            )
-        )
+        response = json.loads(datacube_data_retrival_function(API_KEY, DB_Name, leave_report_collection, data={}, limit=limit, offset=offset, payment=False))
 
         if not response["success"]:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Failed to retrieve leave",
-                    "database_response": {
-                        "success": response["success"],
-                        "message": response["message"],
-                    },
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        return Response(
-            {
-                "success": True,
-                "message": "Leave retrieved successfully",
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve leave",
                 "database_response": {
                     "success": response["success"],
-                    "message": response["message"],
-                },
-                "response": response["data"],
-            },
-            status=status.HTTP_200_OK,
-        )
-
-    def applicants_on_leave(self, request):
-        field = {"status": "Leave"}
-
-        update_field = {}
-
-        candidate_report = dowellconnection(
-            *candidate_management_reports, "fetch", field, update_field
-        )
-
-        res = json.loads(candidate_report)
-
-        if res["isSuccess"]:
-            return Response(
-                {"success": True, "message": "candidate who are on leave", "data": res},
-                status=status.HTTP_201_CREATED,
-            )
-        else:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Could not fetch Leave reports",
-                    "error": res["error"],
+                    "message": response["message"]
                 }
-            )
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Leave retrieved successfully",
+            "database_response": {
+                "success": response["success"],
+                "message": response["message"]
+            },
+            "response": response["data"]
+        }, status=status.HTTP_200_OK)
+        
+        
+    def applicants_on_leave(self, request):
+
+            field = {"status": "Leave"}
+            
+            update_field={}
+            
+            candidate_report = dowellconnection(
+                *candidate_management_reports, "fetch", field, update_field)
+
+            res = json.loads(candidate_report)
+
+            if res["isSuccess"]:
+                return Response(
+                    {   "success": True,
+                        "message": "candidate who are on leave",
+                        "data": res
+                        
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "Could not fetch Leave reports",
+                        "error": res["error"],
+                    }
+                )
 
     def handle_error(self, request):
         return Response(
             {"success": False, "message": "Invalid request type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
-
+   
 @method_decorator(csrf_exempt, name="dispatch")
 class WeeklyAgenda(APIView):
     def post(self, request):
@@ -9686,7 +9035,7 @@ class WeeklyAgenda(APIView):
             return self.agenda_suprojects(request)
         else:
             return self.handle_error(request)
-
+        
     def get(self, request):
         type_request = request.GET.get("type")
 
@@ -9860,9 +9209,7 @@ class WeeklyAgenda(APIView):
             "_id": document_id,
         }
         response = json.loads(
-            datacube_data_retrival_function(
-                API_KEY, DB_Name, sub_project, data, limit, offset, False
-            )
+            datacube_data_retrival_function(API_KEY, DB_Name, sub_project, data, limit, offset,False)
         )
         # response2 = json.loads(datacube_data_retrival_function(API_KEY,"MetaDataTest","agenda_subtask",data,limit,offset,False))
 
@@ -9923,9 +9270,7 @@ class WeeklyAgenda(APIView):
 
         # data={}
         response = json.loads(
-            datacube_data_retrival_function(
-                API_KEY, DB_Name, sub_project, data, limit, offset, False
-            )
+            datacube_data_retrival_function(API_KEY, DB_Name, sub_project, data, limit, offset,False)
         )
         if not response["success"]:
             return Response(
@@ -9982,13 +9327,7 @@ class WeeklyAgenda(APIView):
 
         response = json.loads(
             datacube_data_retrival_function(
-                API_KEY,
-                DB_Name,
-                sub_project,
-                data=field,
-                limit=40,
-                offset=0,
-                payment=False,
+                API_KEY, DB_Name, sub_project, data=field, limit=40, offset=0,payment=False
             )
         )
 
@@ -10035,41 +9374,35 @@ class WeeklyAgenda(APIView):
         )
 
     def grouplead_agenda_check(self, request):
-        project = request.data.get("project")
-        company_id = request.GET.get("company_id")
-        limit = request.GET.get("limit")
-        offset = request.GET.get("offset")
+
+        project=request.data.get("project")
+        company_id=request.GET.get("company_id")
+        limit=request.GET.get("limit")
+        offset=request.GET.get("offset")        
         unique_subprojects = set()
-        collection_name = "All_Projects"
+        collection_name="All_Projects"
 
-        data = {"parent_project": project}
+        data={
+            "parent_project":project
+        }
 
-        subproject_response = json.loads(
-            datacube_data_retrival_function(
-                API_KEY, DB_Name, collection_name, data, limit, offset, False
-            )
-        )
+        subproject_response=json.loads(datacube_data_retrival_function(API_KEY,DB_Name,collection_name,data,limit,offset,False))
 
-        for subproject in subproject_response["data"]:
-            if (
-                subproject["parent_project"] == project
-                and subproject["company_id"] == company_id
-            ):
+        for subproject in subproject_response['data']:
+            if subproject['parent_project'] == project and subproject['company_id'] == company_id:
                 unique_subprojects.update(subproject["sub_project_list"])
-
+        
         subproject_list = list(unique_subprojects)
 
         subproject_agenda = []
         subproject_without_agenda = []
 
-        data = {"company_id": company_id}
-
+        data={
+            "company_id":company_id
+        }
+        
         for subproject in subproject_list:
-            subprojectcheck = json.loads(
-                datacube_data_retrival_function(
-                    API_KEY, DB_Name, subproject, data, limit, offset, False
-                )
-            )
+            subprojectcheck=json.loads(datacube_data_retrival_function(API_KEY,DB_Name,subproject,data,limit,offset,False))
             if subprojectcheck["success"]:
                 if len(subprojectcheck["data"]) > 0:
                     subproject_agenda.append(
@@ -10096,123 +9429,98 @@ class WeeklyAgenda(APIView):
             status=status.HTTP_200_OK,
         )
 
+    
     def agenda_suprojects(self, request):
-        data = request.GET
-        project = request.data.get("project")
-        company_id = data.get("company_id")
-        collection_name = "All_Projects"
+        data=request.GET
+        project=request.data.get("project")
+        company_id=data.get("company_id")
+        collection_name="All_Projects"       
 
-        data = {"parent_project": project, "company_id": company_id}
 
-        serializer = SubprojectSerializer(data=data)
+        data={
+            "parent_project":project,
+            "company_id":company_id
+        }
 
-        if not serializer.is_valid():
-            return Response(
-                {
-                    "success": False,
-                    "message": "posting invaid data",
-                    "error": serializer.errors,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        serializer=SubprojectSerializer(data=data)
+        
+        if not serializer.is_valid():       
+            return Response({
+                "success":False,
+                "message":"posting invaid data",
+                'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        response = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                DB_Name,
-                collection_name=collection_name,
-                data=data,
-                limit=0,
-                offset=0,
-                payment=False,
-            )
-        )
+        response=json.loads(datacube_data_retrival_function(API_KEY,DB_Name,collection_name=collection_name,data=data,limit=0,offset=0,payment=False))
 
         if not response["success"]:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Subprojects could not retrieved successfullly",
-                    "error": response,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({
+            "success":False,
+            "message":"Subprojects could not retrieved successfullly",
+            "error":response
+            },status=status.HTTP_400_BAD_REQUEST)
+        
+        sub_project=response["data"]
 
-        sub_project = response["data"]
+        return Response({
+            "success":True,
+            "message":response["message"],
+            "subprojects_list":sub_project
+        },status=status.HTTP_200_OK)
 
-        return Response(
+    def agenda_add_date(self,request):
+        company_id = request.GET.get('company_id')
+        subproject_name = request.GET.get('subproject_name')
+
+        serializer = WeeklyAgendaDateReportSerializer(data={"company_id":company_id,"subproject_name": subproject_name})
+        if not serializer.is_valid():
+            return Response({
+                "success": False,
+                "message": "Posting wrong data to API",
+                "error": serializer.errors,
+            }, status=status.HTTP_400_BAD_REQUEST)
+        response = json.loads(datacube_data_retrival_function(
+            API_KEY,
+            DB_Name,
+            subproject_name,
             {
-                "success": True,
-                "message": response["message"],
-                "subprojects_list": sub_project,
+                "company_id": company_id
             },
-            status=status.HTTP_200_OK,
-        )
-
-    def agenda_add_date(self, request):
-        company_id = request.GET.get("company_id")
-        subproject_name = request.GET.get("subproject_name")
-
-        serializer = WeeklyAgendaDateReportSerializer(
-            data={"company_id": company_id, "subproject_name": subproject_name}
-        )
-        if not serializer.is_valid():
-            return Response(
-                {
-                    "success": False,
-                    "message": "Posting wrong data to API",
-                    "error": serializer.errors,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        response = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                DB_Name,
-                subproject_name,
-                {"company_id": company_id},
-                10000,
-                0,
-                False,
-            )
-        )
+            10000,
+            0,
+            False
+        ))
         if not response["success"]:
-            return Response(
-                {
-                    "success": False,
-                    "message": f"Failed to retrieve data for {subproject_name.replace('-',' ')}",
-                    "database_response": {
-                        "success": response["success"],
-                        "message": response["message"],
-                    },
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+          return Response({
+                "success":False,
+                "message":f"Failed to retrieve data for {subproject_name.replace('-',' ')}",
+                "database_response":{
+                    "success":response["success"],
+                    "message":response["message"]
+                }
+            },status= status.HTTP_400_BAD_REQUEST)  
+        
+        week_pairs = [[data["week_start"], data["week_end"]] for data in response["data"]]
 
-        week_pairs = [
-            [data["week_start"], data["week_end"]] for data in response["data"]
-        ]
-
-        return Response(
-            {
-                "success": True,
-                "message": f"List of date added in the {subproject_name.replace('-',' ')}",
-                "response": week_pairs,
-            }
-        )
-
+        return Response({
+            "success": True,
+            "message": f"List of date added in the {subproject_name.replace('-',' ')}",
+            "response":week_pairs
+        })
     """HANDLE ERROR"""
+    def handle_error(self, request): 
+        return Response({
+            "success": False,
+            "message": "Invalid request type"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
 
-    def handle_error(self, request):
-        return Response(
-            {"success": False, "message": "Invalid request type"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    def agenda_status(self, request):
-        lead_name = request.GET.get("lead_name")
-        subproject = request.GET.get("subproject")
-        field = {"lead_name": lead_name, "subproject": subproject}
+    def agenda_status(self,request):
+        lead_name = request.GET.get('lead_name')
+        subproject = request.GET.get('subproject')
+        field = {
+            "lead_name": lead_name,
+            "subproject": subproject
+        }
 
         response = json.loads(
             dowellconnection(*task_details_module, "fetch", field, update_field=None)
@@ -10265,22 +9573,22 @@ class WeeklyAgenda(APIView):
                 }
             )
 
+        
     def handle_error(self, request):
         return Response(
             {"success": False, "message": "Invalid request type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
-
-@method_decorator(csrf_exempt, name="dispatch")
+    
+@method_decorator(csrf_exempt, name='dispatch')
 class Datacube_operations(APIView):
-    def post(self, request):
+    def post(self,request):
         if request.data["type"] == "add_collection":
             return self.add_collection(request)
         elif request.data["type"] == "get_collection":
-            return self.get_collection(request)
+                return self.get_collection(request)
         elif request.data["type"] == "create_individual_collections":
-            return self.create_individual_collections(request)
+                return self.create_individual_collections(request)
         else:
             return self.handle_error(request)
 
@@ -10294,7 +9602,7 @@ class Datacube_operations(APIView):
             "coll_names": coll_names,
             "num_collections": num_collections,
         }
-        # print(field)
+        #print(field)
 
         serializer = AddCollectionSerializer(data=field)
 
@@ -10309,83 +9617,54 @@ class Datacube_operations(APIView):
         )
 
         if not response["success"]:
-            return Response(
-                {
-                    "success": False,
-                    "message": "new collection could not be added",
-                    "message": response["message"],
-                },
-                status=status.HTTP_201_CREATED,
-            )
+            return Response({
+                "success":False,
+                "message":"new collection could not be added",
+                "message":response["message"]
+            },status=status.HTTP_201_CREATED)
+        
+        return Response({
+                "success":True,
+                "message":"new collection has been added",
+                "data":response["data"]
+            },status=status.HTTP_201_CREATED)
 
-        return Response(
-            {
-                "success": True,
-                "message": "new collection has been added",
-                "data": response["data"],
-            },
-            status=status.HTTP_201_CREATED,
-        )
-
-    def get_collection(self, request):
+    def get_collection(self,request):
         data = request.data
         if data:
-            coll_name = data["coll_name"]
-            db_name = data["db_name"]
-            get_collection = json.loads(
-                datacube_data_retrival_function(
-                    API_KEY, db_name, coll_name, {}, 10, 1, False
-                )
-            )
-            if get_collection["success"] == True:
-                return Response(
-                    {
-                        "success": get_collection["success"],
-                        "message": get_collection["message"],
-                        "number_of_data_in_collection": len(get_collection["data"]),
-                        "data": get_collection["data"],
-                    },
-                    status=status.HTTP_200_OK,
-                )
+            coll_name = data['coll_name']
+            db_name= data['db_name']
+            get_collection = json.loads(datacube_data_retrival_function(API_KEY,db_name,coll_name,{},10,1,False))
+            if get_collection['success']==True:
+                return Response({"success":get_collection['success'],"message":get_collection['message'],"number_of_data_in_collection":len(get_collection['data']), "data":get_collection['data']},status=status.HTTP_200_OK)
             else:
-                return Response(
-                    {
-                        "success": get_collection["success"],
-                        "message": get_collection["message"],
-                    },
-                    status=status.HTTP_204_NO_CONTENT,
-                )
+                return Response({"success":get_collection['success'],"message":get_collection['message']},status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(
                 {"success": False, "message": "No data found"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    def create_individual_collections(self, request):
+    def create_individual_collections(self,request):
         data = request.data
         api_key = API_KEY
-        db_name = REPORT_DB_NAME
-        info = dowellconnection(
-            *candidate_management_reports, "fetch", {}, update_field=None
-        )
-        if len(json.loads(info)["data"]) > 0:
-            info = json.loads(info)["data"]
-            count = 1
-            success = 1
+        db_name= REPORT_DB_NAME
+        info=dowellconnection(*candidate_management_reports, "fetch", {}, update_field=None)
+        if len(json.loads(info)["data"])>0:
+            info=json.loads(info)["data"]
+            count=1
+            success=1
             for _c in info:
-                _c["application_id"] = _c.pop("_id")
-                _c["year"] = str(datetime.today().year)
-                coll_name = _c["username"]
-                query = {"username": _c["username"], "year": _c["year"]}
-                get_collection = json.loads(
-                    datacube_data_retrival_function(
-                        api_key, db_name, coll_name, query, 10, 1, False
-                    )
-                )
-                # print(get_collection,"--"*10)
-                _d = {}
+                _c["application_id"] = _c.pop('_id')
+                _c["year"]=str(datetime.today().year)
+                coll_name =_c["username"]
+                query={"username":_c["username"],
+                        "year":_c["year"]}
+                get_collection = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,1,False))
+                #print(get_collection,"--"*10)
+                _d={}
                 for month in calendar.month_name[1:]:
-                    _d[month] = {
+                    _d[month]={
                         "task_added": 0,
                         "tasks_completed": 0,
                         "tasks_uncompleted": 0,
@@ -10402,333 +9681,353 @@ class Datacube_operations(APIView):
                         "team_tasks_approved": 0,
                         "team_tasks_issues_raised": 0,
                         "team_tasks_issues_resolved": 0,
-                        "team_tasks_comments_added": 0,
+                        "team_tasks_comments_added": 0
                     }
-
-                if get_collection["success"] == False:
-                    if coll_name in get_collection["message"]:
-                        print(get_collection["message"])
-                        # creating collection------------------------------
-                        create_collection = json.loads(
-                            datacube_add_collection(api_key, db_name, coll_name, 1)
-                        )
-                        if create_collection["success"] == True:
-                            print(f"successfully created the collection-{coll_name}")
-                            # inserting data into the collection------------------------------
-                            data = _c
-                            data["task_report"] = {}
-                            data["data"] = _d
-                            insert_collection = json.loads(
-                                datacube_data_insertion(
-                                    api_key, db_name, coll_name, data
-                                )
-                            )
-                            if insert_collection["success"] == True:
-                                print(
-                                    f"successfully inserted the data the collection-{coll_name}"
-                                )
+                            
+                if get_collection['success']==False:
+                    if coll_name in get_collection['message']:
+                        print(get_collection['message'])
+                        #creating collection------------------------------
+                        create_collection = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+                        if create_collection['success']==True:
+                            print(f'successfully created the collection-{coll_name}')
+                            #inserting data into the collection------------------------------
+                            data=_c
+                            data["task_report"]={}
+                            data["data"]=_d
+                            insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+                            if insert_collection['success']==True:
+                                print(f'successfully inserted the data the collection-{coll_name}')
                             else:
-                                print(
-                                    f"failed to insert datafor the collection-{coll_name}"
-                                )
+                                print(f"failed to insert datafor the collection-{coll_name}")
                         else:
                             print(f"failed to create collection for {coll_name}")
-
+                    
                     else:
                         return Response(
-                            get_collection,
-                            status=status.HTTP_404_NOT_FOUND,
-                        )
-
+                                        get_collection,
+                                        status=status.HTTP_404_NOT_FOUND,
+                                    )
+                
                 else:
-                    # print(f'collection-{coll_name} exists')
-                    if len(get_collection["data"]) <= 0:
-                        print(f"collection-{coll_name} is empty... inserting data")
-                        data = _c
-                        data["task_report"] = {}
-                        data["data"] = _d
-                        insert_collection = json.loads(
-                            datacube_data_insertion(api_key, db_name, coll_name, data)
-                        )
-                        if insert_collection["success"] == True:
-                            print(
-                                f"successfully inserted the data the collection- {coll_name}"
-                            )
+                    #print(f'collection-{coll_name} exists')
+                    if len(get_collection['data'])<=0:
+                        print(f'collection-{coll_name} is empty... inserting data')
+                        data=_c
+                        data["task_report"]={}
+                        data["data"]=_d
+                        insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+                        if insert_collection['success']==True:
+                            print(f'successfully inserted the data the collection- {coll_name}')
                         else:
-                            print(
-                                f"failed to insert the data into the collection- {coll_name}"
-                            )
-
+                            print(f'failed to insert the data into the collection- {coll_name}')
+                        
                     else:
-                        if len(get_collection["data"][0]["data"]) <= 0:
-                            print(
-                                f"collection-{coll_name} task data field is empty.. updating"
-                            )
-                            # update collection------------------------------
-                            query = {"application_id": _c["application_id"]}
-
-                            update_data = {"data": _d}
-                            update_collection = json.loads(
-                                datacube_data_update(
-                                    api_key, db_name, coll_name, query, update_data
-                                )
-                            )
-                            if update_collection["success"] == True:
-                                print(
-                                    f"successfully updated the collection-{coll_name}"
-                                )
+                        if len(get_collection['data'][0]['data'])<=0:
+                            print(f'collection-{coll_name} task data field is empty.. updating')
+                            #update collection------------------------------
+                            query={"application_id":_c["application_id"]}
+                            
+                            update_data={"data":_d}
+                            update_collection = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
+                            if update_collection['success']==True:
+                                print(f'successfully updated the collection-{coll_name}')
                             else:
-                                print(f"failed to update the collection-{coll_name}")
-
-            return Response(
-                {
-                    "success": True,
-                    "message": f"{count} Collections created successfully",
-                },
-                status=status.HTTP_200_OK,
-            )
+                                print(f'failed to update the collection-{coll_name}')
+                        
+            return Response({"success":True,"message":f"{count} Collections created successfully"},status=status.HTTP_200_OK)
         else:
             return Response(
                 {"success": False, "message": "No data found"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-
-@method_decorator(csrf_exempt, name="dispatch")
+@method_decorator(csrf_exempt, name='dispatch')
 class test(APIView):
     def get(self, request):
-        return Response(
-            {
-                "api key": API_KEY,
-                "db name": DB_Name,
-            }
-        )
 
+        return Response({
+            "api key":API_KEY,
+            "db name":DB_Name,
+        })
 
 @method_decorator(csrf_exempt, name="dispatch")
 class candidate_attendance(APIView):
+    
+    max_try = 2
     def post(self, request):
         request_type = request.GET.get("type")
         if not request_type:
-            return Response(
-                {
-                    "success": False,
-                    "message": "Request type should be sent in query as params",
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            return Response({
+                "success": False,
+                "message": "Request type should be sent in query as params"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
         if request_type == "add_attendance":
             return self.add_attendance(request)
-        if request_type == "get_attendance":
-            return self.get_attendance(request)
+        elif request_type == "update_attendance":
+            return self.update_attendance(request)
+        elif request_type == "project_wise_attendance":
+            return self.get_project_wise_attendance(request)
+        elif request_type == "get_user_wise_attendance":
+            return self.get_user_wise_attendance(request)
         else:
             self.handle_error(request)
 
     def add_attendance(self, request):
-        applicant_usernames = request.data.get("applicant_usernames")
+        user_present = request.data.get("user_present")
+        user_absent = request.data.get("user_absent")
+        project = request.data.get("project")
         date_taken = request.data.get("date_taken")
         company_id = request.data.get("company_id")
         meeting = request.data.get("meeting")
+        data_type = request.data.get("data_type")
 
         serializer = AttendanceSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return Response(
-                {
-                    "success": False,
-                    "message": "Posting Invalid Data",
-                    "error": serializer.errors,
-                }
-            )
+            return Response({
+                "success": False,
+                "message": "Posting Invalid Data",
+                "error": serializer.errors
+            })
 
         start, end = get_current_week_start_end_date(date_taken)
-
         collection = f"{start}_to_{end}"
 
         data = {
-            "applicant_usernames": applicant_usernames,
+            "user_present": user_present,
+            "user_absent": user_absent,
             "date_taken": date_taken,
+            "project": project,
             "company_id": company_id,
             "meeting": meeting,
+            "data_type": data_type
         }
 
-        try:
-            insert_attendance = json.loads(
-                datacube_data_insertion(API_KEY, ATTENDANCE_DB, collection, data)
-            )
-        except:
-            return Response({"success": False, "error": "Datacube is not responding"})
+        def insert_data(attempt=1):  
+            try:
+                insert_attendance = json.loads(
+                    datacube_data_insertion(API_KEY, ATTENDANCE_DB, collection, data)
+                )
+            except Exception as e:
+                return Response({
+                    "success": False,
+                    "error": "Datacube is not responding"
+                })
 
-        if insert_attendance["success"]:
-            return Response(
-                {
+            if insert_attendance["success"]:
+                return Response({
                     "success": True,
-                    "message": f"Attendance has been successfully recorded to {collection}",
-                },
-                status=status.HTTP_201_CREATED,
-            )
+                    "message": f"Attendance has been successfully recorded to {collection}"
+                }, status=status.HTTP_201_CREATED)
+            
+            elif "success" in insert_attendance and not insert_attendance["success"]:
 
-        else:
-            return Response({"success": False, "error": insert_attendance["message"]})
+                if attempt < self.max_try:
+                    
+                    add_collection = json.loads(datacube_add_collection(API_KEY, ATTENDANCE_DB, collection, num_collections=1))
+                    attempt += 1
+                    return insert_data(attempt=attempt)
+                else:
+                    return Response({
+                        "success": False,
+                        "error": "Maximum try reached to insert the data to the datacube"
+                    })
 
-    def get_attendance(self, request):
-        start_date = request.data.get("start_date")
-        end_date = request.data.get("end_date")
-        username = request.data.get("applicant_username")
-        collection = start_date + "_" + end_date + "_" + username
-        attendance_date = request.data.get("attendance_date")
-        limit = request.data.get("limit")
-        offset = request.data.get("offset")
+        return insert_data()
 
-        data = {}
-        if attendance_date:
-            data = {"date": attendance_date}
+    def get_project_wise_attendance(self,request):
+
+        start_date=request.data.get("start_date")
+        end_date=request.data.get("end_date")
+        projects=request.data.get("project")
+        company_id=request.data.get("company_id")
+        collection=start_date+"_to_"+end_date
+        limit=request.data.get("limit")
+        offset=request.data.get("offset")
+        
+        data={"company_id":company_id}
+        
+        attendance_with_projects={}
+
+        serializer=AttendanceRetrievalSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "error":serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            attendance_report = json.loads(
-                datacube_data_retrival(
-                    API_KEY, ATTENDANCE_DB, collection, data, limit, offset
-                )
-            )
-
+            attendance_report=json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,collection,data,limit,offset))    
+            
         except:
-            return Response(
-                {"success": False, "error": "datacube database not responding"}
-            )
+            return Response({
+                "success":False,
+                "error":"datacube database not responding"
+            })
+       
+        if attendance_report["success"]==True:              
+                if len(attendance_report["data"])>0:
+                    for project in projects:
+                        for attendance in attendance_report["data"]:
+                            if attendance_report["data"][0]["project"] in attendance_with_projects:
+                                attendance_with_projects[project].append(attendance)
+                            else:
+                                attendance_with_projects[project]=[attendance]    
+                    return Response({
+                        "success":True,
+                        "message":"Attendance records has been succesfully retrieved",
+                        "data":attendance_with_projects},status=status.HTTP_200_OK)                  
+                else:
+                    return Response({
+                        "success":False,
+                        "error":"Attendance for the given payload does not exist"
+                    })
+                    
+        return Response({"success":False,"message":attendance_report["message"]},status=status.HTTP_400_BAD_REQUEST )
+    
+    def get_user_wise_attendance(self,request):
 
-        if attendance_report["success"] == True:
-            if len(attendance_report["data"]) > 0:
-                for project in projects:
-                    for attendance in attendance_report["data"]:
-                        if (
-                            attendance_report["data"][0]["project"]
-                            in attendance_with_projects
-                        ):
-                            attendance_with_projects[project].append(attendance)
-                        else:
-                            attendance_with_projects[project] = [attendance]
-                return Response(
-                    {
-                        "success": True,
-                        "message": "Attendance records has been succesfully retrieved",
-                        "data": attendance_with_projects,
-                    },
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(
-                    {
-                        "success": False,
-                        "error": "Attendance for the given payload does not exist",
-                    }
-                )
-
-        return Response(
-            {"success": False, "message": attendance_report["message"]},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    def get_user_wise_attendance(self, request):
-        def add_user_attendance(userdetail, date, is_user_present):
+        def add_user_attendance(userdetail,date,is_user_present):
             if is_user_present:
                 userdetail["dates_present"].append(date)
             else:
                 userdetail["dates_absent"].append(date)
 
-        start_date = request.data.get("start_date")
-        end_date = request.data.get("end_date")
-        usernames = request.data.get("usernames")
-        company_id = request.data.get("company_id")
-        project = request.data.get("project")
-        collection = str(start_date) + "_to_" + str(end_date)
-        limit = request.data.get("limit")
-        offset = request.data.get("offset")
+                
+        start_date=request.data.get("start_date")
+        end_date=request.data.get("end_date")
+        usernames=request.data.get("usernames")
+        company_id=request.data.get("company_id")
+        project=request.data.get("project")
+        collection=str(start_date)+"_to_"+str(end_date)
+        limit=request.data.get("limit")
+        offset=request.data.get("offset")
 
-        data = {"company_id": company_id, "project": project}
+        data={"company_id":company_id,"project":project}
 
-        serializer = IndividualAttendanceRetrievalSerializer(data=request.data)
+        serializer=IndividualAttendanceRetrievalSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return Response({"success": False, "error": serializer.errors})
-
+            return Response({
+                "success":False,
+                "error":serializer.errors
+            })
+        
         try:
-            attendance_report = json.loads(
-                datacube_data_retrival(
-                    API_KEY, ATTENDANCE_DB, collection, data, limit, offset
-                )
-            )
+            attendance_report=json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,collection,data,limit,offset))     
             print(attendance_report)
         except:
-            return Response(
-                {"success": False, "error": "datacube database not responding"}
-            )
+            return Response({
+                "success":False,
+                "error":"datacube database not responding"
+            })
 
-        dates = get_dates_between(start_date, end_date)
+        dates=get_dates_between(start_date,end_date)
 
-        attendance_with_users = {
-            user: {"dates_present": [], "dates_absent": [], "project": project}
-            for user in usernames
+        
+        attendance_with_users={user:{"dates_present":[],"dates_absent":[],"project":project} for user in usernames }
+
+        if attendance_report["success"]==True:
+                for user in usernames:
+                        for date in dates:
+                                is_user_present= any(record.get("date_taken")==date and user in record.get("user_present") for record in attendance_report["data"])
+                                
+                                add_user_attendance(attendance_with_users[user],date,is_user_present)
+                return Response({
+                    "success":True,
+                    "message":"Attendance records has been succesfully retrieved",
+                    "data":attendance_with_users},status=status.HTTP_200_OK)
+            
+        return Response({"success":False,"message":attendance_report},status=status.HTTP_400_BAD_REQUEST )
+    
+    def update_attendance(self,request):
+        user_present=request.data.get("user_present")
+        user_absent=request.data.get("user_absent")
+        date_taken=request.data.get("date_taken")
+        document_id=request.data.get("document_id")
+
+        serializer=UpdateAttendanceSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        start, end = get_current_week_start_end_date(date_taken)
+        
+        collection=f"{start}_to_{end}"
+        
+        update_data={
+            "user_present":user_present,
+            "user_absent":user_absent,
+            "date_taken":date_taken,
         }
 
-        if attendance_report["success"] == True:
-            for user in usernames:
-                for date in dates:
-                    is_user_present = any(
-                        record.get("date_taken") == date
-                        and user in record.get("user_present")
-                        for record in attendance_report["data"]
-                    )
+        query={
+            "document_id":document_id
+        }
+        try:
+            update_attendance = json.loads(
+                datacube_data_update(API_KEY,ATTENDANCE_DB,collection,query,update_data))
+            print(update_attendance)
+        except: 
+                return Response({
+                    "success":False,
+                    "error":"Datacube is not responding"
+                })    
+            
+        if update_attendance["success"]:
+            return Response({
+            "success":True,
+            "message":f"Attendance has been updated to {collection}"
+        },status=status.HTTP_201_CREATED)
+            
+        else:
+            return Response({
+                "success":False,
+                "error":update_attendance["message"]
+            })
 
-                    add_user_attendance(
-                        attendance_with_users[user], date, is_user_present
-                    )
-            return Response(
-                {
-                    "success": True,
-                    "message": "Attendance records has been succesfully retrieved",
-                    "data": attendance_with_users,
-                },
-                status=status.HTTP_200_OK,
-            )
-
-        return Response(
-            {"success": False, "message": attendance_report},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    def handle_error(self, request):
-        return Response(
-            {"success": False, "error": "Invalid request type"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-
+    def handle_error(self,request):
+        return Response({
+            "success":False,
+            "error":"Invalid request type"
+        },status=status.HTTP_400_BAD_REQUEST)
+    
 @method_decorator(csrf_exempt, name="dispatch")
 class speed_test(APIView):
-    def get(self, request, email):
+    def get(self, request,email):
         if not email:
-            return Response({"success": False, "message": "Kindly provide email"})
+            return Response({
+                "success": False,
+                "message": "Kindly provide email"
+            })
         response = get_speed_test_result(email)
-        return Response(
-            {
-                "success": True,
-                "message": "Speed test data retrived successfully",
-                "response": response,
-            }
-        )
-
-
+        return Response({
+            "success": True,
+            "message": "Speed test data retrived successfully",
+            "response": response
+        })
+@method_decorator(csrf_exempt, name="dispatch")
 class dowell_speed_test(APIView):
     def get(self, request, email):
         if not email:
-            return Response({"success": False, "message": "Kindly provide an email"})
+            return Response({
+                "success": False,
+                "message": "Kindly provide an email"
+            })
 
         response = get_speed_test_result(email)
-
+        
         if not response:
-            return Response(
-                {"success": False, "message": f"Failed to retrieve data for {email}"}
-            )
+            return Response({
+                "success": False,
+                "message": f"Failed to retrieve data for {email}"
+            })
 
         results = []
         for test_result in response:
@@ -10740,1067 +10039,650 @@ class dowell_speed_test(APIView):
 
                 device_type = test_result.get("DEVICE")
                 if device_type != "Laptop":
-                    results.append(
-                        {
-                            "success": False,
-                            "message": f"Access denied for {test_result.get('ID')} - Device not recognized as a Laptop",
-                        }
-                    )
+                    results.append({
+                        "success": False,
+                        "message": f"Access denied for {test_result.get('ID')} - Device not recognized as a Laptop"
+                    })
                     continue
 
-                if not speed_test_condition(
-                    download_speed, upload_speed, latency, jitter
-                ):
-                    results.append(
-                        {
-                            "success": False,
-                            "message": f"Speed test result less for {test_result.get('ID')}",
-                            "details": {
-                                "download": download_speed,
-                                "upload": upload_speed,
-                                "latency": latency,
-                                "jitter": jitter,
-                                "date": test_result.get("DATETIME"),
-                            },
+                if not speed_test_condition(download_speed, upload_speed, latency, jitter):
+                    results.append({
+                        "success": False,
+                        "message": f"Speed test result less for {test_result.get('ID')}",
+                        "details": {
+                            "download": download_speed,
+                            "upload": upload_speed,
+                            "latency": latency,
+                            "jitter": jitter,
+                            "date": test_result.get("DATETIME"),
                         }
-                    )
+                    })
                 else:
-                    results.append(
-                        {
-                            "success": True,
-                            "message": "Speed test data retrieved successfully and candidate has passed all the criteria",
-                            "details": {
-                                "download": download_speed,
-                                "upload": upload_speed,
-                                "latency": latency,
-                                "jitter": jitter,
-                                "date": test_result.get("DATETIME"),
-                            },
+                    results.append({
+                        "success": True,
+                        "message": "Speed test data retrieved successfully and candidate has passed all the criteria",
+                        "details": {
+                            "download": download_speed,
+                            "upload": upload_speed,
+                            "latency": latency,
+                            "jitter": jitter,
+                            "date": test_result.get("DATETIME")
                         }
-                    )
+                    })
 
             except (ValueError, KeyError, TypeError) as e:
-                results.append(
-                    {
-                        "success": False,
-                        "message": f"You have manipulted the speedtest result {test_result.get('ID')} , Thank you",
-                    }
-                )
+                results.append({
+                    "success": False,
+                    "message": f"You have manipulted the speedtest result {test_result.get('ID')} , Thank you"
+                })
 
-        return Response(
-            {
-                "success": True,
-                "message": "Speed test data retrieved successfully",
-                "response": results,
-            }
-        )
+        return Response({
+            "success": True,
+            "message": "Speed test data retrieved successfully",
+            "response": results
+        })
 
-
+@method_decorator(csrf_exempt, name="dispatch")   
 class Company_Structure(APIView):
-    def rearrange(self, word):
-        res = ""
-        for char in word:
+    def rearrange(self,word):
+        res=""
+        for char in word.lower():
             if char.isalpha():
                 char.lower()
-                res += char
+                res+=char
         return res
-
-    def post(self, request):
+    def post(self,request):
         type_request = request.GET.get("type")
 
         if type_request == "add_ceo":
             return self.add_ceo(request, type_request)
+        elif type_request == "get_ceo":
+            return self.get_ceo(request, type_request)
         elif type_request == "update_ceo":
-            return self.update_ceo(request, type_request)
+            return self.update_ceo(request,type_request)
         elif type_request == "add_project_leads":
             return self.add_project_leads(request, type_request)
+        elif type_request == "get_project_leads":
+            return self.get_project_leads(request, type_request)
         elif type_request == "update_project_leads":
-            return self.update_project_leads(request, type_request)
+            return self.update_project_leads(request,type_request)
         elif type_request == "add_projects":
-            return self.add_projects(request, type_request)
+            return self.add_projects(request,type_request)
+        elif type_request == "get_projects":
+            return self.get_projects(request,type_request)
         elif type_request == "update_projects":
-            return self.update_projects(request, type_request)
+            return self.update_projects(request,type_request)
         else:
-            return self.handle_error(request, "'ceo'|'project_leads'|'projects'")
-
-    def add_ceo(self, request, type_request):
-        type_request = type_request.replace("add_", "")
+            return self.handle_error(request,"'ceo'|'project_leads'|'projects'")
+    def add_ceo(self,request, type_request):
+        type_request = type_request.replace("add_","")
         coll_name = type_request
-        serializer = CompanyStructureAddCeoSerializer(data=request.data)
+        serializer=CompanyStructureAddCeoSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(
-                {
-                    "success": False,
-                    "message": "Invalid data",
-                    "error": serializer.errors,
-                }
-            )
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
         company_id = request.data.get("company_id")
         company_name = request.data.get("company_name")
         ceo = request.data.get("ceo")
-        c_l = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                COMPANY_STRUCTURE_DB_NAME,
-                coll_name,
-                {"ceo": ceo},
-                10,
-                0,
-                False,
-            )
-        )
-        if len(c_l["data"]) > 0:
-            return Response(
-                {
-                    "success": False,
-                    "message": f"A ceo with called {ceo} already exists",
-                },
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        c_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"ceo":ceo},10,0,False))
+        if len(c_l['data']) >0:
+            return Response({
+                        "success":False,
+                        "message":f"A ceo with called {ceo} already exists",
+                    },status=status.HTTP_404_NOT_FOUND)
         project_leads = []
         coll_name = type_request
-        search_query = {
-            "company_id": company_id,
-            "company_name": company_name,
-            "data_type": "Real_Data",
+        search_query ={  
+            "company_id":company_id,
+            "company_name":company_name,
+            "data_type":"Real_Data"
         }
-        res = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                COMPANY_STRUCTURE_DB_NAME,
-                coll_name,
-                search_query,
-                10,
-                0,
-                False,
-            )
-        )
-        # if ceo exists update else insert it
-        if (
-            res["success"] == False
-            and res["message"]
-            == f"Collection '{coll_name}' does not exist in Datacube database"
-        ):
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        #if ceo exists update else insert it
+        if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
-            create_collection = json.loads(
-                datacube_add_collection(
-                    API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, 1
-                )
-            )
-            if create_collection["success"] == False:
-                return Response(create_collection, status=status.HTTP_400_BAD_REQUEST)
+            create_collection= json.loads(datacube_add_collection(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,1))
+            if create_collection['success'] == False:
+                return Response(create_collection,status=status.HTTP_400_BAD_REQUEST)
             """insert data into the collection if the is no content----------------------"""
-            data = {
-                "company_id": company_id,
-                "company_name": company_name,
-                "ceo": ceo,
-                "project_leads": project_leads,
-                "data_type": "Real_Data",
-            }
-            insert_collection = json.loads(
-                datacube_data_insertion(
-                    API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, data
-                )
-            )
-            if insert_collection["success"] == True:
-                insert_collection[
-                    "message"
-                ] = f"{type_request} data has been inserted successfully."
-                return Response(insert_collection, status=status.HTTP_200_OK)
-            else:
-                return Response(insert_collection, status=status.HTTP_400_BAD_REQUEST)
-        elif res["success"] == True:
-            if len(res["data"]) >= 1:
-                res = {
-                    "success": False,
-                    "message": f"Data with this ceo '{ceo}' already exists.",
+            data ={
+                    "company_id":company_id,
+                    "company_name":company_name,
+                    "ceo":ceo,
+                    "project_leads":project_leads,
+                    "data_type":"Real_Data"
                 }
-                return Response(res, status=status.HTTP_400_BAD_REQUEST)
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+            if insert_collection['success']==True:
+                insert_collection['message'] = f"{type_request} data has been inserted successfully."
+                return Response(insert_collection,status=status.HTTP_200_OK)
+            else:
+                return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+        elif res['success'] == True:
+            if len(res['data']) >=1:
+                res={"success":False, "message":f"Data with this ceo '{ceo}' already exists."}
+                return Response(res,status=status.HTTP_400_BAD_REQUEST)
             else:
                 """insert data into the collection if the is no content----------------------"""
-                data = {
-                    "company_id": company_id,
-                    "company_name": company_name,
-                    "ceo": ceo,
-                    "project_leads": project_leads,
-                    "data_type": "Real_Data",
-                }
-                print(res, "==============")
-                insert_collection = json.loads(
-                    datacube_data_insertion(
-                        API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, data
-                    )
-                )
-                if insert_collection["success"] == True:
-                    insert_collection[
-                        "message"
-                    ] = f"{type_request} data has been inserted successfully.."
-                    return Response(insert_collection, status=status.HTTP_200_OK)
+                data ={
+                        "company_id":company_id,
+                        "company_name":company_name,
+                        "ceo":ceo,
+                        "project_leads":project_leads,
+                        "data_type":"Real_Data"
+                    }
+                print(res,"==============")
+                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+                if insert_collection['success']==True:
+                    insert_collection['message'] = f"{type_request} data has been inserted successfully.."
+                    return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
-                    return Response(
-                        insert_collection, status=status.HTTP_400_BAD_REQUEST
-                    )
-
-    def update_ceo(self, request, type_request):
-        type_request = type_request.replace("update_", "")
-        serializer = CompanyStructureUpdateCeoSerializer(data=request.data)
+                    return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+    def get_ceo(self,request, type_request):
+        company_id = request.data.get("company_id")
+        search_query ={  
+            "company_id":company_id,
+            "data_type":"Real_Data"
+        }
+        coll_name = 'ceo'
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        if res['success'] == True:
+            return Response(res,status=status.HTTP_200_OK)
+        else:
+            return Response(res,status=status.HTTP_404_NOT_FOUND)
+    def update_ceo(self,request, type_request):
+        type_request = type_request.replace("update_","")
+        serializer=CompanyStructureUpdateCeoSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(
-                {
-                    "success": False,
-                    "message": "Invalid data",
-                    "error": serializer.errors,
-                }
-            )
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
         company_id = request.data.get("company_id")
         company_name = request.data.get("company_name")
         previous_ceo = request.data.get("previous_ceo")
         current_ceo = request.data.get("current_ceo")
         data_type = request.data.get("data_type")
         coll_name = type_request
-        search_query = {
-            "company_id": company_id,
-            "data_type": "Real_Data",
-            "ceo": previous_ceo,
+        search_query ={  
+            "company_id":company_id,
+            "data_type":"Real_Data",
+            "ceo":previous_ceo,
         }
-        res = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                COMPANY_STRUCTURE_DB_NAME,
-                coll_name,
-                search_query,
-                10,
-                0,
-                False,
-            )
-        )
-        # if ceo exists update else insert it
-        if res["success"] == False:
-            return Response(res, status=status.HTTP_404_NOT_FOUND)
-        if res["success"] == True:
-            if len(res["data"]) <= 0:
-                res = {
-                    "success": False,
-                    "message": "Data not found with these details.",
-                }
-                return Response(res, status=status.HTTP_404_NOT_FOUND)
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        #if ceo exists update else insert it
+        if res['success'] == False:
+            return Response(res,status=status.HTTP_404_NOT_FOUND)
+        if res['success'] == True:
+            if len(res['data']) <=0 :
+                res = {'success':False,"message":"Data not found with these details."}
+                return Response(res,status=status.HTTP_404_NOT_FOUND)
             else:
-                # update---------------
-                print(res, "==============")
-                update_data = {
-                    "company_name": company_name,
-                    "ceo": current_ceo,
-                    "data_type": data_type,
-                }
-                update_collection = json.loads(
-                    datacube_data_update(
-                        API_KEY,
-                        COMPANY_STRUCTURE_DB_NAME,
-                        coll_name,
-                        search_query,
-                        update_data,
-                    )
-                )
-                if update_collection["success"] == True:
-                    update_collection[
-                        "message"
-                    ] = f"{type_request} data has been updated successfully."
-                    del update_collection["data"]
-                    return Response(update_collection, status=status.HTTP_200_OK)
+                #update---------------
+                print(res,"==============")
+                update_data={
+                            "company_name":company_name,
+                            "ceo":current_ceo,
+                            "data_type":data_type
+                            } 
+                update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
+                if update_collection['success']==True:
+                    update_collection['message'] = f"{type_request} data has been updated successfully."
+                    del update_collection['data']
+                    return Response(update_collection,status=status.HTTP_200_OK)
                 else:
-                    del update_collection["data"]
-                    return Response(
-                        update_collection, status=status.HTTP_400_BAD_REQUEST
-                    )
-
+                    del update_collection['data']
+                    return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
+    
     def add_project_leads(self, request, type_request):
-        type_request = type_request.replace("add_", "")
+        type_request = type_request.replace('add_','')
         coll_name = type_request
-        serializer = CompanyStructureAddProjectLeadSerializer(data=request.data)
+        serializer=CompanyStructureAddProjectLeadSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(
-                {
-                    "success": False,
-                    "message": "Invalid data",
-                    "error": serializer.errors,
-                }
-            )
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
         company_id = request.data.get("company_id")
         project_lead = request.data.get("project_lead")
-        p_l = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                COMPANY_STRUCTURE_DB_NAME,
-                coll_name,
-                {"project_lead": project_lead},
-                10,
-                0,
-                False,
-            )
-        )
-        if len(p_l["data"]) > 0:
-            return Response(
-                {
-                    "success": False,
-                    "message": f"A project lead with called {project_lead} already exists",
-                },
-                status=status.HTTP_404_NOT_FOUND,
-            )
-        info = json.loads(
-            dowellconnection(
-                *candidate_management_reports,
-                "fetch",
-                {"username": project_lead},
-                update_field=None,
-            )
-        )
-        # print(info,"===============")
-        if info["isSuccess"] is False or len(info["data"]) <= 0:
-            return Response(
-                {
-                    "success": False,
-                    "message": f"No such candidate '{project_lead}' exists in Dowell.",
-                }
-            )
-        applicant_id = info["data"][0]["_id"]
+        p_l = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,{"project_lead":project_lead},10,0,False))
+        if len(p_l['data']) >0:
+            return Response({
+                    "success":False,
+                    "message":f"A project lead with called {project_lead} already exists",
+                },status=status.HTTP_404_NOT_FOUND)
+        info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':project_lead}, update_field=None))
+        #print(info,"===============")
+        if (info['isSuccess'] is False or len(info['data'])<=0):
+            return Response({
+                    "success":False,
+                    "message":f"No such candidate '{project_lead}' exists in Dowell."
+                })
+        applicant_id = info['data'][0]['_id']
         project_lead_id = applicant_id
         projects_managed = request.data.get("projects_managed")
         _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
         coll_name = type_request
-        team_lead_reports_to = {}
-        projects = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                COMPANY_STRUCTURE_DB_NAME,
-                "projects",
-                {"company_id": company_id},
-                10,
-                0,
-                False,
-            )
-        )
-        if len(projects["data"]) > 0:
-            for p in projects["data"]:
-                team_lead_reports_to[p["_coded_project"]] = p["teamlead_reports_to"]
-                if p["_coded_project"] not in _coded_projects_managed:
-                    return Response(
-                        {"success": False, "message": f"The Project {p} doesnt exist."}
-                    )
-        search_query = {
-            "company_id": company_id,
-            "project_lead": project_lead,
-            "project_lead_id": project_lead_id,
-            "data_type": "Real_Data",
+        team_lead_reports_to ={}
+        projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{"company_id":company_id},10,0,False))
+        if len(projects['data'])>0:
+            for p in projects['data']:
+                team_lead_reports_to[p['_coded_project']]=p['teamlead_reports_to']
+                if p['_coded_project'] not in _coded_projects_managed:
+                    return Response({
+                            "success":False,
+                            "message":f"The Project {p} doesnt exist."
+                        }) 
+        search_query ={  
+            "company_id":company_id,
+            "project_lead":project_lead,
+            "project_lead_id":project_lead_id,
+            "data_type":"Real_Data"
         }
-        res = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                COMPANY_STRUCTURE_DB_NAME,
-                coll_name,
-                search_query,
-                10,
-                0,
-                False,
-            )
-        )
-        # if ceo exists update else insert it
-        if (
-            res["success"] == False
-            and res["message"]
-            == f"Collection '{coll_name}' does not exist in Datacube database"
-        ):
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        
+        if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
-
+            
             try:
-                create_collection = json.loads(
-                    datacube_add_collection(
-                        API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, 1
-                    )
-                )
-                if create_collection["success"] == False:
-                    return Response(
-                        create_collection, status=status.HTTP_400_BAD_REQUEST
-                    )
+                create_collection= json.loads(datacube_add_collection(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,1))
+                if create_collection['success'] == False:
+                    return Response(create_collection,status=status.HTTP_400_BAD_REQUEST)
             except Exception as error:
-                return Response(
-                    {"success": False, "message": error},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                return Response({'success':False,"message":error},status=status.HTTP_400_BAD_REQUEST)
             """insert data into the collection if the is no content----------------------"""
-            data = {
-                "company_id": company_id,
-                "project_lead": project_lead,
-                "project_lead_id": project_lead_id,
-                "projects_managed": projects_managed,
-                "_coded_projects_managed": _coded_projects_managed,
-                "data_type": "Real_Data",
-            }
-            insert_collection = json.loads(
-                datacube_data_insertion(
-                    API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, data
-                )
-            )
-            if insert_collection["success"] == True:
-                # update the projects team lead reports to list------------------------------
-                p_q = {"company_id": company_id, "_coded_project": projects_managed}
-                projects = json.loads(
-                    datacube_data_retrival_function(
-                        API_KEY,
-                        COMPANY_STRUCTURE_DB_NAME,
-                        "projects",
-                        p_q,
-                        10,
-                        0,
-                        False,
-                    )
-                )
-                if len(projects["data"]) > 0:
-                    for p in projects["data"]:
-                        p = projects["data"][0]
-
-                        teamlead_reports_to = p["teamlead_reports_to"]
-                        teamlead_reports_to.append(project_lead)
-                        update_data = {"teamlead_reports_to": teamlead_reports_to}
-                        update_collection = json.loads(
-                            datacube_data_update(
-                                API_KEY,
-                                COMPANY_STRUCTURE_DB_NAME,
-                                "projects",
-                                p_q,
-                                update_data,
-                            )
-                        )
-                        if update_collection["success"] == False:
-                            del update_collection["data"]
-                            update_collection[
-                                "error"
-                            ] = "Error while trying to update the projects's teamlead_reports_to list"
-                            return Response(
-                                update_collection, status=status.HTTP_400_BAD_REQUEST
-                            )
-                insert_collection[
-                    "message"
-                ] = f"{type_request} data has been inserted successfully."
-                return Response(insert_collection, status=status.HTTP_200_OK)
-            else:
-                return Response(insert_collection, status=status.HTTP_400_BAD_REQUEST)
-        elif res["success"] == True:
-            if len(res["data"]) >= 100:
-                res = {
-                    "success": False,
-                    "message": f"Data with this Project Lead '{project_lead}' already exists.",
+            data ={
+                    "company_id":company_id,
+                    "project_lead":project_lead,
+                    "project_lead_id":project_lead_id,
+                    "projects_managed":projects_managed,
+                    "_coded_projects_managed":_coded_projects_managed,
+                    "data_type":"Real_Data"
                 }
-                return Response(res, status=status.HTTP_400_BAD_REQUEST)
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+            if insert_collection['success']==True:
+                #update the projects team lead reports to list------------------------------
+                p_q ={"company_id":company_id,"_coded_project":projects_managed}
+                projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",p_q,10,0,False))
+                if len(projects['data'])>0:
+                    for p in projects['data']:
+                        p=projects['data'][0]
+
+                        teamlead_reports_to = p['teamlead_reports_to']
+                        teamlead_reports_to.append(project_lead)
+                        update_data={
+                            "teamlead_reports_to":teamlead_reports_to
+                        } 
+                        update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,'projects',p_q,update_data))
+                        if update_collection['success']==False:
+                            del update_collection['data']
+                            update_collection['error'] = "Error while trying to update the projects's teamlead_reports_to list"
+                            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
+                insert_collection['message'] = f"{type_request} data has been inserted successfully."
+                return Response(insert_collection,status=status.HTTP_200_OK)
+            else:
+                return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+        elif res['success'] == True:
+            if len(res['data']) >=1:
+                res={"success":False, "message":f"Data with this Project Lead '{project_lead}' already exists."}
+                return Response(res,status=status.HTTP_400_BAD_REQUEST)
             else:
                 """insert data into the collection if the is no content----------------------"""
-                data = {
-                    "company_id": company_id,
-                    "project_lead": project_lead,
-                    "project_lead_id": project_lead_id,
-                    "projects_managed": projects_managed,
-                    "_coded_projects_managed": _coded_projects_managed,
-                    "data_type": "Real_Data",
-                }
-
-                insert_collection = json.loads(
-                    datacube_data_insertion(
-                        API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, data
-                    )
-                )
-                if insert_collection["success"] == True:
-                    # update ceos project leads list-----------------------
-                    s_q = {
-                        "company_id": company_id,
+                data ={
+                        "company_id":company_id,
+                        "project_lead":project_lead,
+                        "project_lead_id":project_lead_id,
+                        "projects_managed":projects_managed,
+                        "_coded_projects_managed":_coded_projects_managed,
+                        "data_type":"Real_Data"
                     }
-                    res = json.loads(
-                        datacube_data_retrival_function(
-                            API_KEY, COMPANY_STRUCTURE_DB_NAME, "ceo", s_q, 10, 0, False
-                        )
-                    )
-
-                    if res["success"] == True:
-                        for i in res["data"]:
-                            pl = [x for x in i["project_leads"]]
-                            pl.append(project_lead)
-                            update_data = {"project_leads": pl}
-                            update_collection = json.loads(
-                                datacube_data_update(
-                                    API_KEY,
-                                    COMPANY_STRUCTURE_DB_NAME,
-                                    "ceo",
-                                    s_q,
-                                    update_data,
-                                )
-                            )
-                            if update_collection["success"] == False:
-                                del update_collection["data"]
-                                update_collection[
-                                    "error"
-                                ] = "Error while trying to update the ceo's project leads list"
-                                return Response(
-                                    update_collection,
-                                    status=status.HTTP_400_BAD_REQUEST,
-                                )
-                    # update the projects team lead reports to list------------------------------
-                    p_q = {"company_id": company_id, "_coded_project": projects_managed}
-                    projects = json.loads(
-                        datacube_data_retrival_function(
-                            API_KEY,
-                            COMPANY_STRUCTURE_DB_NAME,
-                            "projects",
-                            p_q,
-                            10,
-                            0,
-                            False,
-                        )
-                    )
-                    if len(projects["data"]) > 0:
-                        for p in projects["data"]:
-                            p = projects["data"][0]
-
-                            teamlead_reports_to = p["teamlead_reports_to"]
-                            teamlead_reports_to.append(project_lead)
-                            update_data = {"teamlead_reports_to": teamlead_reports_to}
-                            update_collection = json.loads(
-                                datacube_data_update(
-                                    API_KEY,
-                                    COMPANY_STRUCTURE_DB_NAME,
-                                    "projects",
-                                    p_q,
-                                    update_data,
-                                )
-                            )
-                            if update_collection["success"] == False:
-                                del update_collection["data"]
-                                update_collection[
-                                    "error"
-                                ] = "Error while trying to update the projects's teamlead_reports_to list"
-                                return Response(
-                                    update_collection,
-                                    status=status.HTTP_400_BAD_REQUEST,
-                                )
-                    insert_collection[
-                        "message"
-                    ] = f"{type_request} data has been inserted successfully.."
-                    return Response(insert_collection, status=status.HTTP_200_OK)
+                
+                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+                if insert_collection['success']==True:
+                    insert_collection['message'] = f"{type_request} data has been inserted successfully.."
+                    return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
-                    return Response(
-                        insert_collection, status=status.HTTP_400_BAD_REQUEST
-                    )
-
-    def update_project_leads(self, request, type_request):
-        type_request = type_request.replace("update_", "")
-        serializer = CompanyStructureUpdateProjectLeadSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(
-                {
-                    "success": False,
-                    "message": "Invalid data",
-                    "error": serializer.errors,
-                }
-            )
-
+                    return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+    def get_project_leads(self,request, type_request):
         company_id = request.data.get("company_id")
-        project_lead = request.data.get("project_lead")
-
-        data_type = "Real_Data"
-        if request.data.get("data_type"):
-            data_type = request.data.get("data_type")
-        info = json.loads(
-            dowellconnection(
-                *candidate_management_reports,
-                "fetch",
-                {"username": project_lead},
-                update_field=None,
-            )
-        )
-        # print(info,"===============")
-        if info["isSuccess"] is False or len(info["data"]) <= 0:
-            return Response(
-                {
-                    "success": False,
-                    "message": f"No such candidate {project_lead} exists in Dowell.",
-                }
-            )
-
-        coll_name = type_request
-        search_query = {
-            "company_id": company_id,
-            "project_lead": project_lead,
-            "data_type": data_type,
+        search_query ={  
+            "company_id":company_id,
+            "data_type":"Real_Data"
         }
-        res = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                COMPANY_STRUCTURE_DB_NAME,
-                coll_name,
-                search_query,
-                10,
-                0,
-                False,
-            )
-        )
-        # if ceo exists update else insert it
-        if res["success"] == False:
-            return Response(res, status=status.HTTP_404_NOT_FOUND)
-        elif res["success"] == True:
-            if len(res["data"]) <= 0:
-                res = {
-                    "success": False,
-                    "message": f"Data not found for \n {search_query}",
-                }
-                return Response(res, status=status.HTTP_404_NOT_FOUND)
-            else:
-                # update---------------
-                update_data = {"data_type": data_type}
-                update_collection = json.loads(
-                    datacube_data_update(
-                        API_KEY,
-                        COMPANY_STRUCTURE_DB_NAME,
-                        coll_name,
-                        search_query,
-                        update_data,
-                    )
-                )
+        coll_name = 'project_leads'
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        if res['success'] == True:
+            return Response(res,status=status.HTTP_200_OK)
+        else:
+            return Response(res,status=status.HTTP_404_NOT_FOUND)
+    def update_project_leads(self,request,type_request):
+        type_request = type_request.replace("update_","")
+        serializer=CompanyStructureUpdateProjectLeadSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
+        
+        company_id = request.data.get('company_id')
+        project_lead = request.data.get('project_lead')
+        projects_managed = request.data.get('projects_managed')
+        _coded_projects_managed = [self.rearrange(p.lower()) for p in projects_managed]
 
-                if update_collection["success"] == True:
-                    update_collection[
-                        "message"
-                    ] = f"{type_request} data has been updated successfully."
-                    del update_collection["data"]
-                    return Response(update_collection, status=status.HTTP_200_OK)
+        data_type ="Real_Data"
+        if request.data.get('data_type'):
+            data_type = request.data.get('data_type')
+        info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':project_lead}, update_field=None))
+        #print(info,"===============")
+        if (info['isSuccess'] is False or len(info['data'])<=0):
+            return Response({
+                    "success":False,
+                    "message":f"No such candidate {project_lead} exists in Dowell."
+                })
+        
+        coll_name = type_request
+        search_query = {  
+            'company_id':company_id,
+            'project_lead':project_lead,
+            'data_type':data_type
+        }
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        #if ceo exists update else insert it
+        if res['success'] == False :
+            return Response(res,status=status.HTTP_404_NOT_FOUND)
+        elif res['success'] == True:
+            if len(res['data']) <= 0 :
+                res = {'success':False,"message":f"Data not found for \n {search_query}"}
+                return Response(res,status=status.HTTP_404_NOT_FOUND)
+            else:
+                #update---------------
+                #check if the projects_managed is already in another project lead db
+                pq={
+                    'company_id':company_id,
+                    'data_type':data_type
+                }
+                current_projects_managed={}
+                current_coded_projects_managed={}
+                _pleads=[]
+                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,10,0,False))
+                if check_projects_managed['success']==True:
+                    for p in check_projects_managed['data']:
+                        if p["projects_managed"]!=None and len(p["projects_managed"])>0:
+                            for pm in p["projects_managed"]:
+                                if not self.rearrange(pm.lower()) in _coded_projects_managed:
+                                    try:
+                                        current_projects_managed[p["project_lead"]].append(pm)
+                                    except Exception:
+                                        current_projects_managed[p["project_lead"]] =[]
+                                        current_projects_managed[p["project_lead"]].append(pm)
+                                    try:
+                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
+                                    except Exception:
+                                        current_coded_projects_managed[p["project_lead"]] =[]
+                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
+                                    _pleads.append(p["project_lead"])
+                for pl in _pleads:
+                    pleadquery={
+                        'company_id':company_id,
+                        'project_lead':pl,
+                        'data_type':data_type
+                    }
+                    p_update_data={'data_type':data_type,
+                                   'projects_managed': current_projects_managed[pl], 
+                                   '_coded_projects_managed':current_coded_projects_managed[pl]} 
+                    update_collection_two = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,pleadquery,p_update_data))
+                    if update_collection_two['success']==False:
+                        update_collection_two['message'] = f"{type_request} data failed to update. for project lead {pl}. \n {update_collection_two['message']}"
+                        del update_collection_two['data']
+                        return Response(update_collection_two,status=status.HTTP_400_BAD_REQUEST)
+                            
+                update_data={'data_type':data_type,'projects_managed':projects_managed, '_coded_projects_managed':_coded_projects_managed} 
+                update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
+                
+                if update_collection['success']==True:
+                    update_collection['message'] = f"{type_request} data has been updated successfully."
+                    del update_collection['data']
+                    return Response(update_collection,status=status.HTTP_200_OK)
                 else:
-                    del update_collection["data"]
-                    return Response(
-                        update_collection, status=status.HTTP_400_BAD_REQUEST
-                    )
+                    del update_collection['data']
+                    return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
 
     def add_projects(self, request, type_request):
-        type_request = type_request.replace("add_", "")
+        type_request = type_request.replace("add_","")
         coll_name = type_request
-        serializer = CompanyStructureProjectsSerializer(data=request.data)
+        serializer=CompanyStructureProjectsSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(
-                {
-                    "success": False,
-                    "message": "Invalid data",
-                    "error": serializer.errors,
-                }
-            )
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
         company_id = request.data.get("company_id")
         project = request.data.get("project")
         _coded_project = self.rearrange(project.lower())
-        ##checking if project exists---------------------
-        project = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                COMPANY_STRUCTURE_DB_NAME,
-                coll_name,
-                {"_coded_project": _coded_project},
-                10,
-                0,
-                False,
-            )
-        )
-        if len(project["data"]) > 0:
-            return Response(
-                {
-                    "success": False,
-                    "message": f"A project with called {project} already exists",
-                },
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        _project = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},10,0,False))
+        
+        for p in _project['data']:
+            if p['_coded_project'] == _coded_project:
+                return Response({
+                        "success":False,
+                        "message":f"A project with {project} already exists",
+                    },status=status.HTTP_400_BAD_REQUEST)
         team_lead = request.data.get("team_lead")
-        info = json.loads(
-            dowellconnection(
-                *candidate_management_reports,
-                "fetch",
-                {"username": team_lead},
-                update_field=None,
-            )
-        )
-        # print(info,"===============")
-        if info["isSuccess"] is False or len(info["data"]) <= 0:
-            return Response(
-                {
-                    "success": False,
-                    "message": f"No such team_lead candidate '{team_lead}' exists in Dowell.",
-                }
-            )
-        # checking if team lead reports to is in dowell------------------------
+        info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':team_lead}, update_field=None))
+        #print(info,"===============")
+        if (info['isSuccess'] is False or len(info['data'])<=0):
+            return Response({
+                    "success":False,
+                    "message":f"No such team_lead candidate '{team_lead}' exists in Dowell."
+                })
+        #checking if team lead reports to is in dowell------------------------
         teamlead_reports_to = []
-        res_proj = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                COMPANY_STRUCTURE_DB_NAME,
-                "project_leads",
-                {"company_id": company_id},
-                10,
-                0,
-                False,
-            )
-        )
-        if res_proj["success"] == True and len(res_proj["data"]) >= 1:
-            for project_leads in res_proj["data"]:
+        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},10,0,False))
+        if res_proj['success'] == True and len(res_proj['data']) >=1 :
+            for project_leads in res_proj['data']:
                 if "_coded_projects_managed" in project_leads.keys():
                     if _coded_project in project_leads["_coded_projects_managed"]:
-                        teamlead_reports_to.append(project_leads["project_lead"])
+                        teamlead_reports_to.append(project_leads['project_lead'])
 
         group_leads = request.data.get("group_leads")
         for user in group_leads:
-            info = json.loads(
-                dowellconnection(
-                    *candidate_management_reports,
-                    "fetch",
-                    {"username": user},
-                    update_field=None,
-                )
-            )
-            # print(info,"===============")
-            if info["isSuccess"] is False or len(info["data"]) <= 0:
-                return Response(
-                    {
-                        "success": False,
-                        "message": f"No such group_lead candidate '{user}' exists in Dowell.",
-                    },
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-        members = []
+            info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
+            #print(info,"===============")
+            if (info['isSuccess'] is False or len(info['data'])<=0):
+                return Response({
+                        "success":False,
+                        "message":f"No such group_lead candidate '{user}' exists in Dowell."
+                    },status=status.HTTP_404_NOT_FOUND)
+        members=[]
         if request.data.get("members"):
             members = request.data.get("members")
+        
+        members = list(set(members+group_leads+teamlead_reports_to))
 
-        members = list(set(members + group_leads + teamlead_reports_to))
-
-        search_query = {
-            "company_id": company_id,
-            "_coded_project": _coded_project,
-            "data_type": "Real_Data",
+        
+        search_query ={  
+            "company_id":company_id,
+            "_coded_project":_coded_project,
+            "data_type":"Real_Data"
         }
-        res = json.loads(
-            datacube_data_retrival_function(
-                API_KEY,
-                COMPANY_STRUCTURE_DB_NAME,
-                coll_name,
-                search_query,
-                10,
-                1,
-                False,
-            )
-        )
-        # if ceo exists update else insert it
-
-        if (
-            res["success"] == False
-            and res["message"]
-            == f"Collection '{coll_name}' does not exist in Datacube database"
-        ):
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        #if ceo exists update else insert it
+        
+        if res['success'] == False and res['message']==f"Collection '{coll_name}' does not exist in Datacube database":
             """create the collection if the is no content----------------------"""
-            create_collection = json.loads(
-                datacube_add_collection(
-                    API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, 1
-                )
-            )
-            if create_collection["success"] == False:
-                return Response(create_collection, status=status.HTTP_400_BAD_REQUEST)
+            create_collection= json.loads(datacube_add_collection(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,1))
+            if create_collection['success'] == False:
+                return Response(create_collection,status=status.HTTP_400_BAD_REQUEST)
             """insert data into the collection if the is no content----------------------"""
-            data = {
-                "company_id": company_id,
-                "group_leads": group_leads,
-                "team_lead": team_lead,
-                "project": project,
-                "_coded_project": _coded_project,
-                "data_type": "Real_Data",
-            }
-            if len(teamlead_reports_to) >= 1:
-                data["teamlead_reports_to"] = teamlead_reports_to[0]
-            insert_collection = json.loads(
-                datacube_data_insertion(
-                    API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, data
-                )
-            )
-            if insert_collection["success"] == True:
-                # update the projects collection for ------------------------------
-                s_q = {"company_id": company_id, "data_type": "Real_Data"}
-                if len(teamlead_reports_to) >= 1:
-                    s_q["project_lead"] = teamlead_reports_to[0]
-                res = json.loads(
-                    datacube_data_retrival_function(
-                        API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, s_q, 10, 1, False
-                    )
-                )
-                # if ceo exists update else insert it
-                if res["success"] == False:
-                    return Response(res, status=status.HTTP_404_NOT_FOUND)
-                elif res["success"] == True:
-                    if len(res["data"]) <= 0:
-                        res = {
-                            "success": False,
-                            "message": "Data not found with these details.",
-                        }
-                        return Response(res, status=status.HTTP_404_NOT_FOUND)
-                    else:
-                        # update---------------
-                        for i in res["data"]:
-                            projects_managed = [x for x in i["projects_managed"]]
-                            projects_managed.append(project)
-                            _coded_projects_managed = [
-                                self.rearrange(i.lower()) for i in projects_managed
-                            ]
-
-                            update_data = {
-                                "projects_managed": projects_managed,
-                                "_coded_projects_managed": _coded_projects_managed,
-                            }
-                            update_collection = json.loads(
-                                datacube_data_update(
-                                    API_KEY,
-                                    COMPANY_STRUCTURE_DB_NAME,
-                                    coll_name,
-                                    search_query,
-                                    update_data,
-                                )
-                            )
-                            if update_collection["success"] == False:
-                                del update_collection["data"]
-                                update_collection[
-                                    "error"
-                                ] = "Error while trying to update the ceo's project leads list"
-                                return Response(
-                                    update_collection,
-                                    status=status.HTTP_400_BAD_REQUEST,
-                                )
-
-                insert_collection[
-                    "message"
-                ] = f"{type_request} data has been inserted successfully."
-                return Response(insert_collection, status=status.HTTP_200_OK)
-            else:
-                return Response(insert_collection, status=status.HTTP_400_BAD_REQUEST)
-        elif res["success"] == True:
-            if len(res["data"]) >= 1:
-                res = {
-                    "success": False,
-                    "message": f"Data with this project '{project}' already exists.",
+            data ={
+                    "company_id":company_id,
+                    "group_leads":group_leads,
+                    "team_lead":team_lead,
+                    "project":project,
+                    "_coded_project":_coded_project,
+                    "data_type":"Real_Data"
                 }
-                return Response(res, status=status.HTTP_400_BAD_REQUEST)
+            if len(teamlead_reports_to)>=1:
+                data['teamlead_reports_to']=teamlead_reports_to[0]
+            insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+            if insert_collection['success']==True:
+                insert_collection['message'] = f"{type_request} data has been inserted successfully."
+                return Response(insert_collection,status=status.HTTP_200_OK)
+            else:
+                return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+        elif res['success'] == True:
+            if len(res['data']) >=1:
+                res={"success":False, "message":f"Data with this project '{project}' already exists."}
+                return Response(res,status=status.HTTP_400_BAD_REQUEST)
             else:
                 """insert data into the collection if the is no content----------------------"""
-                data = {
-                    "company_id": company_id,
-                    "group_leads": group_leads,
-                    "team_lead": team_lead,
-                    "project": project,
-                    "_coded_project": _coded_project,
-                    "data_type": "Real_Data",
-                }
-
-                if len(teamlead_reports_to) >= 1:
-                    data["teamlead_reports_to"] = teamlead_reports_to[0]
-                insert_collection = json.loads(
-                    datacube_data_insertion(
-                        API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, data
-                    )
-                )
-                if insert_collection["success"] == True:
-                    # update the projects collection for ------------------------------
-                    s_q = {
-                        "company_id": company_id,
-                        "project_lead": teamlead_reports_to[0],
-                        "data_type": "Real_Data",
+                data ={
+                        "company_id":company_id,
+                        "group_leads":group_leads,
+                        "team_lead":team_lead,
+                        "project":project,
+                        "_coded_project":_coded_project,
+                        "data_type":"Real_Data"
                     }
-                    res = json.loads(
-                        datacube_data_retrival_function(
-                            API_KEY,
-                            COMPANY_STRUCTURE_DB_NAME,
-                            coll_name,
-                            s_q,
-                            10,
-                            1,
-                            False,
-                        )
-                    )
-                    # if ceo exists update else insert it
-                    if res["success"] == False:
-                        return Response(res, status=status.HTTP_404_NOT_FOUND)
-                    elif res["success"] == True:
-                        if len(res["data"]) <= 0:
-                            res = {
-                                "success": False,
-                                "message": "Data not found with these details.",
-                            }
-                            return Response(res, status=status.HTTP_404_NOT_FOUND)
-                        else:
-                            # update---------------
-                            for i in res["data"]:
-                                projects_managed = [x for x in i["projects_managed"]]
-                                projects_managed.append(project)
-                                _coded_projects_managed = [
-                                    self.rearrange(i.lower()) for i in projects_managed
-                                ]
-
-                                update_data = {
-                                    "projects_managed": projects_managed,
-                                    "_coded_projects_managed": _coded_projects_managed,
-                                }
-                                update_collection = json.loads(
-                                    datacube_data_update(
-                                        API_KEY,
-                                        COMPANY_STRUCTURE_DB_NAME,
-                                        coll_name,
-                                        search_query,
-                                        update_data,
-                                    )
-                                )
-                                if update_collection["success"] == False:
-                                    del update_collection["data"]
-                                    update_collection[
-                                        "error"
-                                    ] = "Error while trying to update the ceo's project leads list"
-                                    return Response(
-                                        update_collection,
-                                        status=status.HTTP_400_BAD_REQUEST,
-                                    )
-
-                    insert_collection[
-                        "message"
-                    ] = f"{type_request} data has been inserted successfully.."
-                    return Response(insert_collection, status=status.HTTP_200_OK)
+                
+                if len(teamlead_reports_to)>=1:
+                    data['teamlead_reports_to']=teamlead_reports_to[0]
+                insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
+                if insert_collection['success']==True:
+                    insert_collection['message'] = f"{type_request} data has been inserted successfully.."
+                    return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
-                    return Response(
-                        insert_collection, status=status.HTTP_400_BAD_REQUEST
-                    )
-
+                    return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
+    def get_projects(self,request, type_request):
+        company_id = request.data.get("company_id")
+        search_query ={  
+            "company_id":company_id,
+            "data_type":"Real_Data"
+        }
+        coll_name = 'projects'
+        res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
+        if res['success'] == True:
+            return Response(res,status=status.HTTP_200_OK)
+        else:
+            return Response(res,status=status.HTTP_404_NOT_FOUND)
     def update_projects(self, request, type_request):
-        type_request = type_request.replace("update_", "")
-        serializer = CompanyStructureProjectsSerializer(data=request.data)
+        type_request = type_request.replace("update_","")
+        serializer=CompanyStructureProjectsSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response(
-                {
-                    "success": False,
-                    "message": "Invalid data",
-                    "error": serializer.errors,
-                }
-            )
-
+            return Response({
+                "success":False,
+                "message":"Invalid data",
+                "error":serializer.errors
+            })
+        
         project = request.data.get("project")
         _coded_project = self.rearrange(project.lower())
         company_id = request.data.get("company_id")
         team_lead = request.data.get("team_lead")
         teamlead_reports_to = []
-        res_proj = json.loads(
-            datacube_data_retrival_function(
-                API_KEY, COMPANY_STRUCTURE_DB_NAME, "project_leads", {}, 10, 0, False
-            )
-        )
-        # print(res_proj, "===============",len(res_proj['data']))
-        if res_proj["success"] == True and len(res_proj["data"]) >= 1:
-            for project_leads in res_proj["data"]:
+        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{},10,0,False))
+        #print(res_proj, "===============",len(res_proj['data']))
+        if res_proj['success'] == True and len(res_proj['data']) >=1 :
+            for project_leads in res_proj['data']:
                 if "_coded_projects_managed" in project_leads.keys():
                     if _coded_project in project_leads["_coded_projects_managed"]:
-                        teamlead_reports_to.append(project_leads["project_lead"])
+                        teamlead_reports_to.append(project_leads['project_lead'])
 
         group_leads = request.data.get("group_leads")
         members = request.data.get("members")
-        _m = []
+        _m =[]
         update_data = {"teamlead_reports_to": teamlead_reports_to[-1]}
         if members:
             _m += members
         if group_leads:
-            _m += group_leads
+            _m+=group_leads
             update_data["group_leads"] = group_leads
         _m += teamlead_reports_to
-
+        
         if team_lead:
             _m.append(team_lead)
             update_data["team_lead"] = team_lead
-
+        
         members = list(set(_m))
-        if len(members) >= 1:
+        if len(members)>=1:
             update_data["members"] = members
 
             for user in members:
-                info = json.loads(
-                    dowellconnection(
-                        *candidate_management_reports,
-                        "fetch",
-                        {"username": user},
-                        update_field=None,
-                    )
-                )
-                # print(info,"===============")
-                if info["isSuccess"] is False or len(info["data"]) <= 0:
-                    return Response(
-                        {
-                            "success": False,
-                            "message": f"No such candidate '{user}' exists in Dowell.",
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+                info=json.loads(dowellconnection(*candidate_management_reports, "fetch", {'username':user}, update_field=None))
+                #print(info,"===============")
+                if (info['isSuccess'] is False or len(info['data'])<=0):
+                    return Response({
+                            "success":False,
+                            "message":f"No such candidate '{user}' exists in Dowell."
+                        },status=status.HTTP_400_BAD_REQUEST)   
 
         coll_name = type_request
 
-        # update---------------
-        search_query = {"_coded_project": _coded_project, "company_id": company_id}
-
-        update_collection = json.loads(
-            datacube_data_update(
-                API_KEY, COMPANY_STRUCTURE_DB_NAME, coll_name, search_query, update_data
-            )
-        )
-        if update_collection["success"] == True:
-            update_collection[
-                "message"
-            ] = f"{type_request} data has been updated successfully."
-            del update_collection["data"]
-            return Response(update_collection, status=status.HTTP_200_OK)
-        else:
-            del update_collection["data"]
-            return Response(update_collection, status=status.HTTP_400_BAD_REQUEST)
-
-    def get(self, requests, company_id):
-        data = {}
-        search_query = {
-            "company_id": company_id,
-            "data_type": "Real_Data",
+        #update---------------
+        search_query={
+            '_coded_project':_coded_project,
+            "company_id":company_id
         }
-        ceo = json.loads(
-            datacube_data_retrival_function(
-                API_KEY, COMPANY_STRUCTURE_DB_NAME, "ceo", search_query, 10, 0, False
-            )
-        )
-        if len(ceo["data"]) > 0:
-            _x = ceo["data"][-1]
-            data["ceo"] = _x["ceo"]
-            data["company_id"] = _x["company_id"]
+        
+        update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
+        if update_collection['success']==True:
+            update_collection['message'] = f"{type_request} data has been updated successfully."
+            del update_collection['data']
+            return Response(update_collection,status=status.HTTP_200_OK)
+        else:
+            del update_collection['data']
+            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)    
+
+    def get(self,requests, company_id):
+        data={}
+        search_query ={  
+            "company_id":company_id,
+            "data_type":"Real_Data",
+        }
+        ceo = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"ceo",search_query,10,0, False))
+        if len(ceo['data']) >0:
+            _x = ceo['data'][-1]
+            data['ceo'] =_x['ceo']
+            data['company_id'] =_x['company_id']
             data["project_leads"] = []
-            for i in _x["project_leads"]:
-                plq = {
-                    "project_lead": i,  # eg Manish
-                    "company_id": company_id,
-                    "data_type": "Real_Data",
+            plq={
+                'company_id':company_id,
+                "data_type":"Real_Data"
+            }
+            project_leads = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",plq,10,0,False))
+            
+            for y in project_leads['data']:
+                _y ={
+                    "project_lead":y['project_lead'],
+                    "project_lead_id":y['project_lead_id'],
+                    'projects_managed':y['projects_managed'],
+                    "projects":[]#y['projects_managed']
                 }
-
-                project_leads = json.loads(
-                    datacube_data_retrival_function(
-                        API_KEY,
-                        COMPANY_STRUCTURE_DB_NAME,
-                        "project_leads",
-                        plq,
-                        10,
-                        0,
-                        False,
-                    )
-                )
-
-                if len(project_leads["data"]) > 0:
-                    for z in projects["data"]:
-                        if z["_coded_project"] in y["_coded_projects_managed"]:
+                
+                pq={
+                    'company_id':company_id,
+                    "data_type":"Real_Data"
+                }
+                projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",pq,10,0,False))
+        
+                if len(projects['data'])>0:
+                    
+                    for z in projects['data']:
+                        if z["_coded_project"] in y['_coded_projects_managed']:
                             del z["_id"]
                             del z["_coded_project"]
-                            _y["projects"].append(z)
-
+                            del z["teamlead_reports_to"]
+                            _y['projects'].append(z)
+                        
                 data["project_leads"].append(_y)
-        return Response({"success": True, "data": data}, status=status.HTTP_200_OK)
+        return Response({'success':True,'data':data},status=status.HTTP_200_OK)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
