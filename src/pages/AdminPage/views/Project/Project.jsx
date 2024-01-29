@@ -22,7 +22,6 @@ const Project = ({ _id }) => {
     projectsLoading,
     projectsAdded,
     subProjectsAdded,
-    setProjectsLoading,
     setProjectsAdded,
     projectsLoaded,
   } = useJobContext();
@@ -32,9 +31,9 @@ const Project = ({ _id }) => {
   const { currentUser } = useCurrentUserContext();
   const [projectTime, setProjectTime] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [projectLoading, setProjectLoading] = useState(false);
 
   useEffect(() => {
-    setProjectsLoading(true);
     if (state && state.showProject && state?.showProject === true) {
       setShowProjectsPop(true);
 
@@ -43,6 +42,7 @@ const Project = ({ _id }) => {
     }
 
     //Getting project time
+    setProjectLoading(true);
     getProjectTime(currentUser.portfolio_info[0].org_id).then((res) => {
       setProjectTime(
         res?.data?.data?.filter(
@@ -50,6 +50,7 @@ const Project = ({ _id }) => {
             project?.data_type === currentUser.portfolio_info[0].data_type
         )
       );
+      setProjectLoading(false);
       console.log(projectTime);
     });
 
@@ -71,8 +72,6 @@ const Project = ({ _id }) => {
     ) {
       setInactiveProjects(projectsAdded[0]?.inactive_project_list);
     }
-
-    setProjectsLoading(false);
   }, []);
 
   const showProjectPopup = () => {
@@ -112,7 +111,7 @@ const Project = ({ _id }) => {
       newSidebarDesign={true}
       hideSideBar={showProjectsPop}
     >
-      {projectsLoading ? (
+      {projectLoading ? (
         <LoadingSpinner />
       ) : (
         <div className={styles.wrapper}>
