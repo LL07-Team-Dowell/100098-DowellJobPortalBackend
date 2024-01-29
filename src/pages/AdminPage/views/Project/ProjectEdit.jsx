@@ -64,6 +64,15 @@ const ProjectEdit = () => {
     });
   };
 
+  const handleTotalTimeChange = (valueEntered, inputName) => {
+    const filteredValue = valueEntered.replace(/\D/g, "");
+    setCopyOfProjectTimeDetail((prevValue) => {
+      const copyOfPrevValue = { ...prevValue };
+      copyOfPrevValue[inputName] = filteredValue;
+      return copyOfPrevValue;
+    });
+  };
+
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
@@ -125,20 +134,13 @@ const ProjectEdit = () => {
             const updateTotalTime = res[0].data;
             const updateEditing = res[1].data;
             console.log(updateEditing, updateTotalTime);
-
-            updateTotalTime
-              ? setCopyOfProjectTimeDetail((prevProjectDetail) => {
-                  return {
-                    ...prevProjectDetail,
-                    total_time: copyOfProjectTimeDetail.total_time,
-                  };
-                })
-              : setCopyOfProjectTimeDetail((prevProjectDetail) => {
-                  return {
-                    ...prevProjectDetail,
-                    editing_enabled: copyOfProjectTimeDetail.editing_enabled,
-                  };
-                });
+            setCopyOfProjectTimeDetail((prevProjectDetail) => {
+              return {
+                ...prevProjectDetail,
+                total_time: copyOfProjectTimeDetail.total_time,
+                editing_enabled: copyOfProjectTimeDetail.editing_enabled,
+              };
+            });
 
             toast.success("Update Successful");
           })
@@ -157,21 +159,8 @@ const ProjectEdit = () => {
       toast.error("Something went wrong");
     }
 
-    navigate(`/projects`);
+    navigate(`/projects/edit-project-time/?project=${project}&id=${id}`);
   };
-
-  // if (!id) {
-  //   const addProjectDetails = await addProjectTime(projectTimeDetail);
-  //   if (addProjectDetails.status === 200) {
-  //     setProjectTimeDetail((prevData) => [...projectTimeDetail, ...prevData]);
-  //     toast.success("Job created successfully");
-  //   } else {
-  //     toast.info("Something went wrong");
-  //   }
-  // } else {
-  //   if (id) {
-  //   }
-  // }
 
   return (
     <StaffJobLandingLayout
@@ -370,7 +359,10 @@ const ProjectEdit = () => {
                             placeholder="Enter total time"
                             value={copyOfProjectTimeDetail.total_time}
                             onChange={(e) =>
-                              handleInputChange(e.target.value, e.target.name)
+                              handleTotalTimeChange(
+                                e.target.value,
+                                e.target.name
+                              )
                             }
                           />
                         </div>
@@ -398,9 +390,12 @@ const ProjectEdit = () => {
                             id="total_time"
                             name="total_time"
                             placeholder="Enter total time"
-                            value={Number(copyOfProjectTimeDetail.total_time)}
+                            value={copyOfProjectTimeDetail.total_time}
                             onChange={(e) =>
-                              handleInputChange(e.target.value, e.target.name)
+                              handleTotalTimeChange(
+                                e.target.value,
+                                e.target.name
+                              )
                             }
                             disabled
                           />
