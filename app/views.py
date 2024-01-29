@@ -10678,6 +10678,7 @@ class Company_Structure(APIView):
                         if z["_coded_project"] in y['_coded_projects_managed']:
                             del z["_id"]
                             del z["_coded_project"]
+                            del z["teamlead_reports_to"]
                             _y['projects'].append(z)
                         
                 data["project_leads"].append(_y)
