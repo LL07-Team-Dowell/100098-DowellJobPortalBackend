@@ -119,6 +119,7 @@ from .serializers import (
     AddEventSerializer,
     UpdateEventSerializer,
     GetEventSerializer,
+    UpdateAttendanceSerializer,
 )
 from .authorization import (
     verify_user_token,
@@ -10519,7 +10520,9 @@ class candidate_attendance(APIView):
             )
         if request_type == "add_attendance":
             return self.add_attendance(request)
-        if request_type == "get_attendance":
+        if request_type=="update_attendance":
+           return self.update_attendance(request) 
+       if request_type == "get_attendance":
             return self.get_attendance(request)
         else:
             self.handle_error(request)

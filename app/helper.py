@@ -606,6 +606,7 @@ def datacube_data_update(api_key, db_name, coll_name, query, update_data):
     }
 
     response = requests.put(url, json=data)
+    print(response.text)
     return response.text
 
 

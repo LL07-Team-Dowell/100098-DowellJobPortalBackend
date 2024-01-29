@@ -774,6 +774,12 @@ class AttendanceSerializer(serializers.Serializer):
         allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
 
+class UpdateAttendanceSerializer(serializers.Serializer):
+    user_present = serializers.ListField(child=serializers.CharField())
+    user_absent = serializers.ListField(child=serializers.CharField())
+    date_taken = serializers.DateField(allow_null=False)
+    document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+
 
 class Project_Update_Serializer(serializers.Serializer):
     project = serializers.ListField(allow_null=False)
