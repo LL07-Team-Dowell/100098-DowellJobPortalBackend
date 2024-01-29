@@ -737,6 +737,33 @@ class AttendanceSerializer(serializers.Serializer):
     data_type = serializers.ChoiceField(
         allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
+class AttendanceRetrievalSerializer(serializers.Serializer):
+    start_date = serializers.DateField(allow_null=False)
+    end_date = serializers.DateField(allow_null=False)
+    project=serializers.CharField(max_length=255,allow_null=False)
+    company_id = serializers.IntegerField(allow_null=False)
+    meeting = serializers.CharField(allow_null=False)
+    project = serializers.ListField(allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+
+class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
+    start_date = serializers.DateField(allow_null=False)
+    end_date = serializers.DateField(allow_null=False)
+    project=serializers.CharField(max_length=255,allow_null=False)
+    usernames=serializers.ListField(allow_null=False)
+    company_id = serializers.IntegerField(allow_null=False)
+    meeting = serializers.CharField(allow_null=False)
+    project = serializers.CharField(allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
+class UpdateAttendanceSerializer(serializers.Serializer):
+    user_present = serializers.ListField(child=serializers.CharField())
+    user_absent = serializers.ListField(child=serializers.CharField())
+    date_taken = serializers.DateField(allow_null=False)
+    document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
 
 
 class Project_Update_Serializer(serializers.Serializer):
@@ -805,22 +832,22 @@ class UpdateUserIdSerializer(serializers.Serializer):
     application_id=serializers.CharField(max_length=255,allow_null=False)
 
 
-class AttendanceRetrievalSerializer(serializers.Serializer):
-    start_date = serializers.DateField(allow_null=False)
-    end_date = serializers.DateField(allow_null=False)
-    project=serializers.CharField(max_length=255,allow_null=False)
-    company_id = serializers.IntegerField(allow_null=False)
-    meeting = serializers.CharField(allow_null=False)
-    project = serializers.ListField(allow_null=False)
-    data_type = serializers.ChoiceField(
-        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+class InsertPaymentInformation(serializers.Serializer):
+    weekly_payment_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    payment_currency = serializers.CharField(max_length=10)
+    last_payment_date = serializers.DateField()
+    current_payment_amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    db_record_type = serializers.CharField()
+    previous_weekly_amounts = serializers.ListField(
+        child=serializers.DecimalField(max_digits=10, decimal_places=2)
     )
+
 
 class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
     start_date = serializers.DateField(allow_null=False)
     end_date = serializers.DateField(allow_null=False)
-    project=serializers.CharField(max_length=255,allow_null=False)
-    usernames=serializers.ListField(allow_null=False)
+    project = serializers.CharField(max_length=255, allow_null=False)
+    usernames = serializers.ListField(allow_null=False)
     company_id = serializers.IntegerField(allow_null=False)
     meeting = serializers.CharField(allow_null=False)
     project = serializers.CharField(allow_null=False)
@@ -828,21 +855,46 @@ class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
         allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
 
+
 class AddEventSerializer(serializers.Serializer):
-    company_id=serializers.CharField(max_length=225,allow_null=False)
-    event_name=serializers.CharField(max_length=225,allow_null=False)
-    event_type=serializers.ChoiceField(choices=("Meeting","Event"),allow_null=False)
-    event_frequency=serializers.ChoiceField(allow_null=False,choices=("daily","weekly","twice_a_week","monthly","once_in_two_months","yearly","custom"))
-    event_host=serializers.CharField(max_length=225,allow_null=False)
+    company_id = serializers.CharField(max_length=225, allow_null=False)
+    event_name = serializers.CharField(max_length=225, allow_null=False)
+    event_type = serializers.ChoiceField(choices=("Meeting", "Event"), allow_null=False)
+    event_frequency = serializers.ChoiceField(
+        allow_null=False,
+        choices=(
+            "daily",
+            "weekly",
+            "twice_a_week",
+            "monthly",
+            "once_in_two_months",
+            "yearly",
+            "custom",
+        ),
+    )
+    event_host = serializers.CharField(max_length=225, allow_null=False)
     data_type = serializers.ChoiceField(
         allow_null=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
-    is_mendatory=serializers.BooleanField(allow_null=False)
+    is_mendatory = serializers.BooleanField(allow_null=False)
+
 
 class UpdateEventSerializer(serializers.Serializer):
-    company_id=serializers.CharField(max_length=225,allow_null=False)
-    event_frequency=serializers.ChoiceField(allow_null=False,choices=("daily","weekly","twice_a_week","monthly","once_in_two_months","yearly","custom"))
-    document_id=serializers.CharField(allow_null=False, allow_blank=False)
+    company_id = serializers.CharField(max_length=225, allow_null=False)
+    event_frequency = serializers.ChoiceField(
+        allow_null=False,
+        choices=(
+            "daily",
+            "weekly",
+            "twice_a_week",
+            "monthly",
+            "once_in_two_months",
+            "yearly",
+            "custom",
+        ),
+    )
+    document_id = serializers.CharField(allow_null=False, allow_blank=False)
+
 
 class GetEventSerializer(serializers.Serializer):
-    company_id=serializers.CharField(max_length=225,allow_null=False)
+    company_id = serializers.CharField(max_length=225, allow_null=False)

@@ -10618,7 +10618,7 @@ class Company_Structure(APIView):
                 data["project_leads"].append(_y)
         return Response({'success':True,'data':data},status=status.HTTP_200_OK)
 
-    
+
 @method_decorator(csrf_exempt, name="dispatch")
 class DowellEvents(APIView):
     def post(self, request):
