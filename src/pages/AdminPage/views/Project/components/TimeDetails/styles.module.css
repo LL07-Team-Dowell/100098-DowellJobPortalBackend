@@ -1,8 +1,9 @@
 .time__Detail {
-    border: 1px solid #f2f2f2;
+    border: 1px solid #efefef;
     width: 100%;
     padding: 1rem;
     border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 .hour__Info {

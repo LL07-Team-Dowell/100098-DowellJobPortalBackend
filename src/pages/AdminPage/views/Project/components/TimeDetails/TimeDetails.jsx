@@ -6,7 +6,18 @@ export default function TimeDetails({
   time,
   isSubproject,
   subprojects,
+  returnEmptyContent,
+  children
 }) {
+  if (returnEmptyContent && children) return (
+    <div className={styles.time__Detail}>
+      <h3>{title}</h3>
+      <div>
+        {children}
+      </div>
+    </div>
+  )
+
   if (isSubproject && Array.isArray(subprojects))
     return (
       <div className={styles.time__Detail}>
