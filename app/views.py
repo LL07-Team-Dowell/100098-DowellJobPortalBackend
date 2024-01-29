@@ -52,7 +52,8 @@ from .helper import (
     get_current_week_start_end_date,
     speed_test_condition,
     get_dates_between,
-    normalize
+    normalize,
+    datacube_add_collection
 )
 from .serializers import (
     AccountSerializer,
@@ -119,7 +120,8 @@ from .serializers import (
     IndividualAttendanceRetrievalSerializer,
     AddEventSerializer,
     UpdateEventSerializer,
-    GetEventSerializer
+    GetEventSerializer,
+    UpdateAttendanceSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -130,6 +132,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from dotenv import load_dotenv
 import os
+import logging
 
 """for linux server"""
 load_dotenv("/home/100098/100098-DowellJobPortal/.env")
@@ -9749,81 +9752,90 @@ class test(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class candidate_attendance(APIView):
-    def post(self,request):
-       request_type=request.GET.get("type")
-       if not request_type:
-           return Response({"success":False,
-                            "message":"Request type should be sent in query as params"},
-                           status=status.HTTP_400_BAD_REQUEST
-                           )
-       if request_type=="add_attendance":
-           return self.add_attendance(request) 
-       if request_type=="project_wise_attendance":
-           return self.get_project_wise_attendance(request) 
-       if request_type=="get_user_wise_attendance":
-           return self.get_user_wise_attendance(request) 
-           
-       else:
-           self.handle_error(request)
-        
     
-    def add_attendance(self,request):
-        user_present=request.data.get("user_present")
-        user_absent=request.data.get("user_absent")
-        project=request.data.get("project")
-        date_taken=request.data.get("date_taken")
-        company_id=request.data.get("company_id")
-        meeting=request.data.get("meeting")
-        data_type=request.data.get("data_type")
+    max_try = 2
+    def post(self, request):
+        request_type = request.GET.get("type")
+        if not request_type:
+            return Response({
+                "success": False,
+                "message": "Request type should be sent in query as params"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
+        if request_type == "add_attendance":
+            return self.add_attendance(request)
+        elif request_type == "update_attendance":
+            return self.update_attendance(request)
+        elif request_type == "project_wise_attendance":
+            return self.get_project_wise_attendance(request)
+        elif request_type == "get_user_wise_attendance":
+            return self.get_user_wise_attendance(request)
+        else:
+            self.handle_error(request)
 
-        serializer=AttendanceSerializer(data=request.data)
-        
+    def add_attendance(self, request):
+        user_present = request.data.get("user_present")
+        user_absent = request.data.get("user_absent")
+        project = request.data.get("project")
+        date_taken = request.data.get("date_taken")
+        company_id = request.data.get("company_id")
+        meeting = request.data.get("meeting")
+        data_type = request.data.get("data_type")
+
+        serializer = AttendanceSerializer(data=request.data)
+
         if not serializer.is_valid():
             return Response({
-                "success":False,
-                "message":"Posting Invalid Data",
-                "error":serializer.errors
-                
+                "success": False,
+                "message": "Posting Invalid Data",
+                "error": serializer.errors
             })
-            
+
         start, end = get_current_week_start_end_date(date_taken)
-        
-        collection=f"{start}_to_{end}"
-        
-        data={
-            "user_present":user_present,
-            "user_absent":user_absent,
-            "date_taken":date_taken,
-            "project":project,
-            "company_id":company_id,
-            "meeting":meeting,
-            "data_type":data_type
+        collection = f"{start}_to_{end}"
+
+        data = {
+            "user_present": user_present,
+            "user_absent": user_absent,
+            "date_taken": date_taken,
+            "project": project,
+            "company_id": company_id,
+            "meeting": meeting,
+            "data_type": data_type
         }
 
-        try:
-            insert_attendance = json.loads(
-                datacube_data_insertion(API_KEY,ATTENDANCE_DB,collection, data)
-            )
-            print(insert_attendance)
-        except: 
+        def insert_data(attempt=1):  
+            try:
+                insert_attendance = json.loads(
+                    datacube_data_insertion(API_KEY, ATTENDANCE_DB, collection, data)
+                )
+            except Exception as e:
                 return Response({
-                    "success":False,
-                    "error":"Datacube is not responding"
-                })    
+                    "success": False,
+                    "error": "Datacube is not responding"
+                })
+
+            if insert_attendance["success"]:
+                return Response({
+                    "success": True,
+                    "message": f"Attendance has been successfully recorded to {collection}"
+                }, status=status.HTTP_201_CREATED)
             
-        if insert_attendance["success"]:
-            return Response({
-            "success":True,
-            "message":f"Attendance has been successfully recorded to {collection}"
-        },status=status.HTTP_201_CREATED)
-            
-        else:
-            return Response({
-                "success":False,
-                "error":insert_attendance["message"]
-            }) 
-    
+            elif "success" in insert_attendance and not insert_attendance["success"]:
+
+                if attempt < self.max_try:
+                    
+                    add_collection = json.loads(datacube_add_collection(API_KEY, ATTENDANCE_DB, collection, num_collections=1))
+                    attempt += 1
+                    return insert_data(attempt=attempt)
+                else:
+                    return Response({
+                        "success": False,
+                        "error": "Maximum try reached to insert the data to the datacube"
+                    })
+
+        return insert_data()
+
     def get_project_wise_attendance(self,request):
 
         start_date=request.data.get("start_date")
@@ -9929,6 +9941,57 @@ class candidate_attendance(APIView):
             
         return Response({"success":False,"message":attendance_report},status=status.HTTP_400_BAD_REQUEST )
     
+    def update_attendance(self,request):
+        user_present=request.data.get("user_present")
+        user_absent=request.data.get("user_absent")
+        date_taken=request.data.get("date_taken")
+        document_id=request.data.get("document_id")
+
+        serializer=UpdateAttendanceSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "message":"Posting Invalid Data",
+                "error":serializer.errors
+                
+            })
+            
+        start, end = get_current_week_start_end_date(date_taken)
+        
+        collection=f"{start}_to_{end}"
+        
+        update_data={
+            "user_present":user_present,
+            "user_absent":user_absent,
+            "date_taken":date_taken,
+        }
+
+        query={
+            "document_id":document_id
+        }
+        try:
+            update_attendance = json.loads(
+                datacube_data_update(API_KEY,ATTENDANCE_DB,collection,query,update_data))
+            print(update_attendance)
+        except: 
+                return Response({
+                    "success":False,
+                    "error":"Datacube is not responding"
+                })    
+            
+        if update_attendance["success"]:
+            return Response({
+            "success":True,
+            "message":f"Attendance has been updated to {collection}"
+        },status=status.HTTP_201_CREATED)
+            
+        else:
+            return Response({
+                "success":False,
+                "error":update_attendance["message"]
+            })
+
     def handle_error(self,request):
         return Response({
             "success":False,
