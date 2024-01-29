@@ -10372,6 +10372,8 @@ class Company_Structure(APIView):
         
         company_id = request.data.get('company_id')
         project_lead = request.data.get('project_lead')
+        projects_managed = request.data.get('projects_managed')
+        _coded_projects_managed = [self.rearrange(p) for p in projects_managed]
 
         data_type ="Real_Data"
         if request.data.get('data_type'):
@@ -10400,7 +10402,47 @@ class Company_Structure(APIView):
                 return Response(res,status=status.HTTP_404_NOT_FOUND)
             else:
                 #update---------------
-                update_data={'data_type':data_type} 
+                #check if the projects_managed is already in another project lead db
+                pq={
+                    'company_id':company_id,
+                    'data_type':data_type
+                }
+                current_projects_managed={}
+                current_coded_projects_managed={}
+                _pleads=[]
+                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,10,0,False))
+                if check_projects_managed['success']==True:
+                    for p in check_projects_managed['data']:
+                        if p["projects_managed"]!=None and len(p["projects_managed"])>0:
+                            for pm in p["projects_managed"]:
+                                if not self.rearrange(pm) in _coded_projects_managed:
+                                    try:
+                                        current_projects_managed[p["project_lead"]].append(pm)
+                                    except Exception:
+                                        current_projects_managed[p["project_lead"]] =[]
+                                        current_projects_managed[p["project_lead"]].append(pm)
+                                    try:
+                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm))
+                                    except Exception:
+                                        current_coded_projects_managed[p["project_lead"]] =[]
+                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm))
+                                    _pleads.append(p["project_lead"])
+                for pl in _pleads:
+                    pleadquery={
+                        'company_id':company_id,
+                        'project_lead':pl,
+                        'data_type':data_type
+                    }
+                    p_update_data={'data_type':data_type,
+                                   'projects_managed': current_projects_managed[pl], 
+                                   '_coded_projects_managed':current_coded_projects_managed[pl]} 
+                    update_collection_two = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,pleadquery,p_update_data))
+                    if update_collection_two['success']==False:
+                        update_collection_two['message'] = f"{type_request} data failed to update. for project lead {pl}. \n {update_collection_two['message']}"
+                        del update_collection_two['data']
+                        return Response(update_collection_two,status=status.HTTP_400_BAD_REQUEST)
+                            
+                update_data={'data_type':data_type,'projects_managed':projects_managed, '_coded_projects_managed':_coded_projects_managed} 
                 update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
                 
                 if update_collection['success']==True:
