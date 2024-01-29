@@ -741,7 +741,7 @@ class AttendanceRetrievalSerializer(serializers.Serializer):
     start_date = serializers.DateField(allow_null=False)
     end_date = serializers.DateField(allow_null=False)
     project=serializers.CharField(max_length=255,allow_null=False)
-    company_id = serializers.IntegerField(allow_null=False)
+    company_id = serializers.CharField(allow_null=False)
     meeting = serializers.CharField(allow_null=False)
     project = serializers.ListField(allow_null=False)
     data_type = serializers.ChoiceField(
@@ -753,7 +753,7 @@ class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
     end_date = serializers.DateField(allow_null=False)
     project=serializers.CharField(max_length=255,allow_null=False)
     usernames=serializers.ListField(allow_null=False)
-    company_id = serializers.IntegerField(allow_null=False)
+    company_id = serializers.CharField(allow_null=False)
     meeting = serializers.CharField(allow_null=False)
     project = serializers.CharField(allow_null=False)
     data_type = serializers.ChoiceField(
@@ -854,6 +854,11 @@ class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
     data_type = serializers.ChoiceField(
         allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
+class UpdateAttendanceSerializer(serializers.Serializer):
+    user_present = serializers.ListField(child=serializers.CharField())
+    user_absent = serializers.ListField(child=serializers.CharField())
+    date_taken = serializers.DateField(allow_null=False)
+    document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
 
 
 class AddEventSerializer(serializers.Serializer):
