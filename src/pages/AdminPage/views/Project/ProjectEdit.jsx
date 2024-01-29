@@ -1,16 +1,23 @@
 import { useState } from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import styles from "./styles.module.css";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useEffect } from "react";
-import { getProjectTime } from "../../../../services/projectTimeServices";
+import {
+  addProjectTime,
+  getProjectTime,
+  updateProjectTime,
+  updateProjectTimeEnabled,
+} from "../../../../services/projectTimeServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import TimeDetails from "./components/TimeDetails/TimeDetails";
 import Avatar from "react-avatar";
 import { useJobContext } from "../../../../contexts/Jobs";
+import { toast } from "react-toastify";
+import SearchBar from "../../../../components/SearchBar/SearchBar";
 
 const ProjectEdit = () => {
   const navigate = useNavigate();
@@ -20,7 +27,8 @@ const ProjectEdit = () => {
   const urlParams = new URLSearchParams(location.search);
   const project = urlParams.get("project");
   const id = urlParams.get("id");
-  const [ showEditView, setShowEditView ] = useState(false);
+  // const { id } = useParams();
+  const [showEditView, setShowEditView] = useState(false);
   //  console.log(id)
   // console.log(project);
 
@@ -30,6 +38,9 @@ const ProjectEdit = () => {
     editing_enabled: true,
     spent_time: 0,
     left_time: 0,
+    project: project,
+    company_id: currentUser.portfolio_info[0].org_id,
+    data_type: currentUser.portfolio_info[0].data_type,
   });
 
   const [copyOfProjectTimeDetail, setCopyOfProjectTimeDetail] = useState({
@@ -38,16 +49,26 @@ const ProjectEdit = () => {
     editing_enabled: true,
     spent_time: 0,
     left_time: 0,
+    project: project,
+    company_id: currentUser.portfolio_info[0].org_id,
+    data_type: currentUser.portfolio_info[0].data_type,
   });
 
-  const {
-    subProjectsAdded
-  } = useJobContext();
-  
+  const { subProjectsAdded } = useJobContext();
+
   const handleInputChange = (valueEntered, inputName) => {
     setCopyOfProjectTimeDetail((prevValue) => {
       const copyOfPrevValue = { ...prevValue };
       copyOfPrevValue[inputName] = valueEntered;
+      return copyOfPrevValue;
+    });
+  };
+
+  const handleTotalTimeChange = (valueEntered, inputName) => {
+    const filteredValue = valueEntered.replace(/\D/g, "");
+    setCopyOfProjectTimeDetail((prevValue) => {
+      const copyOfPrevValue = { ...prevValue };
+      copyOfPrevValue[inputName] = filteredValue;
       return copyOfPrevValue;
     });
   };
@@ -94,7 +115,52 @@ const ProjectEdit = () => {
     if (showEditView) setCopyOfProjectTimeDetail(projectTimeDetail);
 
     setShowEditView(!showEditView);
-  }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      if (id) {
+        Promise.all([
+          updateProjectTime({
+            total_time: Number(copyOfProjectTimeDetail.total_time),
+            document_id: id,
+          }),
+          updateProjectTimeEnabled({
+            editing_enabled: copyOfProjectTimeDetail.editing_enabled,
+            document_id: id,
+          }),
+        ])
+          .then((res) => {
+            const updateTotalTime = res[0].data;
+            const updateEditing = res[1].data;
+            console.log(updateEditing, updateTotalTime);
+            setCopyOfProjectTimeDetail((prevProjectDetail) => {
+              return {
+                ...prevProjectDetail,
+                total_time: copyOfProjectTimeDetail.total_time,
+                editing_enabled: copyOfProjectTimeDetail.editing_enabled,
+              };
+            });
+
+            toast.success("Update Successful");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        const addNewProjectTime = await addProjectTime(copyOfProjectTimeDetail);
+        // console.log(addNewProjectTime);
+        setCopyOfProjectTimeDetail((prevDetails) => {
+          return { ...prevDetails, ...addNewProjectTime };
+        });
+        toast.success("Job created successfully");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+
+    navigate(`/projects/edit-project-time/?project=${project}&id=${id}`);
+  };
 
   return (
     <StaffJobLandingLayout
@@ -132,48 +198,43 @@ const ProjectEdit = () => {
             <LoadingSpinner />
           ) : (
             <>
-              <button 
+              <button
                 className={styles.project__name__heading}
                 onClick={handleEditProjectTime}
               >
-                <h2>
-                  {
-                    showEditView ? 'Cancel editing' :
-                    'Edit project time'
-                  }
-                </h2>
+                <h2>{showEditView ? "Cancel editing" : "Edit project time"}</h2>
               </button>
-              {
-                !showEditView ? <>
+              {!showEditView ? (
+                <>
                   <div>
                     <h3>Teamlead Detail</h3>
                     <div className={styles.project__Time__lead__Display}>
-                      <Avatar 
-                        name={projectTimeDetail.lead_name} 
+                      <Avatar
+                        name={projectTimeDetail.lead_name}
                         round={true}
                         size="3.2rem"
                       />
                       <div className={styles.project__Team__Lead}>
                         <p>{projectTimeDetail.lead_name}</p>
-                        <span className={styles.lead__Hightlight__Item}>{project}</span>
+                        <span className={styles.lead__Hightlight__Item}>
+                          {project}
+                        </span>
                       </div>
                     </div>
                   </div>
                   <div className={styles.project__Time__Overview}>
-                    
                     <TimeDetails
-                      title={'Spent time'}
-                      time={projectTimeDetail.spent_time} 
+                      title={"Spent time"}
+                      time={projectTimeDetail.spent_time}
                     />
                     <TimeDetails
-                      title={'Left time'}
-                      time={projectTimeDetail.left_time} 
+                      title={"Left time"}
+                      time={projectTimeDetail.left_time}
                     />
                     <TimeDetails
-                      title={'Total time'}
-                      time={projectTimeDetail.total_time} 
+                      title={"Total time"}
+                      time={projectTimeDetail.total_time}
                     />
-
                   </div>
 
                   <div
@@ -185,24 +246,22 @@ const ProjectEdit = () => {
                   >
                     <CircularProgressbar
                       value={
-                        projectTimeDetail?.total_time === 0 ? 
-                          0.00 
-                        : 
-                        Number(
-                          (projectTimeDetail.spent_time /
-                            projectTimeDetail.total_time) *
-                            100
-                        ).toFixed(2)
+                        projectTimeDetail?.total_time === 0
+                          ? 0.0
+                          : Number(
+                              (projectTimeDetail.spent_time /
+                                projectTimeDetail.total_time) *
+                                100
+                            ).toFixed(2)
                       }
                       text={
-                        projectTimeDetail?.total_time === 0 ? 
-                          '0.00%'
-                        :
-                        `${Number(
-                          (projectTimeDetail.spent_time /
-                            projectTimeDetail.total_time) *
-                            100
-                        ).toFixed(2)}%`
+                        projectTimeDetail?.total_time === 0
+                          ? "0.00%"
+                          : `${Number(
+                              (projectTimeDetail.spent_time /
+                                projectTimeDetail.total_time) *
+                                100
+                            ).toFixed(2)}%`
                       }
                       styles={buildStyles({
                         pathColor: `#005734`,
@@ -213,8 +272,8 @@ const ProjectEdit = () => {
                     />
                   </div>
 
-                  <TimeDetails 
-                    title={'Subprojects'}
+                  <TimeDetails
+                    title={"Subprojects"}
                     isSubproject={true}
                     subprojects={
                       subProjectsAdded.find(
@@ -222,8 +281,9 @@ const ProjectEdit = () => {
                       )?.sub_project_list
                     }
                   />
-                </> : <>
-
+                </>
+              ) : (
+                <>
                   <div
                     style={{
                       maxWidth: 250,
@@ -233,24 +293,22 @@ const ProjectEdit = () => {
                   >
                     <CircularProgressbar
                       value={
-                        projectTimeDetail?.total_time === 0 ? 
-                          0.00 
-                        : 
-                        Number(
-                          (projectTimeDetail.spent_time /
-                            projectTimeDetail.total_time) *
-                            100
-                        ).toFixed(2)
+                        projectTimeDetail?.total_time === 0
+                          ? 0.0
+                          : Number(
+                              (projectTimeDetail.spent_time /
+                                projectTimeDetail.total_time) *
+                                100
+                            ).toFixed(2)
                       }
                       text={
-                        projectTimeDetail?.total_time === 0 ? 
-                          '0.00%'
-                        :
-                        `${Number(
-                          (projectTimeDetail.spent_time /
-                            projectTimeDetail.total_time) *
-                            100
-                        ).toFixed(2)}%`
+                        projectTimeDetail?.total_time === 0
+                          ? "0.00%"
+                          : `${Number(
+                              (projectTimeDetail.spent_time /
+                                projectTimeDetail.total_time) *
+                                100
+                            ).toFixed(2)}%`
                       }
                       styles={buildStyles({
                         pathColor: `#005734`,
@@ -301,7 +359,10 @@ const ProjectEdit = () => {
                             placeholder="Enter total time"
                             value={copyOfProjectTimeDetail.total_time}
                             onChange={(e) =>
-                              handleInputChange(e.target.value, e.target.name)
+                              handleTotalTimeChange(
+                                e.target.value,
+                                e.target.name
+                              )
                             }
                           />
                         </div>
@@ -331,7 +392,10 @@ const ProjectEdit = () => {
                             placeholder="Enter total time"
                             value={copyOfProjectTimeDetail.total_time}
                             onChange={(e) =>
-                              handleInputChange(e.target.value, e.target.name)
+                              handleTotalTimeChange(
+                                e.target.value,
+                                e.target.name
+                              )
                             }
                             disabled
                           />
@@ -340,10 +404,15 @@ const ProjectEdit = () => {
                     )}
                   </div>
                   <div className={styles.project__btn}>
-                    <button className={styles.project__submit}>Update</button>
+                    <button
+                      className={styles.project__submit}
+                      onClick={handleUpdate}
+                    >
+                      Update
+                    </button>
                   </div>
                 </>
-              }
+              )}
             </>
           )}
         </div>
