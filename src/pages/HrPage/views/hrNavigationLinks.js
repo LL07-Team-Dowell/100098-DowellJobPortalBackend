@@ -31,11 +31,11 @@ export const hrNavigationLinks = [
         icon: <TfiAgenda />,
         text: "Agenda",
     },
-    {
-        linkAddress: "/attendance",
-        icon: <IoCalendarOutline />,
-        text: "Attendance",
-    },
+    // {
+    //     linkAddress: "/attendance",
+    //     icon: <IoCalendarOutline />,
+    //     text: "Attendance",
+    // },
     {
         linkAddress: "/attendance-",
         icon: <IoCalendarOutline />,
