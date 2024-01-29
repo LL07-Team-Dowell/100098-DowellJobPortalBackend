@@ -675,7 +675,7 @@ class TaskDetailsInputSerializer(serializers.Serializer):
     task_created_date = serializers.DateField()
     end_date = serializers.DateField()
     user_id = serializers.IntegerField()
-    company_id = serializers.IntegerField()
+    company_id = serializers.CharField()
 
 class AddProjectTimeSerializer(serializers.Serializer):
     project = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
@@ -848,9 +848,7 @@ class IndividualAttendanceRetrievalSerializer(serializers.Serializer):
     end_date = serializers.DateField(allow_null=False)
     project = serializers.CharField(max_length=255, allow_null=False)
     usernames = serializers.ListField(allow_null=False)
-    company_id = serializers.IntegerField(allow_null=False)
-    meeting = serializers.CharField(allow_null=False)
-    project = serializers.CharField(allow_null=False)
+    company_id = serializers.CharField(allow_null=False)
     data_type = serializers.ChoiceField(
         allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
