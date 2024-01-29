@@ -1,6 +1,6 @@
 import { useState } from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import styles from "./styles.module.css";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useEffect } from "react";
@@ -8,6 +8,7 @@ import {
   addProjectTime,
   getProjectTime,
   updateProjectTime,
+  updateProjectTimeEnabled,
 } from "../../../../services/projectTimeServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
@@ -15,6 +16,8 @@ import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner
 import TimeDetails from "./components/TimeDetails/TimeDetails";
 import Avatar from "react-avatar";
 import { useJobContext } from "../../../../contexts/Jobs";
+import { toast } from "react-toastify";
+import SearchBar from "../../../../components/SearchBar/SearchBar";
 
 const ProjectEdit = () => {
   const navigate = useNavigate();
@@ -24,6 +27,7 @@ const ProjectEdit = () => {
   const urlParams = new URLSearchParams(location.search);
   const project = urlParams.get("project");
   const id = urlParams.get("id");
+  // const { id } = useParams();
   const [showEditView, setShowEditView] = useState(false);
   //  console.log(id)
   // console.log(project);
@@ -35,7 +39,7 @@ const ProjectEdit = () => {
     spent_time: 0,
     left_time: 0,
     project: project,
-    company_id: id,
+    company_id: currentUser.portfolio_info[0].org_id,
     data_type: currentUser.portfolio_info[0].data_type,
   });
 
@@ -45,6 +49,9 @@ const ProjectEdit = () => {
     editing_enabled: true,
     spent_time: 0,
     left_time: 0,
+    project: project,
+    company_id: currentUser.portfolio_info[0].org_id,
+    data_type: currentUser.portfolio_info[0].data_type,
   });
 
   const { subProjectsAdded } = useJobContext();
@@ -100,6 +107,71 @@ const ProjectEdit = () => {
 
     setShowEditView(!showEditView);
   };
+
+  const handleUpdate = async () => {
+    try {
+      if (id) {
+        Promise.all([
+          updateProjectTime({
+            total_time: Number(copyOfProjectTimeDetail.total_time),
+            document_id: id,
+          }),
+          updateProjectTimeEnabled({
+            editing_enabled: copyOfProjectTimeDetail.editing_enabled,
+            document_id: id,
+          }),
+        ])
+          .then((res) => {
+            const updateTotalTime = res[0].data;
+            const updateEditing = res[1].data;
+            console.log(updateEditing, updateTotalTime);
+
+            updateTotalTime
+              ? setCopyOfProjectTimeDetail((prevProjectDetail) => {
+                  return {
+                    ...prevProjectDetail,
+                    total_time: copyOfProjectTimeDetail.total_time,
+                  };
+                })
+              : setCopyOfProjectTimeDetail((prevProjectDetail) => {
+                  return {
+                    ...prevProjectDetail,
+                    editing_enabled: copyOfProjectTimeDetail.editing_enabled,
+                  };
+                });
+
+            toast.success("Update Successful");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        const addNewProjectTime = await addProjectTime(copyOfProjectTimeDetail);
+        // console.log(addNewProjectTime);
+        setCopyOfProjectTimeDetail((prevDetails) => {
+          return { ...prevDetails, ...addNewProjectTime };
+        });
+        toast.success("Job created successfully");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+
+    navigate(`/projects`);
+  };
+
+  // if (!id) {
+  //   const addProjectDetails = await addProjectTime(projectTimeDetail);
+  //   if (addProjectDetails.status === 200) {
+  //     setProjectTimeDetail((prevData) => [...projectTimeDetail, ...prevData]);
+  //     toast.success("Job created successfully");
+  //   } else {
+  //     toast.info("Something went wrong");
+  //   }
+  // } else {
+  //   if (id) {
+  //   }
+  // }
 
   return (
     <StaffJobLandingLayout
@@ -326,7 +398,7 @@ const ProjectEdit = () => {
                             id="total_time"
                             name="total_time"
                             placeholder="Enter total time"
-                            value={copyOfProjectTimeDetail.total_time}
+                            value={Number(copyOfProjectTimeDetail.total_time)}
                             onChange={(e) =>
                               handleInputChange(e.target.value, e.target.name)
                             }
@@ -337,7 +409,12 @@ const ProjectEdit = () => {
                     )}
                   </div>
                   <div className={styles.project__btn}>
-                    <button className={styles.project__submit}>Update</button>
+                    <button
+                      className={styles.project__submit}
+                      onClick={handleUpdate}
+                    >
+                      Update
+                    </button>
                   </div>
                 </>
               )}

@@ -8,6 +8,11 @@
   gap: 1.5rem;
 }
 
+.search__bar {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .top__Nav__Content {
   display: flex;
   align-items: center;

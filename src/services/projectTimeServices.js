@@ -16,3 +16,10 @@ export const addProjectTime = async (data) => {
 export const updateProjectTime = async (data) => {
   return await currentBackendAxiosInstance.patch("/update_project_time/", data);
 };
+
+export const updateProjectTimeEnabled = async (data) => {
+  return await currentBackendAxiosInstance.patch(
+    "/update_project_time_enabled/",
+    data
+  );
+};
