@@ -773,7 +773,7 @@ class CompanyStructureAddProjectLeadSerializer(serializers.Serializer):
 class CompanyStructureUpdateProjectLeadSerializer(serializers.Serializer):
     company_id = serializers.CharField(max_length=255,allow_null=False)
     project_lead = serializers.CharField(max_length=255,allow_null=False)
-    projects_managed=serializers.ListField(allow_null=False, required=False)
+    projects_managed=serializers.ListField(allow_null=False, required=True)
     DATA_TYPE_CHOICE = (
         ("Real_Data", "Real_Data"),
         ("Archived_Data", "Archived_Data"),
