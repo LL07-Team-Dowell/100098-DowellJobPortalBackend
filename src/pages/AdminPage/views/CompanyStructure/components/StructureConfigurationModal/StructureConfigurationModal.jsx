@@ -71,7 +71,7 @@ export default function StructureConfigurationModal ({
             
             if (isNewProjectLeadInStructure) {
                 isNewProjectLeadInStructure?.projects_managed?.push(project);
-                isNewProjectLeadInStructure?.projects?.push(existingProjectDetails);
+                if (existingProjectDetails) isNewProjectLeadInStructure?.projects?.push(existingProjectDetails);
             }
             
             if (!isNewProjectLeadInStructure) addNewProjectLead(currentStructureDataCopy, itemValue, project, existingProjectDetails);

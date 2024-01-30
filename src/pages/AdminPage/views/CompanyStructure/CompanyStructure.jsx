@@ -205,7 +205,26 @@ const CompanyStructurePage = () => {
             // CONFIGURING/UPDATING PROJECT LEADS
             case 2:
                 const newProjectLeads = copyOfStructureData?.project_leads?.filter(item => item.is_new_project_lead);
-                const updatedProjectLeads = copyOfStructureData?.project_leads?.filter(item => !item.is_new_project_lead && item?.projects_managed?.length !== companyStructure?.project_leads?.find(project => project?.project_lead === item?.project_lead)?.projects_managed?.length);
+                const updatedProjectLeads = copyOfStructureData?.project_leads
+                ?.filter(
+                    item => 
+                        !item.is_new_project_lead && 
+                        (
+                            !item?.projects_managed
+                            ?.every(
+                                project => 
+                                    companyStructure?.project_leads?.find(project => project?.project_lead === item?.project_lead)?.projects_managed?.includes(project)
+                            ) 
+                            ||
+                            !companyStructure?.project_leads
+                            ?.find(
+                                project => project?.project_lead === item?.project_lead
+                            )?.projects_managed
+                                ?.every(
+                                    project => item?.projects_managed?.includes(project)
+                                )
+                        )
+                );
 
                 try {
 
