@@ -9779,7 +9779,7 @@ class candidate_attendance(APIView):
         project = request.data.get("project")
         date_taken = request.data.get("date_taken")
         company_id = request.data.get("company_id")
-        meeting = request.data.get("meeting")
+        event_id = request.data.get("event_id")
         data_type = request.data.get("data_type")
 
         serializer = AttendanceSerializer(data=request.data)
@@ -9794,19 +9794,48 @@ class candidate_attendance(APIView):
         start, end = get_current_week_start_end_date(date_taken)
         collection = f"{start}_to_{end}"
 
+        query={
+            "_id":event_id
+        }
+
+        try:
+            check_data = json.loads(
+                datacube_data_retrival(
+                    API_KEY,
+                    ATTENDANCE_DB,
+                    Events_collection,
+                    data=query,
+                    limit=0,
+                    offset=0,
+                )
+            )
+            
+        except:
+            return Response({"success": False, "error": "Datacube is not responding"})
+        
+ 
+        if not len(check_data["data"])>0:   #here we check if the event_id exist or not 
+            return Response({
+                "success":False,
+                "error":"Event does not exist"
+            })
+
+        
+        event=check_data["data"][0]["event_name"]
+
         data = {
             "user_present": user_present,
             "user_absent": user_absent,
             "date_taken": date_taken,
             "project": project,
             "company_id": company_id,
-            "meeting": meeting,
+            "event": event,
             "data_type": data_type
         }
 
         check_field={
             "date_taken":date_taken,
-            "meeting": meeting,
+            "event": event,
             "project":project,
             "data_type": data_type
         }
@@ -9825,11 +9854,11 @@ class candidate_attendance(APIView):
         except:
             return Response({"success": False, "error": "Datacube is not responding"})
         
-        if check_data["success"] and len(check_data["data"]) > 0:
+        if check_data["success"] and len(check_data["data"]) > 0:  #here we are checking if the attendance has been already recorded 
             return Response(
                 {
                     "success": False,
-                    "error": f"attendance of the date {date_taken} for the meeting {meeting} and project {project} already recorded ",
+                    "error": f"attendance of the date {date_taken} for the event {event} and project {project} already recorded ",
                 },
                 status=status.HTTP_409_CONFLICT,
             )
@@ -9851,7 +9880,7 @@ class candidate_attendance(APIView):
                     "message": f"Attendance has been successfully recorded to {collection}"
                 }, status=status.HTTP_201_CREATED)
             
-            elif not insert_attendance["success"] and attempt < self.max_try:
+            elif not insert_attendance["success"] and attempt < self.max_try:  # After the validation of datacube, if the data is not inserted we will consider there is no collection in the DB so we try to create a colection and again try to insert the data
                     add_collection = json.loads(datacube_add_collection(API_KEY, ATTENDANCE_DB, collection, num_collections=1))
 
                     if add_collection["success"]:
@@ -9867,7 +9896,7 @@ class candidate_attendance(APIView):
                 return Response({
                     "success": False,
                     "error": "Attendance could not be recored due to unknown error"
-                })
+                },status=status.HTTP_404_NOT_FOUND)
 
         return insert_data()
 
@@ -9921,60 +9950,77 @@ class candidate_attendance(APIView):
                     
         return Response({"success":False,"message":attendance_report["message"]},status=status.HTTP_400_BAD_REQUEST )
     
-    def get_user_wise_attendance(self,request):
+    def get_user_wise_attendance(self, request):
+        def add_user_attendance(user_attendance, event_name, date, is_present):
+            for user_record in user_attendance:
+                if user_record['event'] == event_name:
+                    if is_present:
+                        user_record['dates_present'].append(date)
+                    else:
+                        user_record['dates_absent'].append(date)
+                    break
 
-        def add_user_attendance(userdetail,date,is_user_present):
-            if is_user_present:
-                userdetail["dates_present"].append(date)
-            else:
-                userdetail["dates_absent"].append(date)
+        start_date = request.data.get("start_date")
+        end_date = request.data.get("end_date")
+        usernames = request.data.get("usernames")
+        company_id = request.data.get("company_id")
+        project = request.data.get("project")
+        collection = str(start_date) + "_to_" + str(end_date)
+        limit = request.data.get("limit")
+        offset = request.data.get("offset")
+        data = {"company_id": company_id,"project":project}
 
-                
-        start_date=request.data.get("start_date")
-        end_date=request.data.get("end_date")
-        usernames=request.data.get("usernames")
-        company_id=request.data.get("company_id")
-        project=request.data.get("project")
-        collection=str(start_date)+"_to_"+str(end_date)
-        limit=request.data.get("limit")
-        offset=request.data.get("offset")
-
-        data={"company_id":company_id,"project":project}
-
-        serializer=IndividualAttendanceRetrievalSerializer(data=request.data)
+        serializer = IndividualAttendanceRetrievalSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response({
-                "success":False,
-                "error":serializer.errors
+                "success": False,
+                "error": serializer.errors
             })
-        
+
         try:
-            attendance_report=json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,collection,data,limit,offset))     
-            print(attendance_report)
-        except:
+            attendance_report = json.loads(datacube_data_retrival(API_KEY, ATTENDANCE_DB, collection, data, limit, offset))
+            fetch_events = json.loads(datacube_data_retrival(API_KEY, ATTENDANCE_DB, Events_collection, data, limit=0, offset=0))
+        except Exception as e:
             return Response({
-                "success":False,
-                "error":"datacube database not responding"
+                "success": False,
+                "error": str(e)
             })
 
-        dates=get_dates_between(start_date,end_date)
+        events_list = [events["event_name"] for events in fetch_events.get("data", [])]
+        dates = get_dates_between(start_date, end_date)
 
-        
-        attendance_with_users={user:{"dates_present":[],"dates_absent":[],"project":project} for user in usernames }
+        attendance_with_users = {user: [] for user in usernames}
 
-        if attendance_report["success"]==True:
-                for user in usernames:
-                        for date in dates:
-                                is_user_present= any(record.get("date_taken")==date and user in record.get("user_present") for record in attendance_report["data"])
-                                
-                                add_user_attendance(attendance_with_users[user],date,is_user_present)
-                return Response({
-                    "success":True,
-                    "message":"Attendance records has been succesfully retrieved",
-                    "data":attendance_with_users},status=status.HTTP_200_OK)
-            
-        return Response({"success":False,"message":attendance_report},status=status.HTTP_400_BAD_REQUEST )
+        if attendance_report.get("success"):
+            for user in usernames:
+                for event_name in events_list:
+                    user_attendance_record = {
+                        "event": event_name,
+                        "dates_present": [],
+                        "dates_absent": [],
+                        "project": project
+                    }
+                    attendance_with_users[user].append(user_attendance_record)
+
+                    for date in dates:
+                        is_user_present = any(
+                            record.get("date_taken") == date and user in record.get("user_present", []) and record.get("meeting") == event_name 
+                            for record in attendance_report.get("data", [])
+                        )
+                        add_user_attendance(attendance_with_users[user], event_name, date, is_user_present)
+
+            return Response({
+                "success": True,
+                "message": "Attendance records have been successfully retrieved",
+                "data": attendance_with_users
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "success": False,
+                "error": "Failed to retrieve attendance records."
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     
     def update_attendance(self,request):
         user_present=request.data.get("user_present")
@@ -10744,13 +10790,26 @@ class DowellEvents(APIView):
             "data_type": data.get("data_type"),
             "company_id": data.get("company_id"),
             "is_mendatory": data.get("is_mendatory"),
+            "project":data.get("project")
         }
 
-        check_field = {
-            "event_name": data.get("event_name"),
-            "event_type": data.get("event_type"),
-            "event_host": data.get("event_host"),
-        }
+        if field["project"]:
+
+            check_field = {
+                "event_name": data.get("event_name"),
+                "event_type": data.get("event_type"),
+                "event_host": data.get("event_host"),
+                "project":data.get("project")
+            }           
+        
+        else:
+            check_field = {
+                "event_name": data.get("event_name"),
+                "event_type": data.get("event_type"),
+                "event_host": data.get("event_host"),
+                
+            }
+
 
         serializer = AddEventSerializer(data=request.data)
 
