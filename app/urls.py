@@ -234,5 +234,5 @@ urlpatterns = [
     path('events/',DowellEvents.as_view()),
 
     # invoice module apis------------------------------------------------------
-    path("invoice-module/", Invoice_module.as_view()),
+    path("invoice_module/", Invoice_module.as_view()),
 ]
