@@ -308,6 +308,8 @@ class Invoice_module(APIView):
             return self.save_payment_records(request)
         elif type_request == "update-payment-records":
             return self.update_payment_records(request)
+        elif type_request == "process-payment":
+            return self.process_payment(request)
         else:
             return self.handle_error(request)
 
@@ -374,14 +376,15 @@ class Invoice_module(APIView):
             )
 
     def save_payment_records(self, request):
-        user_id = request.data.get("username")
+        user_id = request.data.get("user_id")  # Change from "username" to "user_id"
+        company_id = request.data.get("company_id")
         weekly_payment_amount = request.data.get("weekly_payment_amount")
         payment_currency = request.data.get("currency")
 
-        if not (user_id and weekly_payment_amount and payment_currency):
+        if not (user_id and company_id and weekly_payment_amount and payment_currency):
             return Response(
                 {
-                    "message": "Username, weekly_payment_amount, and currency are required"
+                    "message": "user_id, company_id, weekly_payment_amount, and currency are required"  # Update field names
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -407,6 +410,7 @@ class Invoice_module(APIView):
                 "coll_name": user_id,
                 "operation": "insert",
                 "data": {
+                    "company_id": company_id,
                     "weekly_payment_amount": weekly_payment_amount,
                     "payment_currency": payment_currency,
                     "db_record_type": "payment_record",
@@ -424,10 +428,11 @@ class Invoice_module(APIView):
 
     def update_payment_records(self, request):
         user_id = request.data.get("username")
+        company_id = request.data.get("company_id")
         weekly_payment_amount = request.data.get("weekly_payment_amount")
         payment_currency = request.data.get("currency")
 
-        if not (user_id and weekly_payment_amount and payment_currency):
+        if not (user_id and company_id and weekly_payment_amount and payment_currency):
             return Response(
                 {
                     "message": "Username, weekly_payment_amount, and currency are required"
@@ -468,6 +473,7 @@ class Invoice_module(APIView):
                 "coll_name": user_id,
                 "operation": "update",
                 "update_data": {
+                    "company_id": company_id,
                     "weekly_payment_amount": weekly_payment_amount,
                     "payment_currency": payment_currency,
                     "db_record_type": "payment_record",
@@ -484,6 +490,92 @@ class Invoice_module(APIView):
                 {"message": "Data does not exist, you need to save first"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+    def process_payment(self, request):
+        user_id = request.data.get("user_id")
+        company_id = request.data.get("company_id")
+        payment_month = request.data.get("payment_month")
+        payment_year = request.data.get("payment_year")
+        number_of_leave_days = request.data.get("number_of_leave_days")
+        approved_logs_count = request.data.get("approved_logs_count")
+        total_logs_required = request.data.get("total_logs_required")
+
+        url = "https://datacube.uxlivinglab.online/db_api/get_data/"
+        data = {
+            "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            "db_name": "Payment_Records",
+            "coll_name": user_id,
+            "operation": "fetch",
+            "data": {
+                "db_record_type": "payment_detail",
+                "payment_month": payment_month,
+                "payment_year": payment_year,
+            },
+        }
+
+        response = requests.post(url, json=data)
+
+        existing_data = response.json()["data"]
+
+        if existing_data:
+            return Response(
+                {
+                    "message": f"Payment already processed for {payment_month} {payment_year}"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        else:
+            work_hours_per_week = 40
+            weeks_per_month = 4
+            monthly_payment = work_hours_per_week * weeks_per_month
+
+            work_hours_per_day = 8
+            daily_payment = work_hours_per_day
+            amount_to_pay = monthly_payment
+
+            if approved_logs_count < total_logs_required:
+                logs_ratio = approved_logs_count / total_logs_required
+                amount_to_pay *= logs_ratio
+
+            if number_of_leave_days > 0:
+                leave_adjustment = daily_payment * number_of_leave_days
+                amount_to_pay -= leave_adjustment
+
+            save_url = "https://datacube.uxlivinglab.online/db_api/crud/"
+            save_data = {
+                "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+                "db_name": "Payment_Records",
+                "coll_name": user_id,
+                "operation": "insert",
+                "data": {
+                    "db_record_type": "payment_detail",
+                    "payment_month": payment_month,
+                    "payment_year": payment_year,
+                    "amount_paid": amount_to_pay,
+                    "currency_paid": "currency",
+                    "actual_monthly_pay": monthly_payment,
+                    "approved_logs_count": approved_logs_count,
+                    "requried_logs_count": total_logs_required,
+                    "leave_days": number_of_leave_days,
+                },
+            }
+
+            save_response = requests.post(save_url, json=save_data)
+
+            if save_response.status_code in [200, 201]:
+                inserted_data = save_response.json()["data"]
+                success_message = f"Payment processed successfully for {payment_month} {payment_year}. Inserted ID: {inserted_data['inserted_id']}"
+
+                return Response(
+                    {"message": success_message},
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {"message": "Failed to save payment details"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
 
     def handle_error(self, request):
         return Response(
