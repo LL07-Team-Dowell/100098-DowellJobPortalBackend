@@ -10005,7 +10005,7 @@ class candidate_attendance(APIView):
 
                     for date in dates:
                         is_user_present = any(
-                            record.get("date_taken") == date and user in record.get("user_present", []) and record.get("meeting") == event_name 
+                            record.get("date_taken") == date and user in record.get("user_present", []) and record.get("event") == event_name 
                             for record in attendance_report.get("data", [])
                         )
                         add_user_attendance(attendance_with_users[user], event_name, date, is_user_present)
