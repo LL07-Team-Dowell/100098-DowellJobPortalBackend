@@ -9779,7 +9779,7 @@ class candidate_attendance(APIView):
         project = request.data.get("project")
         date_taken = request.data.get("date_taken")
         company_id = request.data.get("company_id")
-        meeting = request.data.get("meeting")
+        event_id = request.data.get("event_id")
         data_type = request.data.get("data_type")
 
         serializer = AttendanceSerializer(data=request.data)
@@ -9794,19 +9794,48 @@ class candidate_attendance(APIView):
         start, end = get_current_week_start_end_date(date_taken)
         collection = f"{start}_to_{end}"
 
+        query={
+            "_id":event_id
+        }
+
+        try:
+            check_data = json.loads(
+                datacube_data_retrival(
+                    API_KEY,
+                    ATTENDANCE_DB,
+                    Events_collection,
+                    data=query,
+                    limit=0,
+                    offset=0,
+                )
+            )
+            
+        except:
+            return Response({"success": False, "error": "Datacube is not responding"})
+        
+ 
+        if not len(check_data["data"])>0:   #here we check if the event_id exist or not 
+            return Response({
+                "success":False,
+                "error":"Event does not exist"
+            })
+
+        
+        event=check_data["data"][0]["event_name"]
+
         data = {
             "user_present": user_present,
             "user_absent": user_absent,
             "date_taken": date_taken,
             "project": project,
             "company_id": company_id,
-            "meeting": meeting,
+            "event": event,
             "data_type": data_type
         }
 
         check_field={
             "date_taken":date_taken,
-            "meeting": meeting,
+            "event": event,
             "project":project,
             "data_type": data_type
         }
@@ -9825,11 +9854,11 @@ class candidate_attendance(APIView):
         except:
             return Response({"success": False, "error": "Datacube is not responding"})
         
-        if check_data["success"] and len(check_data["data"]) > 0:
+        if check_data["success"] and len(check_data["data"]) > 0:  #here we are checking if the attendance has been already recorded 
             return Response(
                 {
                     "success": False,
-                    "error": f"attendance of the date {date_taken} for the meeting {meeting} and project {project} already recorded ",
+                    "error": f"attendance of the date {date_taken} for the event {event} and project {project} already recorded ",
                 },
                 status=status.HTTP_409_CONFLICT,
             )
@@ -9851,7 +9880,7 @@ class candidate_attendance(APIView):
                     "message": f"Attendance has been successfully recorded to {collection}"
                 }, status=status.HTTP_201_CREATED)
             
-            elif not insert_attendance["success"] and attempt < self.max_try:
+            elif not insert_attendance["success"] and attempt < self.max_try:  # After the validation of datacube, if the data is not inserted we will consider there is no collection in the DB so we try to create a colection and again try to insert the data
                     add_collection = json.loads(datacube_add_collection(API_KEY, ATTENDANCE_DB, collection, num_collections=1))
 
                     if add_collection["success"]:
@@ -9867,7 +9896,7 @@ class candidate_attendance(APIView):
                 return Response({
                     "success": False,
                     "error": "Attendance could not be recored due to unknown error"
-                })
+                },status=status.HTTP_404_NOT_FOUND)
 
         return insert_data()
 
