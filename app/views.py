@@ -9976,7 +9976,7 @@ class candidate_attendance(APIView):
             return Response({
                 "success": False,
                 "error": serializer.errors
-            })
+            },status=status.HTTP_400_BAD_REQUEST)
 
         try:
             attendance_report = json.loads(datacube_data_retrival(API_KEY, ATTENDANCE_DB, collection, data, limit, offset))
