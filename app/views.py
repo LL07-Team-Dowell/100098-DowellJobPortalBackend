@@ -10824,13 +10824,14 @@ class DowellEvents(APIView):
 
         try:
             fetch_collection = json.loads(
-                datacube_data_retrival(
+                datacube_data_retrival_function(
                     API_KEY,
                     ATTENDANCE_DB,
                     Events_collection,
-                    data=check_field,
-                    limit=0,
-                    offset=0,
+                    check_field,
+                    0,
+                    0,
+                    False
                 )
             )
         except:
@@ -10919,9 +10920,7 @@ class DowellEvents(APIView):
 
     def GetAllEvents(self, request):
         data = {key: value for key, value in request.data.items()}
-        limit = request.GET.get("limit")
-        offset = request.GET.get("offset")
-
+        
         serializer = GetEventSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -10936,8 +10935,8 @@ class DowellEvents(APIView):
 
         try:
             fetch_collection = json.loads(
-                datacube_data_retrival(
-                    API_KEY, ATTENDANCE_DB, Events_collection, data, limit, offset
+                datacube_data_retrival_function(
+                    API_KEY, ATTENDANCE_DB, Events_collection, data, 0, 0, False
                 )
             )
             print(fetch_collection)
