@@ -10352,7 +10352,6 @@ class Company_Structure(APIView):
         projects_managed = request.data.get("projects_managed")
         _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
         coll_name = type_request
-        team_lead_reports_to ={}
         projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{"company_id":company_id},10,0,False))
         if len(projects['data'])>0:
             for p in _coded_projects_managed:
@@ -10361,12 +10360,12 @@ class Company_Structure(APIView):
                             "success":False,
                             "message":f"The Project '{p}' doesnt exist."
                         })
-            
+        data_type = "Real_Data" 
         search_query ={  
             "company_id":company_id,
             "project_lead":project_lead,
             "project_lead_id":project_lead_id,
-            "data_type":"Real_Data"
+            "data_type":data_type
         }
         res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
         
@@ -10386,7 +10385,7 @@ class Company_Structure(APIView):
                     "project_lead_id":project_lead_id,
                     "projects_managed":projects_managed,
                     "_coded_projects_managed":_coded_projects_managed,
-                    "data_type":"Real_Data"
+                    "data_type":data_type
                 }
             insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
             if insert_collection['success']==True:
@@ -10406,11 +10405,51 @@ class Company_Structure(APIView):
                         "project_lead_id":project_lead_id,
                         "projects_managed":projects_managed,
                         "_coded_projects_managed":_coded_projects_managed,
-                        "data_type":"Real_Data"
+                        "data_type":data_type
                     }
                 
                 insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
                 if insert_collection['success']==True:
+                    #check if the projects_managed is already in another project lead db
+                    pq={
+                        'company_id':company_id,
+                        'data_type':data_type
+                    }
+                    current_projects_managed={}
+                    current_coded_projects_managed={}
+                    _pleads=[]
+                    check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,10,0,False))
+                    if check_projects_managed['success']==True:
+                        for p in check_projects_managed['data']:
+                            if p["projects_managed"]!=None and len(p["projects_managed"])>0:
+                                for pm in p["projects_managed"]:
+                                    if not self.rearrange(pm.lower()) in _coded_projects_managed:
+                                        try:
+                                            current_projects_managed[p["project_lead"]].append(pm)
+                                        except Exception:
+                                            current_projects_managed[p["project_lead"]] =[]
+                                            current_projects_managed[p["project_lead"]].append(pm)
+                                        try:
+                                            current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
+                                        except Exception:
+                                            current_coded_projects_managed[p["project_lead"]] =[]
+                                            current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
+                                        _pleads.append(p["project_lead"])
+                    for pl in _pleads:
+                        pleadquery={
+                            'company_id':company_id,
+                            'project_lead':pl,
+                            'data_type':data_type
+                        }
+                        p_update_data={'data_type':data_type,
+                                    'projects_managed': current_projects_managed[pl], 
+                                    '_coded_projects_managed':current_coded_projects_managed[pl]} 
+                        update_collection_two = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,pleadquery,p_update_data))
+                        if update_collection_two['success']==False:
+                            update_collection_two['message'] = f"{type_request} data failed to update. for project lead {pl}. \n {update_collection_two['message']}"
+                            del update_collection_two['data']
+                            return Response(update_collection_two,status=status.HTTP_400_BAD_REQUEST)
+                            
                     insert_collection['message'] = f"{type_request} data has been inserted successfully.."
                     return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
