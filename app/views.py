@@ -9961,7 +9961,7 @@ class candidate_attendance(APIView):
                         user_record['dates_present'].append(date)
                     else:
                         user_record['dates_absent'].append(date)
-                    break
+                    
 
         start_date = request.data.get("start_date")
         end_date = request.data.get("end_date")
@@ -9973,6 +9973,8 @@ class candidate_attendance(APIView):
         offset = request.data.get("offset")
         data = {"company_id": company_id,"project":project}
 
+        event_query={"company_id":company_id}
+
         serializer = IndividualAttendanceRetrievalSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -9983,13 +9985,12 @@ class candidate_attendance(APIView):
 
         try:
             attendance_report = json.loads(datacube_data_retrival(API_KEY, ATTENDANCE_DB, collection, data, limit, offset))
-            fetch_events = json.loads(datacube_data_retrival(API_KEY, ATTENDANCE_DB, Events_collection, data, limit=0, offset=0))
+            fetch_events = json.loads(datacube_data_retrival(API_KEY, ATTENDANCE_DB, Events_collection, data=event_query, limit=0, offset=0))
         except Exception as e:
             return Response({
                 "success": False,
                 "error": str(e)
             })
-
         events_list = [events["event_name"] for events in fetch_events.get("data", [])]
         dates = get_dates_between(start_date, end_date)
 
@@ -10011,8 +10012,7 @@ class candidate_attendance(APIView):
                             record.get("date_taken") == date and user in record.get("user_present", []) and record.get("event") == event_name 
                             for record in attendance_report.get("data", [])
                         )
-                        add_user_attendance(attendance_with_users[user], event_name, date, is_user_present)
-
+                        add_user_attendance(attendance_with_users[user], event_name, date, is_user_present)  #attendance_with_users[user] conatins all the events of the week with teh key user
             return Response({
                 "success": True,
                 "message": "Attendance records have been successfully retrieved",
