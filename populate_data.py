@@ -3,7 +3,8 @@ import json
 import requests
 import calendar
 api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f"
-db_name= "Reports"
+REPORT_DB_NAME = "ReportDB"
+REPORT_UUID = "4f38703b-2c74-4292-9e0f-9e62fb22797e"
 num_collections = 1
 
 def datacube_add_collection(api_key,db_name,coll_names,num_collections):
@@ -12,7 +13,7 @@ def datacube_add_collection(api_key,db_name,coll_names,num_collections):
 
     data = {
         "api_key": api_key,
-        "db_name": db_name,
+        "db_name": REPORT_DB_NAME,
         "coll_names": coll_names,
         "num_collections": num_collections,
     }
@@ -215,14 +216,7 @@ comment_report_module = [
     "1000981017",
     "ABCDE",
 ]
-def normalize(text):
-    normalized_text = ''
-    for char in text:
-        if char.isalnum() or char =='_' or char =='-':
-            normalized_text += char
-        if char ==' ':
-            normalized_text+='_'
-    return normalized_text
+
 def update_report_database(task_created_date,company_id):
     field = {
             "task_created_date": task_created_date,
@@ -240,9 +234,9 @@ def update_report_database(task_created_date,company_id):
             query={"report_record_month": _monthname,
                     "report_record_year": year,
                     "db_report_type": "report"}
-            coll_name = normalize(_t['task_added_by'])
+            coll_name = REPORT_UUID+task['user_id']
             print(f"----------retrieving data from collection {coll_name} for {_monthname}, {year}----------")
-            get_collection = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0, False))
+            get_collection = json.loads(datacube_data_retrival_function(api_key,REPORT_DB_NAME,coll_name,query,10,0, False))
             #print(get_collection,"==",coll_name)
             
             if get_collection['success']==False:
@@ -250,7 +244,7 @@ def update_report_database(task_created_date,company_id):
                 print(f'-------creating collection-{coll_name} ----------')
                 #inserting data collection-------------------------------------- 
                 #creating collection------------------------------
-                create_collection = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+                create_collection = json.loads(datacube_add_collection(api_key,REPORT_DB_NAME,coll_name,1))
                 if create_collection['success']==True:
                     print(f'successfully created the collection-{coll_name}')
                     #inserting data into the collection------------------------------
@@ -331,7 +325,7 @@ def update_report_database(task_created_date,company_id):
                         "report_record_year": year,
                         "db_report_type": "report"
                     }
-                    insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+                    insert_collection = json.loads(datacube_data_insertion(api_key,REPORT_DB_NAME,coll_name,data))
                     if insert_collection['success']==True:
                         print(f'successfully inserted the data into the empty collection- {coll_name}')
                         print(insert_collection)
@@ -425,7 +419,7 @@ def update_report_database(task_created_date,company_id):
                     }
                     
                     update_data=data #'''incomplete---'''
-                    update_collection = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
+                    update_collection = json.loads(datacube_data_update(api_key,REPORT_DB_NAME,coll_name,query,update_data))
                     if update_collection['success']==True:
                         print(f"------successfully updated the data the collection- {coll_name}------")
                     else:
@@ -510,7 +504,7 @@ def update_report_database(task_created_date,company_id):
                         "report_record_year": year,
                         "db_report_type": "report"
                     }
-                    insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+                    insert_collection = json.loads(datacube_data_insertion(api_key,REPORT_DB_NAME,coll_name,data))
                     if insert_collection['success']==True:
                         print(f'successfully inserted the data into the empty collection- {coll_name}')
                         print(insert_collection)
@@ -526,14 +520,14 @@ if __name__ == "__main__":
     year =2024
     month_number =1
     _, number_of_days = calendar.monthrange(year, month_number)
-    _month_dates = [f"{year}-"+"{:02d}".format(month_number)+"-"+"{:02d}".format(d) for d in range(8, number_of_days + 1)]
+    _month_dates = [f"{year}-"+"{:02d}".format(month_number)+"-"+"{:02d}".format(d) for d in range(1, number_of_days + 1)]
     #print(_month_dates)
     #['2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-20', '2024-01-21', '2024-01-22', '2024-01-23', '2024-01-24', '2024-01-25', '2024-01-26', '2024-01-27', '2024-01-28', '2024-01-29', '2024-01-30', '2024-01-31']
     """second week of jan 2024-----------------------------"""
     
     print("---second week of jan 2024-----------------------------")
     for day in _month_dates:
-        if day == "2024-01-15":
+        if day == "2024-01-8":
             break
         else:
             print(f"---------updating for {day}------------------")
