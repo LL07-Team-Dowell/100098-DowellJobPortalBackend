@@ -142,6 +142,8 @@ if os.getenv("DB_Name"):
     DB_Name = str(os.getenv("DB_Name"))
 if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
+if os.getenv("REPORT_UUID"):
+    REPORT_UUID = str(os.getenv("REPORT_UUID"))
 if os.getenv("PROJECT_DB_NAME"):
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
 if os.getenv("ATTENDANCE_DB"):
@@ -157,6 +159,7 @@ else:
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
+    REPORT_UUID = str(os.getenv("REPORT_UUID"))
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
@@ -6567,13 +6570,13 @@ class Generate_Report(APIView):
             company_id = payload.get("company_id")
             if not company_id:
                 return Response({'success':False,"message": f"Company id is empty"},status=status.HTTP_400_BAD_REQUEST)
-            username = payload.get("username")
-            if not username:
-                return Response({'success':False,"message": f"username is empty"},status=status.HTTP_400_BAD_REQUEST)
+            user_id = payload.get("user_id")
+            if not user_id:
+                return Response({'success':False,"message": f"user_id is empty"},status=status.HTTP_400_BAD_REQUEST)
             
             # check if the user has any data------------------------------------------------
             field = {
-                "username": username,
+                "user_id": user_id,
                 "company_id": company_id,
             }
             info = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None ))["data"]
@@ -6603,7 +6606,7 @@ class Generate_Report(APIView):
             data = {}
             data["personal_info"] = info[0]
 
-            coll_name = normalize(username)
+            coll_name = REPORT_UUID+user_id
             query ={
                 "report_record_year": year,
                 "db_report_type": "report"
@@ -10349,21 +10352,20 @@ class Company_Structure(APIView):
         projects_managed = request.data.get("projects_managed")
         _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
         coll_name = type_request
-        team_lead_reports_to ={}
         projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{"company_id":company_id},10,0,False))
         if len(projects['data'])>0:
-            for p in projects['data']:
-                team_lead_reports_to[p['_coded_project']]=p['teamlead_reports_to']
-                if p['_coded_project'] not in _coded_projects_managed:
+            for p in _coded_projects_managed:
+                if p not in [i['_coded_project'] for i in projects['data']]:
                     return Response({
                             "success":False,
-                            "message":f"The Project {p} doesnt exist."
-                        }) 
+                            "message":f"The Project '{p}' doesnt exist."
+                        })
+        data_type = "Real_Data" 
         search_query ={  
             "company_id":company_id,
             "project_lead":project_lead,
             "project_lead_id":project_lead_id,
-            "data_type":"Real_Data"
+            "data_type":data_type
         }
         res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
         
@@ -10383,27 +10385,10 @@ class Company_Structure(APIView):
                     "project_lead_id":project_lead_id,
                     "projects_managed":projects_managed,
                     "_coded_projects_managed":_coded_projects_managed,
-                    "data_type":"Real_Data"
+                    "data_type":data_type
                 }
             insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
             if insert_collection['success']==True:
-                #update the projects team lead reports to list------------------------------
-                p_q ={"company_id":company_id,"_coded_project":projects_managed}
-                projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",p_q,10,0,False))
-                if len(projects['data'])>0:
-                    for p in projects['data']:
-                        p=projects['data'][0]
-
-                        teamlead_reports_to = p['teamlead_reports_to']
-                        teamlead_reports_to.append(project_lead)
-                        update_data={
-                            "teamlead_reports_to":teamlead_reports_to
-                        } 
-                        update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,'projects',p_q,update_data))
-                        if update_collection['success']==False:
-                            del update_collection['data']
-                            update_collection['error'] = "Error while trying to update the projects's teamlead_reports_to list"
-                            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)
                 insert_collection['message'] = f"{type_request} data has been inserted successfully."
                 return Response(insert_collection,status=status.HTTP_200_OK)
             else:
@@ -10420,11 +10405,51 @@ class Company_Structure(APIView):
                         "project_lead_id":project_lead_id,
                         "projects_managed":projects_managed,
                         "_coded_projects_managed":_coded_projects_managed,
-                        "data_type":"Real_Data"
+                        "data_type":data_type
                     }
                 
                 insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
                 if insert_collection['success']==True:
+                    #check if the projects_managed is already in another project lead db
+                    pq={
+                        'company_id':company_id,
+                        'data_type':data_type
+                    }
+                    current_projects_managed={}
+                    current_coded_projects_managed={}
+                    _pleads=[]
+                    check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,10,0,False))
+                    if check_projects_managed['success']==True:
+                        for p in check_projects_managed['data']:
+                            if p["projects_managed"]!=None and len(p["projects_managed"])>0:
+                                for pm in p["projects_managed"]:
+                                    if not self.rearrange(pm.lower()) in _coded_projects_managed:
+                                        try:
+                                            current_projects_managed[p["project_lead"]].append(pm)
+                                        except Exception:
+                                            current_projects_managed[p["project_lead"]] =[]
+                                            current_projects_managed[p["project_lead"]].append(pm)
+                                        try:
+                                            current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
+                                        except Exception:
+                                            current_coded_projects_managed[p["project_lead"]] =[]
+                                            current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
+                                        _pleads.append(p["project_lead"])
+                    for pl in _pleads:
+                        pleadquery={
+                            'company_id':company_id,
+                            'project_lead':pl,
+                            'data_type':data_type
+                        }
+                        p_update_data={'data_type':data_type,
+                                    'projects_managed': current_projects_managed[pl], 
+                                    '_coded_projects_managed':current_coded_projects_managed[pl]} 
+                        update_collection_two = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,pleadquery,p_update_data))
+                        if update_collection_two['success']==False:
+                            update_collection_two['message'] = f"{type_request} data failed to update. for project lead {pl}. \n {update_collection_two['message']}"
+                            del update_collection_two['data']
+                            return Response(update_collection_two,status=status.HTTP_400_BAD_REQUEST)
+                            
                     insert_collection['message'] = f"{type_request} data has been inserted successfully.."
                     return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
@@ -10824,13 +10849,14 @@ class DowellEvents(APIView):
 
         try:
             fetch_collection = json.loads(
-                datacube_data_retrival(
+                datacube_data_retrival_function(
                     API_KEY,
                     ATTENDANCE_DB,
                     Events_collection,
-                    data=check_field,
-                    limit=0,
-                    offset=0,
+                    check_field,
+                    0,
+                    0,
+                    False
                 )
             )
         except:
@@ -10919,9 +10945,7 @@ class DowellEvents(APIView):
 
     def GetAllEvents(self, request):
         data = {key: value for key, value in request.data.items()}
-        limit = request.GET.get("limit")
-        offset = request.GET.get("offset")
-
+        
         serializer = GetEventSerializer(data=request.data)
 
         if not serializer.is_valid():
@@ -10936,8 +10960,8 @@ class DowellEvents(APIView):
 
         try:
             fetch_collection = json.loads(
-                datacube_data_retrival(
-                    API_KEY, ATTENDANCE_DB, Events_collection, data, limit, offset
+                datacube_data_retrival_function(
+                    API_KEY, ATTENDANCE_DB, Events_collection, data, 0, 0, False
                 )
             )
             print(fetch_collection)
