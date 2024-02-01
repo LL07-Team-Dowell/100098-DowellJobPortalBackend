@@ -19,7 +19,7 @@
     border-right: 2px solid #efefef;
 }
 
-.upd_calendar{
+.upd_calendar {
     width: 100%;
     /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
 }
@@ -27,6 +27,7 @@
 .att_upd_input {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .att_upd_candidates {
@@ -62,6 +63,7 @@
     border-radius: 8px;
     font-family: "Poppins", sans-serif;
     background-color: transparent;
+    cursor: pointer;
 }
 
 .att_upd_candidates {
@@ -75,15 +77,15 @@
     margin: 1rem;
 }
 
-.update_att{
+.update_att {
     width: 100%;
     display: flex;
     /* flex-direction: row; */
-    align-items:center;
+    align-items: center;
     justify-content: space-between;
 }
 
-.update_att button{
+.update_att button {
     height: max-content;
     padding: 10px 20px;
     font-size: 14px;
@@ -92,16 +94,18 @@
     border: 0px;
     border-radius: 8px;
     font-family: "Poppins", sans-serif;
+    cursor: pointer;
     /* margin: 1rem; */
 }
 
-.loading_users{
+.loading_users {
     margin-right: 50%;
     display: flex;
     align-items: center;
     /* justify-content:flex-start; */
 }
-.loading_users p{
+
+.loading_users p {
     font-size: 0.8rem;
     padding: 2px 4px;
 }
@@ -118,17 +122,19 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0.1, 0.2);
     flex-wrap: wrap;
 }
-.user_box b,h6{
+
+.user_box b,
+h6 {
     text-align: center;
     margin: 0.6rem auto;
 }
 
-.user_box h6{
+.user_box h6 {
     font-weight: 500;
     font-size: small;
 }
 
-.user_box b{
+.user_box b {
     font-weight: 600;
     font-size: medium;
 }
@@ -147,27 +153,32 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.mark_att{
+.mark_att {
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
 }
 
-.absent{
+.absent {
     color: #f02a2b;
     font-size: 25px;
+    cursor: pointer;
 }
-.present{
+
+.present {
     color: #4ecb71;
     font-size: 25px;
+    cursor: pointer;
 }
-.att_title{
+
+.att_title {
     display: flex;
     align-items: center;
     padding: 0.1% 4%;
 }
-.back_icon{
+
+.back_icon {
     /* height: 30px;
     width: 30px; */
     /* background-color: #005734; */
@@ -178,12 +189,18 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0.2, 0.3);
 }
-.att_title h3{
+
+.att_title h3 {
     font-size: 25px;
     font-family: "Poppins", sans-serif;
     color: #005734;
     font-weight: 500;
     padding: 1px 13px;
+}
+
+.item_Filter {
+    width: 16rem;
+    cursor: pointer;
 }
 
 .react-calendar {
@@ -196,35 +213,34 @@
         .react-calendar__navigation__arrow {
             display: none;
         }
-    
+
         .react-calendar__navigation__label {
             font-size: 20px;
         }
     }
-    
+
     .react-calendar__tile {
         height: 40px;
     }
-    
+
     .react-calendar__month-view__weekdays__weekday {
         font-size: 10px;
         color: rgb(15, 70, 15);
     }
-    
+
     .react-calendar__tile--active {
         background: #005734;
         color: white;
     }
-    
+
     .react-calendar__tile--active:enabled:hover,
     .react-calendar__tile--active:enabled:focus {
-        background: #005734;;
+        background: #005734;
+        ;
     }
-    
+
     .react-calendar__tile,
     .react-calendar__month-view__days__day {
         font-size: 14px;
     }
-    }
-    
-    
+}

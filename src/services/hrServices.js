@@ -42,3 +42,11 @@ export const getAllEvents = async (companyId) => {
 export const addAttendance = async (data) => {
   return await currentBackendAxiosInstance.post(`attendance/?type=add_attendance`, data)
 }
+
+export const getUserWiseAttendance = async (data) => {
+  return await currentBackendAxiosInstance.post(`attendance/?type=get_user_wise_attendance`, data)
+}
+
+export const getProjectWiseAttendance = async (data) => {
+  return await currentBackendAxiosInstance.post(`attendance/?type=project_wise_attendance`, data)
+}

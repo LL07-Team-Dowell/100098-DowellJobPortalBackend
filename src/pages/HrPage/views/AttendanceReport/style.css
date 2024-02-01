@@ -1,12 +1,12 @@
 .att_report_main {
-    width: 95%;
+    width: 98%;
     background-color: #f5f5f5;
     margin: 1rem auto;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     border-radius: 30px;
-    margin-bottom: 10%;
+    margin-bottom: 30%;
     /* margin-left: 2%; */
     padding: 2%;
 }
@@ -19,6 +19,7 @@
     color: #807f7f;
     padding: 0.45rem;
     font-family: "Poppins", sans-serif;
+    cursor: pointer;
 }
 
 button.hr__Att__Btn {
@@ -39,7 +40,8 @@ button.hr__Att__Btn {
     align-items: flex-start;
     gap: 0.4rem;
     flex-direction: column;
-    /* margin-left: 25px; */
+    margin: 1rem;
+    cursor: pointer;
 }
 
 .item__Filter__Wrap p {
@@ -48,7 +50,8 @@ button.hr__Att__Btn {
 }
 
 .item__Filter {
-    width: 18rem;
+    width: 12rem;
+    cursor: pointer;
 }
 
 .att_rep {
@@ -82,6 +85,7 @@ button.hr__Att__Btn {
     background-color: white;
     border-bottom: 1px solid #ddd;
     padding: 2%;
+    cursor: pointer;
 }
 
 .att_rep tr {
@@ -113,7 +117,8 @@ button.hr__Att__Btn {
     /* margin-left: 35px; */
     margin-bottom: 1rem;
     border-radius: 30px;
-    padding: 3%;
+    padding: 1% 1%;
+    flex-wrap: wrap;
 }
 
 .att_name {
@@ -179,6 +184,7 @@ button.hr__Att__Btn {
 .users_info {
     padding: 1%;
     display: flex;
+    flex-wrap: wrap;
 }
 
 .users_info button {
@@ -199,4 +205,25 @@ button.hr__Att__Btn {
     padding: 10px 20px;
     font-size: large;
     font-weight: 600;
+}
+
+.switch_screen {
+    display: flex;
+    flex-direction: row;
+    padding: 0% 2%;
+}
+
+.switch_screen p {
+    font-size: larger;
+    font-family: "Poppins", sans-serif;
+    margin: 0% 2%;
+    padding-bottom: 5px;
+    cursor: pointer;
+    color: #807f7f;
+}
+
+.switch_option.active {
+    color: #005734;
+    border-bottom: 5px solid #005734;
+    font-weight: 500;
 }
