@@ -9774,7 +9774,7 @@ class candidate_attendance(APIView):
         elif request_type == "get_user_wise_attendance":
             return self.get_user_wise_attendance(request)
         else:
-            self.handle_error(request)
+            return self.handle_error(request)
 
     def add_attendance(self, request):
         user_present = request.data.get("user_present")
@@ -9832,13 +9832,13 @@ class candidate_attendance(APIView):
             "date_taken": date_taken,
             "project": project,
             "company_id": company_id,
-            "event": event,
+            "event_id": event_id,
             "data_type": data_type
         }
 
         check_field={
             "date_taken":date_taken,
-            "event": event,
+            "event_id": event_id,
             "project":project,
             "data_type": data_type
         }
@@ -9902,56 +9902,61 @@ class candidate_attendance(APIView):
                 },status=status.HTTP_404_NOT_FOUND)
 
         return insert_data()
+    
+    def get_project_wise_attendance(self, request):
+        start_date = request.data.get("start_date")
+        end_date = request.data.get("end_date")
+        projects = request.data.get("project")
+        company_id = request.data.get("company_id")
+        collection = start_date + "_to_" + end_date
+        limit = request.data.get("limit")
+        offset = request.data.get("offset")
 
-    def get_project_wise_attendance(self,request):
+        data = {"company_id": company_id}
 
-        start_date=request.data.get("start_date")
-        end_date=request.data.get("end_date")
-        projects=request.data.get("project")
-        company_id=request.data.get("company_id")
-        collection=start_date+"_to_"+end_date
-        limit=request.data.get("limit")
-        offset=request.data.get("offset")
-        
-        data={"company_id":company_id}
-        
-        attendance_with_projects={}
+        attendance_with_projects = {project: [] for project in projects}
 
-        serializer=AttendanceRetrievalSerializer(data=request.data)
+        serializer = AttendanceRetrievalSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({
-                "success":False,
-                "error":serializer.errors
-            },status=status.HTTP_400_BAD_REQUEST)
+                "success": False,
+                "error": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            attendance_report=json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,collection,data,limit,offset))    
-            
-        except:
+            attendance_report = json.loads(datacube_data_retrival(API_KEY, ATTENDANCE_DB, collection, data, limit, offset))
+
+        except Exception as e:
             return Response({
-                "success":False,
-                "error":"datacube database not responding"
+                "success": False,
+                "error": "datacube database not responding"
             })
-       
-        if attendance_report["success"]==True:              
-                if len(attendance_report["data"])>0:
-                    for project in projects:
-                        for attendance in attendance_report["data"]:
-                            if attendance_report["data"][0]["project"] in attendance_with_projects:
-                                attendance_with_projects[project].append(attendance)
-                            else:
-                                attendance_with_projects[project]=[attendance]    
-                    return Response({
-                        "success":True,
-                        "message":"Attendance records has been succesfully retrieved",
-                        "data":attendance_with_projects},status=status.HTTP_200_OK)                  
-                else:
-                    return Response({
-                        "success":False,
-                        "error":"Attendance for the given payload does not exist"
-                    })
-                    
-        return Response({"success":False,"message":attendance_report["message"]},status=status.HTTP_400_BAD_REQUEST )
+
+        if attendance_report["success"]:
+            if attendance_report["data"]:
+                for project in projects:
+                    for attendance in attendance_report["data"]:
+                        if attendance["project"] == project:
+                            attendance_with_projects[project].append(attendance)
+
+                return Response({
+                    "success": True,
+                    "message": "Attendance records have been successfully retrieved",
+                    "data": attendance_with_projects
+                }, status=status.HTTP_200_OK)
+
+            else:
+                return Response({
+                    "success": False,
+                    "error": "Attendance for the given payload does not exist"
+                })
+
+        return Response({
+            "success": False,
+            "message": attendance_report.get("message", "Unknown error")
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
     
     def get_user_wise_attendance(self, request):
         def add_user_attendance(user_attendance, event_name, date, is_present):
