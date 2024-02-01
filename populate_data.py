@@ -418,12 +418,22 @@ def update_report_database(task_created_date,company_id):
                         "db_report_type": "report"
                     }
                     
-                    update_data=data #'''incomplete---'''
-                    update_collection = json.loads(datacube_data_update(api_key,REPORT_DB_NAME,coll_name,query,update_data))
-                    if update_collection['success']==True:
-                        print(f"------successfully updated the data the collection- {coll_name}------")
-                    else:
-                        print(f"------failed to update the data the collection- {coll_name}----{update_collection['message']}")
+                    update_data=data 
+                    try:
+                        update_collection = json.loads(datacube_data_update(api_key,REPORT_DB_NAME,coll_name,query,update_data))
+                        if update_collection['success']==True:
+                            print(f"------successfully updated the data the collection- {coll_name}------")
+                        else:
+                            print(f"------failed to update the data the collection- {coll_name}----{update_collection['message']}")
+                    except json.decoder.JSONDecodeError:
+                        try:
+                            update_collection = json.loads(datacube_data_update(api_key,REPORT_DB_NAME,coll_name,query,update_data))
+                            if update_collection['success']==True:
+                                print(f"------successfully updated the data the collection- {coll_name}------")
+                            else:
+                                print(f"------failed to update the data the collection- {coll_name}----{update_collection['message']}")
+                        except json.decoder.JSONDecodeError:
+                            print(f"------failed to update the data the collection- {coll_name}----{update_collection['message']}")
 
                 else:
                     print(f'-------collection-{coll_name} is empty ------------------')
