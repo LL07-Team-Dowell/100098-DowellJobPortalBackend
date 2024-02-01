@@ -10352,14 +10352,18 @@ class Company_Structure(APIView):
         projects_managed = request.data.get("projects_managed")
         _coded_projects_managed = [self.rearrange(i.lower()) for i in projects_managed]
         coll_name = type_request
-        projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{"company_id":company_id},10,0,False))
-        if len(projects['data'])>0:
-            for p in _coded_projects_managed:
-                if p not in [i['_coded_project'] for i in projects['data']]:
-                    return Response({
-                            "success":False,
-                            "message":f"The Project '{p}' doesnt exist."
-                        })
+        serializer_class = SettingUserProjectSerializer
+        profiles = UserProject.objects.all()
+        serializer = serializer_class(profiles, many=True)
+        for i in serializer.data:
+            if i["data_type"]== "Real_Data" and i["company_id"]==company_id:
+                for p in projects_managed:
+                    if p in i["project_list"]:
+                        return Response({
+                                "success":False,
+                                "message":f"The Project '{p}' already exists."
+                            }, status=status.HTTP_404_NOT_FOUND)
+                        
         data_type = "Real_Data" 
         search_query ={  
             "company_id":company_id,
