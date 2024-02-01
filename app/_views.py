@@ -339,18 +339,16 @@ class Invoice_module(APIView):
                     # Check if user_id is present
                     if user_id:
                         # Create a collection for each username
-                        url = (
-                            "https://datacube.uxlivinglab.online/db_api/add_collection/"
-                        )
-                        data_to_add = {
-                            "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                            "db_name": "Payment_Records",
-                            "coll_names": user_id,
-                            "num_collections": 1,
-                        }
-                        response = requests.post(url, json=data_to_add)
+                        api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f"
+                        db_name = "Payment_Records"
+                        coll_name = [user_id]
+                        num_collection = 1
 
-                        if response.status_code == 200:
+                        response_collection = datacube_add_collection(
+                            api_key, db_name, coll_name, num_collection
+                        )
+
+                        if "success" in response_collection:
                             print(f"Collection created for user_id: {user_id}")
                         else:
                             print(f"Failed to create collection for user_id: {user_id}")
@@ -400,6 +398,14 @@ class Invoice_module(APIView):
         }
         response = requests.post(url, json=data)
         response_data = response.json()
+
+        api_key = ""
+        db_name = ""
+        coll_name = ""
+
+        response = datacube_data_retrival_function(
+            api_key, db_name, coll_name, data, limit, offset, payment
+        )
 
         # Handle the API response appropriately
         if response_data["data"] == []:
@@ -501,23 +507,35 @@ class Invoice_module(APIView):
         total_logs_required = request.data.get("total_logs_required")
 
         url = "https://datacube.uxlivinglab.online/db_api/get_data/"
-        data = {
+        data_1 = {
             "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
             "db_name": "Payment_Records",
             "coll_name": user_id,
             "operation": "fetch",
-            "data": {
+            "filters": {
                 "db_record_type": "payment_detail",
                 "payment_month": payment_month,
                 "payment_year": payment_year,
             },
         }
 
-        response = requests.post(url, json=data)
+        data_2 = {
+            "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            "db_name": "Payment_Records",
+            "coll_name": user_id,
+            "operation": "fetch",
+            "filters": {
+                "db_record_type": "payment_record",
+            },
+        }
 
-        existing_data = response.json()["data"]
+        response_1 = requests.post(url, json=data_1)
+        existing_payment_detail = response_1.json()["data"]
 
-        if existing_data:
+        response_2 = requests.post(url, json=data_2)
+        existing_payment_record = response_2.json()["data"]
+
+        if existing_payment_detail:
             return Response(
                 {
                     "message": f"Payment already processed for {payment_month} {payment_year}"
@@ -525,13 +543,21 @@ class Invoice_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        else:
-            work_hours_per_week = 40
-            weeks_per_month = 4
-            monthly_payment = work_hours_per_week * weeks_per_month
+        if not existing_payment_record:
+            return Response(
+                {"message": "user does not have a payment record yet"},
+                status=status.HTTP_404_BAD_REQUEST,
+            )
 
-            work_hours_per_day = 8
-            daily_payment = work_hours_per_day
+        else:
+            weeks_per_month = 4
+            weekly_payment_amount = existing_payment_record[0].get(
+                "weekly_payment_amount", 0
+            )
+            currency_paid = existing_payment_record[0].get("payment_currency", 0)
+            monthly_payment = weekly_payment_amount * weeks_per_month
+
+            daily_payment = weekly_payment_amount / 5
             amount_to_pay = monthly_payment
 
             if approved_logs_count < total_logs_required:
@@ -553,7 +579,7 @@ class Invoice_module(APIView):
                     "payment_month": payment_month,
                     "payment_year": payment_year,
                     "amount_paid": amount_to_pay,
-                    "currency_paid": "currency",
+                    "currency_paid": currency_paid,
                     "actual_monthly_pay": monthly_payment,
                     "approved_logs_count": approved_logs_count,
                     "requried_logs_count": total_logs_required,
@@ -563,6 +589,27 @@ class Invoice_module(APIView):
 
             save_response = requests.post(save_url, json=save_data)
 
+            update_date = datetime.now().isoformat()
+            update_url = "https://datacube.uxlivinglab.online/db_api/crud/"
+            update_data = {
+                "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+                "db_name": "Payment_Records",
+                "coll_name": user_id,
+                "operation": "update",
+                "query": {"_id": existing_payment_record[0].get("_id", 0)},
+                "update_data": {
+                    "last_payment_date": update_date,
+                },
+            }
+
+            update_response = requests.put(update_url, json=update_data)
+
+            if update_response.status_code not in [200, 201]:
+                return Response(
+                    {"message": "Failed to update last_payment_date"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
             if save_response.status_code in [200, 201]:
                 inserted_data = save_response.json()["data"]
                 success_message = f"Payment processed successfully for {payment_month} {payment_year}. Inserted ID: {inserted_data['inserted_id']}"
@@ -571,6 +618,7 @@ class Invoice_module(APIView):
                     {"message": success_message},
                     status=status.HTTP_200_OK,
                 )
+
             else:
                 return Response(
                     {"message": "Failed to save payment details"},
