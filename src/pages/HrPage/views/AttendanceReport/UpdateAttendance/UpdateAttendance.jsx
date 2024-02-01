@@ -36,7 +36,7 @@ const AttendanceUpdatePage = () => {
     const [isEventLoading, setIsEventLoading] = useState(false);
     const [isProjectLoading, setIsProjectLoading] = useState(false);
     const [userNames, setUserNames] = useState([]);
-    // const companyId = "6385c0f18eca0fb652c94561";
+    const companyId = "6385c0f18eca0fb652c94561";
 
     const today = new Date();
     const mondayOfThisWeek = today.getDay() === 0 ?
