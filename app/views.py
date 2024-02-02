@@ -9959,9 +9959,9 @@ class candidate_attendance(APIView):
 
     
     def get_user_wise_attendance(self, request):
-        def add_user_attendance(user_attendance, event_name, date, is_present):
+        def add_user_attendance(user_attendance, event_id, date, is_present):
             for user_record in user_attendance:
-                if user_record['event'] == event_name:
+                if user_record['event_id'] == event_id:
                     if is_present:
                         user_record['dates_present'].append(date)
                     else:
@@ -9996,16 +9996,17 @@ class candidate_attendance(APIView):
                 "success": False,
                 "error": str(e)
             })
-        events_list = [events["_id"] for events in fetch_events.get("data", [])]
+        events_list = {events["_id"]:events["event_name"] for events in fetch_events.get("data", [])}
         dates = get_dates_between(start_date, end_date)
 
         attendance_with_users = {user: [] for user in usernames}
 
         if attendance_report.get("success"):
             for user in usernames:
-                for event_id in events_list:
+                for event_id,event_name in events_list.items():
                     user_attendance_record = {
-                        "event": event_id,
+                        "event_id": event_id,
+                        "event":event_name,
                         "dates_present": [],
                         "dates_absent": [],
                         "project": project
@@ -10062,7 +10063,7 @@ class candidate_attendance(APIView):
         try:
             update_attendance = json.loads(
                 datacube_data_update(API_KEY,ATTENDANCE_DB,collection,query,update_data))
-            print(update_attendance)
+            
         except: 
                 return Response({
                     "success":False,
