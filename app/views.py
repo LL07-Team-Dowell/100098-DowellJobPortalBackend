@@ -10360,15 +10360,15 @@ class Company_Structure(APIView):
         serializer_class = SettingUserProjectSerializer
         profiles = UserProject.objects.all()
         serializer = serializer_class(profiles, many=True)
-        for i in serializer.data:
-            if i["data_type"]== "Real_Data" and i["company_id"]==company_id:
-                for p in projects_managed:
-                    if not p in i["project_list"]:
-                        return Response({
-                                "success":False,
-                                "message":f"The Project '{p}' does not exist in Dowell check the list below.",
-                                'data':i["project_list"]
-                            }, status=status.HTTP_404_NOT_FOUND)
+        i = serializer.data[-1]
+        if i["data_type"]== "Real_Data" and i["company_id"]==company_id:
+            for p in projects_managed:
+                if not p in i["project_list"]:
+                    return Response({
+                            "success":False,
+                            "message":f"The Project '{p}' does not exist in Dowell check the list below.",
+                            'data':i["project_list"]
+                        }, status=status.HTTP_404_NOT_FOUND)
         data_type = "Real_Data" 
         search_query ={  
             "company_id":company_id,
