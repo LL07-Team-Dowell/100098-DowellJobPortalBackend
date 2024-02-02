@@ -10362,14 +10362,14 @@ class Company_Structure(APIView):
         profiles = UserProject.objects.all()
         serializer = serializer_class(profiles, many=True)
         for i in serializer.data:
-            if i["data_type"]== "Real_Data" and i["company_id"]==company_id:
+            if i['id']==3 and i["data_type"]== "Real_Data" and i["company_id"]==company_id:
                 for p in projects_managed:
-                    if p in i["project_list"]:
+                    if not p in i["project_list"]:
                         return Response({
                                 "success":False,
-                                "message":f"The Project '{p}' already exists."
+                                "message":f"The Project '{p}' does not exist in Dowell check the list below.",
+                                'data':i["project_list"]
                             }, status=status.HTTP_404_NOT_FOUND)
-                        
         data_type = "Real_Data" 
         search_query ={  
             "company_id":company_id,
@@ -10409,6 +10409,44 @@ class Company_Structure(APIView):
                 return Response(res,status=status.HTTP_400_BAD_REQUEST)
             else:
                 """insert data into the collection if the is no content----------------------"""
+                #check if the projects_managed is already in another project lead db
+                #update all project leads
+                pq={
+                    'company_id':company_id,
+                    'data_type':data_type
+                }
+                current_projects_managed={}
+                current_coded_projects_managed={}
+                _pleads=[]
+                check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,10,0,False))
+                if check_projects_managed['success']==True:
+                    for p in check_projects_managed['data']:
+                        if p["projects_managed"]!=None and len(p["projects_managed"])>0:
+                            for pm in p['projects_managed']:
+                                if p["project_lead"] not in current_projects_managed.keys():
+                                    current_projects_managed[p["project_lead"]] = []
+                                if p["project_lead"] not in current_coded_projects_managed.keys():
+                                    current_coded_projects_managed[p["project_lead"]] =[]
+                                if not self.rearrange(pm.lower()) in _coded_projects_managed:
+                                    current_projects_managed[p["project_lead"]].append(pm)
+                                    current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
+                                _pleads.append(p["project_lead"])
+                
+                for pl in _pleads:
+                    pleadquery={
+                        'company_id':company_id,
+                        'project_lead':pl,
+                        'data_type':data_type
+                    }
+                    p_update_data={'data_type':data_type,
+                                'projects_managed': current_projects_managed[pl], 
+                                '_coded_projects_managed':current_coded_projects_managed[pl]} 
+                    update_collection_two = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,pleadquery,p_update_data))
+                    if update_collection_two['success']==False:
+                        update_collection_two['message'] = f"{type_request} data failed to update. for project lead {pl}. \n {update_collection_two['message']}"
+                        del update_collection_two['data']
+                        return Response(update_collection_two,status=status.HTTP_400_BAD_REQUEST)
+                            
                 data ={
                         "company_id":company_id,
                         "project_lead":project_lead,
@@ -10417,49 +10455,9 @@ class Company_Structure(APIView):
                         "_coded_projects_managed":_coded_projects_managed,
                         "data_type":data_type
                     }
-                
+                #update the current project lead 
                 insert_collection = json.loads(datacube_data_insertion(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,data))
                 if insert_collection['success']==True:
-                    #check if the projects_managed is already in another project lead db
-                    pq={
-                        'company_id':company_id,
-                        'data_type':data_type
-                    }
-                    current_projects_managed={}
-                    current_coded_projects_managed={}
-                    _pleads=[]
-                    check_projects_managed = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,'project_leads',pq,10,0,False))
-                    if check_projects_managed['success']==True:
-                        for p in check_projects_managed['data']:
-                            if p["projects_managed"]!=None and len(p["projects_managed"])>0:
-                                for pm in p["projects_managed"]:
-                                    if not self.rearrange(pm.lower()) in _coded_projects_managed:
-                                        try:
-                                            current_projects_managed[p["project_lead"]].append(pm)
-                                        except Exception:
-                                            current_projects_managed[p["project_lead"]] =[]
-                                            current_projects_managed[p["project_lead"]].append(pm)
-                                        try:
-                                            current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
-                                        except Exception:
-                                            current_coded_projects_managed[p["project_lead"]] =[]
-                                            current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
-                                        _pleads.append(p["project_lead"])
-                    for pl in _pleads:
-                        pleadquery={
-                            'company_id':company_id,
-                            'project_lead':pl,
-                            'data_type':data_type
-                        }
-                        p_update_data={'data_type':data_type,
-                                    'projects_managed': current_projects_managed[pl], 
-                                    '_coded_projects_managed':current_coded_projects_managed[pl]} 
-                        update_collection_two = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,pleadquery,p_update_data))
-                        if update_collection_two['success']==False:
-                            update_collection_two['message'] = f"{type_request} data failed to update. for project lead {pl}. \n {update_collection_two['message']}"
-                            del update_collection_two['data']
-                            return Response(update_collection_two,status=status.HTTP_400_BAD_REQUEST)
-                            
                     insert_collection['message'] = f"{type_request} data has been inserted successfully.."
                     return Response(insert_collection,status=status.HTTP_200_OK)
                 else:
@@ -10501,8 +10499,20 @@ class Company_Structure(APIView):
                     "success":False,
                     "message":f"No such candidate {project_lead} exists in Dowell."
                 })
-        
+        serializer_class = SettingUserProjectSerializer
+        profiles = UserProject.objects.all()
+        serializer = serializer_class(profiles, many=True)
+        for i in serializer.data:
+            if i['id']==3 and i["data_type"]== "Real_Data" and i["company_id"]==company_id:
+                for p in projects_managed:
+                    if not p in i["project_list"]:
+                        return Response({
+                                "success":False,
+                                "message":f"The Project '{p}' does not exist in Dowell check the list below.",
+                                'data':i["project_list"]
+                            }, status=status.HTTP_404_NOT_FOUND)
         coll_name = type_request
+        
         search_query = {  
             'company_id':company_id,
             'project_lead':project_lead,
@@ -10518,7 +10528,7 @@ class Company_Structure(APIView):
                 return Response(res,status=status.HTTP_404_NOT_FOUND)
             else:
                 #update---------------
-                #check if the projects_managed is already in another project lead db
+                #update all project leads
                 pq={
                     'company_id':company_id,
                     'data_type':data_type
@@ -10530,19 +10540,16 @@ class Company_Structure(APIView):
                 if check_projects_managed['success']==True:
                     for p in check_projects_managed['data']:
                         if p["projects_managed"]!=None and len(p["projects_managed"])>0:
-                            for pm in p["projects_managed"]:
+                            for pm in p['projects_managed']:
+                                if p["project_lead"] not in current_projects_managed.keys():
+                                    current_projects_managed[p["project_lead"]] = []
+                                if p["project_lead"] not in current_coded_projects_managed.keys():
+                                    current_coded_projects_managed[p["project_lead"]] =[]
                                 if not self.rearrange(pm.lower()) in _coded_projects_managed:
-                                    try:
-                                        current_projects_managed[p["project_lead"]].append(pm)
-                                    except Exception:
-                                        current_projects_managed[p["project_lead"]] =[]
-                                        current_projects_managed[p["project_lead"]].append(pm)
-                                    try:
-                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
-                                    except Exception:
-                                        current_coded_projects_managed[p["project_lead"]] =[]
-                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
-                                    _pleads.append(p["project_lead"])
+                                    current_projects_managed[p["project_lead"]].append(pm)
+                                    current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
+                                _pleads.append(p["project_lead"])
+
                 for pl in _pleads:
                     pleadquery={
                         'company_id':company_id,
@@ -10557,7 +10564,7 @@ class Company_Structure(APIView):
                         update_collection_two['message'] = f"{type_request} data failed to update. for project lead {pl}. \n {update_collection_two['message']}"
                         del update_collection_two['data']
                         return Response(update_collection_two,status=status.HTTP_400_BAD_REQUEST)
-                            
+                #update the current project lead          
                 update_data={'data_type':data_type,'projects_managed':projects_managed, '_coded_projects_managed':_coded_projects_managed} 
                 update_collection = json.loads(datacube_data_update(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,update_data))
                 
