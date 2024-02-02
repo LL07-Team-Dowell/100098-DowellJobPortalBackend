@@ -10366,9 +10366,9 @@ class Company_Structure(APIView):
                     if p in i["project_list"]:
                         return Response({
                                 "success":False,
-                                "message":f"The Project '{p}' already exists."
+                                "message":f"The Project '{p}' already exists.",
+                                'data':i["project_list"]
                             }, status=status.HTTP_404_NOT_FOUND)
-                        
         data_type = "Real_Data" 
         search_query ={  
             "company_id":company_id,
@@ -10431,19 +10431,15 @@ class Company_Structure(APIView):
                     if check_projects_managed['success']==True:
                         for p in check_projects_managed['data']:
                             if p["projects_managed"]!=None and len(p["projects_managed"])>0:
-                                for pm in p["projects_managed"]:
+                                for pm in p['projects_managed']:
+                                    if p["project_lead"] not in current_projects_managed.keys():
+                                        current_projects_managed[p["project_lead"]] = []
+                                    if p["project_lead"] not in current_coded_projects_managed.keys():
+                                        current_coded_projects_managed[p["project_lead"]] =[]
                                     if not self.rearrange(pm.lower()) in _coded_projects_managed:
-                                        try:
-                                            current_projects_managed[p["project_lead"]].append(pm)
-                                        except Exception:
-                                            current_projects_managed[p["project_lead"]] =[]
-                                            current_projects_managed[p["project_lead"]].append(pm)
-                                        try:
-                                            current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
-                                        except Exception:
-                                            current_coded_projects_managed[p["project_lead"]] =[]
-                                            current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
-                                        _pleads.append(p["project_lead"])
+                                        current_projects_managed[p["project_lead"]].append(pm)
+                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
+                                    _pleads.append(p["project_lead"])
                     for pl in _pleads:
                         pleadquery={
                             'company_id':company_id,
@@ -10529,19 +10525,16 @@ class Company_Structure(APIView):
                 if check_projects_managed['success']==True:
                     for p in check_projects_managed['data']:
                         if p["projects_managed"]!=None and len(p["projects_managed"])>0:
-                            for pm in p["projects_managed"]:
+                            for pm in p['projects_managed']:
+                                if p["project_lead"] not in current_projects_managed.keys():
+                                    current_projects_managed[p["project_lead"]] = []
+                                if p["project_lead"] not in current_coded_projects_managed.keys():
+                                    current_coded_projects_managed[p["project_lead"]] =[]
                                 if not self.rearrange(pm.lower()) in _coded_projects_managed:
-                                    try:
-                                        current_projects_managed[p["project_lead"]].append(pm)
-                                    except Exception:
-                                        current_projects_managed[p["project_lead"]] =[]
-                                        current_projects_managed[p["project_lead"]].append(pm)
-                                    try:
-                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
-                                    except Exception:
-                                        current_coded_projects_managed[p["project_lead"]] =[]
-                                        current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
-                                    _pleads.append(p["project_lead"])
+                                    current_projects_managed[p["project_lead"]].append(pm)
+                                    current_coded_projects_managed[p["project_lead"]].append(self.rearrange(pm.lower()))
+                                _pleads.append(p["project_lead"])
+
                 for pl in _pleads:
                     pleadquery={
                         'company_id':company_id,
