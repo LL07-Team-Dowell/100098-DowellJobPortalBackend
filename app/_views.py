@@ -312,6 +312,7 @@ class Invoice_module(APIView):
             return self.process_payment(request)
         else:
             return self.handle_error(request)
+        # 1 api is remaining
 
     def create_collection(self, request, company_id):
         if company_id:
