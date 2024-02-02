@@ -4629,7 +4629,6 @@ class Public_apply_job(APIView):
             "candidate_certificate":data.get("candidate_certificate")
         }
         update_field = {"status": "nothing to update"}
-        update_field = {"status": "nothing to update"}
 
         serializer = CandidateSerializer(data=field)
         if serializer.is_valid():
@@ -4910,7 +4909,7 @@ class updateTheUserDetails(APIView):
                     )
                 else:
                     return Response(
-                        {"success": False, "message": "Mail was not sent."},
+                        {"success": False, "message": "User details is updated. Mail was not sent."},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
             else:
@@ -4918,6 +4917,11 @@ class updateTheUserDetails(APIView):
                     {"success": False, "message": "User details is not updated."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
+        else:
+            return Response(
+                {"success": False, "message": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 @method_decorator(csrf_exempt, name="dispatch")
