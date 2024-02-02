@@ -10363,10 +10363,10 @@ class Company_Structure(APIView):
         for i in serializer.data:
             if i["data_type"]== "Real_Data" and i["company_id"]==company_id:
                 for p in projects_managed:
-                    if p in i["project_list"]:
+                    if not p in i["project_list"]:
                         return Response({
                                 "success":False,
-                                "message":f"The Project '{p}' already exists.",
+                                "message":f"The Project '{p}' does not exist in Dowell check the list below.",
                                 'data':i["project_list"]
                             }, status=status.HTTP_404_NOT_FOUND)
         data_type = "Real_Data" 
