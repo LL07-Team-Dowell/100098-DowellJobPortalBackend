@@ -1,7 +1,7 @@
 import Avatar from "react-avatar";
 import styles from "./styles.module.css";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import Overlay from "../../../../../../components/Overlay";
 import { AiOutlineClose } from "react-icons/ai";
@@ -19,6 +19,7 @@ import {
   updateCandidateApplicationDetail,
 } from "../../../../../../services/adminServices";
 import { Link } from "react-router-dom";
+import useClickOutside from "../../../../../../hooks/useClickOutside";
 
 export default function FullApplicationCardItem({ application, activeStatus }) {
   const [showEditOptions, setShowEditOptions] = useState(false);
@@ -40,6 +41,9 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [viewOverlayVisibility, setViewOverlayVisibility] = useState(false);
+  const updateListingRef = useRef();
+
+  useClickOutside(updateListingRef, () => setShowEditOptions(false));
 
   const handleViewItemClick = () => {
     setViewOverlayVisibility(true);
@@ -271,7 +275,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
           )}
         </div>
         {showEditOptions && (
-          <ul className={styles.update__Listing}>
+          <ul className={styles.update__Listing} ref={updateListingRef}>
             <li className={styles.item} onClick={handleViewItemClick}>
               View
             </li>
