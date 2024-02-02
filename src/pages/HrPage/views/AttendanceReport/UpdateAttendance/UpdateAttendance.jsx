@@ -17,12 +17,13 @@ import { IoChevronBack } from "react-icons/io5";
 import { getAllEvents } from "../../../../../services/hrServices";
 import { addAttendance } from "../../../../../services/hrServices";
 import { toast } from "react-toastify";
+import Select from "react-select";
 
 const AttendanceUpdatePage = () => {
     const navigate = useNavigate();
     const { currentUser } = useCurrentUserContext();
     const [projects, setProjects] = useState([]);
-    const [selectedProject, setSelectedProject] = useState("");
+    const [selectedProject, setSelectedProject] = useState('');
     const [usersInSelectedProject, setUsersInSelectedProject] = useState([]);
     const [selectedDate, setSelectedDate] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -32,8 +33,10 @@ const AttendanceUpdatePage = () => {
     const [usersPresent, setUsersPresent] = useState([]);
     const [usersAbsent, setUsersAbsent] = useState([]);
     const [isAttendanceUpdated, setIsAttendanceUpdated] = useState(false);
-    // const [isPresent, setIsPresent] = useState(false);
-    // const companyId = "6385c0f18eca0fb652c94561";
+    const [isEventLoading, setIsEventLoading] = useState(false);
+    const [isProjectLoading, setIsProjectLoading] = useState(false);
+    const [userNames, setUserNames] = useState([]);
+    const companyId = "6385c0f18eca0fb652c94561";
 
     const today = new Date();
     const mondayOfThisWeek = today.getDay() === 0 ?
@@ -43,6 +46,7 @@ const AttendanceUpdatePage = () => {
     const sundayOfNextWeek = new Date(new Date().setDate(mondayOfThisWeek.getDate() + 6));
 
     useEffect(() => {
+        setIsProjectLoading(true);
         const fetchProjects = async () => {
             try {
                 const data = (await getSettingUserProject()).data;
@@ -53,14 +57,18 @@ const AttendanceUpdatePage = () => {
                 ).reverse();
                 if (companyProjects.length > 0) {
                     const projectList = companyProjects[0].project_list || [];
-                    setProjects(projectList);
+                    const options = projectList.map((projectName) => ({
+                        label: projectName,
+                        value: projectName,
+                    }));
+                    setProjects(options);
                     setIsLoading(false);
+                    setIsProjectLoading(false);
                 }
             } catch (error) {
                 console.error("Error fetching projects:", error);
             }
         };
-
         fetchProjects();
     }, []);
 
@@ -69,11 +77,19 @@ const AttendanceUpdatePage = () => {
     }
 
     useEffect(() => {
+        setIsEventLoading(true);
         const fetchEvents = async () => {
+            // if (!selectedEvent) return toast.warn('Select an Event!');
             try {
                 const data = (await getAllEvents(dataForFetchingEvents)).data.data;
-                const eventNamesList = data.map(event => event.event_name);
+                const eventNamesList = data.map(event => ({
+                    id: event._id,
+                    value: event.is_mendatory,
+                    label: event.event_name,
+                }));
+                console.log(">>>>>>>>>>mamnd", eventNamesList);
                 setEventNames(eventNamesList);
+                setIsEventLoading(false);
             } catch (error) {
                 console.error("Error fetching events:", error);
             }
@@ -93,26 +109,28 @@ const AttendanceUpdatePage = () => {
             const hiredCandidates = onboardingCandidates.filter(candidate => candidate.status === 'hired');
 
             const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
-                candidate.project && candidate.project.includes(selectedProject)
+                candidate.project && candidate.project.includes(selectedProject?.value)
             );
 
             const options = candidatesInSelectedProject.map(candidate => candidate.applicant);
+            const optionsUsername = candidatesInSelectedProject.map(candidate => candidate.username);
+            console.log('user names', optionsUsername);
             setUsersInSelectedProject(options);
-            setUsersAbsent(options);
+            setUserNames(optionsUsername);
+            if (selectedEvent.value === 'True') {
+                setUsersAbsent(optionsUsername);
+            }
             setIsLoading(false);
-            // console.log(">>>>>>>>>>>>>>>>", options.length);
         }).catch(err => {
             console.log('onboarded failed to load');
         })
     }, [selectedProject]);
 
     const handleProjectChange = async (event) => {
-        const projectId = event.target.value;
-        setSelectedProject(projectId);
+        setSelectedProject(event);
     };
 
     const handleDateChange = (date) => {
-        // console.log(">>>>>>>>>>>>>>>>",formatDateForAPI(date));
         setSelectedDate(formatDateForAPI(date));
     };
 
@@ -121,13 +139,17 @@ const AttendanceUpdatePage = () => {
         updatedAttendanceStates[index] = !updatedAttendanceStates[index];
         setAttendanceStates(updatedAttendanceStates);
 
-        const user = usersInSelectedProject[index];
+        // const user = usersInSelectedProject[index];
+        const user = userNames[index];
         if (updatedAttendanceStates[index]) {
             setUsersPresent(prevUsers => [...prevUsers, user]);
             setUsersAbsent(prevUsers => prevUsers.filter(u => u !== user));
         } else {
             setUsersAbsent(prevUsers => [...prevUsers, user]);
             setUsersPresent(prevUsers => prevUsers.filter(u => u !== user));
+        }
+        if (selectedEvent?.value === 'False') {
+            setUsersAbsent([]);
         }
     };
 
@@ -136,8 +158,8 @@ const AttendanceUpdatePage = () => {
         "user_absent": usersAbsent,
         "date_taken": selectedDate,
         "company_id": currentUser?.portfolio_info[0]?.org_id,
-        "meeting": selectedEvent,
-        "project": selectedProject,
+        "event_id": selectedEvent.id,
+        "project": selectedProject.label,
         "data_type": "Real_Data",
     }
     const handleUpdateClick = async () => {
@@ -157,6 +179,20 @@ const AttendanceUpdatePage = () => {
             });
         setIsAttendanceUpdated(false);
     };
+
+    const handleEventChange = (selectedOption) => {
+        setSelectedEvent(selectedOption);
+    }
+
+    useEffect(() => {
+        setUsersPresent([]);
+        setAttendanceStates([]);
+        if (selectedEvent?.value === 'True') {
+            setUsersAbsent(usersAbsent);
+        } else {
+            setUsersAbsent([]);
+        }
+    }, [selectedEvent])
     // console.log("dataaaa>>>>>>>", dataToPost);
     return (
         <StaffJobLandingLayout
@@ -176,36 +212,32 @@ const AttendanceUpdatePage = () => {
                     <div className="att_upd_input">
                         <div className="att_upd_select">
                             <label>
-                                <span>Event</span>
-                                <select
+                                <span>Select Event:</span>
+                                <Select
+                                    options={eventNames}
+                                    isMulti={false}
+                                    isLoading={isEventLoading}
                                     value={selectedEvent}
-                                    onChange={(e) => setSelectedEvent(e.target.value)}
-                                >
-                                    <option value="">Select an Event</option>
-                                    {
-                                        eventNames.map((event, index) => (
-                                            <option key={index} value={event}>
-                                                {event}
-                                            </option>
-                                        ))}
-                                </select>
+                                    onChange={(selectedOption) => {
+                                        handleEventChange(selectedOption);
+                                    }}
+                                    // hideSelectedOptions={true}
+                                    isOptionSelected={(option, selectValue) => selectValue.some(i => i === option)}
+                                    className="item_Filter"
+                                />
                             </label>
                         </div>
                         <div className="att_upd_select">
                             <label>
-                                <span>Project</span>
-                                <select
+                                <span>Select Project:</span>
+                                <Select
+                                    options={projects}
+                                    isMulti={false}
+                                    isLoading={isProjectLoading}
                                     value={selectedProject}
                                     onChange={handleProjectChange}
-                                >
-                                    <option value="">Select a Project</option>
-                                    {
-                                        projects.map((project, index) => (
-                                            <option key={index} value={project}>
-                                                {project}
-                                            </option>
-                                        ))}
-                                </select>
+                                    className="item_Filter"
+                                />
                             </label>
                         </div>
                     </div>
@@ -216,9 +248,9 @@ const AttendanceUpdatePage = () => {
                                 <LoadingSpinner width={"1.2rem"} height={"1.2rem"} />
                             </div>
                         ) : usersInSelectedProject.length === 0 ? (
-                            selectedProject ? (
+                            selectedProject.label ? (
                                 <div className="loading_users">
-                                    <p>{`No user(s) found in ${selectedProject}`}</p>
+                                    <p>{`No user(s) found in ${selectedProject.label}`}</p>
                                 </div>
                             ) : (
                                 <></>
@@ -232,7 +264,7 @@ const AttendanceUpdatePage = () => {
                                         <>
                                             <div className="update_att">
                                                 <p>Candidates in selected project:</p>
-                                                <button onClick={handleUpdateClick}>{isAttendanceUpdated ? <><LoadingSpinner width={"1rem"} height={"1rem"} /></> : <>Update</>}</button>
+                                                <button onClick={() => { handleUpdateClick() }}>{isAttendanceUpdated ? <><LoadingSpinner width={"1rem"} height={"1rem"} /></> : <>Update</>}</button>
                                             </div>
                                             <div className="user_boxes">
                                                 {usersInSelectedProject.map((user, index) => (
@@ -247,7 +279,7 @@ const AttendanceUpdatePage = () => {
                                                             color="#005734"
                                                         />
                                                         <h6>{user}</h6>
-                                                        <b>{selectedProject}</b>
+                                                        <b>{selectedProject.label}</b>
                                                     </div>
                                                 ))}
                                             </div>
