@@ -9996,16 +9996,16 @@ class candidate_attendance(APIView):
                 "success": False,
                 "error": str(e)
             })
-        events_list = [events["event_name"] for events in fetch_events.get("data", [])]
+        events_list = [events["_id"] for events in fetch_events.get("data", [])]
         dates = get_dates_between(start_date, end_date)
 
         attendance_with_users = {user: [] for user in usernames}
 
         if attendance_report.get("success"):
             for user in usernames:
-                for event_name in events_list:
+                for event_id in events_list:
                     user_attendance_record = {
-                        "event": event_name,
+                        "event": event_id,
                         "dates_present": [],
                         "dates_absent": [],
                         "project": project
@@ -10014,10 +10014,10 @@ class candidate_attendance(APIView):
 
                     for date in dates:
                         is_user_present = any(
-                            record.get("date_taken") == date and user in record.get("user_present", []) and record.get("event") == event_name 
+                            record.get("date_taken") == date and user in record.get("user_present", []) and record.get("event_id") == event_id 
                             for record in attendance_report.get("data", [])
                         )
-                        add_user_attendance(attendance_with_users[user], event_name, date, is_user_present)  #attendance_with_users[user] conatins all the events of the week with teh key user
+                        add_user_attendance(attendance_with_users[user], event_id, date, is_user_present)  #attendance_with_users[user] conatins all the events of the week with teh key user
             return Response({
                 "success": True,
                 "message": "Attendance records have been successfully retrieved",
