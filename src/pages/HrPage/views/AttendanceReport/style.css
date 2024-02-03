@@ -14,7 +14,8 @@
 .att__Date__Input {
     border: 1px solid lightgray;
     font-size: 14px;
-    width: max-content;
+    /* width: max-content; */
+    max-width: 9rem;
     border-radius: 3px;
     color: #807f7f;
     padding: 0.45rem;
@@ -94,9 +95,18 @@ button.hr__Att__Btn {
 
 .tbl_rep {
     max-height: 400px;
-    overflow: scroll;
+    overflow: auto;
     /* padding-right: 10%; */
     /* border-radius: 30px; */
+}
+
+.tbl_rep thead {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.tbl_rep tbody td {
+    font-size: 0.92rem;
 }
 
 .att_report_main h3 {
@@ -163,6 +173,9 @@ button.hr__Att__Btn {
 .title {
     /* margin: 1rem auto; */
     padding-top: 3%;
+    font-weight: 500;
+    color: #005734;
+    font-size: 1.3rem;
 }
 
 .present {
@@ -214,7 +227,7 @@ button.hr__Att__Btn {
 }
 
 .switch_screen p {
-    font-size: larger;
+    font-size: 0.9rem;
     font-family: "Poppins", sans-serif;
     margin: 0% 2%;
     padding-bottom: 5px;

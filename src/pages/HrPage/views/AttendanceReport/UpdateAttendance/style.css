@@ -162,13 +162,13 @@ h6 {
 
 .absent {
     color: #f02a2b;
-    font-size: 25px;
+    /* font-size: .875rem; */
     cursor: pointer;
 }
 
 .present {
     color: #4ecb71;
-    font-size: 25px;
+    /* font-size: 0.875rem; */
     cursor: pointer;
 }
 
@@ -176,6 +176,7 @@ h6 {
     display: flex;
     align-items: center;
     padding: 0.1% 4%;
+    margin: 0.5rem 0 1.7rem;
 }
 
 .back_icon {
@@ -196,6 +197,7 @@ h6 {
     color: #005734;
     font-weight: 500;
     padding: 1px 13px;
+    margin: 0;
 }
 
 .item_Filter {

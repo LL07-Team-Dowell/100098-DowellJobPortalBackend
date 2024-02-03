@@ -81,8 +81,8 @@ const AttendanceReport = () => {
             );
 
             const options = candidatesInSelectedProject.map(candidate => ({
-                username: candidate.username,
-                value: candidate._id,
+                // username: candidate.username,
+                value: candidate.username,
                 label: candidate.applicant,
             }));
             setCandidateOptions(options);
@@ -111,7 +111,7 @@ const AttendanceReport = () => {
         });
         const selectedUsers = filteredUsers.map(user => ({
             label: user.applicant,
-            value: user._id,
+            value: user.username,
         }));
 
         setCandidateOptions(selectedUsers);
@@ -120,7 +120,7 @@ const AttendanceReport = () => {
 
     const prepareProjectWiseData = () => {
         const projectsForAPI = selectedMultiProjects.map((project) => project.label);
-        const usersForAPI = selectedUser.map((user) => user.username);
+        const usersForAPI = selectedUser.map((user) => user.value);
 
         return {
             usernames: usersForAPI,
@@ -135,7 +135,7 @@ const AttendanceReport = () => {
     };
 
     const prepareUserWiseData = () => {
-        const usersForAPI = selectedUser.map((user) => user.username);
+        const usersForAPI = selectedUser.map((user) => user.value);
 
         return {
             usernames: usersForAPI,
@@ -345,6 +345,9 @@ const AttendanceReport = () => {
             case SCREEN_EVENT:
                 setViews({ projectWiseView: false, multiProjectView: false, userWiseView: false, eventWiseView: true })
                 break;
+            default:
+                console.log(`${index} is not defined`)
+                break;
         }
     };
 
@@ -361,7 +364,7 @@ const AttendanceReport = () => {
         const filteredUser = selectedUser?.filter((user) => user.label === userForAttendance);
 
         if (filteredUser.length !== 0) {
-            const username = filteredUser[0].username;
+            const username = filteredUser[0].value;
             const userAttendance = userWiseResponse[username][index];
 
             if (userAttendance) {
@@ -497,7 +500,7 @@ const AttendanceReport = () => {
                             <p>Candidates:</p>
                             {
                                 selectedUser.map((candidate) => (
-                                    <button key={candidate.value} onClick={() => renderingAttendance(candidate.label, candidate.username)}>
+                                    <button key={candidate.value} onClick={() => renderingAttendance(candidate.label, candidate.value)}>
                                         {candidate.label}
                                     </button>
 
@@ -553,7 +556,15 @@ const AttendanceReport = () => {
                             {
                                 views.userWiseView && views.projectWiseView &&
                                 <div className="users_info">
+                                    {/* <div className="item__Filter__Wrap">
+                                        <p>Events</p>
+                                        <Select
+                                            options={eventNames}
+                                            onChange={}
+                                        />
+                                    </div> */}
                                     <p>Events:</p>
+
                                     {
                                         eventNames.map((event, index) => (
                                             <button key={event.value} onClick={() => renderingEventAttendance(index)}>
