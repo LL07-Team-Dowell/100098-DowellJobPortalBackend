@@ -220,6 +220,23 @@ button.hr__Att__Btn {
     font-weight: 600;
 }
 
+
+.select__Event__Wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.4rem;
+    margin-left: auto;
+    min-width: 15rem;
+    max-width: 18rem;
+}
+
+.users_info .select__Event__Wrap p {
+    padding: 0;
+    font-weight: normal;
+    font-size: 1rem;
+}
+
 .switch_screen {
     display: flex;
     flex-direction: row;

@@ -126,3 +126,19 @@ export const formatDateForAPI = (date, type='normal') => {
         day < 10 ? "0" + day : day
     }`
 }
+
+export const getDaysDifferenceBetweenDates = (startDate, endDate) => {
+    if (
+        new Date(startDate) == "Invalid Date" ||
+        new Date(endDate) == "Invalid Date" ||
+        (startDate > endDate)
+    ) return 0
+
+    const startDateFormatted = new Date(startDate);
+    const endDateFormatted = new Date(endDate);
+
+    const differenceInMilliSec = Math.abs(endDateFormatted - startDateFormatted);
+    const differenceInDays = differenceInMilliSec / (1000 * 60 * 60 * 24);
+
+    return Math.round(differenceInDays);
+}
