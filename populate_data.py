@@ -530,14 +530,14 @@ if __name__ == "__main__":
     year =2024
     month_number =1
     _, number_of_days = calendar.monthrange(year, month_number)
-    _month_dates = [f"{year}-"+"{:02d}".format(month_number)+"-"+"{:02d}".format(d) for d in range(1, number_of_days + 1)]
+    _month_dates = [f"{year}-"+"{:02d}".format(month_number)+"-"+"{:02d}".format(d) for d in range(15, number_of_days + 1)]
     #print(_month_dates)
-    #['2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-20', '2024-01-21', '2024-01-22', '2024-01-23', '2024-01-24', '2024-01-25', '2024-01-26', '2024-01-27', '2024-01-28', '2024-01-29', '2024-01-30', '2024-01-31']
+    #['2024-01-22', '2024-01-23', '2024-01-24', '2024-01-25', '2024-01-26', '2024-01-27', '2024-01-28', '2024-01-29', '2024-01-30', '2024-01-31']
     """second week of jan 2024-----------------------------"""
     
     print("---second week of jan 2024-----------------------------")
     for day in _month_dates:
-        if day == "2024-01-8":
+        if day == "2024-01-22":
             break
         else:
             print(f"---------updating for {day}------------------")
