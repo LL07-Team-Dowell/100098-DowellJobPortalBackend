@@ -189,6 +189,7 @@ h6 {
     justify-content: center;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0.2, 0.3);
+    cursor: pointer;
 }
 
 .att_title h3 {
@@ -206,6 +207,23 @@ h6 {
 }
 
 .react-calendar {
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0.1, 0.2);
+    border: none;
+    max-width: 18rem;
+
+    .react-calendar__tile--active {
+        background: #005734;
+        color: white;
+    }
+
+    .react-calendar__tile--active:enabled:hover,
+    .react-calendar__tile--active:enabled:focus {
+        background: #005734;
+    }
+}
+
+/* .react-calendar {
     border-radius: 25px;
     box-shadow: 0 4px 8px rgba(0, 0, 0.1, 0.2);
     border: none;
@@ -245,4 +263,4 @@ h6 {
     .react-calendar__month-view__days__day {
         font-size: 14px;
     }
-}
+} */

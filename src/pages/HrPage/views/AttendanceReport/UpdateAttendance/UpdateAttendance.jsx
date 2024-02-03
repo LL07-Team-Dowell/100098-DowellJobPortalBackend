@@ -205,7 +205,19 @@ const AttendanceUpdatePage = () => {
                 <div className="att_upd_calendar">
                     <div className="upd_calendar">
                         <p>Select Date:</p>
-                        <Calendar minDate={mondayOfThisWeek} maxDate={sundayOfNextWeek} onChange={handleDateChange} className="react-calendar" />
+                        <br />
+                        <Calendar 
+                            minDate={mondayOfThisWeek} 
+                            maxDate={sundayOfNextWeek} 
+                            onChange={handleDateChange} 
+                            className="react-calendar"
+                            tileDisabled={
+                                ({ activeStartDate, date, view }) => (
+                                    date.getDay() === 0 ||
+                                    date.getDay() === 6
+                                )
+                            } 
+                        />
                     </div>
                 </div>
                 <div className="att_upd_candidates">

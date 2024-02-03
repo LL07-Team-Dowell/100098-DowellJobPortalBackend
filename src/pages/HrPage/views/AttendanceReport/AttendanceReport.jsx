@@ -154,6 +154,8 @@ const AttendanceReport = () => {
         setShowAttendaceReport(false);
         setPercentage('');
         setAttendanceDetails([]);
+        setSelectedProjectForMulti(null);
+
         if (views.multiProjectView) {
             if (selectedUser.length === 0 && startDate === null && selectedMultiProjects.length === 0 && selectedEvent === '') {
                 return toast.error("Please select Project(s), User(s), Event and a Start Date.");
@@ -169,9 +171,9 @@ const AttendanceReport = () => {
                     setIsLoading(false);
                     toast.error('Unable to Retrieve Attendance!');
                 })
-                if (projectWiseresponse) {
-                    renderingAttendance(selectedUser[0].label);
-                }
+                // if (projectWiseresponse) {
+                //     renderingAttendance(selectedUser[0].label);
+                // }
             }
         } else if (views.userWiseView) {
             if (selectedUser.length === 0 && startDate === null && selectedMultiProjects.length === 0 && selectedEvent === '') {
@@ -256,28 +258,31 @@ const AttendanceReport = () => {
         setUserForAttendance(candidate);
         console.log('candidate>>>>>>>>>>>>>', candidate);
 
-        if (views.multiProjectView) {
-            const projectData = projectWiseresponse['Business development'];
+        // UPDATED THE LOGIC FOR THIS. CHECK THE 'handleSelectProjectForMulti' FUNCTION
+        // if (views.multiProjectView) {
+        //     const projectData = projectWiseresponse['Business development'];
 
-            if (Array.isArray(projectData)) {
-                const userData = projectData.filter(data =>
-                    (data.user_present.includes(candidate) || data.user_absent.includes(candidate)) && data.meeting === selectedEvent.label
-                );
+        //     if (Array.isArray(projectData)) {
+        //         const userData = projectData.filter(data =>
+        //             (data.user_present.includes(candidate) || data.user_absent.includes(candidate)) && data.meeting === selectedEvent.label
+        //         );
 
-                const userAttendance = Array(userData.length + 2).fill(false);
+        //         const userAttendance = Array(userData.length + 2).fill(false);
 
-                userData.forEach((data, index) => {
-                    if (data.user_present.includes(candidate)) {
-                        userAttendance[index] = true;
-                    }
-                });
+        //         userData.forEach((data, index) => {
+        //             if (data.user_present.includes(candidate)) {
+        //                 userAttendance[index] = true;
+        //             }
+        //         });
 
-                const numberOfDaysPresent = userAttendance.filter(value => value === true).length;
+        //         const numberOfDaysPresent = userAttendance.filter(value => value === true).length;
 
-                setPercentage(numberOfDaysPresent);
-                setAttendanceDetails([userAttendance]);
-            }
-        } else if (views.userWiseView) {
+        //         setPercentage(numberOfDaysPresent);
+        //         setAttendanceDetails([userAttendance]);
+        //     }
+        // } 
+        
+        if (views.userWiseView) {
             const userAttendance = userWiseResponse[username];
             if (userAttendance && userAttendance.length > 0) {
                 const allDates = [...userAttendance[0].dates_present, ...userAttendance[0].dates_absent];
@@ -294,11 +299,11 @@ const AttendanceReport = () => {
         }
     }
 
-    const dataForFetchingEvents = {
-        company_id: currentUser?.portfolio_info[0].org_id,
-    }
-
     useEffect(() => {
+        const dataForFetchingEvents = {
+            company_id: currentUser?.portfolio_info[0].org_id,
+        }
+
         setDataLoading({ ...dataLoading, isEventLoading: true });
         const fetchEvents = async () => {
             try {
@@ -337,6 +342,7 @@ const AttendanceReport = () => {
         setAttendanceDetails([]);
         setEndDate('');
         setSelectedProjectForMulti(null);
+        
         switch (index) {
             case SCREEN_PROJECT_USER:
                 setViews({ projectWiseView: false, multiProjectView: true, userWiseView: true, eventWiseView: true })
@@ -457,27 +463,49 @@ const AttendanceReport = () => {
                                 isMulti={true}
                                 isLoading={dataLoading.isProjectLoading}
                                 value={selectedMultiProjects}
-                                onChange={(projectName) => (
-                                    setSelectedMultiProjects(projectName)
+                                onChange={(projectsSelected) => {
+                                    setSelectedMultiProjects(projectsSelected);
+                                    
+                                    const usersFromProjectsSelected = allHiredCandidates?.filter(
+                                        candidate =>
+                                            candidate.project && 
+                                            candidate.project?.find(
+                                                item => projectsSelected?.find(project => project?.value === item)
+                                            )
+                                        )?.map(
+                                            candidate => {
+                                                return {
+                                                    label: candidate?.applicant,
+                                                    value: candidate?.username,
+                                                }
+                                            }
+                                        )
+                                    // console.log(usersFromProjectsSelected);
+                                    setSelectedUser(usersFromProjectsSelected);
                                     // handleMultiProjectChange()
-                                )}
+                                }}
                                 className="item__Filter"
                             />
                         </div>
                     }
                     {
                         views.userWiseView &&
-                        <div className="item__Filter__Wrap">
-                            <p>Select User:</p>
-                            <Select
-                                options={candidateOptions}
-                                isMulti={true}
-                                isLoading={dataLoading.isUserLoading}
-                                value={selectedUser}
-                                onChange={handleChange}
-                                className="item__Filter"
-                            />
-                        </div>
+                        <>
+                            {
+                                views.multiProjectView ? <></> :
+                                <div className="item__Filter__Wrap">
+                                    <p>Select User:</p>
+                                    <Select
+                                        options={candidateOptions}
+                                        isMulti={true}
+                                        isLoading={dataLoading.isUserLoading}
+                                        value={selectedUser}
+                                        onChange={handleChange}
+                                        className="item__Filter"
+                                    />
+                                </div>
+                            }
+                        </>
                     }
                     {
                         views.eventWiseView &&
@@ -598,8 +626,8 @@ const AttendanceReport = () => {
                                         <>
                                             {
                                                 views.multiProjectView ? <>
-                                                    <p style={{ fontSize: '0.875rem' }}>
-                                                        {
+                                                    <p style={{ fontSize: '0.75rem' }}>
+                                                        Members: {
                                                             allHiredCandidates?.filter(
                                                                 candidate =>
                                                                     candidate.project && 
@@ -707,6 +735,16 @@ const AttendanceReport = () => {
                                                                     <>
                                                                         {
                                                                             React.Children.toArray(selectedUser?.map(user => {
+                                                                                const usersForCurrentMultiProject = allHiredCandidates?.filter(
+                                                                                    candidate =>
+                                                                                        candidate.project && 
+                                                                                        candidate.project?.includes(selectedProjectForMulti?.value)
+                                                                                    )?.map(
+                                                                                        candidate => candidate?.username
+                                                                                    )
+                                                                                
+                                                                                if (!usersForCurrentMultiProject?.includes(user?.value)) return <></>
+
                                                                                 return <tr>
                                                                                     <td>{user?.label}</td>
                                                                                     {

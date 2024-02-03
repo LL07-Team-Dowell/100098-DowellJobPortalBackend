@@ -11,7 +11,7 @@ function HrTrainingScreen({ trainingCards, setShowOverlay, setQuestions, handleR
   const { questions } = useHrJobScreenAllTasksContext();
   // console.log(questions);
 
-  const { navigate } = useNavigate();
+  const navigate = useNavigate();
 
   const { currentUser } = useCurrentUserContext();
 

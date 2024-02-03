@@ -180,7 +180,7 @@ function HrTrainingQuestions() {
                     onClick={(e) => handleOnSubmit(e)}
                     disabled={isLoading}
                   >
-                    <div className="save">
+                    <div className="save_">
                       {isLoading ? (
                         <LoadingSpinner width={25} height={25} color="#fff" />
                       ) : (
