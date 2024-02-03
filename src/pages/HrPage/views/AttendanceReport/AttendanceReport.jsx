@@ -158,6 +158,7 @@ const AttendanceReport = () => {
 
         if (views.multiProjectView) {
             if (selectedUser.length === 0 && startDate === null && selectedMultiProjects.length === 0 && selectedEvent === '') {
+                setIsLoading(false);
                 return toast.error("Please select Project(s), User(s), Event and a Start Date.");
             } else {
                 const dataToPost = prepareProjectWiseData();
@@ -177,6 +178,7 @@ const AttendanceReport = () => {
             }
         } else if (views.userWiseView) {
             if (selectedUser.length === 0 && startDate === null && selectedMultiProjects.length === 0 && selectedEvent === '') {
+                setIsLoading(false);
                 return toast.error("Please select Project, User(s) , Event and a Start Date.");
             } else {
                 const dataToPost = prepareUserWiseData();
@@ -196,6 +198,7 @@ const AttendanceReport = () => {
             }
         } else if (views.eventWiseView) {
             if (selectedEvent === '' && startDate === null) {
+                setIsLoading(false);
                 return toast.error("Please select an Event and a Start Date.");
             }
             else {
