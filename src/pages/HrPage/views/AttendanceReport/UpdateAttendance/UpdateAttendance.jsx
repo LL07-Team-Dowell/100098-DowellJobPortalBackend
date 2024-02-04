@@ -18,6 +18,7 @@ import { getAllEvents } from "../../../../../services/hrServices";
 import { addAttendance } from "../../../../../services/hrServices";
 import { toast } from "react-toastify";
 import Select from "react-select";
+import { Tooltip } from "react-tooltip";
 
 const AttendanceUpdatePage = () => {
     const navigate = useNavigate();
@@ -81,7 +82,9 @@ const AttendanceUpdatePage = () => {
         const fetchEvents = async () => {
             // if (!selectedEvent) return toast.warn('Select an Event!');
             try {
-                const data = (await getAllEvents(dataForFetchingEvents)).data.data;
+                const data = (await getAllEvents(dataForFetchingEvents)).data.data?.filter(event => 
+                    event.data_type === currentUser?.portfolio_info[0]?.data_type
+                );
                 const eventNamesList = data.map(event => ({
                     id: event._id,
                     value: event.is_mendatory,
@@ -117,12 +120,13 @@ const AttendanceUpdatePage = () => {
             console.log('user names', optionsUsername);
             setUsersInSelectedProject(options);
             setUserNames(optionsUsername);
-            if (selectedEvent.value === 'True') {
+            if (selectedEvent.value === true) {
                 setUsersAbsent(optionsUsername);
             }
             setIsLoading(false);
         }).catch(err => {
             console.log('onboarded failed to load');
+            setIsLoading(false);
         })
     }, [selectedProject]);
 
@@ -187,7 +191,7 @@ const AttendanceUpdatePage = () => {
     useEffect(() => {
         setUsersPresent([]);
         setAttendanceStates([]);
-        if (selectedEvent?.value === 'True') {
+        if (selectedEvent?.value === true) {
             setUsersAbsent(usersAbsent);
         } else {
             setUsersAbsent([]);
@@ -276,13 +280,62 @@ const AttendanceUpdatePage = () => {
                                         <>
                                             <div className="update_att">
                                                 <p>Candidates in selected project:</p>
-                                                <button onClick={() => { handleUpdateClick() }}>{isAttendanceUpdated ? <><LoadingSpinner width={"1rem"} height={"1rem"} /></> : <>Update</>}</button>
+                                                <button 
+                                                    onClick={
+                                                        () => { handleUpdateClick() }
+                                                    }
+                                                    disabled={isAttendanceUpdated ? true : false}
+                                                >
+                                                        {
+                                                            isAttendanceUpdated ? 
+                                                                <>
+                                                                    <LoadingSpinner 
+                                                                        width={"1rem"} 
+                                                                        height={"1rem"} 
+                                                                        color={'#fff'}
+                                                                    />
+                                                                </> 
+                                                            : 
+                                                            <>
+                                                                Update
+                                                            </>
+                                                        }
+                                                    </button>
                                             </div>
                                             <div className="user_boxes">
                                                 {usersInSelectedProject.map((user, index) => (
-                                                    <div key={index} className="user_box">
+                                                    <div key={user + index} className="user_box">
                                                         <div className="mark_att" onClick={() => handleAttendanceChange(index)}>
-                                                            {attendanceStates[index] ? <FaCircleCheck className="present" /> : <MdCancel className="absent" />}
+                                                            {
+                                                                attendanceStates[index] ?
+                                                                    <>
+                                                                        <FaCircleCheck 
+                                                                            className="present" 
+                                                                            fontSize={'1.4rem'}
+                                                                            data-tooltip-id={"check-status-present"}
+                                                                        /> 
+                                                                        <Tooltip 
+                                                                            id="check-status-present" 
+                                                                            content={
+                                                                                'Update to absent'
+                                                                            }
+                                                                        />
+                                                                    </>
+                                                                    : 
+                                                                    <>
+                                                                        <MdCancel 
+                                                                            className="absent" 
+                                                                            fontSize={'1.4rem'}
+                                                                            data-tooltip-id={"check-status-absent"}
+                                                                        />
+                                                                        <Tooltip 
+                                                                            id="check-status-absent" 
+                                                                            content={
+                                                                                'Update to present'
+                                                                            }
+                                                                        />
+                                                                    </>
+                                                            }
                                                         </div>
                                                         <Avatar
                                                             name={user[0]}

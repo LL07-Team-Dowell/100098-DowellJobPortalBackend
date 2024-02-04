@@ -49,7 +49,7 @@ const NewSideNavigationBar = ({
     }, [links, navLinksOpenForUserSet])
 
     useEffect(() => {
-        if (navLinksOpenForUser?.includes(switchViewItem.id)) return setShowViewsModal(true)
+        if (navLinksOpenForUser?.includes(switchViewItem.id) && newSidebarDesign) return setShowViewsModal(true)
 
         setShowViewsModal(false)
     }, [])

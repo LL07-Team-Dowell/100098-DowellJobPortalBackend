@@ -132,7 +132,8 @@ button.hr__Att__Btn {
 }
 
 .att_name {
-    width: 78%;
+    width: max-content;
+    max-width: 78%;
     border-radius: 18px;
     border: 1px solid #c8c8c8;
     padding: 2%;
@@ -140,6 +141,7 @@ button.hr__Att__Btn {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    gap: 1.8rem;
 }
 
 .att_name .profile {

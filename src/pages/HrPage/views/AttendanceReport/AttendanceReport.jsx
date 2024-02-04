@@ -60,6 +60,8 @@ const AttendanceReport = () => {
         eventWiseView: true,
     })
     const [selectedProjectForMulti, setSelectedProjectForMulti] = useState(null);
+    const [foundUserEventAttendanceDetail, setFoundUserEventAttendanceDetail] = useState(null);
+
     const isWeekend = (dayIndex) => dayIndex === 5 || dayIndex === 6;
     // const companyId = "6385c0f18eca0fb652c94561";
 
@@ -155,6 +157,7 @@ const AttendanceReport = () => {
         setPercentage('');
         setAttendanceDetails([]);
         setSelectedProjectForMulti(null);
+        setFoundUserEventAttendanceDetail(null);
 
         if (views.multiProjectView) {
             if (selectedUser.length === 0 && startDate === null && selectedMultiProjects.length === 0 && selectedEvent === '') {
@@ -288,16 +291,21 @@ const AttendanceReport = () => {
         if (views.userWiseView) {
             const userAttendance = userWiseResponse[username];
             if (userAttendance && userAttendance.length > 0) {
-                const allDates = [...userAttendance[0].dates_present, ...userAttendance[0].dates_absent];
-                const sortedDates = allDates.sort();
-                console.log('date', userAttendance[0].dates_present);
-                const updatedAttendanceDetails = sortedDates.map(date => {
-                    return userAttendance[0].dates_present.includes(date);
-                });
-                updatedAttendanceDetails.push(false, false);
-                const numberOfDaysPresent = updatedAttendanceDetails.filter(value => value === true).length;
-                setPercentage(numberOfDaysPresent);
-                setAttendanceDetails([updatedAttendanceDetails]);
+                setPercentage('');
+                setAttendanceDetails(userAttendance);
+                
+                // UPDATED THE FUNCTIONALITY FOR THIS AS WELL
+                // console.log(userAttendance);
+                // const allDates = [...userAttendance[0].dates_present, ...userAttendance[0].dates_absent];
+                // const sortedDates = allDates.sort();
+                // console.log('date', userAttendance[0].dates_present);
+                // const updatedAttendanceDetails = sortedDates.map(date => {
+                //     return userAttendance[0].dates_present.includes(date);
+                // });
+                // updatedAttendanceDetails.push(false, false);
+                // const numberOfDaysPresent = updatedAttendanceDetails.filter(value => value === true).length;
+                // setPercentage(numberOfDaysPresent);
+                // setAttendanceDetails([updatedAttendanceDetails]);
             }
         }
     }
@@ -310,7 +318,9 @@ const AttendanceReport = () => {
         setDataLoading({ ...dataLoading, isEventLoading: true });
         const fetchEvents = async () => {
             try {
-                const data = (await getAllEvents(dataForFetchingEvents)).data.data;
+                const data = (await getAllEvents(dataForFetchingEvents)).data.data?.filter(event => 
+                    event.data_type === currentUser?.portfolio_info[0]?.data_type
+                );
                 const eventNamesList = data.map(event => ({
                     id: event._id,
                     value: event.event_name,
@@ -345,6 +355,7 @@ const AttendanceReport = () => {
         setAttendanceDetails([]);
         setEndDate('');
         setSelectedProjectForMulti(null);
+        setFoundUserEventAttendanceDetail(null);
         
         switch (index) {
             case SCREEN_PROJECT_USER:
@@ -371,31 +382,55 @@ const AttendanceReport = () => {
         return '';
     };
 
-    const renderingEventAttendance = (index) => {
-        const filteredUser = selectedUser?.filter((user) => user.label === userForAttendance);
-
-        if (filteredUser.length !== 0) {
-            const username = filteredUser[0].value;
-            const userAttendance = userWiseResponse[username][index];
-
-            if (userAttendance) {
-                const allDates = [
-                    ...(Array.isArray(userAttendance.dates_present) ? userAttendance.dates_present : []),
-                    ...(Array.isArray(userAttendance.dates_absent) ? userAttendance.dates_absent : []),
-                ];
-                console.log(allDates);
-                const sortedDates = allDates.sort();
-
-                const updatedAttendanceDetails = sortedDates.map(date => {
-                    return userAttendance.dates_present.includes(date);
-                });
-                updatedAttendanceDetails.push(false, false);
-                const numberOfDaysPresent = updatedAttendanceDetails.filter(value => value === true).length;
-
-                setPercentage(numberOfDaysPresent);
-                setAttendanceDetails([updatedAttendanceDetails]);
-            }
+    const renderingEventAttendance = (eventId) => {
+        const foundEvent = eventNames?.find(event => event?.id === eventId);
+        if (!foundEvent) return
+        
+        setSelectedEvent({
+            id: eventId,
+            value: foundEvent?.value,
+            label: foundEvent?.label,
+        });
+        setFoundUserEventAttendanceDetail(null);
+        
+        const foundEventAttendance = attendanceDetails?.find(attendance => attendance?.event_id === eventId);
+        if (!foundEventAttendance) {
+            setPercentage('');
+            return
         }
+
+        setPercentage(
+            foundEventAttendance?.dates_present ?
+                foundEventAttendance?.dates_present.length
+            :
+            ''
+        );
+        setFoundUserEventAttendanceDetail(foundEventAttendance);
+
+        // const filteredUser = selectedUser?.filter((user) => user.label === userForAttendance);
+
+        // if (filteredUser.length !== 0) {
+        //     const username = filteredUser[0].value;
+        //     const userAttendance = userWiseResponse[username][index];
+
+        //     if (userAttendance) {
+        //         const allDates = [
+        //             ...(Array.isArray(userAttendance.dates_present) ? userAttendance.dates_present : []),
+        //             ...(Array.isArray(userAttendance.dates_absent) ? userAttendance.dates_absent : []),
+        //         ];
+        //         console.log(allDates);
+        //         const sortedDates = allDates.sort();
+
+        //         const updatedAttendanceDetails = sortedDates.map(date => {
+        //             return userAttendance.dates_present.includes(date);
+        //         });
+        //         updatedAttendanceDetails.push(false, false);
+        //         const numberOfDaysPresent = updatedAttendanceDetails.filter(value => value === true).length;
+
+        //         setPercentage(numberOfDaysPresent);
+        //         setAttendanceDetails([updatedAttendanceDetails]);
+        //     }
+        // }
     }
 
     const handleSelectProjectForMulti = (project) => {
@@ -648,36 +683,42 @@ const AttendanceReport = () => {
                                             }
                                         </>
                                     </div>
-                                    <div className="att_percentage">
-                                        <CircularProgressbar
-                                            value={(Number(percentage) / 5) * 100}
-                                            styles={
-                                                buildStyles({
-                                                    pathColor: `#18d462`,
-                                                    trailColor: '#f5f5f5',
-                                                })
-                                            }
-                                        />
-                                        <div>
-                                            <p>Present</p>
-                                            <b>{`${(Number(percentage) / 5) * 100}%`}</b>
-                                        </div>
-                                    </div>
-                                    <div className="att_percentage">
-                                        <CircularProgressbar
-                                            value={100 - ((Number(percentage) / 5) * 100)}
-                                            styles={
-                                                buildStyles({
-                                                    pathColor: `#f02a2b`,
-                                                    trailColor: '#f5f5f5',
-                                                })
-                                            }
-                                        />
-                                        <div>
-                                            <p>Absent</p>
-                                            <b>{`${100 - ((Number(percentage) / 5) * 100)}%`}</b>
-                                        </div>
-                                    </div>
+                                    {
+                                        views.userWiseView && !views.multiProjectView && selectedEvent?.length < 1 ? <></> 
+                                        :
+                                        <>
+                                            <div className="att_percentage">
+                                                <CircularProgressbar
+                                                    value={(Number(percentage) / 5) * 100}
+                                                    styles={
+                                                        buildStyles({
+                                                            pathColor: `#18d462`,
+                                                            trailColor: '#f5f5f5',
+                                                        })
+                                                    }
+                                                />
+                                                <div>
+                                                    <p>Present</p>
+                                                    <b>{`${(Number(percentage) / 5) * 100}%`}</b>
+                                                </div>
+                                            </div>
+                                            <div className="att_percentage">
+                                                <CircularProgressbar
+                                                    value={100 - ((Number(percentage) / 5) * 100)}
+                                                    styles={
+                                                        buildStyles({
+                                                            pathColor: `#f02a2b`,
+                                                            trailColor: '#f5f5f5',
+                                                        })
+                                                    }
+                                                />
+                                                <div>
+                                                    <p>Absent</p>
+                                                    <b>{`${100 - ((Number(percentage) / 5) * 100)}%`}</b>
+                                                </div>
+                                            </div>
+                                        </>
+                                    }
                                 </div>
                                 {
                                     views.userWiseView && views.projectWiseView &&
@@ -687,9 +728,9 @@ const AttendanceReport = () => {
                                             <Select
                                                 options={eventNames}
                                                 onChange={(val) => {
-                                                    const foundEventIndex = eventNames.findIndex(event => event._id === val._id);
-                                                    if (foundEventIndex === -1) return
-                                                    renderingEventAttendance(foundEventIndex);
+                                                    // const foundEventIndex = eventNames.findIndex(event => event._id === val._id);
+                                                    // if (foundEventIndex === -1) return
+                                                    renderingEventAttendance(val?.id);
                                                 }}
                                             />
                                         </div>
@@ -707,6 +748,7 @@ const AttendanceReport = () => {
                                 }
                                 {
                                     attendanceDetails?.length < 1 ? <></> :
+                                    views.userWiseView && !views.multiProjectView && selectedEvent?.length < 1 ? <></> :
                                     <>
                                         <h2 className="title">Attendance Report</h2>
                                         <div className="tbl_rep">
@@ -798,7 +840,51 @@ const AttendanceReport = () => {
                                                                 }
                                                             </> :
                                                             views.userWiseView ? <>
-                                                                {attendanceDetails.map((weekData, weekIndex) => (
+                                                                {
+                                                                    selectedEvent?.length < 1 ? <></> :
+                                                                    <tr>
+                                                                        {
+                                                                            React.Children.toArray(datesForToolTip?.map((date, index) => {
+                                                                                return <td
+                                                                                    Tooltip={formatTooltip(index)}
+                                                                                    data-tooltip-id="my-tooltip"
+                                                                                    data-tooltip-content={isWeekend(index) ? `Holiday` : `${new Date(datesForToolTip[index]).toDateString()}`}
+                                                                                    data-tooltip-place="top"
+                                                                                >
+                                                                                    {
+                                                                                        isWeekend(index) ?
+                                                                                            <>
+                                                                                                <FaCircleCheck className="holiday table_data" />Holiday
+                                                                                            </> 
+                                                                                        :
+                                                                                        (
+                                                                                            Array.isArray(foundUserEventAttendanceDetail?.dates_present) && 
+                                                                                            foundUserEventAttendanceDetail?.dates_present?.includes(formatDateForAPI(date)) 
+                                                                                        ) ?
+                                                                                            <>
+                                                                                                <FaCircleCheck className="present table_data" />Present
+                                                                                            </>
+                                                                                        :
+                                                                                        <>
+                                                                                            <MdCancel className="absent table_data" />Absent
+                                                                                        </>
+                                                                                    }
+                                                                                </td>
+                                                                            }))
+                                                                        }
+                                                                        <td
+                                                                            Tooltip={formatTooltip(6)}
+                                                                            data-tooltip-id="my-tooltip"
+                                                                            data-tooltip-content={`Holiday`}
+                                                                            data-tooltip-place="top"
+                                                                        >
+                                                                            <>
+                                                                                <FaCircleCheck className="holiday table_data" />Holiday
+                                                                            </>
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                {/* {attendanceDetails.map((weekData, weekIndex) => (
                                                                     <tr key={weekIndex}>
                                                                         {weekData.map((isPresent, dayIndex) => (
                                                                             <td key={dayIndex} Tooltip={formatTooltip(dayIndex)}
@@ -809,7 +895,7 @@ const AttendanceReport = () => {
                                                                             </td>
                                                                         ))}
                                                                     </tr>
-                                                                ))}
+                                                                ))} */}
                                                             </> :
                                                             <></>
                                                         }
