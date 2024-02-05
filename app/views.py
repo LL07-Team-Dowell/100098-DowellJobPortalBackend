@@ -121,7 +121,8 @@ from .serializers import (
     AddEventSerializer,
     UpdateEventSerializer,
     GetEventSerializer,
-    UpdateAttendanceSerializer
+    UpdateAttendanceSerializer,
+    GetEventAttendanceSerializer
 )
 from .authorization import (
     verify_user_token,
@@ -9777,6 +9778,9 @@ class candidate_attendance(APIView):
             return self.get_project_wise_attendance(request)
         elif request_type == "get_user_wise_attendance":
             return self.get_user_wise_attendance(request)
+        elif request_type == "get_event_attendance":
+            return self.get_event_attendance(request)
+        
         else:
             return self.handle_error(request)
 
@@ -9880,10 +9884,10 @@ class candidate_attendance(APIView):
                     "success": False,
                     "error": "Datacube is not responding"
                 })
-
             if insert_attendance["success"]:
                 return Response({
                     "success": True,
+                    "inserted_id":insert_attendance["data"]["inserted_id"],
                     "message": f"Attendance has been successfully recorded to {collection}"
                 }, status=status.HTTP_201_CREATED)
             
@@ -10085,6 +10089,50 @@ class candidate_attendance(APIView):
                 "success":False,
                 "error":update_attendance["message"]
             })
+
+    def get_event_attendance(self,request):
+        event_id=request.data.get("event_id")
+        date_taken=request.data.get("date_taken")
+        project=request.data.get("project")
+
+        serializer=GetEventAttendanceSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "success":False,
+                "error":serializer.errors
+            },status=status.HTTP_400_BAD_REQUEST)
+        
+        start,end=get_current_week_start_end_date(date_taken)
+
+        collection=str(start)+"_to_"+str(end)
+
+        query={
+            "event_id":event_id,
+            "date_taken":date_taken,
+            "project":project
+        }
+        
+        try:
+            fetch_attendance=json.loads(datacube_data_retrival(API_KEY,ATTENDANCE_DB,collection,data=query,limit=0,offset=0))
+
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        if fetch_attendance["success"] and len(fetch_attendance["data"])>0:
+            return Response({
+                "success":True,
+                "message":"attendance has been retrieved succesfully",
+                "data":fetch_attendance["data"][0]
+            },status=status.HTTP_200_OK)
+
+        else:
+            return Response({
+                "success":False,
+                "error":fetch_attendance["message"],
+            },status=status.HTTP_204_NO_CONTENT)
 
     def handle_error(self,request):
         return Response({
