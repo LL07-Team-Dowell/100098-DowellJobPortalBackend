@@ -858,6 +858,12 @@ class UpdateAttendanceSerializer(serializers.Serializer):
     date_taken = serializers.DateField(allow_null=False)
     document_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
 
+class GetEventAttendanceSerializer(serializers.Serializer):
+    event_id=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    project=serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    date_taken=serializers.DateField(allow_null=False)
+    
+
 
 class AddEventSerializer(serializers.Serializer):
     company_id = serializers.CharField(max_length=225, allow_null=False)
