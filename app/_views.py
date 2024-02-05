@@ -310,9 +310,10 @@ class Invoice_module(APIView):
             return self.update_payment_records(request)
         elif type_request == "process-payment":
             return self.process_payment(request)
+        elif type_request == "get-invoice":
+            return self.invoice(request)
         else:
             return self.handle_error(request)
-        # 1 api is remaining
 
     def create_collection(self, request, company_id):
         if company_id:
@@ -340,16 +341,15 @@ class Invoice_module(APIView):
                     # Check if user_id is present
                     if user_id:
                         # Create a collection for each username
-                        api_key = "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f"
-                        db_name = "Payment_Records"
-                        coll_name = [user_id]
-                        num_collection = 1
 
-                        response_collection = datacube_add_collection(
-                            api_key, db_name, coll_name, num_collection
+                        data_to_add = datacube_add_collection(
+                            api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+                            db_name="Payment_Records",
+                            coll_names=user_id,
+                            num_collections=1,
                         )
 
-                        if "success" in response_collection:
+                        if "success" in data_to_add:
                             print(f"Collection created for user_id: {user_id}")
                         else:
                             print(f"Failed to create collection for user_id: {user_id}")
@@ -375,7 +375,7 @@ class Invoice_module(APIView):
             )
 
     def save_payment_records(self, request):
-        user_id = request.data.get("user_id")  # Change from "username" to "user_id"
+        user_id = request.data.get("user_id")
         company_id = request.data.get("company_id")
         weekly_payment_amount = request.data.get("weekly_payment_amount")
         payment_currency = request.data.get("currency")
@@ -383,55 +383,55 @@ class Invoice_module(APIView):
         if not (user_id and company_id and weekly_payment_amount and payment_currency):
             return Response(
                 {
-                    "message": "user_id, company_id, weekly_payment_amount, and currency are required"  # Update field names
+                    "message": "user_id, company_id, weekly_payment_amount, and currency are required"
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        url = "https://datacube.uxlivinglab.online/db_api/get_data/"
-
-        data = {
-            "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-            "db_name": "Payment_Records",
-            "coll_name": user_id,
-            "operation": "fetch",
-            "data": {"db_record_type": "payment_records"},
-        }
-        response = requests.post(url, json=data)
-        response_data = response.json()
-
-        api_key = ""
-        db_name = ""
-        coll_name = ""
-
-        response = datacube_data_retrival_function(
-            api_key, db_name, coll_name, data, limit, offset, payment
+        fetch_data = {"db_record_type": "payment_record"}
+        response_data = datacube_data_retrival(
+            api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            database_name="Payment_Records",
+            collection_name=user_id,
+            data=fetch_data,
+            limit=1,
+            offset=0,
         )
 
-        # Handle the API response appropriately
-        if response_data["data"] == []:
-            url = "https://datacube.uxlivinglab.online/db_api/crud/"
-            data = {
-                "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                "db_name": "Payment_Records",
-                "coll_name": user_id,
-                "operation": "insert",
-                "data": {
+        try:
+            response_data_dict = json.loads(response_data)
+        except json.JSONDecodeError:
+            # Handle the case where the string is not valid JSON
+            response_data_dict = {}
+            print(response_data_dict)
+
+        else:
+            # Check if "data" key exists within the list
+            if response_data_dict.get("data", []):
+                # Existing data found, return a response record is already saved
+                return Response(
+                    {"message": "Record already saved"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            else:
+                # Data doesn't exist, proceed to insert
+                insert_data = {
                     "company_id": company_id,
                     "weekly_payment_amount": weekly_payment_amount,
                     "payment_currency": payment_currency,
                     "db_record_type": "payment_record",
                     "previous_weekly_amounts": [],
                     "last_payment_date": "",
-                },
-            }
-            response = requests.post(url, json=data)
-            return Response(response.json(), status=status.HTTP_200_OK)
-        else:
-            return Response(
-                {"message": "Record already saved"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+                }
+
+                response = datacube_data_insertion(
+                    api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+                    database_name="Payment_Records",
+                    collection_name=user_id,
+                    data=insert_data,
+                )
+
+                return Response(response, status=status.HTTP_200_OK)
 
     def update_payment_records(self, request):
         user_id = request.data.get("username")
@@ -447,50 +447,54 @@ class Invoice_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Fetch data from the API to get the existing record
-        url = "https://datacube.uxlivinglab.online/db_api/get_data/"
-        data = {
-            "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-            "db_name": "Payment_Records",
-            "coll_name": user_id,
-            "operation": "fetch",
-            "data": {"db_record_type": "payment_records"},
-        }
-        response = requests.post(url, json=data)
-        existing_data = response.json()["data"]
+        # Fetch data using the provided function
+        fetch_data = {"db_record_type": "payment_record"}
+        response_data = datacube_data_retrival(
+            api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            database_name="Payment_Records",
+            collection_name=user_id,
+            data=fetch_data,
+            limit=1,
+            offset=0,
+        )
 
-        # Check if data exists
-        if existing_data:
-            previous_weekly_amounts = existing_data[0].get(
-                "previous_weekly_amounts", []
-            )
+        try:
+            response_data_dict = json.loads(response_data)
+        except json.JSONDecodeError:
+
+            print(response_data_dict)
+
+        # Check if "data" key exists.
+        if response_data_dict.get("data", []):
+            existing_record = response_data_dict["data"][0]
+            previous_weekly_amounts = existing_record.get("previous_weekly_amounts", [])
 
             # Concatenate the previous amount and currency into a string
-            previous_amount_currency = f"{existing_data[0].get('weekly_payment_amount', '')}{existing_data[0].get('payment_currency', '')}"
+            previous_amount_currency = f"{existing_record.get('weekly_payment_amount', '')}{existing_record.get('payment_currency', '')}"
 
             # Append the new payment to previous weekly amounts
             new_payment = f"{weekly_payment_amount}{payment_currency}"
             previous_weekly_amounts.append(previous_amount_currency)
 
-            # Send the update request to the API
-            update_url = "https://datacube.uxlivinglab.online/db_api/crud/"
+            # Send the update request
+            update_query = {"_id": existing_record["_id"]}
             update_data = {
-                "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                "db_name": "Payment_Records",
-                "coll_name": user_id,
-                "operation": "update",
-                "update_data": {
-                    "company_id": company_id,
-                    "weekly_payment_amount": weekly_payment_amount,
-                    "payment_currency": payment_currency,
-                    "db_record_type": "payment_record",
-                    "previous_weekly_amounts": previous_weekly_amounts,
-                    "last_payment_date": "",
-                },
+                "company_id": company_id,
+                "weekly_payment_amount": weekly_payment_amount,
+                "payment_currency": payment_currency,
+                "db_record_type": "payment_record",
+                "previous_weekly_amounts": previous_weekly_amounts,
+                "last_payment_date": "",
             }
-            update_response = requests.put(update_url, json=update_data)
+            update_response = datacube_data_update(
+                api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+                db_name="Payment_Records",
+                coll_name=user_id,
+                query=update_query,
+                update_data=update_data,
+            )
 
-            return Response(update_response.json(), status=update_response.status_code)
+            return Response(update_response, status=status.HTTP_200_OK)
 
         else:
             return Response(
@@ -569,6 +573,9 @@ class Invoice_module(APIView):
                 leave_adjustment = daily_payment * number_of_leave_days
                 amount_to_pay -= leave_adjustment
 
+            if amount_to_pay < 0:
+                amount_to_pay = 0
+
             save_url = "https://datacube.uxlivinglab.online/db_api/crud/"
             save_data = {
                 "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
@@ -625,6 +632,48 @@ class Invoice_module(APIView):
                     {"message": "Failed to save payment details"},
                     status=status.HTTP_404_NOT_FOUND,
                 )
+
+    def invoice(self, request):
+        user_id = request.data.get("user_id")
+        company_id = request.data.get("company_id")
+        payment_year = request.data.get("payment_year")
+
+        fetch_data = {"payment_year": payment_year}
+        result = datacube_data_retrival(
+            api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            database_name="Payment_Records",
+            collection_name=user_id,
+            data=fetch_data,
+            limit=0,
+            offset=0,
+        )
+
+        try:
+            result_dict = json.loads(result)
+        except json.JSONDecodeError:
+            # Handle the case where the string is not valid JSON
+            result_dict = {}
+
+        if result_dict.get("success", False):
+            payment_details = result_dict.get("data", [])
+            if payment_details:
+                return Response(
+                    {
+                        "message": f"Payment details for {payment_year} and user_id {user_id}",
+                        "data": payment_details,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {"message": f"No payment details found for {payment_year}"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+        else:
+            return Response(
+                {"message": "Failed to fetch payment details", "response": result_dict},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def handle_error(self, request):
         return Response(
