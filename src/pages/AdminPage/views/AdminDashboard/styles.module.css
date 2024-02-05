@@ -212,4 +212,13 @@
         flex: 100%;
         width: 100%;
     }
+
+    .log__Filter {
+        margin-top: 1.2rem;
+    }
+
+    .no__Log__Content {
+        font-size: 0.875rem;
+        text-align: center;
+    }
 }

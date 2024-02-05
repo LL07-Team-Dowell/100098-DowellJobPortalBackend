@@ -14,6 +14,7 @@ const AttendanceLandingPage = () => {
             hideSearchBar={true}
             pageTitle={'Attendance'}
         >
+            <h2 className="attendance__Report__Heading">Attendance Report</h2>
             <div className="create_team_parent report" style={{ padding: '20px 20px 200px' }}>
                 <div
                     className="Create_Team"
@@ -23,7 +24,7 @@ const AttendanceLandingPage = () => {
                         <div>
                             <TbReportAnalytics className="icon" />
                         </div>
-                        <h4>Attendance report</h4>
+                        <h4>View Attendance</h4>
                         <p>
                             Get insights into attendance trends and weekly progress for effective organization management.
                         </p>

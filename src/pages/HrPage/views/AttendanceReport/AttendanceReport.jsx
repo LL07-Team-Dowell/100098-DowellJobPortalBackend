@@ -14,87 +14,223 @@ import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner
 import Avatar from "react-avatar";
 import { useNavigate } from "react-router-dom";
 import { IoChevronBack } from "react-icons/io5";
+import DatePicker from "react-datepicker";
+import getDay from "date-fns/getDay";
+import { getAllEvents, getProjectWiseAttendance, getUserWiseAttendance } from "../../../../services/hrServices";
+import { formatDateForAPI } from "../../../../helpers/helpers";
+import { Tooltip } from "react-tooltip";
+import { addDays } from "date-fns";
 
 const AttendanceReport = () => {
     const navigate = useNavigate();
-    const [selectedUser, setSelectedUser] = useState([]);
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
-    const [showAttendaceReport, setShowAttendaceReport] = useState(false);
     const { currentUser } = useCurrentUserContext();
+    const [selectedUser, setSelectedUser] = useState([]);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState("");
+    const [showAttendaceReport, setShowAttendaceReport] = useState(true);
     const [candidateOptions, setCandidateOptions] = useState([]);
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState("");
-    // const [usersVisibility, setUsersVisibility] = useState(false);
+    const [selectedMultiProjects, setSelectedMultiProjects] = useState([]);
+    const [selectedStartDate, setSelectedStartDate] = useState('');
     const [userForAttendance, setUserForAttendance] = useState("");
-    const [isProjectLoading, setIsProjectLoading] = useState(false);
-    const [isUserLoading, setIsUserLoading] = useState(false);
-    // const companyId = "6385c0f18eca0fb652c94561";
+    const [activeScreen, setActiveScreen] = useState(0);
+    const [eventNames, setEventNames] = useState([]);
+    const [selectedEvent, setSelectedEvent] = useState("");
+    const [allHiredCandidates, setAllHiredCandidates] = useState([]);
+    const screens = ['Project Wise', 'User Wise',];
+    const SCREEN_PROJECT_USER = 0;
+    const SCREEN_PROJECT_USER_EVENT = 1;
+    const SCREEN_EVENT = 2;
+    const [datesForToolTip, setDatesForToolTip] = useState([]);
+    const [attendanceDetails, setAttendanceDetails] = useState([]);
+    const [percentage, setPercentage] = useState('');
+    const [userWiseResponse, setUserWiseResponse] = useState({});
+    const [projectWiseresponse, setProjectWiseResponse] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [dataLoading, setDataLoading] = useState({
+        isProjectLoading: false,
+        isUserLoading: false,
+        isEventLoading: false,
+    })
+    const [views, setViews] = useState({
+        projectWiseView: false,
+        multiProjectView: true,
+        userWiseView: true,
+        eventWiseView: true,
+    })
+    const [selectedProjectForMulti, setSelectedProjectForMulti] = useState(null);
+    const [foundUserEventAttendanceDetail, setFoundUserEventAttendanceDetail] = useState(null);
 
     const isWeekend = (dayIndex) => dayIndex === 5 || dayIndex === 6;
+    // const companyId = "6385c0f18eca0fb652c94561";
 
     //dummy data
-    const attendanceDetails = [
-        [true, false, true, true, false, false, false],
-    ];
+    // const attendanceDetail = [
+    //     [true, false, true, true, false, false, false],
+    // ];
 
     useEffect(() => {
         setSelectedUser([]);
-        setIsUserLoading(true);
+        setDataLoading({ ...dataLoading, isUserLoading: true });
         setShowAttendaceReport(false);
+        // currentUser?.portfolio_info[0].org_id
         getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id).then(res => {
             const onboardingCandidates = res?.data?.response?.data;
             const hiredCandidates = onboardingCandidates.filter(candidate => candidate.status === 'hired');
-
+            setAllHiredCandidates(hiredCandidates);
             const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
                 candidate.project && candidate.project.includes(selectedProject?.value)
             );
 
             const options = candidatesInSelectedProject.map(candidate => ({
-                value: candidate._id,
+                // username: candidate.username,
+                value: candidate.username,
                 label: candidate.applicant,
             }));
-            console.log(">>>>>>>>>>>>>>>>", options);
             setCandidateOptions(options);
-            setUserForAttendance(options[0].label);
-            setIsUserLoading(false);
+            setUserForAttendance(options[0]?.label);
+            setDataLoading({ ...dataLoading, isUserLoading: false });
         }).catch(err => {
             setUserForAttendance("");
-            console.log('onboarded failed to load');
+            console.log('onboarded failed to load', err);
         })
     }, [selectedProject]);
 
     const handleChange = (selectedOptions) => {
         setSelectedUser(selectedOptions);
-        // console.log(">>>>>>>>>>>>>>>>>>>",selectedOptions.length);
         selectedOptions.length > 0 ? setUserForAttendance(selectedOptions[0].label) : setShowAttendaceReport(false);
     };
 
-    const handleGetAttendanceClick = () => {
-        if (selectedUser.length === 0 && startDate === "" && selectedProject?.value === "") {
-            return toast.error("Please select Project, User(s) and a Start Date.");
-        } else if (selectedProject?.value === "") {
-            return toast.error("Please select a project.");
-        } else if (selectedUser.length === 0) {
-            return toast.error("Please select user(s).");
-        } else if (startDate === "") {
-            return toast.error("Please select a start date.");
-        } else {
-            // setUsersVisibility(true);
-            setShowAttendaceReport(true);
+    useEffect(() => {
+        const filteredUsers = allHiredCandidates.filter(user => {
+            if (user.project && Array.isArray(user.project)) {
+                return user.project.some(
+                    project => selectedMultiProjects.some(
+                        selectedProject => selectedProject.label === project
+                    ));
+            }
+            return false;
+        });
+        const selectedUsers = filteredUsers.map(user => ({
+            label: user.applicant,
+            value: user.username,
+        }));
+
+        setCandidateOptions(selectedUsers);
+        setDataLoading({ ...dataLoading, isUserLoading: false });
+    }, [selectedMultiProjects])
+
+    const prepareProjectWiseData = () => {
+        const projectsForAPI = selectedMultiProjects.map((project) => project.label);
+        const usersForAPI = selectedUser.map((user) => user.value);
+
+        return {
+            usernames: usersForAPI,
+            start_date: selectedStartDate,
+            end_date: endDate,
+            company_id: currentUser?.portfolio_info[0]?.org_id,
+            meeting: selectedEvent.label,
+            limit: '0',
+            offset: '0',
+            project: projectsForAPI,
+        };
+    };
+
+    const prepareUserWiseData = () => {
+        const usersForAPI = selectedUser.map((user) => user.value);
+
+        return {
+            usernames: usersForAPI,
+            start_date: selectedStartDate,
+            end_date: endDate,
+            company_id: currentUser?.portfolio_info[0]?.org_id,
+            limit: '0',
+            offset: '0',
+            project: selectedProject.label,
+        };
+    };
+
+    const handleGetAttendanceClick = async () => {
+        setIsLoading(true);
+        setShowAttendaceReport(false);
+        setPercentage('');
+        setAttendanceDetails([]);
+        setSelectedProjectForMulti(null);
+        setFoundUserEventAttendanceDetail(null);
+
+        if (views.multiProjectView) {
+            if (selectedUser.length === 0 && startDate === null && selectedMultiProjects.length === 0 && selectedEvent === '') {
+                setIsLoading(false);
+                return toast.error("Please select Project(s), User(s), Event and a Start Date.");
+            } else {
+                const dataToPost = prepareProjectWiseData();
+                await getProjectWiseAttendance(dataToPost).then(res => {
+                    toast.success('Attendance Retrieved Successfully!');
+                    console.log('projectwise>>>>>>>>>>>>>>', res.data.data);
+                    setProjectWiseResponse(res.data.data)
+                    setShowAttendaceReport(true);
+                    setIsLoading(false);
+                }).catch(() => {
+                    setIsLoading(false);
+                    toast.error('Unable to Retrieve Attendance!');
+                })
+                // if (projectWiseresponse) {
+                //     renderingAttendance(selectedUser[0].label);
+                // }
+            }
+        } else if (views.userWiseView) {
+            if (selectedUser.length === 0 && startDate === null && selectedMultiProjects.length === 0 && selectedEvent === '') {
+                setIsLoading(false);
+                return toast.error("Please select Project, User(s) , Event and a Start Date.");
+            } else {
+                const dataToPost = prepareUserWiseData();
+                await getUserWiseAttendance(dataToPost).then(res => {
+                    toast.success('Attendance Retrieved Successfully!');
+                    setShowAttendaceReport(true);
+                    setUserWiseResponse(res?.data?.data);
+                    console.log('user wise', res?.data?.data);
+                    setIsLoading(false);
+                }).catch(() => {
+                    setIsLoading(false);
+                    toast.error('Unable to Retrieve Attendance!');
+                })
+                if (userWiseResponse) {
+                    renderingAttendance(selectedUser[0].label);
+                }
+            }
+        } else if (views.eventWiseView) {
+            if (selectedEvent === '' && startDate === null) {
+                setIsLoading(false);
+                return toast.error("Please select an Event and a Start Date.");
+            }
+            else {
+                toast.error('Under Construction!');
+                setIsLoading(false);
+            }
         }
     }
 
     useEffect(() => {
         if (startDate) {
+            const selectedDates = [];
             const newEndDate = new Date(startDate);
-            newEndDate.setDate(newEndDate.getDate() + 7);
+            newEndDate.setDate(newEndDate.getDate() + 5);
             setEndDate(newEndDate.toISOString().split('T')[0]);
+            setSelectedStartDate(formatDateForAPI(startDate));
+
+            let currentDate = new Date(startDate);
+            while (currentDate <= newEndDate) {
+                selectedDates.push(new Date(currentDate));
+                currentDate = addDays(currentDate, 1);
+            }
+
+            setDatesForToolTip(selectedDates);
         }
     }, [startDate]);
 
     useEffect(() => {
-        setIsProjectLoading(true);
+        setDataLoading({ ...dataLoading, isProjectLoading: true })
         const fetchProjects = async () => {
             try {
                 const data = (await getSettingUserProject()).data;
@@ -110,7 +246,7 @@ const AttendanceReport = () => {
                         value: projectName,
                     }));
                     setProjects(options);
-                    setIsProjectLoading(false);
+                    setDataLoading({ ...dataLoading, isProjectLoading: false })
                 }
             } catch (error) {
                 console.error("Error fetching projects:", error);
@@ -120,12 +256,207 @@ const AttendanceReport = () => {
     }, []);
 
     const handleProjectChange = async (event) => {
-        const projectId = event;
-        setSelectedProject(projectId);
+        setSelectedProject(event);
+        console.log(">>>>>>>>>>all hired candidates", allHiredCandidates);
     };
 
-    const renderingAttendance = (candidate) => {
+    const renderingAttendance = (candidate, username) => {
         setUserForAttendance(candidate);
+        console.log('candidate>>>>>>>>>>>>>', candidate);
+
+        // UPDATED THE LOGIC FOR THIS. CHECK THE 'handleSelectProjectForMulti' FUNCTION
+        // if (views.multiProjectView) {
+        //     const projectData = projectWiseresponse['Business development'];
+
+        //     if (Array.isArray(projectData)) {
+        //         const userData = projectData.filter(data =>
+        //             (data.user_present.includes(candidate) || data.user_absent.includes(candidate)) && data.meeting === selectedEvent.label
+        //         );
+
+        //         const userAttendance = Array(userData.length + 2).fill(false);
+
+        //         userData.forEach((data, index) => {
+        //             if (data.user_present.includes(candidate)) {
+        //                 userAttendance[index] = true;
+        //             }
+        //         });
+
+        //         const numberOfDaysPresent = userAttendance.filter(value => value === true).length;
+
+        //         setPercentage(numberOfDaysPresent);
+        //         setAttendanceDetails([userAttendance]);
+        //     }
+        // } 
+        
+        if (views.userWiseView) {
+            const userAttendance = userWiseResponse[username];
+            if (userAttendance && userAttendance.length > 0) {
+                setPercentage('');
+                setAttendanceDetails(userAttendance);
+                
+                // UPDATED THE FUNCTIONALITY FOR THIS AS WELL
+                // console.log(userAttendance);
+                // const allDates = [...userAttendance[0].dates_present, ...userAttendance[0].dates_absent];
+                // const sortedDates = allDates.sort();
+                // console.log('date', userAttendance[0].dates_present);
+                // const updatedAttendanceDetails = sortedDates.map(date => {
+                //     return userAttendance[0].dates_present.includes(date);
+                // });
+                // updatedAttendanceDetails.push(false, false);
+                // const numberOfDaysPresent = updatedAttendanceDetails.filter(value => value === true).length;
+                // setPercentage(numberOfDaysPresent);
+                // setAttendanceDetails([updatedAttendanceDetails]);
+            }
+        }
+    }
+
+    useEffect(() => {
+        const dataForFetchingEvents = {
+            company_id: currentUser?.portfolio_info[0].org_id,
+        }
+
+        setDataLoading({ ...dataLoading, isEventLoading: true });
+        const fetchEvents = async () => {
+            try {
+                const data = (await getAllEvents(dataForFetchingEvents)).data.data?.filter(event => 
+                    event.data_type === currentUser?.portfolio_info[0]?.data_type
+                );
+                const eventNamesList = data.map(event => ({
+                    id: event._id,
+                    value: event.event_name,
+                    label: event.event_name,
+                }));
+                setEventNames(eventNamesList);
+                setDataLoading({ ...dataLoading, isEventLoading: false });
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        };
+
+        fetchEvents();
+    }, []);
+
+    const isMonday = (date) => {
+        const day = getDay(date);
+        return day === 1;
+    };
+
+    const handleOptionClick = (index) => {
+        setActiveScreen(index);
+        setSelectedUser([]);
+        setSelectedProject('');
+        setSelectedMultiProjects([]);
+        setSelectedEvent('');
+        setCandidateOptions([]);
+        setShowAttendaceReport(false);
+        setPercentage('');
+        setSelectedStartDate('');
+        setStartDate(null);
+        setAttendanceDetails([]);
+        setEndDate('');
+        setSelectedProjectForMulti(null);
+        setFoundUserEventAttendanceDetail(null);
+        
+        switch (index) {
+            case SCREEN_PROJECT_USER:
+                setViews({ projectWiseView: false, multiProjectView: true, userWiseView: true, eventWiseView: true })
+                break;
+            case SCREEN_PROJECT_USER_EVENT:
+                setViews({ projectWiseView: true, multiProjectView: false, userWiseView: true, eventWiseView: false })
+                break;
+            case SCREEN_EVENT:
+                setViews({ projectWiseView: false, multiProjectView: false, userWiseView: false, eventWiseView: true })
+                break;
+            default:
+                console.log(`${index} is not defined`)
+                break;
+        }
+    };
+
+    const formatTooltip = (dayIndex) => {
+        if (startDate) {
+            const selectedDate = new Date(startDate);
+            selectedDate.setDate(selectedDate.getDate() + dayIndex);
+            return selectedDate.toDateString();
+        }
+        return '';
+    };
+
+    const renderingEventAttendance = (eventId) => {
+        const foundEvent = eventNames?.find(event => event?.id === eventId);
+        if (!foundEvent) return
+        
+        setSelectedEvent({
+            id: eventId,
+            value: foundEvent?.value,
+            label: foundEvent?.label,
+        });
+        setFoundUserEventAttendanceDetail(null);
+        
+        const foundEventAttendance = attendanceDetails?.find(attendance => attendance?.event_id === eventId);
+        if (!foundEventAttendance) {
+            setPercentage('');
+            return
+        }
+
+        setPercentage(
+            foundEventAttendance?.dates_present ?
+                foundEventAttendance?.dates_present.length
+            :
+            ''
+        );
+        setFoundUserEventAttendanceDetail(foundEventAttendance);
+
+        // const filteredUser = selectedUser?.filter((user) => user.label === userForAttendance);
+
+        // if (filteredUser.length !== 0) {
+        //     const username = filteredUser[0].value;
+        //     const userAttendance = userWiseResponse[username][index];
+
+        //     if (userAttendance) {
+        //         const allDates = [
+        //             ...(Array.isArray(userAttendance.dates_present) ? userAttendance.dates_present : []),
+        //             ...(Array.isArray(userAttendance.dates_absent) ? userAttendance.dates_absent : []),
+        //         ];
+        //         console.log(allDates);
+        //         const sortedDates = allDates.sort();
+
+        //         const updatedAttendanceDetails = sortedDates.map(date => {
+        //             return userAttendance.dates_present.includes(date);
+        //         });
+        //         updatedAttendanceDetails.push(false, false);
+        //         const numberOfDaysPresent = updatedAttendanceDetails.filter(value => value === true).length;
+
+        //         setPercentage(numberOfDaysPresent);
+        //         setAttendanceDetails([updatedAttendanceDetails]);
+        //     }
+        // }
+    }
+
+    const handleSelectProjectForMulti = (project) => {
+        const attendanceDataForProject = projectWiseresponse[project?.value];
+        if (!attendanceDataForProject) return
+
+        setSelectedProjectForMulti(project);
+
+        const attendanceDataForUsersAndEvent = attendanceDataForProject.filter(
+            item =>
+                item.event_id === selectedEvent?.id &&
+                (
+                    item.user_present.some(userPresent => selectedUser.map(user => user.value).includes(userPresent)) ||
+                    item.user_absent.some(userPresent => selectedUser.map(user => user.value).includes(userPresent))
+                )
+        )
+
+        const presentCount = attendanceDataForUsersAndEvent?.map(item => {
+            if (
+                item.user_present.some(userPresent => selectedUser.map(user => user.value).includes(userPresent))
+            ) return 1
+            return 0;
+        })?.reduce((x, y) => x + y, 0);
+
+        setPercentage(presentCount);
+        setAttendanceDetails(attendanceDataForUsersAndEvent);
     }
 
     return (
@@ -134,51 +465,110 @@ const AttendanceReport = () => {
             hideSearchBar={true}
         >
             <div className="att_title"><div className="back_icon" onClick={() => navigate(-1)}><IoChevronBack /></div><h3>Attendance</h3></div>
+            <div className="switch_screen">
+                {screens.map((option, index) => (
+                    <p
+                        key={index}
+                        className={`switch_option ${activeScreen === index ? 'active' : ''}`}
+                        onClick={() => handleOptionClick(index)}
+                    >
+                        {option}
+                    </p>
+                ))}
+            </div>
             <section className="att_report_main">
                 <div className="check">
-                    <div className="item__Filter__Wrap">
-                        <p>Select Project:</p>
-                        {/* <select
-                            value={selectedProject}
-                            onChange={handleProjectChange}
-                            className="att_select_input"
-                        >
-                            <option value="">Select a Project</option>
+                    {
+                        views.projectWiseView &&
+                        <div className="item__Filter__Wrap">
+                            <p>Select Project:</p>
+                            <Select
+                                options={projects}
+                                isMulti={false}
+                                isLoading={dataLoading.isProjectLoading}
+                                value={selectedProject}
+                                onChange={handleProjectChange}
+                                className="item__Filter"
+                            />
+                        </div>
+                    }
+                    {
+                        views.multiProjectView &&
+                        <div className="item__Filter__Wrap">
+                            <p>Select Project:</p>
+                            <Select
+                                options={projects}
+                                isMulti={true}
+                                isLoading={dataLoading.isProjectLoading}
+                                value={selectedMultiProjects}
+                                onChange={(projectsSelected) => {
+                                    setSelectedMultiProjects(projectsSelected);
+                                    
+                                    const usersFromProjectsSelected = allHiredCandidates?.filter(
+                                        candidate =>
+                                            candidate.project && 
+                                            candidate.project?.find(
+                                                item => projectsSelected?.find(project => project?.value === item)
+                                            )
+                                        )?.map(
+                                            candidate => {
+                                                return {
+                                                    label: candidate?.applicant,
+                                                    value: candidate?.username,
+                                                }
+                                            }
+                                        )
+                                    // console.log(usersFromProjectsSelected);
+                                    setSelectedUser(usersFromProjectsSelected);
+                                    // handleMultiProjectChange()
+                                }}
+                                className="item__Filter"
+                            />
+                        </div>
+                    }
+                    {
+                        views.userWiseView &&
+                        <>
                             {
-                                projects.map((project, index) => (
-                                    <option key={index} value={project}>
-                                        {project}
-                                    </option>
-                                ))}
-                        </select> */}
-                        <Select
-                            options={projects}
-                            isMulti={false}
-                            isLoading={isProjectLoading}
-                            value={selectedProject}
-                            onChange={handleProjectChange}
-                            className="item__Filter"
-                        />
-                    </div>
-                    <div className="item__Filter__Wrap">
-                        <p>Select User:</p>
-                        <Select
-                            options={candidateOptions}
-                            isMulti={true}
-                            isLoading={isUserLoading}
-                            value={selectedUser}
-                            onChange={handleChange}
-                            className="item__Filter"
-                        />
-                    </div>
-
+                                views.multiProjectView ? <></> :
+                                <div className="item__Filter__Wrap">
+                                    <p>Select User:</p>
+                                    <Select
+                                        options={candidateOptions}
+                                        isMulti={true}
+                                        isLoading={dataLoading.isUserLoading}
+                                        value={selectedUser}
+                                        onChange={handleChange}
+                                        className="item__Filter"
+                                    />
+                                </div>
+                            }
+                        </>
+                    }
+                    {
+                        views.eventWiseView &&
+                        <div className="item__Filter__Wrap">
+                            <p>Select Event:</p>
+                            <Select
+                                isLoading={dataLoading.isEventLoading}
+                                options={eventNames}
+                                isMulti={false}
+                                value={selectedEvent}
+                                onChange={(selectedOption) => {
+                                    setSelectedEvent(selectedOption);
+                                }}
+                                className="item__Filter"
+                            />
+                        </div>}
                     <div className="item__Filter__Wrap">
                         <p>Start Date</p>
-                        <input
-                            type="date"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
+                        <DatePicker
+                            selected={startDate}
+                            onChange={(date) => setStartDate(date)}
+                            filterDate={isMonday}
+                            placeholderText="dd/mm/yyyy"
                             className="att__Date__Input"
+                            dateFormat="dd/MM/yyyy"
                         />
                     </div>
 
@@ -191,99 +581,332 @@ const AttendanceReport = () => {
                             className="att__Date__Input"
                         />
                     </div>
-                    <button onClick={handleGetAttendanceClick} className="hr__Att__Btn">Get Attendance</button>
-
+                    <button 
+                        onClick={handleGetAttendanceClick} 
+                        className="hr__Att__Btn" 
+                        disabled={isLoading ? true : false}
+                    >
+                        {
+                            isLoading ? 
+                                <LoadingSpinner width={18} height={18} color={'#fff'} /> :
+                            `Get Attendance`
+                        }
+                    </button>
                 </div>
 
                 {
                     showAttendaceReport &&
                     <>
                         <div className="users_info">
-                            <p>Candidates:</p>
                             {
-                                // usersVisibility &&
-                                selectedUser.map((candidate) => (
-                                    <button key={candidate.value} className="candidateButton" onClick={() => renderingAttendance(candidate.label)}>
-                                        {candidate.label}
-                                    </button>
+                                views.multiProjectView ? <>
+                                    <p>Projects:</p>
+                                    {
+                                        React.Children.toArray(selectedMultiProjects.map(project => {
+                                            return <button
+                                                onClick={() => handleSelectProjectForMulti(project)}
+                                            >
+                                                {project.label}
+                                            </button>
+                                        }))
+                                    }
+                                </> : 
+                                views.userWiseView ? <>
+                                    <p>Candidates:</p>
+                                    {
+                                        selectedUser.map((candidate) => (
+                                            <button 
+                                                key={candidate.value} 
+                                                onClick={() => renderingAttendance(candidate.label, candidate.value)}
+                                            >
+                                                {candidate.label}
+                                            </button>
 
-                                ))
+                                        ))
+                                    }
+                                </> :
+                                <>
+                                
+                                </>
                             }
                         </div>
-                        <div className="att_rep">
-                            <div className="att_name txt_color">
-                                <div className="profile">
-                                    <Avatar
-                                        name={userForAttendance[0]}
-                                        round={true}
-                                        size='8rem'
-                                        color="#807f7f"
-                                    />
-                                </div>
-                                <div className="candidate_info">
-                                    <h4>{userForAttendance}</h4>
-                                    <p>Freelancer</p>
-                                    <p>Project: <b>{selectedProject?.value}</b></p>
-                                </div>
-                                <div className="att_percentage">
-                                    <CircularProgressbar
-                                        value={82}
-                                        styles={
-                                            buildStyles({
-                                                pathColor: `#18d462`,
-                                                trailColor: '#f5f5f5',
-                                            })
-                                        }
-                                    />
-                                    <div>
-                                        <p>Present</p>
-                                        <b>82%</b>
+                        {
+                            (
+                                (percentage.length < 1 && attendanceDetails?.length < 1) 
+                                || 
+                                (views.multiProjectView && !selectedProjectForMulti)
+                            ) ? 
+                                <></> 
+                            :
+                            <div className="att_rep">
+                                <div className="att_name txt_color">
+                                    <div className="profile">
+                                        <Avatar
+                                            name={
+                                                views.multiProjectView ?
+                                                    selectedProjectForMulti?.value :
+                                                userForAttendance[0]
+                                            }
+                                            round={true}
+                                            size='8rem'
+                                            color="#807f7f"
+                                        />
                                     </div>
-                                </div>
-                                <div className="att_percentage">
-                                    <CircularProgressbar
-                                        value={18}
-                                        styles={
-                                            buildStyles({
-                                                pathColor: `#f02a2b`,
-                                                trailColor: '#f5f5f5',
-                                            })
-                                        }
-                                    />
-                                    <div>
-                                        <p>Absent</p>
-                                        <b>18%</b>
+                                    <div className="candidate_info">
+                                        <h4>
+                                            {
+                                                selectedProjectForMulti ? 
+                                                    selectedProjectForMulti?.value 
+                                                    :    
+                                                userForAttendance
+                                            }
+                                        </h4>
+                                        <>
+                                            {
+                                                views.multiProjectView ? <>
+                                                    <p style={{ fontSize: '0.75rem' }}>
+                                                        Members: {
+                                                            allHiredCandidates?.filter(
+                                                                candidate =>
+                                                                    candidate.project && 
+                                                                    candidate.project?.includes(selectedProjectForMulti?.value)
+                                                                )?.map(
+                                                                    candidate => candidate?.applicant
+                                                                )?.flat()?.join(', ')
+                                                        }
+                                                    </p>
+                                                </> :
+                                                <>
+                                                    <p>Freelancer</p>
+                                                    <p>Project: <b>{selectedProject?.value}</b></p>
+                                                </>
+                                            }
+                                        </>
                                     </div>
+                                    {
+                                        views.userWiseView && !views.multiProjectView && selectedEvent?.length < 1 ? <></> 
+                                        :
+                                        <>
+                                            <div className="att_percentage">
+                                                <CircularProgressbar
+                                                    value={(Number(percentage) / 5) * 100}
+                                                    styles={
+                                                        buildStyles({
+                                                            pathColor: `#18d462`,
+                                                            trailColor: '#f5f5f5',
+                                                        })
+                                                    }
+                                                />
+                                                <div>
+                                                    <p>Present</p>
+                                                    <b>{`${(Number(percentage) / 5) * 100}%`}</b>
+                                                </div>
+                                            </div>
+                                            <div className="att_percentage">
+                                                <CircularProgressbar
+                                                    value={100 - ((Number(percentage) / 5) * 100)}
+                                                    styles={
+                                                        buildStyles({
+                                                            pathColor: `#f02a2b`,
+                                                            trailColor: '#f5f5f5',
+                                                        })
+                                                    }
+                                                />
+                                                <div>
+                                                    <p>Absent</p>
+                                                    <b>{`${100 - ((Number(percentage) / 5) * 100)}%`}</b>
+                                                </div>
+                                            </div>
+                                        </>
+                                    }
                                 </div>
+                                {
+                                    views.userWiseView && views.projectWiseView &&
+                                    <div className="users_info">
+                                        <div className="select__Event__Wrap">
+                                            <p>Filter by Event</p>
+                                            <Select
+                                                options={eventNames}
+                                                onChange={(val) => {
+                                                    // const foundEventIndex = eventNames.findIndex(event => event._id === val._id);
+                                                    // if (foundEventIndex === -1) return
+                                                    renderingEventAttendance(val?.id);
+                                                }}
+                                            />
+                                        </div>
+                                        {/* <p>Events:</p>
+    
+                                        {
+                                            eventNames.map((event, index) => (
+                                                <button key={event.value} onClick={() => renderingEventAttendance(index)}>
+                                                    {event.label}
+                                                </button>
+    
+                                            ))
+                                        } */}
+                                    </div>
+                                }
+                                {
+                                    attendanceDetails?.length < 1 ? <></> :
+                                    views.userWiseView && !views.multiProjectView && selectedEvent?.length < 1 ? <></> :
+                                    <>
+                                        <h2 className="title">Attendance Report</h2>
+                                        <div className="tbl_rep">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        {
+                                                            views.multiProjectView &&
+                                                            <th>User</th>
+                                                        }
+                                                        <th>Monday</th>
+                                                        <th>Tuesday</th>
+                                                        <th>Wednesday</th>
+                                                        <th>Thursday</th>
+                                                        <th>Friday</th>
+                                                        <th>Saturday</th>
+                                                        <th>Sunday</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <Tooltip
+                                                        id="my-tooltip"
+                                                    />
+                                                    <>
+                                                        {
+                                                            views.multiProjectView ? <>
+                                                                {
+                                                                    !selectedProjectForMulti ? <></> :
+                                                                    <>
+                                                                        {
+                                                                            React.Children.toArray(selectedUser?.map(user => {
+                                                                                const usersForCurrentMultiProject = allHiredCandidates?.filter(
+                                                                                    candidate =>
+                                                                                        candidate.project && 
+                                                                                        candidate.project?.includes(selectedProjectForMulti?.value)
+                                                                                    )?.map(
+                                                                                        candidate => candidate?.username
+                                                                                    )
+                                                                                
+                                                                                if (!usersForCurrentMultiProject?.includes(user?.value)) return <></>
+
+                                                                                return <tr>
+                                                                                    <td>{user?.label}</td>
+                                                                                    {
+                                                                                        React.Children.toArray(datesForToolTip.map((date, index) => {
+                                                                                            return <td
+                                                                                                Tooltip={formatTooltip(index)}
+                                                                                                data-tooltip-id="my-tooltip"
+                                                                                                data-tooltip-content={isWeekend(index) ? `Holiday` : `${new Date(datesForToolTip[index]).toDateString()}`}
+                                                                                                data-tooltip-place="top"
+                                                                                            >
+                                                                                                {
+                                                                                                    isWeekend(index) ?
+                                                                                                        <>
+                                                                                                            <FaCircleCheck className="holiday table_data" />Holiday
+                                                                                                        </> 
+                                                                                                    :
+                                                                                                    attendanceDetails?.find(
+                                                                                                        item => 
+                                                                                                            item.user_present?.includes(user?.value) 
+                                                                                                            &&
+                                                                                                            formatDateForAPI(item.date_taken) === formatDateForAPI(date)
+                                                                                                    ) ?
+                                                                                                        <>
+                                                                                                            <FaCircleCheck className="present table_data" />Present
+                                                                                                        </>
+                                                                                                    :
+                                                                                                    <>
+                                                                                                        <MdCancel className="absent table_data" />Absent
+                                                                                                    </>
+                                                                                                }
+                                                                                            </td>
+                                                                                        }))
+                                                                                    }
+                                                                                    <td
+                                                                                        Tooltip={formatTooltip(6)}
+                                                                                        data-tooltip-id="my-tooltip"
+                                                                                        data-tooltip-content={`Holiday`}
+                                                                                        data-tooltip-place="top"
+                                                                                    >
+                                                                                        <>
+                                                                                            <FaCircleCheck className="holiday table_data" />Holiday
+                                                                                        </>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }))
+                                                                        }   
+                                                                    </>
+                                                                }
+                                                            </> :
+                                                            views.userWiseView ? <>
+                                                                {
+                                                                    selectedEvent?.length < 1 ? <></> :
+                                                                    <tr>
+                                                                        {
+                                                                            React.Children.toArray(datesForToolTip?.map((date, index) => {
+                                                                                return <td
+                                                                                    Tooltip={formatTooltip(index)}
+                                                                                    data-tooltip-id="my-tooltip"
+                                                                                    data-tooltip-content={isWeekend(index) ? `Holiday` : `${new Date(datesForToolTip[index]).toDateString()}`}
+                                                                                    data-tooltip-place="top"
+                                                                                >
+                                                                                    {
+                                                                                        isWeekend(index) ?
+                                                                                            <>
+                                                                                                <FaCircleCheck className="holiday table_data" />Holiday
+                                                                                            </> 
+                                                                                        :
+                                                                                        (
+                                                                                            Array.isArray(foundUserEventAttendanceDetail?.dates_present) && 
+                                                                                            foundUserEventAttendanceDetail?.dates_present?.includes(formatDateForAPI(date)) 
+                                                                                        ) ?
+                                                                                            <>
+                                                                                                <FaCircleCheck className="present table_data" />Present
+                                                                                            </>
+                                                                                        :
+                                                                                        <>
+                                                                                            <MdCancel className="absent table_data" />Absent
+                                                                                        </>
+                                                                                    }
+                                                                                </td>
+                                                                            }))
+                                                                        }
+                                                                        <td
+                                                                            Tooltip={formatTooltip(6)}
+                                                                            data-tooltip-id="my-tooltip"
+                                                                            data-tooltip-content={`Holiday`}
+                                                                            data-tooltip-place="top"
+                                                                        >
+                                                                            <>
+                                                                                <FaCircleCheck className="holiday table_data" />Holiday
+                                                                            </>
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                                {/* {attendanceDetails.map((weekData, weekIndex) => (
+                                                                    <tr key={weekIndex}>
+                                                                        {weekData.map((isPresent, dayIndex) => (
+                                                                            <td key={dayIndex} Tooltip={formatTooltip(dayIndex)}
+                                                                                data-tooltip-id="my-tooltip"
+                                                                                data-tooltip-content={isWeekend(dayIndex) ? `Holiday` : `${new Date(datesForToolTip[dayIndex]).toDateString()}`}
+                                                                                data-tooltip-place="top">
+                                                                                {isWeekend(dayIndex) ? <><FaCircleCheck className="holiday table_data" />Holiday</> : isPresent ? <><FaCircleCheck className="present table_data" />Present</> : <><MdCancel className="absent table_data" />Absent</>}
+                                                                            </td>
+                                                                        ))}
+                                                                    </tr>
+                                                                ))} */}
+                                                            </> :
+                                                            <></>
+                                                        }
+                                                    </>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </>
+                                }
                             </div>
-                            <h2 className="title">Attendance Report</h2>
-                            <div className="tbl_rep">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Monday</th>
-                                            <th>Tuesday</th>
-                                            <th>Wednesday</th>
-                                            <th>Thursday</th>
-                                            <th>Friday</th>
-                                            <th>Saturday</th>
-                                            <th>Sunday</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {attendanceDetails.map((weekData, weekIndex) => (
-                                            <tr key={weekIndex}>
-                                                {weekData.map((isPresent, dayIndex) => (
-                                                    <td key={dayIndex}>
-                                                        {isWeekend(dayIndex) ? <><FaCircleCheck className="holiday table_data" />Holiday</> : isPresent ? <><FaCircleCheck className="present table_data" />Present</> : <><MdCancel className="absent table_data" />Absent</>}
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        }
                     </>
                 }
             </section>

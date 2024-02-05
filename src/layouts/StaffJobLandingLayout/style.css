@@ -404,6 +404,7 @@
     }
     .staff__Jobs__Layout__Content__Container .new__Side__Navigation__Bar.new__Side__Width {
         width: 100%;
+        min-height: 6.5rem;
         height: max-content;
     }
 }

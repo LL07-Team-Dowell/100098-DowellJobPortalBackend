@@ -288,7 +288,7 @@ const AgendaReport = () => {
                                 <Tooltip
                                     id="my-tooltip"
                                 />
-                                {Array.from({ length: agendaAddedDatesLength - 1}).map((_, index) => (
+                                {Array.from({ length: agendaAddedDatesLength }).map((_, index) => (
                                     <button key={index} onClick={() => handleResultVisibilty(index)}
                                         data-tooltip-id="my-tooltip"
                                         data-tooltip-content={`${new Date(agendaDates[index][0]).toDateString()}`}
