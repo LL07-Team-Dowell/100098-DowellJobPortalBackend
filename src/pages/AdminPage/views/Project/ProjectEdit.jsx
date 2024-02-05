@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-import { useNavigate, useLocation, useParams, useSearchParams } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import styles from "./styles.module.css";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { useEffect } from "react";
@@ -42,7 +47,7 @@ const ProjectEdit = () => {
     editing_enabled: true,
     spent_time: 0,
     left_time: 0,
-    project: params.get('project'),
+    project: params.get("project"),
     company_id: currentUser.portfolio_info[0].org_id,
     data_type: currentUser.portfolio_info[0].data_type,
   });
@@ -53,16 +58,14 @@ const ProjectEdit = () => {
     editing_enabled: true,
     spent_time: 0,
     left_time: 0,
-    project: params.get('project'),
+    project: params.get("project"),
     company_id: currentUser.portfolio_info[0].org_id,
     data_type: currentUser.portfolio_info[0].data_type,
   });
 
   const { subProjectsAdded, applications } = useJobContext();
-  const {
-    companyStructure,
-    companyStructureLoading,
-} = useCompanyStructureContext();
+  const { companyStructure, companyStructureLoading } =
+    useCompanyStructureContext();
 
   const handleInputChange = (valueEntered, inputName) => {
     setCopyOfProjectTimeDetail((prevValue) => {
@@ -82,11 +85,19 @@ const ProjectEdit = () => {
   };
 
   useEffect(() => {
-    const foundTeamlead = companyStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))?.projects?.find(item => item.project === params.get('project'))?.team_lead;
+    const foundTeamlead = companyStructure?.project_leads
+      ?.find((item) =>
+        item?.projects?.find(
+          (structure) => structure?.project === params.get("project")
+        )
+      )
+      ?.projects?.find(
+        (item) => item.project === params.get("project")
+      )?.team_lead;
 
     const fetchProjectDetails = async () => {
       try {
-        if (params.get('id') && params.get('id') !== 'null') {
+        if (params.get("id") && params.get("id") !== "null") {
           setLoading(true);
 
           const projectDetails = await getProjectTime(
@@ -98,26 +109,34 @@ const ProjectEdit = () => {
 
           // Find the object with the specific id
           const editDetails = editProjectData.find(
-            (item) => item["_id"] === params.get('id')
+            (item) => item["_id"] === params.get("id")
           );
 
           if (editDetails) {
             setProjectTimeDetail((prevDetails) => {
-              return { ...prevDetails, ...editDetails, lead_name: foundTeamlead };
+              return {
+                ...prevDetails,
+                ...editDetails,
+                lead_name: foundTeamlead,
+              };
             });
             setCopyOfProjectTimeDetail((prevDetails) => {
-              return { ...prevDetails, ...editDetails, lead_name: foundTeamlead };
+              return {
+                ...prevDetails,
+                ...editDetails,
+                lead_name: foundTeamlead,
+              };
             });
           }
 
           setLoading(false);
         } else {
           setProjectTimeDetail((prevDetail) => {
-            return { ...prevDetail, lead_name: foundTeamlead }
-          })
+            return { ...prevDetail, lead_name: foundTeamlead };
+          });
           setCopyOfProjectTimeDetail((prevDetail) => {
-            return { ...prevDetail, lead_name: foundTeamlead }
-          })
+            return { ...prevDetail, lead_name: foundTeamlead };
+          });
         }
       } catch (error) {
         console.error("Error fetching project details:", error);
@@ -142,26 +161,27 @@ const ProjectEdit = () => {
       copyOfProjectTimeDetail?.lead_name?.length < 1 ||
       isNaN(copyOfProjectTimeDetail.total_time) ||
       Number(copyOfProjectTimeDetail) < 0.01
-    ) return
+    )
+      return;
 
     setDataPosting(true);
 
     try {
-      if (params.get('id') && params.get('id') !== 'null') {
+      if (params.get("id") && params.get("id") !== "null") {
         Promise.all([
           updateProjectTime({
             total_time: Number(copyOfProjectTimeDetail.total_time),
-            document_id: params.get('id'),
+            document_id: params.get("id"),
           }),
           updateProjectTimeEnabled({
             editing_enabled: copyOfProjectTimeDetail.editing_enabled,
-            document_id: params.get('id'),
+            document_id: params.get("id"),
           }),
         ])
           .then((res) => {
             const updateTotalTime = res[0]?.data;
             const updateEditing = res[1]?.data;
-            console.log(updateEditing, updateTotalTime);
+            // console.log(updateEditing, updateTotalTime);
             setProjectTimeDetail((prevProjectDetail) => {
               return {
                 ...prevProjectDetail,
@@ -176,7 +196,9 @@ const ProjectEdit = () => {
             console.log(err);
           });
       } else {
-        const addNewProjectTime = (await addProjectTime(copyOfProjectTimeDetail)).data;
+        const addNewProjectTime = (
+          await addProjectTime(copyOfProjectTimeDetail)
+        ).data;
         // console.log(addNewProjectTime);
         newDocumentId = addNewProjectTime?.data?.inserted_id;
         setProjectTimeDetail((prevDetails) => {
@@ -196,7 +218,9 @@ const ProjectEdit = () => {
       window.history.replaceState(
         {},
         document.title,
-        `/100098-DowellJobPortal/#/projects/edit-project-time/?project=${encodeURIComponent(params.get('project'))}&id=${encodeURIComponent(newDocumentId)}`
+        `/100098-DowellJobPortal/#/projects/edit-project-time/?project=${encodeURIComponent(
+          params.get("project")
+        )}&id=${encodeURIComponent(newDocumentId)}`
       );
     }
   };
@@ -247,24 +271,51 @@ const ProjectEdit = () => {
               {!showEditView ? (
                 <>
                   <div>
-                    <h3>Lead Detail for {params.get('project')}</h3>
+                    <h3>Lead Detail for {params.get("project")}</h3>
                     <div className={styles.project__Leads__Detail}>
                       <div className={styles.project__Time__lead__Display}>
                         <Avatar
-                          name={companyStructure?.project_leads?.find(item => item?.projects_managed?.includes(params.get('project')))?.project_lead}
+                          name={
+                            companyStructure?.project_leads?.find((item) =>
+                              item?.projects_managed?.includes(
+                                params.get("project")
+                              )
+                            )?.project_lead
+                          }
                           round={true}
                           size="3.2rem"
                         />
                         <div className={styles.project__Team__Lead}>
                           <p>
-                            {
-                              applications?.find(application => application.username === companyStructure?.project_leads?.find(item => item?.projects_managed?.includes(params.get('project')))?.project_lead) ?
-                                applications?.find(application => application.username === companyStructure?.project_leads?.find(item => item?.projects_managed?.includes(params.get('project')))?.project_lead)?.applicant
-                              :
-                              companyStructure?.project_leads?.find(item => item?.projects_managed?.includes(params.get('project')))?.project_lead
-                            }
+                            {applications?.find(
+                              (application) =>
+                                application.username ===
+                                companyStructure?.project_leads?.find((item) =>
+                                  item?.projects_managed?.includes(
+                                    params.get("project")
+                                  )
+                                )?.project_lead
+                            )
+                              ? applications?.find(
+                                  (application) =>
+                                    application.username ===
+                                    companyStructure?.project_leads?.find(
+                                      (item) =>
+                                        item?.projects_managed?.includes(
+                                          params.get("project")
+                                        )
+                                    )?.project_lead
+                                )?.applicant
+                              : companyStructure?.project_leads?.find((item) =>
+                                  item?.projects_managed?.includes(
+                                    params.get("project")
+                                  )
+                                )?.project_lead}
                           </p>
-                          <span className={styles.lead__Hightlight__Item} style={{ backgroundColor: labelColors.projectLead}}>
+                          <span
+                            className={styles.lead__Hightlight__Item}
+                            style={{ backgroundColor: labelColors.projectLead }}
+                          >
                             Project Lead
                           </span>
                         </div>
@@ -277,51 +328,99 @@ const ProjectEdit = () => {
                         />
                         <div className={styles.project__Team__Lead}>
                           <p>
-                            {
-                              applications?.find(application => application.username === projectTimeDetail.lead_name) ?
-                                applications?.find(application => application.username === projectTimeDetail.lead_name)?.applicant
-                              :
-                              projectTimeDetail.lead_name
-                            }
+                            {applications?.find(
+                              (application) =>
+                                application.username ===
+                                projectTimeDetail.lead_name
+                            )
+                              ? applications?.find(
+                                  (application) =>
+                                    application.username ===
+                                    projectTimeDetail.lead_name
+                                )?.applicant
+                              : projectTimeDetail.lead_name}
                           </p>
-                          <span className={styles.lead__Hightlight__Item} style={{ backgroundColor: labelColors.teamlead }}>
+                          <span
+                            className={styles.lead__Hightlight__Item}
+                            style={{ backgroundColor: labelColors.teamlead }}
+                          >
                             Team Lead
                           </span>
                         </div>
                       </div>
-                      {
-                        companyStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))?.projects?.find(item => item.project === params.get('project'))?.group_leads 
-                        &&
-                        Array.isArray(
-                          companyStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))?.projects?.find(item => item.project === params.get('project'))?.group_leads
-                        ) ?
-                          React.Children.toArray(
-                            companyStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))?.projects?.find(item => item.project === params.get('project'))?.group_leads?.map(lead => {
-                              return <div className={styles.project__Time__lead__Display}>
-                                <Avatar
-                                  name={lead}
-                                  round={true}
-                                  size="3.2rem"
-                                />
-                                <div className={styles.project__Team__Lead}>
-                                  <p>
-                                    {
-                                      applications?.find(application => application.username === lead) ?
-                                        applications?.find(application => application.username === lead)?.applicant
-                                      :
-                                      lead
-                                    }
-                                  </p>
-                                  <span className={styles.lead__Hightlight__Item} style={{ backgroundColor: labelColors.groupLead }}>
-                                    Group Lead
-                                  </span>
+                      {companyStructure?.project_leads
+                        ?.find((item) =>
+                          item?.projects?.find(
+                            (structure) =>
+                              structure?.project === params.get("project")
+                          )
+                        )
+                        ?.projects?.find(
+                          (item) => item.project === params.get("project")
+                        )?.group_leads &&
+                      Array.isArray(
+                        companyStructure?.project_leads
+                          ?.find((item) =>
+                            item?.projects?.find(
+                              (structure) =>
+                                structure?.project === params.get("project")
+                            )
+                          )
+                          ?.projects?.find(
+                            (item) => item.project === params.get("project")
+                          )?.group_leads
+                      ) ? (
+                        React.Children.toArray(
+                          companyStructure?.project_leads
+                            ?.find((item) =>
+                              item?.projects?.find(
+                                (structure) =>
+                                  structure?.project === params.get("project")
+                              )
+                            )
+                            ?.projects?.find(
+                              (item) => item.project === params.get("project")
+                            )
+                            ?.group_leads?.map((lead) => {
+                              return (
+                                <div
+                                  className={
+                                    styles.project__Time__lead__Display
+                                  }
+                                >
+                                  <Avatar
+                                    name={lead}
+                                    round={true}
+                                    size="3.2rem"
+                                  />
+                                  <div className={styles.project__Team__Lead}>
+                                    <p>
+                                      {applications?.find(
+                                        (application) =>
+                                          application.username === lead
+                                      )
+                                        ? applications?.find(
+                                            (application) =>
+                                              application.username === lead
+                                          )?.applicant
+                                        : lead}
+                                    </p>
+                                    <span
+                                      className={styles.lead__Hightlight__Item}
+                                      style={{
+                                        backgroundColor: labelColors.groupLead,
+                                      }}
+                                    >
+                                      Group Lead
+                                    </span>
+                                  </div>
                                 </div>
-                              </div>
-                            })  
-                          ) 
-                        :
+                              );
+                            })
+                        )
+                      ) : (
                         <></>
-                      }
+                      )}
                     </div>
                   </div>
                   <div className={styles.project__Time__Overview}>
@@ -373,65 +472,101 @@ const ProjectEdit = () => {
                       })}
                     />
                   </div>
-                  
+
                   <div className={styles.project__Detail__Overview}>
                     <TimeDetails
                       title={"Subprojects"}
                       isSubproject={true}
                       subprojects={
                         subProjectsAdded.find(
-                          (item) => item.parent_project === params.get('project')
-                        )?.sub_project_list ?
-                          subProjectsAdded.find(
-                            (item) => item.parent_project === params.get('project')
-                          )?.sub_project_list
-                        :
-                        []
+                          (item) =>
+                            item.parent_project === params.get("project")
+                        )?.sub_project_list
+                          ? subProjectsAdded.find(
+                              (item) =>
+                                item.parent_project === params.get("project")
+                            )?.sub_project_list
+                          : []
                       }
                     />
-                    <TimeDetails
-                      returnEmptyContent={true}
-                      title={'Members'}
-                    >
-                      {
-                        companyStructureLoading ? <p>Loading...</p> :
+                    <TimeDetails returnEmptyContent={true} title={"Members"}>
+                      {companyStructureLoading ? (
+                        <p>Loading...</p>
+                      ) : (
                         <div className={styles.userss__Wrap}>
-                          {
-                            companyStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))?.projects?.find(item => item.project === params.get('project'))?.members 
-                            &&
-                            Array.isArray(
-                              companyStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))?.projects?.find(item => item.project === params.get('project'))?.members
-                            ) ?
-                              React.Children.toArray(
-                                companyStructure?.project_leads?.find(item => item?.projects?.find(structure => structure?.project === params.get('project')))?.projects?.find(item => item.project === params.get('project'))?.members?.map(member => {
-                                  return <div className={styles.user__Member__Detail}>
-                                    <Avatar 
-                                      name={member}
-                                      size="2.3rem"
-                                      round={true}
-                                    />
-                                    <p>
-                                      {
-                                        applications?.find(application => application.username === member) ?
-                                          applications?.find(application => application.username === member)?.applicant
-                                        :
-                                        member
-                                      }
-                                    </p>
-                                  </div>
+                          {companyStructure?.project_leads
+                            ?.find((item) =>
+                              item?.projects?.find(
+                                (structure) =>
+                                  structure?.project === params.get("project")
+                              )
+                            )
+                            ?.projects?.find(
+                              (item) => item.project === params.get("project")
+                            )?.members &&
+                          Array.isArray(
+                            companyStructure?.project_leads
+                              ?.find((item) =>
+                                item?.projects?.find(
+                                  (structure) =>
+                                    structure?.project === params.get("project")
+                                )
+                              )
+                              ?.projects?.find(
+                                (item) => item.project === params.get("project")
+                              )?.members
+                          ) ? (
+                            React.Children.toArray(
+                              companyStructure?.project_leads
+                                ?.find((item) =>
+                                  item?.projects?.find(
+                                    (structure) =>
+                                      structure?.project ===
+                                      params.get("project")
+                                  )
+                                )
+                                ?.projects?.find(
+                                  (item) =>
+                                    item.project === params.get("project")
+                                )
+                                ?.members?.map((member) => {
+                                  return (
+                                    <div
+                                      className={styles.user__Member__Detail}
+                                    >
+                                      <Avatar
+                                        name={member}
+                                        size="2.3rem"
+                                        round={true}
+                                      />
+                                      <p>
+                                        {applications?.find(
+                                          (application) =>
+                                            application.username === member
+                                        )
+                                          ? applications?.find(
+                                              (application) =>
+                                                application.username === member
+                                            )?.applicant
+                                          : member}
+                                      </p>
+                                    </div>
+                                  );
                                 })
-                              ) 
-                            : 
+                            )
+                          ) : (
                             <></>
-                          }
+                          )}
                         </div>
-                      }
+                      )}
                     </TimeDetails>
                   </div>
                 </>
               ) : (
                 <>
-                  <p style={{ fontSize: '0.875rem' }}>Current project: {params.get('project')}</p>
+                  <p style={{ fontSize: "0.875rem" }}>
+                    Current project: {params.get("project")}
+                  </p>
                   <div
                     style={{
                       maxWidth: 250,
@@ -486,7 +621,9 @@ const ProjectEdit = () => {
                     {copyOfProjectTimeDetail.editing_enabled ? (
                       <>
                         <div className={styles.job__details}>
-                          <label htmlFor="lead_name">Teamlead Username (edit in company structure)</label>
+                          <label htmlFor="lead_name">
+                            Teamlead Username (edit in company structure)
+                          </label>
                           <input
                             type="text"
                             id="lead_name"
@@ -501,7 +638,9 @@ const ProjectEdit = () => {
                         </div>
                         <br />
                         <div className={styles.job__details}>
-                          <label htmlFor="total_time">Total Time Allocated (in hours)</label>
+                          <label htmlFor="total_time">
+                            Total Time Allocated (in hours)
+                          </label>
                           <input
                             type="text"
                             id="total_time"
@@ -520,7 +659,9 @@ const ProjectEdit = () => {
                     ) : (
                       <>
                         <div className={styles.job__details}>
-                          <label htmlFor="lead_name">Teamlead Username (edit in company structure)</label>
+                          <label htmlFor="lead_name">
+                            Teamlead Username (edit in company structure)
+                          </label>
                           <input
                             type="text"
                             id="lead_name"
@@ -535,7 +676,9 @@ const ProjectEdit = () => {
                         </div>
                         <br />
                         <div className={styles.job__details}>
-                          <label htmlFor="total_time">Total Time Allocated (in hours)</label>
+                          <label htmlFor="total_time">
+                            Total Time Allocated (in hours)
+                          </label>
                           <input
                             type="text"
                             id="total_time"
@@ -560,16 +703,15 @@ const ProjectEdit = () => {
                       onClick={handleUpdate}
                       disabled={dataPosting ? true : false}
                     >
-                      {
-                        dataPosting ?
-                          <LoadingSpinner 
-                            width={'1.2rem'}
-                            height={'1.2rem'}
-                            color={'#fff'}
-                          />
-                        :
-                        'Update'
-                      }
+                      {dataPosting ? (
+                        <LoadingSpinner
+                          width={"1.2rem"}
+                          height={"1.2rem"}
+                          color={"#fff"}
+                        />
+                      ) : (
+                        "Update"
+                      )}
                     </button>
                   </div>
                 </>
