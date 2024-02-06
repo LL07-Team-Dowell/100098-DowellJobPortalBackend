@@ -12,8 +12,7 @@ import Overlay from "../../../../components/Overlay";
 import { AiOutlineClose } from "react-icons/ai";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
-import AddEventsPopup from "./AddEventsPopUp";
-import EditEventsPopup from "./EditEventPopup";
+import EventsPopup from "./EventsPopUp";
 
 const EventScreen = () => {
   const [showEventsPop, setShowEventsPop] = useState(false);
@@ -98,20 +97,21 @@ const EventScreen = () => {
                     <h3>Event Host: {eventss.event_host}</h3>
                   </div>
                   {showEditOptions[eventss._id] && (
-                    <ul className="update__Listing">
+                    <ul className="update__Listing_event">
                       <li
                         className="item"
                         onClick={() => handleUpdateEvent(eventss._id)}
                       >
-                        Update
+                        Edit
                       </li>
                     </ul>
                   )}
                   {showEditModal[eventss._id] && (
-                    <EditEventsPopup
+                    <EventsPopup
                       handleCloseModal={() => handleCloseModal(eventss._id)}
                       setShowEventsPop={() => setShowEventsPop(false)}
                       forceUpdateEvent={forceUpdateEvent}
+                      id={eventss._id}
                     />
                   )}
                 </div>
@@ -119,7 +119,7 @@ const EventScreen = () => {
             })
           )}
           {showEventsPop && (
-            <AddEventsPopup
+            <EventsPopup
               handleCloseModal={handleCloseModal}
               setShowEventsPop={() => setShowEventsPop(false)}
               forceUpdateEvent={forceUpdateEvent}
