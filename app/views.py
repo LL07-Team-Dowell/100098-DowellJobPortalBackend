@@ -9011,7 +9011,7 @@ class candidate_leave(APIView):
         offset = request.GET.get('offset')
         company_id=request.GET.get("company_id")
 
-        if not (company_id or limit or offset):
+        if not (company_id and limit and offset):
             return Response({
                 "success":False,
                 "error":"company_id, offset, limit should be send in query params"
