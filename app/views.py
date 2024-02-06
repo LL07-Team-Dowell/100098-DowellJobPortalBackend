@@ -7108,8 +7108,7 @@ class Generate_Report(APIView):
                 return self.generate_individual_task_report(request)
             elif request.data["report_type"] == "Project":
                 return self.generate_project_report(request)
-            elif request.data["report_type"] == "Public":
-                return self.generate_public_report(request)
+            
             elif request.data["report_type"] == "Level":
                 return self.generate_task_level_report(request)
 
@@ -7118,7 +7117,7 @@ class Generate_Report(APIView):
                 {
                     "message": "Parameters not Valid. "
                     + str(serializer.errors["report_type"][0]),
-                    "response": "It must me one of these -> 'Admin','Hr','Account','Candidate','Team','Lead','Individual','Individual Task','Project','Public' ",
+                    "response": "It must me one of these -> 'Admin','Hr','Account','Candidate','Team','Lead','Individual','Individual Task','Project' ",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
