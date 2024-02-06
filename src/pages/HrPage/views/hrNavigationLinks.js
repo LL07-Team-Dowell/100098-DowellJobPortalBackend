@@ -27,7 +27,7 @@ export const hrNavigationLinks = [
         text: "Users",
     },
     {
-        linkAddress: "/agenda-report",
+        linkAddress: "/agenda",
         icon: <TfiAgenda />,
         text: "Agenda",
     },
