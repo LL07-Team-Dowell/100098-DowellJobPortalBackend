@@ -52,7 +52,6 @@ from .helper import (
     get_current_week_start_end_date,
     speed_test_condition,
     get_dates_between,
-    normalize,
     datacube_add_collection
 )
 from .serializers import (
@@ -128,7 +127,6 @@ from .authorization import (
     verify_user_token,
     sign_token,
 )
-from .models import UsersubProject, TaskReportdata, MonthlyTaskData, PersonalInfo
 from django.views.decorators.csrf import csrf_protect
 
 from dotenv import load_dotenv
