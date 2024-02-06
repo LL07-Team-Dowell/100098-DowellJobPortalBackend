@@ -38,8 +38,6 @@ const ProjectEdit = () => {
   // const { id } = useParams();
   const [showEditView, setShowEditView] = useState(false);
   const [dataPosting, setDataPosting] = useState(false);
-  //  console.log(id)
-  // console.log(project);
 
   const [projectTimeDetail, setProjectTimeDetail] = useState({
     total_time: 0,
