@@ -12,7 +12,6 @@ from rest_framework import status
 from discord.ext import commands
 from discord import Intents
 from .constant import *
-from .models import MonthlyTaskData, PersonalInfo, TaskReportdata
 
 
 def dowellconnection(
