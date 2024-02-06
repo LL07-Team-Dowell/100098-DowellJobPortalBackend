@@ -363,7 +363,7 @@ export default function FullApplicationCardItem({ application, activeStatus }) {
                   <Link
                     to={application.freelancePlatformUrl}
                     target="_blank"
-                  >{application.freelancePlatformUrl}</Link>
+                  >Click Here!</Link>
                 </p>
                 <p>
                   <b>Job Applied For:</b> {application.job_title}
