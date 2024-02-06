@@ -706,6 +706,9 @@ class leaveapplyserializers(serializers.Serializer):
     applicant=serializers.CharField(max_length=255,allow_null=False)
     email=serializers.EmailField(allow_null=False)
     company_id = serializers.CharField(max_length=255,allow_null=False,allow_blank=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
 
 class leaveapproveserializers(serializers.Serializer):
     leave_start=serializers.DateField(allow_null=False)

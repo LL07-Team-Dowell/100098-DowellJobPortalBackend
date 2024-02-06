@@ -153,7 +153,11 @@ if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
 if os.getenv("Events_collection"):
     Events_collection = str(os.getenv("Events_collection"))
-
+if os.getenv("LEAVE_REPORT_COLLECTION"):
+    leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
+if os.getenv("LEAVE_DB_NAME"):
+    LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
+    
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
@@ -166,6 +170,7 @@ else:
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
     ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
     Events_collection=str(os.getenv("Events_collection"))
+    LEAVE_DB=str(os.getenv("LEAVE_DB_NAME"))
 
 # Create your views here.
 
@@ -8844,6 +8849,7 @@ class candidate_leave(APIView):
         leave_start_date = request.data.get("leave_start_date")
         leave_end_date = request.data.get("leave_end_date")
         email = request.data.get("email")
+        data_type=request.data.get("data_type")
 
         field = {
             "applicant_id": applicant_id,
@@ -8853,6 +8859,14 @@ class candidate_leave(APIView):
             "leave_start_date": leave_start_date,
             "leave_end_date": leave_end_date,
             "email": email,
+            "data_type":data_type
+        }
+
+        query={
+            "applicant_id":applicant_id,
+            "leave_start_date":leave_start_date,
+            "leave_end_date":leave_end_date,
+            "data_type":data_type
         }
 
         serializer = leaveapplyserializers(data=request.data)
@@ -8866,10 +8880,25 @@ class candidate_leave(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        try:
+            check_duplicates=json.loads(datacube_data_retrival(API_KEY,LEAVE_DB,collection_name=leave_report_collection,data=query,limit=0,offset=0))
+        
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        if check_duplicates["success"] and len(check_duplicates["data"])>0:
+            return Response({
+                "success":False,
+                "error":"leave application already submitted for the given date"
+            },status=status.HTTP_400_BAD_REQUEST)
+        
+       
         response = json.loads(
             datacube_data_insertion(
-                API_KEY, DB_Name, collection_name=leave_report_collection, data=field
+                API_KEY, LEAVE_DB, collection_name=leave_report_collection, data=field
             )
         )
 
@@ -8890,9 +8919,17 @@ class candidate_leave(APIView):
         )
 
     def candidate_leave_approve(self, request):
-        applicant_id = request.data.get("applicant_id")
+        applicant_id = request.GET.get("applicant_id")
+        
         field = {"_id": applicant_id}
-        serializer = leaveapproveserializers(data=request.data)
+
+        data={
+            "applicant_id":applicant_id,
+            "leave_start": request.data.get("leave_start"),
+            "leave_end": request.data.get("leave_end")
+        }
+        serializer = leaveapproveserializers(data=data)
+
         if not serializer.is_valid():
             return Response(
                 {
@@ -8907,9 +8944,16 @@ class candidate_leave(APIView):
             "leave_end": request.data.get("leave_end"),
             "status": "Leave",
         }
-        candidate_report = dowellconnection(
-            *candidate_management_reports, "update", field, update_field
-        )
+        try:
+            candidate_report = dowellconnection(
+                *candidate_management_reports, "update", field, update_field
+            )
+
+        except:
+            return Response({
+                "success":False,
+                "error":"dowell connection not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         res = json.loads(candidate_report)
 
@@ -8940,7 +8984,7 @@ class candidate_leave(APIView):
             "_id": leave_id,
         }
 
-        response = json.loads(datacube_data_retrival_function(API_KEY, DB_Name, leave_report_collection, data=data, limit=limit, offset=offset, payment=False))
+        response = json.loads(datacube_data_retrival_function(API_KEY, LEAVE_DB, leave_report_collection, data=data, limit=limit, offset=offset, payment=False))
 
         if not response["success"]:
             return Response({
@@ -8965,42 +9009,58 @@ class candidate_leave(APIView):
     def get_all_leave_application(self, request):
         limit = request.GET.get('limit')
         offset = request.GET.get('offset')
+        company_id=request.GET.get("company_id")
 
-        response = json.loads(datacube_data_retrival_function(API_KEY, DB_Name, leave_report_collection, data={}, limit=limit, offset=offset, payment=False))
-
-        if not response["success"]:
+        if not (company_id or limit or offset):
             return Response({
-                "success": False,
-                "message": "Failed to retrieve leave",
+                "success":False,
+                "error":"company_id, offset, limit should be send in query params"
+            },status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            response = json.loads(datacube_data_retrival_function(API_KEY, LEAVE_DB, leave_report_collection, data={"company_id":company_id}, limit=limit, offset=offset, payment=False))
+        except:
+            return Response({
+                "success":False,
+                "error":"datacube not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        if response["success"] and len(response["data"])>0:
+            return Response({
+                "success": True,
+                "message": "Leave retrieved successfully",
                 "database_response": {
                     "success": response["success"],
                     "message": response["message"]
-                }
-            }, status=status.HTTP_400_BAD_REQUEST)
+                },
+                "response": response["data"]
+            }, status=status.HTTP_200_OK)
+        
+        
+        else:
+            return Response({
+                "success": True,
+                "message": "No leave application found for the given query",
+            }, status=status.HTTP_204_NO_CONTENT)
 
-        return Response({
-            "success": True,
-            "message": "Leave retrieved successfully",
-            "database_response": {
-                "success": response["success"],
-                "message": response["message"]
-            },
-            "response": response["data"]
-        }, status=status.HTTP_200_OK)
+        
         
         
     def applicants_on_leave(self, request):
-
-            field = {"status": "Leave"}
             
+            company_id=request.GET.get("company_id")
+            field = {"status": "Leave","company_id":company_id}        
             update_field={}
-            
-            candidate_report = dowellconnection(
-                *candidate_management_reports, "fetch", field, update_field)
+        
+            try:
+                candidate_report = dowellconnection(
+                    *candidate_management_reports, "fetch", field, update_field)
+            except:
+                return Response({"success":False,"error":"dowellconnection not responding"},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             res = json.loads(candidate_report)
 
-            if res["isSuccess"]:
+            if res["isSuccess"] and len(res["data"])>0:
                 return Response(
                     {   "success": True,
                         "message": "candidate who are on leave",
@@ -9012,10 +9072,9 @@ class candidate_leave(APIView):
             else:
                 return Response(
                     {
-                        "success": False,
-                        "message": "Could not fetch Leave reports",
-                        "error": res["error"],
-                    }
+                        "success": True,
+                        "message": "No candidates found on leave",
+                    },status=status.HTTP_204_NO_CONTENT
                 )
 
     def handle_error(self, request):
