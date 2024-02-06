@@ -52,7 +52,6 @@ from .helper import (
     get_current_week_start_end_date,
     speed_test_condition,
     get_dates_between,
-    normalize,
     datacube_add_collection
 )
 from .serializers import (
