@@ -302,8 +302,8 @@ class Invoice_module(APIView):
         type_request = request.GET.get("type")
         company_id = request.GET.get("company_id")
 
-        if type_request == "create-collection":
-            return self.create_collection(request, company_id)
+        if type_request == "get-payment-records":  # for user
+            return self.get_payment_records(request)
         elif type_request == "save-payment-records":
             return self.save_payment_records(request)
         elif type_request == "update-payment-records":
@@ -315,63 +315,45 @@ class Invoice_module(APIView):
         else:
             return self.handle_error(request)
 
-    def create_collection(self, request, company_id):
-        if company_id:
-            field = {"company_id": company_id, "status": "hired"}
-            response = dowellconnection(
-                *candidate_management_reports, "fetch", field, update_field=None
-            )
-            parsed_response = json.loads(response)
+    def get_payment_records(self, request):
+        user_id = request.data.get("user_id")
+        company_id = request.data.get("company_id")
 
-            if parsed_response.get("isSuccess", False):
-                onboarded_candidates = parsed_response.get("data", [])
+        fetch_data = {"db_record_type": "payment_record"}
+        result = datacube_data_retrival(
+            api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+            database_name="Payment_Records",
+            collection_name=user_id,
+            data=fetch_data,
+            limit=1,
+            offset=0,
+        )
 
-                if not onboarded_candidates:
-                    return Response(
-                        {
-                            "message": f"There are no onboarded candidates with this company id",
-                            "response": parsed_response,
-                        },
-                        status=status.HTTP_204_NO_CONTENT,
-                    )
+        try:
+            result_dict = json.loads(result)
+        except json.JSONDecodeError:
+            # Handle the case where the string is not valid JSON
+            result_dict = {}
 
-                for candidate in onboarded_candidates:
-                    user_id = candidate.get("user_id")
-
-                    # Check if user_id is present
-                    if user_id:
-                        # Create a collection for each username
-
-                        data_to_add = datacube_add_collection(
-                            api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                            db_name="Payment_Records",
-                            coll_names=user_id,
-                            num_collections=1,
-                        )
-
-                        if "success" in data_to_add:
-                            print(f"Collection created for user_id: {user_id}")
-                        else:
-                            print(f"Failed to create collection for user_id: {user_id}")
-
+        if result_dict.get("success", True):
+            payment_details = result_dict.get("data", [])
+            if payment_details:
                 return Response(
                     {
-                        "message": "Collections created successfully",
+                        "message": f"Payment details for user_id {user_id}",
+                        "data": payment_details[0],
                     },
                     status=status.HTTP_200_OK,
                 )
             else:
                 return Response(
-                    {
-                        "message": "Failed to fetch onboarded candidates",
-                        "response": parsed_response,
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
+                    {"message": f"No payment details found for {user_id}"},
+                    status=status.HTTP_404_NOT_FOUND,
                 )
         else:
             return Response(
-                {"message": "Company ID is required"},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"message": "Failed to fetch payment details", "response": result_dict},
+                status=status.HTTP_404_BAD_REQUEST,
             )
 
     def save_payment_records(self, request):
@@ -388,8 +370,9 @@ class Invoice_module(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        fetch_data = {"db_record_type": "payment_record"}
-        response_data = datacube_data_retrival(
+        # Check if the collection exists for the user_id in the Payment Records database
+        fetch_data = {"company_id": company_id, "user_id": user_id}
+        response = datacube_data_retrival(
             api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
             database_name="Payment_Records",
             collection_name=user_id,
@@ -397,41 +380,47 @@ class Invoice_module(APIView):
             limit=1,
             offset=0,
         )
+        parsed_response = json.loads(response)
 
-        try:
-            response_data_dict = json.loads(response_data)
-        except json.JSONDecodeError:
-            # Handle the case where the string is not valid JSON
-            response_data_dict = {}
-            print(response_data_dict)
-
+        if parsed_response.get("data"):
+            # Records already exist in the collection, return a message
+            return Response(
+                {"message": "Records already exist in the collection"},
+                status=status.HTTP_409_CONFLICT,
+            )
         else:
-            # Check if "data" key exists within the list
-            if response_data_dict.get("data", []):
-                # Existing data found, return a response record is already saved
-                return Response(
-                    {"message": "Record already saved"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            else:
-                # Data doesn't exist, proceed to insert
-                insert_data = {
+            # Collection doesn't exist, create a new collection first and then save records
+            data_to_add = datacube_add_collection(
+                api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
+                db_name="Payment_Records",
+                coll_names=user_id,
+                num_collections=1,
+            )
+
+            if "success" in data_to_add:
+                print(f"Collection created for user_id: {user_id}")
+                # Now save records in the newly created collection
+                data_to_insert = {
                     "company_id": company_id,
+                    "user_id": user_id,
                     "weekly_payment_amount": weekly_payment_amount,
                     "payment_currency": payment_currency,
                     "db_record_type": "payment_record",
                     "previous_weekly_amounts": [],
                     "last_payment_date": "",
                 }
-
                 response = datacube_data_insertion(
                     api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
                     database_name="Payment_Records",
                     collection_name=user_id,
-                    data=insert_data,
+                    data=data_to_insert,
                 )
-
                 return Response(response, status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    {"message": f"Failed to create collection for user_id: {user_id}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
 
     def update_payment_records(self, request):
         user_id = request.data.get("username")
