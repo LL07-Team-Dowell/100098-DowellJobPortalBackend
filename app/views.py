@@ -9009,7 +9009,7 @@ class candidate_leave(APIView):
         offset = request.GET.get('offset')
         company_id=request.GET.get("company_id")
 
-        if not (company_id or limit or offset):
+        if not (company_id and limit and offset):
             return Response({
                 "success":False,
                 "error":"company_id, offset, limit should be send in query params"
@@ -11005,10 +11005,11 @@ class DowellEvents(APIView):
 
         except:
             return Response({"success": False, "error": "Datacube is not responding"})
-
         if insert_collection["success"] and len(insert_collection["data"]) > 0:
             return Response(
-                {"success": True, "message": "events has been added successfuly"}
+                {"success": True,
+                 "inserted_id":insert_collection["data"]["inserted_id"],
+                 "message": "events has been added successfuly"}
             )
 
         else:
