@@ -139,6 +139,9 @@ if os.getenv("ATTENDANCE_DB_NAME"):
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
 if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
+if os.getenv("DB_PAYMENT_RECORDS"):
+    DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
+
 
 else:
     """for windows local"""
@@ -150,151 +153,9 @@ else:
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
     ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+    DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
 
 # Create your views here.
-
-INVERVIEW_CALL = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600&display=swap" rel="stylesheet">
-    <title>Interview Invitation</title>
-</head>
-<body style="font-family: poppins;background-color: #f5f5f5;margin: 0;padding: 0;text-align: center;">
-    <div style="max-width: 600px;margin: 20px auto;background-color: #fff;padding: 20px;border-radius: 4px;box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-        <div style= :text-align: center;margin-bottom: 20px;>
-            <img src="https://dowellfileuploader.uxlivinglab.online/hr/logo-2-min-min.png" alt="Company Logo" style="width: 200px;">
-        </div>
-        <div >
-            <h3 style="text-align: center;font-size: 24px;margin: 0;margin-bottom: 10px;">Hello {},</h3>
-            <img src="https://img.freepik.com/free-vector/people-talking-via-electronic-mail_52683-38063.jpg?size=626&ext=jpg&ga=GA1.1.225976907.1673277028&semt=ais" alt="Interview Image" style="display: block;margin: 0 auto;width: 400px;max-width: 100%;border-radius: 4px;">
-        </div>
-        <div>
-            <p style="margin: 0;margin-bottom: 10px;line-height: 1.5;">Congratulations! You have been invited to interview for the {} job at DoWell UX Living Lab.</p>
-            <p style="margin: 0;margin-bottom: 10px;line-height: 1.5;">Here are the details of the interview:</p>
-            <p style="margin: 0;margin-bottom: 10px;line-height: 1.5;"><b>Venue:</b> Discord</p>
-            <p style="margin: 0;margin-bottom: 10px;line-height: 1.5;"><b>Time:</b> {}</p>
-            <br>
-            <p style="margin: 0;margin-bottom: 10px;line-height: 1.5;">Kindly click the button below to join the Discord server:</p>
-            <a href="https://discord.gg/Qfw7nraNPS" style="display: inline-block;background-color: #007bff;color: #fff;text-decoration: none;padding: 10px 20px;border-radius: 4px;transition: background-color 0.3s ease;text-align: center;" target="_blank">Join Discord Server</a>
-        </div>
-    </div>
-</body>
-</html>
-"""
-
-INVITATION_MAIL = """
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FULL SIGNUP MAIL</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter&family=Poppins&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div style="width: 80%; margin: 0 auto;font-family: 'Poppins', sans-serif;">
-        <img src="https://dowellfileuploader.uxlivinglab.online/hr/logo-2-min-min.png" alt="Dowell Logo" width="70px" height="70px" style="display: block; margin: 0 auto;">
-        <div style="width: 80%; margin: 0 auto; text-align: center;">
-            <p style="font-size: 2rem; font-weight: 700;">Hello {},</p>
-            <img src="https://img.freepik.com/free-vector/reading-letter-concept-illustration_114360-4591.jpg?size=626&ext=jpg&ga=GA1.1.225976907.1673277028&semt=sph" alt="mail-logo" width="250px" height="250px">
-        </div>
-        <div style="width: 80%; margin: 0 auto; text-align: center;">
-            <p style="font-weight: 400; margin: 0; margin-bottom: 1.5rem; margin-top: 1rem;">Congratulations! Your application for {} has been approved at DoWell UX Living Lab.</p>
-            <p style="font-weight: 400; margin: 0; margin-bottom: 1.5rem;">Kindly use the button below to create an account and track your application progress.</p> 
-            <a href="{}" style="text-decoration: none; cursor: pointer; background-color: #005734; padding: 1rem; border-radius: 0.5rem; display: block; margin: 5rem auto 0; width: max-content;">
-                <p style="display: inline-block; margin: 0; color: #fff; font-weight: 600;">
-                    Complete full signup
-                </p>
-            </a>
-        </div>
-    </div>
-</body>
-</html>
-
-"""
-ISSUES_MAIL = """
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <title>Issue Update</title>
-  </head>
-  <body
-    style="
-      font-family: poppins;
-      background-color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      height: 100vh;
-      display: flex;
-      width: 100%;
-      align-items: center;
-    "
-  >
-    <div
-      style="
-        max-width: 600px;
-        margin: 10px auto;
-        background-color: #fff;
-        padding: 10px 20px;
-        border-radius: 4px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      "
-    >
-      <div style="text-align: center; margin-bottom: 0px;">
-        <img
-          src="http://67.217.61.253/hr/logo-2-min-min.png"
-          alt="Company Logo"
-          style="width: 100px; height: 100px;"
-        />
-      </div>
-      <div style="text-align: center;">
-        <h3 style="font-size: 24px; margin: 0; margin-bottom: 5px;">
-          Issue Raised By {},
-        </h3>
-      </div>
-      <div style="margin: 0; margin-bottom: 10px; line-height: 1.5;">
-        <p style="font-weight: bold;">
-          Issue Description:
-        </p>
-        <p>
-          This is the issue raised by {} to understand the sample of the issue
-        </p>
-        <a
-          href="https://web.discord.com"
-          style="
-            display: inline-block;
-            background-color: #007bff;
-            color: #fff;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-            text-align: center;
-          "
-          target="_blank"
-          >Issue Page</a>
-      </div>
-    </div>
-  </body>
-</html>
-"""
 
 
 class Invoice_module(APIView):
@@ -321,8 +182,8 @@ class Invoice_module(APIView):
 
         fetch_data = {"db_record_type": "payment_record"}
         result = datacube_data_retrival(
-            api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-            database_name="Payment_Records",
+            api_key=API_KEY,
+            database_name=DB_PAYMENT_RECORDS,
             collection_name=user_id,
             data=fetch_data,
             limit=1,
@@ -373,8 +234,8 @@ class Invoice_module(APIView):
         # Check if the collection exists for the user_id in the Payment Records database
         fetch_data = {"company_id": company_id, "user_id": user_id}
         response = datacube_data_retrival(
-            api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-            database_name="Payment_Records",
+            api_key=API_KEY,
+            database_name=DB_PAYMENT_RECORDS,
             collection_name=user_id,
             data=fetch_data,
             limit=1,
@@ -391,8 +252,8 @@ class Invoice_module(APIView):
         else:
             # Collection doesn't exist, create a new collection first and then save records
             data_to_add = datacube_add_collection(
-                api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                db_name="Payment_Records",
+                api_key=API_KEY,
+                db_name=DB_PAYMENT_RECORDS,
                 coll_names=user_id,
                 num_collections=1,
             )
@@ -410,8 +271,8 @@ class Invoice_module(APIView):
                     "last_payment_date": "",
                 }
                 response = datacube_data_insertion(
-                    api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                    database_name="Payment_Records",
+                    api_key=API_KEY,
+                    database_name=DB_PAYMENT_RECORDS,
                     collection_name=user_id,
                     data=data_to_insert,
                 )
@@ -439,8 +300,8 @@ class Invoice_module(APIView):
         # Fetch data using the provided function
         fetch_data = {"db_record_type": "payment_record"}
         response_data = datacube_data_retrival(
-            api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-            database_name="Payment_Records",
+            api_key=API_KEY,
+            database_name=DB_PAYMENT_RECORDS,
             collection_name=user_id,
             data=fetch_data,
             limit=1,
@@ -476,8 +337,8 @@ class Invoice_module(APIView):
                 "last_payment_date": "",
             }
             update_response = datacube_data_update(
-                api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                db_name="Payment_Records",
+                api_key=API_KEY,
+                db_name=DB_PAYMENT_RECORDS,
                 coll_name=user_id,
                 query=update_query,
                 update_data=update_data,
@@ -502,8 +363,8 @@ class Invoice_module(APIView):
 
         url = "https://datacube.uxlivinglab.online/db_api/get_data/"
         data_1 = {
-            "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-            "db_name": "Payment_Records",
+            "api_key": API_KEY,
+            "db_name": DB_PAYMENT_RECORDS,
             "coll_name": user_id,
             "operation": "fetch",
             "filters": {
@@ -514,8 +375,8 @@ class Invoice_module(APIView):
         }
 
         data_2 = {
-            "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-            "db_name": "Payment_Records",
+            "api_key": API_KEY,
+            "db_name": DB_PAYMENT_RECORDS,
             "coll_name": user_id,
             "operation": "fetch",
             "filters": {
@@ -567,8 +428,8 @@ class Invoice_module(APIView):
 
             save_url = "https://datacube.uxlivinglab.online/db_api/crud/"
             save_data = {
-                "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                "db_name": "Payment_Records",
+                "api_key": API_KEY,
+                "db_name": DB_PAYMENT_RECORDS,
                 "coll_name": user_id,
                 "operation": "insert",
                 "data": {
@@ -589,8 +450,8 @@ class Invoice_module(APIView):
             update_date = datetime.now().isoformat()
             update_url = "https://datacube.uxlivinglab.online/db_api/crud/"
             update_data = {
-                "api_key": "1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-                "db_name": "Payment_Records",
+                "api_key": API_KEY,
+                "db_name": DB_PAYMENT_RECORDS,
                 "coll_name": user_id,
                 "operation": "update",
                 "query": {"_id": existing_payment_record[0].get("_id", 0)},
@@ -629,8 +490,8 @@ class Invoice_module(APIView):
 
         fetch_data = {"payment_year": payment_year}
         result = datacube_data_retrival(
-            api_key="1b834e07-c68b-4bf6-96dd-ab7cdc62f07f",
-            database_name="Payment_Records",
+            api_key=API_KEY,
+            database_name=DB_PAYMENT_RECORDS,
             collection_name=user_id,
             data=fetch_data,
             limit=0,
