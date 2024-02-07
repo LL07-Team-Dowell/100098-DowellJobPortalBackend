@@ -12,7 +12,6 @@ from rest_framework import status
 from discord.ext import commands
 from discord import Intents
 from .constant import *
-from .models import MonthlyTaskData, PersonalInfo, TaskReportdata
 
 
 def dowellconnection(
@@ -790,11 +789,19 @@ def get_dates_between(start_date, end_date):
     return [date.strftime("%Y-%m-%d") for date in date_list]
 
 
-def normalize(text):
-    normalized_text = ""
-    for char in text:
-        if char.isalnum() or char == "_" or char == "-":
-            normalized_text += char
-        if char == " ":
-            normalized_text += "_"
-    return normalized_text
+def update_user_Report_data(api_key, user_id, task_date, update_data):
+    year,_monthname,_monthcnt=get_month_details(task_date)
+    query={
+        "report_record_month": _monthname,
+        "report_record_year": year,
+        "db_report_type": "report"
+    }
+    REPORT_DB_NAME = "ReportDB"
+    REPORT_UUID = "4f38703b-2c74-4292-9e0f-9e62fb22797e"
+    coll_name = REPORT_UUID+user_id
+    get_report = json.loads(datacube_data_retrival_function(api_key,REPORT_DB_NAME,coll_name,query,10,0, False))
+    if get_report['success'] == True:
+        update_report = json.loads(datacube_data_update(api_key,REPORT_DB_NAME,coll_name,query,update_data))
+        return update_report
+    else:
+        return get_report

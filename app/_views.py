@@ -119,7 +119,7 @@ from .authorization import (
     verify_user_token,
     sign_token,
 )
-from .models import UsersubProject, TaskReportdata, MonthlyTaskData, PersonalInfo
+from .models import UsersubProject
 from django.views.decorators.csrf import csrf_protect
 
 from dotenv import load_dotenv
