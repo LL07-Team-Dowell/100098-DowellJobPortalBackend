@@ -193,7 +193,7 @@ const EventsPopup = ({
                 </label>
 
                 <div className={styles.event_mandatory}>
-                  <label htmlFor="is_mendatory">Is Madantory ?</label>
+                  <label htmlFor="is_mendatory">Is Mandatory ?</label>
                   <div className={styles.edit_is_mandatory}>
                     <input
                       className={styles.edit_active_checkbox}
@@ -287,7 +287,7 @@ const EventsPopup = ({
                 </label>
 
                 <div className={styles.event_mandatory}>
-                  <label htmlFor="is_mendatory">Is Madantory ?</label>
+                  <label htmlFor="is_mendatory">Is Mandatory ?</label>
                   <div className={styles.edit_is_mandatory}>
                     <input
                       className={styles.edit_active_checkbox}
