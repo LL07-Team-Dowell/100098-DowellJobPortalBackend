@@ -210,46 +210,48 @@
     width: 100%;
     display: flex;
     justify-content: start;
-  }
-  
-  .applicant_info {
+}
+
+.applicant_info {
     display: flex;
     flex-direction: column;
     /* align-items: center; */
     justify-content: space-around;
     margin: 1rem;
     font-family: "Poppins", sans-serif;
-  }
-  
-  .applicant_info h2 {
+}
+
+.applicant_info h2 {
     font-weight: 600;
     letter-spacing: 0.04em;
     font-size: 1.4rem;
     color: #404040;
-  }
-  
-  .applicant_oth_info {
+}
+
+.applicant_oth_info {
     display: flex;
     flex-direction: column;
     line-height: 2rem;
     font-family: "Poppins", sans-serif;
-  }
-  
-  .applicant_oth_info b {
+}
+
+.applicant_oth_info b {
     font-size: 0.9rem;
     font-weight: 600;
     margin: 0.5rem;
     color: #404040;
-  }
-  
-  .applicant_oth_info p{
+}
+
+.applicant_oth_info p {
     font-size: 0.8rem;
-  }
+    display: flex;
+    align-items: center;
+}
 
 @media screen and (min-width: 1000px) {
     .full__Application__Item.admin__Item {
         width: calc(calc(100% - 10.5rem) / 3);
-    }    
+    }
 }
 
 @media (min-width: 992px) and (max-width: 1500px) {

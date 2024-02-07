@@ -89,6 +89,8 @@ import useUpdateUserId from "./hooks/useUpdateUserId";
 import AttendanceLandingPage from "./pages/HrPage/views/AttendancePages/AttendanceLandingPage";
 import AttendanceUpdatePage from "./pages/HrPage/views/AttendanceReport/UpdateAttendance/UpdateAttendance";
 import { accountRoutesInfo } from "./routes/accountRoutes";
+import AgendaLandingPage from "./pages/HrPage/views/AgendaLandingPage/AgendaLandingPage";
+import HrAgendaReport from "./pages/HrPage/views/Agenda/HrAgendaReport/HrAgendaReport";
 
 function App() {
   // console.log = () => { };
@@ -143,13 +145,13 @@ function App() {
   );
 
   useTitle(teamManagementProductName);
-  
+
   useUpdateUserId(
-    loading, 
-    currentUser, 
-    currentUserHiredApplications, 
+    loading,
+    currentUser,
+    currentUserHiredApplications,
     currentUserHiredApplicationsLoaded,
-    setCurrentUserHiredApplications, 
+    setCurrentUserHiredApplications,
     applicationsWithoutUserIdUpdated,
     setApplicationsWithoutUserIdUpdated,
   );
@@ -542,7 +544,7 @@ function App() {
       <Routes>
         {
           React.Children.toArray(subAdminRoutesInfo.map(info => {
-            return <Route 
+            return <Route
               path={info?.path}
               element={
                 <JobContextProvider>
@@ -580,7 +582,7 @@ function App() {
       <Routes>
         {
           React.Children.toArray(mainAdminRoutesInfo.map(info => {
-            return <Route 
+            return <Route
               path={info?.path}
               element={
                 <JobContextProvider>
@@ -643,7 +645,17 @@ function App() {
           }
         />
         <Route
-          path='/agenda-report'
+          path='/agenda'
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <AgendaLandingPage />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
+        <Route
+          path='/agenda/track-agenda'
           element={
             <HrJobScreenAllTasksContextProvider>
               <ValuesProvider>
@@ -652,7 +664,16 @@ function App() {
             </HrJobScreenAllTasksContextProvider>
           }
         />
-
+        <Route
+          path='/agenda/agenda-report'
+          element={
+            <HrJobScreenAllTasksContextProvider>
+              <ValuesProvider>
+                <HrAgendaReport />
+              </ValuesProvider>
+            </HrJobScreenAllTasksContextProvider>
+          }
+        />
         <Route
           path='/all-users'
           element={
@@ -711,7 +732,7 @@ function App() {
             </Route>
           </Route>
         </Route>
-       
+
 
         <Route path='*' element={<ErrorPage />} />
       </Routes>
@@ -1219,7 +1240,7 @@ function App() {
       <Routes>
         {
           React.Children.toArray(projectLeadRoutesInfo.map(item => {
-            return <Route 
+            return <Route
               path={item?.path}
               element={
                 <CandidateTaskContextProvider>

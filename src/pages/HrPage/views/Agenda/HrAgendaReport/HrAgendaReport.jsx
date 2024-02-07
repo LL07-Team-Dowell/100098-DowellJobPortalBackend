@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import StaffJobLandingLayout from "../../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
-import './style.css';
 import { FaCircle } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
@@ -12,9 +11,10 @@ import { getWeeklyAgenda } from "../../../../../services/commonServices";
 import LoadingSpinner from "../../../../../components/LoadingSpinner/LoadingSpinner";
 import { getSubprojectAgendaAddedDates } from "../../../../../services/commonServices";
 import { Tooltip } from "react-tooltip";
+import styles from './style.module.css';
 import Avatar from "react-avatar";
 
-const AgendaReport = () => {
+const HrAgendaReport = () => {
     //dummy data
     const hoursChartData = {
         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -235,16 +235,13 @@ const AgendaReport = () => {
 
     return (
         <StaffJobLandingLayout
-            adminView={true}
-            adminAlternativePageActive={true}
-            pageTitle={"Reports"}
-            newSidebarDesign={true}
+            hrView={true}
         >
-            <div className="parent_div">
-                <div className="main_div">
-                    <div className="wrapper">
+            <div className={styles.parent_div}>
+                <div className={styles.main_div}>
+                    <div className={styles.wrapper}>
                         <h2>Weekly Agenda Detailed Report</h2>
-                        <div className="internal_div report">
+                        <div className={`${styles.internal_div} ${styles.report}`}>
                             <div>
                                 <label>
                                     <span>Project</span>
@@ -283,7 +280,7 @@ const AgendaReport = () => {
                     </div>
                     {
                         buttonVisibility &&
-                        <div className="pagination_wrap txt_color">
+                        <div className={`${styles.pagination_wrap} ${styles.txt_color}`}>
                             <h4>Dates Added: </h4>
                             <div>
                                 <Tooltip
@@ -303,7 +300,7 @@ const AgendaReport = () => {
                     {
                         resultVisibility &&
                         <>
-                            <div className="graph_main_div">
+                            <div className={styles.graph_main_div}>
                                 <div>
                                     <h3>Total Subtasks</h3>
                                     <h2>{totalSubTasks}</h2>
@@ -318,20 +315,20 @@ const AgendaReport = () => {
                                         <Bar data={hoursChartData} options={chartOptions} />
                                     </div>
                                 </div>
-                                <div className="lead_assignee">
+                                <div className={styles.lead_assignee}>
                                     <h3>Team Members</h3>
                                     <p>Lead</p>
                                     <div>
-                                        <div className="profile"><p>{leadName[0]?.toUpperCase()}</p></div>
-                                        <div className="lead_name">
+                                        <div className={styles.profile}><p>{leadName[0]?.toUpperCase()}</p></div>
+                                        <div className={styles.lead_name}>
                                             <h4>{leadName}</h4>
                                             <p>{selectedProject}</p>
                                         </div>
                                     </div>
                                     <p>Assignees</p>
                                     <div>
-                                        <div className="profile"><p>{tableData[0]?.assignee[0]?.toUpperCase()}</p></div>
-                                        <div className="lead_name">
+                                        <div className={styles.profile}><p>{tableData[0]?.assignee[0]?.toUpperCase()}</p></div>
+                                        <div className={styles.lead_name}>
                                             <h4>
                                                 {tableData
                                                     .map(item => item.assignee)
@@ -344,16 +341,16 @@ const AgendaReport = () => {
                                 </div>
 
                             </div>
-                            <div className="progress_main_div">
-                                <div className="agenda_report_wrap">
-                                    <div className="report_agenda">
+                            <div className={styles.progress_main_div}>
+                                <div className={styles.agenda_report_wrap}>
+                                    <div className={styles.report_agenda}>
                                         <h2>{agendaTitle}</h2>
                                         <p>{agendaDescription}</p>
                                     </div>
-                                    <div className="report_agenda_list">
+                                    <div className={styles.report_agenda_list}>
                                         <h3>Timeline of weekly agenda</h3>
-                                        <div className="weekly_agenda_list_table_div ">
-                                            <table className="weekly_agenda_list_table">
+                                        <div className={styles.weekly_agenda_list_table_div}>
+                                            <table className={styles.weekly_agenda_list_table}>
                                                 <thead>
                                                     <tr>
                                                         <th>Name</th>
@@ -366,11 +363,11 @@ const AgendaReport = () => {
                                                 <tbody>
                                                     {tableData.map((item, index) => (
                                                         <tr key={index}>
-                                                            <td className="name-column">{item.name}</td>
+                                                            <td>{item.name}</td>
                                                             <td className={item.status.toLowerCase()}>{item.status}</td>
                                                             <td>{item.dueDate}</td>
                                                             <td>{item.hours}</td>
-                                                            <td><div className="assignee_name">
+                                                            <td><div className={styles.assignee_name}>
                                                                 <Avatar
                                                                     name={item.assignee[0]}
                                                                     round={true}
@@ -388,7 +385,7 @@ const AgendaReport = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="overall_progress">
+                                <div className={styles.overall_progress}>
                                     <p>Overall Progress</p>
                                     <div>
                                         <CircularProgressbar
@@ -404,24 +401,24 @@ const AgendaReport = () => {
                                             }
                                         />
                                     </div>
-                                    <div className="label_div">
+                                    <div className={styles.label_div}>
                                         <ul>
                                             <li>
-                                                <FaCircle className="bullet-icon completed" />
+                                                <FaCircle className={`${styles['bullet-icon']} ${styles.completed}`} />
                                                 Completed - 140/160
                                             </li>
                                             <li>
-                                                <FaCircle className="bullet-icon incompleted" />
+                                                <FaCircle className={`${styles['bullet-icon']} ${styles.completed}`} />
                                                 Incompleted - 20/160
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
-                            <div className="evaluator">
+                            <div className={styles.evaluator}>
                                 <h3>Evaluator Response</h3>
                                 <div>
-                                    <div className="circular_progress_bar">
+                                    <div className={styles.circular_progress_bar}>
                                         <div>
                                             <CircularProgressbar
                                                 value={parseFloat(evaluatorResponse["Confidence level created by AI"])}
@@ -436,12 +433,12 @@ const AgendaReport = () => {
                                                 }
                                             />
                                         </div>
-                                        <div className="response">
+                                        <div className={styles.response}>
                                             <p>Confidence level created by AI: <b className="evaluator_reponse_color_p">{evaluatorResponse["Confidence level created by AI"]}</b></p>
                                             <p>Confidence level created by Human: <b className="evaluator_reponse_color_g">{evaluatorResponse["Confidence level created by Human"]}</b></p>
                                         </div>
                                     </div>
-                                    <div className="circular_progress_bar">
+                                    <div className={styles.circular_progress_bar}>
                                         <div>
                                             <CircularProgressbar
                                                 value={parseFloat(evaluatorResponse["Creative"])}
@@ -456,13 +453,13 @@ const AgendaReport = () => {
                                                 }
                                             />
                                         </div>
-                                        <div className="response">
-                                            <p>Plagarized: <b className="evaluator_reponse_color_p">{evaluatorResponse["Plagiarised"]}</b></p>
-                                            <p>Creative: <b className="evaluator_reponse_color_g">{evaluatorResponse["Creative"]}</b></p>
+                                        <div className={styles.response}>
+                                            <p>Plagarized: <b className={styles.evaluator_reponse_color_p}>{evaluatorResponse["Plagiarised"]}</b></p>
+                                            <p>Creative: <b className={styles.evaluator_reponse_color_g}>{evaluatorResponse["Creative"]}</b></p>
                                         </div>
                                     </div>
-                                    <div className="circular_progress_bar">
-                                        <div className="character_count">
+                                    <div className={styles.circular_progress_bar}>
+                                        <div className={styles.character_count}>
                                             <p>Total Characters - <b>{evaluatorResponse["Total characters"]}</b></p>
                                             <p>Total Sentences - <b>{evaluatorResponse["Total sentences"]}</b></p>
                                         </div>
@@ -473,7 +470,7 @@ const AgendaReport = () => {
                     }
                     {
                         noResultFound && <>
-                            <div className="no_data_found"><p>No data Found for given Project and Sub Project!</p></div>
+                            <div className={styles.no_data_found}><p>No data Found for given Project and Sub Project!</p></div>
                         </>
                     }
                 </div>
@@ -482,4 +479,4 @@ const AgendaReport = () => {
     );
 }
 
-export default AgendaReport;
+export default HrAgendaReport;
