@@ -11007,10 +11007,11 @@ class DowellEvents(APIView):
 
         except:
             return Response({"success": False, "error": "Datacube is not responding"})
-
         if insert_collection["success"] and len(insert_collection["data"]) > 0:
             return Response(
-                {"success": True, "message": "events has been added successfuly"}
+                {"success": True,
+                 "inserted_id":insert_collection["data"]["inserted_id"],
+                 "message": "events has been added successfuly"}
             )
 
         else:
