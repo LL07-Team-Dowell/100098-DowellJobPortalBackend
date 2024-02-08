@@ -1,7 +1,7 @@
 import React, { useState, useReducer } from "react";
 import Overlay from "../../../../components/Overlay";
 import { AiOutlineClose } from "react-icons/ai";
-import "./styles.css";
+import styles from "./styles.module.css";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { useJobContext } from "../../../../contexts/Jobs";
 import { addEvents, updateEvents } from "../../../../services/eventServices";
@@ -9,9 +9,6 @@ import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuse
 import Select from "react-select";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { getAllEvents } from "../../../../services/hrServices";
 
 const EventsPopup = ({
   handleCloseModal,
@@ -26,16 +23,6 @@ const EventsPopup = ({
   const [dataPosting, setDataPosting] = useState(false);
   const [selectedEventHost, setSelectedEventHost] = useState(null);
   console.log(id);
-
-  // const [addEvent, setAddEvent] = useState({
-  //   company_id: currentUser.portfolio_info[0].org_id,
-  //   event_name: "",
-  //   event_frequency: "",
-  //   data_type: currentUser.portfolio_info[0].data_type,
-  //   event_host: "",
-  //   event_type: "",
-  //   is_mendatory: true,
-  // });
 
   const [editEvent, setEditEvent] = useState({
     company_id: currentUser.portfolio_info[0].org_id,
@@ -61,27 +48,11 @@ const EventsPopup = ({
     });
   };
 
-  const handleEventFrequencyChange = (e) => {
-    setEventFrequency(e.target.value);
-    setEditEvent((prevValue) => {
-      const copyOfPrevValue = { ...prevValue };
-      copyOfPrevValue["event_frequency"] = e.target.value;
-      return copyOfPrevValue;
-    });
-  };
-
-  const handleEventTypeChange = (e) => {
-    setEventType(e.target.value);
-    setEditEvent((prevValue) => {
-      const copyOfPrevValue = { ...prevValue };
-      copyOfPrevValue["event_type"] = e.target.value;
-      return copyOfPrevValue;
-    });
-  };
-
   const handleUpdate = () => {
     setDataPosting(true);
     const fetchEventDetails = async () => {
+      let newDocumentId;
+
       try {
         if (id && id !== null) {
           const editEventDetails = await updateEvents(editEvent);
@@ -101,15 +72,27 @@ const EventsPopup = ({
 
           toast.success("Events successfully updated");
         } else {
-          const eventDetails = await addEvents(editEvent);
+          const eventDetails = (await addEvents(editEvent)).data;
+          console.log(eventDetails);
+
+          newDocumentId = eventDetails?.data?.inserted_id;
           setEditEvent((prevDetails) => {
             return { ...prevDetails, ...editEvent };
           });
           setShowEventsPop();
           toast.success("Events successfully added");
-          // console.log(eventDetails);
+          forceUpdateEvent();
         }
-        forceUpdateEvent();
+
+        if (newDocumentId) {
+          window.history.replaceState(
+            {},
+            document.title,
+            `/100098-DowellJobPortal/#/event/?id=${encodeURIComponent(
+              newDocumentId
+            )}`
+          );
+        }
       } catch (error) {
         console.log(console.error("Error fetching project details:", error));
         toast.error("Something went wrong");
@@ -124,22 +107,22 @@ const EventsPopup = ({
   return (
     <>
       <Overlay>
-        <div className="edit_modal_event">
+        <div className={styles.edit_modal_event}>
           <div style={{ width: "100%" }}>
             <AiOutlineClose
               onClick={handleCloseModal}
-              className="edit_Icon_event"
+              className={styles.edit_Icon_event}
             />
           </div>
           {id ? (
             <>
-              <div className="events_popup">
+              <div className={styles.events_popup}>
                 <h2>Edit Event</h2>
                 <label htmlFor="event_name">
                   <span>Event Name</span>
                   <input
                     type="text"
-                    className="select_Item_event"
+                    className={styles.select_Item_event}
                     id="event_name"
                     name="event_name"
                     placeholder="Enter Event name"
@@ -166,7 +149,7 @@ const EventsPopup = ({
                       }));
                       setSelectedEventHost(selectedOption);
                     }}
-                    className="events__popup__select"
+                    className={styles.events__popup__select}
                   />
                 </label>
 
@@ -187,7 +170,7 @@ const EventsPopup = ({
                       }));
                       setEventFrequency(selectedOption);
                     }}
-                    className="events__popup__select"
+                    className={styles.events__popup__select}
                   />
                 </label>
 
@@ -205,15 +188,15 @@ const EventsPopup = ({
                       }));
                       setEventType(selectedOption);
                     }}
-                    className="events__popup__select"
+                    className={styles.events__popup__select}
                   />
                 </label>
 
-                <div className="event_mandatory">
+                <div className={styles.event_mandatory}>
                   <label htmlFor="is_mendatory">Is Madantory ?</label>
-                  <div className="edit_is_mandatory">
+                  <div className={styles.edit_is_mandatory}>
                     <input
-                      className="edit_active_checkbox"
+                      className={styles.edit_active_checkbox}
                       type="checkbox"
                       name={"is_mendatory"}
                       checked={editEvent.is_mendatory}
@@ -227,13 +210,13 @@ const EventsPopup = ({
             </>
           ) : (
             <>
-              <div className="events_popup">
+              <div className={styles.events_popup}>
                 <h2>Add New Event</h2>
                 <label htmlFor="event_name">
                   <span>Event Name</span>
                   <input
                     type="text"
-                    className="select_Item_event"
+                    className={styles.select_Item_event}
                     id="event_name"
                     name="event_name"
                     placeholder="Enter Event name"
@@ -260,7 +243,7 @@ const EventsPopup = ({
                       }));
                       setSelectedEventHost(selectedOption);
                     }}
-                    className="events__popup__select"
+                    className={styles.events__popup__select}
                   />
                 </label>
 
@@ -281,7 +264,7 @@ const EventsPopup = ({
                       }));
                       setEventFrequency(selectedOption);
                     }}
-                    className="events__popup__select"
+                    className={styles.events__popup__select}
                   />
                 </label>
 
@@ -299,15 +282,15 @@ const EventsPopup = ({
                       }));
                       setEventType(selectedOption);
                     }}
-                    className="events__popup__select"
+                    className={styles.events__popup__select}
                   />
                 </label>
 
-                <div className="event_mandatory">
+                <div className={styles.event_mandatory}>
                   <label htmlFor="is_mendatory">Is Madantory ?</label>
-                  <div className="edit_is_mandatory">
+                  <div className={styles.edit_is_mandatory}>
                     <input
-                      className="edit_active_checkbox"
+                      className={styles.edit_active_checkbox}
                       type="checkbox"
                       name={"is_mendatory"}
                       checked={editEvent.is_mendatory}
@@ -323,7 +306,7 @@ const EventsPopup = ({
 
           <div className="project__btn">
             <button
-              className="project__submit"
+              className={styles.project__submit}
               onClick={handleUpdate}
               disabled={dataPosting ? true : false}
             >
