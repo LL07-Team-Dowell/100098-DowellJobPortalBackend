@@ -291,7 +291,7 @@ export default function StructureConfigurationModal ({
                                 <>
                                     <label>
                                         <p>
-                                            <span>Select team lead</span>
+                                            <span>Select team lead <span style={{ color: 'red' }}>*</span></span>
                                         </p>
                                         {
                                             
