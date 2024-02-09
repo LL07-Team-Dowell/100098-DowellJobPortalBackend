@@ -605,7 +605,20 @@ def datacube_data_update(api_key, db_name, coll_name, query, update_data):
     }
 
     response = requests.put(url, json=data)
-    print(response.text)
+    return response.text
+
+
+def datacube_delete_function(api_key, db_name, coll_name, query):
+    url = "https://datacube.uxlivinglab.online/db_api/crud/"
+    data = {
+        "api_key": api_key,
+        "db_name": db_name,
+        "coll_name": coll_name,
+        "operation": "delete",
+        "query": query,
+    }
+
+    response = requests.delete(url, json=data)
     return response.text
 
 
