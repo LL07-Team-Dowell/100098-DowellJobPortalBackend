@@ -10,56 +10,91 @@ import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import EventsPopup from "./EventsPopUp";
+import DeleteConfirmation from "../../../../components/DeleteConfirmation/DeleteConfirmation";
+import { deleteEvents } from "../../../../services/eventServices";
+import { toast } from "react-toastify";
 
 const EventScreen = () => {
   const [showEventsPop, setShowEventsPop] = useState(false);
+  const [showDeletePop, setShowDeletePop] = useState(false);
   const { projectsLoading } = useJobContext();
   const { currentUser } = useCurrentUserContext();
   const [events, setEvents] = useState([]);
   const [showEditOptions, setShowEditOptions] = useState({});
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [reducerEvent, forceUpdateEvent] = useReducer((x) => x + 1, 0);
-  const [eventsLoading, setEventsLoading] = useState(false);
+  const [showDeleteOptions, setShowDeleteOptions] = useState({});
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventsBeingEdited, setEventsBeingEdited] = useState(null);
+  const [eventsBeingDeleted, setEventsBeingDeleted] = useState(null);
+  const [eventsLoaded, setEventsLoaded] = useState(false);
 
   useEffect(() => {
-    setEventsLoading(true);
-    getAllEvents({ company_id: currentUser.portfolio_info[0].org_id }).then(
-      (res) => {
+    if (eventsLoaded) return;
+
+    getAllEvents({
+      company_id: currentUser.portfolio_info[0].org_id,
+      data_type: currentUser.portfolio_info[0].data_type,
+    })
+      .then((res) => {
         console.log(res.data.data);
         const eventDetails = res?.data?.data;
         const sortedEvents = eventDetails.reverse();
         setEvents(sortedEvents);
         setEventsLoading(false);
+        setEventsLoaded(true);
         console.log(events);
-      }
-    );
-  }, [reducerEvent]);
+      })
+      .catch((err) => {
+        console.log(err);
+        setEventsLoading(false);
+      });
+  }, []);
 
   const showEventsPopup = () => {
     setShowEventsPop(true);
   };
 
-  const handleUpdateEvent = (eventssId) => {
-    setShowEditModal((prevEditOption) => ({
-      ...prevEditOption,
-      [eventssId]: true,
-    }));
+  const handleUpdateEvent = (eventss) => {
+    setEventsBeingEdited(eventss);
+    setShowEventsPop(true);
     setShowEditOptions(false);
   };
+  const handleDeleteEvent = (eventss) => {
+    setEventsBeingDeleted(eventss);
+    setShowDeletePop(true);
+    setShowDeleteOptions(false);
+  };
 
-  const showUpdate = (eventssId) => {
+  const showIcon = (eventssId) => {
     setShowEditOptions((prevEditOption) => ({
       ...prevEditOption,
       [eventssId]: true,
     }));
   };
 
-  const handleCloseModal = (eventssId) => {
+  const handleCloseModal = () => {
     setShowEventsPop(false);
-    setShowEditModal((prevEditOption) => ({
-      ...prevEditOption,
-      [eventssId]: false,
-    }));
+    setShowDeletePop(false);
+    setEventsBeingEdited(null);
+  };
+
+  const handleDeleteOfEvent = () => {
+    if (eventsBeingDeleted) {
+      const copyOfEvents = events.slice();
+
+      deleteEvents(eventsBeingDeleted?._id);
+
+      setEvents(
+        copyOfEvents.filter((event) => event._id !== eventsBeingDeleted?._id)
+      );
+
+      handleCloseModal();
+
+      setShowDeleteOptions(false);
+
+      toast.success(`${eventsBeingDeleted.event_name} successfully deleted`);
+
+      return;
+    }
   };
 
   return (
@@ -91,7 +126,7 @@ const EventScreen = () => {
                       <h2>{eventss.event_name}</h2>
                       <div
                         className={styles.edit__App}
-                        onClick={() => showUpdate(eventss._id)}
+                        onClick={() => showIcon(eventss._id)}
                       >
                         <HiOutlineDotsVertical />
                       </div>
@@ -108,19 +143,17 @@ const EventScreen = () => {
                       <ul className={styles.update__Listing_event}>
                         <li
                           className={styles.item}
-                          onClick={() => handleUpdateEvent(eventss._id)}
+                          onClick={() => handleUpdateEvent(eventss)}
                         >
                           Edit
                         </li>
+                        <li
+                          className={styles.delete}
+                          onClick={() => handleDeleteEvent(eventss)}
+                        >
+                          Delete
+                        </li>
                       </ul>
-                    )}
-                    {showEditModal[eventss._id] && (
-                      <EventsPopup
-                        handleCloseModal={() => handleCloseModal(eventss._id)}
-                        setShowEventsPop={() => setShowEventsPop(false)}
-                        forceUpdateEvent={forceUpdateEvent}
-                        id={eventss._id}
-                      />
                     )}
                   </div>
                 );
@@ -129,8 +162,17 @@ const EventScreen = () => {
             {showEventsPop && (
               <EventsPopup
                 handleCloseModal={handleCloseModal}
-                setShowEventsPop={() => setShowEventsPop(false)}
-                forceUpdateEvent={forceUpdateEvent}
+                events={events}
+                currentEvent={eventsBeingEdited}
+                setCurrentEvent={setEventsBeingEdited}
+                updateEvent={setEvents}
+              />
+            )}
+            {showDeletePop && (
+              <DeleteConfirmation
+                text="Are you sure you want to delete this Event?"
+                closeModal={handleCloseModal}
+                deleteFunction={handleDeleteOfEvent}
               />
             )}
           </div>
