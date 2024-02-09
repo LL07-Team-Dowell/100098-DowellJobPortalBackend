@@ -10,17 +10,8 @@ DATA_TYPE_CHOICE = (
     )
 # account serializers__________________________________________________________________________
 class AccountSerializer(serializers.Serializer):
-    DATA_TYPE_CHOICE = (
-        ("Real_Data", "Real_Data"),
-        ("Learning_Data", "Learning_Data"),
-        ("Testing_Data", "Testing_Data"),
-        ("Archived_Data", "Archived_Data"),
-    )
-    JOB_CATEGORY_CHOICE = (
-        ("Freelancer", "Freelancer"),
-        ("Internship", "Internship"),
-        ("Employee", "Employee"),
-    )
+
+    
 
     applicant = serializers.CharField(allow_null=False, allow_blank=False)
     project = serializers.ListField(required=True, allow_empty=False)
@@ -34,12 +25,7 @@ class AccountSerializer(serializers.Serializer):
 
 
 class RejectSerializer(serializers.Serializer):
-    DATA_TYPE_CHOICE = (
-        ("Real_Data", "Real_Data"),
-        ("Learning_Data", "Learning_Data"),
-        ("Testing_Data", "Testing_Data"),
-        ("Archived_Data", "Archived_Data"),
-    )
+
     JOB_CATEGORY_CHOICE = (
         ("Freelancer", "Freelancer"),
         ("Internship", "Internship"),
@@ -911,5 +897,5 @@ class UpdateEventSerializer(serializers.Serializer):
 class GetEventSerializer(serializers.Serializer):
     company_id = serializers.CharField(max_length=225, allow_null=False)
     data_type = serializers.ChoiceField(
-        allow_null=False, required=True, allow_blank=False, choices=DATA_TYPE_CHOICE
+        allow_null=True, required=False, allow_blank=True, choices=DATA_TYPE_CHOICE
     )
