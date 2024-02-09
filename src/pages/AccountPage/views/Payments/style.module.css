@@ -1,0 +1,187 @@
+.record_table {
+    max-height: 500px;
+    overflow: auto;
+    margin: 1rem;
+    width: 98%;
+    /* box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2); */
+}
+
+.table_list {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem auto;
+}
+
+.table_list th {
+    text-align: left;
+    background-color: white;
+    color: #909090;
+    padding: 1rem;
+}
+
+.table_list td {
+    padding: 8px;
+    text-align: left;
+    background-color: white;
+    font-size: 1rem;
+    padding: 1rem;
+}
+
+.table_list tr {
+    border-bottom: 1.5px solid #ddd;
+}
+
+.selection_wrap {
+    display: flex;
+    flex-wrap: row;
+    align-items: center;
+}
+
+.btn_get_record {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: #005734;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    margin: 1rem;
+}
+
+.select_user {
+    width: 30%;
+    margin: 1rem;
+}
+
+.select_user p {
+    font-family: "Poppins", sans-serif;
+    padding: 2px;
+    font-size: 0.9rem;
+}
+
+.main_wrap h3 {
+    margin: 1rem;
+    font-size: 1.5rem;
+    color: #005734;
+    font-weight: 400;
+}
+
+.main_wrap {
+    padding: 1rem;
+    /* overflow: scroll; */
+    margin-bottom: 15%;
+}
+
+.add_record {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    width: max-content;
+    padding: 0.4rem;
+    border-radius: 10px;
+    font-weight: 400;
+    margin: 1rem;
+}
+
+.add_record h6 {
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+.add_edit_modal {
+    width: 45%;
+    height: max-content;
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.close_icon {
+    width: 100%;
+    text-align: right;
+    padding: 0.2rem;
+}
+
+.select_input {
+    margin: 1.5rem;
+    /* width: 90%; */
+}
+
+.select_input input,
+select {
+    padding: 0.5rem 1rem;
+    border-radius: 3px;
+    border: 1px solid #cccccc;
+    padding: 8px;
+    font-size: 14px;
+    width: 100%;
+    font-family: "Poppins", sans-serif;
+    background-color: transparent;
+    color: #3e3e3e;
+}
+
+.select_input p {
+    font-family: "Poppins", sans-serif;
+    padding: 2px;
+    font-size: 0.9rem;
+}
+
+.btn_add_record {
+    margin: 2rem auto;
+    display: flex;
+    align-items: center;
+}
+
+.edit_add_record {
+    width: 100%;
+}
+
+.no_data_found_modal {
+    width: 38%;
+    height: max-content;
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.warning_modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: space-around; */
+    font-family: "Poppins", sans-serif;
+}
+
+.warning_modal b {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin: 1rem;
+}
+
+.warning_modal p {
+    font-size: 1rem;
+    font-weight: 350;
+    margin: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.warning_modal .user_not_found {
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+
+.warning_modal .add_record {
+    margin: 1.5rem;
+}

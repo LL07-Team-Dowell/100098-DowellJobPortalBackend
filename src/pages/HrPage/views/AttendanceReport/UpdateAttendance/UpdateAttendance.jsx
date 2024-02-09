@@ -74,7 +74,8 @@ const AttendanceUpdatePage = () => {
     }, []);
 
     const dataForFetchingEvents = {
-        company_id: currentUser?.portfolio_info[0].org_id,
+        company_id: currentUser?.portfolio_info[0]?.org_id,
+        data_type: currentUser?.portfolio_info[0]?.data_type,
     }
 
     useEffect(() => {
@@ -82,7 +83,7 @@ const AttendanceUpdatePage = () => {
         const fetchEvents = async () => {
             // if (!selectedEvent) return toast.warn('Select an Event!');
             try {
-                const data = (await getAllEvents(dataForFetchingEvents)).data.data?.filter(event => 
+                const data = (await getAllEvents(dataForFetchingEvents)).data.data?.filter(event =>
                     event.data_type === currentUser?.portfolio_info[0]?.data_type
                 );
                 const eventNamesList = data.map(event => ({
@@ -210,17 +211,17 @@ const AttendanceUpdatePage = () => {
                     <div className="upd_calendar">
                         <p>Select Date:</p>
                         <br />
-                        <Calendar 
-                            minDate={mondayOfThisWeek} 
-                            maxDate={sundayOfNextWeek} 
-                            onChange={handleDateChange} 
+                        <Calendar
+                            minDate={mondayOfThisWeek}
+                            maxDate={sundayOfNextWeek}
+                            onChange={handleDateChange}
                             className="react-calendar"
                             tileDisabled={
                                 ({ activeStartDate, date, view }) => (
                                     date.getDay() === 0 ||
                                     date.getDay() === 6
                                 )
-                            } 
+                            }
                         />
                     </div>
                 </div>
@@ -280,27 +281,27 @@ const AttendanceUpdatePage = () => {
                                         <>
                                             <div className="update_att">
                                                 <p>Candidates in selected project:</p>
-                                                <button 
+                                                <button
                                                     onClick={
                                                         () => { handleUpdateClick() }
                                                     }
                                                     disabled={isAttendanceUpdated ? true : false}
                                                 >
-                                                        {
-                                                            isAttendanceUpdated ? 
-                                                                <>
-                                                                    <LoadingSpinner 
-                                                                        width={"1rem"} 
-                                                                        height={"1rem"} 
-                                                                        color={'#fff'}
-                                                                    />
-                                                                </> 
-                                                            : 
+                                                    {
+                                                        isAttendanceUpdated ?
+                                                            <>
+                                                                <LoadingSpinner
+                                                                    width={"1rem"}
+                                                                    height={"1rem"}
+                                                                    color={'#fff'}
+                                                                />
+                                                            </>
+                                                            :
                                                             <>
                                                                 Update
                                                             </>
-                                                        }
-                                                    </button>
+                                                    }
+                                                </button>
                                             </div>
                                             <div className="user_boxes">
                                                 {usersInSelectedProject.map((user, index) => (
@@ -309,27 +310,27 @@ const AttendanceUpdatePage = () => {
                                                             {
                                                                 attendanceStates[index] ?
                                                                     <>
-                                                                        <FaCircleCheck 
-                                                                            className="present" 
+                                                                        <FaCircleCheck
+                                                                            className="present"
                                                                             fontSize={'1.4rem'}
                                                                             data-tooltip-id={"check-status-present"}
-                                                                        /> 
-                                                                        <Tooltip 
-                                                                            id="check-status-present" 
+                                                                        />
+                                                                        <Tooltip
+                                                                            id="check-status-present"
                                                                             content={
                                                                                 'Update to absent'
                                                                             }
                                                                         />
                                                                     </>
-                                                                    : 
+                                                                    :
                                                                     <>
-                                                                        <MdCancel 
-                                                                            className="absent" 
+                                                                        <MdCancel
+                                                                            className="absent"
                                                                             fontSize={'1.4rem'}
                                                                             data-tooltip-id={"check-status-absent"}
                                                                         />
-                                                                        <Tooltip 
-                                                                            id="check-status-absent" 
+                                                                        <Tooltip
+                                                                            id="check-status-absent"
                                                                             content={
                                                                                 'Update to present'
                                                                             }

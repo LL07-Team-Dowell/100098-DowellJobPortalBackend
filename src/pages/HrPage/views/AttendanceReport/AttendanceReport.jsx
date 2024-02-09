@@ -287,13 +287,13 @@ const AttendanceReport = () => {
         //         setAttendanceDetails([userAttendance]);
         //     }
         // } 
-        
+
         if (views.userWiseView) {
             const userAttendance = userWiseResponse[username];
             if (userAttendance && userAttendance.length > 0) {
                 setPercentage('');
                 setAttendanceDetails(userAttendance);
-                
+
                 // UPDATED THE FUNCTIONALITY FOR THIS AS WELL
                 // console.log(userAttendance);
                 // const allDates = [...userAttendance[0].dates_present, ...userAttendance[0].dates_absent];
@@ -312,13 +312,14 @@ const AttendanceReport = () => {
 
     useEffect(() => {
         const dataForFetchingEvents = {
-            company_id: currentUser?.portfolio_info[0].org_id,
+            company_id: currentUser?.portfolio_info[0]?.org_id,
+            data_type: currentUser?.portfolio_info[0]?.data_type,
         }
 
         setDataLoading({ ...dataLoading, isEventLoading: true });
         const fetchEvents = async () => {
             try {
-                const data = (await getAllEvents(dataForFetchingEvents)).data.data?.filter(event => 
+                const data = (await getAllEvents(dataForFetchingEvents)).data.data?.filter(event =>
                     event.data_type === currentUser?.portfolio_info[0]?.data_type
                 );
                 const eventNamesList = data.map(event => ({
@@ -356,7 +357,7 @@ const AttendanceReport = () => {
         setEndDate('');
         setSelectedProjectForMulti(null);
         setFoundUserEventAttendanceDetail(null);
-        
+
         switch (index) {
             case SCREEN_PROJECT_USER:
                 setViews({ projectWiseView: false, multiProjectView: true, userWiseView: true, eventWiseView: true })
@@ -385,14 +386,14 @@ const AttendanceReport = () => {
     const renderingEventAttendance = (eventId) => {
         const foundEvent = eventNames?.find(event => event?.id === eventId);
         if (!foundEvent) return
-        
+
         setSelectedEvent({
             id: eventId,
             value: foundEvent?.value,
             label: foundEvent?.label,
         });
         setFoundUserEventAttendanceDetail(null);
-        
+
         const foundEventAttendance = attendanceDetails?.find(attendance => attendance?.event_id === eventId);
         if (!foundEventAttendance) {
             setPercentage('');
@@ -402,8 +403,8 @@ const AttendanceReport = () => {
         setPercentage(
             foundEventAttendance?.dates_present ?
                 foundEventAttendance?.dates_present.length
-            :
-            ''
+                :
+                ''
         );
         setFoundUserEventAttendanceDetail(foundEventAttendance);
 
@@ -503,21 +504,21 @@ const AttendanceReport = () => {
                                 value={selectedMultiProjects}
                                 onChange={(projectsSelected) => {
                                     setSelectedMultiProjects(projectsSelected);
-                                    
+
                                     const usersFromProjectsSelected = allHiredCandidates?.filter(
                                         candidate =>
-                                            candidate.project && 
+                                            candidate.project &&
                                             candidate.project?.find(
                                                 item => projectsSelected?.find(project => project?.value === item)
                                             )
-                                        )?.map(
-                                            candidate => {
-                                                return {
-                                                    label: candidate?.applicant,
-                                                    value: candidate?.username,
-                                                }
+                                    )?.map(
+                                        candidate => {
+                                            return {
+                                                label: candidate?.applicant,
+                                                value: candidate?.username,
                                             }
-                                        )
+                                        }
+                                    )
                                     // console.log(usersFromProjectsSelected);
                                     setSelectedUser(usersFromProjectsSelected);
                                     // handleMultiProjectChange()
@@ -531,17 +532,17 @@ const AttendanceReport = () => {
                         <>
                             {
                                 views.multiProjectView ? <></> :
-                                <div className="item__Filter__Wrap">
-                                    <p>Select User:</p>
-                                    <Select
-                                        options={candidateOptions}
-                                        isMulti={true}
-                                        isLoading={dataLoading.isUserLoading}
-                                        value={selectedUser}
-                                        onChange={handleChange}
-                                        className="item__Filter"
-                                    />
-                                </div>
+                                    <div className="item__Filter__Wrap">
+                                        <p>Select User:</p>
+                                        <Select
+                                            options={candidateOptions}
+                                            isMulti={true}
+                                            isLoading={dataLoading.isUserLoading}
+                                            value={selectedUser}
+                                            onChange={handleChange}
+                                            className="item__Filter"
+                                        />
+                                    </div>
                             }
                         </>
                     }
@@ -581,15 +582,15 @@ const AttendanceReport = () => {
                             className="att__Date__Input"
                         />
                     </div>
-                    <button 
-                        onClick={handleGetAttendanceClick} 
-                        className="hr__Att__Btn" 
+                    <button
+                        onClick={handleGetAttendanceClick}
+                        className="hr__Att__Btn"
                         disabled={isLoading ? true : false}
                     >
                         {
-                            isLoading ? 
+                            isLoading ?
                                 <LoadingSpinner width={18} height={18} color={'#fff'} /> :
-                            `Get Attendance`
+                                `Get Attendance`
                         }
                     </button>
                 </div>
@@ -610,131 +611,131 @@ const AttendanceReport = () => {
                                             </button>
                                         }))
                                     }
-                                </> : 
-                                views.userWiseView ? <>
-                                    <p>Candidates:</p>
-                                    {
-                                        selectedUser.map((candidate) => (
-                                            <button 
-                                                key={candidate.value} 
-                                                onClick={() => renderingAttendance(candidate.label, candidate.value)}
-                                            >
-                                                {candidate.label}
-                                            </button>
-
-                                        ))
-                                    }
                                 </> :
-                                <>
-                                
-                                </>
+                                    views.userWiseView ? <>
+                                        <p>Candidates:</p>
+                                        {
+                                            selectedUser.map((candidate) => (
+                                                <button
+                                                    key={candidate.value}
+                                                    onClick={() => renderingAttendance(candidate.label, candidate.value)}
+                                                >
+                                                    {candidate.label}
+                                                </button>
+
+                                            ))
+                                        }
+                                    </> :
+                                        <>
+
+                                        </>
                             }
                         </div>
                         {
                             (
-                                (percentage.length < 1 && attendanceDetails?.length < 1) 
-                                || 
+                                (percentage.length < 1 && attendanceDetails?.length < 1)
+                                ||
                                 (views.multiProjectView && !selectedProjectForMulti)
-                            ) ? 
-                                <></> 
-                            :
-                            <div className="att_rep">
-                                <div className="att_name txt_color">
-                                    <div className="profile">
-                                        <Avatar
-                                            name={
-                                                views.multiProjectView ?
-                                                    selectedProjectForMulti?.value :
-                                                userForAttendance[0]
-                                            }
-                                            round={true}
-                                            size='8rem'
-                                            color="#807f7f"
-                                        />
-                                    </div>
-                                    <div className="candidate_info">
-                                        <h4>
-                                            {
-                                                selectedProjectForMulti ? 
-                                                    selectedProjectForMulti?.value 
-                                                    :    
-                                                userForAttendance
-                                            }
-                                        </h4>
-                                        <>
-                                            {
-                                                views.multiProjectView ? <>
-                                                    <p style={{ fontSize: '0.75rem' }}>
-                                                        Members: {
-                                                            allHiredCandidates?.filter(
-                                                                candidate =>
-                                                                    candidate.project && 
-                                                                    candidate.project?.includes(selectedProjectForMulti?.value)
+                            ) ?
+                                <></>
+                                :
+                                <div className="att_rep">
+                                    <div className="att_name txt_color">
+                                        <div className="profile">
+                                            <Avatar
+                                                name={
+                                                    views.multiProjectView ?
+                                                        selectedProjectForMulti?.value :
+                                                        userForAttendance[0]
+                                                }
+                                                round={true}
+                                                size='8rem'
+                                                color="#807f7f"
+                                            />
+                                        </div>
+                                        <div className="candidate_info">
+                                            <h4>
+                                                {
+                                                    selectedProjectForMulti ?
+                                                        selectedProjectForMulti?.value
+                                                        :
+                                                        userForAttendance
+                                                }
+                                            </h4>
+                                            <>
+                                                {
+                                                    views.multiProjectView ? <>
+                                                        <p style={{ fontSize: '0.75rem' }}>
+                                                            Members: {
+                                                                allHiredCandidates?.filter(
+                                                                    candidate =>
+                                                                        candidate.project &&
+                                                                        candidate.project?.includes(selectedProjectForMulti?.value)
                                                                 )?.map(
                                                                     candidate => candidate?.applicant
                                                                 )?.flat()?.join(', ')
-                                                        }
-                                                    </p>
-                                                </> :
+                                                            }
+                                                        </p>
+                                                    </> :
+                                                        <>
+                                                            <p>Freelancer</p>
+                                                            <p>Project: <b>{selectedProject?.value}</b></p>
+                                                        </>
+                                                }
+                                            </>
+                                        </div>
+                                        {
+                                            views.userWiseView && !views.multiProjectView && selectedEvent?.length < 1 ? <></>
+                                                :
                                                 <>
-                                                    <p>Freelancer</p>
-                                                    <p>Project: <b>{selectedProject?.value}</b></p>
+                                                    <div className="att_percentage">
+                                                        <CircularProgressbar
+                                                            value={(Number(percentage) / 5) * 100}
+                                                            styles={
+                                                                buildStyles({
+                                                                    pathColor: `#18d462`,
+                                                                    trailColor: '#f5f5f5',
+                                                                })
+                                                            }
+                                                        />
+                                                        <div>
+                                                            <p>Present</p>
+                                                            <b>{`${(Number(percentage) / 5) * 100}%`}</b>
+                                                        </div>
+                                                    </div>
+                                                    <div className="att_percentage">
+                                                        <CircularProgressbar
+                                                            value={100 - ((Number(percentage) / 5) * 100)}
+                                                            styles={
+                                                                buildStyles({
+                                                                    pathColor: `#f02a2b`,
+                                                                    trailColor: '#f5f5f5',
+                                                                })
+                                                            }
+                                                        />
+                                                        <div>
+                                                            <p>Absent</p>
+                                                            <b>{`${100 - ((Number(percentage) / 5) * 100)}%`}</b>
+                                                        </div>
+                                                    </div>
                                                 </>
-                                            }
-                                        </>
+                                        }
                                     </div>
                                     {
-                                        views.userWiseView && !views.multiProjectView && selectedEvent?.length < 1 ? <></> 
-                                        :
-                                        <>
-                                            <div className="att_percentage">
-                                                <CircularProgressbar
-                                                    value={(Number(percentage) / 5) * 100}
-                                                    styles={
-                                                        buildStyles({
-                                                            pathColor: `#18d462`,
-                                                            trailColor: '#f5f5f5',
-                                                        })
-                                                    }
+                                        views.userWiseView && views.projectWiseView &&
+                                        <div className="users_info">
+                                            <div className="select__Event__Wrap">
+                                                <p>Filter by Event</p>
+                                                <Select
+                                                    options={eventNames}
+                                                    onChange={(val) => {
+                                                        // const foundEventIndex = eventNames.findIndex(event => event._id === val._id);
+                                                        // if (foundEventIndex === -1) return
+                                                        renderingEventAttendance(val?.id);
+                                                    }}
                                                 />
-                                                <div>
-                                                    <p>Present</p>
-                                                    <b>{`${(Number(percentage) / 5) * 100}%`}</b>
-                                                </div>
                                             </div>
-                                            <div className="att_percentage">
-                                                <CircularProgressbar
-                                                    value={100 - ((Number(percentage) / 5) * 100)}
-                                                    styles={
-                                                        buildStyles({
-                                                            pathColor: `#f02a2b`,
-                                                            trailColor: '#f5f5f5',
-                                                        })
-                                                    }
-                                                />
-                                                <div>
-                                                    <p>Absent</p>
-                                                    <b>{`${100 - ((Number(percentage) / 5) * 100)}%`}</b>
-                                                </div>
-                                            </div>
-                                        </>
-                                    }
-                                </div>
-                                {
-                                    views.userWiseView && views.projectWiseView &&
-                                    <div className="users_info">
-                                        <div className="select__Event__Wrap">
-                                            <p>Filter by Event</p>
-                                            <Select
-                                                options={eventNames}
-                                                onChange={(val) => {
-                                                    // const foundEventIndex = eventNames.findIndex(event => event._id === val._id);
-                                                    // if (foundEventIndex === -1) return
-                                                    renderingEventAttendance(val?.id);
-                                                }}
-                                            />
-                                        </div>
-                                        {/* <p>Events:</p>
+                                            {/* <p>Events:</p>
     
                                         {
                                             eventNames.map((event, index) => (
@@ -744,147 +745,147 @@ const AttendanceReport = () => {
     
                                             ))
                                         } */}
-                                    </div>
-                                }
-                                {
-                                    attendanceDetails?.length < 1 ? <></> :
-                                    views.userWiseView && !views.multiProjectView && selectedEvent?.length < 1 ? <></> :
-                                    <>
-                                        <h2 className="title">Attendance Report</h2>
-                                        <div className="tbl_rep">
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        {
-                                                            views.multiProjectView &&
-                                                            <th>User</th>
-                                                        }
-                                                        <th>Monday</th>
-                                                        <th>Tuesday</th>
-                                                        <th>Wednesday</th>
-                                                        <th>Thursday</th>
-                                                        <th>Friday</th>
-                                                        <th>Saturday</th>
-                                                        <th>Sunday</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <Tooltip
-                                                        id="my-tooltip"
-                                                    />
-                                                    <>
-                                                        {
-                                                            views.multiProjectView ? <>
-                                                                {
-                                                                    !selectedProjectForMulti ? <></> :
-                                                                    <>
-                                                                        {
-                                                                            React.Children.toArray(selectedUser?.map(user => {
-                                                                                const usersForCurrentMultiProject = allHiredCandidates?.filter(
-                                                                                    candidate =>
-                                                                                        candidate.project && 
-                                                                                        candidate.project?.includes(selectedProjectForMulti?.value)
-                                                                                    )?.map(
-                                                                                        candidate => candidate?.username
-                                                                                    )
-                                                                                
-                                                                                if (!usersForCurrentMultiProject?.includes(user?.value)) return <></>
+                                        </div>
+                                    }
+                                    {
+                                        attendanceDetails?.length < 1 ? <></> :
+                                            views.userWiseView && !views.multiProjectView && selectedEvent?.length < 1 ? <></> :
+                                                <>
+                                                    <h2 className="title">Attendance Report</h2>
+                                                    <div className="tbl_rep">
+                                                        <table>
+                                                            <thead>
+                                                                <tr>
+                                                                    {
+                                                                        views.multiProjectView &&
+                                                                        <th>User</th>
+                                                                    }
+                                                                    <th>Monday</th>
+                                                                    <th>Tuesday</th>
+                                                                    <th>Wednesday</th>
+                                                                    <th>Thursday</th>
+                                                                    <th>Friday</th>
+                                                                    <th>Saturday</th>
+                                                                    <th>Sunday</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <Tooltip
+                                                                    id="my-tooltip"
+                                                                />
+                                                                <>
+                                                                    {
+                                                                        views.multiProjectView ? <>
+                                                                            {
+                                                                                !selectedProjectForMulti ? <></> :
+                                                                                    <>
+                                                                                        {
+                                                                                            React.Children.toArray(selectedUser?.map(user => {
+                                                                                                const usersForCurrentMultiProject = allHiredCandidates?.filter(
+                                                                                                    candidate =>
+                                                                                                        candidate.project &&
+                                                                                                        candidate.project?.includes(selectedProjectForMulti?.value)
+                                                                                                )?.map(
+                                                                                                    candidate => candidate?.username
+                                                                                                )
 
-                                                                                return <tr>
-                                                                                    <td>{user?.label}</td>
-                                                                                    {
-                                                                                        React.Children.toArray(datesForToolTip.map((date, index) => {
-                                                                                            return <td
-                                                                                                Tooltip={formatTooltip(index)}
-                                                                                                data-tooltip-id="my-tooltip"
-                                                                                                data-tooltip-content={isWeekend(index) ? `Holiday` : `${new Date(datesForToolTip[index]).toDateString()}`}
-                                                                                                data-tooltip-place="top"
-                                                                                            >
-                                                                                                {
-                                                                                                    isWeekend(index) ?
+                                                                                                if (!usersForCurrentMultiProject?.includes(user?.value)) return <></>
+
+                                                                                                return <tr>
+                                                                                                    <td>{user?.label}</td>
+                                                                                                    {
+                                                                                                        React.Children.toArray(datesForToolTip.map((date, index) => {
+                                                                                                            return <td
+                                                                                                                Tooltip={formatTooltip(index)}
+                                                                                                                data-tooltip-id="my-tooltip"
+                                                                                                                data-tooltip-content={isWeekend(index) ? `Holiday` : `${new Date(datesForToolTip[index]).toDateString()}`}
+                                                                                                                data-tooltip-place="top"
+                                                                                                            >
+                                                                                                                {
+                                                                                                                    isWeekend(index) ?
+                                                                                                                        <>
+                                                                                                                            <FaCircleCheck className="holiday table_data" />Holiday
+                                                                                                                        </>
+                                                                                                                        :
+                                                                                                                        attendanceDetails?.find(
+                                                                                                                            item =>
+                                                                                                                                item.user_present?.includes(user?.value)
+                                                                                                                                &&
+                                                                                                                                formatDateForAPI(item.date_taken) === formatDateForAPI(date)
+                                                                                                                        ) ?
+                                                                                                                            <>
+                                                                                                                                <FaCircleCheck className="present table_data" />Present
+                                                                                                                            </>
+                                                                                                                            :
+                                                                                                                            <>
+                                                                                                                                <MdCancel className="absent table_data" />Absent
+                                                                                                                            </>
+                                                                                                                }
+                                                                                                            </td>
+                                                                                                        }))
+                                                                                                    }
+                                                                                                    <td
+                                                                                                        Tooltip={formatTooltip(6)}
+                                                                                                        data-tooltip-id="my-tooltip"
+                                                                                                        data-tooltip-content={`Holiday`}
+                                                                                                        data-tooltip-place="top"
+                                                                                                    >
                                                                                                         <>
                                                                                                             <FaCircleCheck className="holiday table_data" />Holiday
-                                                                                                        </> 
-                                                                                                    :
-                                                                                                    attendanceDetails?.find(
-                                                                                                        item => 
-                                                                                                            item.user_present?.includes(user?.value) 
-                                                                                                            &&
-                                                                                                            formatDateForAPI(item.date_taken) === formatDateForAPI(date)
-                                                                                                    ) ?
-                                                                                                        <>
-                                                                                                            <FaCircleCheck className="present table_data" />Present
                                                                                                         </>
-                                                                                                    :
-                                                                                                    <>
-                                                                                                        <MdCancel className="absent table_data" />Absent
-                                                                                                    </>
-                                                                                                }
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            }))
+                                                                                        }
+                                                                                    </>
+                                                                            }
+                                                                        </> :
+                                                                            views.userWiseView ? <>
+                                                                                {
+                                                                                    selectedEvent?.length < 1 ? <></> :
+                                                                                        <tr>
+                                                                                            {
+                                                                                                React.Children.toArray(datesForToolTip?.map((date, index) => {
+                                                                                                    return <td
+                                                                                                        Tooltip={formatTooltip(index)}
+                                                                                                        data-tooltip-id="my-tooltip"
+                                                                                                        data-tooltip-content={isWeekend(index) ? `Holiday` : `${new Date(datesForToolTip[index]).toDateString()}`}
+                                                                                                        data-tooltip-place="top"
+                                                                                                    >
+                                                                                                        {
+                                                                                                            isWeekend(index) ?
+                                                                                                                <>
+                                                                                                                    <FaCircleCheck className="holiday table_data" />Holiday
+                                                                                                                </>
+                                                                                                                :
+                                                                                                                (
+                                                                                                                    Array.isArray(foundUserEventAttendanceDetail?.dates_present) &&
+                                                                                                                    foundUserEventAttendanceDetail?.dates_present?.includes(formatDateForAPI(date))
+                                                                                                                ) ?
+                                                                                                                    <>
+                                                                                                                        <FaCircleCheck className="present table_data" />Present
+                                                                                                                    </>
+                                                                                                                    :
+                                                                                                                    <>
+                                                                                                                        <MdCancel className="absent table_data" />Absent
+                                                                                                                    </>
+                                                                                                        }
+                                                                                                    </td>
+                                                                                                }))
+                                                                                            }
+                                                                                            <td
+                                                                                                Tooltip={formatTooltip(6)}
+                                                                                                data-tooltip-id="my-tooltip"
+                                                                                                data-tooltip-content={`Holiday`}
+                                                                                                data-tooltip-place="top"
+                                                                                            >
+                                                                                                <>
+                                                                                                    <FaCircleCheck className="holiday table_data" />Holiday
+                                                                                                </>
                                                                                             </td>
-                                                                                        }))
-                                                                                    }
-                                                                                    <td
-                                                                                        Tooltip={formatTooltip(6)}
-                                                                                        data-tooltip-id="my-tooltip"
-                                                                                        data-tooltip-content={`Holiday`}
-                                                                                        data-tooltip-place="top"
-                                                                                    >
-                                                                                        <>
-                                                                                            <FaCircleCheck className="holiday table_data" />Holiday
-                                                                                        </>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            }))
-                                                                        }   
-                                                                    </>
-                                                                }
-                                                            </> :
-                                                            views.userWiseView ? <>
-                                                                {
-                                                                    selectedEvent?.length < 1 ? <></> :
-                                                                    <tr>
-                                                                        {
-                                                                            React.Children.toArray(datesForToolTip?.map((date, index) => {
-                                                                                return <td
-                                                                                    Tooltip={formatTooltip(index)}
-                                                                                    data-tooltip-id="my-tooltip"
-                                                                                    data-tooltip-content={isWeekend(index) ? `Holiday` : `${new Date(datesForToolTip[index]).toDateString()}`}
-                                                                                    data-tooltip-place="top"
-                                                                                >
-                                                                                    {
-                                                                                        isWeekend(index) ?
-                                                                                            <>
-                                                                                                <FaCircleCheck className="holiday table_data" />Holiday
-                                                                                            </> 
-                                                                                        :
-                                                                                        (
-                                                                                            Array.isArray(foundUserEventAttendanceDetail?.dates_present) && 
-                                                                                            foundUserEventAttendanceDetail?.dates_present?.includes(formatDateForAPI(date)) 
-                                                                                        ) ?
-                                                                                            <>
-                                                                                                <FaCircleCheck className="present table_data" />Present
-                                                                                            </>
-                                                                                        :
-                                                                                        <>
-                                                                                            <MdCancel className="absent table_data" />Absent
-                                                                                        </>
-                                                                                    }
-                                                                                </td>
-                                                                            }))
-                                                                        }
-                                                                        <td
-                                                                            Tooltip={formatTooltip(6)}
-                                                                            data-tooltip-id="my-tooltip"
-                                                                            data-tooltip-content={`Holiday`}
-                                                                            data-tooltip-place="top"
-                                                                        >
-                                                                            <>
-                                                                                <FaCircleCheck className="holiday table_data" />Holiday
-                                                                            </>
-                                                                        </td>
-                                                                    </tr>
-                                                                }
-                                                                {/* {attendanceDetails.map((weekData, weekIndex) => (
+                                                                                        </tr>
+                                                                                }
+                                                                                {/* {attendanceDetails.map((weekData, weekIndex) => (
                                                                     <tr key={weekIndex}>
                                                                         {weekData.map((isPresent, dayIndex) => (
                                                                             <td key={dayIndex} Tooltip={formatTooltip(dayIndex)}
@@ -896,16 +897,16 @@ const AttendanceReport = () => {
                                                                         ))}
                                                                     </tr>
                                                                 ))} */}
-                                                            </> :
-                                                            <></>
-                                                        }
-                                                    </>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </>
-                                }
-                            </div>
+                                                                            </> :
+                                                                                <></>
+                                                                    }
+                                                                </>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </>
+                                    }
+                                </div>
                         }
                     </>
                 }
