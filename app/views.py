@@ -10963,23 +10963,13 @@ class DowellEvents(APIView):
             "project":data.get("project")
         }
 
-        if field["project"]:
-
-            check_field = {
+        check_field = {
                 "event_name": data.get("event_name"),
                 "event_type": data.get("event_type"),
                 "event_host": data.get("event_host"),
-                "project":data.get("project")
-            }           
-        
-        else:
-            check_field = {
-                "event_name": data.get("event_name"),
-                "event_type": data.get("event_type"),
-                "event_host": data.get("event_host"),
-                
             }
-
+        if field["project"]:
+            check_field["project"] = data.get("project")
 
         serializer = AddEventSerializer(data=request.data)
 
