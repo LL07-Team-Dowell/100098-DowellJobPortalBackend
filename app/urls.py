@@ -145,10 +145,7 @@ urlpatterns = [
          public_product.as_view()),
     # Thread-------------------------------------
     path("fetch_thread/<str:document_id>/", Thread_Apis.as_view()),
-    path(
-        "fetch_team_alerted_id_thread/<str:team_alerted_id>/",
-        GetTeamAlertedThreads.as_view(),
-    ),
+    path("fetch_team_alerted_id_thread/<str:team_alerted_id>/", GetTeamAlertedThreads.as_view(),),
     path("fetch_team_thread/<str:team_id>/", GetTeamThreads.as_view()),
     path("fetch_all_threads/<str:company_id>/", GetAllThreads.as_view()),
     path("create_thread/", Thread_Apis.as_view()),
@@ -163,26 +160,16 @@ urlpatterns = [
 
     ######
     path("get_all_qrcode/<str:job_company_id>/", GetQRCode.as_view()),
-    path(
-        "generate_candidate_duplicates/<str:company_id>/",
-        Generate_candidate_dublicates.as_view(),
-    ),
-    path(
-        "generate_project_task_Report/", Generate_project_task_details_Report.as_view()
-    ),
+    path("generate_candidate_duplicates/<str:company_id>/",Generate_candidate_dublicates.as_view()),
+    path("generate_project_task_Report/", Generate_project_task_details_Report.as_view()),
     path("generate_public_report/", Public_report.as_view()),
 
     # Payment Request Status -------------------------------------
-    path(
-        "update_payment_request_status/<str:document_id>/",
-        Update_payment_status.as_view(),
-    ),
+    path("update_payment_request_status/<str:document_id>/",Update_payment_status.as_view()),
+
     # Qr code apis -------------------------------------
     path("get_all_qrcode/<str:job_company_id>/", GetQRCode.as_view()),
-    path(
-        "generate_candidate_duplicates/<str:company_id>/",
-        Generate_candidate_dublicates.as_view(),
-    ),
+    path("generate_candidate_duplicates/<str:company_id>/",Generate_candidate_dublicates.as_view(),),
 
     # github api---------------------------------------
     path("updategithubprofile/", AddUserGithubInfo.as_view()),
@@ -230,7 +217,6 @@ urlpatterns = [
     path('get_company_structure/<str:company_id>/', Company_Structure.as_view()),
 
     #eventsAPI
-
     path('events/',DowellEvents.as_view()),
 
     # invoice module apis------------------------------------------------------

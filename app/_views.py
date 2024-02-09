@@ -133,26 +133,36 @@ if os.getenv("DB_Name"):
     DB_Name = str(os.getenv("DB_Name"))
 if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
+if os.getenv("REPORT_UUID"):
+    REPORT_UUID = str(os.getenv("REPORT_UUID"))
 if os.getenv("PROJECT_DB_NAME"):
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
-if os.getenv("ATTENDANCE_DB_NAME"):
-    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+if os.getenv("ATTENDANCE_DB"):
+    ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
 if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
+if os.getenv("Events_collection"):
+    Events_collection = str(os.getenv("Events_collection"))
+if os.getenv("LEAVE_REPORT_COLLECTION"):
+    leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
+if os.getenv("LEAVE_DB_NAME"):
+    LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
 if os.getenv("DB_PAYMENT_RECORDS"):
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
-
-
+    
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
+    REPORT_UUID = str(os.getenv("REPORT_UUID"))
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
-    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+    ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
+    Events_collection=str(os.getenv("Events_collection"))
+    LEAVE_DB=str(os.getenv("LEAVE_DB_NAME"))
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
 
 # Create your views here.

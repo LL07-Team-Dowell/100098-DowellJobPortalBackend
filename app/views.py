@@ -156,6 +156,8 @@ if os.getenv("LEAVE_REPORT_COLLECTION"):
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
 if os.getenv("LEAVE_DB_NAME"):
     LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
+if os.getenv("DB_PAYMENT_RECORDS"):
+    DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
     
 else:
     """for windows local"""
@@ -170,6 +172,7 @@ else:
     ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
     Events_collection=str(os.getenv("Events_collection"))
     LEAVE_DB=str(os.getenv("LEAVE_DB_NAME"))
+    DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
 
 # Create your views here.
 
