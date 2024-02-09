@@ -789,19 +789,44 @@ def get_dates_between(start_date, end_date):
     return [date.strftime("%Y-%m-%d") for date in date_list]
 
 
-def update_user_Report_data(api_key, user_id, task_date, update_data):
+def update_user_Report_data(api_key,db_name, report_uuid, user_id, task_date, update_data):
     year,_monthname,_monthcnt=get_month_details(task_date)
     query={
         "report_record_month": _monthname,
         "report_record_year": year,
         "db_report_type": "report"
     }
-    REPORT_DB_NAME = "ReportDB"
-    REPORT_UUID = "4f38703b-2c74-4292-9e0f-9e62fb22797e"
-    coll_name = REPORT_UUID+user_id
-    get_report = json.loads(datacube_data_retrival_function(api_key,REPORT_DB_NAME,coll_name,query,10,0, False))
+    coll_name = report_uuid+user_id
+    get_report = json.loads(datacube_data_retrival_function(api_key,db_name,coll_name,query,10,0, False))
     if get_report['success'] == True:
-        update_report = json.loads(datacube_data_update(api_key,REPORT_DB_NAME,coll_name,query,update_data))
+        update_report = json.loads(datacube_data_update(api_key,db_name,coll_name,query,update_data))
         return update_report
     else:
-        return get_report
+        create_collection = json.loads(datacube_add_collection(api_key,db_name,coll_name,1))
+        if create_collection['success']==True:
+            data={
+                "task_added": 0 if "task_added" not in update_data.keys() else update_data["task_added"],
+                "tasks_completed": 0,
+                "tasks_uncompleted": 0 if "tasks_uncompleted" not in update_data.keys() else update_data["tasks_uncompleted"],
+                "tasks_approved": 0,
+                "percentage_tasks_completed": 0.0,
+                "tasks_you_approved": 0,
+                "tasks_you_marked_as_complete": 0,
+                "tasks_you_marked_as_incomplete": 0,
+                "teams": 0 if "teams" not in update_data.keys() else update_data["teams"],
+                "team_tasks": 0 if "team_tasks" not in update_data.keys() else update_data["team_tasks"],
+                "team_tasks_completed": 0,
+                "team_tasks_uncompleted": 0 if "team_tasks_uncompleted" not in update_data.keys() else update_data["team_tasks_uncompleted"],
+                "percentage_team_tasks_completed": 0.0,
+                "team_tasks_approved": 0,
+                "team_tasks_issues_raised": 0,
+                "team_tasks_issues_resolved": 0,
+                "team_tasks_comments_added": 0,
+                "report_record_month": _monthname,
+                "report_record_year": year,
+                "db_report_type": "report"
+            }
+            insert_collection = json.loads(datacube_data_insertion(api_key,db_name,coll_name,data))
+            return insert_collection 
+        else:
+            return create_collection
