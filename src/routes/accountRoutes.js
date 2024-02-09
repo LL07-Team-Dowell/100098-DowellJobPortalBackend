@@ -1,5 +1,5 @@
 import AccountPage from "../pages/AccountPage/AccountPage";
-import Payment from "../pages/AccountPage/Payment";
+import Payment from "../pages/AccountPage/views/Payments/Payment";
 import AccountsOnboardingPage from "../pages/AccountPage/views/OnboardingPage/OnboardingPage";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
 import Logout from "../pages/LogoutPage/Logout";
