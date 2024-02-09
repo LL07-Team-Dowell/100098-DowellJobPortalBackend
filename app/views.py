@@ -10927,6 +10927,8 @@ class DowellEvents(APIView):
             return self.UpdateEvents(request)
         if request_type == "GetAllEvents":
             return self.GetAllEvents(request)
+        if request_type == "Delete_Events":
+            return self.Delete_Events(request)
         else:
             return self.handle_error(request)
 
@@ -11069,20 +11071,63 @@ class DowellEvents(APIView):
 
         else:
             return Response({"success": False, "error": update_event["message"]})
+        
+    def Delete_Events(self, request):
+        document_id = request.GET.get("document_id")
+
+        field = {"_id": document_id}
+
+
+        if not document_id:
+            return Response({
+                "success":False,
+                "error":"document id should be sent in query params"
+            })
+        
+        update_field = {
+           "data_type":"Archived_Data"
+        }
+
+        try:
+            update_event = json.loads(
+                datacube_data_update(
+                    API_KEY,
+                    ATTENDANCE_DB,
+                    coll_name=Events_collection,
+                    query=field,
+                    update_data=update_field,
+                )
+            )
+
+        except:
+            return Response(
+                {"success": False, "error": "Datacube not responding"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        if update_event["success"] == True:
+            return Response(
+                {
+                    "success": True,
+                    "message": f"Document {document_id} has been safely deleted",
+                }
+            )
+
+        else:
+            return Response({"success": False, "error": update_event["message"]})
 
     def GetAllEvents(self, request):
         data = {key: value for key, value in request.data.items()}
         
-        serializer = GetEventSerializer(data=request.data)
+        serializer = GetEventSerializer(data=data)
 
         if not serializer.is_valid():
-            print(serializer.errors)
             return Response(
                 {
                     "success": False,
                     "message": "Posting Invalid Data",
                     "error": serializer.errors,
-                }
+                },status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
@@ -11091,7 +11136,6 @@ class DowellEvents(APIView):
                     API_KEY, ATTENDANCE_DB, Events_collection, data, 0, 0, False
                 )
             )
-            print(fetch_collection)
 
         except:
             return Response({"success": False, "error": "Datacube is not responding"})

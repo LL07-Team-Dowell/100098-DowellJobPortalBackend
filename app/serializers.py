@@ -910,3 +910,6 @@ class UpdateEventSerializer(serializers.Serializer):
 
 class GetEventSerializer(serializers.Serializer):
     company_id = serializers.CharField(max_length=225, allow_null=False)
+    data_type = serializers.ChoiceField(
+        allow_null=False, required=True, allow_blank=False, choices=DATA_TYPE_CHOICE
+    )
