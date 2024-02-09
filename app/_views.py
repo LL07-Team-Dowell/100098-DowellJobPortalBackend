@@ -296,7 +296,7 @@ class Invoice_module(APIView):
                 )
 
     def update_payment_records(self, request):
-        user_id = request.data.get("username")
+        user_id = request.data.get("user_id")
         company_id = request.data.get("company_id")
         weekly_payment_amount = request.data.get("weekly_payment_amount")
         payment_currency = request.data.get("currency")
@@ -304,7 +304,7 @@ class Invoice_module(APIView):
         if not (user_id and company_id and weekly_payment_amount and payment_currency):
             return Response(
                 {
-                    "message": "Username, weekly_payment_amount, and currency are required"
+                    "message": "User_id, weekly_payment_amount, and currency are required"
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -455,7 +455,7 @@ class Invoice_module(APIView):
                     "requried_logs_count": total_logs_required,
                     "leave_days": number_of_leave_days,
                     "payment_approved": False,
-                    "paymentmade_on": " ",
+                    "payment_made_on": " ",
                 },
             }
 
@@ -537,6 +537,72 @@ class Invoice_module(APIView):
             return Response(
                 {"message": "Failed to fetch payment details", "response": result_dict},
                 status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    def update_payment_status(self, request):
+        _id = request.data.get("_id")
+        user_id = request.data.get("user_id")
+
+        if not (_id and user_id):
+            return Response(
+                {"message": "User ID and record ID are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        fetch_data = {"db_record_type": "payment_detail", "_id": _id}
+        response_data = datacube_data_retrival(
+            api_key=API_KEY,
+            database_name=DB_PAYMENT_RECORDS,
+            collection_name=user_id,
+            data=fetch_data,
+            limit=1,
+            offset=0,
+        )
+
+        try:
+            response_data_dict = json.loads(response_data)
+        except json.JSONDecodeError:
+            return Response(
+                {"message": "Failed to fetch payment details"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        if response_data_dict.get("data", []):
+
+            existing_record = response_data_dict["data"][0]
+            existing_record["payment_approved"] = True
+            existing_record["payment_made_on"] = datetime.now().isoformat()
+
+            url = "https://datacube.uxlivinglab.online/db_api/crud/"
+            update_data = {
+                "api_key": API_KEY,
+                "db_name": DB_PAYMENT_RECORDS,
+                "coll_name": user_id,
+                "operation": "update",
+                "query": {"_id": existing_record["_id"]},
+                "update_data": {
+                    "payment_approved": True,
+                    "payment_made_on": existing_record["payment_made_on"],
+                },
+            }
+
+            response = requests.put(url, json=update_data)
+
+            if response.status_code == 200:
+                return Response(
+                    {"message": "Payment details updated successfully"},
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {"message": "Failed to update payment details"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+        else:
+            return Response(
+                {"message": "Payment detail record not found"},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
     def handle_error(self, request):
