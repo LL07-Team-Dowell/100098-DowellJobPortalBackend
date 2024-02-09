@@ -133,26 +133,36 @@ if os.getenv("DB_Name"):
     DB_Name = str(os.getenv("DB_Name"))
 if os.getenv("REPORT_DB_NAME"):
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
+if os.getenv("REPORT_UUID"):
+    REPORT_UUID = str(os.getenv("REPORT_UUID"))
 if os.getenv("PROJECT_DB_NAME"):
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
-if os.getenv("ATTENDANCE_DB_NAME"):
-    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+if os.getenv("ATTENDANCE_DB"):
+    ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
 if os.getenv("COMPANY_STRUCTURE_DB_NAME"):
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
+if os.getenv("Events_collection"):
+    Events_collection = str(os.getenv("Events_collection"))
+if os.getenv("LEAVE_REPORT_COLLECTION"):
+    leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
+if os.getenv("LEAVE_DB_NAME"):
+    LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
 if os.getenv("DB_PAYMENT_RECORDS"):
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
-
-
+    
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
+    REPORT_UUID = str(os.getenv("REPORT_UUID"))
     PROJECT_DB_NAME = str(os.getenv("PROJECT_DB_NAME"))
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
-    ATTENDANCE_DB_NAME = str(os.getenv("ATTENDANCE_DB_NAME"))
+    ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
+    Events_collection=str(os.getenv("Events_collection"))
+    LEAVE_DB=str(os.getenv("LEAVE_DB_NAME"))
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
 
 # Create your views here.
@@ -173,6 +183,8 @@ class Invoice_module(APIView):
             return self.process_payment(request)
         elif type_request == "get-invoice":
             return self.invoice(request)
+        elif type_request == "update-payment-status":
+            return self.update_payment_status(request)
         else:
             return self.handle_error(request)
 
@@ -214,7 +226,7 @@ class Invoice_module(APIView):
         else:
             return Response(
                 {"message": "Failed to fetch payment details", "response": result_dict},
-                status=status.HTTP_404_BAD_REQUEST,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
     def save_payment_records(self, request):
@@ -442,6 +454,8 @@ class Invoice_module(APIView):
                     "approved_logs_count": approved_logs_count,
                     "requried_logs_count": total_logs_required,
                     "leave_days": number_of_leave_days,
+                    "payment_approved": False,
+                    "paymentmade_on": " ",
                 },
             }
 
