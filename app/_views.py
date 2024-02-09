@@ -173,6 +173,8 @@ class Invoice_module(APIView):
             return self.process_payment(request)
         elif type_request == "get-invoice":
             return self.invoice(request)
+        elif type_request == "update-payment-status":
+            return self.update_payment_status(request)
         else:
             return self.handle_error(request)
 
@@ -214,7 +216,7 @@ class Invoice_module(APIView):
         else:
             return Response(
                 {"message": "Failed to fetch payment details", "response": result_dict},
-                status=status.HTTP_404_BAD_REQUEST,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
     def save_payment_records(self, request):
@@ -442,6 +444,8 @@ class Invoice_module(APIView):
                     "approved_logs_count": approved_logs_count,
                     "requried_logs_count": total_logs_required,
                     "leave_days": number_of_leave_days,
+                    "payment_approved": False,
+                    "paymentmade_on": " ",
                 },
             }
 
