@@ -163,7 +163,10 @@ def dowellconnection(
     headers = {"Content-Type": "application/json"}
 
     response = requests.request("POST", url, headers=headers, data=payload)
-    res = json.loads(response.text)
+    try:
+        res = json.loads(response.text)
+    except Exception as e:
+        res = {'success':False,"error": response.text, 'data': []}
 
     return res   
 candidate_management_reports = [
