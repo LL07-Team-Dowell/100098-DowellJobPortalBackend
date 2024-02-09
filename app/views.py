@@ -52,7 +52,7 @@ from .helper import (
     get_current_week_start_end_date,
     speed_test_condition,
     get_dates_between,
-    datacube_add_collection
+    update_user_Report_data
 )
 from .serializers import (
     AccountSerializer,
@@ -2710,11 +2710,7 @@ class task_module(APIView):
                 "task_saved": False,
             }
 
-            response = json.loads(
-                dowellconnection(
-                    *task_management_reports, "insert", field, update_field=None
-                )
-            )
+            response = json.loads(dowellconnection(*task_management_reports, "insert", field, update_field=None))
             if response["isSuccess"]:
                 field = {
                     "task": data.get("task"),
@@ -10694,7 +10690,7 @@ class Company_Structure(APIView):
                 "success":False,
                 "message":"Invalid data",
                 "error":serializer.errors
-            })
+            },status=status.HTTP_400_BAD_REQUEST)
         company_id = request.data.get("company_id")
         project = request.data.get("project")
         _coded_project = self.rearrange(project.lower())
@@ -10713,7 +10709,8 @@ class Company_Structure(APIView):
             return Response({
                     "success":False,
                     "message":f"No such team_lead candidate '{team_lead}' exists in Dowell."
-                })
+                    
+                },status=status.HTTP_404_NOT_FOUND)
         #checking if team lead reports to is in dowell------------------------
         teamlead_reports_to = []
         res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},10,0,False))
@@ -10812,7 +10809,7 @@ class Company_Structure(APIView):
                 "success":False,
                 "message":"Invalid data",
                 "error":serializer.errors
-            })
+            },status=status.HTTP_400_BAD_REQUEST)
         
         project = request.data.get("project")
         _coded_project = self.rearrange(project.lower())
