@@ -52,7 +52,8 @@ from .helper import (
     get_current_week_start_end_date,
     speed_test_condition,
     get_dates_between,
-    datacube_add_collection
+    datacube_add_collection,
+    datacube_delete_function
 )
 from .serializers import (
     AccountSerializer,
@@ -10052,15 +10053,31 @@ class candidate_attendance(APIView):
                 "success": False,
                 "error": serializer.errors
             },status=status.HTTP_400_BAD_REQUEST)
-
+        
+        def fetch_data(api_key, db, collection, data, limit, offset, result_container):
+            result_container['data'] = json.loads(datacube_data_retrival(api_key, db, collection, data, limit, offset))
         try:
-            attendance_report = json.loads(datacube_data_retrival(API_KEY, ATTENDANCE_DB, collection, data, limit, offset))
-            fetch_events = json.loads(datacube_data_retrival(API_KEY, ATTENDANCE_DB, Events_collection, data=event_query, limit=0, offset=0))
+    
+            attendance_report = {}
+            fetch_events = {}
+
+            attendance_thread = threading.Thread(target=fetch_data, args=(API_KEY, ATTENDANCE_DB, collection, data, limit, offset, attendance_report))
+            events_thread = threading.Thread(target=fetch_data, args=(API_KEY, ATTENDANCE_DB, Events_collection, event_query, limit, offset, fetch_events))
+            
+            attendance_thread.start()
+            events_thread.start()
+            attendance_thread.join()
+            events_thread.join()
+
+            attendance_report = attendance_report['data']
+            fetch_events = fetch_events['data']
+
         except Exception as e:
             return Response({
-                "success": False,
-                "error": str(e)
-            })
+                "success":False,
+                "error":f"Datacube is not responding, {e}"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                
         events_list = {events["_id"]:events["event_name"] for events in fetch_events.get("data", [])}
         dates = get_dates_between(start_date, end_date)
 
@@ -11090,12 +11107,11 @@ class DowellEvents(APIView):
 
         try:
             update_event = json.loads(
-                datacube_data_update(
+                datacube_delete_function(
                     API_KEY,
                     ATTENDANCE_DB,
                     coll_name=Events_collection,
                     query=field,
-                    update_data=update_field,
                 )
             )
 
@@ -11109,7 +11125,7 @@ class DowellEvents(APIView):
             return Response(
                 {
                     "success": True,
-                    "message": f"Document {document_id} has been safely deleted",
+                    "message": f"Document {document_id} has been permanently deleted",
                 }
             )
 
