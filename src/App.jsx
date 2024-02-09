@@ -54,7 +54,7 @@ import TeamScreenThreadCandidate from "./pages/CandidatePage/views/TeamScreenThr
 import JobLandingLayout from "./layouts/CandidateJobLandingLayout/LandingLayout";
 import TeamThread from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
 import UserDetailNotFound from "./pages/UserDetailNotFound/UserDetailNotFound";
-import Payment from "./pages/AccountPage/Payment";
+import Payment from "./pages/AccountPage/views/Payments/Payment";
 import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThreadScreen";
 import GroupLeadTask from "./pages/GroupLeadPage/components/GroupLeadTask";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";

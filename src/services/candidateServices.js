@@ -95,3 +95,21 @@ export const deleteSingleCandidateTaskV2 = async (taskId, status) => {
     `task_module/?type=delete_current_task&current_task_id=${taskId}&action=${status}`,
   )
 }
+
+export const getPaymentRecord = async (data) => {
+  return await currentBackendAxiosInstance.post(
+    `invoice_module/?type=get-payment-records`, data
+  )
+}
+
+export const savePaymentRecord = async (dataToPost) => {
+  return await currentBackendAxiosInstance.post(
+    `invoice_module/?type=save-payment-records`, dataToPost
+  )
+}
+
+export const updatePaymentRecord = async (dataToPost) => {
+  return await currentBackendAxiosInstance.post(
+    `invoice_module/?type=update-payment-records`, dataToPost
+  )
+}

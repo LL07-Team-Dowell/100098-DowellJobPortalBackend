@@ -228,7 +228,9 @@ const HrAgendaReport = () => {
             setIsLoading(false);
             // console.log(">>>>>>>>>>>>>>>",agendaAddedDatesLength);
         }).catch(error => {
-            console.error('Errorrrrrrrrrrr:', error);
+            console.error('Errorrrrrrrrrrr:', error?.response?.data?.message);
+            setIsLoading(false);
+            toast.info(error?.response?.data?.message);
         }
         );
     }
@@ -275,7 +277,13 @@ const HrAgendaReport = () => {
                                     </select>
                                 </label>
                             </div>
-                            <button onClick={handleButtonsVisibilty}>{isloading ? <LoadingSpinner width={20} height={20} color="#fff" /> : 'Show Results'}</button>
+                            <button 
+                                style={{ cursor: 'pointer'}} 
+                                onClick={handleButtonsVisibilty}
+                                disabled={isloading ? true : false}
+                            >
+                                {isloading ? <LoadingSpinner width={20} height={20} color="#fff" /> : 'Show Results'}
+                            </button>
                         </div>
                     </div>
                     {
