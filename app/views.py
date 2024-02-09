@@ -11082,7 +11082,7 @@ class DowellEvents(APIView):
             return Response({
                 "success":False,
                 "error":"document id should be sent in query params"
-            })
+            },status=status.HTTP_400_BAD_REQUEST)
         
         update_field = {
            "data_type":"Archived_Data"
