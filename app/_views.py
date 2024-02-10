@@ -114,6 +114,7 @@ from .serializers import (
     WorklogsDateSerializer,
     UpdateUserIdSerializer,
     InsertPaymentInformation,
+    PaymentSerializer,
 )
 from .authorization import (
     verify_user_token,
@@ -149,7 +150,7 @@ if os.getenv("LEAVE_DB_NAME"):
     LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
 if os.getenv("DB_PAYMENT_RECORDS"):
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
-    
+
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
@@ -161,8 +162,8 @@ else:
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
     ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
-    Events_collection=str(os.getenv("Events_collection"))
-    LEAVE_DB=str(os.getenv("LEAVE_DB_NAME"))
+    Events_collection = str(os.getenv("Events_collection"))
+    LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
 
 # Create your views here.
@@ -376,6 +377,16 @@ class Invoice_module(APIView):
         approved_logs_count = request.data.get("approved_logs_count")
         total_logs_required = request.data.get("total_logs_required")
 
+        serializer = PaymentSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                {
+                    "success": False,
+                    "message": "Invalid data",
+                    "error": serializer.errors,
+                }
+            )
+
         url = "https://datacube.uxlivinglab.online/db_api/get_data/"
         data_1 = {
             "api_key": API_KEY,
@@ -577,22 +588,28 @@ class Invoice_module(APIView):
             existing_record["payment_approved"] = True
             existing_record["payment_made_on"] = datetime.now().isoformat()
 
-            url = "https://datacube.uxlivinglab.online/db_api/crud/"
             update_data = {
-                "api_key": API_KEY,
-                "db_name": DB_PAYMENT_RECORDS,
-                "coll_name": user_id,
-                "operation": "update",
-                "query": {"_id": existing_record["_id"]},
-                "update_data": {
-                    "payment_approved": True,
-                    "payment_made_on": existing_record["payment_made_on"],
-                },
+                "payment_approved": True,
+                "payment_made_on": existing_record["payment_made_on"],
             }
 
-            response = requests.put(url, json=update_data)
+            response = datacube_data_update(
+                api_key=API_KEY,
+                db_name=DB_PAYMENT_RECORDS,
+                coll_name=user_id,
+                query={"_id": existing_record["_id"]},
+                update_data=update_data,
+            )
 
-            if response.status_code == 200:
+            try:
+                response_json = json.loads(response)
+            except json.JSONDecodeError:
+                return Response(
+                    {"message": "Failed to parse response JSON"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+            if response_json.get("success", False):
                 return Response(
                     {"message": "Payment details updated successfully"},
                     status=status.HTTP_200_OK,
