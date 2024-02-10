@@ -23,7 +23,7 @@ const EventScreen = () => {
   const [showEditOptions, setShowEditOptions] = useState({});
   const [showDeleteOptions, setShowDeleteOptions] = useState({});
   const [eventsLoading, setEventsLoading] = useState(true);
-  const [eventsBeingEdited, setEventsBeingEdited] = useState(null);
+  const [eventsBeingEdited, setEventsBeingEdited] = useState({});
   const [eventsBeingDeleted, setEventsBeingDeleted] = useState(null);
   const [eventsLoaded, setEventsLoaded] = useState(false);
 
