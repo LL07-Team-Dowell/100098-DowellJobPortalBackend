@@ -763,7 +763,7 @@ def datacube_data_retrival_function(
     api_key, database_name, collection_name, data, limit, offset, payment
 ):
     """
-    DON"T USER THIS WITHOUT ASKING ME
+    DON"T USE THIS WITHOUT ASKING ME
     """
     url = "https://datacube.uxlivinglab.online/db_api/get_data/"
 

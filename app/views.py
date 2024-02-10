@@ -10810,12 +10810,13 @@ class Company_Structure(APIView):
                 else:
                     return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
     def get_projects(self,request, type_request):
+        type_request = type_request.replace("get_","")
         company_id = request.data.get("company_id")
         search_query ={  
             "company_id":company_id,
             "data_type":"Real_Data"
         }
-        coll_name = 'projects'
+        coll_name = type_request
         res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
         if res['success'] == True:
             return Response(res,status=status.HTTP_200_OK)
@@ -10836,7 +10837,13 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         team_lead = request.data.get("team_lead")
         teamlead_reports_to = []
-        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{},10,0,False))
+        res_projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},10,0,False))
+        if not (res_projects['success'] == True and len(res_projects['data']) >=1) :
+            return Response({
+                "success":False,
+                "message":f"No date to update for this '{project}'"
+            },status=status.HTTP_404_NOT_FOUND)
+        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},10,0,False))
         #print(res_proj, "===============",len(res_proj['data']))
         if res_proj['success'] == True and len(res_proj['data']) >=1 :
             for project_leads in res_proj['data']:
@@ -10847,7 +10854,9 @@ class Company_Structure(APIView):
         group_leads = request.data.get("group_leads")
         members = request.data.get("members")
         _m =[]
-        update_data = {"teamlead_reports_to": teamlead_reports_to[-1]}
+        update_data ={}
+        if len(teamlead_reports_to)>=1:
+            update_data["teamlead_reports_to"]= teamlead_reports_to[-1]
         if members:
             _m += members
         if group_leads:
@@ -10963,23 +10972,13 @@ class DowellEvents(APIView):
             "project":data.get("project")
         }
 
-        if field["project"]:
-
-            check_field = {
+        check_field = {
                 "event_name": data.get("event_name"),
                 "event_type": data.get("event_type"),
                 "event_host": data.get("event_host"),
-                "project":data.get("project")
-            }           
-        
-        else:
-            check_field = {
-                "event_name": data.get("event_name"),
-                "event_type": data.get("event_type"),
-                "event_host": data.get("event_host"),
-                
             }
-
+        if field["project"]:
+            check_field["project"] = data.get("project")
 
         serializer = AddEventSerializer(data=request.data)
 
