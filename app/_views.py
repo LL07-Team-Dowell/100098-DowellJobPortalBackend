@@ -193,13 +193,14 @@ class Invoice_module(APIView):
         company_id = request.data.get("company_id")
 
         fetch_data = {"db_record_type": "payment_record"}
-        result = datacube_data_retrival(
+        result = datacube_data_retrival_function(
             api_key=API_KEY,
             database_name=DB_PAYMENT_RECORDS,
             collection_name=user_id,
             data=fetch_data,
             limit=1,
             offset=0,
+            payment=False,
         )
 
         try:
@@ -245,13 +246,14 @@ class Invoice_module(APIView):
 
         # Check if the collection exists for the user_id in the Payment Records database
         fetch_data = {"company_id": company_id, "user_id": user_id}
-        response = datacube_data_retrival(
+        response = datacube_data_retrival_function(
             api_key=API_KEY,
             database_name=DB_PAYMENT_RECORDS,
             collection_name=user_id,
             data=fetch_data,
             limit=1,
             offset=0,
+            payment= False,
         )
         parsed_response = json.loads(response)
 
@@ -311,13 +313,14 @@ class Invoice_module(APIView):
 
         # Fetch data using the provided function
         fetch_data = {"db_record_type": "payment_record"}
-        response_data = datacube_data_retrival(
+        response_data = datacube_data_retrival_function(
             api_key=API_KEY,
             database_name=DB_PAYMENT_RECORDS,
             collection_name=user_id,
             data=fetch_data,
             limit=1,
             offset=0,
+            payment=False,
         )
 
         try:
@@ -503,13 +506,14 @@ class Invoice_module(APIView):
         payment_year = request.data.get("payment_year")
 
         fetch_data = {"payment_year": payment_year}
-        result = datacube_data_retrival(
+        result = datacube_data_retrival_function(
             api_key=API_KEY,
             database_name=DB_PAYMENT_RECORDS,
             collection_name=user_id,
             data=fetch_data,
             limit=0,
             offset=0,
+            payment=False,
         )
 
         try:
