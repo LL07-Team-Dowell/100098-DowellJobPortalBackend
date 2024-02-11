@@ -121,6 +121,14 @@
   color: #fff;
 }
 
+.update__Listing_event li.delete {
+  color: red;
+}
+
+.update__Listing_event li.delete:hover {
+  background-color: #eee;
+}
+
 .edit_modal_event {
   background-color: white;
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;

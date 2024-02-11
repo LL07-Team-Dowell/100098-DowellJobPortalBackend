@@ -112,11 +112,18 @@ const JobApplicationScreen = () => {
   console.log(testResult);
   console.log(error);
   console.log({ currentJob });
+
+  const handleCloseModal = () => {
+    setShowInternetSpeedTestModal(false);
+  };
+
   const netSpeed = (e) => {
     e.preventDefault();
     const email = newApplicationData?.applicant_email;
 
     if (!isEmailValid) return;
+
+    if (email === "") return toast.info("Please enter an email");
 
     getInternetSpeedTest(email)
       .then((res) => {
@@ -128,12 +135,11 @@ const JobApplicationScreen = () => {
         console.log(speedTestResults);
 
         const matchingSpeedResult = speedTestResults.find(
-          (item) =>
-            item.success === true
-            // item.details.upload >= 100 &&
-            // item.details.download >= 100 &&
-            // item.details.jitter <= 30 &&
-            // item.details.latency <= 50
+          (item) => item.success === true
+          // item.details.upload >= 100 &&
+          // item.details.download >= 100 &&
+          // item.details.jitter <= 30 &&
+          // item.details.latency <= 50
         );
 
         if (!matchingSpeedResult) {
@@ -1067,8 +1073,9 @@ const JobApplicationScreen = () => {
                         submissionModalIcon={false}
                         handleBtnClick={() => {
                           setPublicSuccessModalBtnDisabled(true);
-                          window.location.replace(speedTestURL);
+                          window.open(speedTestURL, "_blank");
                         }}
+                        handleCloseModal={handleCloseModal}
                         btnDisabled={publicSuccessModalBtnDisabled}
                       />
                     )}

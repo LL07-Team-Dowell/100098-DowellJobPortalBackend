@@ -20,3 +20,9 @@ export const updateEvents = async (data) => {
     data
   );
 };
+
+export const deleteEvents = async (documentId) => {
+  return await currentBackendAxiosInstance.post(
+    `events/?type=Delete_Events&document_id=${documentId}`
+  );
+};
