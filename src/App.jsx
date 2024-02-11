@@ -91,6 +91,7 @@ import AttendanceUpdatePage from "./pages/HrPage/views/AttendanceReport/UpdateAt
 import { accountRoutesInfo } from "./routes/accountRoutes";
 import AgendaLandingPage from "./pages/HrPage/views/AgendaLandingPage/AgendaLandingPage";
 import HrAgendaReport from "./pages/HrPage/views/Agenda/HrAgendaReport/HrAgendaReport";
+import UsersLogsScreen from "./common/screens/UserLogsScreen/UserLogsScreen";
 
 function App() {
   // console.log = () => { };
@@ -1213,12 +1214,9 @@ function App() {
           element={
             <CandidateTaskContextProvider>
               <StaffJobLandingLayout teamleadView={true} isGrouplead={true}>
-                <TaskScreen
-                  candidateAfterSelectionScreen={true}
-                  assignedProject={assignedProjects}
-                  showBackBtn={true}
-                  loadProjects={true}
-                  isGrouplead={true}
+                <UsersLogsScreen 
+                  className={'group__Lead__User__Logs'} 
+                  isLeadUser={true}
                 />
               </StaffJobLandingLayout>
             </CandidateTaskContextProvider>

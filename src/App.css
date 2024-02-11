@@ -10,3 +10,11 @@
 .center__Text{
   text-align: center;
 }
+
+
+@media screen and (min-width: 992px) {
+  .group__Lead__User__Logs {
+    width: 84%;
+    margin: 2rem auto;
+  } 
+}

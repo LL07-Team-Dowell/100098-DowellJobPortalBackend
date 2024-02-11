@@ -142,3 +142,16 @@ export const getDaysDifferenceBetweenDates = (startDate, endDate) => {
 
     return Math.round(differenceInDays);
 }
+
+export const calculateHoursOfLogs = (logsPassed) => {
+    const hourGapBetweenLogs = logsPassed.map(log => {
+      const [ startTime, endTime ] = [ new Date(`${log.task_created_date} ${log.start_time}`), new Date(`${log.task_created_date} ${log.end_time}`) ]
+      if (startTime == 'Invalid Date' || endTime == 'Invalid Date') return 0
+
+      const diffInMs = Math.abs(endTime - startTime);
+      return  diffInMs / (1000 * 60 * 60);
+    });
+
+    const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y , 0)).toFixed(2)
+    return totalHours
+}

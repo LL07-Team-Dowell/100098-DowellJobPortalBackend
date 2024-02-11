@@ -1,0 +1,140 @@
+.user__log__Wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 2.5rem;
+    padding: 1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.active__Task__Tile {
+    background-color:  	#90EE90;
+    color: #fff;
+}
+
+.user__Filter_Wrap {
+    width: max-content;
+    position: relative;
+}
+
+.divider {
+    background-color: #e8e8e8;
+    height: 150%;
+    width: 1px;
+    position: absolute;
+    top: 0;
+    right: -7.5%;
+    /* top: 50%; */
+    /* transform: translateY(-50%); */
+}
+
+.loading__Date__Text {
+    text-align: center;
+    width: 100%;
+    font-size: 0.8rem;
+}
+
+.user__log__Details,
+.filters__Wrap,
+.filter__items,
+.log__Detail__Wrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.user__log__Details {
+    /* width: 70%; */
+    flex-grow: 1;
+    gap: 4.5rem;
+}
+
+.filters__Wrap,
+.filter__items {
+    gap: 0.4rem;
+}
+
+.filters__Wrap {
+    margin: 1.8rem 0;
+}
+
+.filters__Wrap h3 {
+    font-weight: 500;
+}
+
+.user__log__Details h2 {
+    font-weight: 500;
+    color: #005734;
+    font-size: 1.3rem;
+}
+
+.log__Load__Wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 1.5rem auto;
+    width: 100%;
+}
+
+.log__Load__Wrap p {
+    font-size: 0.875rem;
+}
+
+.loader {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.log__Detail__Wrap {
+    gap: 1.8rem;
+}
+
+.select__Project {
+    width: max-content;
+}
+
+.pro__Select__Wrap {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.2rem;
+}
+
+.pro__Select__Wrap p {
+    font-size: 0.875rem;
+}
+
+.log__Heading {
+    font-size: 0.875rem;
+    color: #838383;
+    font-weight: 500;
+}
+
+.single__log__Detail {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.date__log {
+    font-size: 1rem;
+}
+
+._log,
+.log__Timing {
+    font-size: 0.875rem;
+}
+
+.log__Timing {
+    color: rgb(184, 184, 184);
+}
+
+@media screen and (max-width: 767px) {
+    .user__log__Wrap {
+        flex-direction: column;
+        padding-bottom: 100px;
+    }
+
+    .divider {
+        display: none;
+    }
+}

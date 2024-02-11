@@ -136,6 +136,11 @@
     font-size: 0.8rem;
     cursor: pointer;
   }
+
+  .new__Log__User__Wrapp {
+    width: 85%;
+    margin: 2rem auto;
+  }
 }
 
 @media screen and (max-width: 786px) {

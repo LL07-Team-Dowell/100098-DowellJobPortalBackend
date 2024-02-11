@@ -16,6 +16,7 @@ import "./style.css";
 import { useLocation, useParams } from "react-router-dom";
 import { getAllTeams } from "../../../../services/createMembersTasks";
 import { getSettingUserProject } from "../../../../services/hrServices";
+import UsersLogsScreen from "../../../../common/screens/UserLogsScreen/UserLogsScreen";
 
 const AfterSelectionScreen = ({ assignedProjects }) => {
   const { currentUser } = useCurrentUserContext();
@@ -134,10 +135,7 @@ const AfterSelectionScreen = ({ assignedProjects }) => {
             hideSideNavigation={showAddTaskModal}
           >
             <div className="candidate__After__Selection__Screen">
-              <TaskScreen
-                candidateAfterSelectionScreen={true}
-                assignedProject={allProjects}
-              />
+              <UsersLogsScreen />
             </div>
           </JobLandingLayout>
         </>

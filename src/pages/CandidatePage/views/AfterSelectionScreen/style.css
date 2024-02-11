@@ -129,4 +129,9 @@
     .candidate__After__Selection__Screen .candidate-task-screen-container .all__Tasks__Container {
         padding-bottom: 3%;
     }
+
+    .candidate__After__Selection__Screen {
+        width: 80%;
+        margin: 1.8rem auto;
+    }
 }

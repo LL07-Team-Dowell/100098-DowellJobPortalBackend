@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BiEdit, BiSelectMultiple } from "react-icons/bi";
-import { formatDateAndTime } from "../../../../helpers/helpers";
+import { calculateHoursOfLogs, formatDateAndTime } from "../../../../helpers/helpers";
 import { candidateUpdateTaskForTeamLead } from "../../../../services/teamleadServices";
 import CustomHr from "../CustomHr/CustomHr";
 import DropdownButton from "../DropdownButton/Dropdown";
@@ -71,19 +71,6 @@ const CandidateTaskItem = ({
       }
     } 
     
-    const calculateHours = (logsPassed) => {
-      const hourGapBetweenLogs = logsPassed.map(log => {
-        const [ startTime, endTime ] = [ new Date(`${log.task_created_date} ${log.start_time}`), new Date(`${log.task_created_date} ${log.end_time}`) ]
-        if (startTime == 'Invalid Date' || endTime == 'Invalid Date') return 0
-  
-        const diffInMs = Math.abs(endTime - startTime);
-        return  diffInMs / (1000 * 60 * 60);
-      });
-  
-      const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y , 0)).toFixed(2)
-      return totalHours
-    }
-    
     return (
       <>
         <div className="candidate-task-container">
@@ -104,7 +91,7 @@ const CandidateTaskItem = ({
                     <>
                       {
                         newTaskItem && tasks && tasks.length > 0 && <span style={{ display: 'block', fontSize: '0.75rem', marginTop: '0.15rem', color: '#838383' }}>
-                          {`${tasks.length} logs, ${calculateHours(tasks)} hours`}
+                          {`${tasks.length} logs, ${calculateHoursOfLogs(tasks)} hours`}
                         </span>
                       }
                     </>

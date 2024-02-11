@@ -27,7 +27,7 @@ import { generateCommonAdminReport } from "../../../../../services/commonService
 import Select from "react-select";
 import { getSettingUserProfileInfo } from "../../../../../services/settingServices";
 import { rolesDict, rolesNamesDict } from "../../Settings/AdminSettings";
-import { formatDateForAPI } from "../../../../../helpers/helpers";
+import { calculateHoursOfLogs, formatDateForAPI } from "../../../../../helpers/helpers";
 import { useModal } from "../../../../../hooks/useModal";
 import ReportCapture from "../../../../../components/ReportCapture/ReportCapture";
 import { toast } from "react-toastify";
@@ -406,19 +406,6 @@ export default function DetailedIndividual({
       toast.success("Successfully downloaded report!");
     });
   };
-
-  const calculateHours = (logsPassed) => {
-    const hourGapBetweenLogs = logsPassed.map(log => {
-      const [ startTime, endTime ] = [ new Date(`${log.task_created_date} ${log.start_time}`), new Date(`${log.task_created_date} ${log.end_time}`) ]
-      if (startTime == 'Invalid Date' || endTime == 'Invalid Date') return 0
-
-      const diffInMs = Math.abs(endTime - startTime);
-      return  diffInMs / (1000 * 60 * 60);
-    });
-
-    const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y , 0)).toFixed(2)
-    return totalHours
-  }
 
   if (firstLoading)
     return (
@@ -960,7 +947,7 @@ export default function DetailedIndividual({
                             work logs totaling {" "}
                             <b>
                               {
-                                calculateHours(
+                                calculateHoursOfLogs(
                                   taskReportData
                                   .find(
                                     (task) =>

@@ -7,7 +7,7 @@ import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { useCandidateTaskContext } from "../../../../contexts/CandidateTasksContext";
 import { Calendar } from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { formatDateForAPI } from "../../../../helpers/helpers";
+import { calculateHoursOfLogs, formatDateForAPI } from "../../../../helpers/helpers";
 import { differenceInCalendarDays } from "date-fns";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getCandidateTask, getCandidateTasksOfTheDayV2 } from "../../../../services/candidateServices";
@@ -451,19 +451,6 @@ const TaskScreen = ({
     setShowModal(true);
   }
 
-  const calculateHours = (logsPassed) => {
-    const hourGapBetweenLogs = logsPassed.map(log => {
-      const [ startTime, endTime ] = [ new Date(`${log.task_created_date} ${log.start_time}`), new Date(`${log.task_created_date} ${log.end_time}`) ]
-      if (startTime == 'Invalid Date' || endTime == 'Invalid Date') return 0
-
-      const diffInMs = Math.abs(endTime - startTime);
-      return  diffInMs / (1000 * 60 * 60);
-    });
-
-    const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y , 0)).toFixed(2)
-    return totalHours
-  }
-
   return (
     <>
       {
@@ -644,12 +631,12 @@ const TaskScreen = ({
                                       tasksForTheDay && Array.isArray(tasksForTheDay) && tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length > 0 ?
                                         subprojectSelected.length > 0 ?
                                           tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true).length > 0 ?
-                                          `${tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true).length} logs, ${calculateHours(tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true))} hours`
+                                          `${tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true).length} logs, ${calculateHoursOfLogs(tasksForTheDay.filter(task => task.project === project && task.subproject === subprojectSelected && task.is_active && task.is_active === true))} hours`
                                           :
                                           '0 logs, 0 hours'
                                         :
                                         tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length > 0 ?
-                                          `${tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length} logs, ${calculateHours(tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true))} hours`
+                                          `${tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true).length} logs, ${calculateHoursOfLogs(tasksForTheDay.filter(task => task.project === project && task.is_active && task.is_active === true))} hours`
                                         :
                                           '0 logs, 0 hours'
                                       :

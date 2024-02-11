@@ -37,6 +37,7 @@ import AddPage from "../GroupLeadPage/components/AddPage";
 import { getAllOnBoardedCandidate, getCandidateTasksOfTheDayV2 } from "../../services/candidateServices";
 import { extractNewTasksAndAddExtraDetail } from "./util/extractNewTasks";
 import { createArrayWithLength } from "../AdminPage/views/Landingpage/LandingPage";
+import UsersLogsScreen from "../../common/screens/UserLogsScreen/UserLogsScreen";
 
 const Teamlead = ({ isGrouplead }) => {
   const { currentUser } = useCurrentUserContext();
@@ -1203,13 +1204,7 @@ const Teamlead = ({ isGrouplead }) => {
               ) : section === "task" ? (
                 showCandidateTask ? (
                   <>
-                    <TaskScreen
-                      currentUser={currentTeamMember}
-                      handleAddTaskBtnClick={() => setShowAddTaskModal(true)}
-                      handleEditBtnClick={handleEditTaskBtnClick}
-                      assignedProject={currentUserProject}
-                      teamleadScreen={true}
-                    />
+                    <UsersLogsScreen />
                     <h1>Button</h1>
                   </>
                 ) : (
@@ -1444,25 +1439,9 @@ const Teamlead = ({ isGrouplead }) => {
               ) : section === "user" ? (
                 <UserScreen isGrouplead={isGrouplead} />
               ) : !isGrouplead && section === 'user-tasks' ? (
-                <TaskScreen
-                  candidateAfterSelectionScreen={true}
-                  assignedProject={
-                    currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-                      Array.isArray(
-                        currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-                      ) ?
-                      [
-                        currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project,
-                        ...currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-                      ]
-                      :
-                      [
-                        currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project
-                      ]
-                  }
-                  showBackBtn={true}
-                  loadProjects={true}
-                  isTeamlead={true}
+                <UsersLogsScreen 
+                  className={'new__Log__User__Wrapp'} 
+                  isLeadUser={true}
                 />
               ) :
                 !isGrouplead && section === 'all-tasks' ? (

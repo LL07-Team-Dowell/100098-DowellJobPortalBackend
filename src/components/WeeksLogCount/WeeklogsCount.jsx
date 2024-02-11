@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from './styles.module.css';
 import { useEffect } from "react";
 import { getWorklogDetailsWithinTimeframe } from "../../services/commonServices";
-import { formatDateForAPI } from "../../helpers/helpers";
+import { calculateHoursOfLogs, formatDateForAPI } from "../../helpers/helpers";
 import Overlay from "../Overlay";
 import { AiOutlineArrowLeft, AiOutlineClose } from "react-icons/ai";
 import HorizontalBarLoader from "../HorizontalBarLoader/HorizontalBarLoader";
@@ -22,19 +22,6 @@ const WeeklogsCount = ({ user, className }) => {
     const [customLogData, setCustomData] = useState(null);
     const [showSecondPage, setShowSecondPage] = useState(false);
     const [approvedTasksCount, setApprovedTasksCount] = useState([]);
-
-    const calculateHours = (logsPassed) => {
-        const hourGapBetweenLogs = logsPassed.map(log => {
-            const [startTime, endTime] = [new Date(`${log.task_created_date} ${log.start_time}`), new Date(`${log.task_created_date} ${log.end_time}`)]
-            if (startTime == 'Invalid Date' || endTime == 'Invalid Date') return 0
-
-            const diffInMs = Math.abs(endTime - startTime);
-            return diffInMs / (1000 * 60 * 60);
-        });
-
-        const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y, 0)).toFixed(2)
-        return totalHours
-    }
 
     useEffect(() => {
 
@@ -137,7 +124,7 @@ const WeeklogsCount = ({ user, className }) => {
                     </> :
                         <>
                             <span>
-                                You have a total of {logData?.length} {logData?.length > 1 ? 'logs' : 'log'} and {calculateHours(logData)} hours this week
+                                You have a total of {logData?.length} {logData?.length > 1 ? 'logs' : 'log'} and {calculateHoursOfLogs(logData)} hours this week
                             </span>
                             <button
                                 className={styles.btn}
@@ -182,7 +169,7 @@ const WeeklogsCount = ({ user, className }) => {
 
                                             <p className={styles.log__Count__Info}>{`Worklogs Approved: ${approvedTasksCount?.length}`}</p>
                                             <p className={styles.log__Count__Info}>{`Total Worklogs: ${customLogData?.length}`}</p>
-                                            <p className={styles.log__Count__Info}>{`Total Hours: ${calculateHours(customLogData)}`}</p>
+                                            <p className={styles.log__Count__Info}>{`Total Hours: ${calculateHoursOfLogs(customLogData)}`}</p>
                                         </>
                                         :
                                         <span>Log details from {new Date(startDateCopy).toDateString()} to {new Date(endDateCopy).toDateString()}</span>

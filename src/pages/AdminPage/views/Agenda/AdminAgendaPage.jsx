@@ -3,7 +3,7 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 import styles from "./styles.module.css";
 import { IoIosArrowBack } from "react-icons/io";
 import React, { useEffect, useState , useRef} from "react";
-import { formatDateForAPI } from "../../../../helpers/helpers";
+import { calculateHoursOfLogs, formatDateForAPI } from "../../../../helpers/helpers";
 import { IoFilterOutline } from "react-icons/io5";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { getAllCompanyUserSubProject, getWeeklyAgenda, getWorkLogsAddedUnderSubproject, getSubprojectAgendaAddedDates } from "../../../../services/commonServices";
@@ -75,19 +75,6 @@ const AdminAgendaPage = () => {
         const endDate = new Date(date);
         endDate.setDate(endDate.getDate() + 7);
         handleAgendaDetailUpdate('week_end', formatDateForAPI(endDate));
-    }
-
-    const calculateHours = (logsPassed) => {
-        const hourGapBetweenLogs = logsPassed.map(log => {
-            const [startTime, endTime] = [new Date(`${log.task_created_date} ${log.start_time}`), new Date(`${log.task_created_date} ${log.end_time}`)]
-            if (startTime == 'Invalid Date' || endTime == 'Invalid Date') return 0
-
-            const diffInMs = Math.abs(endTime - startTime);
-            return diffInMs / (1000 * 60 * 60);
-        });
-
-        const totalHours = Number(hourGapBetweenLogs.reduce((x, y) => x + y, 0)).toFixed(2)
-        return totalHours
     }
 
     useEffect(() => {
@@ -380,7 +367,7 @@ const AdminAgendaPage = () => {
                                                                         <span className={styles.agenda__To__Do}>To do</span>
                                                                     </>
                                                                         :
-                                                                        calculateHours(
+                                                                        calculateHoursOfLogs(
                                                                             taskDetailsForPeriod
                                                                                 .filter(
                                                                                     log =>

@@ -18,6 +18,7 @@ const SubprojectSelectWithSearch = ({
     hideSelectionsMade,
     alwaysOnDisplay,
     passedInputVal,
+    searchPlaceholder,
 }) => {
     const [ inputVal, setInputVal ] = useState('');
     const [ displayedItems, setDisplayedItems ] = useState([]);
@@ -269,7 +270,12 @@ const SubprojectSelectWithSearch = ({
                     <div className={`${styles.search__Wrapper} ${searchWrapperClassName ? searchWrapperClassName : ''}`}>
                         <AiOutlineSearch />
                         <input 
-                            placeholder="Search for subproject"
+                            placeholder={
+                                searchPlaceholder ? 
+                                    searchPlaceholder 
+                                :
+                                "Search for subproject"
+                            }
                             value={inputVal}
                             onChange={({ target }) => setInputVal(target.value)}
                             ref={inputRef}
