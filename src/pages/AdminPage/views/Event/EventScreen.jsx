@@ -13,11 +13,13 @@ import EventsPopup from "./EventsPopUp";
 import DeleteConfirmation from "../../../../components/DeleteConfirmation/DeleteConfirmation";
 import { deleteEvents } from "../../../../services/eventServices";
 import { toast } from "react-toastify";
+import Avatar from "react-avatar";
+import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 
 const EventScreen = () => {
   const [showEventsPop, setShowEventsPop] = useState(false);
   const [showDeletePop, setShowDeletePop] = useState(false);
-  const { projectsLoading } = useJobContext();
+  const { projectsLoading, applications } = useJobContext();
   const { currentUser } = useCurrentUserContext();
   const [events, setEvents] = useState([]);
   const [showEditOptions, setShowEditOptions] = useState({});
@@ -123,7 +125,14 @@ const EventScreen = () => {
                 return (
                   <div className={styles.event_card}>
                     <div className={styles.event_card_header}>
-                      <h2>{eventss.event_name}</h2>
+                      <div className={styles.event__Name__Content}>
+                        <Avatar 
+                          name={eventss?.event_name}
+                          size="3rem"
+                          round={true}
+                        />
+                        <h2>{eventss.event_name}</h2>
+                      </div>
                       <div
                         className={styles.edit__App}
                         onClick={() => showIcon(eventss._id)}
@@ -132,9 +141,21 @@ const EventScreen = () => {
                       </div>
                     </div>
                     <div className={styles.event_card_description}>
-                      <h3>Host: {eventss.event_host}</h3>
+                      <h3>
+                        <span className={styles.event__card__Info}>Host</span> 
+                        <span>
+                          {
+                            applications?.filter(application => application?.status === candidateStatuses.ONBOARDING)?.find(application => application?.username === eventss.event_host) ?
+                              applications?.filter(application => application?.status === candidateStatuses.ONBOARDING)?.find(application => application?.username === eventss.event_host)?.applicant
+                            :
+                            eventss?.event_host
+                          }
+                        </span>
+                      </h3>
+                      <h3><span className={styles.event__card__Info}>Frequency</span> <span>{eventss?.event_frequency?.replaceAll('_', ' ')}</span></h3>
+                      <h3><span className={styles.event__card__Info}>Mandatory Event</span> <span>{eventss?.is_mendatory === true ? 'Yes' : 'No'}</span></h3>
                       {eventss.project ? (
-                        <h3>Project: {eventss.project}</h3>
+                        <h3><span className={styles.event__card__Info}>Project</span> <span>{eventss.project}</span></h3>
                       ) : (
                         <></>
                       )}
@@ -173,6 +194,7 @@ const EventScreen = () => {
                 text="Are you sure you want to delete this Event?"
                 closeModal={handleCloseModal}
                 deleteFunction={handleDeleteOfEvent}
+                itemName={'event'}
               />
             )}
           </div>

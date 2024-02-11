@@ -28,6 +28,12 @@
       text-align: center;
       overflow-y: auto;
       
+      .delete__Confirmation_Confirm__Info {
+        font-size: 0.75rem;
+        margin: 1rem auto;
+        width: 85%;
+      }
+      
       .buttons {
         display: flex;
         align-items: flex-end;

@@ -49,7 +49,7 @@
 .event_cards {
   margin-top: 2rem;
   display: grid;
-  gap: 3rem;
+  gap: 1rem;
   grid-template-columns: repeat(3, 1fr);
 }
 
@@ -59,7 +59,7 @@
   height: auto;
   border-radius: 1.8rem;
   background-color: #fff;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 20px 0px;
   transition: 0.3s;
   position: relative;
   text-transform: capitalize;
@@ -76,6 +76,13 @@
 .event_card .event_card_header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.event__Name__Content {
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
 }
 
@@ -86,7 +93,10 @@
 }
 
 .event_card_description {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 
 .event_card_description h3 {
@@ -94,6 +104,13 @@
   font-size: 0.9rem;
   color: #000;
   font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.event_card_description h3 .event__card__Info {
+  color: #b8b8b8;
 }
 
 .update__Listing_event {

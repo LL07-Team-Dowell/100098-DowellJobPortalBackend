@@ -59,6 +59,7 @@ const Teams = ({
             <DeleteConfirmationTeam
               close={unshowDeletePopup}
               deleteFunction={deleteFunction}
+              itemName={'team'}
             />
           )}
           {showEditPopup && (

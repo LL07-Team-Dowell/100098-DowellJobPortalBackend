@@ -165,6 +165,7 @@ const Card = ({
           closeModal={clodeModal}
           deleteFunction={() => handleDeleteOfJob(_id)}
           id={_id}
+          itemName={'job'}
         />
       )}
       <div className='card'>

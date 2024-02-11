@@ -255,8 +255,8 @@ const Payment = () => {
             {
               Loading.isLoading ?
                 <LoadingSpinner
-                  width={"2rem"}
-                  height={"2rem"} /> :
+                  width={"1.2rem"}
+                  height={"1.2rem"} /> :
                 'Get Record'
             }
           </button>

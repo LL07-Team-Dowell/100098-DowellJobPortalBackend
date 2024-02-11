@@ -254,7 +254,7 @@ const EventsPopup = ({
                 />
               </div>
               <div className={styles.events_popup}>
-                <h2>Edit Event</h2>
+                <h2>Add Event</h2>
                 <label htmlFor="event_name">
                   <span>Event Name</span>
                   <input

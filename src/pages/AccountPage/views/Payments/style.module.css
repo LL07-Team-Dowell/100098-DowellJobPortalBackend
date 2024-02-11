@@ -39,7 +39,7 @@
 
 .btn_get_record {
     padding: 0.5rem 1rem;
-    font-size: 1rem;
+    font-size: 0.875rem;
     background-color: #005734;
     color: white;
     border: none;
@@ -47,6 +47,7 @@
     font-family: "Poppins", sans-serif;
     font-weight: 300;
     margin: 1rem;
+    cursor: pointer;
 }
 
 .select_user {
@@ -71,6 +72,9 @@
     padding: 1rem;
     /* overflow: scroll; */
     margin-bottom: 15%;
+    width: 82%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .add_record {
@@ -114,7 +118,7 @@
 }
 
 .select_input input,
-select {
+.select_input select {
     padding: 0.5rem 1rem;
     border-radius: 3px;
     border: 1px solid #cccccc;
@@ -184,4 +188,10 @@ select {
 
 .warning_modal .add_record {
     margin: 1.5rem;
+}
+
+@media screen and (max-width: 767px) {
+    .main_wrap {
+        width: 100%;
+    }
 }
