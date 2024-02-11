@@ -16,10 +16,13 @@ const SuccessPublicSubmissionModal = ({
         <div className={styles.public__Modal}>
           <div className={styles.top__Content}>
             <h2>{title}</h2>
-            <AiOutlineClose
-              onClick={handleCloseModal}
-              className={styles.edit_Icon_event}
-            />
+            {
+              submissionModalIcon ? <></> :
+              <AiOutlineClose
+                onClick={handleCloseModal}
+                className={styles.edit_Icon_event}
+              />
+            }
             {submissionModalIcon ? (
               <AiOutlineCheckCircle className={styles.icon} />
             ) : (

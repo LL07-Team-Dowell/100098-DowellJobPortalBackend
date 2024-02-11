@@ -617,6 +617,7 @@ const JobApplicationScreen = () => {
     // return
 
     if (!selectedFile) return toast.info("Please upload a certification");
+    if (newApplicationData.internet_speed.length < 1) return toast.info("You have not entered details for your internet speed");
 
     if (isPublicUser || isProductUser) {
       if (newApplicationData.applicant_email.length < 1)
