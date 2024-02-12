@@ -976,7 +976,7 @@ class PaymentSerializer(serializers.Serializer):
         ("December", "December"),
     )
     user_id = serializers.CharField(max_length=100)
-    company_id = serializers.CharField(max_length=100)
+    # company_id = serializers.CharField(max_length=100)
     payment_month = serializers.ChoiceField(choices=PAYMENT_MONTH_CHOICE)
     payment_year = serializers.IntegerField(min_value=1)
     number_of_leave_days = serializers.IntegerField(min_value=0)
