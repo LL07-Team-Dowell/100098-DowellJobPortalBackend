@@ -29,7 +29,7 @@ const UsersLogsScreen = ({
     })
     const [ selectedDate, setSelectedDate ] = useState(formatDateForAPI(new Date()));
     const [ logsLoading, setLogsLoading ] = useState(true);
-    const [ logsData, setLogData ] = useState([]);
+    const [ logsData, setLogsData ] = useState([]);
     const [ logsToDisplay, setLogsToDisplay ] = useState([]);
     const [ projects, setProjects ] = useState([]);
     const [ projectsLoading, setProjectsLoading ] = useState(true);
@@ -94,7 +94,7 @@ const UsersLogsScreen = ({
             const parentTaskOfTheDay = res.data?.task_details?.find(task => task.task_created_date === selectedDate);
             if (!parentTaskOfTheDay) return;
 
-            setLogData(
+            setLogsData(
                 res.data?.task?.filter(
                     task => task.task_id === parentTaskOfTheDay?._id &&
                     task.is_active && 
@@ -127,32 +127,35 @@ const UsersLogsScreen = ({
     }, [currentUser, projectsLoading, projects, isLeadUser])
 
     useEffect(() => {
-        setLogsToDisplay(
-            logsData.filter(
-                log => (
-                    log.approved === activeFilters.showApproved ||
-                    log.approval === activeFilters.showApproved
-                )
-            ).filter(
-                log => {
-                    if (activeFilters.showMeetingTypeLogs) {
-                        if (log.task_type === 'MEETING UPDATE') return true
-                        return false 
-                    }
-
-                    return true
+        const filteredData = logsData.filter(
+            log => {
+                if (activeFilters.showApproved) {
+                    if (log?.approved === true || log?.approval === true) return true
+                    return false
                 }
-            ).filter(
-                log => {
-                    if (activeFilters.showTaskTypeLogs) {
-                        if (log.task_type === 'TASK UPDATE') return true
-                        return false 
-                    }
-
-                    return true
+                return true
+            }
+        ).filter(
+            log => {
+                if (activeFilters.showMeetingTypeLogs) {
+                    if (log.task_type === 'MEETING UPDATE') return true
+                    return false 
                 }
-            )
-        )
+
+                return true
+            }
+        ).filter(
+            log => {
+                if (activeFilters.showTaskTypeLogs) {
+                    if (log.task_type === 'TASK UPDATE') return true
+                    return false 
+                }
+
+                return true
+            }
+        );
+
+        setLogsToDisplay(filteredData);
     }, [activeFilters, logsData])
 
     const tileClassName = ({ date, view }) => {
@@ -167,7 +170,7 @@ const UsersLogsScreen = ({
     };
 
     const handleSelectDate = async (daySelected) => {
-        setLogData([]);
+        setLogsData([]);
         setSelectedDate(formatDateForAPI(daySelected));
         setLogsLoading(true);
 
@@ -185,7 +188,7 @@ const UsersLogsScreen = ({
             const parentTaskOfTheDay = res?.task_details?.find(task => task.task_created_date === formatDateForAPI(daySelected));
             if (!parentTaskOfTheDay) return;
 
-            setLogData(
+            setLogsData(
                 res?.task?.filter(
                     task => task.task_id === parentTaskOfTheDay?._id &&
                     task.is_active && 
