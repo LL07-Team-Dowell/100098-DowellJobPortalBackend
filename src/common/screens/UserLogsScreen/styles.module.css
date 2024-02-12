@@ -93,6 +93,10 @@
     width: max-content;
 }
 
+.project__Listing {
+    max-height: 20rem !important;
+}
+
 .pro__Select__Wrap {
     display: flex;
     align-items: center;
@@ -102,6 +106,16 @@
 
 .pro__Select__Wrap p {
     font-size: 0.875rem;
+}
+
+.selected__Subproject__item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background-color: #fff;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    padding: 0.5rem 0.9rem;
 }
 
 .log__Heading {
@@ -116,14 +130,25 @@
     gap: 0.6rem;
 }
 
+.single__log__Detail.approved__log ._log {
+    color: #005734;
+}
+
 .date__log {
-    font-size: 1rem;
+    font-weight: 500;
     white-space: nowrap;
 }
 
 ._log,
-.log__Timing {
+.log__Timing,
+.date__log {
     font-size: 0.875rem;
+}
+
+._log {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
 }
 
 .log__Timing {

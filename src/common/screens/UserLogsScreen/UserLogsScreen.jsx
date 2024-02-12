@@ -11,10 +11,14 @@ import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 import useLoadProjectAndSubproject from "../../hooks/useLoadProjectAndSubproject";
 import DropdownButton from "../../../pages/TeamleadPage/components/DropdownButton/Dropdown";
 import SubprojectSelectWithSearch from "../../../components/SubprojectSelectWithSearch/SubprojectSelectWithSearch";
+import { AiOutlineCheckCircle, AiOutlineClose } from "react-icons/ai";
+import { useMediaQuery } from "@mui/material";
 
 const UsersLogsScreen = ({ 
     className,
     isLeadUser,
+    isApprovalView,
+    projectsAllowedToView,
 }) => {
     const { currentUser } = useCurrentUserContext();
     const [ datesWithLogsInfo, setDatesWithLogsInfo ] = useState({
@@ -24,6 +28,7 @@ const UsersLogsScreen = ({
     })
     const [ activeFilters, setActiveFilters ] = useState({
         showApproved: false,
+        showPendingApproval: false,
         showTaskTypeLogs: false,
         showMeetingTypeLogs: false,
     })
@@ -39,6 +44,7 @@ const UsersLogsScreen = ({
     const [ subprojectsLoaded, setSubProjectsLoaded ] = useState(false);
     const [ selectedProject, setSelectedProject ] = useState(null);
     const [ selectedSubproject, setSelectedSubproject ] = useState(null);
+    const isSmallScreen = useMediaQuery('(max-width: 767px)');
 
     const handleUpdateDatesWithLogsInfo = (keyToUpdate, value) => {
         setDatesWithLogsInfo((prevData) => {
@@ -129,8 +135,18 @@ const UsersLogsScreen = ({
     useEffect(() => {
         const filteredData = logsData.filter(
             log => {
+                if (activeFilters.showApproved && activeFilters.showPendingApproval) return true
                 if (activeFilters.showApproved) {
                     if (log?.approved === true || log?.approval === true) return true
+                    return false
+                }
+                return true
+            }
+        ).filter(
+            log => {
+                if (activeFilters.showApproved && activeFilters.showPendingApproval) return true
+                if (activeFilters.showPendingApproval) {
+                    if (log?.approved === false || log?.approval === false) return true
                     return false
                 }
                 return true
@@ -216,13 +232,31 @@ const UsersLogsScreen = ({
                         :
                     <></>
                 }
+                {
+                    isSmallScreen && !isApprovalView && <>
+                        <WeeklogsCount
+                            user={currentUser}
+                        />
+                        <br />
+                        <br />
+                    </>
+                }
                 <Calendar
                     tileClassName={tileClassName}
                     onClickDay={(day) => handleSelectDate(day)}
+                    value={selectedDate}
                 />
                 <div className={styles.filters__Wrap}>
                     <h3>Filters</h3>
                     <div className={styles.filter__items}>
+                        <CheckboxItem 
+                            label={'Show only worklogs pending approval'}
+                            checked={activeFilters.showPendingApproval}
+                            handleSelectItem={
+                                (val) => handleUpdateFilters('showPendingApproval', val)
+                            }
+                        />
+
                         <CheckboxItem 
                             label={'Show only approved worklogs'}
                             checked={activeFilters.showApproved}
@@ -249,9 +283,12 @@ const UsersLogsScreen = ({
                 <div className={styles.divider}></div>
             </div>
             <div className={styles.user__log__Details}>
-                <WeeklogsCount
-                    user={currentUser}
-                />
+                {
+                    !isSmallScreen && !isApprovalView && 
+                    <WeeklogsCount
+                        user={currentUser}
+                    />
+                }
 
                 <div>
                     <h2>Worklog Details for {formatDateAndTime(selectedDate, true)}</h2>
@@ -279,10 +316,20 @@ const UsersLogsScreen = ({
                                         selections={projects.sort((a, b) => a.localeCompare(b))} 
                                         handleSelectionClick={(project) => setSelectedProject(project)}
                                         className={styles.select__Project}
+                                        selectionsDropDownClassName={styles.project__Listing}
                                     />
                                 </div>
                                 <div className={styles.pro__Select__Wrap}>
                                     <p>Subproject: </p>
+                                    {
+                                        selectedSubproject && <div className={styles.selected__Subproject__item}>
+                                            <p>{selectedSubproject}</p>
+                                            <AiOutlineClose 
+                                                onClick={() => setSelectedSubproject(null)} 
+                                                cursor={'pointer'}
+                                            />
+                                        </div>
+                                    }
                                     <SubprojectSelectWithSearch
                                         searchPlaceholder={'Filter by subproject'}
                                         subprojects={subprojects.filter(item => item.parent_project === selectedProject)}
@@ -322,9 +369,22 @@ const UsersLogsScreen = ({
                                                 }
                                                 return true
                                             }).map(log => {
-                                                return <p className={styles.single__log__Detail}>
+                                                const logIsApproved = log?.approved === true || log?.approval === true;
+
+                                                return <p className={`${styles.single__log__Detail} ${logIsApproved ? styles.approved__log : ''}`}>
+                                                    {
+                                                        logIsApproved ? 
+                                                            <AiOutlineCheckCircle 
+                                                                fontSize={'0.8rem'} 
+                                                                color="#005734" 
+                                                            />
+                                                        :
+                                                        <></>
+                                                    }
                                                     <span className={styles.date__log}>{formatDateAndTime(log?.task_created_date)}</span>
-                                                    <span className={styles._log}>{log?.task}</span>
+                                                    <span className={styles._log}>
+                                                        {log?.task}
+                                                    </span>
                                                     <span className={styles.log__Timing}>from {log?.start_time} to {log?.end_time}</span>
                                                 </p>
                                             })
