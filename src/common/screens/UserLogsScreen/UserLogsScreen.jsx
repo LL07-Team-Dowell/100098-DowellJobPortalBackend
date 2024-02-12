@@ -182,7 +182,7 @@ const UsersLogsScreen = ({
             const res = (await getCandidateTasksOfTheDayV2(dataToPost)).data;
             setLogsLoading(false);
 
-            const parentTaskOfTheDay = res?.task_details?.find(task => task.task_created_date === selectedDate);
+            const parentTaskOfTheDay = res?.task_details?.find(task => task.task_created_date === formatDateForAPI(daySelected));
             if (!parentTaskOfTheDay) return;
 
             setLogData(
