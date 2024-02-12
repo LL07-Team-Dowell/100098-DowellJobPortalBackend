@@ -118,6 +118,7 @@
 
 .date__log {
     font-size: 1rem;
+    white-space: nowrap;
 }
 
 ._log,
@@ -127,6 +128,7 @@
 
 .log__Timing {
     color: rgb(184, 184, 184);
+    white-space: nowrap;
 }
 
 @media screen and (max-width: 767px) {
