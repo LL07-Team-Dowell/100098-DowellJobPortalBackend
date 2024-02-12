@@ -2564,6 +2564,7 @@ class approve_task(APIView):
                         *task_details_module, "update", field, update_field
                     )
                     if json.loads(response)["isSuccess"] is True:
+                        
                         return Response(
                             {
                                 "message": "Task approved successfully",
@@ -2678,8 +2679,8 @@ class task_module(APIView):
         else:
             return self.handle_error(request)
 
-    @verify_user_token
-    def add_task(self,request,user):
+    #@verify_user_token
+    def add_task(self,request):
         data = request.data
         payload = {
             "project": data.get("project"),
@@ -2743,18 +2744,14 @@ class task_module(APIView):
                 )
                 if response["isSuccess"]:
                     field["_id"]=response["inserted_id"]
-                    # year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                    # filter_params={
-                    #    "applicant_id":data.get("applicant_id"),
-                    #    "username":data.get("task_added_by"),
-                    #    "year":year,
-                    #    "month":monthname,
-                    #    "company_id":data.get("company_id")
-                    # }
-                    # task_params={"task_added"}
-                    # report =updatereportdb(filter_params=filter_params,task_params=task_params)
-                    ##------------------------------------------------
-
+                    
+                    update_data = {
+                        'task_added': True,
+                        'tasks_uncompleted':True
+                    }
+                    res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                            data.get("user_id"), data.get("task_created_date"), 
+                                            update_data)
                     return Response(
                         {
                             "success": True,
@@ -3313,7 +3310,12 @@ class create_team(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
-                
+                update_data = {
+                    'teams': True,
+                }
+                res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                        data.get("user_id"), data.get("task_created_date"), 
+                                        update_data)
                 return Response(
                     {
                         "message": "Team created successfully",
@@ -3528,7 +3530,7 @@ class create_team_task(APIView):
                 "completed": data.get("completed"),
                 "team_id": data.get("team_id"),
                 "data_type": data.get("data_type"),
-                "task_created_date": self.get_current_datetime(datetime.now()),
+                "task_created_date": payload["task_created_date"],
                 "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
@@ -3542,18 +3544,13 @@ class create_team_task(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
-                ##adding to sqlite--------------------------------
-                # year,monthname, monthcount = get_month_details(data.get("task_created_date"))
-                # filter_params={
-                #    "applicant_id":data.get("applicant_id"),
-                #    "username":data.get("task_added_by"),
-                #    "year":year,
-                #    "month":monthname,
-                #    "company_id":data.get("company_id")
-                # }
-                # task_params={"team_tasks"}
-                # report =updatereportdb(filter_params=filter_params,task_params=task_params)
-                ##------------------------------------------------
+                update_data = {
+                        'team_tasks': True,
+                        'team_tasks_uncompleted':True
+                }
+                res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                        data.get("user_id"), field["task_created_date"], 
+                                        update_data)
 
                 return Response(
                     {
@@ -6586,7 +6583,7 @@ class Generate_Report(APIView):
             # check if the user has any data------------------------------------------------
             field = {
                 "user_id": user_id,
-                "company_id": company_id,
+                #"company_id": company_id,
             }
             info = json.loads(dowellconnection(*candidate_management_reports, "fetch", field, update_field=None ))["data"]
             if len(info) <= 0:
@@ -10810,13 +10807,12 @@ class Company_Structure(APIView):
                 else:
                     return Response(insert_collection,status=status.HTTP_400_BAD_REQUEST)
     def get_projects(self,request, type_request):
-        type_request = type_request.replace("get_","")
         company_id = request.data.get("company_id")
         search_query ={  
             "company_id":company_id,
             "data_type":"Real_Data"
         }
-        coll_name = type_request
+        coll_name = type_request.replace("get_","")
         res = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,coll_name,search_query,10,0,False))
         if res['success'] == True:
             return Response(res,status=status.HTTP_200_OK)
