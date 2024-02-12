@@ -114,6 +114,7 @@ from .serializers import (
     WorklogsDateSerializer,
     UpdateUserIdSerializer,
     InsertPaymentInformation,
+    PaymentSerializer,
 )
 from .authorization import (
     verify_user_token,
@@ -149,7 +150,7 @@ if os.getenv("LEAVE_DB_NAME"):
     LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
 if os.getenv("DB_PAYMENT_RECORDS"):
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
-    
+
 else:
     """for windows local"""
     load_dotenv(f"{os.getcwd()}/.env")
@@ -161,28 +162,38 @@ else:
     leave_report_collection = str(os.getenv("LEAVE_REPORT_COLLECTION"))
     COMPANY_STRUCTURE_DB_NAME = str(os.getenv("COMPANY_STRUCTURE_DB_NAME"))
     ATTENDANCE_DB = str(os.getenv("ATTENDANCE_DB"))
-    Events_collection=str(os.getenv("Events_collection"))
-    LEAVE_DB=str(os.getenv("LEAVE_DB_NAME"))
+    Events_collection = str(os.getenv("Events_collection"))
+    LEAVE_DB = str(os.getenv("LEAVE_DB_NAME"))
     DB_PAYMENT_RECORDS = str(os.getenv("DB_PAYMENT_RECORDS"))
 
 # Create your views here.
 
 
 class Invoice_module(APIView):
-    def post(self, request):
+    def get(self, request):
         type_request = request.GET.get("type")
-        company_id = request.GET.get("company_id")
-
-        if type_request == "get-payment-records":  # for user
+        if type_request == "get-payment-records":
             return self.get_payment_records(request)
-        elif type_request == "save-payment-records":
-            return self.save_payment_records(request)
-        elif type_request == "update-payment-records":
-            return self.update_payment_records(request)
-        elif type_request == "process-payment":
-            return self.process_payment(request)
         elif type_request == "get-invoice":
             return self.invoice(request)
+        else:
+            return self.handle_error(request)
+
+    def post(self, request):
+        type_request = request.GET.get("type")
+
+        if type_request == "save-payment-records":
+            return self.save_payment_records(request)
+        elif type_request == "process-payment":
+            return self.process_payment(request)
+        else:
+            return self.handle_error(request)
+
+    def patch(self, request):
+        type_request = request.GET.get("type")
+
+        if type_request == "update-payment-records":
+            return self.update_payment_records(request)
         elif type_request == "update-payment-status":
             return self.update_payment_status(request)
         else:
@@ -190,7 +201,6 @@ class Invoice_module(APIView):
 
     def get_payment_records(self, request):
         user_id = request.data.get("user_id")
-        company_id = request.data.get("company_id")
 
         fetch_data = {"db_record_type": "payment_record"}
         result = datacube_data_retrival_function(
@@ -205,7 +215,7 @@ class Invoice_module(APIView):
 
         try:
             result_dict = json.loads(result)
-        except json.JSONDecodeError:
+        except json.Exception as e:
             # Handle the case where the string is not valid JSON
             result_dict = {}
 
@@ -214,19 +224,31 @@ class Invoice_module(APIView):
             if payment_details:
                 return Response(
                     {
+                        "success": True,
                         "message": f"Payment details for user_id {user_id}",
-                        "data": payment_details[0],
+                        "database_response": True,
+                        "response": payment_details[0],
                     },
                     status=status.HTTP_200_OK,
                 )
             else:
                 return Response(
-                    {"message": f"No payment details found for {user_id}"},
-                    status=status.HTTP_404_NOT_FOUND,
+                    {
+                        "success": False,
+                        "message": f"No payment details found for {user_id}",
+                        "database_response": False,
+                        "response": "",
+                    },
+                    status=status.HTTP_204_NO_CONTENT,
                 )
         else:
             return Response(
-                {"message": "Failed to fetch payment details", "response": result_dict},
+                {
+                    "success": False,
+                    "message": "Failed to fetch payment details",
+                    "database_response": False,
+                    "response": "",
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -239,7 +261,10 @@ class Invoice_module(APIView):
         if not (user_id and company_id and weekly_payment_amount and payment_currency):
             return Response(
                 {
-                    "message": "user_id, company_id, weekly_payment_amount, and currency are required"
+                    "success": False,
+                    "message": "user_id, company_id, weekly_payment_amount, and currency are required",
+                    "database_response": False,
+                    "response": "",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -253,15 +278,20 @@ class Invoice_module(APIView):
             data=fetch_data,
             limit=1,
             offset=0,
-            payment= False,
+            payment=False,
         )
         parsed_response = json.loads(response)
 
         if parsed_response.get("data"):
             # Records already exist in the collection, return a message
             return Response(
-                {"message": "Records already exist in the collection"},
-                status=status.HTTP_409_CONFLICT,
+                {
+                    "success": False,
+                    "message": "Records already exist in the collection",
+                    "database_response": False,
+                    "response": "",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
         else:
             # Collection doesn't exist, create a new collection first and then save records
@@ -290,15 +320,28 @@ class Invoice_module(APIView):
                     collection_name=user_id,
                     data=data_to_insert,
                 )
-                return Response(response, status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        "success": True,
+                        "message": "data inserted successfully",
+                        "database_response": True,
+                        "response": response,
+                    },
+                    status=status.HTTP_200_OK,
+                )
             else:
                 return Response(
-                    {"message": f"Failed to create collection for user_id: {user_id}"},
+                    {
+                        "success": False,
+                        "message": f"Failed to create collection for user_id: {user_id}",
+                        "database_response": False,
+                        "response": "",
+                    },
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
 
     def update_payment_records(self, request):
-        user_id = request.data.get("username")
+        user_id = request.data.get("user_id")
         company_id = request.data.get("company_id")
         weekly_payment_amount = request.data.get("weekly_payment_amount")
         payment_currency = request.data.get("currency")
@@ -306,7 +349,10 @@ class Invoice_module(APIView):
         if not (user_id and company_id and weekly_payment_amount and payment_currency):
             return Response(
                 {
-                    "message": "Username, weekly_payment_amount, and currency are required"
+                    "success": False,
+                    "message": "user_id, company_id, weekly_payment_amount, and currency are required",
+                    "database_response": False,
+                    "response": "",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -325,9 +371,8 @@ class Invoice_module(APIView):
 
         try:
             response_data_dict = json.loads(response_data)
-        except json.JSONDecodeError:
-
-            print(response_data_dict)
+        except json.Exception as e:
+            result_dict = {}
 
         # Check if "data" key exists.
         if response_data_dict.get("data", []):
@@ -359,72 +404,98 @@ class Invoice_module(APIView):
                 update_data=update_data,
             )
 
-            return Response(update_response, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "success": True,
+                    "message": "Data Update successfully",
+                    "database_response": True,
+                    "response": update_response,
+                },
+                status=status.HTTP_200_OK,
+            )
 
         else:
             return Response(
-                {"message": "Data does not exist, you need to save first"},
+                {
+                    "success": False,
+                    "message": "Data does not exist, you need to save first",
+                    "database_response": False,
+                    "response": "",
+                },
                 status=status.HTTP_404_NOT_FOUND,
             )
 
     def process_payment(self, request):
         user_id = request.data.get("user_id")
-        company_id = request.data.get("company_id")
         payment_month = request.data.get("payment_month")
         payment_year = request.data.get("payment_year")
         number_of_leave_days = request.data.get("number_of_leave_days")
         approved_logs_count = request.data.get("approved_logs_count")
         total_logs_required = request.data.get("total_logs_required")
 
-        url = "https://datacube.uxlivinglab.online/db_api/get_data/"
-        data_1 = {
-            "api_key": API_KEY,
-            "db_name": DB_PAYMENT_RECORDS,
-            "coll_name": user_id,
-            "operation": "fetch",
-            "filters": {
-                "db_record_type": "payment_detail",
-                "payment_month": payment_month,
-                "payment_year": payment_year,
-            },
-        }
-
-        data_2 = {
-            "api_key": API_KEY,
-            "db_name": DB_PAYMENT_RECORDS,
-            "coll_name": user_id,
-            "operation": "fetch",
-            "filters": {
-                "db_record_type": "payment_record",
-            },
-        }
-
-        response_1 = requests.post(url, json=data_1)
-        existing_payment_detail = response_1.json()["data"]
-
-        response_2 = requests.post(url, json=data_2)
-        existing_payment_record = response_2.json()["data"]
-
-        if existing_payment_detail:
+        serializer = PaymentSerializer(data=request.data)
+        if not serializer.is_valid():
             return Response(
                 {
-                    "message": f"Payment already processed for {payment_month} {payment_year}"
+                    "success": False,
+                    "message": "Invalid data",
+                    "response": serializer.errors,
+                }
+            )
+
+        data_1 = {
+            "db_record_type": "payment_detail",
+            "payment_month": payment_month,
+            "payment_year": payment_year,
+        }
+        data_2 = {"db_record_type": "payment_record"}
+
+        existing_payment_detail = datacube_data_retrival(
+            api_key=API_KEY,
+            database_name=DB_PAYMENT_RECORDS,
+            collection_name=user_id,
+            data=data_1,
+            limit=1,
+            offset=0,
+        )
+        json_existing_payment_detail = json.loads(existing_payment_detail)
+
+        existing_payment_record = datacube_data_retrival(
+            api_key=API_KEY,
+            database_name=DB_PAYMENT_RECORDS,
+            collection_name=user_id,
+            data=data_2,
+            limit=1,
+            offset=0,
+        )
+
+        json_existing_payment_record = json.loads(existing_payment_record)
+        record_data = json_existing_payment_record.get("data")
+
+        if json_existing_payment_detail.get("data") != []:
+            return Response(
+                {
+                    "success": False,
+                    "message": f"Payment already processed for {payment_month} {payment_year}",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if not existing_payment_record:
+        if not json_existing_payment_record:
             return Response(
-                {"message": "user does not have a payment record yet"},
-                status=status.HTTP_404_BAD_REQUEST,
+                {
+                    "success": False,
+                    "message": "User does not have a payment record yet",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         else:
             weeks_per_month = 4
-            weekly_payment_amount = existing_payment_record[0].get(
+            weekly_payment_amount = json_existing_payment_record.get(
                 "weekly_payment_amount", 0
             )
-            currency_paid = existing_payment_record[0].get("payment_currency", 0)
+            currency_paid = json_existing_payment_record.get("payment_currency", 0)
             monthly_payment = weekly_payment_amount * weeks_per_month
 
             daily_payment = weekly_payment_amount / 5
@@ -441,68 +512,75 @@ class Invoice_module(APIView):
             if amount_to_pay < 0:
                 amount_to_pay = 0
 
-            save_url = "https://datacube.uxlivinglab.online/db_api/crud/"
-            save_data = {
-                "api_key": API_KEY,
-                "db_name": DB_PAYMENT_RECORDS,
-                "coll_name": user_id,
-                "operation": "insert",
-                "data": {
-                    "db_record_type": "payment_detail",
-                    "payment_month": payment_month,
-                    "payment_year": payment_year,
-                    "amount_paid": amount_to_pay,
-                    "currency_paid": currency_paid,
-                    "actual_monthly_pay": monthly_payment,
-                    "approved_logs_count": approved_logs_count,
-                    "requried_logs_count": total_logs_required,
-                    "leave_days": number_of_leave_days,
-                    "payment_approved": False,
-                    "paymentmade_on": " ",
-                },
+            insert_data = {
+                "db_record_type": "payment_detail",
+                "payment_month": payment_month,
+                "payment_year": payment_year,
+                "amount_paid": amount_to_pay,
+                "currency_paid": currency_paid,
+                "actual_monthly_pay": monthly_payment,
+                "approved_logs_count": approved_logs_count,
+                "requried_logs_count": total_logs_required,
+                "leave_days": number_of_leave_days,
+                "payment_approved": False,
+                "payment_made_on": " ",
             }
-
-            save_response = requests.post(save_url, json=save_data)
+            data_insert = datacube_data_insertion(
+                api_key=API_KEY,
+                database_name=DB_PAYMENT_RECORDS,
+                collection_name=user_id,
+                data=insert_data,
+            )
+            response_data = json.loads(data_insert)
 
             update_date = datetime.now().isoformat()
-            update_url = "https://datacube.uxlivinglab.online/db_api/crud/"
-            update_data = {
-                "api_key": API_KEY,
-                "db_name": DB_PAYMENT_RECORDS,
-                "coll_name": user_id,
-                "operation": "update",
-                "query": {"_id": existing_payment_record[0].get("_id", 0)},
-                "update_data": {
-                    "last_payment_date": update_date,
-                },
-            }
+            insert_query = {"_id": record_data[0]["_id"]}
+            update_date = {"last_payment_date": update_date}
+            update_data = datacube_data_update(
+                api_key=API_KEY,
+                db_name=DB_PAYMENT_RECORDS,
+                coll_name=user_id,
+                query=insert_query,
+                update_data=update_date,
+            )
+            json_update_data = json.loads(update_data)
 
-            update_response = requests.put(update_url, json=update_data)
-
-            if update_response.status_code not in [200, 201]:
+            if json_update_data.get("success") == False:
                 return Response(
-                    {"message": "Failed to update last_payment_date"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    {
+                        "success": False,
+                        "message": "Failed to update last_payment_date",
+                        "database_response": False,
+                        "response": "",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            if save_response.status_code in [200, 201]:
-                inserted_data = save_response.json()["data"]
-                success_message = f"Payment processed successfully for {payment_month} {payment_year}. Inserted ID: {inserted_data['inserted_id']}"
+            if response_data.get("success") == True:
+                inserted_data = response_data["data"]
 
                 return Response(
-                    {"message": success_message},
+                    {
+                        "success": True,
+                        "message": f"Payment processed successfully for {payment_month} {payment_year}. Inserted ID: {inserted_data['inserted_id']}",
+                        "database_response": True,
+                        "response": response_data,
+                    },
                     status=status.HTTP_200_OK,
                 )
-
             else:
                 return Response(
-                    {"message": "Failed to save payment details"},
+                    {
+                        "success": False,
+                        "message": "Failed to save payment details",
+                        "database_response": False,
+                        "response": "",
+                    },
                     status=status.HTTP_404_NOT_FOUND,
                 )
 
     def invoice(self, request):
         user_id = request.data.get("user_id")
-        company_id = request.data.get("company_id")
         payment_year = request.data.get("payment_year")
 
         fetch_data = {"payment_year": payment_year}
@@ -518,7 +596,7 @@ class Invoice_module(APIView):
 
         try:
             result_dict = json.loads(result)
-        except json.JSONDecodeError:
+        except json.Exception as e:
             # Handle the case where the string is not valid JSON
             result_dict = {}
 
@@ -527,19 +605,121 @@ class Invoice_module(APIView):
             if payment_details:
                 return Response(
                     {
+                        "success": True,
                         "message": f"Payment details for {payment_year} and user_id {user_id}",
-                        "data": payment_details,
+                        "database_response": True,
+                        "response": payment_details,
                     },
                     status=status.HTTP_200_OK,
                 )
             else:
                 return Response(
-                    {"message": f"No payment details found for {payment_year}"},
+                    {
+                        "success": False,
+                        "message": f"No payment details found for {payment_year}",
+                        "database_response": False,
+                        "response": "",
+                    },
                     status=status.HTTP_404_NOT_FOUND,
                 )
         else:
             return Response(
-                {"message": "Failed to fetch payment details", "response": result_dict},
+                {
+                    "success": False,
+                    "message": "Failed to fetch payment details",
+                    "database_response": False,
+                    "response": "",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    def update_payment_status(self, request):
+        _id = request.data.get("_id")
+        user_id = request.data.get("user_id")
+
+        if not (_id and user_id):
+            return Response(
+                {
+                    "success": False,
+                    "message": "User ID and record ID are required",
+                    "database_response": False,
+                    "response": "",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        fetch_data = {"db_record_type": "payment_detail", "_id": _id}
+        response_data = datacube_data_retrival(
+            api_key=API_KEY,
+            database_name=DB_PAYMENT_RECORDS,
+            collection_name=user_id,
+            data=fetch_data,
+            limit=1,
+            offset=0,
+        )
+
+        try:
+            response_data_dict = json.loads(response_data)
+        except json.Exception as e:
+            return Response(
+                {"message": "Failed to fetch payment details"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        if response_data_dict.get("data", []):
+
+            existing_record = response_data_dict["data"][0]
+            existing_record["payment_approved"] = True
+            existing_record["payment_made_on"] = datetime.now().isoformat()
+
+            update_data = {
+                "payment_approved": True,
+                "payment_made_on": existing_record["payment_made_on"],
+            }
+
+            response = datacube_data_update(
+                api_key=API_KEY,
+                db_name=DB_PAYMENT_RECORDS,
+                coll_name=user_id,
+                query={"_id": existing_record["_id"]},
+                update_data=update_data,
+            )
+
+            try:
+                response_json = json.loads(response)
+            except Exception as e:
+                return Response(
+                    {"message": "Failed to parse response JSON"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+            if response_json.get("success", False):
+                return Response(
+                    {
+                        "success": True,
+                        "message": "Payment details updated successfully",
+                        "database_response": True,
+                        "response": response_json,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {
+                        "success": False,
+                        "message": "Failed to update payment details",
+                        "database_response": False,
+                        "response": "",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Payment detail record not found",
+                    "database_response": False,
+                    "response": "",
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
