@@ -33,7 +33,6 @@ import AdminReports from "./pages/AdminPage/views/Reports/Reports";
 import RedirectPage from "./pages/Redirectpage/redirect";
 import { testingRoles } from "./utils/testingRoles";
 import LoadingPage from "./pages/LoadingPage/LoadingPage";
-import CreateTaskScreen from "./pages/TeamleadPage/views/CreateTaskScreen/CreateTaskScreen";
 import { HrJobScreenAllTasksContextProvider } from "./contexts/HrJobScreenAllTasks";
 import CandidateTranningScreen from "./pages/CandidatePage/views/CandidateTranningScreen/CandidateTranningScreen";
 import TraningProgress from "./pages/CandidatePage/views/TraningProgress.js/TraningProgress";
@@ -58,7 +57,6 @@ import Payment from "./pages/AccountPage/views/Payments/Payment";
 import TeamThreadScreen from "./pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThreadScreen";
 import GroupLeadTask from "./pages/GroupLeadPage/components/GroupLeadTask";
 import { PageUnderConstruction } from "./pages/UnderConstructionPage/ConstructionPage";
-import TaskScreen from "./pages/TeamleadPage/views/TaskScreen/TaskScreen";
 import DetailedIndividual from "./pages/AdminPage/views/Reports/detailedIndividual/DetailedIndividual";
 import TaskReports from "./pages/AdminPage/views/Reports/TaskReports";
 import TeamReport from "./pages/AdminPage/views/Reports/TeamReoprt/TeamReport";
@@ -92,6 +90,8 @@ import { accountRoutesInfo } from "./routes/accountRoutes";
 import AgendaLandingPage from "./pages/HrPage/views/AgendaLandingPage/AgendaLandingPage";
 import HrAgendaReport from "./pages/HrPage/views/Agenda/HrAgendaReport/HrAgendaReport";
 import UsersLogsScreen from "./common/screens/UserLogsScreen/UserLogsScreen";
+import TeamleadLogApprovalScreen from "./pages/TeamleadPage/views/LogApprovalScreen/TeamleadLogApprovalScreen";
+import GroupleadLogApprovalScreen from "./pages/GroupLeadPage/views/LogApprovalScreen/GroupleadLogApprovalScreen";
 
 function App() {
   // console.log = () => { };
@@ -778,11 +778,11 @@ function App() {
         </Route>
 
         <Route
-          path='/new-task-screen'
+          path='/logs-approval-screen'
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
-                <CreateTaskScreen />
+                <TeamleadLogApprovalScreen />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }
@@ -998,11 +998,11 @@ function App() {
         </Route>
 
         <Route
-          path='/new-task-screen'
+          path='/logs-approval-screen'
           element={
             <CandidateTaskContextProvider>
               <ValuesProvider>
-                <CreateTaskScreen isGrouplead={true} />
+                <GroupleadLogApprovalScreen />
               </ValuesProvider>
             </CandidateTaskContextProvider>
           }

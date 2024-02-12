@@ -7,40 +7,35 @@ import { useNavigationContext } from "../../contexts/NavigationContext";
 import ErrorPage from "../ErrorPage/ErrorPage";
 import SelectedCandidates from "./components/SelectedCandidates/SelectedCandidates";
 import SelectedCandidatesScreen from "./views/SelectedCandidatesScreen/SelectedCandidatesScreen";
-import TaskScreen from "./views/TaskScreen/TaskScreen";
 import "./style.css";
 import { candidateStatuses } from "../CandidatePage/utils/candidateStatuses";
 import { candidateDataReducerActions } from "../../reducers/CandidateDataReducer";
-import Button from "../AdminPage/components/Button/Button";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import AddTaskScreen from "./views/AddTaskScreen/AddTaskScreen";
 import UserScreen from "./views/UserScreen/UserScreen";
 import { useLocation, useNavigate } from "react-router-dom";
-import { mutableNewApplicationStateNames } from "../../contexts/NewApplicationContext";
 import StaffJobLandingLayout from "../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import TitleNavigationBar from "../../components/TitleNavigationBar/TitleNavigationBar";
 import TogglerNavMenuBar from "../../components/TogglerNavMenuBar/TogglerNavMenuBar";
 import JobCard from "../../components/JobCard/JobCard";
-import { getAllCompanyUserSubProject, getJobs2 } from "../../services/commonServices";
+import { getJobs2 } from "../../services/commonServices";
 import { useCurrentUserContext } from "../../contexts/CurrentUserContext";
-import { useJobContext } from "../../contexts/Jobs";
 import {
   getCandidateApplicationsForTeamLead,
-  getCandidateTaskForTeamLead,
-  getCandidateTasksV2,
 } from "../../services/teamleadServices";
 import { useCandidateTaskContext } from "../../contexts/CandidateTasksContext";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from "react-icons/io";
-import { ApproveVouchar, ClaimVouchar } from "./views/ClaimVouchar/ClaimVouchar";
 import AddPage from "../GroupLeadPage/components/AddPage";
-import { getAllOnBoardedCandidate, getCandidateTasksOfTheDayV2 } from "../../services/candidateServices";
-import { extractNewTasksAndAddExtraDetail } from "./util/extractNewTasks";
 import { createArrayWithLength } from "../AdminPage/views/Landingpage/LandingPage";
 import UsersLogsScreen from "../../common/screens/UserLogsScreen/UserLogsScreen";
 
 const Teamlead = ({ isGrouplead }) => {
-  const { currentUser } = useCurrentUserContext();
+  const { 
+    currentUser, 
+    allApplications, 
+    setAllApplications,
+    userRemovalStatusChecked,
+  } = useCurrentUserContext();
   const { section, searchParams } = useNavigationContext();
   const {
     candidatesData,
@@ -53,28 +48,23 @@ const Teamlead = ({ isGrouplead }) => {
   const [rehireTabActive, setRehireTabActive] = useState(false);
   const [selectedTabActive, setSelectedTabActive] = useState(false);
   const [currentCandidate, setCurrentCandidate] = useState({});
-  const [currentTeamMember, setCurrentTeamMember] = useState({});
-  const [currentUserProject, setCurrentUserProject] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [showApplicationDetails, setShowApplicationDetails] = useState(false);
   const { userTasks, setUserTasks } = useCandidateTaskContext();
-  console.log("userTasks", userTasks);
+  // console.log("userTasks", userTasks);
   // const [allTasks, setAllTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [editTaskActive, setEditTaskActive] = useState(false);
-  const [currentTaskToEdit, setCurrentTaskToEdit] = useState({});
   const location = useLocation();
   const [currentActiveItem, setCurrentActiveItem] = useState("Approval");
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [filteredJobs, setFilteredJobs] = useState(jobs);
-  const [filteredTasks, setFilteredTasks] = useState(userTasks);
+  const [filteredUsersForLogTiles, setFilteredUsersForLogTiles] = useState([]);
   const [showAddTaskModalForGrouplead, setShowAddTaskModalForGrouplead] = useState(false);
   const [showAddIssueModalForGrouplead, setShowAddIssueModalForGrouplead] = useState(false);
   const [currentSelectedProjectForLead, setCurrentSelectedProjectForLead] = useState('');
-  const [tasksToDisplayForLead, setTasksToDisplayForLead] = useState([]);
-  const [showTaskLandingPage, setShowTaskLandingPage] = useState(true);
   const [cardGroupNumber, setCardGroupNumber] = useState(0);
   const [cardIndex, setCardIndex] = useState(0);
   const [currentSortOption, setCurrentSortOption] = useState(null);
@@ -89,15 +79,9 @@ const Teamlead = ({ isGrouplead }) => {
       console.log("cardPagination " + cardPagination + "cardPagination2 " + cardPagination2 + "cardPagination3 " + cardPagination3)
     }
   }, [cardPagination, cardPagination2, cardPagination3])
-  const initializePagination = () => {
-    setCardPagination(0);
-  };
-  const initializePagination2 = () => {
-    setCardPagination2(0);
-  };
-  const initializePagination3 = () => {
-    setCardPagination2(0);
-  };
+  const initializePagination = () => setCardPagination(0);
+  const initializePagination2 = () => setCardPagination2(0);
+  const initializePagination3 = () => setCardPagination2(0);
 
   const incrementStepPagination = (steps, length) => {
     console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
@@ -186,167 +170,89 @@ const Teamlead = ({ isGrouplead }) => {
 
       console.log("filteredJobs", filteredJobs);
     } else if (section === "task" || section === 'all-tasks') {
-      setFilteredTasks(
-        tasksToDisplayForLead.filter((task) =>
-          (typeof task.applicant === 'string' && task.applicant && task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())) ||
-          (typeof task.applicantName === 'string' && task.applicantName && task.applicantName.toLocaleLowerCase().includes(value.toLocaleLowerCase()))
+      setFilteredUsersForLogTiles(
+        candidatesData.allCandidates
+        .filter(candidate => 
+          candidate.project && 
+          Array.isArray(candidate.project) &&
+          candidate.project.includes(currentSelectedProjectForLead) &&
+          (
+            candidate.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase()) ||
+            value.toLocaleLowerCase().includes(candidate.applicant.toLocaleLowerCase()) ||
+            candidate.username.toLocaleLowerCase().includes(value.toLocaleLowerCase()) ||
+            value.toLocaleLowerCase().includes(candidate.username.toLocaleLowerCase()) 
+          )
         )
       );
 
-      console.log("filteredTasks", filteredTasks);
+      console.log("filteredTasks", filteredUsersForLogTiles);
     }
   };
 
-  // const handleSearchTask = (value) => {
-  //   console.log("value", value);
-  //   setSearchValue(value);
-  //   setFilteredTasks(
-  //     userTasks.filter((task) =>
-  //       task.applicant.toLocaleLowerCase().includes(value.toLocaleLowerCase())
-  //     )
-  //   );
-
-  //   console.log("filteredTasks", filteredTasks);
-  // };
-
   useEffect(() => {
-    if (candidatesDataLoaded) return;
+    if (candidatesDataLoaded || !userRemovalStatusChecked) return;
 
-    const requestData = {
-      company_id: currentUser?.portfolio_info[0].org_id,
-    };
-
-    const initialProjectSelected = currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project;
-
-    const requestDataToPost2 = {
-      "company_id": currentUser.portfolio_info[0].org_id,
-      "data_type": currentUser.portfolio_info[0].data_type,
-      "project": initialProjectSelected,
-    }
+    const initialProjectSelected = currentUser?.settings_for_profile_info?.profile_info[currentUser?.settings_for_profile_info?.profile_info?.length - 1]?.project;
 
     setCurrentSelectedProjectForLead(initialProjectSelected);
 
     setLoading(true);
 
+    const allCandidates = allApplications?.filter(
+      (application) =>
+        application.data_type === currentUser?.portfolio_info[0]?.data_type
+    )?.reverse();
+
+    console.log(allCandidates);
+
     if (isGrouplead) {
-      Promise.all([
-        getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
-        getCandidateTasksV2(requestDataToPost2),
-        getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id),
-      ])
-        .then(async (res) => {
+      const onboardingCandidates = allCandidates
+      ?.filter(
+        (application) =>
+          application.status === candidateStatuses.ONBOARDING
+      );
 
-          if (userTasks.length > 0) {
-            setLoading(false);
-            setCandidatesDataLoaded(true);
-            return;
-          }
+      dispatchToCandidatesData({
+        type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES,
+        payload: {
+          stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
+          value: onboardingCandidates,
+        },
+      });
 
-          const onboardingCandidates = res[2]?.data?.response?.data
-            .filter(
-              (application) =>
-                application.data_type === currentUser?.portfolio_info[0].data_type
-            );
+      dispatchToCandidatesData({
+        type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
+        payload: {
+          stateToChange: initialCandidatesDataStateNames.allCandidates,
+          value: allCandidates?.filter(candidate => candidate.user_id)
+        }
+      });
 
-          dispatchToCandidatesData({
-            type: candidateDataReducerActions.UPDATE_ONBOARDING_CANDIDATES,
-            payload: {
-              stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
-              value: onboardingCandidates,
-            },
-          });
-
-          const tasksToDisplay = res[0]?.data?.response?.data
-            ?.filter(
-              (task) =>
-                task.data_type === currentUser?.portfolio_info[0]?.data_type
-            )
-          const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
-          const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task, false, onboardingCandidates);
-
-          let updatedTasksForOtherProjects;
-
-          const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-            Array.isArray(
-              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-            )
-
-          if (userHasOtherProjects) {
-            updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async (project) => {
-              const dataToPost = {
-                ...requestDataToPost2,
-                project: project
-              }
-
-              const res = (await getCandidateTasksV2(dataToPost)).data;
-
-              const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task, false, onboardingCandidates);
-              return extractedTasks;
-            }))
-          }
-
-          const newTasksToDisplay = userHasOtherProjects ?
-            [...previousTasksFormat, ...updatedTasksForMainProject, ...updatedTasksForOtherProjects.flat()]
-            :
-            [...previousTasksFormat, ...updatedTasksForMainProject];
-
-          const usersWithTasks = [
-            ...new Map(
-              newTasksToDisplay.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
-            ).values(),
-          ];
-          setUserTasks(usersWithTasks.sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date)));
-          setTasksToDisplayForLead(
-            usersWithTasks.filter(
-              (task) =>
-                task.project ===
-                initialProjectSelected
-            )
-          )
-          setLoading(false);
-          setCandidatesDataLoaded(true);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
+      setLoading(false);
+      setCandidatesDataLoaded(true);
 
       return
     }
 
-
-    Promise.all([
-      getJobs2(requestData),
-      getCandidateApplicationsForTeamLead(
-        currentUser?.portfolio_info[0].org_id
-      ),
-      getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
-      getCandidateTasksV2(requestDataToPost2),
-    ])
+    getJobs2({ company_id: currentUser?.portfolio_info[0]?.org_id })
       .then(async (res) => {
         console.log("res", res);
-        const jobsMatchingCurrentCompany = res[0].data.response.data.filter(
+        const jobsMatchingCurrentCompany = res.data?.response?.data?.filter(
           (job) =>
-            job.data_type === currentUser?.portfolio_info[0].data_type &&
+            job.data_type === currentUser?.portfolio_info[0]?.data_type &&
             job.is_active
         )
         .filter(job => !job.is_internal);
         console.log(jobsMatchingCurrentCompany);
         setJobs(jobsMatchingCurrentCompany);
 
-        const applicationForMatching = res[1].data.response.data
-          .filter(
-            (application) =>
-              application.data_type === currentUser?.portfolio_info[0].data_type
-          )
-          .reverse();
-        const selectedCandidates = applicationForMatching.filter(
+        const selectedCandidates = allCandidates.filter(
           (application) => application.status === candidateStatuses.SELECTED
         );
-        const candidatesToRehire = applicationForMatching.filter(
+        const candidatesToRehire = allCandidates.filter(
           (application) => application.status === candidateStatuses.TO_REHIRE
         );
-        const onboardingCandidates = applicationForMatching.filter(
+        const onboardingCandidates = allCandidates.filter(
           (application) => application.status === candidateStatuses.ONBOARDING
         );
         dispatchToCandidatesData({
@@ -371,87 +277,22 @@ const Teamlead = ({ isGrouplead }) => {
           },
         });
 
+        dispatchToCandidatesData({
+          type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
+          payload: {
+            stateToChange: initialCandidatesDataStateNames.allCandidates,
+            value: allCandidates?.filter(candidate => candidate.user_id)
+          }
+        });
+
         setCandidatesDataLoaded(true);
-
-        if (userTasks.length > 0) {
-          setLoading(false);
-          return;
-        }
-
-        const tasksToDisplay = res[2].data.response.data
-          .filter(
-            (task) =>
-              task.data_type === currentUser?.portfolio_info[0].data_type
-          )
-        console.log("tasksToDisplay", tasksToDisplay);
-
-        const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
-        const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[3]?.data?.task_details, res[3]?.data?.task, false, onboardingCandidates);
-
-        let updatedTasksForOtherProjects;
-
-        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-          Array.isArray(
-            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-          )
-
-        if (userHasOtherProjects) {
-          updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async (project) => {
-            const dataToPost = {
-              ...requestDataToPost2,
-              project: project
-            }
-
-            const res = (await getCandidateTasksV2(dataToPost)).data;
-
-            const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task, false, onboardingCandidates);
-            return extractedTasks;
-          }))
-        }
-
-        console.log('previous tasks: ', previousTasksFormat);
-        console.log('updated new tasks 1: ', updatedTasksForMainProject);
-        userHasOtherProjects && console.log('updated new tasks 2: ', updatedTasksForOtherProjects.flat());
-
-        const newTasksToDisplay = userHasOtherProjects ?
-          [...previousTasksFormat, ...updatedTasksForMainProject, ...updatedTasksForOtherProjects.flat()]
-          :
-          [...previousTasksFormat, ...updatedTasksForMainProject];
-
-        const usersWithTasks = [
-          ...new Map(
-            newTasksToDisplay.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
-          ).values(),
-        ];
-        console.log(usersWithTasks);
-        // console.log(res.data.response.data);
-        setUserTasks(usersWithTasks.sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date)));
-        setTasksToDisplayForLead(
-          usersWithTasks.filter(
-            (task) =>
-              task.project ===
-              initialProjectSelected
-          )
-        )
         setLoading(false);
       })
       .catch((err) => {
         console.log(err);
         setLoading(false);
       });
-  }, []);
-
-  useEffect(() => {
-    const foundCandidate = candidatesData.onboardingCandidates.find(
-      (data) => data.applicant === currentTeamMember
-    );
-
-    if (!foundCandidate) return;
-
-    const candidateProject =
-      foundCandidate.others[mutableNewApplicationStateNames.assigned_project];
-    setCurrentUserProject(candidateProject);
-  }, [currentTeamMember]);
+  }, [allApplications, userRemovalStatusChecked]);
 
   useEffect(() => {
     const currentTab = searchParams.get("tab");
@@ -492,105 +333,6 @@ const Teamlead = ({ isGrouplead }) => {
   }, [location]);
 
   useEffect(() => {
-    if (section === 'task' && !isGrouplead && !showTaskLandingPage) {
-      if (loading || tasksToDisplayForLead?.length > 0) return
-
-      const initialProjectSelected = currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project;
-
-      const dataToPost = {
-        "company_id": currentUser.portfolio_info[0].org_id,
-        "data_type": currentUser.portfolio_info[0].data_type,
-        "project": initialProjectSelected,
-      }
-
-      setLoading(true);
-
-      Promise.all([
-        getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
-        getCandidateTasksV2(dataToPost),
-        getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id),
-      ])
-        .then(async (res) => {
-          console.log("res", res);
-
-          const onboardingCandidates = res[2]?.data?.response?.data
-            ?.filter(
-              (application) =>
-                application.data_type === currentUser?.portfolio_info[0].data_type
-            );
-
-          const tasksToDisplay = res[0]?.data?.response?.data
-            ?.filter(
-              (task) =>
-                task.data_type === currentUser?.portfolio_info[0].data_type
-            )
-          console.log("tasksToDisplay", tasksToDisplay);
-
-          const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
-          const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task, false, onboardingCandidates);
-
-          let updatedTasksForOtherProjects;
-
-          const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-            Array.isArray(
-              currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-            )
-
-          if (userHasOtherProjects) {
-            updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async (project) => {
-              const dataToPost2 = {
-                ...dataToPost,
-                project: project
-              }
-
-              const res = (await getCandidateTasksV2(dataToPost2)).data;
-
-              const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task, false, onboardingCandidates);
-              return extractedTasks;
-            }))
-          }
-
-          const newTasksToDisplay = userHasOtherProjects ?
-            [...previousTasksFormat, ...updatedTasksForMainProject, ...updatedTasksForOtherProjects.flat()]
-            :
-            [...previousTasksFormat, ...updatedTasksForMainProject];
-          console.log(newTasksToDisplay);
-          const usersWithTasks = [
-            ...new Map(
-              newTasksToDisplay.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
-            ).values(),
-          ];
-          console.log(usersWithTasks);
-          // console.log(res.data.response.data);
-          setUserTasks(usersWithTasks.sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date)));
-          setTasksToDisplayForLead(
-            usersWithTasks.filter(
-              (task) =>
-                task.project ===
-                currentSelectedProjectForLead
-            )
-          )
-          setLoading(false);
-          setCurrentSelectedProjectForLead(initialProjectSelected);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    }
-  }, [section, showTaskLandingPage])
-
-  useEffect(() => {
-    setTasksToDisplayForLead(
-      userTasks.filter(
-        (task) =>
-          task.project ===
-          currentSelectedProjectForLead
-      )
-    )
-  }, [userTasks, currentSelectedProjectForLead])
-
-  useEffect(() => {
 
     if (!currentSortOption) return;
 
@@ -599,18 +341,25 @@ const Teamlead = ({ isGrouplead }) => {
 
     const getCategoryArray = (propertyName, date) => {
 
-      tasksToDisplayForLead.forEach(task => {
+      const usersMatchingCurrentProjectSelection = candidatesData.allCandidates
+      .filter(candidate => 
+        candidate.project && 
+        Array.isArray(candidate.project) &&
+        candidate.project.includes(currentSelectedProjectForLead)
+      );
+
+      usersMatchingCurrentProjectSelection.forEach(user => {
         if (date) {
 
-          if (categories.hasOwnProperty(new Date(task[`${propertyName}`]).toDateString())) return
+          if (categories.hasOwnProperty(new Date(user[`${propertyName}`]).toDateString())) return
 
-          categories[`${new Date(task[propertyName]).toDateString()}`] = new Date(task[`${propertyName}`]).toDateString();
+          categories[`${new Date(user[propertyName]).toDateString()}`] = new Date(user[`${propertyName}`]).toDateString();
           return
 
         }
 
-        if (!categories.hasOwnProperty(task[`${propertyName}`])) {
-          categories[`${task[propertyName]}`] = task[`${propertyName}`]
+        if (!categories.hasOwnProperty(user[`${propertyName}`])) {
+          categories[`${user[propertyName]}`] = user[`${propertyName}`]
         }
       })
 
@@ -621,7 +370,7 @@ const Teamlead = ({ isGrouplead }) => {
         if (key === "undefined") return;
 
         if (date) {
-          const matchingTasks = tasksToDisplayForLead.filter(task => new Date(task[`${propertyName}`]).toDateString() === key);
+          const matchingTasks = usersMatchingCurrentProjectSelection.filter(user => new Date(user[`${propertyName}`]).toDateString() === key);
           categoryObj.name = key;
           categoryObj.data = matchingTasks;
           newArray.push(categoryObj);
@@ -629,7 +378,7 @@ const Teamlead = ({ isGrouplead }) => {
           return
         }
 
-        const matchingTasks = tasksToDisplayForLead.filter(task => task[`${propertyName}`] === key);
+        const matchingTasks = usersMatchingCurrentProjectSelection.filter(user => user[`${propertyName}`] === key);
         categoryObj.name = key;
         categoryObj.data = matchingTasks;
         newArray.push(categoryObj);
@@ -641,11 +390,11 @@ const Teamlead = ({ isGrouplead }) => {
 
     switch (currentSortOption) {
       case "applicant":
-        const applicantCategoryData = getCategoryArray('applicantName');
+        const applicantCategoryData = getCategoryArray('applicant');
         setSortResults(applicantCategoryData);
         break;
       case "date":
-        const dateCategoryData = getCategoryArray("task_created_date", true);
+        const dateCategoryData = getCategoryArray("onboarded_on", true);
         setSortResults(dateCategoryData.sort((a, b) => new Date(b.name) - new Date(a.name)));
         break;
       default:
@@ -654,12 +403,6 @@ const Teamlead = ({ isGrouplead }) => {
     }
 
   }, [currentSortOption])
-
-  const handleEditTaskBtnClick = (currentData) => {
-    setEditTaskActive(true);
-    setCurrentTaskToEdit(currentData);
-    setShowAddTaskModal(true);
-  };
 
   const handleBackBtnClick = () => {
     setShowCandidate(false);
@@ -676,9 +419,8 @@ const Teamlead = ({ isGrouplead }) => {
   };
 
   const handleViewTaskBtnClick = (data) => {
-    navigate(`/new-task-screen?applicant=${data.applicant}&project=${data.project}&name=${data.applicantName}`);
-    // setCurrentTeamMember(data.user);
-    // setShowCandidateTask(true);
+    navigate(`/logs-approval-screen?applicant=${data.applicant}&project=${currentSelectedProjectForLead}&user-id=${data.user_id}`);
+    // navigate(`/new-task-screen?applicant=${data.applicant}&project=${data.project}&name=${data.applicantName}`);
   };
 
   const handleViewBtnClick = (data) => {
@@ -691,12 +433,15 @@ const Teamlead = ({ isGrouplead }) => {
     getCandidateApplicationsForTeamLead(currentUser?.portfolio_info[0].org_id)
       .then((res) => {
         console.log("res", res);
-        const applicationForMatching = res.data.response.data
-          .filter(
-            (application) =>
-              application.data_type === currentUser?.portfolio_info[0].data_type
-          )
-          .reverse();
+        const dataGotten = res.data.response.data
+        .filter(
+          (application) =>
+            application.data_type === currentUser?.portfolio_info[0].data_type
+        );
+
+        setAllApplications(dataGotten);
+
+        const applicationForMatching = dataGotten.reverse();
         const selectedCandidates = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.SELECTED
         );
@@ -736,88 +481,6 @@ const Teamlead = ({ isGrouplead }) => {
       });
   };
 
-  const handleRefreshForCandidateTask = () => {
-    if (loading) return
-
-    const initialProjectSelected = currentUser?.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.project;
-
-    const dataToPost = {
-      "company_id": currentUser.portfolio_info[0].org_id,
-      "data_type": currentUser.portfolio_info[0].data_type,
-      "project": initialProjectSelected,
-    }
-
-    setLoading(true);
-    setCurrentSortOption(null);
-    setSortResults([]);
-
-    Promise.all([
-      getCandidateTaskForTeamLead(currentUser?.portfolio_info[0].org_id),
-      getCandidateTasksV2(dataToPost),
-    ])
-      .then(async (res) => {
-        console.log("res", res);
-
-        const tasksToDisplay = res[0]?.data?.response?.data
-          ?.filter(
-            (task) =>
-              task.data_type === currentUser?.portfolio_info[0].data_type
-          )
-        console.log("tasksToDisplay", tasksToDisplay);
-
-        const previousTasksFormat = tasksToDisplay.filter(task => !task.user_id && task.task);
-        const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res[1]?.data?.task_details, res[1]?.data?.task, false, candidatesData.onboardingCandidates);
-
-        let updatedTasksForOtherProjects;
-
-        const userHasOtherProjects = currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects &&
-          Array.isArray(
-            currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects
-          )
-
-        if (userHasOtherProjects) {
-          updatedTasksForOtherProjects = await Promise.all(currentUser.settings_for_profile_info.profile_info[currentUser.settings_for_profile_info.profile_info.length - 1]?.additional_projects.map(async (project) => {
-            const dataToPost2 = {
-              ...dataToPost,
-              project: project
-            }
-
-            const res = (await getCandidateTasksV2(dataToPost2)).data;
-
-            const extractedTasks = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task, false, candidatesData.onboardingCandidates);
-            return extractedTasks;
-          }))
-        }
-
-        const newTasksToDisplay = userHasOtherProjects ?
-          [...previousTasksFormat, ...updatedTasksForMainProject, ...updatedTasksForOtherProjects.flat()]
-          :
-          [...previousTasksFormat, ...updatedTasksForMainProject];
-        console.log(newTasksToDisplay);
-        const usersWithTasks = [
-          ...new Map(
-            newTasksToDisplay.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
-          ).values(),
-        ];
-        console.log(usersWithTasks);
-        // console.log(res.data.response.data);
-        setUserTasks(usersWithTasks.sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date)));
-        setTasksToDisplayForLead(
-          usersWithTasks.filter(
-            (task) =>
-              task.project ===
-              currentSelectedProjectForLead
-          )
-        )
-        setLoading(false);
-        setCurrentSelectedProjectForLead(initialProjectSelected);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
-  };
-
   return (
     <>
       <StaffJobLandingLayout
@@ -848,6 +511,8 @@ const Teamlead = ({ isGrouplead }) => {
           !(isGrouplead && (section === "home" || section === undefined)) && <>
             {
               section === 'user-tasks' ? <></> :
+                <>
+                <br />
                 <TitleNavigationBar
                   title={
                     (section === "task" || section === 'all-tasks')
@@ -883,6 +548,7 @@ const Teamlead = ({ isGrouplead }) => {
                         () => handleBackBtnClick()
                   }
                 />
+                </>
             }
           </>
         }
@@ -892,7 +558,7 @@ const Teamlead = ({ isGrouplead }) => {
               <button
                 className="refresh-container-teamlead desktop"
               >
-                <div className="refresh-btn refresh-btn-teamlead" onClick={loading ? () => {} : () => handleRefreshForCandidateTask()}
+                <div className="refresh-btn refresh-btn-teamlead" onClick={loading ? () => {} : () => handleRefreshForCandidateApplicationsForTeamlead()}
                 >
                   {
                     loading ? 
@@ -924,7 +590,7 @@ const Teamlead = ({ isGrouplead }) => {
                     <button
                       className="refresh-container-teamlead desktop"
                     >
-                      <div className="refresh-btn refresh-btn-teamlead" onClick={loading ? () => {} : section === "all-tasks" ? () => handleRefreshForCandidateTask() : () => handleRefreshForCandidateApplicationsForTeamlead()}
+                      <div className="refresh-btn refresh-btn-teamlead" onClick={loading ? () => {} : () => handleRefreshForCandidateApplicationsForTeamlead()}
                       >
                         <IoMdRefresh />
                         <p>Refresh</p>
@@ -959,7 +625,7 @@ const Teamlead = ({ isGrouplead }) => {
           section !== "user" && !showCandidate && isGrouplead && section === 'task' && <button
             className="refresh-container-teamlead desktop"
           >
-            <div className="refresh-btn refresh-btn-teamlead" onClick={() => handleRefreshForCandidateTask()}
+            <div className="refresh-btn refresh-btn-teamlead" onClick={() => handleRefreshForCandidateApplicationsForTeamlead()}
             >
               <IoMdRefresh />
               <p>Refresh</p>
@@ -978,7 +644,7 @@ const Teamlead = ({ isGrouplead }) => {
                   updateTasks={setUserTasks}
                   editPage={editTaskActive}
                   setEditPage={setEditTaskActive}
-                  taskToEdit={currentTaskToEdit}
+                  taskToEdit={{}}
                 />
               )}
 
@@ -998,11 +664,11 @@ const Teamlead = ({ isGrouplead }) => {
                       }
                       updateCandidateData={dispatchToCandidatesData}
                       jobTitle={
-                        jobs.filter(
+                        jobs?.filter(
                           (job) =>
                             job.job_number === currentCandidate.job_number
                         ).length >= 1
-                          ? jobs.filter(
+                          ? jobs?.filter(
                             (job) =>
                               job.job_number === currentCandidate.job_number
                           )[0].job_title
@@ -1014,10 +680,10 @@ const Teamlead = ({ isGrouplead }) => {
                         setShowApplicationDetails(!showApplicationDetails)
                       }
                       job={
-                        jobs.find(
+                        jobs?.find(
                           (job) => job.job_number === currentCandidate.job_number
                         ) ?
-                          jobs.find(
+                          jobs?.find(
                             (job) => job.job_number === currentCandidate.job_number
                           ) :
                           null
@@ -1096,11 +762,11 @@ const Teamlead = ({ isGrouplead }) => {
                                       candidateCardView={true}
                                       candidateData={dataitem}
                                       jobAppliedFor={
-                                        jobs.find(
+                                        jobs?.find(
                                           (job) =>
                                             job.job_number === dataitem.job_number
                                         )
-                                          ? jobs.find(
+                                          ? jobs?.find(
                                             (job) =>
                                               job.job_number ===
                                               dataitem.job_number
@@ -1122,11 +788,11 @@ const Teamlead = ({ isGrouplead }) => {
                                         candidateCardView={true}
                                         candidateData={dataitem}
                                         jobAppliedFor={
-                                          jobs.find(
+                                          jobs?.find(
                                             (job) =>
                                               job.job_number === dataitem.job_number
                                           )
-                                            ? jobs.find(
+                                            ? jobs?.find(
                                               (job) =>
                                                 job.job_number ===
                                                 dataitem.job_number
@@ -1150,11 +816,11 @@ const Teamlead = ({ isGrouplead }) => {
                                       candidateCardView={true}
                                       candidateData={dataitem}
                                       jobAppliedFor={
-                                        jobs.find(
+                                        jobs?.find(
                                           (job) =>
                                             job.job_number === dataitem.job_number
                                         )
-                                          ? jobs.find(
+                                          ? jobs?.find(
                                             (job) =>
                                               job.job_number ===
                                               dataitem.job_number
@@ -1176,11 +842,11 @@ const Teamlead = ({ isGrouplead }) => {
                                         candidateCardView={true}
                                         candidateData={dataitem}
                                         jobAppliedFor={
-                                          jobs.find(
+                                          jobs?.find(
                                             (job) =>
                                               job.job_number === dataitem.job_number
                                           )
-                                            ? jobs.find(
+                                            ? jobs?.find(
                                               (job) =>
                                                 job.job_number ===
                                                 dataitem.job_number
@@ -1218,14 +884,20 @@ const Teamlead = ({ isGrouplead }) => {
                               sortResults.filter(
                                 item =>
                                   item.data.find(
-                                    task => typeof task?.applicantName === 'string' && task?.applicantName?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
+                                    user => typeof user?.applicant === 'string' && user?.applicant?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
                               ).length
                               :
                               sortResults.length
                             :
                             searchValue.length >= 1
-                              ? filteredTasks.length
-                              : tasksToDisplayForLead.length
+                              ? filteredUsersForLogTiles.length
+                              : candidatesData.allCandidates
+                                .filter(candidate => 
+                                  candidate.project && 
+                                  Array.isArray(candidate.project) &&
+                                  candidate.project.includes(currentSelectedProjectForLead)
+                                )
+                                .length
                         }
                         availableSortOptions={sortOptionsForLead}
                         sortActive={currentSortOption ? true : false}
@@ -1261,18 +933,18 @@ const Teamlead = ({ isGrouplead }) => {
                         {section === "task" ? (
                           searchValue.length >= 1 ? (
                             React.Children.toArray(
-                              filteredTasks.map((dataitem, index) => {
+                              filteredUsersForLogTiles.map((dataitem, index) => {
                                 return (
                                   <JobCard
                                     buttonText={"View"}
                                     candidateCardView={true}
                                     candidateData={dataitem}
                                     jobAppliedFor={
-                                      jobs.find(
+                                      jobs?.find(
                                         (job) =>
                                           job.job_number === dataitem.job_number
                                       )
-                                        ? jobs.find(
+                                        ? jobs?.find(
                                           (job) =>
                                             job.job_number ===
                                             dataitem.job_number
@@ -1283,7 +955,7 @@ const Teamlead = ({ isGrouplead }) => {
                                     taskView={true}
                                     className={index % 2 !== 0 ? 'remove__mar' : ''}
                                     externalLinkingEnabled={true}
-                                    externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
+                                    externalLink={`/logs-approval-screen?applicant=${dataitem.applicant}~project=${currentSelectedProjectForLead}~user-id=${dataitem.user_id}`}
                                   />
                                 );
                               })
@@ -1306,11 +978,11 @@ const Teamlead = ({ isGrouplead }) => {
                                                   candidateCardView={true}
                                                   candidateData={dataitem}
                                                   jobAppliedFor={
-                                                    jobs.find(
+                                                    jobs?.find(
                                                       (job) =>
                                                         job.job_number === dataitem.job_number
                                                     )
-                                                      ? jobs.find(
+                                                      ? jobs?.find(
                                                         (job) =>
                                                           job.job_number ===
                                                           dataitem.job_number
@@ -1321,7 +993,7 @@ const Teamlead = ({ isGrouplead }) => {
                                                   taskView={true}
                                                   className={index % 2 !== 0 ? 'remove__mar' : ''}
                                                   externalLinkingEnabled={true}
-                                                  externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
+                                                  externalLink={`/logs-approval-screen?applicant=${dataitem.applicant}~project=${currentSelectedProjectForLead}~user-id=${dataitem.user_id}`}
                                                 />
                                               }))
                                             }
@@ -1334,7 +1006,12 @@ const Teamlead = ({ isGrouplead }) => {
                             )
                               :
                               React.Children.toArray(
-                                tasksToDisplayForLead
+                                  candidatesData.allCandidates
+                                  .filter(candidate => 
+                                    candidate.project && 
+                                    Array.isArray(candidate.project) &&
+                                    candidate.project.includes(currentSelectedProjectForLead)
+                                  )
                                   ?.slice(cardGroupNumber, cardGroupNumber + 6)
                                   .map((dataitem, index) => {
                                     return (
@@ -1343,11 +1020,11 @@ const Teamlead = ({ isGrouplead }) => {
                                         candidateCardView={true}
                                         candidateData={dataitem}
                                         jobAppliedFor={
-                                          jobs.find(
+                                          jobs?.find(
                                             (job) =>
                                               job.job_number === dataitem.job_number
                                           )
-                                            ? jobs.find(
+                                            ? jobs?.find(
                                               (job) =>
                                                 job.job_number ===
                                                 dataitem.job_number
@@ -1358,7 +1035,7 @@ const Teamlead = ({ isGrouplead }) => {
                                         taskView={true}
                                         className={index % 2 !== 0 ? 'remove__mar' : ''}
                                         externalLinkingEnabled={true}
-                                        externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
+                                        externalLink={`/logs-approval-screen?applicant=${dataitem.applicant}~project=${currentSelectedProjectForLead}~user-id=${dataitem.user_id}`}
                                       />
                                     );
                                   })
@@ -1383,9 +1060,18 @@ const Teamlead = ({ isGrouplead }) => {
                                   Math.ceil(sortResults.length / 6)
                                   :
                                   searchValue.length >= 1 ?
-                                    Math.ceil(filteredTasks.length / 6)
+                                    Math.ceil(filteredUsersForLogTiles.length / 6)
                                     :
-                                    Math.ceil(tasksToDisplayForLead.length / 6)
+                                    Math.ceil(
+                                      candidatesData.allCandidates
+                                      .filter(candidate => 
+                                        candidate.project && 
+                                        Array.isArray(candidate.project) &&
+                                        candidate.project.includes(currentSelectedProjectForLead)
+                                      ).length 
+                                      / 
+                                      6
+                                    )
                               )
                                 .slice(
                                   cardPagination,
@@ -1412,9 +1098,18 @@ const Teamlead = ({ isGrouplead }) => {
                                       Math.ceil(sortResults.length / 6)
                                       :
                                       searchValue.length >= 1 ?
-                                        Math.ceil(filteredTasks.length / 6)
+                                        Math.ceil(filteredUsersForLogTiles.length / 6)
                                         :
-                                        Math.ceil(tasksToDisplayForLead.length / 6)
+                                        Math.ceil(
+                                          candidatesData.allCandidates
+                                          .filter(candidate => 
+                                            candidate.project && 
+                                            Array.isArray(candidate.project) &&
+                                            candidate.project.includes(currentSelectedProjectForLead)
+                                          ).length 
+                                          / 
+                                          6
+                                        )
                                   )
                                 }
                               >
@@ -1439,10 +1134,18 @@ const Teamlead = ({ isGrouplead }) => {
               ) : section === "user" ? (
                 <UserScreen isGrouplead={isGrouplead} />
               ) : !isGrouplead && section === 'user-tasks' ? (
-                <UsersLogsScreen 
-                  className={'new__Log__User__Wrapp'} 
-                  isLeadUser={true}
-                />
+                <>
+                  <br />
+                  <TitleNavigationBar 
+                    handleBackBtnClick={() => navigate(-1)}
+                    className={'team__Lead__back__Btn__Wrap'}
+                    buttonWrapClassName={'team__Lead__back__Btn'}
+                  />
+                  <UsersLogsScreen 
+                    className={'new__Log__User__Wrapp'} 
+                    isLeadUser={true}
+                  />
+                </>
               ) :
                 !isGrouplead && section === 'all-tasks' ? (
                   <>
@@ -1454,14 +1157,19 @@ const Teamlead = ({ isGrouplead }) => {
                             sortResults.filter(
                               item =>
                                 item.data.find(
-                                  task => typeof task?.applicantName === 'string' && task?.applicantName?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
+                                  user => typeof user?.applicant === 'string' && user?.applicant?.toLocaleLowerCase()?.includes(searchValue.toLocaleLowerCase()))
                             ).length
                             :
                             sortResults.length
                           :
                           searchValue.length >= 1
-                            ? filteredTasks.length
-                            : tasksToDisplayForLead.length
+                            ? filteredUsersForLogTiles.length
+                            : candidatesData.allCandidates
+                              .filter(candidate => 
+                                candidate.project && 
+                                Array.isArray(candidate.project) &&
+                                candidate.project.includes(currentSelectedProjectForLead)
+                              ).length
                       }
                       availableSortOptions={sortOptionsForLead}
                       sortActive={currentSortOption ? true : false}
@@ -1498,7 +1206,7 @@ const Teamlead = ({ isGrouplead }) => {
                         searchValue.length >= 1 ? (
                           <>
                             {React.Children.toArray(
-                              filteredTasks
+                              filteredUsersForLogTiles
                                 ?.slice(cardGroupNumber, cardGroupNumber + 6)
                                 .map((dataitem, index) => {
                                   return (
@@ -1507,11 +1215,11 @@ const Teamlead = ({ isGrouplead }) => {
                                       candidateCardView={true}
                                       candidateData={dataitem}
                                       jobAppliedFor={
-                                        jobs.find(
+                                        jobs?.find(
                                           (job) =>
                                             job.job_number === dataitem.job_number
                                         )
-                                          ? jobs.find(
+                                          ? jobs?.find(
                                             (job) =>
                                               job.job_number ===
                                               dataitem.job_number
@@ -1522,7 +1230,7 @@ const Teamlead = ({ isGrouplead }) => {
                                       taskView={true}
                                       className={index % 2 !== 0 ? 'remove__mar' : ''}
                                       externalLinkingEnabled={true}
-                                      externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
+                                      externalLink={`/logs-approval-screen?applicant=${dataitem.applicant}~project=${currentSelectedProjectForLead}~user-id=${dataitem.user_id}`}
                                     />
                                   );
                                 })
@@ -1536,7 +1244,7 @@ const Teamlead = ({ isGrouplead }) => {
                                 <IoIosArrowBack />
                               </button>
                               {createArrayWithLength(
-                                Math.ceil(filteredTasks.length / 6)
+                                Math.ceil(filteredUsersForLogTiles.length / 6)
                               )
                                 .slice(cardPagination2, cardPagination2 + 6)
                                 .map((s, index) => (
@@ -1556,7 +1264,7 @@ const Teamlead = ({ isGrouplead }) => {
                                 onClick={() =>
                                   incrementStepPagination2(
                                     6,
-                                    Math.ceil(filteredTasks.length / 6)
+                                    Math.ceil(filteredUsersForLogTiles.length / 6)
                                   )
                                 }
                               >
@@ -1584,11 +1292,11 @@ const Teamlead = ({ isGrouplead }) => {
                                                     candidateCardView={true}
                                                     candidateData={dataitem}
                                                     jobAppliedFor={
-                                                      jobs.find(
+                                                      jobs?.find(
                                                         (job) =>
                                                           job.job_number === dataitem.job_number
                                                       )
-                                                        ? jobs.find(
+                                                        ? jobs?.find(
                                                           (job) =>
                                                             job.job_number ===
                                                             dataitem.job_number
@@ -1599,7 +1307,7 @@ const Teamlead = ({ isGrouplead }) => {
                                                     taskView={true}
                                                     className={index % 2 !== 0 ? 'remove__mar' : ''}
                                                     externalLinkingEnabled={true}
-                                                    externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
+                                                    externalLink={`/logs-approval-screen?applicant=${dataitem.applicant}~project=${currentSelectedProjectForLead}~user-id=${dataitem.user_id}`}
                                                   />
                                                 }))
                                               }
@@ -1612,7 +1320,12 @@ const Teamlead = ({ isGrouplead }) => {
                                   :
                                   React.Children.toArray(
                                     // createArrayWithLength(Math.ceil(tasksToDisplayForLead / 6))
-                                    tasksToDisplayForLead
+                                      candidatesData.allCandidates
+                                      .filter(candidate => 
+                                        candidate.project && 
+                                        Array.isArray(candidate.project) &&
+                                        candidate.project.includes(currentSelectedProjectForLead)
+                                      )
                                       ?.slice(cardGroupNumber, cardGroupNumber + 6)
                                       .map((dataitem, index) => {
                                         return (
@@ -1621,11 +1334,11 @@ const Teamlead = ({ isGrouplead }) => {
                                             candidateCardView={true}
                                             candidateData={dataitem}
                                             jobAppliedFor={
-                                              jobs.find(
+                                              jobs?.find(
                                                 (job) =>
                                                   job.job_number === dataitem.job_number
                                               )
-                                                ? jobs.find(
+                                                ? jobs?.find(
                                                   (job) =>
                                                     job.job_number ===
                                                     dataitem.job_number
@@ -1636,7 +1349,7 @@ const Teamlead = ({ isGrouplead }) => {
                                             taskView={true}
                                             className={index % 2 !== 0 ? 'remove__mar' : ''}
                                             externalLinkingEnabled={true}
-                                            externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
+                                            externalLink={`/logs-approval-screen?applicant=${dataitem.applicant}~project=${currentSelectedProjectForLead}~user-id=${dataitem.user_id}`}
                                           />
                                         );
 
@@ -1654,7 +1367,16 @@ const Teamlead = ({ isGrouplead }) => {
                                   currentSortOption ?
                                     Math.ceil(sortResults.length / 6)
                                     :
-                                    Math.ceil(tasksToDisplayForLead.length / 6)
+                                    Math.ceil(
+                                      candidatesData.allCandidates
+                                      .filter(candidate => 
+                                        candidate.project && 
+                                        Array.isArray(candidate.project) &&
+                                        candidate.project.includes(currentSelectedProjectForLead)
+                                      ).length 
+                                      / 
+                                      6
+                                    )
                                 )
                                   .slice(cardPagination3, cardPagination3 + 6)
                                   .map((s, index) => (
@@ -1676,7 +1398,16 @@ const Teamlead = ({ isGrouplead }) => {
                                       currentSortOption ?
                                         Math.ceil(sortResults.length / 6)
                                         :
-                                        Math.ceil(tasksToDisplayForLead.length / 6)
+                                        Math.ceil(
+                                          candidatesData.allCandidates
+                                          .filter(candidate => 
+                                            candidate.project && 
+                                            Array.isArray(candidate.project) &&
+                                            candidate.project.includes(currentSelectedProjectForLead)
+                                          ).length 
+                                          / 
+                                          6
+                                        )
                                     )
                                   }
                                 >

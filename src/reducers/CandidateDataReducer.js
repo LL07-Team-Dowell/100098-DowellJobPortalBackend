@@ -5,6 +5,7 @@ export const candidateDataReducerActions = {
   UPDATE_SELECTED_CANDIDATES: "update_selected_candidates",
   UPDATE_REJECTED_CANDIDATES: "update_rejected_candidates",
   UPDATE_CANDIDATES_TO_HIRE: "update_candidates_to_hire",
+  UPDATE_ALL_CANDIDATES: "update_all_candidates",
 };
 
 export const candidateDataReducer = (currentCandidateState, action) => {
@@ -15,6 +16,7 @@ export const candidateDataReducer = (currentCandidateState, action) => {
     case candidateDataReducerActions.UPDATE_REJECTED_CANDIDATES:
     case candidateDataReducerActions.UPDATE_SELECTED_CANDIDATES:
     case candidateDataReducerActions.UPDATE_CANDIDATES_TO_HIRE:
+    case candidateDataReducerActions.UPDATE_ALL_CANDIDATES:
       if (!action.payload.stateToChange) return currentCandidateState;
 
       if (action.payload.updateExisting)

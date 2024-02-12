@@ -7,6 +7,7 @@ export const initialCandidatesData = {
     candidatesToRehire: [],
     selectedCandidates: [],
     rejectedCandidates: [],
+    allCandidates: [],
 }
 
 export const initialCandidatesDataStateNames = {
@@ -15,6 +16,7 @@ export const initialCandidatesDataStateNames = {
     candidatesToRehire: "candidatesToRehire",
     selectedCandidates: "selectedCandidates",
     rejectedCandidates: "rejectedCandidates",
+    allCandidates: "allCandidates",
 }
 
 const CandidateContext = createContext({});

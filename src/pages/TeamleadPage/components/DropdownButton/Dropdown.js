@@ -47,7 +47,17 @@ const DropdownButton = ({ currentSelection, selections, adminPageActive, handleS
             }
         >
             <span ref={currentSelectionRef}>{ currentSelection }</span>
-            { !removeDropDownIcon && <KeyboardArrowRightIcon className="down-icon right-icon" /> }
+            { 
+                !removeDropDownIcon &&
+                <>
+                    {
+                        showDropdown ?
+                            <KeyboardArrowDownIcon className="down-icon right-icon" />
+                        :
+                        <KeyboardArrowRightIcon className="down-icon right-icon" />
+                    }
+                </>
+            }
 
             {
                 selections ? 

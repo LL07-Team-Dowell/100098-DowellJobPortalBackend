@@ -31,6 +31,7 @@ import TeamThread from "../pages/TeamleadPage/views/CreateMembersTask/views/comp
 import CreateTaskScreen from "../pages/TeamleadPage/views/CreateTaskScreen/CreateTaskScreen";
 import EventScreen from "../pages/AdminPage/views/Event/EventScreen";
 import ProjectEdit from "../pages/AdminPage/views/Project/ProjectEdit";
+import AdminLogsApprovalPage from "../pages/AdminPage/views/LogsApprovalPage/AdminLogsApprovalPage";
 
 export const mainAdminRoutesInfo = [
   {
@@ -198,10 +199,8 @@ export const mainAdminRoutesInfo = [
     component: AdminLogsHomePage,
   },
   {
-    path: "/new-task-screen",
-    component: () => {
-      return <CreateTaskScreen isAdmin={true} />;
-    },
+    path: "/logs-approval-screen",
+    component: AdminLogsApprovalPage,
   },
   {
     path: "/all-applications",

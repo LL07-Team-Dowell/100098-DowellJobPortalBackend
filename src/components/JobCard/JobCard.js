@@ -229,12 +229,12 @@ const JobCard = ({
             candidateCardView && candidateData && taskView &&
             <div className="job__Details__Info task__View">
                 <div className="detail__Item">
-                    <span className="job__Highlight__Item">Description: </span>
-                    <span>{candidateData.task ? candidateData.task.length > 42 ? candidateData.task.slice(0, 43) + "..." : candidateData.task : "Log"}</span>
+                    <span className="job__Highlight__Item">Username: </span>
+                    <span>{candidateData.username ? candidateData.username.length > 42 ? candidateData.username.slice(0, 43) + "..." : candidateData.username : "Log"}</span>
                 </div>
                 <div className="detail__Item">
-                    <span className="job__Highlight__Item">Submitted on: </span>
-                    <span>{formatDateAndTime(candidateData.task_created_date)}</span>
+                    <span className="job__Highlight__Item">Onboarded on: </span>
+                    <span>{formatDateAndTime(candidateData.onboarded_on, true)}</span>
                 </div>
             </div>
         }

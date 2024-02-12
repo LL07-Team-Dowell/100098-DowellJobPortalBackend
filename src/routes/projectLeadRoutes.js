@@ -7,6 +7,7 @@ import ErrorPage from "../pages/ErrorPage/ErrorPage";
 import ProjectLeadAgendaPage from "../pages/ProjectLeadPage/views/Agenda/ProjectLeadAgendaPage";
 import ProjectLeadHomePage from "../pages/ProjectLeadPage/views/HomePage/HomePage";
 import ProjectLogRequest from "../pages/ProjectLeadPage/views/LogRequests/ProjectLogRequest";
+import ProjectLeadLogsPage from "../pages/ProjectLeadPage/views/LogsViewPage/ProjectLeadLogsPage";
 import ProjectLeadReportsLandingPage from "../pages/ProjectLeadPage/views/ReportsPage/ReportsLandingPage";
 import ProjectLeadTeams from "../pages/ProjectLeadPage/views/TeamsPage/TeamsLandingPage";
 import ProjectLeadUserScreen from "../pages/ProjectLeadPage/views/UserScreen/UserScreen";
@@ -14,7 +15,6 @@ import CreateTeam from "../pages/TeamleadPage/views/CreateMembersTask/views/Crea
 import TeamScreenMembers from "../pages/TeamleadPage/views/CreateMembersTask/views/TeamScreenMembers";
 import TeamScreenTasks from "../pages/TeamleadPage/views/CreateMembersTask/views/TeamScreenTasks";
 import TeamThread from "../pages/TeamleadPage/views/CreateMembersTask/views/compoonent/TeamThread/TeamThread";
-import CreateTaskScreen from "../pages/TeamleadPage/views/CreateTaskScreen/CreateTaskScreen";
 
 export const projectLeadRoutesInfo = [
   {
@@ -30,10 +30,8 @@ export const projectLeadRoutesInfo = [
     component: ProjectLeadAgendaPage,
   },
   {
-    path: "/new-task-screen",
-    component: () => {
-      return <CreateTaskScreen isProjectLead={true} />;
-    },
+    path: "/logs-approval-screen",
+    component: ProjectLeadLogsPage,
   },
   {
     path: "/report",

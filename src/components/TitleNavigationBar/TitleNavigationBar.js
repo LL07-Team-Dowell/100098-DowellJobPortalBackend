@@ -3,7 +3,7 @@ import { IoIosArrowBack, IoMdRefresh } from "react-icons/io";
 import SearchBar from "../SearchBar/SearchBar";
 import "./style.css";
 
-const TitleNavigationBar = ({ className, title, showSearchBar, handleBackBtnClick, hideBackBtn }) => {
+const TitleNavigationBar = ({ className, title, showSearchBar, handleBackBtnClick, hideBackBtn, buttonWrapClassName }) => {
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
 
 
@@ -13,7 +13,7 @@ const TitleNavigationBar = ({ className, title, showSearchBar, handleBackBtnClic
             <div className="title__Item">
                 {
                     !hideBackBtn &&
-                    <div className="back__Icon__Container" onClick={handleBackBtnClick}>
+                    <div className={`back__Icon__Container ${buttonWrapClassName ? buttonWrapClassName : ''}`} onClick={handleBackBtnClick}>
                         <IoIosArrowBack className="back__Icon" />
                     </div>
                 }

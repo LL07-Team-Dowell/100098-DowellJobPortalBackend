@@ -3,9 +3,7 @@ import { useCandidateTaskContext } from "../../../../contexts/CandidateTasksCont
 import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout";
 import { useEffect } from "react";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
-import { getCandidateTasksV2 } from "../../../../services/teamleadServices";
-import { getAllOnBoardedCandidate } from "../../../../services/candidateServices";
-import { extractNewTasksAndAddExtraDetail } from "../../../TeamleadPage/util/extractNewTasks";
+import { getCandidateApplicationsForTeamLead } from "../../../../services/teamleadServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import TitleNavigationBar from "../../../../components/TitleNavigationBar/TitleNavigationBar";
 import { IoIosArrowBack, IoIosArrowForward, IoMdRefresh } from "react-icons/io";
@@ -17,7 +15,12 @@ import { toast } from "react-toastify";
 import { getSettingUserProject } from "../../../../services/hrServices";
 
 const ProjectLeadHomePage = () => {
-    const { currentUser } = useCurrentUserContext();
+    const { 
+        currentUser,
+        allApplications,
+        setAllApplications,
+        userRemovalStatusChecked,
+    } = useCurrentUserContext();
     const { 
         tasksLoaded, 
         setTasksLoaded,
@@ -71,9 +74,9 @@ const ProjectLeadHomePage = () => {
                 task.applicant
                 .toLocaleLowerCase()
                 .includes(value.toLocaleLowerCase())) ||
-            (typeof task.applicantName === "string" &&
-                task.applicantName &&
-                task.applicantName
+            (typeof task.username === "string" &&
+                task.username &&
+                task.username
                 .toLocaleLowerCase()
                 .includes(value.toLocaleLowerCase()))
         )
@@ -82,56 +85,38 @@ const ProjectLeadHomePage = () => {
     };
 
     const handleViewTaskBtnClick = (data) => {
-        navigate(`/new-task-screen?applicant=${data.applicant}&project=${data.project}&name=${data.applicantName}`);
+        navigate(`/logs-approval-screen?applicant=${data.applicant}&project=${currentSelectedProjectForLead}&user-id=${data.user_id}`);
     };
 
     useEffect(() => {
-        if (!fetchedOnboardingUsersLoaded) {
-            setLoading(true);
+        if (!userRemovalStatusChecked) return
 
-            getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id).then(res => {
-                const onboardingCandidates = res?.data?.response?.data
-                .filter(
-                (application) =>
-                    application.data_type === currentUser?.portfolio_info[0].data_type
-                );
-
-                setFetchedOnboardingUsers(onboardingCandidates);
-                setFetchedOnboardingUsersLoaded(true);
-            }).catch(err => {
-                console.log('onboarded failed to load');
-                setFetchedOnboardingUsersLoaded(true);
-            })
-
+        if (fetchedOnboardingUsersLoaded) {
+            if (allProjects.length > 0) setCurrentSelectedProjectForLead(allProjects[0]);
             return
         }
-    }, [])
 
-    useEffect(() => {
-        if (!fetchedOnboardingUsersLoaded) return
+        const onboardingCandidates = allApplications
+        ?.filter(
+        (application) =>
+            application.data_type === currentUser?.portfolio_info[0].data_type &&
+            application.user_id
+        );
+        setFetchedOnboardingUsers(onboardingCandidates);
+        setFetchedOnboardingUsersLoaded(true);
 
-        if (allProjects.length > 0) {
-            const tasksForMainProject = tasksLoaded?.find(item => item.project === allProjects[0]);
-
-            if (initialTasksLoaded && tasksForMainProject) {
-                setLoading(false);
-                setCurrentSelectedProjectForLead(tasksForMainProject?.project);
-                return
-            }
-        }
-
-        setInitialTasksLoaded(false);
         setLoading(true);
 
-        getSettingUserProject().then((res) => {
-            const projectsGotten = res.data
+        getSettingUserProject()
+        .then(res => {
+            const projectsGotten = res?.data
             ?.filter(
-              (project) =>
+            (project) =>
                 project?.data_type === currentUser.portfolio_info[0].data_type &&
                 project?.company_id === currentUser.portfolio_info[0].org_id &&
                 project.project_list &&
                 project.project_list.every(
-                  (listing) => typeof listing === "string"
+                    (listing) => typeof listing === "string"
                 )
             )
             ?.reverse()
@@ -144,98 +129,27 @@ const ProjectLeadHomePage = () => {
             }
 
             const initialProjectSelected = allProjectsFetched[0];
-
             setCurrentSelectedProjectForLead(initialProjectSelected);
 
-            const requestDataToPost = {
-                "company_id": currentUser.portfolio_info[0].org_id,
-                "data_type": currentUser.portfolio_info[0].data_type,
-                "project": initialProjectSelected,
-            }
-
-            getCandidateTasksV2(requestDataToPost)
-            .then(res => {
-
-                const updatedTasksForMainProject = extractNewTasksAndAddExtraDetail(res?.data?.task_details, res?.data?.task, false, fetchedOnboardingUsers);
-
-                const usersWithTasks = [
-                    ...new Map(
-                        updatedTasksForMainProject.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
-                    ).values(),
-                ].sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date));
-
-                setTasksLoaded((prevDetail) => {
-                    return [
-                        ...prevDetail,
-                        {
-                            project: initialProjectSelected,
-                            tasksForProject: usersWithTasks,
-                        }
-                    ]
-                })
-
-                setTasksToDisplayForLead(usersWithTasks)
-
-                setInitialTasksLoaded(true);
-                setLoading(false);
-
-            }).catch(err => {
-                setLoading(false);
-            })
-
+            setLoading(false);
         }).catch(err => {
-            console.log(err);
+            setFetchedOnboardingUsersLoaded(true);
             setLoading(false);
         })
-        
-    }, [fetchedOnboardingUsersLoaded])
+    }, [userRemovalStatusChecked, allApplications])
 
     useEffect(() => {
         if (currentSelectedProjectForLead.length < 1) return
 
-        const tasksLoadedForProject = tasksLoaded?.find(item => item.project === currentSelectedProjectForLead);
+        setTasksToDisplayForLead(
+            fetchedOnboardingUsers?.filter(candidate => 
+                candidate.project && 
+                Array.isArray(candidate.project) &&
+                candidate.project.includes(currentSelectedProjectForLead)
+            )
+        )
 
-        if (tasksLoadedForProject && tasksLoadedForProject?.project) {
-            setTasksToDisplayForLead(tasksLoadedForProject?.tasksForProject)
-            return
-        }
-
-        setTaskForProjectLoading(true);
-
-        const requestDataToPost = {
-            "company_id": currentUser.portfolio_info[0].org_id,
-            "data_type": currentUser.portfolio_info[0].data_type,
-            "project": currentSelectedProjectForLead,
-        }
-
-        getCandidateTasksV2(requestDataToPost).then(res => {
-
-            const tasksForProject = extractNewTasksAndAddExtraDetail(res?.data?.task_details, res?.data?.task, false, fetchedOnboardingUsers);
-            const usersWithTasks = [
-                ...new Map(
-                    tasksForProject.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
-                ).values(),
-            ].sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date));
-
-            setTasksLoaded((prevDetail) => {
-                return [
-                    ...prevDetail,
-                    {
-                        project: currentSelectedProjectForLead,
-                        tasksForProject: usersWithTasks,
-                    }
-                ]
-            })
-
-            setTasksToDisplayForLead(usersWithTasks)
-            setTaskForProjectLoading(false);
-            
-        }).catch(err => {
-            console.log(err);
-            setTaskForProjectLoading(false);
-        })
-
-    }, [currentSelectedProjectForLead])
+    }, [currentSelectedProjectForLead, fetchedOnboardingUsers])
 
     useEffect(() => {
 
@@ -288,11 +202,11 @@ const ProjectLeadHomePage = () => {
     
         switch (currentSortOption) {
           case "applicant":
-            const applicantCategoryData = getCategoryArray('applicantName');
+            const applicantCategoryData = getCategoryArray('applicant');
             setSortResults(applicantCategoryData);
             break;
           case "date":
-            const dateCategoryData = getCategoryArray("task_created_date", true);
+            const dateCategoryData = getCategoryArray("onboarded_on", true);
             setSortResults(dateCategoryData.sort((a, b) => new Date(b.name) - new Date(a.name)));
             break;
           default:
@@ -307,36 +221,52 @@ const ProjectLeadHomePage = () => {
         
         setRefreshLoading(true);
 
-        const dataToPost = {
-            "company_id": currentUser.portfolio_info[0].org_id,
-            "data_type": currentUser.portfolio_info[0].data_type,
-            "project": currentSelectedProjectForLead,
-        }
-
         try {
-            const res = (await getCandidateTasksV2(dataToPost)).data;
-            const tasksForProject = extractNewTasksAndAddExtraDetail(res?.task_details, res?.task, false, fetchedOnboardingUsers);
+            const res = await Promise.all([
+                getCandidateApplicationsForTeamLead(currentUser?.portfolio_info[0]?.org_id), 
+                getSettingUserProject()
+            ]);
+
+            const candidateDataFetched = res[0]?.data.response?.data
+            .filter(
+                (application) =>
+                    application.data_type === currentUser?.portfolio_info[0]?.data_type
+            )
+            setAllApplications(candidateDataFetched);
+
+            const onboardingCandidates = candidateDataFetched
+            .filter(
+            (application) =>
+                application.user_id
+            );
+
+            const projectsGotten = res[1]?.data
+            ?.filter(
+            (project) =>
+                project?.data_type === currentUser.portfolio_info[0].data_type &&
+                project?.company_id === currentUser.portfolio_info[0].org_id &&
+                project.project_list &&
+                project.project_list.every(
+                    (listing) => typeof listing === "string"
+                )
+            )
+            ?.reverse()
             
-            const usersWithTasks = [
-                ...new Map(
-                    tasksForProject.filter(task => task.task_added_by !== currentUser?.userinfo?.username).map((task) => [task._id, task])
-                ).values(),
-            ].sort((a, b) => new Date(b?.task_created_date) - new Date(a?.task_created_date));
-            
-            const copyOfUserTasks = tasksLoaded.slice();
-            const previousIndexOfTasksLoadedForProject = copyOfUserTasks.findIndex(item => item.project === currentSelectedProjectForLead);
-            if (previousIndexOfTasksLoadedForProject !== -1) {
-                copyOfUserTasks[previousIndexOfTasksLoadedForProject].tasksForProject = usersWithTasks;
+            let allProjectsFetched;
+
+            if (projectsGotten.length > 0) {
+                allProjectsFetched = projectsGotten[0]?.project_list.sort((a, b) => a.localeCompare(b));
+                setAllProjects(allProjectsFetched);
             }
 
-            setTasksLoaded(copyOfUserTasks);
-            setTasksToDisplayForLead(usersWithTasks);
+            setFetchedOnboardingUsers(onboardingCandidates);
             setRefreshLoading(false);
             toast.success('Successfully refreshed work logs')
 
         } catch (error) {
+            console.log(error);
             setRefreshLoading(false);
-            toast.info('Refresh for logs failed')
+            toast.info('Refresh failed')
         }
     }
 
@@ -430,7 +360,7 @@ const ProjectLeadHomePage = () => {
                                             taskView={true}
                                             className={index % 2 !== 0 ? 'remove__mar' : ''}
                                             externalLinkingEnabled={true}
-                                            externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
+                                            externalLink={`/logs-approval-screen?applicant=${dataitem.applicant}~project=${currentSelectedProjectForLead}~user-id=${dataitem.user_id}`}
                                         />
                                         );
                                     })
@@ -449,15 +379,15 @@ const ProjectLeadHomePage = () => {
                                                     {
                                                     React.Children.toArray(result.data.map((dataitem, index) => {
                                                         return <JobCard
-                                                        buttonText={"View"}
-                                                        candidateCardView={true}
-                                                        candidateData={dataitem}
-                                                        jobAppliedFor={null}
-                                                        handleBtnClick={handleViewTaskBtnClick}
-                                                        taskView={true}
-                                                        className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                                        externalLinkingEnabled={true}
-                                                        externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
+                                                            buttonText={"View"}
+                                                            candidateCardView={true}
+                                                            candidateData={dataitem}
+                                                            jobAppliedFor={null}
+                                                            handleBtnClick={handleViewTaskBtnClick}
+                                                            taskView={true}
+                                                            className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                                            externalLinkingEnabled={true}
+                                                            externalLink={`/logs-approval-screen?applicant=${dataitem.applicant}~project=${currentSelectedProjectForLead}~user-id=${dataitem.user_id}`}
                                                         />
                                                     }))
                                                     }
@@ -475,15 +405,15 @@ const ProjectLeadHomePage = () => {
                                         ?.map((dataitem, index) => {
                                             return (
                                                 <JobCard
-                                                buttonText={"View"}
-                                                candidateCardView={true}
-                                                candidateData={dataitem}
-                                                jobAppliedFor={null}
-                                                handleBtnClick={handleViewTaskBtnClick}
-                                                taskView={true}
-                                                className={index % 2 !== 0 ? 'remove__mar' : ''}
-                                                externalLinkingEnabled={true}
-                                                externalLink={`/new-task-screen?applicant=${dataitem.applicant}~project=${dataitem.project}~name=${dataitem.applicantName}`}
+                                                    buttonText={"View"}
+                                                    candidateCardView={true}
+                                                    candidateData={dataitem}
+                                                    jobAppliedFor={null}
+                                                    handleBtnClick={handleViewTaskBtnClick}
+                                                    taskView={true}
+                                                    className={index % 2 !== 0 ? 'remove__mar' : ''}
+                                                    externalLinkingEnabled={true}
+                                                    externalLink={`/logs-approval-screen?applicant=${dataitem.applicant}~project=${currentSelectedProjectForLead}~user-id=${dataitem.user_id}`}
                                                 />
                                             );
                                         })
