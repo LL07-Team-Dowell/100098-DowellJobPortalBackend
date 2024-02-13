@@ -344,3 +344,19 @@
 .project__submit:not([disabled]):hover {
   filter: brightness(0.8);
 }
+
+@media (max-width: 767px) {
+  .wrapper_event {
+    padding: 1.4rem 0.5rem 14rem;
+    gap: 1.5rem;
+  }
+
+  .event_cards {
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+
+  .edit_modal_event {
+    width: 90%;
+  }
+}
