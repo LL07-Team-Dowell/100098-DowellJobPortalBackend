@@ -200,7 +200,7 @@ class Invoice_module(APIView):
             return self.handle_error(request)
 
     def get_payment_records(self, request):
-        user_id = request.data.get("user_id")
+        user_id = request.GET.get("user_id")
 
         fetch_data = {"db_record_type": "payment_record"}
         result = datacube_data_retrival_function(
@@ -492,10 +492,10 @@ class Invoice_module(APIView):
 
         else:
             weeks_per_month = 4
-            weekly_payment_amount = json_existing_payment_record.get(
-                "weekly_payment_amount", 0
-            )
-            currency_paid = json_existing_payment_record.get("payment_currency", 0)
+            weekly_payment_amount = json_existing_payment_record["data"][0][
+                "weekly_payment_amount"
+            ]
+            currency_paid = json_existing_payment_record["data"][0]["payment_currency"]
             monthly_payment = weekly_payment_amount * weeks_per_month
 
             daily_payment = weekly_payment_amount / 5
@@ -580,8 +580,8 @@ class Invoice_module(APIView):
                 )
 
     def invoice(self, request):
-        user_id = request.data.get("user_id")
-        payment_year = request.data.get("payment_year")
+        user_id = request.GET.get("user_id")
+        payment_year = request.GET.get("payment_year")
 
         fetch_data = {"payment_year": payment_year}
         result = datacube_data_retrival_function(
