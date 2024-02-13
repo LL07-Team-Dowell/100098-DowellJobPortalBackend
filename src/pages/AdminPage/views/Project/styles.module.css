@@ -381,4 +381,18 @@
   .search__project__Navigation__Bar input {
     max-width: 80%;
   }
+
+  .project__cards {
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+
+  .project__Detail__Overview,
+  .project__Time__Overview {
+    flex-direction: column;
+  }
+
+  .project__details__bg {
+    width: 98%;
+  }
 }
