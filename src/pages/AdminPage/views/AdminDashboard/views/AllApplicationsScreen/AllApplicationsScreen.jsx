@@ -49,7 +49,7 @@ const AllApplicationsScreen = () => {
         if (!applicationsLoaded) {
             if (!userRemovalStatusChecked) return
             
-            setApplications(allApplications?.reverse());
+            setApplications(allApplications);
             setApplicationsLoaded(true);
 
         }

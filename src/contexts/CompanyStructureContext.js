@@ -32,7 +32,7 @@ export default function CompanyStructureContextProvider ({ children }) {
         if (!applicationsLoaded) {
             if (!userRemovalStatusChecked) return
 
-            setApplications(allApplications?.reverse());
+            setApplications(allApplications);
             setApplicationsLoaded(true);
         }
 

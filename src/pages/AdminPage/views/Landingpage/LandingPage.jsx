@@ -119,7 +119,7 @@ const LandingPage = ({ subAdminView }) => {
 
     if (!userRemovalStatusChecked) return;
     
-    setlist(allApplications?.reverse());
+    setlist(allApplications);
     setApplicationsLoaded(true);
   }, [userRemovalStatusChecked, currentUser]);
 

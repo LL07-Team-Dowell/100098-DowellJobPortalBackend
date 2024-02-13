@@ -134,7 +134,7 @@ const AdminDashboard = ({ subAdminView }) => {
     useEffect(() => {
         if (!applicationsLoaded) {
             if (!userRemovalStatusChecked) return;
-            setApplications(allApplications?.reverse());
+            setApplications(allApplications);
             setApplicationsLoaded(true);
         }
     }, [userRemovalStatusChecked, allApplications])

@@ -231,7 +231,7 @@ const ProjectLeadHomePage = () => {
             .filter(
                 (application) =>
                     application.data_type === currentUser?.portfolio_info[0]?.data_type
-            )
+            )?.reverse()
             setAllApplications(candidateDataFetched);
 
             const onboardingCandidates = candidateDataFetched

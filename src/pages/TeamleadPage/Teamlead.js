@@ -198,15 +198,8 @@ const Teamlead = ({ isGrouplead }) => {
 
     setLoading(true);
 
-    const allCandidates = allApplications?.filter(
-      (application) =>
-        application.data_type === currentUser?.portfolio_info[0]?.data_type
-    )?.reverse();
-
-    console.log(allCandidates);
-
     if (isGrouplead) {
-      const onboardingCandidates = allCandidates
+      const onboardingCandidates = allApplications
       ?.filter(
         (application) =>
           application.status === candidateStatuses.ONBOARDING
@@ -224,7 +217,7 @@ const Teamlead = ({ isGrouplead }) => {
         type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
         payload: {
           stateToChange: initialCandidatesDataStateNames.allCandidates,
-          value: allCandidates?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+          value: allApplications?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
         }
       });
 
@@ -246,13 +239,13 @@ const Teamlead = ({ isGrouplead }) => {
         console.log(jobsMatchingCurrentCompany);
         setJobs(jobsMatchingCurrentCompany);
 
-        const selectedCandidates = allCandidates.filter(
+        const selectedCandidates = allApplications.filter(
           (application) => application.status === candidateStatuses.SELECTED
         );
-        const candidatesToRehire = allCandidates.filter(
+        const candidatesToRehire = allApplications.filter(
           (application) => application.status === candidateStatuses.TO_REHIRE
         );
-        const onboardingCandidates = allCandidates.filter(
+        const onboardingCandidates = allApplications.filter(
           (application) => application.status === candidateStatuses.ONBOARDING
         );
         dispatchToCandidatesData({
@@ -281,7 +274,7 @@ const Teamlead = ({ isGrouplead }) => {
           type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
           payload: {
             stateToChange: initialCandidatesDataStateNames.allCandidates,
-            value: allCandidates?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+            value: allApplications?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
           }
         });
 
@@ -437,7 +430,7 @@ const Teamlead = ({ isGrouplead }) => {
         .filter(
           (application) =>
             application.data_type === currentUser?.portfolio_info[0].data_type
-        );
+        )?.reverse();
 
         setAllApplications(dataGotten);
 
