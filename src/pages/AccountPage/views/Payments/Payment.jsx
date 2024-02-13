@@ -43,16 +43,31 @@ const Payment = () => {
     isUpdateRecordLoading: false,
   });
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [weeklyPayList, setWeeklyPayList] = useState([]);
+  const [usersOtherInfo, setUsersOtherInfo] = useState([]);
 
   useEffect(() => {
     getAppliedJobs(currentUser?.portfolio_info[0].org_id).then(res => {
       const data = res?.data?.response?.data;
-      const filteredUsers = data.map(
-        users => ({
+      // console.log('responseeeeeeeeeee', res?.data?.response?.data);
+      const filteredUsers = data
+        .filter(users => users.hasOwnProperty('user_id'))
+        .map(users => ({
           label: users.applicant,
           value: users._id,
         }));
       setAllUsers(filteredUsers);
+
+      const filteredOtherInfo = data
+        .filter(users => users.hasOwnProperty('user_id'))
+        .map(users => ({
+          user_id: users._id,
+          // name: users.applicant,
+          freelancePlatform: users.freelancePlatform,
+          payment: users.payment,
+        }));
+      setUsersOtherInfo(filteredOtherInfo);
+
     }).catch(err => {
       console.log(err);
     })
@@ -81,13 +96,18 @@ const Payment = () => {
       setLoading({ ...Loading, isLoading: false });
     } catch (error) {
       setLoading({ ...Loading, isLoading: false });
-      // console.error('Error occurred while fetching payment records:', error.response.data.response.message);
+      console.error('Error occurred while fetching payment records:', error.response.data.message);
       toast.error('Unable to retrieve payment record(s)');
       const errorMessage = error?.response?.data?.response?.message;
       const collectionIdPattern = /'([^']+)'/;
       const match = collectionIdPattern.exec(errorMessage);
-      console.log(match[1]);
-
+      // console.log(match[1]);
+      if (match && match.length > 1) {
+        settingUserForUpdatingRecord(match[1]);
+        setNoDatafoundModal(true);
+      } else {
+        console.error("Error message does not match expected pattern:", errorMessage);
+      }
       settingUserForUpdatingRecord(match[1]);
       setNoDatafoundModal(true);
     }
@@ -111,12 +131,13 @@ const Payment = () => {
   const closeModal = () => {
     clearAllFields();
     setPaymentMethod('');
+    setWeeklyPayList([]);
     setAddEditModal(false);
   }
 
   const closeUpdateModal = () => {
-    clearAllFields();
-    setPaymentRecord([]);
+    // clearAllFields();
+    // setPaymentRecord([]);
     setShowUpdateModal(false);
   }
 
@@ -130,28 +151,88 @@ const Payment = () => {
   }
 
   const handleAddRecordClick = () => {
-    setSelectedUsers([]);
+    clearAllFields();
     visibilityOfModals();
     setPaymentRecord([]);
     setAddSingleUserRecord(false);
   }
 
   const handleNoDataFoundAddRecordClick = () => {
+    clearAllFields();
     setAddSingleUserRecord(true);
     visibilityOfModals();
   }
 
   const handleUserChange = (selectedUser) => {
+    console.log(selectedUser);
     setSelectedUsers(selectedUser);
     selectedUser.length > 0 ? <></> : setPaymentRecord([]);
   }
+
+  const getCurrencyFromPayment = (paymentString) => {
+    if (paymentString.includes('$')) {
+      return { label: "US Dollar (USD)", value: "USD" };
+    }
+    if (paymentString.includes('₦')) {
+      return { label: "Nigerian Naira (NGN)", value: "NGN" };
+    }
+    if (paymentString.includes('£')) {
+      return { label: "British Pound (GBP)", value: "GBP" };
+    }
+    if (paymentString.includes('₹')) {
+      return { label: "Indian Rupee (INR)", value: "INR" };
+    }
+
+    const currency = currencyList.find(currency => paymentString.toUpperCase().includes(currency.value.toUpperCase()));
+    // console.log('currency>>>>>>>>>', currency);
+    return currency ? currency : 'Unknown Currency';
+  };
+
+  const handleAddUserChange = (selectedUser) => {
+    setSelectedUsers(selectedUser);
+
+    if (selectedUser.length === 0) {
+      setWeeklyPayList([]);
+      setSelectedCurrency([]);
+      setPaymentMethod([]);
+      return;
+    }
+
+    const updatedList = [];
+    const updatedCurrencyList = [];
+    const updatedPaymentMethodList = [];
+
+    selectedUser.forEach(user => {
+      const userInfo = usersOtherInfo.find(info => info.user_id === user.value);
+      if (userInfo) {
+
+        const paymentValue = userInfo.payment.match(/\d+(\.\d+)?/);
+        const label = paymentValue ? paymentValue[0] : '30';
+        updatedList.push({ label, value: userInfo.user_id });
+
+        const currency = getCurrencyFromPayment(userInfo.payment);
+        updatedCurrencyList.push({ label: currency.label, value: currency.value });
+
+        updatedPaymentMethodList.push({ label: userInfo.freelancePlatform, value: userInfo.user_id });
+      }
+    });
+
+    console.log(updatedList);
+    console.log(updatedCurrencyList);
+    console.log(updatedPaymentMethodList);
+
+    setWeeklyPayList(updatedList);
+    setSelectedCurrency(updatedCurrencyList);
+    setPaymentMethod(updatedPaymentMethodList);
+  };
+
 
   const handleCurrencyChange = selectedOption => setSelectedCurrency(selectedOption);
   const handlePaymentChange = selectedOption => setPaymentMethod(selectedOption);
 
   const handleAddRecordButtonClick = async () => {
     // !selectedUsers || !weeklyPay || !selectedCurrency || !paymentMethod
-    if (!selectedUsers || !weeklyPay || !selectedCurrency || !paymentMethod) {
+    if (!selectedUsers || !weeklyPayList || !selectedCurrency || !paymentMethod) {
       return toast.error('Please select User(s), Weekly Pay, Currency and Payment method!');
     }
     setLoading({ ...Loading, isAddRecordLoading: true })
@@ -163,24 +244,31 @@ const Payment = () => {
         "currency": selectedCurrency.value
       }
 
+      // console.log(dataToPost);
       await savePaymentRecord(dataToPost).then(() => {
         toast.success(`Payment record added successfully!`);
         setAddEditModal(false);
-      }).catch(() => {
-        toast.error('Unable to add payment record. Please try again!')
+      }).catch(error => {
+        toast.error(`${error.response.data.message}, Please update the record!`);
       })
       setLoading({ ...Loading, isAddRecordLoading: false })
     } else {
       try {
-        const promises = selectedUsers.map(async (user) => {
+        const promises = selectedUsers.map((user, index) => {
+          const weeklyPayEntry = weeklyPayList.find(entry => entry.value === user.value);
+
+          const currencyEntry = selectedCurrency[index];
+
           const dataToPost = {
             "company_id": currentUser?.portfolio_info[0]?.org_id,
             "user_id": user.value,
-            "weekly_payment_amount": weeklyPay,
-            "currency": selectedCurrency.value
+            "weekly_payment_amount": weeklyPayEntry ? weeklyPayEntry.label : null,
+            "currency": currencyEntry.value,
           };
+          // return dataToPost;
           return savePaymentRecord(dataToPost);
         });
+        console.log(promises);
 
         const results = await Promise.all(promises);
 
@@ -190,13 +278,14 @@ const Payment = () => {
         } else {
           toast.error('Unable to add payment record(s). Please try again!');
         }
-        // toast.success(`Payment record(s) added successfully!`);
+        toast.success(`Payment record(s) added successfully!`);
       } catch (error) {
-        toast.error('Unable to add payment record(s). Please try again!')
+        // console.log(error.response.data.message);
+        toast.error(`${error.response.data.message}, Please update the record!`);
       }
       setLoading({ ...Loading, isAddRecordLoading: false })
     }
-    clearAllFields();
+    // clearAllFields();
   }
 
   const handleEditClick = (index) => {
@@ -241,6 +330,7 @@ const Payment = () => {
             {
               (addEditModal || showUpdateModal) ?
                 <Select
+                  value={{ value: '', label: 'Select...' }}
                   isDisabled={true}
                 /> :
                 <Select
@@ -284,7 +374,7 @@ const Payment = () => {
                     <td>
                       {record?.data?.data?.previous_weekly_amounts && record.data.data.previous_weekly_amounts.length > 0 ? record.data.data.previous_weekly_amounts.join(', ') : '-'}
                     </td>
-                    <td>{record?.data?.data?.last_payment_date !== "" ? record.data.data.last_payment_date : '-'}</td>
+                    <td>{record?.data?.data?.last_payment_date !== "" ? `${new Date(record.data.data.last_payment_date).toDateString()}` : '-'}</td>
                     <td><PiNotePencilDuotone color="#005734" fontSize="1.5em" onClick={() => handleEditClick(index)} /></td>
                   </tr>
                 ))}
@@ -303,10 +393,10 @@ const Payment = () => {
                 <IoCloseSharp fontSize="1.5em" onClick={closeModal} />
               </div>
               <div className={styles.edit_add_record}>
-                <div className={styles.select_input}>
-                  {
-                    addSingleUserRecord ?
-                      <>
+                {
+                  addSingleUserRecord ?
+                    <>
+                      <div className={styles.select_input}>
                         <p>User:</p>
                         <Select
                           isMulti={false}
@@ -314,47 +404,74 @@ const Payment = () => {
                           isDisabled={true}
                           placeholder="Select User(s)..."
                         />
-                      </>
-                      :
-                      <>
+                      </div>
+                      <div className={styles.select_input}>
+                        <p>Weekly Pay:</p>
+                        <input type='text'
+                          value={weeklyPay}
+                          onChange={(e) => setWeeklyPay(e.target.value)}
+                          placeholder='Enter weekly pay...'
+                        />
+                      </div>
+                      <div className={styles.select_input}>
+                        <p>Payment Currency:</p>
+                        <Select
+                          options={currencyList}
+                          isMulti={false}
+                          value={selectedCurrency}
+                          onChange={handleCurrencyChange}
+                          placeholder="Select currency..."
+                        />
+                      </div>
+                      <div className={styles.select_input}>
+                        <p>Payment Method:</p>
+                        <Select
+                          options={paymentMethods}
+                          isMulti={false}
+                          value={paymentMethod}
+                          onChange={handlePaymentChange}
+                          placeholder="Select a payment method..."
+                        />
+                      </div>
+                    </>
+                    :
+                    <>
+                      <div className={styles.select_input}>
                         <p>Select User(s):</p>
                         <Select
                           options={allUsers}
                           isMulti={true}
                           value={selectedUsers}
-                          onChange={handleUserChange}
+                          onChange={handleAddUserChange}
                           placeholder="Select User(s)..."
                         />
-                      </>
-                  }
-                </div>
-                <div className={styles.select_input}>
-                  <p>Weekly Pay:</p>
-                  <input type='text'
-                    value={weeklyPay}
-                    onChange={(e) => setWeeklyPay(e.target.value)}
-                  />
-                </div>
-                <div className={styles.select_input}>
-                  <p>Payment Currency:</p>
-                  <Select
-                    options={currencyList}
-                    isMulti={false}
-                    value={selectedCurrency}
-                    onChange={handleCurrencyChange}
-                    placeholder="Select a currency..."
-                  />
-                </div>
-                <div className={styles.select_input}>
-                  <p>Payment Method:</p>
-                  <Select
-                    options={paymentMethods}
-                    isMulti={false}
-                    value={paymentMethod}
-                    onChange={handlePaymentChange}
-                    placeholder="Select a payment method..."
-                  />
-                </div>
+
+                      </div>
+                      <div className={styles.select_input}>
+                        <p>Weekly Pay:</p>
+                        <Select
+                          value={weeklyPayList}
+                          isMulti={true}
+                        />
+                      </div>
+                      <div className={styles.select_input}>
+                        <p>Payment Currency:</p>
+                        <Select
+                          isMulti={true}
+                          value={selectedCurrency}
+                          placeholder="Currency..."
+                        />
+                      </div>
+                      <div className={styles.select_input}>
+                        <p>Payment Method:</p>
+                        <Select
+                          isMulti={true}
+                          value={paymentMethod}
+                          placeholder="Payment method..."
+                        />
+                      </div>
+                    </>
+                }
                 <button className={`${styles.btn_get_record} ${styles.btn_add_record}`} onClick={handleAddRecordButtonClick}>
                   {
                     Loading.isAddRecordLoading ?
@@ -441,26 +558,3 @@ const Payment = () => {
 }
 
 export default Payment;
-
-
-{/* <CreatableSelect
-                    components={components}
-                    inputValue={inputValue}
-                    isClearable
-                    isMulti={false}
-                    menuIsOpen={false}
-                    onChange={(newValue) => setValue(newValue)}
-                    onInputChange={(newValue) => setInputValue(newValue)}
-                    // onKeyDown={handleKeyDown}
-                    placeholder="Type something and press enter..."
-                    value={value}
-                  /> */}
-
-//     <tr>
-//   <td>ayesha</td>
-//   <td>35</td>
-//   <td>USD</td>
-//   <td>35</td>
-//   <td>january</td>
-//   <td><PiNotePencilDuotone color="#005734" fontSize="1.5em" /></td>
-// </tr>

@@ -12,11 +12,8 @@ import { candidateStatuses } from '../../../CandidatePage/utils/candidateStatuse
 import { useHrCandidateContext } from '../../../../contexts/HrCandidateContext';
 import LoadingSpinner from '../../../../components/LoadingSpinner/LoadingSpinner';
 import UserScreen from '../UserScreen/UserScreen';
-import Button from '../../../AdminPage/components/Button/Button';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AddTaskScreen from '../../../TeamleadPage/views/AddTaskScreen/AddTaskScreen';
 import TaskScreen from '../../../TeamleadPage/views/TaskScreen/TaskScreen';
-import AttendanceScreen from '../AttendanceScreen/AttendanceScreen';
 import TitleNavigationBar from '../../../../components/TitleNavigationBar/TitleNavigationBar';
 import TogglerNavMenuBar from '../../../../components/TogglerNavMenuBar/TogglerNavMenuBar';
 import JobCard from '../../../../components/JobCard/JobCard';
@@ -29,12 +26,9 @@ import HrTrainingQuestions from '../HrTrainingScreen/HrTrainingQuestion';
 import { trainingCards } from '../HrTrainingScreen/hrTrainingCards';
 import { getTrainingManagementQuestions, getTrainingManagementResponses } from '../../../../services/hrTrainingServices';
 import { IoMdRefresh } from "react-icons/io";
-import { set } from 'date-fns';
 import { toast } from 'react-toastify';
 import { getRolesInOrganization, getUserInfoFromLoginAPI } from '../../../../services/authServices';
 import { teamManagementProductName } from '../../../../utils/utils';
-import { getCandidateTasksV2 } from '../../../../services/teamleadServices';
-import { extractNewTasksAndAddExtraDetail } from '../../../TeamleadPage/util/extractNewTasks';
 import HrTasks from '../Tasks/HrTasks';
 
 function fuzzySearch(query, text) {

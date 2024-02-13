@@ -93,6 +93,11 @@
     width: max-content;
 }
 
+.project__Listing {
+    max-height: 20rem !important;
+    font-size: 0.875rem;
+}
+
 .pro__Select__Wrap {
     display: flex;
     align-items: center;
@@ -104,10 +109,62 @@
     font-size: 0.875rem;
 }
 
+.selected__Subproject__item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background-color: #fff;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    padding: 0.5rem 0.9rem;
+}
+
 .log__Heading {
     font-size: 0.875rem;
     color: #838383;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.single__Approve__Btn,
+.batch__Approve__Btn {
+    position: relative;
+    color: #005734;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.4);
+    right: unset;
+    bottom: unset;
+    white-space: nowrap;
+    border-radius: 5px;
+    background-color: #fff;
+    padding: 0.5rem 1rem;
+}
+
+.batch__Approve__Btn {
+    font-size: 0.75rem;
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+    min-width: 9.5rem;
+    max-width: 10.5rem;
+}
+
+.single__Approve__Btn {
+    font-size: 0.65rem;
+}
+
+.logs__Wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.single__log__Detail__Wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
 .single__log__Detail {
@@ -116,14 +173,25 @@
     gap: 0.6rem;
 }
 
+.single__log__Detail.approved__log ._log {
+    color: #005734;
+}
+
 .date__log {
-    font-size: 1rem;
+    font-weight: 500;
     white-space: nowrap;
 }
 
 ._log,
-.log__Timing {
+.log__Timing,
+.date__log {
     font-size: 0.875rem;
+}
+
+._log {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
 }
 
 .log__Timing {

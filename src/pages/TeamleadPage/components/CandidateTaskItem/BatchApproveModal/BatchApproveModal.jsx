@@ -26,18 +26,18 @@ const BatchApproveModal = ({
     }
 
     const handleSelectLog = (log) => {
-        const logAlreadySelected = selectedLogs.slice().includes(log?.single_task_id);
+        const logAlreadySelected = selectedLogs.slice().includes(log?._id);
         
-        if (logAlreadySelected) return handleRemoveLog(log?.single_task_id) 
+        if (logAlreadySelected) return handleRemoveLog(log?._id) 
         
-        handleAddLog(log?.single_task_id)
+        handleAddLog(log?._id)
     }
     
 
     const handleSelectAll = () => {
-        const remainingItemsToBeSelected = logs.filter(log => !selectedLogs.slice().includes(log?.single_task_id));
+        const remainingItemsToBeSelected = logs.filter(log => !selectedLogs.slice().includes(log?._id));
         setSelectedLogs((prevLogs) => {
-            return [...prevLogs, ...remainingItemsToBeSelected.map(log => log?.single_task_id)]
+            return [...prevLogs, ...remainingItemsToBeSelected.map(log => log?._id)]
         })
     }
 
@@ -62,14 +62,14 @@ const BatchApproveModal = ({
                     <h2>Batch Log Approval</h2>
                     <Button
                         text={
-                            logs.filter(log => !selectedLogs.slice().includes(log?.single_task_id)).length < 1 ?
+                            logs.filter(log => !selectedLogs.slice().includes(log?._id)).length < 1 ?
                                 "Unselect all"
                             :
                             "Select all"
                         }
                         icon={<BiSolidSelectMultiple />}
                         handleClick={
-                            logs.filter(log => !selectedLogs.slice().includes(log?.single_task_id)).length < 1 ?
+                            logs.filter(log => !selectedLogs.slice().includes(log?._id)).length < 1 ?
                             () => handleUnselectAll()
                             :
 
@@ -89,11 +89,11 @@ const BatchApproveModal = ({
                             React.Children.toArray(logs.map(log => {
                                 return <>
                                     <div className={styles.log__Item}>
-                                        <label htmlFor={log?.single_task_id}>
+                                        <label htmlFor={log?._id}>
                                             <input 
                                                 type={'checkbox'} 
-                                                id={log?.single_task_id} 
-                                                checked={selectedLogs.slice().includes(log?.single_task_id) ? true : false}
+                                                id={log?._id} 
+                                                checked={selectedLogs.slice().includes(log?._id) ? true : false}
                                                 onChange={() => handleSelectLog(log)}
                                             />
                                             <div>

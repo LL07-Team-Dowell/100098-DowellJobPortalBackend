@@ -4,12 +4,15 @@ import React, { useRef, useState } from 'react';
 import useClickOutside from '../../../../hooks/useClickOutside';
 
 import "./style.css";
+import { AiOutlineSearch } from 'react-icons/ai';
 
 
-const DropdownButton = ({ currentSelection, selections, adminPageActive, handleSelectionClick, removeDropDownIcon, className, handleClick, disabled }) => {
+const DropdownButton = ({ currentSelection, selections, adminPageActive, handleSelectionClick, removeDropDownIcon, className, handleClick, disabled, selectionsDropDownClassName }) => {
     const currentSelectionRef = useRef(null);
     const selectionsRef = useRef(null);
+    const inputRef = useRef();
     const [showDropdown, setShowDropdown] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
     
     useClickOutside(selectionsRef, () => setShowDropdown(false));
     
@@ -18,6 +21,7 @@ const DropdownButton = ({ currentSelection, selections, adminPageActive, handleS
         if (!currentSelectionRef.current) return;
 
         currentSelectionRef.current.innerText = selection;
+        setSearchValue('');
 
         handleSelectionClick && handleSelectionClick(selection);
 
@@ -33,25 +37,62 @@ const DropdownButton = ({ currentSelection, selections, adminPageActive, handleS
                 `
             } 
             onClick={
-                () => handleClick ? 
-                    handleClick(currentSelection) 
+                handleClick ?
+                    () => handleClick(currentSelection)
                 : 
-                setShowDropdown(prevValue => { return !prevValue })
+                (e) => {
+                    if (inputRef.current && inputRef.current?.contains(e?.target)) return;
+                    setShowDropdown(prevValue => { return !prevValue })
+                }
             }
         >
             <span ref={currentSelectionRef}>{ currentSelection }</span>
-            { !removeDropDownIcon && <KeyboardArrowRightIcon className="down-icon right-icon" /> }
+            { 
+                !removeDropDownIcon &&
+                <>
+                    {
+                        showDropdown ?
+                            <KeyboardArrowDownIcon className="down-icon right-icon" />
+                        :
+                        <KeyboardArrowRightIcon className="down-icon right-icon" />
+                    }
+                </>
+            }
 
             {
                 selections ? 
                 
-                <div className={`dropdown-selections ${showDropdown ? 'active_' : ''}`} ref={selectionsRef}>
-                    {React.Children.toArray(selections.map(selection => {
-                        return <div className="dropdown-selection-item" onClick={ () => updateCurrentSelection(selection) }>
-                            {selection}
-                            <div style={{ backgroundColor: "#fafafa", height: "0.07rem", marginTop: "0.5rem" }}></div>
-                        </div>
-                    }))}
+                <div 
+                    className={`dropdown-selections ${showDropdown ? 'active_' : ''} ${selectionsDropDownClassName && showDropdown ? selectionsDropDownClassName : ''}`} 
+                    ref={selectionsRef}
+                >
+                    <div className='search__Selections__Wrap' ref={inputRef}>
+                        <AiOutlineSearch 
+                            fontSize={'0.875rem'}
+                        />
+                        <input 
+                            type='text'
+                            value={searchValue}
+                            onChange={({ target }) => setSearchValue(target.value)}
+                            placeholder='Search'
+                        />
+                    </div>
+                    {
+                        React.Children.toArray(selections
+                            .filter(selection => {
+                                if (searchValue.length > 0) {
+                                    if (selection.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())) return true;
+                                    return false;
+                                }
+                                return true;
+                            })
+                            .map(selection => {
+                            return <div className={`dropdown-selection-item ${selection === currentSelection ? 'active-item_' : ''}`} onClick={ () => updateCurrentSelection(selection) }>
+                                {selection}
+                                <div style={{ backgroundColor: "#fafafa", height: "0.07rem", marginTop: "0.5rem" }}></div>
+                            </div>
+                        }))
+                    }
                 </div> : <></>
 
             }

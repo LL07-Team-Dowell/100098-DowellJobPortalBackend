@@ -36,6 +36,17 @@
   cursor: pointer;
 }
 
+.team__Lead__back__Btn__Wrap {
+  width: max-content;
+  margin: 0;
+  margin-right: auto;
+}
+
+.team__Lead__back__Btn {
+  width: 3.5rem !important;
+  height: 3rem !important;
+} 
+
 @media (min-width: 768px) and (max-width: 991.98px) {
   .tasks-container .add__Btn {
     padding-top: 3%;
@@ -140,6 +151,11 @@
   .new__Log__User__Wrapp {
     width: 85%;
     margin: 2rem auto;
+  }
+
+  .team__Lead__back__Btn__Wrap {
+    width: 85%;
+    margin: 0 auto;
   }
 }
 

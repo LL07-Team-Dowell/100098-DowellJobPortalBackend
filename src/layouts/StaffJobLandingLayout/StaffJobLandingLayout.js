@@ -91,6 +91,7 @@ const StaffJobLandingLayout = ({
     setNewContract,
     setCurrentUserHiredApplications,
     setCurrentUserHiredApplicationsLoaded,
+    setAllApplications,
   } = useCurrentUserContext();
   const [isSuperUser, setIsSuperUser] = useState(false);
 
@@ -104,6 +105,7 @@ const StaffJobLandingLayout = ({
     setNewContract,
     setCurrentUserHiredApplications,
     setCurrentUserHiredApplicationsLoaded,
+    setAllApplications,
   );
 
   useEffect(() => {

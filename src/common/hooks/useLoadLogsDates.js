@@ -7,13 +7,18 @@ export default function useLoadLogsDates ({
     dataLoaded,
     updateDataLoaded,
     updateDataLoading,
+    useOtherUserID=false,
+    otherUserID=null
 }) {
 
     useEffect(() => {
         if (!user || dataLoaded) return;
         
         const dataToPost = {
-            "user_id": user?.userinfo?.userID,
+            "user_id": useOtherUserID && otherUserID ? 
+                otherUserID 
+            : 
+            user?.userinfo?.userID,
             "company_id":  user?.portfolio_info[0]?.org_id,
             "data_type": user?.portfolio_info[0]?.data_type,
         }
@@ -28,6 +33,6 @@ export default function useLoadLogsDates ({
             updateDataLoaded(false);
         })
 
-    }, [user])
+    }, [user, useOtherUserID, otherUserID])
 
 }
