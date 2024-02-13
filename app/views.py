@@ -162,7 +162,7 @@ if os.getenv("DB_PAYMENT_RECORDS"):
     
 else:
     """for windows local"""
-    load_dotenv(f"{os.getcwd()}/.env")
+    load_dotenv(f"{os.getcwd()}/env")
     API_KEY = str(os.getenv("API_KEY"))
     DB_Name = str(os.getenv("DB_Name"))
     REPORT_DB_NAME = str(os.getenv("REPORT_DB_NAME"))
@@ -2491,10 +2491,16 @@ class approve_task(APIView):
         field = {"_id": data.get("document_id")}
         update_field = {}
         response = dowellconnection(*task_details_module, "fetch", field, update_field)
+        user_id =''
+        task_created_date=''
         if response is not None:
             for item in json.loads(response)["data"]:
+                if 'user_id' in item.keys():
+                    user_id = item['user_id']
+                if 'task_created_date' in item.keys():
+                    task_created_date=item['task_created_date']
                 if "max_updated_date" not in item:
-                    return True
+                    return True,task_created_date,user_id
             current_date = datetime.today()
             # print(json.loads(response)["data"],"=========")
             try:
@@ -2526,13 +2532,13 @@ class approve_task(APIView):
             if len(max_updated_dates) >= 1:
                 max_updated_date = max(max_updated_dates)
                 if current_date <= max_updated_date:
-                    return True
+                    return True,task_created_date,user_id
                 else:
-                    return False
+                    return False,task_created_date,user_id
             else:
-                return True
+                return True,task_created_date,user_id
 
-        return False
+        return False,task_created_date,user_id
 
     @verify_user_token
     def patch(self, request, user):
@@ -2541,12 +2547,13 @@ class approve_task(APIView):
         if data:
             field = {"_id": data.get("document_id")}
             update_field = {
-                "status": data.get("status"),
-                "task_approved_by": data.get("lead_username")
+                "status": "completed",
+                "task_approved_by": data.get("lead_username"),
+                'user_id': data.get('user_id'),
             }
             serializer = TaskApprovedBySerializer(data=update_field)
             if serializer.is_valid():
-                check_approvable = self.approvable()
+                check_approvable, task_created_date, user_id = self.approvable()
 
                 if check_approvable is True:
                     validate_teamlead = self.valid_teamlead(data.get("lead_username"))
@@ -2564,6 +2571,17 @@ class approve_task(APIView):
                         *task_details_module, "update", field, update_field
                     )
                     if json.loads(response)["isSuccess"] is True:
+                        update_data = {
+                            'tasks_completed':True,
+                            'tasks_approved':True
+                            }
+                        res=update_user_Report_data(API_KEY, REPORT_DB_NAME, REPORT_UUID, user_id,task_created_date,update_data)
+                        
+                        update_data_two = {
+                            'tasks_you_marked_as_complete':True,
+                            'tasks_you_approved':True
+                            }
+                        res_two=update_user_Report_data(API_KEY, REPORT_DB_NAME, REPORT_UUID, data.get("user_id"),task_created_date,update_data_two)
                         
                         return Response(
                             {
@@ -2642,7 +2660,6 @@ class task_module(APIView):
         _date = task_updated_date + relativedelta(hours=336)
         _date = _date.strftime("%Y-%m-%d %H:%M:%S")
         return _date
-
     #@verify_user_token
     def post(self, request):
         type_request = request.GET.get("type")
@@ -3283,7 +3300,7 @@ class task_module(APIView):
 class create_team(APIView):
     def get_current_datetime(self, date):
         _date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
-            "%m/%d/%Y %H:%M:%S"
+            "%Y-%m-%d"
         )
         return str(_date)
 
@@ -3310,12 +3327,14 @@ class create_team(APIView):
             )
             # print(response)
             if json.loads(response)["isSuccess"] == True:
-                update_data = {
-                    'teams': True,
-                }
-                res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
-                                        data.get("user_id"), data.get("task_created_date"), 
+                for user_id in field["members"]:
+                    update_data = {
+                        'teams': True,
+                    }
+                    res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                        user_id, field["date_created"], 
                                         update_data)
+                 
                 return Response(
                     {
                         "message": "Team created successfully",
@@ -3495,16 +3514,9 @@ class delete_team(APIView):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class create_team_task(APIView):
-    # def max_updated_date(self, updated_date):
-    #     task_updated_date = datetime.strptime(
-    #         updated_date, "%m/%d/%Y %H:%M:%S"
-    #     )
-    #     _date = task_updated_date + relativedelta(hours=12)
-    #     _date = _date.strftime('%m/%d/%Y %H:%M:%S')
-    #     return str(_date)
     def get_current_datetime(self, date):
         _date = datetime.strptime(str(date), "%Y-%m-%d %H:%M:%S.%f").strftime(
-            "%m/%d/%Y %H:%M:%S"
+            "%Y-%m-%d"
         )
         return str(_date)
 
@@ -3516,6 +3528,7 @@ class create_team_task(APIView):
             "task_image": data.get("image"),
             "assignee": data.get("assignee"),
             "team_id": data.get("team_id"),
+            "user_id": data.get("user_id"),
             "task_created_date": self.get_current_datetime(datetime.now()),
             "subtasks": data.get("subtasks"),
         }
@@ -3534,15 +3547,14 @@ class create_team_task(APIView):
                 "due_date": data.get("due_date"),
                 "task_updated_date": "",
                 "approval": False,
-                "subtasks": data.get("subtasks"),
-                # "max_updated_date": self.max_updated_date(self.get_current_datetime(datetime.now())),
+                "user_id": data.get("user_id"),
+                "subtasks": data.get("subtasks")
             }
             update_field = {"status": "nothing to update"}
             
             response = dowellconnection(
                 *task_management_reports, "insert", field, update_field
             )
-            # print(response)
             if json.loads(response)["isSuccess"] == True:
                 update_data = {
                         'team_tasks': True,
@@ -3551,7 +3563,7 @@ class create_team_task(APIView):
                 res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
                                         data.get("user_id"), field["task_created_date"], 
                                         update_data)
-
+                
                 return Response(
                     {
                         "message": "Task created successfully",
@@ -5144,6 +5156,7 @@ class Thread_Apis(APIView):
             "expected_product_behavior": data.get("expected_product_behavior"),
             "actual_product_behavior": data.get("actual_product_behavior"),
             "thread_type": data.get("thread_type"),
+            "user_id": data.get("user_id"),
         }
 
         field = {
@@ -5162,6 +5175,7 @@ class Thread_Apis(APIView):
             "expected_product_behavior": data.get("expected_product_behavior"),
             "actual_product_behavior": data.get("actual_product_behavior"),
             "thread_type": data.get("thread_type"),
+            "user_id": data.get("user_id")
         }
         update_field = {}
         serializer = ThreadsSerializer(data=serializer_data)
@@ -5212,7 +5226,12 @@ class Thread_Apis(APIView):
                     send_mail_thread.start()
                     send_mail_thread.join()
                 ##------------------------------------------------
-
+                update_data = {
+                    'team_tasks_issues_raised': True,
+                }
+                res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                    data.get('user_id'), field["created_date"], 
+                                    update_data)
                 return Response(
                     {
                         "message": "Thread created successfully",
@@ -5279,7 +5298,7 @@ class Thread_Apis(APIView):
         data = request.data
         if data:
             field = {
-                "_id": data.get("document_id"),
+                "_id": data.get("document_id")
             }
 
             # check for previous status
@@ -5380,6 +5399,14 @@ class Thread_Apis(APIView):
 
             # print(update_response)
             if json.loads(update_response)["isSuccess"] == True:
+                if data.get("current_status") == "Resolved":
+                    update_data = {
+                        'team_tasks_issues_resolved': True,
+                    }
+                    date_ = json.loads(get_response)["data"][0]["created_date"]
+                    res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                    data.get("user_id"), date_, 
+                                    update_data)
                 return Response(
                     {
                         "message": f"Thread with id-{data.get('document_id')} has been successfully updated",
@@ -5553,6 +5580,12 @@ class Comment_Apis(APIView):
             )
             # print(insert_response)
             if json.loads(insert_response)["isSuccess"] == True:
+                update_data = {
+                    'team_tasks_comments_added': True,
+                }
+                res= update_user_Report_data(API_KEY,REPORT_DB_NAME, REPORT_UUID, 
+                                    data.get('user_id'), field["created_date"], 
+                                    update_data)
                 return Response(
                     {
                         "message": "Comment created successfully",
@@ -6618,6 +6651,7 @@ class Generate_Report(APIView):
                 "db_report_type": "report"
             }
             get_collection = json.loads(datacube_data_retrival_function(API_KEY,REPORT_DB_NAME,coll_name,query,10,0, False))
+            print(get_collection)
             if get_collection['success']==False:
                 return Response({'success':False,"message": f"This candidate has no report data collection created"},status=status.HTTP_204_NO_CONTENT)
             if len(get_collection['data']) <= 0:
