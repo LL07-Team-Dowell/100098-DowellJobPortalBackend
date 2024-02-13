@@ -58,7 +58,7 @@ const Card = ({
 
   useEffect(() => {
     setnumber(list.filter((j) => j.job_number === job_number).length);
-  }, [jobs]);
+  }, [list, jobs]);
 
   const date = () => {
     const givenDate = new Date(created_on);

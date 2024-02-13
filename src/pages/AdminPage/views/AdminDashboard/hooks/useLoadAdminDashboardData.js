@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { getSettingUserProject } from "../../../../../services/hrServices";
-import { getApplicationForAdmin, getJobsFromAdmin, getSettingUserSubProject } from "../../../../../services/adminServices";
+import { getJobsFromAdmin, getSettingUserSubProject } from "../../../../../services/adminServices";
 
 export default function useLoadAdminDashboardData(
     dataLoaded, 
@@ -11,8 +11,6 @@ export default function useLoadAdminDashboardData(
     updateSubProjectsLoadingState,
     updateSubProjectsLoadedState,
     updateSubprojects,
-    updateApplications,
-    updateApplicationsLoadedState,
     updateJobs,
     updateDataLoaded,
 ) {
@@ -22,7 +20,6 @@ export default function useLoadAdminDashboardData(
         Promise.all([
             getSettingUserProject(),
             getSettingUserSubProject(),
-            getApplicationForAdmin(userDetail?.portfolio_info[0]?.org_id),
             getJobsFromAdmin(userDetail?.portfolio_info[0]?.org_id),
         ]).then(res => {
 
@@ -55,21 +52,14 @@ export default function useLoadAdminDashboardData(
             updateSubProjectsLoadingState(false);
             updateSubProjectsLoadedState(true);
 
-            const applicationsFetched = res[2]?.data?.response?.data?.filter(
-                (item) => userDetail?.portfolio_info[0]?.data_type === item.data_type
-            )?.reverse()
-
-            updateApplications(applicationsFetched)
-            updateApplicationsLoadedState(true);
-
             updateJobs(
-                res[3]?.data?.response?.data
+                res[2]?.data?.response?.data
                 ?.reverse()
                 ?.filter(
                     (job) =>
                     job.data_type === userDetail?.portfolio_info[0]?.data_type
                 )
-                ? res[3]?.data?.response?.data
+                ? res[2]?.data?.response?.data
                     ?.reverse()
                     ?.filter(
                         (job) =>

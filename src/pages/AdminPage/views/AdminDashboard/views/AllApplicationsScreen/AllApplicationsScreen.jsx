@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useJobContext } from "../../../../../../contexts/Jobs";
 import StaffJobLandingLayout from "../../../../../../layouts/StaffJobLandingLayout/StaffJobLandingLayout"
-import { getApplicationForAdmin } from "../../../../../../services/adminServices";
 import { useCurrentUserContext } from "../../../../../../contexts/CurrentUserContext";
 import styles from './styles.module.css';
 import SearchBar from "../../../../../../components/SearchBar/SearchBar";
@@ -32,7 +31,11 @@ const AllApplicationsScreen = () => {
         projectsLoading,
         setProjectsLoading,
     } = useJobContext();
-    const { currentUser } = useCurrentUserContext();
+    const { 
+        currentUser,
+        allApplications, 
+        userRemovalStatusChecked,
+    } = useCurrentUserContext();
     const [ searchValue, setSearchValue ] = useState('');
     const [ projectAssignedFilter, setProjectAssignedFilter ] = useState([]);
     const [ currentApplicationCategory, setCurrentApplicationCategory ] = useState([]);
@@ -44,18 +47,13 @@ const AllApplicationsScreen = () => {
 
     useEffect(() => {
         if (!applicationsLoaded) {
-            getApplicationForAdmin(currentUser?.portfolio_info[0]?.org_id).then(res => {
-                const applicationsFetched = res?.data?.response?.data?.filter(
-                    (item) => currentUser?.portfolio_info[0]?.data_type === item.data_type
-                )?.reverse()
+            if (!userRemovalStatusChecked) return
+            
+            setApplications(allApplications?.reverse());
+            setApplicationsLoaded(true);
 
-                setApplications(applicationsFetched);
-                setApplicationsLoaded(true);
-            }).catch(err => {
-                console.log('Failed to get applications for admin');
-            })
         }
-    }, [])
+    }, [currentUser, userRemovalStatusChecked])
 
     const incrementStepPagination = (steps, length) => {
         if (steps + 1 <= length) {
