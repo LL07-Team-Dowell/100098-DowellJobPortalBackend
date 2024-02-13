@@ -224,7 +224,7 @@ const Teamlead = ({ isGrouplead }) => {
         type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
         payload: {
           stateToChange: initialCandidatesDataStateNames.allCandidates,
-          value: allCandidates?.filter(candidate => candidate.user_id)
+          value: allCandidates?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
         }
       });
 
@@ -281,7 +281,7 @@ const Teamlead = ({ isGrouplead }) => {
           type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
           payload: {
             stateToChange: initialCandidatesDataStateNames.allCandidates,
-            value: allCandidates?.filter(candidate => candidate.user_id)
+            value: allCandidates?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
           }
         });
 
@@ -451,6 +451,7 @@ const Teamlead = ({ isGrouplead }) => {
         const onboardingCandidates = applicationForMatching.filter(
           (application) => application.status === candidateStatuses.ONBOARDING
         );
+        
         dispatchToCandidatesData({
           type: candidateDataReducerActions.UPDATE_SELECTED_CANDIDATES,
           payload: {
@@ -471,6 +472,13 @@ const Teamlead = ({ isGrouplead }) => {
             stateToChange: initialCandidatesDataStateNames.onboardingCandidates,
             value: onboardingCandidates,
           },
+        });
+        dispatchToCandidatesData({
+          type: candidateDataReducerActions.UPDATE_ALL_CANDIDATES,
+          payload: {
+            stateToChange: initialCandidatesDataStateNames.allCandidates,
+            value: applicationForMatching?.filter(candidate => candidate.user_id).filter(candidate => candidate.user_id !== currentUser?.userinfo?.userID)
+          }
         });
 
         setLoading(false);
