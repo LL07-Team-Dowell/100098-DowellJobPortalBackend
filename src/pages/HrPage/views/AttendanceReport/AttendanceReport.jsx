@@ -20,10 +20,11 @@ import { getAllEvents, getProjectWiseAttendance, getUserWiseAttendance } from ".
 import { formatDateForAPI } from "../../../../helpers/helpers";
 import { Tooltip } from "react-tooltip";
 import { addDays } from "date-fns";
+import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 
 const AttendanceReport = () => {
     const navigate = useNavigate();
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser, allApplications, userRemovalStatusChecked } = useCurrentUserContext();
     const [selectedUser, setSelectedUser] = useState([]);
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState("");
@@ -75,27 +76,23 @@ const AttendanceReport = () => {
         setDataLoading({ ...dataLoading, isUserLoading: true });
         setShowAttendaceReport(false);
         // currentUser?.portfolio_info[0].org_id
-        getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id).then(res => {
-            const onboardingCandidates = res?.data?.response?.data;
-            const hiredCandidates = onboardingCandidates.filter(candidate => candidate.status === 'hired');
-            setAllHiredCandidates(hiredCandidates);
-            const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
-                candidate.project && candidate.project.includes(selectedProject?.value)
-            );
 
-            const options = candidatesInSelectedProject.map(candidate => ({
-                // username: candidate.username,
-                value: candidate.username,
-                label: candidate.applicant,
-            }));
-            setCandidateOptions(options);
-            setUserForAttendance(options[0]?.label);
-            setDataLoading({ ...dataLoading, isUserLoading: false });
-        }).catch(err => {
-            setUserForAttendance("");
-            console.log('onboarded failed to load', err);
-        })
-    }, [selectedProject]);
+        if (!userRemovalStatusChecked) return;
+        const hiredCandidates = allApplications.filter(candidate => candidate.status === candidateStatuses.ONBOARDING);
+        setAllHiredCandidates(hiredCandidates);
+        const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
+            candidate.project && candidate.project.includes(selectedProject?.value)
+        );
+
+        const options = candidatesInSelectedProject.map(candidate => ({
+            // username: candidate.username,
+            value: candidate.username,
+            label: candidate.applicant,
+        }));
+        setCandidateOptions(options);
+        setUserForAttendance(options[0]?.label);
+        setDataLoading({ ...dataLoading, isUserLoading: false });
+    }, [selectedProject, userRemovalStatusChecked]);
 
     const handleChange = (selectedOptions) => {
         setSelectedUser(selectedOptions);
