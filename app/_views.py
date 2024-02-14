@@ -17,7 +17,6 @@ from .constant import *
 from .helper import (
     get_event_id,
     dowellconnection,
-    call_notification,
     save_image,
     set_finalize,
     update_number,
