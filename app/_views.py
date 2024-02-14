@@ -564,7 +564,7 @@ class Invoice_module(APIView):
                         "success": True,
                         "message": f"Payment processed successfully for {payment_month} {payment_year}. Inserted ID: {inserted_data['inserted_id']}",
                         "database_response": True,
-                        "response": response_data,
+                        "response": [inserted_data],
                     },
                     status=status.HTTP_200_OK,
                 )
