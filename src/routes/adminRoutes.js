@@ -5,7 +5,7 @@ import AdminDashboard from "../pages/AdminPage/views/AdminDashboard/AdminDashboa
 import AllApplicationsScreen from "../pages/AdminPage/views/AdminDashboard/views/AllApplicationsScreen/AllApplicationsScreen";
 import AdminUserScreen from "../pages/AdminPage/views/AdminUserScreen/AdminUserScreen";
 import AdminAgendaPage from "../pages/AdminPage/views/Agenda/AdminAgendaPage";
-import AgendaReport from "../pages/AdminPage/views/Agenda/AgendaReportPage/AgendaReport";
+import AdminAgendaReport from "../pages/AdminPage/views/Agenda/AgendaReportPage/AgendaReport";
 import CompanyStructurePage from "../pages/AdminPage/views/CompanyStructure/CompanyStructure";
 import EditJob from "../pages/AdminPage/views/EditJob/EditJob";
 import LandingPage from "../pages/AdminPage/views/Landingpage/LandingPage";
@@ -84,7 +84,7 @@ export const mainAdminRoutesInfo = [
   },
   {
     path: "/report/agenda-report",
-    component: AgendaReport,
+    component: AdminAgendaReport,
   },
   {
     path: "/report/team-report",
