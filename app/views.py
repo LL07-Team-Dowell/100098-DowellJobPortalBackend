@@ -8860,7 +8860,8 @@ class candidate_leave(APIView):
             "leave_start_date": leave_start_date,
             "leave_end_date": leave_end_date,
             "email": email,
-            "data_type":data_type
+            "data_type":data_type,
+            "Leave_Approval":False
         }
 
         query={
@@ -8921,10 +8922,11 @@ class candidate_leave(APIView):
 
     def candidate_leave_approve(self, request):
         user_id = request.GET.get("user_id")
+        leave_id = request.GET.get("leave_id")
         
         field = {"user_id": user_id}
 
-        serializer = leaveapproveserializers(data={"user_id":user_id})
+        serializer = leaveapproveserializers(data={"user_id":user_id,"leave_id":leave_id})
 
         if not serializer.is_valid():
             return Response(
@@ -8936,7 +8938,11 @@ class candidate_leave(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         update_field = {
-            "status": "Leave",
+            "status": "Leave"
+        }
+
+        update_datacube_field = {
+            "Leave_Approval": "True"
         }
         try:
             candidate_report = dowellconnection(
@@ -8948,8 +8954,16 @@ class candidate_leave(APIView):
                 "success":False,
                 "error":"dowell connection not responding"
             },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        
         res = json.loads(candidate_report)
+
+        try:
+            update_datacube=json.loads(datacube_data_update(API_KEY,LEAVE_DB,leave_report_collection,{"_id":leave_id},update_datacube_field))
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if res["isSuccess"]:
             return Response(

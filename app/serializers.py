@@ -725,10 +725,12 @@ class leaveapplyserializers(serializers.Serializer):
     data_type = serializers.ChoiceField(
         allow_null=False, required=False, allow_blank=False, choices=DATA_TYPE_CHOICE
     )
+    Leave_Approval=serializers.BooleanField(allow_null=False,default=False)
 
 
 class leaveapproveserializers(serializers.Serializer):
     user_id = serializers.CharField(allow_null=False)
+    leave_id = serializers.CharField(allow_null=False)
 
 
 class AddCollectionSerializer(serializers.Serializer):
