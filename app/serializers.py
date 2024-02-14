@@ -716,7 +716,7 @@ class leaveapplyserializers(serializers.Serializer):
     leave_start_date = serializers.DateField(allow_null=False)
     leave_end_date = serializers.DateField(allow_null=False)
     project = serializers.CharField(max_length=255, allow_null=False)
-    applicant_id = serializers.CharField(max_length=255, allow_null=False)
+    user_id = serializers.CharField(max_length=255, allow_null=False)
     applicant = serializers.CharField(max_length=255, allow_null=False)
     email = serializers.EmailField(allow_null=False)
     company_id = serializers.CharField(
@@ -728,9 +728,7 @@ class leaveapplyserializers(serializers.Serializer):
 
 
 class leaveapproveserializers(serializers.Serializer):
-    leave_start = serializers.DateField(allow_null=False)
-    leave_end = serializers.DateField(allow_null=False)
-    applicant_id = serializers.CharField(allow_null=False)
+    user_id = serializers.CharField(allow_null=False)
 
 
 class AddCollectionSerializer(serializers.Serializer):
