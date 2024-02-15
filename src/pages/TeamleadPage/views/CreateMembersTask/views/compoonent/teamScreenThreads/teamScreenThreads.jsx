@@ -855,7 +855,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                 <ReactTooltip
                                   id="inprogress"
                                   place="bottom"
-                                  content="Update Status Inprogress to Completed"
+                                  content="Update Status to In progress"
                                 />
                               </div>
                               <div className="progress">
@@ -894,7 +894,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                 <ReactTooltip
                                   id="completed"
                                   place="bottom"
-                                  content="Update Status Inprogress to Completed"
+                                  content="Update Status to Completed"
                                 />
                               </div>
                               <div className="progress">
@@ -925,7 +925,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                     }
                                     onClick={() =>
                                       toast.info(
-                                        "Wait for Assigned team to issue to update completed status"
+                                        "Wait for Assigned team to update completed status"
                                       )
                                     }
                                   ></div>
@@ -933,7 +933,7 @@ const TeamScreenThreads = ({ status, id }) => {
                                 <ReactTooltip
                                   id="resolved"
                                   place="bottom"
-                                  content="Update Status Completed to Resolve"
+                                  content="Update Status to Resolved"
                                 />
                               </div>
                             </div>
