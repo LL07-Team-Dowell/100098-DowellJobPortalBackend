@@ -6,6 +6,7 @@ import { FiSend } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { AiOutlinePlus } from "react-icons/ai";
 import { RiFileList3Line } from "react-icons/ri";
+import { LiaFileInvoiceSolid } from "react-icons/lia";
 
 export const afterSelectionLinks = [
   {
@@ -27,6 +28,11 @@ export const afterSelectionLinks = [
     text: "Teams",
     icon: <AiOutlineTeam />,
     linkAddress: "/teams",
+  },
+  {
+    text: "Invoice",
+    icon: <LiaFileInvoiceSolid />,
+    linkAddress: "/invoice",
   },
   // {
   //   text: "User",
