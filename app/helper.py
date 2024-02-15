@@ -821,6 +821,18 @@ def update_user_Report_data(api_key,db_name, report_uuid, user_id, task_date, up
             percentage_tasks_completed =0.0
             if task_added > 0:
                 percentage_tasks_completed = (task_completed/task_added)*100
+            task_approved = get_report['data'][0]['tasks_approved']
+            task_you_marked_as_complete = get_report['data'][0]['tasks_you_marked_as_complete']
+            tasks_you_marked_as_incomplete = get_report['data'][0]['tasks_you_marked_as_incomplete']
+            if 'tasks_approved' in update_data.keys() and task_approved < task_added:
+                task_approved+=1
+            if 'tasks_you_marked_as_incomplete' in update_data.keys() and task_approved< task_added:
+                tasks_you_marked_as_incomplete+=1
+            if 'tasks_you_marked_as_complete' in update_data.keys()  and task_approved < task_added:
+                task_you_marked_as_complete+=1
+                tasks_you_marked_as_incomplete -=1
+            
+
             
             team_tasks = get_report['data'][0]['team_tasks']+ (1 if 'team_tasks' in update_data.keys() else 0)
             team_tasks_completed = get_report['data'][0]['team_tasks_completed']
@@ -841,9 +853,9 @@ def update_user_Report_data(api_key,db_name, report_uuid, user_id, task_date, up
                 "tasks_uncompleted": task_uncompleted,
                 "tasks_approved": get_report['data'][0]['tasks_approved'] + (1 if 'tasks_approved' in update_data.keys() else 0),
                 "percentage_tasks_completed": percentage_tasks_completed,
-                "tasks_you_approved": get_report['data'][0]['tasks_you_approved'] + (1 if 'tasks_you_approved' in update_data.keys() else 0),
-                "tasks_you_marked_as_complete": get_report['data'][0]['tasks_you_marked_as_complete'] + (1 if 'tasks_you_marked_as_complete' in update_data.keys() else 0),
-                "tasks_you_marked_as_incomplete": get_report['data'][0]['tasks_you_marked_as_incomplete'] + (1 if 'tasks_you_marked_as_incomplete' in update_data.keys() else 0),
+                "tasks_you_approved": task_approved,
+                "tasks_you_marked_as_complete": task_you_marked_as_complete,
+                "tasks_you_marked_as_incomplete": tasks_you_marked_as_incomplete,
                 "teams": get_report['data'][0]['teams'] + (1 if 'teams' in update_data.keys() else 0),
                 "team_tasks": team_tasks,
                 "team_tasks_completed": team_tasks_completed,
