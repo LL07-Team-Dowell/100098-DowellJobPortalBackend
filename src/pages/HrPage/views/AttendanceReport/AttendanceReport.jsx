@@ -78,7 +78,7 @@ const AttendanceReport = () => {
         // currentUser?.portfolio_info[0].org_id
 
         if (!userRemovalStatusChecked) return;
-        const hiredCandidates = allApplications.filter(candidate => candidate.status === candidateStatuses.ONBOARDING);
+        const hiredCandidates = allApplications.filter(candidate => candidate.status === candidateStatuses.ONBOARDING || candidate.status === candidateStatuses.RENEWCONTRACT);
         setAllHiredCandidates(hiredCandidates);
         const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
             candidate.project && candidate.project.includes(selectedProject?.value)
@@ -493,7 +493,7 @@ const AttendanceReport = () => {
                     {
                         views.multiProjectView &&
                         <div className="item__Filter__Wrap">
-                            <p>Select Project:</p>
+                            <p>Select Project(s):</p>
                             <Select
                                 options={projects}
                                 isMulti={true}
@@ -530,7 +530,7 @@ const AttendanceReport = () => {
                             {
                                 views.multiProjectView ? <></> :
                                     <div className="item__Filter__Wrap">
-                                        <p>Select User:</p>
+                                        <p>Select User(s):</p>
                                         <Select
                                             options={candidateOptions}
                                             isMulti={true}
