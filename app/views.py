@@ -11107,7 +11107,13 @@ class Company_Structure(APIView):
         company_id = request.data.get("company_id")
         team_lead = request.data.get("team_lead")
         teamlead_reports_to = []
-        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{},10,0,False))
+        res_projects = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"projects",{'company_id':company_id},10,0,False))
+        if not (res_projects['success'] == True and len(res_projects['data']) >=1) :
+            return Response({
+                "success":False,
+                "message":f"No date to update for this '{project}'"
+            },status=status.HTTP_404_NOT_FOUND)
+        res_proj = json.loads(datacube_data_retrival_function(API_KEY,COMPANY_STRUCTURE_DB_NAME,"project_leads",{'company_id':company_id},10,0,False))
         #print(res_proj, "===============",len(res_proj['data']))
         if res_proj['success'] == True and len(res_proj['data']) >=1 :
             for project_leads in res_proj['data']:
@@ -11118,7 +11124,9 @@ class Company_Structure(APIView):
         group_leads = request.data.get("group_leads")
         members = request.data.get("members")
         _m =[]
-        update_data = {"teamlead_reports_to": teamlead_reports_to[-1]}
+        update_data ={}
+        if len(teamlead_reports_to)>=1:
+            update_data["teamlead_reports_to"]= teamlead_reports_to[-1]
         if members:
             _m += members
         if group_leads:
@@ -11158,8 +11166,7 @@ class Company_Structure(APIView):
             return Response(update_collection,status=status.HTTP_200_OK)
         else:
             del update_collection['data']
-            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)    
-
+            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)      
     def get(self,requests, company_id):
         data={}
         search_query ={  
