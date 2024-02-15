@@ -1,7 +1,7 @@
 import json
 import requests
 import datetime
-import threading
+import threading, multiprocessing
 import calendar
 from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
@@ -2489,6 +2489,7 @@ class approve_task(APIView):
     def approvable(self,field):
         update_field = {}
         response = json.loads(dowellconnection(*task_details_module, "fetch", field, update_field))
+        print(response["data"])
         if response["isSuccess"] is False or len(response["data"]) == 0:
             return False, 'No task is found','', 
         user_id =''
@@ -2506,7 +2507,7 @@ class approve_task(APIView):
             try:
                 max_updated_dates = [
                     datetime.strptime(set_date_format(item["max_updated_date"]), "%m/%d/%Y %H:%M:%S")
-                    for item in response["data"]
+                    for item in response["data"] if "max_updated_date" in item.keys()
                 ]
                 task_created_date= json.loads(response)["data"][0]["task_created_date"]
                 user_id = response["data"][0]["user_id"]
@@ -2521,22 +2522,13 @@ class approve_task(APIView):
                     {"_id": field['_id']},
                     {"max_updated_date": max_updated_date},
                 )
-                # print("response:", res)
-                
-                max_updated_dates = [
-                    datetime.strptime(set_date_format(item["max_updated_date"]), "%m/%d/%Y %H:%M:%S")
-                    for item in response["data"]
-                ]
-                
-
-            if len(max_updated_dates) >= 1:
-                max_updated_date = max(max_updated_dates)
-                if current_date <= max_updated_date:
-                    return True,task_created_date,user_id
-                else:
-                    return False,"Task approval unsuccessful. The 2-weeks approval window has elapsed.",user_id
-            else:
+            
+            max_updated_date= datetime.strptime(max_updated_date, "%m/%d/%Y %H:%M:%S")
+            if current_date <= max_updated_date:
                 return True,task_created_date,user_id
+            else:
+                return False,"Task approval unsuccessful. The 2-weeks approval window has elapsed.",user_id
+            
 
         return False,"Task approval unsuccessful. The 2-weeks approval window has elapsed.",user_id
 
@@ -2592,28 +2584,13 @@ class approve_task(APIView):
 
                         update_response_thread_two.start()
 
-                        update_response_thread_two.join()
-                        update_response_thread.join()
-
-                        if (not update_response_thread.is_alive()
-                            and not update_response_thread_two.is_alive() ):
-
-                                return Response(
-                                    {
-                                        'success': True,
-                                        "message": "Task approved successfully",
-                                        "response": [],
-                                    },
-                                    status=status.HTTP_200_OK,
-                                )
-                        else:
-                            return Response(
+                        return Response(
                                 {
-                                    'success': False,
-                                    "message": "Task approval unsuccessful. Task approval failed",
-                                    "response": u_r,
+                                    'success': True,
+                                    "message": "Task approved successfully",
+                                    "response": [],
                                 },
-                                status=status.HTTP_204_NO_CONTENT,
+                                status=status.HTTP_200_OK,
                             )
                     else:
                         return Response(
@@ -2811,41 +2788,24 @@ class task_module(APIView):
                     args=('none'))
 
                 update_response_thread.start()
-                create_response_thread.join()
-                update_response_thread.join()
 
                 error = ''
-                if (not create_response_thread.is_alive()
-                    and not update_response_thread.is_alive() ):
-
+                if (not create_response_thread.is_alive()):
                     if t_r[0]["isSuccess"] == True:
-                        if u_r[0]["success"] == True:
-                            field["_id"]=t_r[0]["inserted_id"]
+                        field["_id"]=t_r[0]["inserted_id"]
                     
-                            return Response(
-                                {
-                                    "success": True,
-                                    "message": "Task added successfully",
-                                    "response": field,
-                                },
-                                status.HTTP_201_CREATED,
-                            )
-                        else:
-                            error = u_r[0]
-                            return Response(
-                                {
-                                    "message": "Task failed to be created",
-                                    "response": error,
-                                },
-                                status=status.HTTP_400_BAD_REQUEST,
-                            )
+                        return Response(
+                            {
+                                "success": True,
+                                "message": "Task added successfully",
+                                "response": field,
+                            },
+                            status.HTTP_201_CREATED,
+                        )
                     else:
                         error = t_r[0]
                         return Response(
-                            {
-                                "message": "Task failed to be created",
-                                "response": error,
-                            },
+                            error,
                             status=status.HTTP_304_NOT_MODIFIED,
                         )
             
@@ -3402,7 +3362,6 @@ class create_team(APIView):
                 if "team_management_report" in args:
                     t_r.append(json.loads(d))
             def call_update_report(*args):
-                
                 for user_id in field["members"]:
                     update_data = {
                         'teams': True,
@@ -3457,15 +3416,6 @@ class create_team(APIView):
                         },
                         status=status.HTTP_304_NOT_MODIFIED,
                     )
-            else:
-                return Response(
-                        {"message": "Operation failed"},
-                        status=status.HTTP_304_NOT_MODIFIED,
-                    )
-        return Response(
-            {"message": "Parameters are not valid"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
 
 @method_decorator(csrf_exempt, name="dispatch")
 class get_team(APIView):
