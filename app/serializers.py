@@ -528,7 +528,6 @@ class githubinfoserializer(serializers.Serializer):
 
 class TaskApprovedBySerializer(serializers.Serializer):
     task_approved_by = serializers.CharField(allow_null=False, allow_blank=False)
-    user_id = serializers.CharField(allow_null=False, allow_blank=False)
 
 
 class ProjectDeadlineSerializer(serializers.Serializer):

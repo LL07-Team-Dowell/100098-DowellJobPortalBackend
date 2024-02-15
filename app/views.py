@@ -2465,6 +2465,7 @@ class approve_task(APIView):
         # print(len(json.loads(info)["data"]),"==========")
         if len(json.loads(info)["data"]) > 0:
             username = json.loads(info)["data"][0]["username"]
+            user_id = json.loads(info)["data"][0]["user_id"]
             portfolio_name = [
                 names["portfolio_name"] for names in json.loads(info)["data"] if "portfolio_name" in names.keys()
             ]
@@ -2481,10 +2482,10 @@ class approve_task(APIView):
                                 valid_profiles.append(d["profile_title"])
             if len(valid_profiles) > 0:
                 if valid_profiles[-1] in portfolio_name:
-                    return True
+                    return True,user_id
                 else:
-                    return False
-        return False
+                    return False,''
+        return False,''
 
     def approvable(self,field):
         update_field = {}
@@ -2540,22 +2541,21 @@ class approve_task(APIView):
 
         return False,"Task approval unsuccessful. The 2-weeks approval window has elapsed.",user_id
 
-    @verify_user_token
-    def patch(self, request, user):
+    #@verify_user_token
+    def patch(self, request):
         data = request.data
         # print(data)
         if data:
             field = {"_id": data.get("document_id")}
             update_field = {
                 "status": "completed",
-                "task_approved_by": data.get("lead_username"),
-                'user_id': data.get('user_id'),
+                "task_approved_by": data.get("lead_username")
             }
             serializer = TaskApprovedBySerializer(data=update_field)
             if serializer.is_valid():
                 check_approvable, task_created_date, user_id = self.approvable(field)
                 if check_approvable is True:
-                    validate_teamlead = self.valid_teamlead(data.get("lead_username"))
+                    validate_teamlead, lead_user_id = self.valid_teamlead(data.get("lead_username"))
                     if validate_teamlead is False:
                         return Response(
                             {
@@ -2577,7 +2577,7 @@ class approve_task(APIView):
 
                         update_response_thread = threading.Thread(
                             target=call_update_report,
-                            args=(API_KEY,REPORT_DB_NAME, REPORT_UUID, data.get("user_id"), task_created_date, {
+                            args=(API_KEY,REPORT_DB_NAME, REPORT_UUID, lead_user_id, task_created_date, {
                                                         'tasks_completed':True,
                                                         'tasks_approved':True
                                                         }))
@@ -2601,14 +2601,16 @@ class approve_task(APIView):
 
                                 return Response(
                                     {
+                                        'success': True,
                                         "message": "Task approved successfully",
-                                        "response": json.loads(response),
+                                        "response": [],
                                     },
                                     status=status.HTTP_200_OK,
                                 )
                         else:
                             return Response(
                                 {
+                                    'success': False,
                                     "message": "Task approval unsuccessful. Task approval failed",
                                     "response": u_r,
                                 },
@@ -2617,6 +2619,7 @@ class approve_task(APIView):
                     else:
                         return Response(
                             {
+                                'success': False,
                                 "message": "Task failed to be approved",
                                 "response": json.loads(response),
                             },
@@ -2625,6 +2628,7 @@ class approve_task(APIView):
                 else:
                     return Response(
                         {
+                            'success': False,
                             "message": task_created_date
                         },
                         status=status.HTTP_400_BAD_REQUEST,
@@ -2632,14 +2636,16 @@ class approve_task(APIView):
             else:
                 return Response(
                     {
-                        "message": "Task approval unsuccessful. task_approved_by is required"
+                        
+                        'success': False,
+                        "message": serializer.errors
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
         else:
             return Response(
-                {"message": "Parameters are not valid"},
+                {'success': False,"message": "Parameters are not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
