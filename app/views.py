@@ -2464,8 +2464,7 @@ class approve_task(APIView):
         )
         # print(len(json.loads(info)["data"]),"==========")
         if len(json.loads(info)["data"]) > 0:
-            username = json.loads(info)["data"][0]["username"]
-            user_id = json.loads(info)["data"][0]["user_id"]
+            user_id = [users['user_id'] for users in json.loads(info)["data"] if "user_id" in users.keys()][0]
             portfolio_name = [
                 names["portfolio_name"] for names in json.loads(info)["data"] if "portfolio_name" in names.keys()
             ]
