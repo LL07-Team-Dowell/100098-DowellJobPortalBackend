@@ -9094,12 +9094,15 @@ class candidate_leave(APIView):
         elif type_request == "get_all_leave_application":
             return self.get_all_leave_application(request)    
         elif type_request == "applicants_on_leave":
-            return self.applicants_on_leave(request)     
+            return self.applicants_on_leave(request) 
+        elif type_request == "get_user_leave":
+            return self.get_user_leave(request)     
+          
         else:
             return self.handle_error(request)
 
     def leave_apply(self, request):
-        applicant_id = request.data.get("applicant_id")
+        user_id = request.data.get("user_id")
         applicant = request.data.get("applicant")
         company_id = request.data.get("company_id")
         project = request.data.get("project")
@@ -9109,18 +9112,19 @@ class candidate_leave(APIView):
         data_type=request.data.get("data_type")
 
         field = {
-            "applicant_id": applicant_id,
+            "user_id": user_id,
             "applicant": applicant,
             "company_id": company_id,
             "project": project,
             "leave_start_date": leave_start_date,
             "leave_end_date": leave_end_date,
             "email": email,
-            "data_type":data_type
+            "data_type":data_type,
+            "Leave_Approval":False
         }
 
         query={
-            "applicant_id":applicant_id,
+            "user_id":user_id,
             "leave_start_date":leave_start_date,
             "leave_end_date":leave_end_date,
             "data_type":data_type
@@ -9176,16 +9180,12 @@ class candidate_leave(APIView):
         )
 
     def candidate_leave_approve(self, request):
-        applicant_id = request.GET.get("applicant_id")
+        user_id = request.GET.get("user_id")
+        leave_id = request.GET.get("leave_id")
         
-        field = {"_id": applicant_id}
+        field = {"user_id": user_id}
 
-        data={
-            "applicant_id":applicant_id,
-            "leave_start": request.data.get("leave_start"),
-            "leave_end": request.data.get("leave_end")
-        }
-        serializer = leaveapproveserializers(data=data)
+        serializer = leaveapproveserializers(data={"user_id":user_id,"leave_id":leave_id})
 
         if not serializer.is_valid():
             return Response(
@@ -9197,9 +9197,11 @@ class candidate_leave(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         update_field = {
-            "leave_start": request.data.get("leave_start"),
-            "leave_end": request.data.get("leave_end"),
-            "status": "Leave",
+            "status": "Leave"
+        }
+
+        update_datacube_field = {
+            "Leave_Approval": "True"
         }
         try:
             candidate_report = dowellconnection(
@@ -9211,8 +9213,16 @@ class candidate_leave(APIView):
                 "success":False,
                 "error":"dowell connection not responding"
             },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        
         res = json.loads(candidate_report)
+
+        try:
+            update_datacube=json.loads(datacube_data_update(API_KEY,LEAVE_DB,leave_report_collection,{"_id":leave_id},update_datacube_field))
+        except:
+            return Response({
+                "success":False,
+                "error":"Datacube is not responding"
+            },status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if res["isSuccess"]:
             return Response(
@@ -9333,6 +9343,38 @@ class candidate_leave(APIView):
                         "message": "No candidates found on leave",
                     },status=status.HTTP_204_NO_CONTENT
                 )
+            
+    def get_user_leave(self, request):
+        user_id = request.GET.get('user_id')
+        limit = request.GET.get('limit')
+        offset = request.GET.get('offset')
+
+        data = {
+            "user_id": user_id,
+        }
+
+        response = json.loads(datacube_data_retrival_function(API_KEY, LEAVE_DB, leave_report_collection, data=data, limit=limit, offset=offset, payment=False))
+
+        if not response["success"]:
+            return Response({
+                "success": False,
+                "message": "Failed to retrieve leave",
+                "database_response": {
+                    "success": response["success"],
+                    "message": response["message"]
+                }
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({
+            "success": True,
+            "message": "Leave retrieved successfully",
+            "database_response": {
+                "success": response["success"],
+                "message": response["message"]
+            },
+            "response": response["data"]
+        }, status=status.HTTP_200_OK)
+
 
     def handle_error(self, request):
         return Response(
@@ -10125,31 +10167,6 @@ class candidate_attendance(APIView):
             "_id":event_id
         }
 
-        try:
-            check_data = json.loads(
-                datacube_data_retrival(
-                    API_KEY,
-                    ATTENDANCE_DB,
-                    Events_collection,
-                    data=query,
-                    limit=0,
-                    offset=0,
-                )
-            )
-            
-        except:
-            return Response({"success": False, "error": "Datacube is not responding"})
-        
- 
-        if not len(check_data["data"])>0:   #here we check if the event_id exist or not 
-            return Response({
-                "success":False,
-                "error":"Event does not exist"
-            })
-
-        
-        event=check_data["data"][0]["event_name"]
-
         data = {
             "user_present": user_present,
             "user_absent": user_absent,
@@ -10185,12 +10202,14 @@ class candidate_attendance(APIView):
             return Response(
                 {
                     "success": False,
-                    "error": f"attendance of the date {date_taken} for the event {event} and project {project} already recorded ",
+                    "error": f"attendance of the date {date_taken} for the event {event_id} and project {project} already recorded ",
                 },
                 status=status.HTTP_409_CONFLICT,
             )
+        
+        
 
-        def insert_data(attempt=1):  
+        def insert_data(attempt=1):
             try:
                 insert_attendance = json.loads(
                     datacube_data_insertion(API_KEY, ATTENDANCE_DB, collection, data)
@@ -10198,35 +10217,34 @@ class candidate_attendance(APIView):
             except Exception as e:
                 return Response({
                     "success": False,
-                    "error": "Datacube is not responding"
+                    "error": f"Failed to insert attendance: {str(e)}"
                 })
+
             if insert_attendance["success"]:
                 return Response({
                     "success": True,
-                    "inserted_id":insert_attendance["data"]["inserted_id"],
+                    "inserted_id": insert_attendance["data"]["inserted_id"],
                     "message": f"Attendance has been successfully recorded to {collection}"
                 }, status=status.HTTP_201_CREATED)
-            
-            elif not insert_attendance["success"] and attempt < self.max_try:  # After the validation of datacube, if the data is not inserted we will consider there is no collection in the DB so we try to create a colection and again try to insert the data
-                    add_collection = json.loads(datacube_add_collection(API_KEY, ATTENDANCE_DB, collection, num_collections=1))
-
-                    if add_collection["success"]:
-                        attempt += 1
-                        return insert_data(attempt=attempt)
-                    
-                    else:
-                        return Response({
-                            "success": False,
-                            "error": "Failed to add cllection in datacube"
-                        })
+            elif attempt < self.max_try:
+                # Retry logic
+                add_collection = json.loads(datacube_add_collection(API_KEY, ATTENDANCE_DB, collection, num_collections=1))
+                if add_collection["success"]:
+                    return insert_data(attempt=attempt + 1)
+                else:
+                    return Response({
+                        "success": False,
+                        "error": "Failed to add collection in datacube"
+                    })
             else:
                 return Response({
                     "success": False,
-                    "error": "Attendance could not be recored due to unknown error"
-                },status=status.HTTP_404_NOT_FOUND)
+                    "error": "Attendance could not be recorded after multiple attempts"
+                }, status=status.HTTP_404_NOT_FOUND)
+            
 
         return insert_data()
-    
+
     def get_project_wise_attendance(self, request):
         start_date = request.data.get("start_date")
         end_date = request.data.get("end_date")
@@ -11154,8 +11172,7 @@ class Company_Structure(APIView):
             return Response(update_collection,status=status.HTTP_200_OK)
         else:
             del update_collection['data']
-            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)    
-
+            return Response(update_collection,status=status.HTTP_400_BAD_REQUEST)      
     def get(self,requests, company_id):
         data={}
         search_query ={  
@@ -11230,13 +11247,23 @@ class DowellEvents(APIView):
             "project":data.get("project")
         }
 
-        check_field = {
+        if field["project"]:
+
+            check_field = {
                 "event_name": data.get("event_name"),
                 "event_type": data.get("event_type"),
                 "event_host": data.get("event_host"),
+                "project":data.get("project")
+            }           
+        
+        else:
+            check_field = {
+                "event_name": data.get("event_name"),
+                "event_type": data.get("event_type"),
+                "event_host": data.get("event_host"),
+                
             }
-        if field["project"]:
-            check_field["project"] = data.get("project")
+
 
         serializer = AddEventSerializer(data=request.data)
 
