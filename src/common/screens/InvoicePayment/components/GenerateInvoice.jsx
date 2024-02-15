@@ -13,6 +13,8 @@ import {
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import { formatDateForAPI } from "../../../../helpers/helpers";
 import HorizontalBarLoader from "../../../../components/HorizontalBarLoader/HorizontalBarLoader";
+import { TbCopy } from "react-icons/tb";
+import { PiArrowElbowRightThin } from "react-icons/pi";
 
 const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
   const [dataProcessing, setDataProcessing] = useState(false);
@@ -20,6 +22,9 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const { currentUser } = useCurrentUserContext();
+  const [showMasterLink, setShowMasterLink] = useState("");
+  const [showMasterCode, setShowMasterCode] = useState("");
+  const [copied, setCopiedId] = useState("");
 
   const [dataForProcess, setDataForProcess] = useState({
     payment_month: "",
@@ -84,23 +89,19 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
           accounts_portfolio: "DummyAC_Portfolio",
         };
 
-        const fetchProcessPaymentDetails = async () => {
-          try {
-            const res = await Promise.all([
-              processPayment(dataForInvoice),
-              workFlowdetails(dataForWorkflow),
-            ]);
+        Promise.all([
+          processPayment(dataForInvoice),
+          workFlowdetails(dataForWorkflow),
+        ]).then((res) => {
+          const masterQrCodeDetails = res[1]?.data?.created_process.master_code;
+          const masterLinkDetails = res[1]?.data?.created_process.master_link;
 
-            console.log(res[0]);
-            console.log(res[1]);
-          } catch (err) {
-            console.log(err);
-          }
-        };
+          setShowMasterCode(masterQrCodeDetails);
+          setShowMasterLink(masterLinkDetails);
 
-        fetchProcessPaymentDetails();
-        setDataProcessing(false);
-        setShowInvoicePage(true);
+          setDataProcessing(false);
+          setShowInvoicePage(true);
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -121,7 +122,38 @@ const GenerateInvoice = ({ handleCloseModal, requiredLogCount }) => {
           <div className={styles.invoice_popup_details}>
             {showInvoicePage ? (
               <>
-                <h2>Invoice page</h2>
+                <h2>Invoice Details</h2>
+                <div className={styles.master_link_container}>
+                  <div className={styles.master_link_img}>
+                    <img src={showMasterCode} alt="master code" />
+                  </div>
+                </div>
+                <div className={styles.master_link_container}>
+                  <span>Master Link</span>
+                  <div>
+                    <button
+                      className={styles.master_link_btn}
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(showMasterLink);
+
+                        setCopiedId("write-text");
+                      }}
+                    >
+                      {copied === "write-text" ? (
+                        <>
+                          <PiArrowElbowRightThin /> Copied
+                        </>
+                      ) : (
+                        <TbCopy />
+                      )}
+                    </button>
+                    <input
+                      type="text"
+                      value={showMasterLink}
+                      className={styles.master_link_input}
+                    />
+                  </div>
+                </div>
               </>
             ) : (
               <>

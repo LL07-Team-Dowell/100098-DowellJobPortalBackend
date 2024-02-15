@@ -79,6 +79,40 @@
   width: 65%;
 }
 
+.master_link_container {
+  position: relative;
+}
+
+.master_link_img {
+  width: 50%;
+}
+
+.master_link_btn {
+  position: absolute;
+  background: none;
+  border: 1px solid #ccc;
+  right: 0;
+  top: -0.2rem;
+  cursor: pointer;
+}
+
+.master_link_btn:hover {
+  color: #005734;
+}
+
+.master_link_input {
+  width: 100%;
+  background-color: #ccc;
+  outline: none;
+  border: none;
+  border: 1px solid #005734;
+  font-family: "Poppins", sans-serif;
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  display: block;
+  cursor: pointer;
+}
+
 .process_btn {
   display: flex;
   justify-content: center;
