@@ -254,6 +254,7 @@ class Invoice_module(APIView):
         user_id = request.data.get("user_id")
         company_id = request.data.get("company_id")
         weekly_payment_amount = request.data.get("weekly_payment_amount")
+        payment_method = request.data.get("payment_method")
         payment_currency = request.data.get("currency")
 
         if not (user_id and company_id and weekly_payment_amount and payment_currency):
@@ -307,6 +308,7 @@ class Invoice_module(APIView):
                     "db_record_type": "payment_record",
                     "previous_weekly_amounts": [],
                     "last_payment_date": "",
+                    "payment_method": payment_method,
                 }
                 response = datacube_data_insertion(
                     api_key=API_KEY,
@@ -338,6 +340,7 @@ class Invoice_module(APIView):
         user_id = request.data.get("user_id")
         company_id = request.data.get("company_id")
         weekly_payment_amount = request.data.get("weekly_payment_amount")
+        payment_method = request.data.get("payment_method")
         payment_currency = request.data.get("currency")
 
         if not (user_id and company_id and weekly_payment_amount and payment_currency):
@@ -381,6 +384,7 @@ class Invoice_module(APIView):
                 "company_id": company_id,
                 "weekly_payment_amount": weekly_payment_amount,
                 "payment_currency": payment_currency,
+                "payment_method": payment_method,
                 "db_record_type": "payment_record",
                 "previous_weekly_amounts": previous_weekly_amounts,
                 "last_payment_date": "",
