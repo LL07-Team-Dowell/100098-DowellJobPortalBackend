@@ -83,6 +83,7 @@
 .public__Modal p {
   font-size: 0.9rem;
   text-align: center;
+  white-space: pre-line;
 }
 
 .icon {

@@ -86,7 +86,11 @@ const AdminDashboard = ({ subAdminView }) => {
         totalWorklogCountInOrgLoaded,
         setTotalWorklogCountInOrgLoaded,
     } = useJobContext();
-    const { currentUser } = useCurrentUserContext();
+    const { 
+        currentUser,
+        allApplications,
+        userRemovalStatusChecked,
+    } = useCurrentUserContext();
     const navigate = useNavigate();
     const [ greeting, setGreeting ] = useState('');
     const defaultLogOverviewDataFilter = 'select';
@@ -102,8 +106,6 @@ const AdminDashboard = ({ subAdminView }) => {
         setSubProjectsLoading,
         setSubProjectsLoaded,
         setSubProjectsAdded,
-        setApplications,
-        setApplicationsLoaded,
         setJobs,
         setDashboardDataLoaded,
     )
@@ -128,6 +130,14 @@ const AdminDashboard = ({ subAdminView }) => {
         setGreeting("Good evening");
 
     }, [])
+
+    useEffect(() => {
+        if (!applicationsLoaded) {
+            if (!userRemovalStatusChecked) return;
+            setApplications(allApplications);
+            setApplicationsLoaded(true);
+        }
+    }, [userRemovalStatusChecked, allApplications])
     
     const handleLoadTotalLogCount = async () => {
         if (totalWorklogCountInOrgLoading) return

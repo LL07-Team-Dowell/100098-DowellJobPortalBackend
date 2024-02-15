@@ -8,7 +8,7 @@ import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import LoadingSpinner from "../../../../components/LoadingSpinner/LoadingSpinner";
 import { getSettingUserProfileInfo, configureSettingUserProfileInfo } from "../../../../services/settingServices";
 import { useJobContext } from "../../../../contexts/Jobs";
-import { adminAddNewSettingProfile, getApplicationForAdmin } from "../../../../services/adminServices";
+import { adminAddNewSettingProfile } from "../../../../services/adminServices";
 import { candidateStatuses } from "../../../CandidatePage/utils/candidateStatuses";
 import { testingRoles } from "../../../../utils/testingRoles";
 import { MdArrowBackIos, MdOutlineArrowForwardIos } from "react-icons/md";
@@ -43,7 +43,12 @@ export const rolesNamesDict = {
 }
 
 const AdminSettings = () => {
-  const { currentUser, setCurrentUser } = useCurrentUserContext();
+  const { 
+    currentUser, 
+    setCurrentUser,
+    allApplications,
+    userRemovalStatusChecked,
+  } = useCurrentUserContext();
   console.log({ CURRENTUSER: currentUser })
   const [firstSelection, setFirstSelection] = useState("");
   const [secondSelection, setSecondSelection] = useState("");
@@ -249,13 +254,10 @@ const AdminSettings = () => {
     })
 
     if (list?.length < 1) {
-      getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
-        .then(resp => {
-          setlist(resp.data.response.data?.filter(j => currentUser.portfolio_info[0].data_type === j.data_type));
-        })
-        .catch(err => console.log(err))
+      if (!userRemovalStatusChecked) return
+      setlist(allApplications);  
     }
-  }, [])
+  }, [userRemovalStatusChecked])
 
   const submit = () => {
     const { org_id, org_name, data_type, owner_name } = options1[0];

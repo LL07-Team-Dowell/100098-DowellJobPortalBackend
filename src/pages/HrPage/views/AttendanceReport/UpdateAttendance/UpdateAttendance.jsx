@@ -19,10 +19,11 @@ import { addAttendance } from "../../../../../services/hrServices";
 import { toast } from "react-toastify";
 import Select from "react-select";
 import { Tooltip } from "react-tooltip";
+import { candidateStatuses } from "../../../../CandidatePage/utils/candidateStatuses";
 
 const AttendanceUpdatePage = () => {
     const navigate = useNavigate();
-    const { currentUser } = useCurrentUserContext();
+    const { currentUser, allApplications, userRemovalStatusChecked } = useCurrentUserContext();
     const [projects, setProjects] = useState([]);
     const [selectedProject, setSelectedProject] = useState('');
     const [usersInSelectedProject, setUsersInSelectedProject] = useState([]);
@@ -108,28 +109,47 @@ const AttendanceUpdatePage = () => {
         setUsersInSelectedProject([]);
         setUsersPresent([]);
         // currentUser?.portfolio_info[0].org_id
-        getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id).then(res => {
-            const onboardingCandidates = res?.data?.response?.data;
-            const hiredCandidates = onboardingCandidates.filter(candidate => candidate.status === 'hired');
 
-            const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
-                candidate.project && candidate.project.includes(selectedProject?.value)
-            );
+        if (!userRemovalStatusChecked) return;
+        const hiredCandidates = allApplications.filter(candidate => candidate.status === candidateStatuses.ONBOARDING);
 
-            const options = candidatesInSelectedProject.map(candidate => candidate.applicant);
-            const optionsUsername = candidatesInSelectedProject.map(candidate => candidate.username);
-            console.log('user names', optionsUsername);
-            setUsersInSelectedProject(options);
-            setUserNames(optionsUsername);
-            if (selectedEvent.value === true) {
-                setUsersAbsent(optionsUsername);
-            }
-            setIsLoading(false);
-        }).catch(err => {
-            console.log('onboarded failed to load');
-            setIsLoading(false);
-        })
-    }, [selectedProject]);
+        const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
+            candidate.project && candidate.project.includes(selectedProject?.value)
+        );
+
+        const options = candidatesInSelectedProject.map(candidate => candidate.applicant);
+        const optionsUsername = candidatesInSelectedProject.map(candidate => candidate.username);
+
+        // console.log('user names', optionsUsername);
+        setUsersInSelectedProject(options);
+        setUserNames(optionsUsername);
+        if (selectedEvent.value === true) {
+            setUsersAbsent(optionsUsername);
+        }
+        setIsLoading(false);
+
+        // getAllOnBoardedCandidate(currentUser?.portfolio_info[0].org_id).then(res => {
+        //     const onboardingCandidates = res?.data?.response?.data;
+        //     const hiredCandidates = onboardingCandidates.filter(candidate => candidate.status === 'hired');
+
+        //     const candidatesInSelectedProject = hiredCandidates.filter(candidate =>
+        //         candidate.project && candidate.project.includes(selectedProject?.value)
+        //     );
+
+        //     const options = candidatesInSelectedProject.map(candidate => candidate.applicant);
+        //     const optionsUsername = candidatesInSelectedProject.map(candidate => candidate.username);
+        //     console.log('user names', optionsUsername);
+        //     setUsersInSelectedProject(options);
+        //     setUserNames(optionsUsername);
+        //     if (selectedEvent.value === true) {
+        //         setUsersAbsent(optionsUsername);
+        //     }
+        //     setIsLoading(false);
+        // }).catch(err => {
+        //     console.log('onboarded failed to load');
+        //     setIsLoading(false);
+        // })
+    }, [selectedProject, userRemovalStatusChecked]);
 
     const handleProjectChange = async (event) => {
         setSelectedProject(event);

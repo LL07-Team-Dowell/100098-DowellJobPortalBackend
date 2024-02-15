@@ -79,16 +79,18 @@ const Payment = () => {
       return toast.warn('Please select user(s)!');
     }
     setLoading({ ...Loading, isLoading: true });
+
     try {
       const promises = selectedUsers.map(async (user) => {
-        const dataToPost = {
-          "user_id": user.value,
-          "company_id": currentUser?.portfolio_info[0]?.org_id
-        };
-        return getPaymentRecord(dataToPost);
+        // const dataToPost = {
+        //   "user_id": user.value,
+        //   // "company_id": currentUser?.portfolio_info[0]?.org_id
+        // };
+        return getPaymentRecord(user.value);
       });
 
       const record = await Promise.all(promises);
+      console.log('record>>>>>>>', record);
       if (record.length > 0) {
         setPaymentRecord(record);
         toast.success('Payment record(s) retrieved successfully!');
@@ -135,6 +137,7 @@ const Payment = () => {
     setAddEditModal(false);
   }
 
+  // ...........
   const closeUpdateModal = () => {
     // clearAllFields();
     // setPaymentRecord([]);
@@ -290,9 +293,9 @@ const Payment = () => {
 
   const handleEditClick = (index) => {
     setShowUpdateModal(true);
-    settingUserForUpdatingRecord(paymentRecord[index].data.data.user_id);
-    setWeeklyPay(paymentRecord[index].data.data.weekly_payment_amount);
-    setSelectedCurrency({ label: paymentRecord[index].data.data.payment_currency, value: paymentRecord[index].data.data.payment_currency })
+    settingUserForUpdatingRecord(paymentRecord[index].data.response.user_id);
+    setWeeklyPay(paymentRecord[index].data.response.weekly_payment_amount);
+    setSelectedCurrency({ label: paymentRecord[index].data.response.payment_currency, value: paymentRecord[index].data.response.payment_currency })
   }
 
   const handleUpdateRecordButtonClick = async () => {
@@ -300,7 +303,7 @@ const Payment = () => {
     setLoading({ ...Loading, isUpdateRecordLoading: true });
     const dataToPost = {
       "company_id": currentUser?.portfolio_info[0]?.org_id,
-      "username": userNotFound.value,
+      "user_id": userNotFound.value,
       "weekly_payment_amount": weeklyPay,
       "currency": selectedCurrency.value,
     }
@@ -308,13 +311,13 @@ const Payment = () => {
     await updatePaymentRecord(dataToPost).then(() => {
       toast.success('Record Updated Successfully!');
       setShowUpdateModal(false);
-      setSelectedUsers([]);
+      // setSelectedUsers([]);
       setPaymentRecord([]);
     }).catch(() => {
       toast.error('Unable to Update Record. Please try again!');
     })
     setLoading({ ...Loading, isUpdateRecordLoading: false });
-    clearAllFields();
+    // clearAllFields();
   }
 
   return (
@@ -367,14 +370,14 @@ const Payment = () => {
                 paymentRecord.map((record, index) => (
                   <tr key={index}>
                     <td>
-                      {selectedUsers.find(user => user.value === record?.data?.data?.user_id)?.label || ''}
+                      {selectedUsers.find(user => user.value === record?.data?.response?.user_id)?.label || ''}
                     </td>
-                    <td>{record?.data?.data?.weekly_payment_amount}</td>
-                    <td>{record?.data?.data?.payment_currency}</td>
+                    <td>{record?.data?.response?.weekly_payment_amount}</td>
+                    <td>{record?.data?.response?.payment_currency}</td>
                     <td>
-                      {record?.data?.data?.previous_weekly_amounts && record.data.data.previous_weekly_amounts.length > 0 ? record.data.data.previous_weekly_amounts.join(', ') : '-'}
+                      {record?.data?.response?.previous_weekly_amounts && record?.data?.response?.previous_weekly_amounts.length > 0 ? record?.data?.response?.previous_weekly_amounts.join(', ') : '-'}
                     </td>
-                    <td>{record?.data?.data?.last_payment_date !== "" ? `${new Date(record.data.data.last_payment_date).toDateString()}` : '-'}</td>
+                    <td>{record?.data?.response?.last_payment_date !== "" ? `${new Date(record?.data?.response?.last_payment_date).toDateString()}` : '-'}</td>
                     <td><PiNotePencilDuotone color="#005734" fontSize="1.5em" onClick={() => handleEditClick(index)} /></td>
                   </tr>
                 ))}

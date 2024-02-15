@@ -8,7 +8,6 @@ import StaffJobLandingLayout from "../../../../layouts/StaffJobLandingLayout/Sta
 import { getUserInfoFromLoginAPI } from "../../../../services/authServices";
 import { useCurrentUserContext } from "../../../../contexts/CurrentUserContext";
 import {
-  getApplicationForAdmin,
   getCreatedProductLinks,
   getJobsFromAdmin,
   getMasterLinks,
@@ -26,6 +25,14 @@ import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 const LandingPage = ({ subAdminView }) => {
   const [stateTrackingProgress, setstateTrackingProgress] = useState(false);
   const [isActive, setIsActive] = useState("active");
+
+  const navigate = useNavigate();
+  const { 
+    currentUser, 
+    setCurrentUser,
+    allApplications,
+    userRemovalStatusChecked,
+  } = useCurrentUserContext();
 
   const {
     jobs,
@@ -110,20 +117,11 @@ const LandingPage = ({ subAdminView }) => {
   useEffect(() => {
     if (applicationsLoaded) return setlist(applications);
 
-    getApplicationForAdmin(currentUser?.portfolio_info[0].org_id)
-      .then((resp) => {
-        setlist(
-          resp?.data?.response?.data?.filter(
-            (j) => currentUser.portfolio_info[0].data_type === j.data_type
-          )
-        );
-        setApplicationsLoaded(true);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
-  const navigate = useNavigate();
-  const { currentUser, setCurrentUser } = useCurrentUserContext();
+    if (!userRemovalStatusChecked) return;
+    
+    setlist(allApplications);
+    setApplicationsLoaded(true);
+  }, [userRemovalStatusChecked, currentUser]);
 
   console.log("currentUser", currentUser);
   // console.log("jobs", jobs);

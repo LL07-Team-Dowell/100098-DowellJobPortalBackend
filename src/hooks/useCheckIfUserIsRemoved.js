@@ -21,7 +21,7 @@ export default function useCheckIfUserIsRemoved(
     getAppliedJobs(userDetails?.portfolio_info[0]?.org_id).then(res => {
       const allApplications = res?.data?.response?.data?.filter(
         (application) => application.data_type === userDetails?.portfolio_info[0]?.data_type
-      );
+      )?.reverse();
 
       const currentUserAppliedJobs = allApplications.filter(
         (application) => application.username === userDetails?.userinfo?.username

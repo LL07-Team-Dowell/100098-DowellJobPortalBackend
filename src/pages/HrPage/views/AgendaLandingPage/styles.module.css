@@ -9,6 +9,7 @@
 .create_team_parent.report {
     display: flex;
     flex-wrap: wrap;
+    gap: 3rem;
     width: 90%;
     margin: 0 auto;
 }

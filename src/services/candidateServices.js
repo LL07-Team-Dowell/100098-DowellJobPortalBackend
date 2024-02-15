@@ -96,9 +96,9 @@ export const deleteSingleCandidateTaskV2 = async (taskId, status) => {
   )
 }
 
-export const getPaymentRecord = async (data) => {
-  return await currentBackendAxiosInstance.post(
-    `invoice_module/?type=get-payment-records`, data
+export const getPaymentRecord = async (user_id) => {
+  return await currentBackendAxiosInstance.get(
+    `invoice_module/?type=get-payment-records&user_id=${user_id}`
   )
 }
 
@@ -109,7 +109,7 @@ export const savePaymentRecord = async (dataToPost) => {
 }
 
 export const updatePaymentRecord = async (dataToPost) => {
-  return await currentBackendAxiosInstance.post(
+  return await currentBackendAxiosInstance.patch(
     `invoice_module/?type=update-payment-records`, dataToPost
   )
 }

@@ -89,6 +89,7 @@ const JobApplicationScreen = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [newApplicationSubmissionLoading, setNewApplicationSubmissionLoading] =
     useState(false);
+  const [speedTestCheckLoading, setSpeedTestCheckLoading] = useState(false);
 
   const addToRefsArray = (elem, arrayToAddTo) => {
     if (elem && !arrayToAddTo.current.includes(elem))
@@ -125,16 +126,20 @@ const JobApplicationScreen = () => {
 
     if (email === "") return toast.info("Please enter an email");
 
+    setSpeedTestCheckLoading(true);
+    
     getInternetSpeedTest(email)
       .then((res) => {
-        const speedTestResults = res.data.response.filter(
-          (item) =>
-            new Date(item.details.date).toDateString() ===
-            new Date().toDateString()
-        );
-        console.log(speedTestResults);
+        setSpeedTestCheckLoading(false);
 
-        const matchingSpeedResult = speedTestResults.find(
+        // const speedTestResults = res.data.response.filter(
+        //   (item) =>
+        //     new Date(item?.details?.date).toDateString() ===
+        //     new Date().toDateString()
+        // );
+        // console.log(speedTestResults);
+
+        const matchingSpeedResult = res?.data?.response?.find(
           (item) => item.success === true
           // item.details.upload >= 100 &&
           // item.details.download >= 100 &&
@@ -150,13 +155,14 @@ const JobApplicationScreen = () => {
             type: newJobApplicationDataReducerActions.UPDATE_INTERNET_SPEED,
             payload: {
               stateToChange: mutableNewApplicationStateNames.internet_speed,
-              value: matchingSpeedResult.details.download,
+              value: matchingSpeedResult?.details?.download,
             },
           });
         }
-        console.log(res.data.response[0].details);
+        // console.log(res.data.response[0].details);
       })
       .catch((error) => {
+        setSpeedTestCheckLoading(false);
         console.log(error);
         if (error?.response?.status === 404)
           setShowInternetSpeedTestModal(true);
@@ -1060,8 +1066,14 @@ const JobApplicationScreen = () => {
                             borderRadius: "0.3rem",
                             marginBottom: "0.2rem",
                           }}
+                          disabled={speedTestCheckLoading ? true : false}
                         >
-                          Check
+                          {
+                            speedTestCheckLoading ?
+                              <LoadingSpinner color={'#fff'} width={'1.2rem'} height={'1.2rem'} /> 
+                            : 
+                            'Check'
+                          }
                         </button>
                       </label>
                     </div>
@@ -1069,11 +1081,10 @@ const JobApplicationScreen = () => {
                       <SuccessPublicSubmissionModal
                         title={"Oops! No result found"}
                         body={
-                          "You have not done your internet speed test yet. Please visit our site to take it now by clicking the button below"
+                          "You have not done your internet speed test today yet. \nPlease visit our site to take it now by clicking the button below"
                         }
                         submissionModalIcon={false}
                         handleBtnClick={() => {
-                          setPublicSuccessModalBtnDisabled(true);
                           window.open(speedTestURL, "_blank");
                         }}
                         handleCloseModal={handleCloseModal}

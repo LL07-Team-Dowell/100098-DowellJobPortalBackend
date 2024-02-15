@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useCurrentUserContext } from "./CurrentUserContext";
 import { useJobContext } from "./Jobs";
-import { getApplicationForAdmin, getCompanyStructure } from "../services/adminServices";
+import { getCompanyStructure } from "../services/adminServices";
 import { testCompanyData } from "../pages/AdminPage/views/CompanyStructure/utils/testData";
 
 const CompanyStructureContext = createContext({})
@@ -15,7 +15,11 @@ export default function CompanyStructureContextProvider ({ children }) {
     const [ showConfigurationModal, setShowConfigurationModal ] = useState(false);
     const [ currentModalPage, setCurrentModalPage ] = useState(1);
 
-    const { currentUser } = useCurrentUserContext();
+    const { 
+        currentUser, 
+        allApplications, 
+        userRemovalStatusChecked 
+    } = useCurrentUserContext();
     const {
         applicationsLoaded,
         setApplications,
@@ -26,19 +30,10 @@ export default function CompanyStructureContextProvider ({ children }) {
         if (!currentUser) return
 
         if (!applicationsLoaded) {
+            if (!userRemovalStatusChecked) return
 
-            getApplicationForAdmin(currentUser?.portfolio_info[0]?.org_id).then(res => {
-                const applicationsFetched = res?.data?.response?.data?.filter(
-                    (item) => currentUser?.portfolio_info[0]?.data_type === item.data_type
-                )?.reverse()
-
-                setApplications(applicationsFetched);
-                setApplicationsLoaded(true);
-
-            }).catch(err => {
-                console.log('Failed to get applications for admin');
-                setApplicationsLoaded(true);
-            })
+            setApplications(allApplications);
+            setApplicationsLoaded(true);
         }
 
         if (!companyStructureLoaded) {
@@ -56,7 +51,7 @@ export default function CompanyStructureContextProvider ({ children }) {
             })
         }
 
-    }, [])
+    }, [currentUser, userRemovalStatusChecked])
 
     return <CompanyStructureContext.Provider value={{
         companyStructure,
