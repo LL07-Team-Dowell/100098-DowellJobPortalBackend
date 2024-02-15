@@ -132,14 +132,14 @@ const JobApplicationScreen = () => {
       .then((res) => {
         setSpeedTestCheckLoading(false);
 
-        const speedTestResults = res.data.response.filter(
-          (item) =>
-            new Date(item?.details?.date).toDateString() ===
-            new Date().toDateString()
-        );
-        console.log(speedTestResults);
+        // const speedTestResults = res.data.response.filter(
+        //   (item) =>
+        //     new Date(item?.details?.date).toDateString() ===
+        //     new Date().toDateString()
+        // );
+        // console.log(speedTestResults);
 
-        const matchingSpeedResult = speedTestResults.find(
+        const matchingSpeedResult = res?.data?.response?.find(
           (item) => item.success === true
           // item.details.upload >= 100 &&
           // item.details.download >= 100 &&
